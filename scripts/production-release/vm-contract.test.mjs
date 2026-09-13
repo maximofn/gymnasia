@@ -25,6 +25,8 @@ test("instalar y hornear no registra ni activa el runner", () => {
   assert.doesNotMatch(read("install-host.sh"), /systemctl (?:enable|start)|config\.sh|--token/);
   assert.doesNotMatch(read("guest-install.sh"), /config\.sh|--token|systemctl (?:enable|start).*runner/);
   assert.match(read("guest-install.sh"), /apt-get purge --yes sudo openssh-server/);
+  assert.match(read("guest-install.sh"), /tar --no-same-owner -xJf node.download/);
+  assert.match(read("guest-install.sh"), /chown -R root:root \/opt\/gymnasia \/opt\/android/);
   assert.match(read("gymnasia-runner.service"), /User=runner/);
   assert.match(read("gymnasia-runner.service"), /ExecStopPost=\+\/usr\/sbin\/poweroff/);
   assert.match(read("bake-image.sh"), /120G/);

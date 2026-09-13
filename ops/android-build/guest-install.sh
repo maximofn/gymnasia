@@ -44,9 +44,9 @@ download() {
 }
 progress node-y-java
 download node
-tar -xJf node.download --strip-components=1 -C /opt/gymnasia/node
+tar --no-same-owner -xJf node.download --strip-components=1 -C /opt/gymnasia/node
 download java
-tar -xzf java.download --strip-components=1 -C /opt/gymnasia/java
+tar --no-same-owner -xzf java.download --strip-components=1 -C /opt/gymnasia/java
 progress herramientas-android
 download android
 unzip -q android.download -d /var/tmp/android-unpack
@@ -79,6 +79,8 @@ ENV
 chmod 0644 /etc/gymnasia-toolchain.env
 # Only runtime caches belong to the runner. The toolchain and admission hook
 # stay root-owned; dependency resolution may not silently replace SDK versions.
+chown -R root:root /opt/gymnasia /opt/android /usr/local/lib/gymnasia
+chmod -R go-w /opt/gymnasia /opt/android /usr/local/lib/gymnasia
 chmod -R a+rX /opt/gymnasia /opt/android
 test ! -e /home/runner/actions/.runner
 test ! -e /var/run/docker.sock && test ! -e /dev/nvidia0

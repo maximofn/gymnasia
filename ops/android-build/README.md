@@ -86,6 +86,10 @@ Las versiones se instalan dentro de la VM; EAS local ignora los campos de
 toolchain de `eas.json`. La imagen no tiene sudo, SSH, Docker, GPU ni KVM
 expuesto al guest. `runner` no es administrador. Las herramientas y el hook
 de admisión son de root; el checkout, cachés y temporales son desechables.
+Los TAR de Node/Java se extraen con `--no-same-owner` y se normaliza el
+propietario de toda la toolchain: conservar el UID del archivo de Node lo
+asignaba a `runner` (UID 1000). La auditoría recorre los archivos como ese
+usuario y rechaza cualquier directorio o herramienta que pueda modificar.
 
 ## Firma y contador
 
