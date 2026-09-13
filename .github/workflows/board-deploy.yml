@@ -1,0 +1,147 @@
+name: Deploy architecture board
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "arquitectura-agente/data/**"
+      - "arquitectura-agente/index.html"
+      - "arquitectura-agente/script.js"
+      - "arquitectura-agente/styles.css"
+      - "arquitectura-agente/vercel.json"
+
+permissions:
+  contents: read
+  deployments: write
+  issues: write
+
+concurrency:
+  group: board-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: Board Production
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      EVIDENCE_PATH: /tmp/board-production-evidence.json
+
+    steps:
+      - name: Check out current main without traversing legacy gitlinks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git -c protocol.version=2 fetch --no-tags --depth=1 origin refs/heads/main
+          git checkout --detach FETCH_HEAD
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npm exec -- playwright install --with-deps chromium
+
+      - name: Re-run every board gate
+        run: |
+          npm run test:linear
+          npm run test:board-automation
+          npm run test:board
+          npm run test:board:e2e
+
+      - name: Resolve the exact Vercel project
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN"
+          test -n "$VERCEL_ORG_ID"
+          test -n "$VERCEL_PROJECT_ID"
+          npm exec --yes -- vercel@59.16.0 pull --yes --environment=production \
+            --cwd arquitectura-agente --token "$VERCEL_TOKEN"
+          node -e 'const fs=require("node:fs"); const p=JSON.parse(fs.readFileSync("arquitectura-agente/.vercel/project.json")); if(p.projectName!=="gymnasia" || p.projectId!==process.env.VERCEL_PROJECT_ID || p.orgId!==process.env.VERCEL_ORG_ID) throw new Error("Vercel no resolvió el proyecto gymnasia esperado")'
+
+      - name: Deploy the static board
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/vercel-deploy.log"
+          npm exec --yes -- vercel@59.16.0 deploy --prod --yes \
+            --cwd arquitectura-agente --token "$VERCEL_TOKEN" 2>&1 | tee "$log"
+          url="$(grep -Eo 'https://[^[:space:]]+' "$log" | tail -1)"
+          case "$url" in
+            https://*) ;;
+            *) echo "Vercel no devolvió una URL de despliegue válida" >&2; exit 1 ;;
+          esac
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Verify the canonical production bytes
+        id: verify
+        continue-on-error: true
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          node scripts/board-automation/verify-production.mjs \
+            --local arquitectura-agente/data/board.json \
+            --url https://gymnasia-sable.vercel.app/ \
+            --attempts 12 --interval-ms 5000 \
+            --commit "$GITHUB_SHA" \
+            --deployment-url "$DEPLOYMENT_URL" \
+            --output "$EVIDENCE_PATH"
+
+      - name: Report a checksum mismatch
+        if: steps.verify.outcome == 'failure'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/board-automation/automation.mjs problem \
+            --kind production-mismatch --evidence "$EVIDENCE_PATH" --run-url "$RUN_URL"
+          exit 1
+
+      - name: Record deployment evidence
+        if: steps.verify.outcome == 'success'
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          set -euo pipefail
+          local_hash="$(node -e 'const fs=require("node:fs"); const p=JSON.parse(fs.readFileSync(process.env.EVIDENCE_PATH)); process.stdout.write(p.localHash)')"
+          {
+            echo "## Tablero desplegado y verificado"
+            echo ""
+            echo "- Commit: \`$GITHUB_SHA\`"
+            echo "- Despliegue: $DEPLOYMENT_URL"
+            echo "- Producción: https://gymnasia-sable.vercel.app/"
+            echo "- SHA-256: \`$local_hash\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve deployment evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: board-production-evidence-${{ github.sha }}
+          path: ${{ runner.temp }}/board-production-evidence.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Report an unexpected deployment failure
+        if: failure() && steps.verify.outcome != 'failure'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/board-automation/automation.mjs problem --kind deploy-failure --run-url "$RUN_URL"
