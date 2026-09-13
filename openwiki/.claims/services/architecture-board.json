@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:315e90e59402938879e60f6a69a8e740ad2c914af01efd89de2782e1cde5969d",
+  "pageVersion": "sha256:7290591644a89b44a34885bf6e6229db7aaba784be3cc150840d88720a3cef5f",
   "claims": [
     {
       "id": "claim_88c860a79f05477a88045b0ffe08a84d",
-      "statement": "`arquitectura-agente/` es un sitio estático que carga `data/board.json` como espejo manual de Linear, sin API, token, backend, cron ni base de datos en su ejecución; Linear es la autoridad cuando existe discrepancia.",
+      "statement": "`arquitectura-agente/` es un sitio estático cuyo navegador lee `data/board.json` sin API, token, backend ni base de datos en ejecución; Linear es la autoridad ante discrepancias, mientras GitHub Actions concilia el espejo cada seis horas.",
       "evidence": [
         {
-          "resource": "repo://arquitectura-agente/README.md#L1-L12",
-          "version": "repo-lines-v1:sha256:c62b31fa5340b833c45630b408997a4345ceca4625ef7bea7ac80f85bd67c780:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyMTJhMmY5NWQyYzY0OWNkZDAxNWRkODdiYmFmYzcyYjViZDk0YjVhMDAyMGI3YWQ0ODk4Mzc4Y2FjZjI2OGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjMjRiYmJkMTZjMmI1MDQzZTgzYTlkMGQ2NWU2YWQyOTI2ZjIyOTNhZTFkMmE0OTkyZDQwZmQyMjA4YWQxNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkYTIyOTJhMjg4MjlhN2U0ZWFkMzQxMTdjYmU3N2MyMGM1YmQ1ZjY0Zjk3OTAzYmIxNjdiNTBjMTI5NmQzMjYifQ"
+          "resource": "repo://.github/workflows/board-reconcile.yml#L1-L16",
+          "version": "repo-lines-v1:sha256:fa7be1c0e97fab59d266224923d539ce9e6fd521910aa7300be544f11a364b0f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkNDRmZDFkM2JmYTE1OTIyMWEzMjA4MjFlYTQ3ZjZkNGMyNjgxNWE3NmM1NTM3MDRmMmQ1OTU4OTYxZmZlNGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYxNmFiNWM2NGFjMTMzNGYzMzAyYTkwZmQ4OTIzYzc4ODFjYzJlYmU2Nzk0OWRiZmU4ZjAxZTA0ZTUyMDAyNjcifQ"
+        },
+        {
+          "resource": "repo://arquitectura-agente/README.md#L1-L13",
+          "version": "repo-lines-v1:sha256:f7572081f4b56a491b22288dbf060bcfa4801b755f46e0efbb00bc57bda1d446:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlODUxODJkOTg1MmE0NWE4YjBkNzg5NWRlMmQwOTc1ZTQ5NzQwMWIzZDY4YzE5ZmY5OGUxM2EwOTVmNGZjNjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjMjRiYmJkMTZjMmI1MDQzZTgzYTlkMGQ2NWU2YWQyOTI2ZjIyOTNhZTFkMmE0OTkyZDQwZmQyMjA4YWQxNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkYTIyOTJhMjg4MjlhN2U0ZWFkMzQxMTdjYmU3N2MyMGM1YmQ1ZjY0Zjk3OTAzYmIxNjdiNTBjMTI5NmQzMjYifQ"
         },
         {
           "resource": "repo://arquitectura-agente/data/board.json#L2-L12",
           "version": "repo-lines-v1:sha256:6de8f2502c955ee0a5b3f5d6a3f805ae778d04900b11a1e3d542457302602084:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiYjUwMTM2MTU2YTFmZjg5ODI0MjVjNzAzNzBiYWIzOTg3NDE0YzQ4ZDQ4ZmYzZmIyMWFiNGM1ZmVlYTBjOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoxLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYzY0NmRmYmJkYjhlNGU5OGNkYzBlOTdkYzg3NzA2OGNjYmFlZmQyYTU1OTIyZDU4NzZjMjM1MWZlZGMyM2UifQ"
-        },
-        {
-          "resource": "repo://arquitectura-agente/script.js#L921-L932",
-          "version": "repo-lines-v1:sha256:96f5856a21a7ea1ccd2c6f5bfcb854cf7700f1326e3b6f6166a2928e729d616d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhY2U1ZmViZjc2MjJjZGVmZmRiYTg0MDFkZWNkMWQ4MDI5MjU4NzIzM2ZkNTk3MjEzNTFhZmY2MzYxZTliNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ1ODYyYjA3MDc0Y2ZkNDQ0ODI3MTg1ZTNlMjA5ODZjNmRjOWU2YWRjMjA4ZTkzYzM5MDM0NWVkMzVmOTM3ODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyMzRhYjRkMjBjMmEwNmRiODk0ZmY3ZGE5NGVlOGEwNTM5ZGMzZDJjMDMxNTJjMTlmNTQ1MzMxMzk3MjRiNzcifQ"
         }
       ]
     },
@@ -114,49 +114,161 @@
     },
     {
       "id": "claim_30d6371016d04c0793a0b19196994079",
-      "statement": "El comando `linear.py board` compara el espejo contra Linear; `--apply` solo sincroniza estados y `meta.updated`, reporta títulos, altas y bajas para edición manual, y mapea `In Review` a `in_progress`.",
+      "statement": "`linear.py board` produce un informe que distingue cambios de estado, título y de inventario; `In Review` se mapea a `in_progress`. `--apply-safe` actualiza estados, títulos y `meta.updated` solo si no hay altas ni bajas, mientras el legado `--apply` actualiza únicamente estados.",
       "evidence": [
         {
-          "resource": "repo://.claude/skills/linear-tickets/scripts/linear.py#L510-L638",
-          "version": "repo-lines-v1:sha256:8a7c939159699c60f165718e1bb231c137e3b5895a0fac6b0c94ac541aabfc1a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2MThjMmNkMWYyNmJiMmNlYzk5YjU2MDgyMTQ0YTI1NGZhYWE3Nzg5MjI4OGNmOWMxMGM2YWM5NjRmZGFjMzI1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJiNmUyNzljZDdiOTYzMzhhMDc2MWQ1NTUzNGQ1YTI5OTE3ZTQ3ODljZWZhYWFjYWNhY2I4ZjRhMTFkYTA2YjNmIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyYWJjNTNjZTMyN2RlMzg5NWJjMjIzMmMwMDhmMzIwZTUxOTQyZDliYmY3YjJjNTFhZWYwZjUwZjA0ZmQ5Mjc0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI4MDRkMTlmODZmNjlmNjdjNDNjYjhhOWRjYmNkMDI2NzYwYTAyNzliZGEzZWNhZGM0OTA2OTllZTY4MmJmY2M4In0"
+          "resource": "repo://.claude/skills/linear-tickets/scripts/linear.py#L514-L592",
+          "version": "repo-lines-v1:sha256:3c71bd141bb5555a92f43f2f7d305f276bf11acc11b1235f8fb414dd9427a6ee:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkYjFhNjkwNzkzMmFhZjZhMzQ3MzYwMWU0NWZmODkyNDM3ZDdiZTZlZjcxZGNkZDA0ODA2MmY5ODc2MjE1ODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhMGUwMmU0MGRhYmUxMjdkYWYwZGNkOTQ0YzMwZjA4MDNlYzAyYzUyYjU5NjQ0ODU5NWI2ZmRjMDllOTA1MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzNjg4YjRmYjRhY2JlYTgxZjNmMGYxOGRmZDMyYzc1NmVjODNhOGUzNGU0ZTk1ZWEwOTcxZThjZDI1ZjhhYzIifQ"
+        },
+        {
+          "resource": "repo://.claude/skills/linear-tickets/scripts/linear.py#L710-L815",
+          "version": "repo-lines-v1:sha256:121d363fff348de1324beab9ee7114a7fb0f0046e05cb0a0dbb1559e6050df68:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI3NmI4MWUwNDQxZWY4NzZmZjIzNGFhMWM3M2QzMGJhZWVkNTY5YjVkNzUyNTVmZjE2NjBiNjE5ZThkMjQ2NmRkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwMWJhNDcxOWM4MGI2ZmU5MTFiMDkxYTdjMDUxMjRiNjRlZWVjZTk2NGUwOWMwNThlZjhmOTgwNWRhY2E1NDZiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwMWYxNjBjNjdkZWU2NzU5YmQ3NjQxZWM3NzExOWU3MzEzYTBhODFhODE1YWE1ZjQ5ZTJlZjQ2OGZmZmUxY2ViIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI4MzUxZTE3NTY4YzhhODk1ZGFhMjNhZjI5YjNjZTBjOTU3YTI1Zjc0ODgwNzNlYzQ0ZTdlZjE2Yzc5YjZjYzk3In0"
+        },
+        {
+          "resource": "repo://.claude/skills/linear-tickets/tests/test_linear.py#L95-L168",
+          "version": "repo-lines-v1:sha256:787cb810c438ffda41f7cd899eefe31e1d398ba8b0502cedb17e00b3370cd390:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2NDEyZmNlZDRkMWFkZTBjY2FmOTMwOWY2YmQ0Y2NjYjBiYzY4MmU3ZTA3MjA3MWEwZWVhYTFlOGY1YjUyNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5MmM0Mzc2NGFmMGFhYTY3NDdhMjQwZTIyMzY3YzhmMGVkMjliOTdhMWNiZmZlMzU5OTgyZWQyZDgxNTg4NWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5NDczNDliOGQ5OWE3YzRiZDNjODRjMTZhMjc2M2ZlYWI5M2RiOGEzMzlmZTZjZjgwM2I1ODRiODZhMDdjZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3ODMzY2FiMGU4YWM1MjBiZjk3YWJiNzc3NWVkYzUyNWUzZGVjNmNlOWMyZmM0M2UwNTAwMGQ4OWJlZmI5MzQifQ"
         }
       ]
     },
     {
       "id": "claim_eb855041d44441aa81e2f084cbb1a729",
-      "statement": "`npm run test:board` ejecuta validación de datos con `node --test`, mientras que la E2E inicia un servidor HTTP local y usa Playwright para comprobar renderizado, interacción del tablero y contención móvil; ninguna de estas pruebas valida el runtime Expo.",
+      "statement": "`npm run test:board` ejecuta la validación de datos con `node --test`; `npm run test:board:e2e` levanta un servidor HTTP local y usa Playwright para comprobar renderizado, interacción, errores de página y contención móvil. Estas suites validan el sitio estático, no el runtime Expo.",
       "evidence": [
         {
-          "resource": "repo://arquitectura-agente/tests/board-data.test.mjs#L1-L223",
-          "version": "repo-lines-v1:sha256:b3d202f5d35fb40a929107e4d8fb2355b54db9f51d85390759842f1fa337ab0d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlYWYyMmNmMDczMjU5MmMyNDcxNDFjYmU2MWVmYTExMDEyNjEyZjVhMzEyMmI5YWY5YmJhZjUyZjU3MjRkMTk0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+          "resource": "repo://arquitectura-agente/tests/board-data.test.mjs#L1-L15",
+          "version": "repo-lines-v1:sha256:20c8f92b92ef10cac0b65232e7b9b43e335db5dda14798a6439c0688a144e2ff:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjZmI4MDNmODA1ZWM0NjBlYTMzNWU5MzdmYWVhMjY2YTYzMTY3MTExZTQ3YzU3NGQ4M2EzOTI3MjE2MTc3MTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE4ZGVmYzU3OTIxMzg3NDQyYzkxYmQwMmJiYzI0NTgyOGU1OTI4NzAyZjIyODA1Y2EyMmRjNjI1M2UyY2Y0NTcifQ"
         },
         {
-          "resource": "repo://arquitectura-agente/tests/board.e2e.mjs#L1-L356",
-          "version": "repo-lines-v1:sha256:dea41e0cb447c3cb6a7561fb09a0f43c3a7eef2a687c7b5aaf59bf4e1db42682:eyJzZWxlY3RlZExpbmVDb3VudCI6MzU2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlYWYyMmNmMDczMjU5MmMyNDcxNDFjYmU2MWVmYTExMDEyNjEyZjVhMzEyMmI5YWY5YmJhZjUyZjU3MjRkMTk0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+          "resource": "repo://arquitectura-agente/tests/board.e2e.mjs#L1-L79",
+          "version": "repo-lines-v1:sha256:f1b365ba3b03ca077b36ae19854e4add7c6bf72590804eb3275ff79a5b8a0347:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3YzNmNzRhNTFlMTJmMTY1ZGM3NzcyZWU5YTRiMzlkZjE4NTEzNDZjOTkxMGM5NDhkYzc1NDBlOTAwZGNiNTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0NTc3MDE0NWU1MjI5ZTM5Y2MyZThjYjk0NjFjNjUxNTMxNzhhNDM1NmZhMTEyOTY2NTkwNTljNmU3ZjRmM2YifQ"
         },
         {
-          "resource": "repo://package.json#L68-L71",
-          "version": "repo-lines-v1:sha256:82ac82e56c21df453a2d027c58aa390e172c0c97016f8645c7b1f9a7209187d3:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjc0NDRjM2M1MDQ4ODc5YWZlYjNkNWMwMDUyMzhlNDhhNDllN2VmNmUxMmJlMGFkZGRkMjUxNjNkMjAzYmY1MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTlkZGNiNzQzZWFmMTk0NWE3ZjRhZjczNmE3NTE2Njg3M2JhZjUyY2YyNzE4NzZkMzU2ZDA2OTVkZjM5NmE3MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTI4OTJiZDQ2MzNkOWY2NDk5NWU1MDJkY2U2YjdhMzk2N2RmMzZjMzZkY2RhMjE1OGZmN2JiZmU1MWUzYjc3NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTkxMmU2NGU4ODg3MmJlZGNkMTc3MGJkYWQ2M2RiMGI1NDBkZjBkMDExMDJhZjEwZGFlYTAyYzAxN2EwZmU1YiJ9"
+          "resource": "repo://arquitectura-agente/tests/board.e2e.mjs#L285-L355",
+          "version": "repo-lines-v1:sha256:065b4c7df92c0845360008098391c003e9f6e4cb078360dea33cd0efc91cd39b:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyNmQyYjhmYzlmYmIxMTIwOWFjNzY4M2QwNzJmNzgzNDUyYWJmMmRjYmFmYzI4ZDExM2E0Mjg1NTNlYjUzNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNWE3MzA5N2Y2YjFkYjYzOTIzNWU5M2VjZWM3MzcxNjZlMjM2NTRjNDg3ZGViMWNiYmQ2YTUwZmIyNTdlNWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM0MmVhYTU0NTAyOWVmMjc1MDRjZTdlNDUzZGQ1YTM2MTg1YWExOWE0ZTM5YWE3YjI4ZmE1MzQ2ZjNkNjZiZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://package.json#L78-L82",
+          "version": "repo-lines-v1:sha256:815f1a009a5747d0f8022e7ef605483782c7fb601e2061c35cd1aef529929875:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTIxY2IwYzU0MmNhMTYwOTNhMmVlY2UxODk5OGJiZjExYmRjN2FiZTZjMDAxYTg4MTY2NDdjODZlNjA0ZmI5NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTlkZGNiNzQzZWFmMTk0NWE3ZjRhZjczNmE3NTE2Njg3M2JhZjUyY2YyNzE4NzZkMzU2ZDA2OTVkZjM5NmE3MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTYxNjMwODg2MzM3MTc1ZmMyMzE2ODlhZmI1MGFhYjgzZWY4YjFlNzAwNjg4OTk2ZWE4ZWJiYzA2MjFiNzY1ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTkxMmU2NGU4ODg3MmJlZGNkMTc3MGJkYWQ2M2RiMGI1NDBkZjBkMDExMDJhZjEwZGFlYTAyYzAxN2EwZmU1YiJ9"
         }
       ]
     },
     {
       "id": "claim_350f61b0bde34c8181b5a22a58b359c1",
-      "statement": "Vercel sirve `arquitectura-agente/` sin paso de build, con URL limpias y sin barra final; el despliegue documentado es manual mediante la CLI de Vercel.",
+      "statement": "Vercel sirve `arquitectura-agente/` sin paso de build, con URL limpias y sin barra final; el despliegue normal es el workflow desde `main`, y el README conserva una recuperación manual excepcional con Vercel CLI.",
       "evidence": [
         {
-          "resource": "repo://arquitectura-agente/README.md#L129-L144",
-          "version": "repo-lines-v1:sha256:cf95749f00aa13daa703d65e8a7f9a97b3ace9cd2a1ff04c72ecc47c8ec60031:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NGNlODJjZjZjYjc5OGNlMDU4NzliMjZlMzk3MjJkZjU1NjA2ZmEwNzBmNmRmNjg1NTg5OTk2ZGNjNWQ3YmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmMjkzMjljNjYwNWRjOGM1MmRiYzI5M2M0OGMxMDFlNmY0YjU1MzhlNWM0ZTE4YTIyNzZiMTg4MGU1ZGFjMzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk5MjFhODA5ZDI4NWQ1OTM0NDIxNDk0OTlmMDY5YTNjMzUzZThkNDk2OGQ2ZTJhNmEzNjNhOGQ5MjE2MmE3YjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://.github/workflows/board-deploy.yml#L3-L21",
+          "version": "repo-lines-v1:sha256:988ccc30111fd3c0db7a6027d57d3600c432600d3bfeb0c7a8b3371f0aae8eb3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0YTc5NmEwMWY4NDU4Yzg5OWQ1YjIyODkwZTVkZjQ0ODAzY2E0ZDgwMTdjMzg3OGQ3Zjg3OTQ0NDkxMjBjOGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiOWFjZTE0YjkxYTYzM2VlYWU1OTAxMDZjNTY5NDljNmRiMzM5ODlmZGQ3ZTBiNTE5ODVjZDFkZDIzZWFkNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwMDE0YmEzYjgyODg4YWEwOGM1MzYyYTA1Y2JiM2E2YTBiMDVlYmRkZDlkY2VjY2RlMGNlZmMzZWM5ODVmMWEifQ"
+        },
+        {
+          "resource": "repo://arquitectura-agente/README.md#L141-L167",
+          "version": "repo-lines-v1:sha256:c61276d9ff0e1258f14306dd2bc693206e66b51cd984f611a9931fd2e65fd040:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NGNlODJjZjZjYjc5OGNlMDU4NzliMjZlMzk3MjJkZjU1NjA2ZmEwNzBmNmRmNjg1NTg5OTk2ZGNjNWQ3YmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzM2E1YTFkMjZhODYwYmQzYzA5NmZlYjY4MWM4ZWUwZjM3MGMxODI2NTllMTM3MTVjZGE1MTBlNjA3YWY2NDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk5MjFhODA5ZDI4NWQ1OTM0NDIxNDk0OTlmMDY5YTNjMzUzZThkNDk2OGQ2ZTJhNmEzNjNhOGQ5MjE2MmE3YjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVmMjkzMjljNjYwNWRjOGM1MmRiYzI5M2M0OGMxMDFlNmY0YjU1MzhlNWM0ZTE4YTIyNzZiMTg4MGU1ZGFjMzUifQ"
         },
         {
           "resource": "repo://arquitectura-agente/vercel.json#L1-L4",
           "version": "repo-lines-v1:sha256:f91c66a44fb4186c4d6be9ae89d68c058f5c7abe811b20f60159302b96029c09:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTZmYjA4ZmRhMWFjYjk1N2I2MTE2YmQzNzgxMWExZmU0MWEwMTYxMWMwNjMxZWRiZjc4NmQ2ODg5YTI3YTU1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_259f36c2f54e4a5aa8feb6289401676a",
+      "statement": "La conciliación programada parte exclusivamente de `main`: ante altas o bajas abre una alerta y se detiene sin escribir cambios parciales; ante cambios seguros valida, crea o actualiza la PR `automation/board-sync` con `--force-with-lease` y nunca hace auto-merge.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/board-reconcile.yml#L26-L70",
+          "version": "repo-lines-v1:sha256:6defcb5678900e6ffbfa080c141dfaf81ea434b6f5b754a5cbfd28948ab27f5e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4OTk5MTEwM2Y2YmE4ODhlM2RlNzY1MWM1YTMwNWM3N2U1NTQ3Njc3M2FiYTgzOTU5MWVjYzViZDBmMmFiMWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxODdjZTRmMDJhYjRmY2Y3Y2Q4MTc2ODMxNTgzNDVjN2ZjNTI0OTc5MzEwMWMxYWVkNWM4NGMxNGViMjg3ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5YzZiN2RiZTU0MDE4MWJhMjM2MmJkYWUxZGU1ZmEzZjhkY2QyY2U4NTFlMWNjMDIwMzM1MGFkZjM1OTJjNDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmODMyMzAxZDc4YWUzODMzYTcyMTU2NjFmZDYxMTFkMjYxY2M5OWQwYWM4NTIzM2VhODg1NGEwMjVjMDYxYjQifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/board-reconcile.yml#L93-L191",
+          "version": "repo-lines-v1:sha256:b874c97d369b1ee7dfadfbc0a448309e79cf715b5d64bc3ecd4ed530557622a0:eyJzZWxlY3RlZExpbmVDb3VudCI6OTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhZTRmYzUxY2UzMTcwMzgzMGE3ODFlNDQzZTVmMjllOTljMGUzODBmZTMxZTE5ZDQwNmNhNDk1NTRkNDlhYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5N2RjZjlmMTYwMGFmNDNmMDc1MDkzYmVmMGE0NDY1MGMzYzYxNTA4OWQ5ZmZmYjVmZTc1MjYwMzA1MjQ3ZWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI0MmZhMGI3YTNmY2U2YTUzNTc3OTcwNzlhODRlNzczNDhmODRjMTYxNTJiODVjMThlMTdiYTliNjc3ZDhkNTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdjZjA4YjhlMDNmZDhiOTFhMDJiYzVlMDlkYzI5MGFkODA5NWI4M2RhY2M0OGMwMmMyZWU0YTJmOWM1OWU3MDAifQ"
+        },
+        {
+          "resource": "repo://scripts/board-automation/workflow-contract.test.mjs#L19-L34",
+          "version": "repo-lines-v1:sha256:70e3d56b151244ba2da9a312d867279447292d1a36439f6eb9d699f923d3e128:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmMjk4NjZiNDk4MzgwZWUyMTgxODgzMDUzMDE5NWFiMTdlYzljM2M3Zjc0MGVlMjRiOWU3NjQyZjE2YzRkZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViMWVhMTVhMGY3YjFkNzc0MWMwOTJkZTgwMmQzOWZkYTQ0MzRlY2YwNWY5NDM1OGM2ZjM2OWNhOTExNmUyMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY1M2U4ODdiOTdhMDVkNWE5NWVmM2ZiZjUzMWE3MThkNmM3M2IxMDU0ZTBkNzA1NzMyMGQ4NjJmYTVjYzVlZDcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_53368f0d6a344a0ba6c2f8b1638c8aa0",
+      "statement": "La aplicación segura del informe se completa en memoria y se verifica antes de persistir; la escritura atómica sincroniza el archivo temporal, conserva sus permisos y lo reemplaza con `os.replace`, evitando escrituras parciales de `board.json`.",
+      "evidence": [
+        {
+          "resource": "repo://.claude/skills/linear-tickets/scripts/linear.py#L710-L757",
+          "version": "repo-lines-v1:sha256:a36c133100800b28529ddbcaa7fbdde904a24b6de565d0093969a8af744c45a1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2YjgxZTA0NDFlZjg3NmZmMjM0YWExYzczZDMwYmFlZWQ1NjliNWQ3NTI1NWZmMTY2MGI2MTllOGQyNDY2ZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczNDdjNzEyOTJiNWZjNTA3ODhmZTE2MzhhOWVkZjcwYjc4YWNmNzM5NTZkZjRhNjQxNjRiNDNiODkzZjAxMjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxZjE2MGM2N2RlZTY3NTliZDc2NDFlYzc3MTE5ZTczMTNhMGE4MWE4MTVhYTVmNDllMmVmNDY4ZmZmZTFjZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFjODdjN2EwZGQ0M2FhZGUxMzI1MDAwOGJiMzEzYzI3NGM0YzAyMjIyM2I2MmIwMjcwMTY1MGFmZjJkN2QxZjgifQ"
+        },
+        {
+          "resource": "repo://.claude/skills/linear-tickets/tests/test_linear.py#L116-L154",
+          "version": "repo-lines-v1:sha256:60456799628352f67f9e9cd0f3a52a7ecd7ad5218e3bd7009d5f9876f4eb00d3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhZTc3YTdiMmUxNmIzYjJkNzZmOTMxN2FiYWY5ZmNlN2Y5NmU4ZDFjYjBiYjMwZGI3N2FhMTYxZmMyYmFjMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2YjNlNzUxN2U0NjdiM2QzZjRmM2NiYjFiOWQwYWMxODRjYzdlOWE2NzFmMmMxMGIzZTBlZjdmN2M4NGJlYTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5NmNkZGQ5ZTg1NDJhMzY1YWU0NWVlZjA5NmE4OTcxNzkyN2M5ZmMxYzZkYzA1ZGZhODYwMmE5YzYxODJhZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI1ZjM3NjM4ZmE3OTdmOTMxYzMzYzYyMjMxMjA0ZDBjYWU1NmRkYmZhMzc4ODUwZmEwOWVkNDA3NzBhZDQyMWIifQ"
+        },
+        {
+          "resource": "repo://.claude/skills/linear-tickets/tests/test_linear.py#L192-L224",
+          "version": "repo-lines-v1:sha256:2274c7b52728d819f54f7747c399b75eb88e44fea38fdb6c39266e35c8f3ae3a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwMDMwYjhmZjFhNmExMjdmNGQ5OTQ3ZTNlODM1ZGYwZTFjOWU1NGJhNThiOTU2NDM4YjE0Y2FlNjA2MDk2NTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmU4MWI4MWQ1YzhlMzQyYTIwNDZjNGYyNzljYTQ3NDJhYmZjYWY4YmE0Yzg0MDU2NTJjODEwMzBlMjFlZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxYzVkOTY2NWY2NDcyNWE4MTZkNGE0MTExZmU3MzRjZTkwNDY5ODkzZDk3MDUwNDA5ZGNjODA4YTNmYTBmNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYxZjZiMmE2NDg1YzE4ZGMyYjI5ODhmYWZlMDZmNmFkMjAyMjQ1ZjIwZGIzMGFjNjQ2YTRkOWNlODE2NmRiNTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d69cf0dc98b341008500229319646fed",
+      "statement": "La automatización de incidencias mantiene un único issue de alerta identificado por marcador, cierra duplicados y deduplica comentarios mediante una huella SHA-256 del payload; una comprobación sana cierra las alertas abiertas.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/board-automation/automation.mjs#L163-L250",
+          "version": "repo-lines-v1:sha256:9743f25f0edb13ef94b36132f4b19b84fcce3b7472cf0bcd309c229d123d1a14:eyJzZWxlY3RlZExpbmVDb3VudCI6ODgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1OGVhN2FlM2QxN2FiNmE2ZGNhMTU1Yzk2YTRjZjJkMjA4ZTNkMjYzMGJhMDFjNWU5NmEwMDgwZmNmNjA0Y2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyMjk2Yjk3NWFlYmU5N2FmNTU4Yzc0OWNjZTM0YWExMDE5MTVjNDBlYjBlYTExNTMxYzRiNWQzMDM0OWIwYTAifQ"
+        },
+        {
+          "resource": "repo://scripts/board-automation/automation.mjs#L4-L6",
+          "version": "repo-lines-v1:sha256:592768314da1accc24492a1adeb3e775ec342ebeff2b4f8edeb5f603306a86a4:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjJlZGUyNzU0NDE3YjQyMGEzNTI3NjhiODNjMmEzYzNjYzY3YmNjMzk5YjlmNGNhNWM0MzQ0NDQzOGMzYWQzYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTBhYzVlMDZkNmMwNWNkYjEzZThkMTdlYzJlN2Y5ZjIxY2IyZWNmYzhhMGE2MWJkZDI5ZTMyOGE0OGViOWI2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGIyMDBkYTJmMjQ0MjgyMzUzNTE1M2VhZWM3NjE1ZGJiMzFkMGQ1N2E3YjY5ZWE2ODI4MGI5ZDNjZDA2ZDA2NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDczNTVlY2MyOGMxYWQ4Yjc0NjcyNDlhODhkMjMzOTM3OWYzYTBkOGNlM2E4OTRiYjRiNzNlOWNiMmU3NThjNyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_6de587b5b01d4236bec1da423f9ef8ba",
+      "statement": "Antes de desplegar el workflow ejecuta todas las puertas y comprueba que Vercel resolvió el proyecto `gymnasia` y los IDs esperados; así impide publicar el tablero en un proyecto u organización distintos.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/board-deploy.yml#L50-L75",
+          "version": "repo-lines-v1:sha256:0f1b7ebc7c398dbbe79d9eeaf03193ac9f895726126b42b27f13f119312ad338:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkMGMzNDQ2ZTRjOGEwNzNhNDFjZmRjODMzMTFhOGQwNWRmYThjNzgzYTU4ZDU4YzQ3MWYyN2E5YTEzNDc0ODYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ODFiZGI3YWNiZDIxYzc5OGFlYTcxYWE0MDQ3ZDc5MDcwM2Y5NDQwNmZhYzI3NmRlYzFiMmI1YTVkZmQ0Y2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhMTQyMDE2YjAzNmM5Zjk2OTkyNDRhNGM0MjlmMDFhZTE5ZmEyY2MxYTg3ZTM3YjBhYmQxNzQwYmQyOGY1YTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3OTFkZmM3NzEyZThkMmFkNWUxYmNmNjdmNWE1NGYxMDUyODI0YTE5NzgwYTJlZmZhZDlkZjhkNjY2YmNmODQifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/board-deploy.yml#L77-L93",
+          "version": "repo-lines-v1:sha256:cd2b2d30205c6263b936e77f91b2f5cea7922fd44396f4cac89bb7dea74374be:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhZDY0ZWIzZGU0NGY0MTc4NWVkMmM5YjNiYzMyY2Q3MGMxNjhmMWFkNzU4MWYyYWU3ZTI1MzRlNTFiMGJkODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmOGQ4NjEzNWNkNjc5ODE3MDkwYzFlMmEwZGZmYTQ3Yjc2OTFlOWNhYWZkYjkwN2YyODkwOGU0YWRmN2JhYTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjOTI5MGJlOTlkNDI4NTMwYjYyMWU0OTk1MWYwMGU3YTUzYTAzZDE4MGE4ZmQ1NjFiMDAxY2UzNGQ1NTg5MWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZlYzlkYTJiMDg5MjAzZGM0YTUzYzM4NDVlMWNkN2RhMjY5OTQxZTdhYThiZWYxYjlkMTIzZjVkZThiMzNhM2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_58a23da9736440d498ad2d3f8aea7783",
+      "statement": "Tras desplegar, el workflow verifica la raíz canónica y los bytes remotos de `/data/board.json` contra el SHA-256 local, con reintentos para propagación; conserva la evidencia como resumen y artefacto durante 30 días y falla/alerta ante discrepancia.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/board-deploy.yml#L95-L141",
+          "version": "repo-lines-v1:sha256:09e9d3002c3af4ac229bda935def7e3aeb23353b11ea9816d4a4d738d6752017:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmMTFkNjQ3OTRmNWVhYTZmZTY5MGRmZGY1NjZmMTA2YjI3YmQyYjhhOGJiZDA1ZDBlYTc2MDM4NTc4NGNiMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkMzJhYzIwODBhMTM0NWM2NDY4ZDBlMGUwOWE0OTMyMDE1MTc2NzQzZjkyYTUyNTM1NWNmZGZkNTg5N2NmZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5ZWZlYWY4MWJlODMxMWYzZjNkMjRjNjk2MzE4ZGY2M2RlMGVjZmU0ODRkZmQxNjc4MjdkMzg0NzFlN2I4YmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjOTgxZTQ5NjA4ZDMzM2RiNWNmMzZjN2M0ZDAzMmQxYWU4Y2RiMTkyMjZlNWI3NjI3Y2JjOTk3YjQ5MjM3MjMifQ"
+        },
+        {
+          "resource": "repo://scripts/board-automation/verify-production.mjs#L14-L79",
+          "version": "repo-lines-v1:sha256:c406a4f2658e98dc8e1f40bd446a558631adbe08773c7ecbe5e4c706435febfb:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzYzYzNmVhYTUyYjBlMDE1ZTliZmFlMzdiZmM3MzdiMzdiMTE1ZmEwZWY5ZmE3NjdhZjRkN2I2MmY4Y2I5ZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjMTMzYzNjODY4NGY2OTFiMzAwNDBhZDY0ZjBiODM0MDhjZjE0NTRjMTVlN2RjNGI5MzRlNDQ4N2RmMTBmNmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmYzI5NTNhN2FlNzNiY2Y0MWNkYzU0NGRjMmU4MTMyNzllOTIyMWQ2M2Y2OGY4ZTBkZjE1ZDhlMTU5NDRkNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyMjk2Yjk3NWFlYmU5N2FmNTU4Yzc0OWNjZTM0YWExMDE5MTVjNDBlYjBlYTExNTMxYzRiNWQzMDM0OWIwYTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_18e8bc9b743241d4baa9a66028de3cf9",
+      "statement": "El CI del tablero se activa para PRs y cambios relevantes en `main`, tiene solo permiso `contents: read`, no recibe secretos de escritura y ejecuta las pruebas de Linear, automatización, datos y E2E.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/board-ci.yml#L3-L23",
+          "version": "repo-lines-v1:sha256:62969060d5d59d7cbbdc757b15384df1acc8705b7801c8bd32ee6c26a0bc6c30:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5ZWNlZGMxOGVjYWYxZGFmOWU3YmVmYjlmZDc5ZTJjM2NmMTU1OTllNTNlNzljZGJkOTAxZWU2ZTJjOTc5ZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ZDc3NGQzNzQzYzI2NTQ3ZmFhMTQ2ZTA3YjBiMDUxN2VjMGE5ZWEwZmI3YjBmZmY4MTAxNmU3MTllMjhjMzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjZjhhZGY1MzBlNTgyNDAyOWYwMGU1MTA1YWZjZWEzYTRkM2E5ZWM5MTRhODBmZGQ3MTBkODg2N2M0OTQ2NWUifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/board-ci.yml#L40-L62",
+          "version": "repo-lines-v1:sha256:f5e9d0c5977323a1ab6951907727e79eb74776b125617f76b84612fd6918099d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmMTg0NDBmYWY4NDg0MDBhYzAxM2RlZDMyNGYzNjU2ODdlMTZiMjYyYzZhZTBmNTM2MTA4MTAyNDUwOWNjYjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMmEyNjk1OTBkMjE3MWFiOTY1ZDAwOWM0NjE0NzlhY2YzOGI1MzNlNTQxN2UzMThjM2RmMDdlYTlkZDQ3OWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdlYzNiMTk1MGJiYmZmNzIwNWY2YjQzZmNjNWU0MmI0OTlhZGRiNDk4ZDg1NzhmYjcwNTZiNTE5MDI0YmMwYjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://scripts/board-automation/workflow-contract.test.mjs#L8-L17",
+          "version": "repo-lines-v1:sha256:0afce2b5332ae950c706b5f4532c8d6c4636bd7bf887dd90cad8008b923125aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmMDk5MmQxYjNmYmRiMWFlYTc1NzAwNTc5ZDk1YzYwZDU0YTNiYTVkYzU2ZTA1ZWU3MDAxYzg3MjI5Zjk5MTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwYWVjYzBhZDVjMzExNmNjMTcyN2Y5NzI2YmRjMWU3YjY5YmFjZDIyMzBmNjk1MjkxMjc0Y2NjZGZmOGVlNzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZmYjU3MzIyNDM5OGIxNWFlNzVkMTIxM2YwODQ3YzcwODJhNTE1ODIwNjVmN2YxNjIxZjExZjM2YWU4NjQzYzIifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-13T07:56:37.562Z"
+    "at": "2026-09-13T12:53:55.207Z"
   }
 }

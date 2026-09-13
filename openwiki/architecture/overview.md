@@ -3,9 +3,6 @@ type: arquitectura de producto
 title: Arquitectura local-first
 description: Gymnasia es un cliente Expo local-first para móvil y web cuyo estado de producto reside en el dispositivo. Esta página delimita los catálogos, la política de IA, proveedores BYOK y el servicio de feedback opcional.
 tags: [local-first, mobile, web, byok, privacy]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
 sources:
   - id: openwiki-source-8037e2358a2c4f9b2c722a11
     resource: repo://AGENTS.md
@@ -45,13 +42,18 @@ sources:
     resource: repo://apps/mobile/package.json
   - id: openwiki-source-1d477406340582311e84da48
     resource: repo://apps/mobile/runtimeEnvironment.ts
+  - id: openwiki-source-1d0198c38ac34ff97dd54fc0
+    resource: repo://apps/mobile/trace.ts
   - id: openwiki-source-f5a826b1adfe83cfcc01ce9c
     resource: repo://apps/mobile/vercel.json
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-13T12:53:55.207Z
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
 ---
 
 # Arquitectura local-first
@@ -103,7 +105,9 @@ Las claves de `AsyncStorage` y de SecureStore se derivan de la variante. Develop
 
 ## Persistencia, secretos y copias
 
-El estado general se serializa en `AsyncStorage`. Las claves API no deben ir en esa serialización: en nativo, la configuración de proveedores usa `expo-secure-store` cuando está disponible y la app informa de un fallo de ese almacén sin perder el estado principal. En web la configuración de proveedor se guarda con el almacenamiento local disponible en el navegador; no tiene la garantía de un secreto de servidor ni la protección equivalente a SecureStore nativo.
+El estado general se serializa en `AsyncStorage`. Las claves API no deben ir en esa serialización: en nativo, la configuración de proveedores usa `expo-secure-store` cuando está disponible y deja en AsyncStorage un espejo saneado sin `api_key`; si el almacén seguro falla, la app lo informa sin descartar el estado principal. En web la configuración de proveedor se guarda con el almacenamiento local disponible en el navegador; no tiene la garantía de un secreto de servidor ni la protección equivalente a SecureStore nativo.
+
+Las trazas de depuración son otro dato local sensible: `trace.ts` conserva hasta 1.000 entradas en `AsyncStorage` dentro del ámbito de la variante y además las escribe en consola. Incluyen metadatos de compilación y diagnósticos de selección de política; el borrado total las trata explícitamente como una familia que debe eliminarse y verificarse. Al añadir instrumentación, no incluya prompts, argumentos, resultados ni otros valores personales en `data`.
 
 Una exportación `.gymnasia` es una copia local iniciada por la persona usuaria. Incluye los datos locales y fotos de progreso normalizadas, excluye claves API y las cachés remotas, y las exportaciones nuevas se cifran y autentican con una contraseña que la app no conserva. El importador todavía acepta, con aviso, los formatos antiguos JSON v1 y ZIP v2. Conversaciones y otros datos incluidos siguen siendo sensibles: importar, exportar o añadir una categoría de datos debe mantener la exclusión de credenciales y el borrado verificable.
 
@@ -140,7 +144,7 @@ La tarea programada redacta informes que superan 30 días y poda contadores de l
 1. **El dispositivo es la autoridad del producto.** Las funciones principales deben operar sin red y recuperar estado localmente.
 2. **Las variantes aíslan estado y comportamiento.** Toda clave persistente o segura nueva debe usar el ámbito de `runtimeEnvironment`.
 3. **Lo remoto se valida antes de usarse.** Mantenga esquema, hash, firma, procedencia y fallback al cambiar catálogos o política.
-4. **Los secretos tienen una frontera distinta del resto del estado.** No serialice claves BYOK en `LocalStore`, backups, trazas ni el espejo de desarrollo; comunique la menor garantía de web.
+4. **Los secretos y la observabilidad tienen fronteras distintas del estado.** No serialice claves BYOK en `LocalStore`, backups, trazas ni el espejo de desarrollo; no introduzca contenido personal en trazas y comunique la menor garantía de web.
 5. **El contexto de IA sale del cliente.** Documente y minimice qué se transmite a cada proveedor; no presente BYOK como confidencialidad de servidor.
 6. **Feedback sigue siendo opcional e idempotente.** Mantenga custodia del token, validación, límites, deduplicación y retención.
 
