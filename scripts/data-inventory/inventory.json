@@ -193,7 +193,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "diagnostics",
-      "purpose": "Registro local de depuración, máximo 1000 entradas. Incluye títulos y cuerpos de las notificaciones entregadas, que llevan el nombre del ejercicio y el número de serie, y eventos allowlist de selección de política sin prompts ni contenido del chat. Nunca se envía por red; el usuario puede copiarlo al portapapeles desde Ajustes.",
+      "purpose": "Registro local de depuración, máximo 1000 entradas. Cada arranque registra la plataforma, la versión de la aplicación y la compilación del paquete instalado; la cabecera de la exportación identifica la versión y compilación actuales. En web y Expo Go se usa la versión del proyecto y la compilación se marca como no disponible. Incluye títulos y cuerpos de las notificaciones entregadas, que llevan el nombre del ejercicio y el número de serie, y eventos allowlist de selección de política sin prompts ni contenido del chat. Nunca se envía por red; el usuario puede copiarlo al portapapeles desde Ajustes.",
       "clearedBy": "traces-button-and-full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"

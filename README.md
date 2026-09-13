@@ -56,6 +56,16 @@ npm --workspace apps/feedback-worker run test     # suite, sin red ni credencial
 npm --workspace apps/feedback-worker run deploy   # despliegue manual
 ```
 
+## Identificar la versión desde las trazas
+
+En Ajustes → Trazas, el texto copiado incluye `app-version` y `build-version` en
+la cabecera. `expo-application` lee estos datos del paquete instalado: en Android
+son `versionName` y `versionCode`; en iOS, la versión y el número de build.
+Cada entrada `App mounted` conserva también `version` y `buildVersion`, para
+distinguir los arranques anteriores si el historial sobrevive a una actualización.
+Las entradas antiguas se conservan sin atribuirles una compilación desconocida.
+En web y Expo Go se muestra la versión del proyecto y `build-version: unavailable`.
+
 ## Catálogos locales
 
 Cada ficha vive en su propio JSON. Los ficheros `all.json` e `index.json` son

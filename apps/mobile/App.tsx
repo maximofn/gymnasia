@@ -26,7 +26,7 @@ import {
   type PlatformAudioSound,
   type PlatformDocumentPickerAsset,
 } from "./platform";
-import { pushTrace, clearTraces, getTraces } from "./trace";
+import { pushTrace, pushAppStartTrace, clearTraces, getTraces } from "./trace";
 import { agentToolEffect } from "./agent/toolDefinitions";
 import {
   sanitizePersonalDataFields,
@@ -3096,7 +3096,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }, [tab]);
 
   useEffect(() => {
-    void pushTrace("app", "App mounted", { platform: Platform.OS, version: Constants.expoConfig?.version });
+    void pushAppStartTrace();
   }, []);
 
   const playRestFinishedAlert = useCallback(async () => {
