@@ -1,4 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Application from "expo-application";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 import { Platform } from "react-native";
 
 import { RUNTIME_ENVIRONMENT, scopedStorageKey } from "./runtimeEnvironment";
@@ -16,6 +18,19 @@ const MAX_TRACES = 1000;
 let traceBuffer: TraceEntry[] = [];
 let traceBufferLoaded = false;
 let traceBufferLoading: Promise<void> | null = null;
+
+function getAppVersionMetadata() {
+  // Expo Go's native values identify Expo Go, not the Gymnasia project it hosts.
+  const isNativeApp = Platform.OS !== "web"
+    && Constants.executionEnvironment !== ExecutionEnvironment.StoreClient;
+  return {
+    version: isNativeApp
+      ? Application.nativeApplicationVersion
+      : Constants.expoConfig?.version ?? null,
+    // EAS can manage this remotely, so app.json is not evidence of the installed build.
+    buildVersion: isNativeApp ? Application.nativeBuildVersion : null,
+  };
+}
 
 async function loadTraceBuffer(): Promise<void> {
   if (traceBufferLoaded) return;
@@ -81,15 +96,25 @@ export async function clearTraces(): Promise<void> {
   }
 }
 
+export function pushAppStartTrace(): Promise<void> {
+  return pushTrace("app", "App mounted", {
+    platform: Platform.OS,
+    ...getAppVersionMetadata(),
+  });
+}
+
 export async function getTraces(): Promise<TraceEntry[]> {
   await loadTraceBuffer();
   return traceBuffer.slice();
 }
 
 export function formatTraces(entries: TraceEntry[]): string {
+  const { version, buildVersion } = getAppVersionMetadata();
   const header = [
     `=== Gymnasia trace dump ===`,
     `platform: ${Platform.OS}`,
+    `app-version: ${version ?? "unavailable"}`,
+    `build-version: ${buildVersion ?? "unavailable"}`,
     `environment: ${RUNTIME_ENVIRONMENT.environment}`,
     `policy-channel: ${RUNTIME_ENVIRONMENT.policyChannel}`,
     `policy-candidate: ${RUNTIME_ENVIRONMENT.policyCandidate}`,
