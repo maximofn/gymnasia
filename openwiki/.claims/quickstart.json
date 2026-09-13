@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:870ce6bca1501bb116ca3f7571c7de37f3143fc962fb21c1da21b0636a461faf",
+  "pageVersion": "sha256:f885134006d7c899f86b1e4671b5e317c80cd87536c96f8933dcce482856aee6",
   "claims": [
     {
       "id": "claim_546dc48f876c41c98cff85c957a00442",
@@ -196,7 +196,7 @@
         },
         {
           "resource": "repo://package.json#L42-L70",
-          "version": "repo-lines-v1:sha256:d8c9f4cf11554b7ae651e066dde9e429ae3196e550a12656492d88bd7609de2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YzI3ZjNjNWJjOTJkYzU0YjAxYjQ0YTk1YTFjYWVkZDM4YzQyZTVmM2JiMGMzNDlkZDAwZTg0MzcyYjM2ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2OTRlY2NhNzkyMjVlNGY1ZGZmMzViZmNlYzhkOThiNTlhZGJmMTUzOWRkMzkxNzQ2NjE2NGQzOWI5NzFmNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
+          "version": "repo-lines-v1:sha256:462fe721b11046118d4e3c5f649933fc46b59fed026373ae7b95b3a21b5f4695:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YzI3ZjNjNWJjOTJkYzU0YjAxYjQ0YTk1YTFjYWVkZDM4YzQyZTVmM2JiMGMzNDlkZDAwZTg0MzcyYjM2ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2OTRlY2NhNzkyMjVlNGY1ZGZmMzViZmNlYzhkOThiNTlhZGJmMTUzOWRkMzkxNzQ2NjE2NGQzOWI5NzFmNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
         }
       ]
     },
@@ -254,25 +254,37 @@
     },
     {
       "id": "claim_15e09fd48ddb44ec828fb8b0a069de63",
-      "statement": "Los comandos raíz separan pruebas deterministas, E2E web específicas y checks especializados: `npm test` ejecuta la suite determinista y el dev store, mientras las E2E de agente, catálogos, entrenamiento, dieta y recuperación son scripts distintos.",
+      "statement": "Los comandos raíz separan pruebas deterministas, E2E web específicas y checks especializados: `npm test` encadena la suite determinista móvil, el dev store y los límites arquitectónicos móviles, mientras las E2E de agente, catálogos, entrenamiento, dieta y recuperación son scripts distintos.",
       "evidence": [
         {
           "resource": "repo://apps/mobile/package.json#L14-L21",
           "version": "repo-lines-v1:sha256:ff295ec390330257375e24e5a83399f0a03f8e2fd9d4c97f8a6278ee63775cb4:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmNlYTdhZWZiMzcyMzY4NWI0NWFkMmZmNzFkMTI3MTQzYmRkNjBhYjgzMmI4MTMwYjI0MTgzMDMzYTkwM2IwNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDg3MzJiODYzOTM4NjMyMDk0YTNmNmViYzU1M2NkMjU1Y2UxN2E3YTkzNWViZjNjNWVmYTMwZjhlZjIxODA3MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWY5NjFhNmU1Y2E3NDkwYzlmN2M4NjlkZTQyZjk0ZTc3ZDFlMzM0ODY4MmIzOTNmYjkxOGYyZTFhMGMyYWE3NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGMwYzFmZWRkZWI5ODZiOGRlNjJiZmM3M2JiNjQ5Mjk2Y2E5ZGRkMTMyOTk2ZTkwYzEwMGRiNzliZjc4OWEyMyJ9"
         },
         {
-          "resource": "repo://package.json#L42-L71",
-          "version": "repo-lines-v1:sha256:d8c9f4cf11554b7ae651e066dde9e429ae3196e550a12656492d88bd7609de2b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YzI3ZjNjNWJjOTJkYzU0YjAxYjQ0YTk1YTFjYWVkZDM4YzQyZTVmM2JiMGMzNDlkZDAwZTg0MzcyYjM2ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2OTRlY2NhNzkyMjVlNGY1ZGZmMzViZmNlYzhkOThiNTlhZGJmMTUzOWRkMzkxNzQ2NjE2NGQzOWI5NzFmNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
+          "resource": "repo://package.json#L47-L81",
+          "version": "repo-lines-v1:sha256:11609401c5dc262529affe97ff6b985d2377a626d88595fe9a11721d1888cddf:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YzI3ZjNjNWJjOTJkYzU0YjAxYjQ0YTk1YTFjYWVkZDM4YzQyZTVmM2JiMGMzNDlkZDAwZTg0MzcyYjM2ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyN2NlOGZmY2FjNDk2M2Q5MTc3M2ZlYTA3N2Q1YWVjMjk1MTAyZTE0ZDBlMjRiYzQ2ZTM4NDAyOTVlMDc4OGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2OTRlY2NhNzkyMjVlNGY1ZGZmMzViZmNlYzhkOThiNTlhZGJmMTUzOWRkMzkxNzQ2NjE2NGQzOWI5NzFmNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImExODFjZDdhZWRhMDhiNThkM2QzNzQzYmFkNGM3MDBjNjUyOGFmYzRiZTAzN2QyNmVhMDFkYjRhNWRjMjZmNDQifQ"
         }
       ]
     },
     {
       "id": "claim_90f091277982442182570acb78766087",
-      "statement": "`arquitectura-agente/` es un espejo manual de tickets de Linear, implementado como sitio estático sin build ni backend y actualizado manualmente desde `data/board.json`.",
+      "statement": "`arquitectura-agente/` es un sitio estático sin build, backend, token ni API de Linear en su runtime; el navegador consume `data/board.json`, Linear es la autoridad y GitHub Actions concilia cada seis horas los cambios mecánicos seguros mediante una PR sin auto-merge.",
       "evidence": [
         {
-          "resource": "repo://AGENTS.md#L143-L149",
-          "version": "repo-lines-v1:sha256:132cf9b6496294b6a2a91644e4fcd67def5959b2e507b2730a1c2ce35bb59db8:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDgzMTE0ZjY5ODkwZjA0NjA4MGRmNTE1OTU1MWNlNDc5YjRhODRlZGZjNmNhYTEyZDI4MzAxMmJmOGY0NzYwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjYwNDdjNjUzZTljYWRmNzBlOGFmOTZmZmJlOThmY2I5YmYxNTg0MmYwZTEwZTZhNjQ5NDU1YTRkM2JkZWQ5YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzc4NDNlYWUxNzVmZDMzODVhYWRiNDIyNmQ4MDgwMzVlY2YxMjVhNWI1ZGYxYTdhY2UxNjFjNjhkNThhMGJhYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDZmYjdjZjMyNGQyNzlkYWJjMTMwMGJkNThmNzk2YzNkZDlhODdhZmRiOThiOWE4MWZjNDI4ODY3OGI0OGJmYSJ9"
+          "resource": "repo://.github/workflows/board-reconcile.yml#L101-L158",
+          "version": "repo-lines-v1:sha256:00d7bcfbbb0f13baa7aefe367e22f504eaa228a22c41b30384cb0749a26ab410:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxOTA4OGNmMzZjNTY1OTAwYzQ4NDgxOWIzOGU4MDZlM2E1OThmM2Y3MTc3NjViOGQwNzVmOTUxMDRiZGE1NjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmNTU5NzljZTczMDIwMzNlNmIyZmQ3ZDg4ZjUzN2EzYjhlMDkxZWEzMDVjODExZmZhMTI3NGJmNTc2NGVhNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwMDNhMjdjNDBmZGM2NzQxODg5OGE4MWEwM2Q2MmIyMGZiOGJjZjc3MGQxM2U0ZDQ4MWNiMDlmNWMzNmI4MDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyMTczMDg0ZjZlMTY4ZWFmMTRiYzg5ZmFiY2YwMjVjODU3Yzc2M2I1Y2UyZTc4NTkwNzc0ZWQ5MGZhNzY1MWEifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/board-reconcile.yml#L3-L12",
+          "version": "repo-lines-v1:sha256:90b6db72014eadd59993d304b9ed2f31679bed84f42cf812764f40da47f61043:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyMjBiNmY3NzkzNDBkMWFjNWFmMjdmMGU0MDU2MmM4NzVmZDczNDdkZGExZGU1ZGEwZWZlNTA3MTYyMTczY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2MmUwZjYwOWNiZmU2MzdkNzJiMTlkMDkzNzgwZDk4N2FjMzQ0MzgyNGJmYjQ2MmQyMjQ4YmQ2ODliMjVkYTIifQ"
+        },
+        {
+          "resource": "repo://arquitectura-agente/README.md#L3-L9",
+          "version": "repo-lines-v1:sha256:514689984756e44b7b4dbff4194bcd02c6f8df475956b2aee9982ddc540be63c:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjliNWIxZTY3MmFhZmMwOGMzYjg3NGMwZWI0YTYzZDRlMmJkOThmYzhjYmU3ZmZkZGM3N2I3M2U0MTQ0NTdlMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzkzNWZkZTliMzFjY2NiZGViNzU2OGI4NzZiN2YzNGE1YTQyMzQ1ZmIzNGRkMDkwZWVjNDcwZDY2NzE3OGVmZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzcwYjk3MDdjYjYxYzU5NzM3YzhlNmU0ZmE2NDNiNDMwZTNkNDhlMjIzNTMyYjEzY2RmMjlhOTlhODkwNzg3OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGY0OTc2ODVhYmVmYWNkNDIxMDUyOWY5YzM5M2NhN2Y1ODExMzRlODdhMThmMzYyNmM3OTczMjBkNzQzZjUwZiJ9"
+        },
+        {
+          "resource": "repo://arquitectura-agente/README.md#L85-L90",
+          "version": "repo-lines-v1:sha256:38a4e4c3c8645326e4db00be49793dbde90afa550432cd90d3b967a6aacbbb0e:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTBmMGE0NGQ1MGY0Nzk5ZjllOGRmYTg5Njk2YzAwNDhkODY4ZTRmNDUxMWZmNjY4Yzg2YjRmYmEyZjYzNTlkNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODFlOGI2NDNiMTU0NzM4YmM3Yzc5NmFkZjVhZmQ0MzQ3YmNhNzUzYjBmMDA4YmY3ODRmMDRlYzVkZDQ0NjYzNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWY2ZTVmM2EzMzkyNjcwODI5OGQ5ZTI2MThmMDgxN2U4MTAwZDQyNTk2NTBjMjJhYWRjNDE2ODcyYWJkOGNjYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjE3MjdiOTgxYmQyMDBiOGY4OWIzODM0OTMwYzY3NDYzNjMwMmY1NjE4NGIxYTdiMDE3NzA2M2ZhMjhmNjY3ZSJ9"
         }
       ]
     },
@@ -329,10 +341,46 @@
           "version": "repo-lines-v1:sha256:96d4d25fc444db25bc88fd3a6f37fd981b20320ffa5643ad2bb955d5c7b01f5c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0NjU2YjA3NTBhMmNlMmUwNzAxMDAyNmUyN2FmZDY0YzI5OTdlNDViZjQxNGIyMTEwY2FkMzNlMjBjNzRjNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0YThlN2QyZjQ4Njc5MGVkNmU4NTYxNzJiZTQ1NTMxZDU5ZjE4NTdkNDNmN2YzYjM5NWZjZjM0MTI0NmMzOTAifQ"
         }
       ]
+    },
+    {
+      "id": "claim_ecda0f1f293742719cd3b6806fa3985e",
+      "statement": "Un cambio publicable del tablero en `main` vuelve a ejecutar sus cuatro gates antes de desplegar en el proyecto Vercel esperado y verifica que el SHA-256 de `data/board.json` servido en producción coincide con los bytes locales.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/board-deploy.yml#L3-L12",
+          "version": "repo-lines-v1:sha256:c88a47f7b4d5721e06953270469e126a092c3ec0ced73f049d9595cfd1a43bf2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2ODkyMjhmMGUwNzU0N2Q3NzY5OTMyYWQ3MjdhYTljYmU2N2JiYTE3MDkzYmU0NmRmMmJhMWRjYjY0OTczZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiOWFjZTE0YjkxYTYzM2VlYWU1OTAxMDZjNTY5NDljNmRiMzM5ODlmZGQ3ZTBiNTE5ODVjZDFkZDIzZWFkNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlMjc0MjI0ZTk4Mjg4MWQ5ODFiOGFkZGZkZGM5ODgwYjJmMWQwNzgwMzE1ZDcwZDVkNTE5MWM3NWY5NWE1YjIifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/board-deploy.yml#L50-L75",
+          "version": "repo-lines-v1:sha256:0f1b7ebc7c398dbbe79d9eeaf03193ac9f895726126b42b27f13f119312ad338:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkMGMzNDQ2ZTRjOGEwNzNhNDFjZmRjODMzMTFhOGQwNWRmYThjNzgzYTU4ZDU4YzQ3MWYyN2E5YTEzNDc0ODYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1ODFiZGI3YWNiZDIxYzc5OGFlYTcxYWE0MDQ3ZDc5MDcwM2Y5NDQwNmZhYzI3NmRlYzFiMmI1YTVkZmQ0Y2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhMTQyMDE2YjAzNmM5Zjk2OTkyNDRhNGM0MjlmMDFhZTE5ZmEyY2MxYTg3ZTM3YjBhYmQxNzQwYmQyOGY1YTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3OTFkZmM3NzEyZThkMmFkNWUxYmNmNjdmNWE1NGYxMDUyODI0YTE5NzgwYTJlZmZhZDlkZjhkNjY2YmNmODQifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/board-deploy.yml#L95-L141",
+          "version": "repo-lines-v1:sha256:09e9d3002c3af4ac229bda935def7e3aeb23353b11ea9816d4a4d738d6752017:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmMTFkNjQ3OTRmNWVhYTZmZTY5MGRmZGY1NjZmMTA2YjI3YmQyYjhhOGJiZDA1ZDBlYTc2MDM4NTc4NGNiMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkMzJhYzIwODBhMTM0NWM2NDY4ZDBlMGUwOWE0OTMyMDE1MTc2NzQzZjkyYTUyNTM1NWNmZGZkNTg5N2NmZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5ZWZlYWY4MWJlODMxMWYzZjNkMjRjNjk2MzE4ZGY2M2RlMGVjZmU0ODRkZmQxNjc4MjdkMzg0NzFlN2I4YmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjOTgxZTQ5NjA4ZDMzM2RiNWNmMzZjN2M0ZDAzMmQxYWU4Y2RiMTkyMjZlNWI3NjI3Y2JjOTk3YjQ5MjM3MjMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bf703fc53d1745d790ef5876466e10bf",
+      "statement": "La configuración Expo exige `APP_ENV`; Development usa por defecto proveedor `fake` y canal `Local`, mientras Staging y Production usan BYOK y reciben identificadores de aplicación, namespaces de almacenamiento y canales de política distintos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/app.config.ts#L102-L119",
+          "version": "repo-lines-v1:sha256:8855f2a0249e8ccf590d54e079cde3beec2c077bedaec259165b327bb5f61eec:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmY2IxZDYyNDc3OGM5MTcxMGM0N2U0ZjFhZTgwNTA4MWJmODBjY2EwZTY3N2ZmYjBjYTYwZWVkZDM1MTk3MzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkOTE1MTZlMjQzMDdhMTBkNTc4MjQ2NmQ2NTRlZmU1OGZjYjlmMmRhZTYyNzJmYmQwMmEwYjA5NjY1MTJiMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlNDZjZDQxMDhlZWQwODc2YjVjYmRhMTE3NGFhNmUzNzllMWNiM2Y3MzE1MTIxNzk3NThiY2VkM2E4ZTczNzkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/app.config.ts#L138-L172",
+          "version": "repo-lines-v1:sha256:c1414fc92d814f3209528eb5d8d7a524fa02263b8309dd2d699c9dc81c97cf22:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5NWZhMGYxMTE3YjVlYTQwNDM0MTQwZGRlMWEzNDBjNzIwZGRiZjMyNjIxMmUxOTE4MzhkNGIxNTZkMzE2YmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVjZWFiYjI2OGE2YTU2MWYxMzcxYjRjZDA2NTIzZjdmMzViM2Y3OGJhNjQ2OGNmYWYzOWY2NTJjZDIxYWUxOTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxYjEwZTllMTU1MDZkZGNjNzMyMGNlYzFhZjljMDhiMTVkM2RmYzJkZjU5Y2Y4NTFhNjAzZDgyZWY3M2QwMGMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/app.config.ts#L8-L33",
+          "version": "repo-lines-v1:sha256:ed8cdd6daaf0a90d1403944cff6493367a08e62f396f3a4f8bbf383ba2bc075a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyOGU3MTA2YzBmYTg4MzQ4MjVkNTJhZmI5YjM2OTM0ZmE2NTQyNzNjNzFmMjE2ZmJjNzAwNjQxNGM3ODU5NGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjZTNjMjcwMDkxZjVmYzBhYjJjZTU2Y2ZiMDYyZGY3NDAxZGY5YmJkMTM4MGJjYzU5MDk3MjMzNjAzMDZjYzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVlZWNhOWFmY2U1ZjIwMzVkOTdjYjgwNGEwNjI4MmE0YTEyMjM5ZWM1YTI0YWJiNmFlZmVlNzAzZTQ4YjhjODIifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-13T07:56:37.562Z"
+    "at": "2026-09-13T12:53:55.207Z"
   }
 }

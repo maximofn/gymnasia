@@ -13,7 +13,7 @@ related:
   - ./provider-configuration.md
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
+    at: 2026-09-13T12:53:55.207Z
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py

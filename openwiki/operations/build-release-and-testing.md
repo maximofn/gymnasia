@@ -1,11 +1,20 @@
 ---
 type: guía operativa
 title: Build, release y estrategia de validación
-description: Selecciona comprobaciones deterministas, E2E web y la prueba de CLI para cambios de copias cifradas y recuperación. Distingue su evidencia de la validación de un build y de un dispositivo Android o iOS.
-tags: [operations, ci, testing, release, android, backup, recovery]
+description: Selecciona comprobaciones deterministas, E2E web, validación del tablero y gates de release para cambios de Gymnasia. Distingue la evidencia de navegador y checks estáticos de la que exige un binario o dispositivo nativo.
+tags: [operations, ci, testing, release, android, backup, recovery, board]
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-13T12:53:55.207Z
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
     resource: repo://.github/workflows/agent-tests.yml
+  - id: openwiki-source-f7f0030a9d7c2b14db9c88c9
+    resource: repo://.github/workflows/board-ci.yml
+  - id: openwiki-source-bb129131b6b18c7d2257c58a
+    resource: repo://.github/workflows/board-deploy.yml
+  - id: openwiki-source-fe0c9d29131f1d556c715974
+    resource: repo://.github/workflows/board-reconcile.yml
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
   - id: openwiki-source-3c34e9e772c8ec0511019e4d
@@ -38,10 +47,16 @@ sources:
     resource: repo://apps/mobile/scripts/storage-recovery.e2e.mjs
   - id: openwiki-source-8899fbcb52b1d704245f96cc
     resource: repo://apps/mobile/vitest.config.mts
+  - id: openwiki-source-90e4eb523a83656a5e292747
+    resource: repo://arquitectura-agente/tests/board.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-c657bdb933b7ed64c860ab05
     resource: repo://scripts/android-permissions/permissions.test.mjs
+  - id: openwiki-source-7b89e371009dc17cea90ee60
+    resource: repo://scripts/board-automation/verify-production.mjs
+  - id: openwiki-source-2d527a0a2fddf1f1e4422fcf
+    resource: repo://scripts/board-automation/workflow-contract.test.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
   - id: openwiki-source-f807c3c379c670c5871c2b49
@@ -58,10 +73,7 @@ sources:
     resource: repo://scripts/production-release/release-transaction.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
 ---
 
 # Build, release y estrategia de validación
@@ -85,6 +97,7 @@ flowchart TD
     Review --> Sensitive{"¿Política o release Android?"}
     Sensitive -->|"Política"| Signed["Promoción firmada y aprobada"]
     Sensitive -->|"Android"| Release["Gates Production y EAS"]
+    Sensitive -->|"Tablero"| Board["CI, despliegue y verificación del tablero"]
     Sensitive -->|"No"| Done["Validación terminada"]
 ```
 
@@ -132,6 +145,8 @@ Asocie cada uno a su riesgo: `expo start` sirve para iterar; `expo run:android` 
 | Entrenamiento, dieta o preferencias web | La E2E específica: por ejemplo `npm run test:train:e2e` o `npm run test:diet:e2e` | Seleccione el script que cubra el flujo afectado; son pruebas web explícitas, no un requisito para iniciar Expo localmente. |
 | Eliminación local de datos | `npm run test:data-deletion:e2e` | Siembra datos y cachés en el almacenamiento web para comprobar el borrado visible; no demuestra el borrado de un dispositivo nativo. |
 | Proxy Anthropic | `npm run test:proxy` | Delega en el workspace Python aislado; no instala ni transforma sus dependencias en dependencias npm. |
+| Contrato, datos o interfaz estática del tablero | `npm run test:linear && npm run test:board-automation && npm run test:board && npm run test:board:e2e` | Comprueba el contrato Linear, los guard rails de automatización, los datos y la representación estática en Chromium; no consulta Linear ni verifica el despliegue de producción. |
+| Release o despliegue del tablero | Los workflows `board-deploy.yml` y `board-reconcile.yml` | Reejecutan los gates del tablero donde corresponde y verifican bytes de producción; requieren secrets, permisos o revisión humana según la operación. |
 | Release Android | `npm run verify:production-source -- --profile production-apk --artifact-type apk --output /tmp/production-source-evidence.json` | Verificador de candidato Production que necesita checkout, GitHub y gates; el workflow es la entrada normal, no un comando local autosuficiente. |
 
 ## Copias cifradas y recuperación: señal mínima y límites
@@ -197,6 +212,35 @@ Por ello, use una E2E cuando cambie la interfaz, el contrato de almacenamiento o
 
 `catalog-tests.yml` también usa Node 22 y `npm ci`, instala Chromium y ejecuta `check:catalogs`, `test:catalogs` y `test:catalogs:e2e` para rutas de fuentes, generador y consumidores declaradas. Sus resultados no cubren por sí mismos permisos Android ni una release.
 
+## Tablero de arquitectura: gates, despliegue y conciliación
+
+El tablero estático tiene una cadena propia, separada de las E2E de la aplicación móvil. `board-ci.yml` se activa en PR y en `main` solo cuando cambian las rutas del tablero, el contrato Linear, la automatización, el manifiesto o los workflows del tablero. Tras `npm ci` e instalar Chromium, ejecuta `test:linear`, `test:board-automation`, `test:board` y `test:board:e2e`. Tiene únicamente `contents: read` y el test de contrato exige que no reciba secretos ni permisos de escritura: es una barrera para validar contribuciones no confiables, no una operación de sincronización ni de despliegue.
+
+`test:board:e2e` sirve `arquitectura-agente` localmente y abre Chromium. Comprueba que `board.json` se refleje en la interfaz y que el layout responda en navegador; por ello no acredita que Vercel haya publicado la revisión ni que Linear esté disponible. `test:board-automation` también fija contratos de seguridad de los tres workflows: las Actions de terceros han de estar inmovilizadas a un SHA y los flujos evitan `actions/checkout` para no recorrer gitlinks heredados.
+
+```mermaid
+flowchart TD
+    Change["Cambio de tablero"] --> CI["board-ci con gates locales"]
+    CI --> Merge["Merge en main"]
+    Merge --> Deploy["board-deploy reejecuta gates"]
+    Deploy --> Vercel["Despliegue Vercel Production"]
+    Vercel --> Match{"SHA-256 remoto coincide"}
+    Match -->|"Sí"| Evidence["Conserva evidencia 30 días"]
+    Match -->|"No"| Alert["Abre alerta production-mismatch"]
+    Schedule["Cada seis horas o manual"] --> Reconcile["board-reconcile desde main"]
+    Reconcile --> Review{"Estado de auditoría"}
+    Review -->|"review_required"| Human["Detiene y pide revisión humana"]
+    Review -->|"safe_changes"| PR["Propone PR sin auto-merge"]
+```
+
+*El despliegue verifica que `board.json` publicado coincide byte a byte con el de `main`; la conciliación solo propone cambios mecánicos seguros y no los fusiona.*
+
+El despliegue se dispara manualmente o por cambios en las rutas publicables del tablero sobre `main`, cancela un despliegue anterior del mismo grupo y se ejecuta en el environment `Board Production`. Antes de usar las credenciales Vercel, repite los cuatro gates, resuelve y comprueba el proyecto `gymnasia` esperado y despliega. Después compara el SHA-256 del `board.json` local contra la URL canónica hasta doce veces, cada cinco segundos. Un desajuste genera una incidencia `production-mismatch`; tanto resultado como evidencia se conservan como artefacto durante 30 días.
+
+La conciliación se programa a `17 */6 * * *` y también puede iniciarse manualmente. Parte siempre de `main`, contrasta Linear con el espejo y verifica primero que producción sigue coincidiendo con `main`. Si necesita criterio humano, notifica el problema, cierra propuestas automáticas obsoletas y termina sin cambios parciales. Si solo hay cambios seguros, los aplica, vuelve a ejecutar automatización, datos y E2E, y crea o actualiza una PR `automation/board-sync` con `--force-with-lease`; no hay auto-merge. Necesita `LINEAR_API_KEY` para auditar y `BOARD_SYNC_TOKEN` solo al crear o actualizar la propuesta.
+
+Consulte [Arquitectura del tablero](../services/architecture-board.md) para el modelo del espejo y sus reglas de sincronización.
+
 ## Política firmada y release Android
 
 La promoción de política es una operación manual protegida, distinta del merge. Requiere el workflow de promoción, una operación y motivo, una activación firmada y los controles remotos de candidato; para el modelo de autorización, staging, producción y rollback consulte [Gobierno de cambios sensibles y política de prompt](prompt-policy-governance.md). Ningún test local autoriza una promoción.
@@ -235,6 +279,8 @@ Incluso con todos los gates verdes, instale el APK en un dispositivo representat
 - **Cambio de privacidad o datos:** `check:data-inventory`, sus tests, checks legales y la E2E de privacidad o borrado cuando modifique la experiencia publicada o de eliminación.
 - **Cambio de permiso, plugin o dependencia nativa:** guard rail de permisos, tipado, export y build/prueba nativa; una E2E web no basta.
 - **Cambio sensible de prompt o salud:** gates de política más autorización explícita antes de merge; promoción firmada posterior si corresponde.
+- **Cambio del tablero:** ejecute los cuatro gates de tablero; el CI de tablero repetirá esa cadena en PR y `main` si la ruta activa el workflow.
+- **Despliegue o conciliación del tablero:** deje que los workflows validen proyecto, hash de producción y condiciones de seguridad; una conciliación segura crea una PR y requiere revisión humana para fusionarla.
 - **Release Android:** deje que el workflow aplique `verify:production-source`, el environment y la verificación del artefacto; complete con prueba manual en dispositivo.
 
 Para el inventario de repositorios y fuentes de contenido, consulte [Repositorios y fuentes de contenido](../content/repositories.md); para preparar un entorno local, [Inicio rápido](../quickstart.md).

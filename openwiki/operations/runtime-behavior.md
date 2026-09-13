@@ -1,96 +1,107 @@
 ---
-type: comportamiento operativo
-title: Comportamiento en ejecución de la automatización OpenWiki
-description: Flujo programado de actualización, persistencia segura y publicación de la automatización privada de OpenWiki. Describe sus puertas de fallo, aislamiento de estados y el informe diario basado en metadatos.
-tags: [runtime, openwiki, automation, security, operations]
-sources:
-  - id: openwiki-source-d63b46e4983cf20d445e960a
-    resource: repo://ops/openwiki-automation-template/.github/workflows/openwiki-report.yml
-  - id: openwiki-source-f32f27b8c35a0f297d027f4f
-    resource: repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml
-  - id: openwiki-source-ba6c3ba898e7ed267320f459
-    resource: repo://ops/openwiki-automation-template/scripts/build-daily-report.mjs
-  - id: openwiki-source-6ab5faaa1bf878af7563da67
-    resource: repo://ops/openwiki-automation-template/scripts/classify-openwiki-error.mjs
-  - id: openwiki-source-4ec18e249945e52b82033a07
-    resource: repo://ops/openwiki-automation-template/scripts/configure-personal-brain.mjs
-  - id: openwiki-source-5bfd59f246d16a9ee874eb84
-    resource: repo://ops/openwiki-automation-template/scripts/oauth-state.mjs
-  - id: openwiki-source-01798f36eec4fe65f6b96cd6
-    resource: repo://ops/openwiki-automation-template/scripts/private-state.mjs
-  - id: openwiki-source-e4328e2b0f1708f5d2181a7f
-    resource: repo://ops/openwiki-automation-template/tests/build-daily-report.test.mjs
-  - id: openwiki-source-6928a24ede2e031817053598
-    resource: repo://ops/openwiki-automation-template/tests/classify-openwiki-error.test.mjs
-  - id: openwiki-source-001a02c95dceb799665ac93d
-    resource: repo://ops/openwiki-automation-template/tests/oauth-state.test.mjs
-  - id: openwiki-source-e204cf07a21df797f3596f66
-    resource: repo://ops/openwiki-automation-template/tests/workflow.test.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+type: observabilidad de runtime
+title: Comportamiento en ejecución y oportunidades
+description: Complemento operativo para interpretar la muestra LangSmith del agente móvil sin exponer contenido de runs. Separa los datos observados de los límites estáticos, los fallos y las decisiones seguras al cambiar el chat, las herramientas o su persistencia.
+tags: [runtime, observability, langsmith, mobile, agent, tools]
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
+    at: 2026-09-13T12:53:55.207Z
+sources:
+  - id: openwiki-source-0c30fc96b9e7c8b57c35473c
+    resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
+  - id: openwiki-source-abc6fea468a7de09acfb0c4f
+    resource: repo://apps/mobile/agent/providerToolClient.ts
+  - id: openwiki-source-b14a4ecd65e83b5561f88e2a
+    resource: repo://apps/mobile/agent/providerToolLoop.ts
+  - id: openwiki-source-d3be928c369037f29888bc0b
+    resource: repo://apps/mobile/agent/toolExecutor.ts
+  - id: openwiki-source-d8ad30beb46f5e7dc1ced4cf
+    resource: repo://apps/mobile/agent/toolOperationLedger.test.ts
+  - id: openwiki-source-9e7ddd51c09caf628a81acad
+    resource: repo://apps/mobile/agent/toolOperationLedger.ts
+  - id: openwiki-source-929e8e1df23628a3f3848ff8
+    resource: repo://apps/mobile/App.tsx
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
 ---
 
-# Comportamiento en ejecución de la automatización OpenWiki
+# Comportamiento en ejecución y oportunidades
 
-La plantilla `ops/openwiki-automation-template` no es el runtime de Gymnasia: es un runner privado de GitHub Actions para actualizar el **Code Brain** público, mantener un **Personal Brain** privado y enviar un estado diario por Telegram. El workflow rechaza explícitamente un repositorio que no sea privado y no inicia el trabajo si faltan los secretos obligatorios. Sus permisos declarados son de lectura para Actions y contenidos; el token con capacidad de publicar se suministra como secreto solo en el paso que empuja la rama de Gymnasia.
+Esta es la vista operativa del agente de `apps/mobile`, no del runner que materializa la wiki. El punto de entrada conversacional construye el contexto del turno, adquiere una política, llama al proveedor BYOK y, si este solicita herramientas, aplica efectos locales bajo guardas e idempotencia. Para los formatos SSE y las continuaciones de cada proveedor, consulte [Streaming de proveedores](../agent/provider-streaming.md); para configuración y secretos BYOK, [Configuración BYOK de proveedores](../agent/provider-configuration.md); para el contrato completo del agente, [Runtime del agente y herramientas](../agent/runtime.md).
 
-## Ciclo de actualización
+## Alcance y privacidad de la muestra
 
-`OpenWiki Update` se ejecuta diariamente a las 08:00 UTC o de forma manual. Tiene un máximo de 120 minutos y su grupo de concurrencia no cancela una actualización ya iniciada. Al arrancar, define homes distintos bajo `$RUNNER_TEMP` para Code Brain y Personal Brain; el checkout no conserva credenciales.
+La configuración de OpenWiki declara los proyectos LangSmith `gymnasia-app-agent` y `gymnasia-food-agent` en el endpoint europeo. No hay un dump LangSmith extraído y legible en los recursos disponibles para esta actualización; por tanto, **no se publican conteos, URLs de trazas, latencias, tokens, costes, llamadas repetidas ni secuencias**. La configuración no prueba tráfico ni comportamiento observado.
+
+Nunca copie prompts, entradas, salidas, argumentos de tools, razonamiento ni contenido de un run. Si se proporciona el dump ya extraído, registre solo agregados y firmas: ventana y filtros, número de runs, URL de traza cuando sea autorizada, proveedor/ruta, estado, llamadas y mediana de latencia por tool, tokens de entrada/salida y coste cuando existan, además de repeticiones agrupadas por `executionId`, tool y operación. Los buckets **error**, **outlier** y **baseline** son una muestra sesgada por filtros, entorno, proveedor y selección: no son tasas de población ni evidencia causal. La mediana de `baseline` es una referencia normal de esa muestra, no una garantía.
+
+### Observado
+
+No hay observaciones cuantitativas verificables en esta actualización. No se observaron en la muestra disponible fallos, reintentos, límites alcanzados, outliers ni una clase de hallazgo, porque no hay muestra legible que los establezca.
+
+### Correlacionado
+
+Los siguientes límites y rutas proceden del código. Sirven para contrastar una observación futura; no convierten una hipótesis en diagnóstico.
 
 ```mermaid
-flowchart TD
-    Gate["Privacidad y secretos requeridos"] --> Homes["Homes aislados en runner temporal"]
-    Homes --> Restore["Restaura OAuth cifrado o semilla"]
-    Restore -->|"restauración correcta"| Code["openwiki code update"]
-    Restore -->|"fallo"| Stop["No ejecuta Code Brain"]
-    Code --> Personal["Configura e ingiere Personal Brain opcional"]
-    Code --> Encrypt["Cifra estados renovados"]
-    Personal --> Encrypt
-    Encrypt --> Clean["Elimina estados y logs temporales"]
-    Clean --> Publish["Publica documentación si el paso Code Brain terminó"]
-    Publish --> PR["Actualiza rama y PR fijas"]
+sequenceDiagram
+    participant UI as Chat UI
+    participant Policy as Policy lease
+    participant Client as Provider tool client
+    participant Provider as BYOK provider
+    participant Guard as Safety and operation guard
+    participant Store as Local store
+    UI->>Policy: acquire lease for turn
+    Policy-->>UI: immutable prompt and safety policy
+    UI->>Client: send history and execution ID
+    Client->>Provider: initial streamed turn
+    Provider-->>UI: content and thinking deltas
+    alt provider requests a tool
+        Provider-->>Client: tool call
+        Client->>Guard: validate safety and operation
+        Guard->>Store: commit allowed local effect
+        Guard-->>Client: tool result or replay
+        Client->>Provider: continuation
+    else turn completes
+        Client-->>UI: final content
+    end
 ```
 
-*El flujo separa la restauración, el trabajo de ambos brains y la persistencia; una ejecución puede terminar fallida después de publicar progreso documental durable.*
+*El diagrama muestra el recorrido de un turno del chat principal y la frontera entre la respuesta remota y un efecto local.*
 
-Antes de ejecutar el Code Brain se busca el artefacto OAuth no expirado más reciente cuya ejecución pertenezca a la rama predeterminada. Si no puede descifrarse, se intenta `OPENWIKI_OAUTH_SEED`; si no existe una fuente recuperable, el comando no se ejecuta. El `.env` restaurado y los directorios que lo contienen se crean con permisos restrictivos.
+- **Política por turno.** `acquireAgentPolicyLease` devuelve un objeto congelado que reúne prompt, política de salud-seguridad, contexto y estado de selección. En canal `Local` se construye desde los artefactos integrados; en canales firmados se rechaza una política sanitaria cuyo contrato no pueda fusionarse. `App` usa el lease antes de preparar el mensaje y de aplicar los guardrails.
+- **Riesgo sanitario antes y durante el turno.** `callProviderChatAPIWithTools` no contacta al proveedor ante un riesgo bloqueante. Para cada tool vuelve a clasificar `nombre + argumentos` y rechaza tanto una tool desconocida como una incompatible, devolviendo un resultado de bloqueo al loop en vez de mutar estado. El evaluador remoto opcional tiene un timeout de 10 s y, ante fallo o resultado inválido, conserva la decisión local base.
+- **Reintentos y latencia visible.** El envío de chat intenta hasta tres veces errores de red, timeout, sobrecarga o estados 429/503/529; espera 2 s y 4 s antes de los reintentos y reinicia el borrador. La interfaz agrupa actualizaciones de streaming con 40 ms. Por ello, varios requests o una espera visible no equivalen por sí solos a varias escrituras ni a la duración de una sola tool.
+- **Continuaciones y límite.** OpenAI, Anthropic y Google ejecutan las calls de cada ronda secuencialmente. `MAX_TOOL_ROUNDS` es 10; Google arroja un error si continúa requiriendo tools al alcanzarlo. El flujo OpenAI exige `responseId` para continuar, y Google rechaza IDs de tool reutilizados entre rondas. Cada continuación puede sumar latencia y consumo remoto aunque el handler local sea rápido.
+- **Historial por proveedor.** Antes de llamar al cliente, `App` limita a los últimos 20 mensajes el historial de OpenAI y Anthropic, mientras que Google recibe todo el historial reconstruido. Compare proveedor y tamaño efectivo de conversación antes de atribuir tokens de entrada elevados a una tool.
+- **Efectos locales.** El ejecutor solo devuelve `committed` si un handler llamó `markEffectCommitted`; validaciones sin efecto y fallos previos al commit no entran en el ledger. Un error del handler se transforma en resultado para el modelo, evitando abortar todo el loop; si el handler ya marcó el efecto, su estado sigue siendo `committed`.
+- **Idempotencia de escritura.** Para effects distintos de lectura, el coordinador identifica una operación mediante versión, `executionId`, proveedor, tool, argumentos JSON canónicos y ocurrencia; `providerCallId` no forma parte de la identidad. Reutiliza ejecuciones concurrentes y reproduce un resultado ya comprometido desde memoria o desde el ledger persistente. Las lecturas no se deduplican. El ledger conserva hasta 256 commits durante siete días, falla antes del efecto si no puede leerse y no deshace una mutación si falla la escritura posterior del ledger.
 
-El comando efectivo es `openwiki code --update --language es --print`. Por defecto habilita trazas LangSmith en el proyecto `openwiki`, en el endpoint europeo y con inputs, outputs y metadatos ocultos. El único interruptor para deshabilitarlas es `disable_langsmith_tracing` en un despacho manual de diagnóstico; no es una configuración general del schedule.
+### Hipótesis de diagnóstico
 
-## Fallos y resultado observable
+1. **Latencia o coste altos con varias rondas:** contrastar el número de continuaciones y el límite de diez rondas antes de optimizar un handler individual.
+2. **Más de un request por mensaje:** separar los reintentos de transporte, el evaluador sanitario consentido y las continuaciones de tools usando `executionId`, proveedor y ocurrencia.
+3. **Tool repetida pero un único efecto durable:** comprobar si fue una unión `inFlight` o un replay de memoria/ledger. Una operación `no_effect` o `failed_before_commit` puede ejecutarse de nuevo porque no hay commit que reproducir.
+4. **Tokens de entrada crecientes:** comparar la ruta Google con OpenAI/Anthropic y el historial efectivo, no solo el nombre de la tool.
+5. **Error después de una escritura:** distinguir fallo previo al commit, fallo de persistencia local y fallo de escritura del ledger. Este último deja un riesgo de deduplicación tras reinicio, no evidencia un rollback.
 
-El paso de OpenWiki captura stdout y stderr en `$RUNNER_TEMP/openwiki.log` y conserva el control del flujo para poder sanearlo. Si el comando falla, `classify-openwiki-error.mjs` devuelve una sola categoría de una lista cerrada (`oauth`, `managed-markers`, `langsmith`, `rate-limit`, `model`, `context-limit`, `network` o `unknown`). Las señales OAuth fuertes tienen prioridad, `429` se trata como `rate-limit` y un error al leer el log también produce `unknown`; ni el workflow ni el clasificador imprimen el log.
+## Hallazgos y oportunidades de runtime
 
-La diferencia importante es entre el **resultado del comando** y el **resultado del paso**. El script del paso absorbe el código de salida del CLI, guarda `result=failure` y deja que los pasos posteriores se ejecuten. Por ello, si el paso `Run OpenWiki` terminó y el cifrado OAuth tuvo éxito, el commit puede publicar páginas ya completadas aun cuando `OPENWIKI_RESULT` sea `failure`; usa entonces el mensaje `docs: preserve partial OpenWiki progress`. Se elimina `openwiki/.run.json`, que es transitorio, y el workflow termina como fallido después de las tareas de persistencia cuando cualquiera de sus condiciones críticas falló. No interprete que una PR de este tipo certifica una actualización completa.
+No hay hallazgos priorizados en esta revisión: falta evidencia de trazas que pueda emparejarse con un archivo, símbolo e implicación operativa. No se infieren outliers, fallos ni oportunidades desde límites estáticos.
 
-La publicación restaura `AGENTS.md` y `CLAUDE.md` desde `origin/main`, añade solamente `openwiki` y `.openwikiignore`, y empuja `openwiki/update` con `--force-with-lease`. Después crea o actualiza una única PR hacia `main`. Esta secuencia evita publicar la copia materializada de instrucciones o sobrescribir sin comprobar la revisión previa de la rama remota.
+Cuando exista evidencia autorizada, cada hallazgo debe contener estrictamente: **Observado** (agregado y URL de traza), **Correlacionado** (archivo y símbolo), **Hipótesis** (si aún no hay causalidad) e **implicación** concreta para quien cambie esa zona. Elimine cualquier observación que no cambie un plan de modificación o validación.
 
-## Estado privado y limpieza
+## Cambios seguros y validación focalizada
 
-El helper OAuth persiste solo los campos ChatGPT permitidos y exige refresh token y account ID. Los cifra con `aes-256-gcm`, una clave derivada por `scrypt` y AAD versionado; cualquier formato no admitido, passphrase incorrecta o modificación autenticada se rechaza. Esto también evita que variables no OAuth que convivieran en un `.env` pasen al artefacto.
+1. Mantenga un único lease inmutable por turno: no mezcle prompt, guardrail y `PolicyContext` de candidatos distintos.
+2. Al añadir una tool, actualice su definición y efecto, el handler y el adaptador de continuación del proveedor. Valide argumentos antes de mutar y marque el commit inmediatamente después del efecto irreversible.
+3. No incorpore `providerCallId` a la identidad de operación y no elimine `occurrence`: el primero cambiaría con un reintento remoto y el segundo distingue dos calls idénticas intencionales dentro de un turno.
+4. Instrumente agregados de proveedor, ruta, estado, duración, número de rondas y estado de commit; no instrumente contenido sensible ni razonamiento.
+5. Si se modifica el streaming o el protocolo, conserve IDs de llamada, bloques y firmas que el proveedor exige para continuar; el transporte y el loop cambian juntos.
 
-El Personal Brain solo se habilita si hay al menos una fuente seleccionada: exportación Linear de solo lectura, clon de `maximofn.com` o Tavily. Cuando hay fuentes, requiere su propia passphrase, restaura el estado privado cifrado o inicia directorios nuevos, copia el OAuth refrescado y configura fuentes locales y/o búsqueda web antes de ejecutar `openwiki ingest all --scheduled --print`. Esta fase no recibe variables de trazado LangSmith. Su estado persistible incluye wiki, conectores, onboarding e instrucciones, se empaqueta y cifra; el helper impone límites de 100 MiB en claro y 140 MiB cifrado antes de leer el archivo.
-
-La limpieza con `always()` elimina los `.env` OAuth en claro, los logs de ambos comandos y ficheros intermedios. Los únicos artefactos cargados son `openwiki-oauth-state.enc` y, cuando corresponde, `openwiki-personal-state.enc`, y solo después de que sus pasos de cifrado hayan terminado correctamente. La limpieza se programa antes de los uploads y antes del commit: que el CLI haya fallado no autoriza publicar logs ni estado en claro.
-
-## Informe diario: observación sin recuperación
-
-`OpenWiki Daily Report` se programa a las 12:00 UTC —cuatro horas después—, tiene un límite de 10 minutos y usa un grupo de concurrencia distinto que cancela informes solapados. Solo continúa si el repositorio es privado y están configurados `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID`.
-
-El informe consulta como máximo 30 ejecuciones de `openwiki-update.yml`, los jobs de la ejecución más reciente y, si hay token de Gymnasia, la PR `openwiki/update`. `buildDailyReport` construye el mensaje desde esos metadatos: estado, duración de jobs, pasos de publicación, fuentes confirmadas y estadísticas de la PR. Filtra las URLs a HTTPS con host `github.com`; no consulta logs ni contenido de OpenWiki. El informe es una superficie de observabilidad y aviso, no reintenta OAuth, OpenWiki ni una publicación.
-
-## Validación y cambios seguros
-
-Ejecute la suite de la plantilla desde `ops/openwiki-automation-template`:
+Ejecute desde la raíz:
 
 ```bash
-npm ci
-npm test
+npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/providerToolClient.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/providerPipeline.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts
 ```
 
-Las pruebas de workflow fijan el aislamiento de rutas del runner, la ausencia de impresión de logs, el interruptor de LangSmith, los límites de publicación y la posibilidad de publicar progreso parcial antes de propagar un fallo. Las pruebas de estado verifican selección restrictiva de OAuth, cifrado autenticado, rechazo de manipulación y permisos `0600`; las del informe prueban la exclusión de campos privados y URLs no confiables. Para cambiar el orden de pasos, preserve especialmente estas invariantes: no ejecutar sin OAuth recuperable, limpiar antes de upload, no subir material en claro y distinguir una publicación parcial de un run correcto.
-
-Consulte [Automatización privada de OpenWiki](openwiki-automation.md) para los secretos y la instalación de la plantilla.
+Estas pruebas fijan contratos locales —lease, continuaciones, límite de tools, resultados de handler e idempotencia—, no disponibilidad, coste ni latencia de proveedores remotos. Para cambios que afecten el recorrido visible, añada `npm run test:agent:e2e` como indica el [Inicio rápido](../quickstart.md).
