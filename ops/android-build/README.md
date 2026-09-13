@@ -54,6 +54,12 @@ usa `SUDO_FORCE_REMOVE=yes` solo dentro de esta VM desechable, que conserva las
 cuentas bloqueadas y no permite login. Sin esa variable, la preparación falla
 al retirar `sudo`, aunque las descargas y la red funcionen correctamente.
 
+El cierre se ejecuta en una unidad separada, después de que termine cloud-init.
+Solo entonces se comprueba su resultado, se limpia su estado y machine-id y se
+apaga con la ruta absoluta de systemctl. El PATH de la toolchain no incluye
+`/usr/sbin`: invocar `poweroff` por nombre dejaba la VM encendida; limpiar
+cloud-init desde su propio script también rompía la escritura de su estado final.
+
 ## Toolchain
 
 `toolchain.json` es la lista comprobada antes de compilar: Node 22.23.1,
@@ -185,6 +191,7 @@ No eliminar el proyecto Expo ni sus credenciales. El cambio propuesto no toca
 - [Infraestructura oficial de Expo, SDK 54](https://docs.expo.dev/build-reference/infrastructure/)
 - [Contador remoto de versiones](https://docs.expo.dev/build-reference/app-versions/)
 - [Hooks antes y después del job](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/run-scripts)
+- [Limpieza de cloud-init para una imagen base](https://docs.cloud-init.io/en/latest/reference/cli.html#clean)
 
 Pruebas de código: `npm run test:production-release`. Los tests deterministas no
 certifican la VM, el aislamiento efectivo, la firma real ni la instalación.

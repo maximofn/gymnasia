@@ -11,7 +11,7 @@ finish() {
     # This installer never receives credentials. Keep its last diagnostics on
     # the private host console before destroying the unsuccessful image.
     tail -n 60 /var/log/gymnasia-image-install.log > /dev/ttyS0
-    poweroff || true
+    /usr/bin/systemctl --no-block poweroff || true
   fi
 }
 trap finish EXIT
@@ -99,7 +99,9 @@ npm --version
 java -version
 eas --version
 rm -rf /var/tmp/*.download /var/tmp/android-unpack /root/.npm /root/.cache
-cloud-init clean --logs
-trap - EXIT
-echo GYMNASIA_IMAGE_READY > /dev/ttyS0
-poweroff
+# Do not delete cloud-init's own state while its final stage is still running.
+# Queue a separate unit and let this script return so the ordering can resolve.
+progress cierre-de-imagen
+systemd-run --no-block --unit=gymnasia-image-seal \
+  --property=After=cloud-final.service \
+  /bin/bash /opt/gymnasia/seal-image.sh

@@ -57,7 +57,7 @@ python3 - "$source_dir" "$work" <<'PY'
 import base64,json,pathlib,sys
 source=pathlib.Path(sys.argv[1]); work=pathlib.Path(sys.argv[2])
 files=[]
-for name in ['guest-install.sh','admit-job.sh','gymnasia-runner.service','downloads.json','toolchain.json']:
+for name in ['guest-install.sh','seal-image.sh','admit-job.sh','gymnasia-runner.service','downloads.json','toolchain.json']:
     files.append({'path':f'/opt/gymnasia/{name}','permissions':'0700' if name.endswith('.sh') else '0644',
                   'encoding':'b64','content':base64.b64encode((source/name).read_bytes()).decode()})
 config={'users':[], 'ssh_pwauth':False, 'disable_root':True, 'write_files':files,
@@ -91,6 +91,7 @@ while systemctl is-active --quiet gymnasia-android-image.service; do
 done
 test "$(systemctl show -p Result --value gymnasia-android-image.service)" = success
 journalctl --no-pager "_SYSTEMD_INVOCATION_ID=$invocation" -o cat > "$work/console.txt"
+if grep -q '^GYMNASIA_IMAGE_FAILED' "$work/console.txt"; then exit 1; fi
 grep -q '^GYMNASIA_IMAGE_READY' "$work/console.txt"
 test "$(cat /proc/sys/net/ipv4/ip_forward)" = 0
 test "$(cat /proc/sys/net/ipv6/conf/all/forwarding)" = 0
