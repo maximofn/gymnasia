@@ -27,7 +27,9 @@ apt-get update
 apt-get install --no-install-recommends --yes ca-certificates curl git unzip zip xz-utils file \
   python3 jq libicu74 libssl3t64 libkrb5-3 zlib1g libstdc++6
 systemctl disable --now ssh.service ssh.socket 2>/dev/null || true
-apt-get purge --yes sudo openssh-server
+# The cloud image deliberately has a locked root account. Ubuntu's sudo prerm
+# otherwise refuses removal; this disposable guest will never allow login.
+SUDO_FORCE_REMOVE=yes apt-get purge --yes sudo openssh-server
 useradd --create-home --shell /bin/bash runner
 passwd -l root
 passwd -l runner

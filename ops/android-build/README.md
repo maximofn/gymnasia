@@ -49,6 +49,11 @@ La imagen usa DNS públicos directamente porque el resolvedor del host también
 está bloqueado. El instalador exige cgroup v2/BPF; la prueba real de aislamiento
 sigue siendo obligatoria, un fichero de configuración no la sustituye.
 
+Ubuntu rechaza desinstalar `sudo` si root no tiene contraseña. El instalador
+usa `SUDO_FORCE_REMOVE=yes` solo dentro de esta VM desechable, que conserva las
+cuentas bloqueadas y no permite login. Sin esa variable, la preparación falla
+al retirar `sudo`, aunque las descargas y la red funcionen correctamente.
+
 ## Toolchain
 
 `toolchain.json` es la lista comprobada antes de compilar: Node 22.23.1,
