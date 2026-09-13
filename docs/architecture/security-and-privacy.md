@@ -49,15 +49,17 @@ su ciclo de vida, está en el inventario.
 Exportación e importación manuales mediante un paquete `.gymnasia`. Contiene medidas,
 las fotos de progreso normalizadas que caben dentro de los límites, dieta, historial de
 entrenamiento, ajustes personales, memoria del asistente y el historial completo de
-conversaciones. Las fotos se verifican por SHA-256 y el paquete no está cifrado. El
-importador sigue aceptando el antiguo JSON v1. El formato completo está en
+conversaciones. Las exportaciones nuevas se cifran y autentican con una contraseña elegida
+por el usuario; las fotos se verifican además por SHA-256. El importador sigue aceptando con
+aviso los antiguos JSON v1 y ZIP v2. El formato completo está en
 `docs/architecture/measurement-photo-backups.md`.
 En móvil, la copia temporal usada para abrir la hoja de compartir se elimina al
 cerrarla; el archivo que el usuario guarde fuera de la app deja de estar bajo su control.
 
 La copia local de recuperación es distinta del paquete portable: conserva una sola
 generación anterior dentro del almacenamiento de la app y permite recuperar, reintentar,
-descartar o exportar el payload original cuando el estado actual no puede leerse.
+descartar o exportar el payload original cuando el estado actual no puede leerse. Esa
+exportación también exige contraseña y usa el mismo contenedor cifrado.
 
 ## Borrado
 

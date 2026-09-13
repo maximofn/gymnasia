@@ -794,10 +794,12 @@ export const SettingsRuntimeFooter = memo(function SettingsRuntimeFooter({
 
 export const BackupImportConfirmation = memo(function BackupImportConfirmation({
   description,
+  legacy,
   onCancel,
   onConfirm,
 }: {
   description: string;
+  legacy: boolean;
   onCancel(): void;
   onConfirm(): void;
 }) {
@@ -806,6 +808,14 @@ export const BackupImportConfirmation = memo(function BackupImportConfirmation({
       <View style={{ width: "85%", maxWidth: 380, borderRadius: 20, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)", backgroundColor: mobileTheme.color.bgSurface, padding: 24, alignItems: "center", gap: 16 }}>
         <Feather name="alert-triangle" size={40} color="#FF8A8A" />
         <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 20, fontWeight: "800", textAlign: "center" }}>¿Restaurar copia?</Text>
+        {legacy ? (
+          <View testID="backup-import-legacy-warning" style={{ width: "100%", borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: "rgba(245,185,66,0.42)", backgroundColor: "rgba(245,185,66,0.08)", padding: 11, flexDirection: "row", gap: 8 }}>
+            <Feather name="unlock" size={16} color="#F5B942" style={{ marginTop: 1 }} />
+            <Text style={{ flex: 1, color: "#F7D895", fontSize: 12, lineHeight: 17 }}>
+              Esta copia antigua no está cifrada. Impórtala solo si reconoces el archivo y su procedencia.
+            </Text>
+          </View>
+        ) : null}
         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, textAlign: "center", lineHeight: 20 }}>{description}</Text>
         <Pressable testID="backup-import-confirm" onPress={onConfirm} style={{ width: "100%", height: 48, borderRadius: mobileTheme.radius.md, backgroundColor: "#FF8A8A", alignItems: "center", justifyContent: "center" }}>
           <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>Sí, restaurar</Text>
@@ -1251,7 +1261,7 @@ export const DataSettingsPanel = memo(function DataSettingsPanel({
         Copia de seguridad
       </Text>
       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
-        Exporta tus datos y fotos de progreso a un paquete .gymnasia. Las fotos se optimizan y se eliminan sus metadatos antes de incluirlas. Guárdalo en tu proveedor de nube (Drive, Dropbox, OneDrive…) o donde prefieras. La copia no incluye tus API keys de proveedores IA.
+        Exporta tus datos y fotos de progreso a un paquete .gymnasia cifrado con una contraseña que solo tú conoces. Las fotos se optimizan y se eliminan sus metadatos antes de incluirlas. La copia no incluye tus API keys de proveedores IA.
       </Text>
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: mobileTheme.color.bgSurface, borderRadius: 12, padding: 14, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle }}>
         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>
@@ -1334,7 +1344,7 @@ export const DataSettingsPanel = memo(function DataSettingsPanel({
       ) : null}
 
       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, opacity: 0.7 }}>
-        Restaurar sustituye por completo los datos actuales por los del archivo. El paquete puede contener información sensible y no está cifrado. Tus API keys se mantienen.
+        Restaurar sustituye por completo los datos actuales por los del archivo. Las copias nuevas están cifradas; las antiguas muestran un aviso. Tus API keys se mantienen.
       </Text>
       <Pressable accessibilityRole="link" accessibilityLabel="Ver qué contiene la copia de seguridad en la política de privacidad" testID="legal-backup-policy-link" onPress={actions.openBackupPolicy} hitSlop={8}>
         <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 11, fontWeight: "700", textDecorationLine: "underline" }}>

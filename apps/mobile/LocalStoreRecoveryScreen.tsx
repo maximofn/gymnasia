@@ -13,6 +13,7 @@ import {
 
 import { mobileTheme } from "./theme";
 import type { RecoveryQuarantineRecord } from "./persistence/localStoreRecovery";
+import { PortablePasswordModal } from "./backup/PortablePasswordModal";
 
 type RecoveryAction = "restore" | "export" | "retry" | "discard";
 
@@ -22,7 +23,7 @@ type LocalStoreRecoveryScreenProps = {
   busy: RecoveryAction | null;
   error: string | null;
   onRestore(): void;
-  onExport(): void;
+  onExport(password: string): Promise<boolean>;
   onRetry(): void;
   onDiscard(): void;
 };
@@ -121,6 +122,7 @@ export function LocalStoreRecoveryScreen({
 }: LocalStoreRecoveryScreenProps) {
   const [showDetails, setShowDetails] = useState(false);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const [exportPasswordOpen, setExportPasswordOpen] = useState(false);
   const actionsDisabled = busy !== null;
   const unreadable = quarantine.cause === "storage_read_failed";
 
@@ -251,11 +253,11 @@ export function LocalStoreRecoveryScreen({
                 variant={hasSnapshot ? "secondary" : "primary"}
                 busy={busy === "export"}
                 disabled={quarantine.rawPayload === null || (actionsDisabled && busy !== "export")}
-                onPress={onExport}
+                onPress={() => setExportPasswordOpen(true)}
               />
               {quarantine.rawPayload !== null ? (
                 <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 17 }}>
-                  Este archivo conserva el contenido original. Puede incluir datos de salud, conversaciones y, en web, claves de IA. Guárdalo en un lugar privado.
+                  El archivo se cifrará con una contraseña que solo tú conoces. Puede contener datos de salud, conversaciones y, en web, claves de IA.
                 </Text>
               ) : null}
               <RecoveryButton
@@ -306,6 +308,21 @@ export function LocalStoreRecoveryScreen({
           </View>
         </View>
       </ScrollView>
+
+      <PortablePasswordModal
+        visible={exportPasswordOpen}
+        mode="create"
+        title="Protege la copia dañada"
+        description="Elige una contraseña para cifrar el contenido antes de guardarlo."
+        busy={busy === "export"}
+        error={busy === "export" ? error : null}
+        onCancel={() => setExportPasswordOpen(false)}
+        onSubmit={(password) => {
+          void onExport(password).then((exported) => {
+            if (exported) setExportPasswordOpen(false);
+          });
+        }}
+      />
 
       <Modal
         visible={confirmDiscard}

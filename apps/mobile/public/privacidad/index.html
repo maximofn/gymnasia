@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Política de privacidad de Gymnasia">
-<meta name="gymnasia-policy-version" content="2026-09-v2">
-<meta name="gymnasia-policy-digest" content="sha256:2ef3859d189862ae1e0b18a4c38d9a148d46a0234d105f1285451ac572f6f5c7">
+<meta name="gymnasia-policy-version" content="2026-09-v3">
+<meta name="gymnasia-policy-digest" content="sha256:ebb4ce9e15a9de286e997d786514670674005bbb9ab42d3a25cf82a61fe8e961">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Política de privacidad de Gymnasia</h1>
-  <p class="meta">Versión 2026-09-v2 · en vigor desde 2026-09-11 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Versión 2026-09-v3 · en vigor desde 2026-09-13 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
   <nav>
     <h2>Contenido</h2>
@@ -169,11 +169,12 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="copias">
     <h2><a href="#copias">Copias de seguridad y exportación</a></h2>
     <p>Puedes exportar todos tus datos a un paquete <code>.gymnasia</code> desde Ajustes, y volver a importarlo después. Es una acción manual: no hay copia automática. La app también mantiene la importación de los antiguos ficheros JSON, aunque una referencia antigua a una foto solo podrá recuperarse si ese fichero sigue accesible en el dispositivo.</p>
-    <p>La copia local de recuperación no es una copia en la nube ni un segundo fichero portable: es una única generación anterior dentro del mismo almacenamiento de la aplicación. Solo se usa si el estado actual no puede leerse. En ese caso Gymnasia bloquea las escrituras y te permite recuperar la última copia, reintentar, descartar los datos afectados o exportar el payload dañado. Esta exportación de recuperación conserva el original sin sanear; es especialmente sensible y puede contener claves de IA en la versión web. No se envía a ningún servidor de Gymnasia.</p>
+    <p>La copia local de recuperación no es una copia en la nube ni un segundo fichero portable: es una única generación anterior dentro del mismo almacenamiento de la aplicación. Solo se usa si el estado actual no puede leerse. En ese caso Gymnasia bloquea las escrituras y te permite recuperar la última copia, reintentar, descartar los datos afectados o exportar el payload dañado. Esta exportación de recuperación conserva el original sin sanear; es especialmente sensible y puede contener claves de IA en la versión web. Antes de guardarla, Gymnasia exige que elijas una contraseña y cifra el archivo igual que una copia normal. No se envía a ningún servidor de Gymnasia.</p>
     <p>El paquete exportado <strong>contiene</strong>: tus medidas y porcentajes de grasa, las copias JPEG normalizadas de tus fotografías de progreso que quepan dentro de los límites de la app, tu registro de dieta completo, tu historial de entrenamiento, tus ajustes personales (sexo, altura, fecha de nacimiento), la memoria del asistente y <strong>el historial íntegro de tus conversaciones</strong>. Es el fichero más sensible que produce la aplicación: guárdalo con cuidado y piensa a quién se lo envías.</p>
     <p>Cada fotografía lleva un checksum SHA-256 para comprobarla al restaurar. La app admite como máximo 500 relaciones de foto, 5 MiB por foto normalizada y 200 MiB de imágenes por copia. Si alguna foto falta, está dañada o no cabe, la copia conserva todas las medidas numéricas y te muestra cuáles se omitieron.</p>
-    <p>El paquete <strong>no contiene</strong> tus claves de API ni las credenciales heredadas de funciones retiradas. <strong>No está cifrado ni protegido por contraseña.</strong></p>
-    <p>Al exportar, el paquete se escribe en el almacenamiento temporal de la aplicación antes de que elijas dónde compartirlo y esa copia temporal se elimina al cerrar la hoja de compartir. El archivo que decidas guardar en Drive, Dropbox, tu galería de archivos u otro destino queda fuera del control de Gymnasia y tendrás que borrarlo allí.</p>
+    <p>El paquete <strong>no contiene</strong> tus claves de API ni las credenciales heredadas de funciones retiradas. Las copias nuevas se cifran y autentican con XChaCha20-Poly1305; la clave se deriva de una contraseña elegida por ti mediante scrypt. Gymnasia no guarda ni transmite esa contraseña y no puede recuperar el archivo si la olvidas. Al importar, el archivo se descifra y se verifica por completo antes de mostrar la confirmación que permite sustituir tus datos actuales.</p>
+    <p>Gymnasia sigue aceptando copias antiguas JSON v1 y ZIP v2 para no dejarte sin acceso a tus datos. Esos formatos antiguos no estaban cifrados: la app te avisa antes de importarlos y debes usarlos solo si reconoces el archivo y su procedencia. No existe una opción para crear nuevas exportaciones sin cifrar.</p>
+    <p>Al exportar en móvil, solo el paquete ya cifrado se escribe en el almacenamiento temporal de la aplicación antes de que elijas dónde compartirlo, y esa copia temporal se elimina al cerrar la hoja de compartir. Las copias temporales creadas al seleccionar un archivo para importarlo también se eliminan al terminar o cancelar. El archivo que decidas guardar en Drive, Dropbox, tu galería de archivos u otro destino queda fuera del control de Gymnasia y tendrás que borrarlo allí.</p>
   </section>
 
   <section id="denuncia">
@@ -259,7 +260,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Política de privacidad de Gymnasia · 2026-09-v2 · 2026-09-11</p>
+    <p>Política de privacidad de Gymnasia · 2026-09-v3 · 2026-09-13</p>
   </footer>
 </main>
 </body>

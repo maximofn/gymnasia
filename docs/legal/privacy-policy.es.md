@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v2
-effective_date: 2026-09-11
+version: 2026-09-v3
+effective_date: 2026-09-13
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -238,8 +238,9 @@ es una única generación anterior dentro del mismo almacenamiento de la aplicac
 se usa si el estado actual no puede leerse. En ese caso Gymnasia bloquea las escrituras y
 te permite recuperar la última copia, reintentar, descartar los datos afectados o exportar
 el payload dañado. Esta exportación de recuperación conserva el original sin sanear; es
-especialmente sensible y puede contener claves de IA en la versión web. No se envía a
-ningún servidor de Gymnasia.
+especialmente sensible y puede contener claves de IA en la versión web. Antes de guardarla,
+Gymnasia exige que elijas una contraseña y cifra el archivo igual que una copia normal. No
+se envía a ningún servidor de Gymnasia.
 
 El paquete exportado **contiene**: tus medidas y porcentajes de grasa, las copias JPEG
 normalizadas de tus fotografías de progreso que quepan dentro de los límites de la
@@ -254,11 +255,21 @@ copia. Si alguna foto falta, está dañada o no cabe, la copia conserva todas la
 numéricas y te muestra cuáles se omitieron.
 
 El paquete **no contiene** tus claves de API ni las credenciales heredadas de funciones
-retiradas. **No está cifrado ni protegido por contraseña.**
+retiradas. Las copias nuevas se cifran y autentican con XChaCha20-Poly1305; la clave se
+deriva de una contraseña elegida por ti mediante scrypt. Gymnasia no guarda ni transmite
+esa contraseña y no puede recuperar el archivo si la olvidas. Al importar, el archivo se
+descifra y se verifica por completo antes de mostrar la confirmación que permite sustituir
+tus datos actuales.
 
-Al exportar, el paquete se escribe en el almacenamiento temporal de la aplicación antes
-de que elijas dónde compartirlo y esa copia temporal se elimina al cerrar la hoja de
-compartir. El archivo que
+Gymnasia sigue aceptando copias antiguas JSON v1 y ZIP v2 para no dejarte sin acceso a tus
+datos. Esos formatos antiguos no estaban cifrados: la app te avisa antes de importarlos y
+debes usarlos solo si reconoces el archivo y su procedencia. No existe una opción para crear
+nuevas exportaciones sin cifrar.
+
+Al exportar en móvil, solo el paquete ya cifrado se escribe en el almacenamiento temporal
+de la aplicación antes de que elijas dónde compartirlo, y esa copia temporal se elimina al
+cerrar la hoja de compartir. Las copias temporales creadas al seleccionar un archivo para
+importarlo también se eliminan al terminar o cancelar. El archivo que
 decidas guardar en Drive, Dropbox, tu galería de archivos u otro destino queda fuera del
 control de Gymnasia y tendrás que borrarlo allí.
 

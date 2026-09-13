@@ -472,6 +472,7 @@ import {
   BACKUP_APP_ID,
   BACKUP_PACKAGE_MIME,
   BACKUP_SCHEMA_VERSION,
+  LEGACY_BACKUP_SCHEMA_VERSION,
   MAX_BACKUP_PACKAGE_BYTES,
   backupFileName,
   createBackupPackage,
@@ -482,11 +483,22 @@ import {
   selectBackupMedia,
   withoutPortablePhotoUris,
   type BackupManifestV2,
+  type BackupManifestV3,
   type BackupMediaCandidate,
   type BackupMediaOmission,
   type BackupMediaOmissionReason,
   type BackupPayloadV1,
+  type ParsedBackupPackage,
 } from "./backup/backupFormat";
+import { PortablePasswordModal } from "./backup/PortablePasswordModal";
+import {
+  decryptPortablePayload,
+  encryptedPortableMaximumFileBytes,
+  encryptPortablePayload,
+  isEncryptedPortablePrefix,
+  PORTABLE_ENCRYPTION_MIME,
+  type PortableByteSource,
+} from "./backup/portableEncryption";
 import {
   clearMeasurementMedia,
   isMeasurementMediaEmpty,
@@ -776,7 +788,7 @@ function normalizeHealthSafetyConsentState(value: unknown): HealthSafetyConsentS
   };
 }
 
-// --- Copia de seguridad (export/import manual, GYM-5) ---
+// --- GYM-5 (ticket para exportar e importar copias manuales) ---
 // Almacena la fecha del último backup manual realizado por el usuario.
 const BACKUP_META_KEY = scopedStorageKey("gymnasia.mobile.backup_meta.v1");
 // Identificador y versión del formato de backup. Bump BACKUP_SCHEMA_VERSION si el
@@ -1193,7 +1205,7 @@ async function clearMigratedProviderApiKeys(secureStoreAvailable: boolean): Prom
   await Promise.all(PROVIDERS.map((provider) => SecureStore.deleteItemAsync(secureStoreKey(provider))));
 }
 
-// --- Copia de seguridad manual (GYM-5) ---
+// --- GYM-5 (ticket para exportar e importar copias manuales) ---
 // Formato de backup versionado. Local-first: el paquete .gymnasia contiene los
 // datos y las fotos de progreso normalizadas que el usuario decide compartir. No
 // incluye API keys de proveedores IA (viven en SecureStore) ni las cachés de repos
@@ -1217,7 +1229,15 @@ type PendingBackupImport =
       manifest: BackupManifestV2<BackupData>;
       sourceUri: string | null;
       webBytes: Uint8Array | null;
+    }
+  | {
+      kind: "v3";
+      parsed: ParsedBackupPackage<BackupData, BackupManifestV3<BackupData>>;
     };
+
+type PortablePasswordRequest =
+  | { kind: "backup-export" }
+  | { kind: "backup-import"; asset: PlatformDocumentPickerAsset };
 
 type BackupResultDetail = {
   measurementId: string;
@@ -1269,15 +1289,22 @@ function backupDetailReasonLabel(reason: BackupResultDetail["reason"]): string {
 }
 
 function pendingBackupCreatedAt(pending: PendingBackupImport): string {
-  return pending.kind === "v2" ? pending.manifest.createdAt : pending.payload.createdAt;
+  if (pending.kind === "v1") return pending.payload.createdAt;
+  return pending.kind === "v2" ? pending.manifest.createdAt : pending.parsed.manifest.createdAt;
 }
 
 function pendingBackupAppVersion(pending: PendingBackupImport): string {
-  return pending.kind === "v2" ? pending.manifest.appVersion : pending.payload.appVersion;
+  if (pending.kind === "v1") return pending.payload.appVersion;
+  return pending.kind === "v2" ? pending.manifest.appVersion : pending.parsed.manifest.appVersion;
 }
 
 function pendingBackupPhotoCount(pending: PendingBackupImport): number {
-  return pending.kind === "v2" ? pending.manifest.media.links.length : pending.expectedPhotoCount;
+  if (pending.kind === "v1") return pending.expectedPhotoCount;
+  return pending.kind === "v2" ? pending.manifest.media.links.length : pending.parsed.manifest.media.links.length;
+}
+
+function pendingBackupIsLegacy(pending: PendingBackupImport): boolean {
+  return pending.kind !== "v3";
 }
 
 async function readBackupMeta(): Promise<BackupMeta> {
@@ -1295,19 +1322,28 @@ async function writeBackupMeta(meta: BackupMeta): Promise<void> {
   await AsyncStorage.setItem(BACKUP_META_KEY, JSON.stringify(meta));
 }
 
-function recoveryFileName(now = new Date()): string {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
-  return `gymnasia_recovery_${stamp}.json`;
+function bytesToFileSuffix(bytes: Uint8Array): string {
+  let suffix = "";
+  for (const byte of bytes) suffix += byte.toString(16).padStart(2, "0");
+  return suffix;
 }
 
-async function downloadOrShareJson(
-  json: string,
+function recoveryFileName(randomSuffix: string): string {
+  return `gymnasia_recovery_${randomSuffix}.gymnasia`;
+}
+
+async function encryptAndSharePortablePayload(
+  plaintext: Uint8Array,
+  password: string,
   fileName: string,
   dialogTitle: string,
 ): Promise<void> {
   if (Platform.OS === "web") {
-    const blob = new Blob([json], { type: "application/json" });
+    const parts: ArrayBuffer[] = [];
+    for await (const part of encryptPortablePayload(plaintext, password, Crypto.getRandomBytesAsync)) {
+      parts.push(part.slice().buffer);
+    }
+    const blob = new Blob(parts, { type: PORTABLE_ENCRYPTION_MIME });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
@@ -1320,19 +1356,26 @@ async function downloadOrShareJson(
   }
 
   const file = new File(Paths.cache, fileName);
+  let handle: ReturnType<typeof file.open> | null = null;
   try {
     if (file.exists) file.delete();
     file.create();
-    file.write(json);
+    handle = file.open();
+    for await (const part of encryptPortablePayload(plaintext, password, Crypto.getRandomBytesAsync)) {
+      handle.writeBytes(part);
+    }
+    handle.close();
+    handle = null;
     if (!await Sharing.isAvailableAsync()) {
       throw new Error("El sistema no permite compartir archivos en este dispositivo.");
     }
     await Sharing.shareAsync(file.uri, {
-      mimeType: "application/json",
+      mimeType: PORTABLE_ENCRYPTION_MIME,
       dialogTitle,
-      UTI: "public.json",
+      UTI: "public.data",
     });
   } finally {
+    handle?.close();
     if (file.exists) file.delete();
   }
 }
@@ -1841,11 +1884,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [localStoreStartupError, setLocalStoreStartupError] = useState<string | null>(null);
   const localStoreHydrationAttemptRef = useRef(0);
   const [secureStoreAvailable, setSecureStoreAvailable] = useState(true);
-  // Copia manual en Configuración → Datos (GYM-5, ticket para exportar e importar copias).
+  // GYM-5 (ticket para exportar e importar copias manuales), en Configuración → Datos.
   const [backupBusy, setBackupBusy] = useState<null | "export" | "import">(null);
   const [backupResult, setBackupResult] = useState<BackupResult | null>(null);
   const [lastBackupAt, setLastBackupAt] = useState<string | null>(null);
   const [pendingImport, setPendingImport] = useState<PendingBackupImport | null>(null);
+  const [portablePasswordRequest, setPortablePasswordRequest] = useState<PortablePasswordRequest | null>(null);
+  const [portablePasswordError, setPortablePasswordError] = useState<string | null>(null);
   const [dataDeletionScope, setDataDeletionScope] =
     useState<LocalDataDeletionScope | null>(null);
   const [dataDeletionConfirmation, setDataDeletionConfirmation] = useState("");
@@ -2526,7 +2571,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     deletionReport: dataSettingsDeletionReport,
     deletionBusy: dataDeletionBusy,
     deletionBlocked: backupBusy !== null || sendingChat || foodEstimatorSending || dataDeletionBusy,
-    exportBackup: () => void runBackupExport(),
+    exportBackup: () => {
+      setPortablePasswordError(null);
+      setPortablePasswordRequest({ kind: "backup-export" });
+    },
     importBackup: () => void pickBackupForImport(),
     openBackupPolicy: () => void openExternalUrl(`${resolvePrivacyPolicyUrl()}#copias`),
     retryDeletion: (scope) => void performDataDeletion(scope),
@@ -2957,7 +3005,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const shellBackHandlers = {
     "training-template-conflict": () => { setTrainingTemplateConflict(null); return true; },
     "training-template-discard": () => { setConfirmDiscardTemplateDraft(false); return true; },
-    "backup-import-confirmation": () => { setPendingImport(null); return true; },
+    "backup-import-confirmation": () => { cancelPendingBackupImport(); return true; },
     "data-deletion": () => { if (!dataDeletionBusyRef.current) closeDataDeletion(); return true; },
     "training-partial-finish": trainingSessionController.back.handlers["training-partial-finish"],
     "workout-completion": trainingSessionController.back.handlers["workout-completion"],
@@ -4753,6 +4801,35 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     return resolveFoodEstimatorProvider(store.keys);
   }
 
+  async function withPickedBackupSource<T>(
+    asset: PlatformDocumentPickerAsset,
+    operation: (source: PortableByteSource) => Promise<T>,
+  ): Promise<T> {
+    if (Platform.OS === "web" && asset.file) {
+      const source: PortableByteSource = {
+        size: asset.file.size,
+        async read(offset, length) {
+          return new Uint8Array(await asset.file!.slice(offset, offset + length).arrayBuffer());
+        },
+      };
+      return operation(source);
+    }
+    const file = new File(asset.uri);
+    const handle = file.open();
+    try {
+      const source: PortableByteSource = {
+        size: file.size,
+        async read(offset, length) {
+          handle.offset = offset;
+          return handle.readBytes(length);
+        },
+      };
+      return await operation(source);
+    } finally {
+      handle.close();
+    }
+  }
+
   async function readPickedBackupBytes(asset: PlatformDocumentPickerAsset): Promise<Uint8Array> {
     if (typeof asset.size === "number" && asset.size > MAX_BACKUP_PACKAGE_BYTES) {
       throw new Error("El archivo supera el tamaño máximo permitido de 220 MiB.");
@@ -4766,11 +4843,41 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     return bytes;
   }
 
-  // --- Copia de seguridad manual (GYM-5) ---
+  function deletePickedBackupCopy(asset: { uri: string }): void {
+    if (Platform.OS === "web") return;
+    try {
+      const file = new File(asset.uri);
+      if (file.exists) file.delete();
+    } catch {
+      // El selector o el sistema pueden haber retirado ya su copia temporal.
+    }
+  }
+
+  function cancelPortablePasswordRequest(): void {
+    if (portablePasswordRequest?.kind === "backup-import") {
+      deletePickedBackupCopy(portablePasswordRequest.asset);
+    }
+    setPortablePasswordRequest(null);
+    setPortablePasswordError(null);
+  }
+
+  function cancelPendingBackupImport(): void {
+    if (pendingImport?.kind === "v3") {
+      for (const bytes of pendingImport.parsed.filesByEntry.values()) bytes.fill(0);
+    }
+    if (pendingImport?.kind === "v2") pendingImport.webBytes?.fill(0);
+    if (pendingImport?.kind === "v2" && pendingImport.sourceUri) {
+      deletePickedBackupCopy({ uri: pendingImport.sourceUri });
+    }
+    setPendingImport(null);
+  }
+
+  // --- GYM-5 (ticket para exportar e importar copias manuales) ---
   // Exporta datos y fotos a un paquete versionado y abre la hoja de compartir.
-  async function runBackupExport() {
+  async function runBackupExport(password: string): Promise<boolean> {
     setBackupBusy("export");
     setBackupResult(null);
+    setPortablePasswordError(null);
     try {
       const personalData = await loadPersonalData();
       const backupData = buildBackupData({ store, userPrefs, personalFoods, personalData });
@@ -4801,7 +4908,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       }
 
       const selectedMedia = selectBackupMedia(candidates);
-      const manifest: BackupManifestV2<BackupData> = {
+      const manifest: BackupManifestV3<BackupData> = {
         app: BACKUP_APP_ID,
         type: "backup",
         schemaVersion: BACKUP_SCHEMA_VERSION,
@@ -4815,36 +4922,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         },
       };
       const packageBytes = createBackupPackage(manifest, selectedMedia.filesByEntry);
-      const fileName = backupFileName();
-
-      if (Platform.OS === "web") {
-        const blob = new Blob([packageBytes.slice().buffer], { type: BACKUP_PACKAGE_MIME });
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = url;
-        anchor.download = fileName;
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-        URL.revokeObjectURL(url);
-      } else {
-        const file = new File(Paths.cache, fileName);
-        try {
-          if (file.exists) file.delete();
-          file.create();
-          file.write(packageBytes);
-          const canShare = await Sharing.isAvailableAsync();
-          if (!canShare) {
-            throw new Error("El sistema no permite compartir archivos en este dispositivo.");
-          }
-          await Sharing.shareAsync(file.uri, {
-            mimeType: BACKUP_PACKAGE_MIME,
-            dialogTitle: "Guardar copia de seguridad de Gymnasia",
-            UTI: "public.zip-archive",
-          });
-        } finally {
-          if (file.exists) file.delete();
-        }
+      try {
+        const randomSuffix = bytesToFileSuffix(await Crypto.getRandomBytesAsync(8));
+        await encryptAndSharePortablePayload(
+          packageBytes,
+          password,
+          backupFileName(randomSuffix),
+          "Guardar copia cifrada de Gymnasia",
+        );
+      } finally {
+        packageBytes.fill(0);
       }
 
       if (migratedUris.size > 0) {
@@ -4867,11 +4954,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           : `Copia creada con ${selectedMedia.links.length} foto(s). Guárdala en un lugar seguro.`,
         details: backupDetailsFromOmissions(selectedMedia.omissions, store.measurements),
       });
+      return true;
     } catch (e) {
+      const message = e instanceof Error ? e.message : "No se pudo crear la copia de seguridad.";
+      setPortablePasswordError(message);
       setBackupResult({
         status: "error",
-        message: e instanceof Error ? e.message : "No se pudo crear la copia de seguridad.",
+        message,
       });
+      return false;
     } finally {
       setBackupBusy(null);
     }
@@ -4884,28 +4975,49 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setBackupResult(null);
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: [BACKUP_PACKAGE_MIME, "application/json", "text/plain", "*/*"],
+        type: [BACKUP_PACKAGE_MIME, "application/zip", "application/json", "text/plain", "*/*"],
         copyToCacheDirectory: true,
         multiple: false,
       });
       if (result.canceled) return;
       const asset = result.assets[0];
-      const bytes = await readPickedBackupBytes(asset);
-      if (isZipPackage(bytes)) {
-        const manifest = readBackupManifestFromPackage<BackupData>(bytes);
-        setPendingImport({
-          kind: "v2",
-          manifest,
-          sourceUri: Platform.OS === "web" ? null : asset.uri,
-          webBytes: Platform.OS === "web" ? bytes : null,
+      let keepTemporaryCopy = false;
+      try {
+        const encrypted = await withPickedBackupSource(asset, async (source) => {
+          if (source.size > encryptedPortableMaximumFileBytes()) {
+            throw new Error("El archivo cifrado supera el tamaño máximo permitido.");
+          }
+          return isEncryptedPortablePrefix(await source.read(0, 12));
         });
-      } else {
-        const parsed = JSON.parse(new TextDecoder().decode(bytes));
-        const payload = parseBackupPayloadV1<BackupData>(parsed);
-        const expectedPhotoCount = payload.data.store.measurements.filter(
-          (measurement) => !!measurement.photo_uri,
-        ).length;
-        setPendingImport({ kind: "v1", payload, expectedPhotoCount });
+        if (encrypted) {
+          keepTemporaryCopy = true;
+          setPortablePasswordError(null);
+          setPortablePasswordRequest({ kind: "backup-import", asset });
+          return;
+        }
+        const bytes = await readPickedBackupBytes(asset);
+        if (isZipPackage(bytes)) {
+          const manifest = readBackupManifestFromPackage<BackupData>(
+            bytes,
+            LEGACY_BACKUP_SCHEMA_VERSION,
+          );
+          keepTemporaryCopy = Platform.OS !== "web";
+          setPendingImport({
+            kind: "v2",
+            manifest,
+            sourceUri: Platform.OS === "web" ? null : asset.uri,
+            webBytes: Platform.OS === "web" ? bytes : null,
+          });
+        } else {
+          const parsed = JSON.parse(new TextDecoder().decode(bytes));
+          const payload = parseBackupPayloadV1<BackupData>(parsed);
+          const expectedPhotoCount = payload.data.store.measurements.filter(
+            (measurement) => !!measurement.photo_uri,
+          ).length;
+          setPendingImport({ kind: "v1", payload, expectedPhotoCount });
+        }
+      } finally {
+        if (!keepTemporaryCopy) deletePickedBackupCopy(asset);
       }
     } catch (e) {
       const message = e instanceof SyntaxError
@@ -4914,6 +5026,38 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           ? e.message
           : "No se pudo leer el archivo.";
       setBackupResult({ status: "error", message });
+    } finally {
+      setBackupBusy(null);
+    }
+  }
+
+  async function unlockBackupForImport(
+    asset: PlatformDocumentPickerAsset,
+    password: string,
+  ): Promise<void> {
+    setBackupBusy("import");
+    setPortablePasswordError(null);
+    try {
+      const packageBytes = await withPickedBackupSource(
+        asset,
+        (source) => decryptPortablePayload(source, password),
+      );
+      let parsed: ParsedBackupPackage<BackupData, BackupManifestV3<BackupData>>;
+      try {
+        parsed = await readAndVerifyBackupPackage<BackupData>(
+          packageBytes,
+          measurementPhotoSha256,
+        );
+      } finally {
+        packageBytes.fill(0);
+      }
+      setPendingImport({ kind: "v3", parsed });
+      setPortablePasswordRequest(null);
+      deletePickedBackupCopy(asset);
+    } catch (error) {
+      setPortablePasswordError(
+        error instanceof Error ? error.message : "No se pudo abrir la copia cifrada.",
+      );
     } finally {
       setBackupBusy(null);
     }
@@ -4931,14 +5075,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     try {
       let data: BackupData;
       const details: BackupResultDetail[] = [];
-      if (pending.kind === "v2") {
-        const packageBytes = pending.webBytes
-          ?? (pending.sourceUri ? await new File(pending.sourceUri).bytes() : null);
-        if (!packageBytes) throw new Error("Ya no se puede leer el paquete seleccionado.");
-        const parsed = await readAndVerifyBackupPackage<BackupData>(
-          packageBytes,
-          measurementPhotoSha256,
-        );
+      if (pending.kind !== "v1") {
+        const parsed = pending.kind === "v3"
+          ? pending.parsed
+          : await (async () => {
+              const packageBytes = pending.webBytes
+                ?? (pending.sourceUri ? await new File(pending.sourceUri).bytes() : null);
+              if (!packageBytes) throw new Error("Ya no se puede leer el paquete seleccionado.");
+              return readAndVerifyBackupPackage<BackupData>(
+                packageBytes,
+                measurementPhotoSha256,
+                LEGACY_BACKUP_SCHEMA_VERSION,
+              );
+            })();
         const assetsById = new Map(parsed.manifest.media.assets.map((asset) => [asset.id, asset]));
         const photoUris = new Map<string, string | null>();
         for (const link of parsed.manifest.media.links) {
@@ -5117,6 +5266,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         message: e instanceof Error ? e.message : "No se pudo restaurar la copia de seguridad.",
       });
     } finally {
+      if (pending.kind === "v3") {
+        for (const bytes of pending.parsed.filesByEntry.values()) bytes.fill(0);
+      }
+      if (pending.kind === "v2") pending.webBytes?.fill(0);
+      if (pending.kind === "v2" && pending.sourceUri) {
+        deletePickedBackupCopy({ uri: pending.sourceUri });
+      }
       setBackupBusy(null);
     }
   }
@@ -8076,9 +8232,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     onRuntimeReset({ report });
   }
 
-  async function runLocalStoreRecoveryExport(): Promise<void> {
+  async function runLocalStoreRecoveryExport(password: string): Promise<boolean> {
     const recovery = localStoreRecovery;
-    if (!recovery || recovery.quarantine.rawPayload === null) return;
+    if (!recovery || recovery.quarantine.rawPayload === null) return false;
     setLocalStoreRecoveryBusy("export");
     setLocalStoreRecoveryError(null);
     try {
@@ -8097,17 +8253,26 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         warning: "Archivo sensible: puede contener datos personales, de salud, conversaciones y claves de IA en web.",
         recovery: quarantine,
       };
-      await downloadOrShareJson(
-        JSON.stringify(payload, null, 2),
-        recoveryFileName(new Date(exportedAt)),
-        "Guardar datos de recuperación de Gymnasia",
-      );
+      const plaintext = new TextEncoder().encode(JSON.stringify(payload, null, 2));
+      try {
+        const randomSuffix = bytesToFileSuffix(await Crypto.getRandomBytesAsync(8));
+        await encryptAndSharePortablePayload(
+          plaintext,
+          password,
+          recoveryFileName(randomSuffix),
+          "Guardar datos cifrados de recuperación de Gymnasia",
+        );
+      } finally {
+        plaintext.fill(0);
+      }
+      return true;
     } catch (exportError) {
       setLocalStoreRecoveryError(
         exportError instanceof Error
           ? exportError.message
           : "No se pudo exportar la copia dañada.",
       );
+      return false;
     } finally {
       setLocalStoreRecoveryBusy(null);
     }
@@ -8183,7 +8348,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         busy={localStoreRecoveryBusy}
         error={localStoreRecoveryError}
         onRestore={() => void runLocalStoreSnapshotRestore()}
-        onExport={() => void runLocalStoreRecoveryExport()}
+        onExport={runLocalStoreRecoveryExport}
         onRetry={() => void runLocalStoreRecoveryRetry()}
         onDiscard={() => void runLocalStoreRecoveryDiscard()}
       />
@@ -8482,8 +8647,32 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         onAddFood={() => { void addFoodFromEstimatorJSON(); }}
       />
 
+      <PortablePasswordModal
+        visible={portablePasswordRequest !== null}
+        mode={portablePasswordRequest?.kind === "backup-import" ? "unlock" : "create"}
+        title={portablePasswordRequest?.kind === "backup-import" ? "Desbloquea la copia" : "Protege tu copia"}
+        description={portablePasswordRequest?.kind === "backup-import"
+          ? "Escribe la contraseña elegida al crear este archivo."
+          : "Elige una contraseña para cifrar todos los datos y las fotos antes de guardar el archivo."}
+        busy={backupBusy !== null}
+        error={portablePasswordError}
+        onCancel={cancelPortablePasswordRequest}
+        onSubmit={(password) => {
+          const request = portablePasswordRequest;
+          if (!request) return;
+          if (request.kind === "backup-import") {
+            void unlockBackupForImport(request.asset, password);
+            return;
+          }
+          void runBackupExport(password).then((exported) => {
+            if (exported) setPortablePasswordRequest(null);
+          });
+        }}
+      />
+
       {pendingImport ? (
         <BackupImportConfirmation
+          legacy={pendingBackupIsLegacy(pendingImport)}
           description={`Se sustituirán TODOS tus datos actuales por los de la copia${pendingBackupCreatedAt(pendingImport)
             ? ` del ${new Date(pendingBackupCreatedAt(pendingImport)).toLocaleString("es-ES", {
                 day: "2-digit",
@@ -8496,7 +8685,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             ? ` (Gymnasia v${pendingBackupAppVersion(pendingImport)})`
             : ""}. La copia declara ${pendingBackupPhotoCount(pendingImport)} foto(s).\nEsta acción no se puede deshacer.`}
           onConfirm={applyPendingImport}
-          onCancel={() => setPendingImport(null)}
+          onCancel={cancelPendingBackupImport}
         />
       ) : null}
 

@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v2
-effective_date: 2026-09-11
+version: 2026-09-v3
+effective_date: 2026-09-13
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -231,7 +231,8 @@ generation inside the app's own storage. It is used only when the current state 
 read. Gymnasia then blocks writes and lets you recover the latest copy, retry, discard the
 affected data, or export the damaged payload. This recovery export preserves the original
 without sanitising it; it is particularly sensitive and may contain AI keys in the web
-version. It is never sent to a Gymnasia server.
+version. Before saving it, Gymnasia requires you to choose a password and encrypts the file
+in the same way as a normal backup. It is never sent to a Gymnasia server.
 
 The exported package **contains**: your measurements and body fat percentages, the
 normalised JPEG copies of your progress photographs that fit within the app's limits,
@@ -246,11 +247,21 @@ images per backup. If a photograph is missing, damaged or does not fit, the back
 all numeric measurements and tells you which photographs were omitted.
 
 The package does **not** contain your API keys or legacy credentials from removed
-features. **It is not encrypted or password-protected.**
+features. New backups are encrypted and authenticated with XChaCha20-Poly1305; the key is
+derived from a password you choose using scrypt. Gymnasia neither stores nor transmits that
+password and cannot recover the file if you forget it. On import, the complete file is
+decrypted and verified before the app shows the confirmation that can replace your current
+data.
 
-When exporting, the package is written to the app's temporary storage before you choose
-where to share it, and that temporary copy is deleted when the share sheet closes. Any
-file you choose
+Gymnasia continues to accept old JSON v1 and ZIP v2 backups so that you do not lose access
+to your data. Those older formats were not encrypted: the app warns you before importing
+them, and you should use them only if you recognise the file and its origin. There is no
+option to create new unencrypted exports.
+
+When exporting on mobile, only the already encrypted package is written to the app's
+temporary storage before you choose where to share it, and that temporary copy is deleted
+when the share sheet closes. Temporary copies made when selecting a file for import are
+also removed on completion or cancellation. Any file you choose
 to save to Drive, Dropbox, your files app or another destination is outside Gymnasia's
 control and must be deleted there.
 
