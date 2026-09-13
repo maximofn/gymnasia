@@ -1,8 +1,12 @@
 # Android en wallabot
 
-**Estado: preparado para revisión, sin activar.** No fusionar el cambio del
+**Estado: imagen y aislamiento probados, flujo sin activar.** No fusionar el cambio del
 workflow ni registrar el runner hasta completar la prueba firmada y la auditoría
 de aislamiento. No se ha ejecutado todavía ninguna build local en wallabot.
+La auditoría del 13-09-2026 pasó permisos, toolchain, red privada y descarte de
+overlays tras éxito, cancelación, caída de QEMU y timeout; el hash de la base y
+los listeners/unidades del host se mantuvieron. Falta la prueba del APK firmado
+y completar el registro efímero antes de activar.
 
 `build-apk.yml` conserva la selección de candidato, validación, borrador,
 verificación y publicación en GitHub. Solo `compile-android` usa
@@ -101,14 +105,15 @@ No ejecutar la primera consulta de firma sin la intervención del mantenedor.
 Si se decide exportarla, hacerlo puntualmente, fuera de Git y con modo 0600;
 nunca guardar keystore, contraseñas o logs en artifacts.
 
-Línea base consultada el 13-09-2026: release `v1.43.1`, package
-`com.maximofn.gymnasia`, versionCode 52, APK SHA-256
-`be2dde6f6834d12d0918770533a7be9f54d5f6998070daac4ebedb036dd05474`.
+Línea base consultada el 13-09-2026: release `v1.43.2`, package
+`com.maximofn.gymnasia`, versionCode 53, APK SHA-256
+`1e38cbb4d932a67379994984db80ac7e39c2ebfd973ac31583642d0329bed164`.
 Su evidencia pública declara el certificado
 `310b3839e405f1fa9f920925767e6ee84247aaa1b8a72259479e919a4859ab31`, coincidente
-con `policy.json`. **Falta comparar los certificados extraídos de ambos APK
-reales**. En cada release se descarga de nuevo la evidencia del último APK,
-se valida su digest de GitHub y se exige un versionCode superior; 52 no es un
+con `policy.json` y con el certificado extraído del bloque de firma del APK
+público. **Falta la verificación nativa del APK local y comparar ambas firmas**.
+En cada release se descarga de nuevo la evidencia del último APK,
+se valida su digest de GitHub y se exige un versionCode superior; 53 no es un
 contador nuevo ni un valor fijado en el código.
 
 ## Activación pendiente: completar en orden
