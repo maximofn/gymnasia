@@ -19,6 +19,7 @@ revisarlos. No son instrucciones para ejecutar código de una PR en el host.
 ```bash
 sudo bash install-host.sh
 sudo bash bake-image.sh
+sudo python3 audit-image.py
 ```
 
 El primero instala QEMU 8.2.2 del paquete Ubuntu
@@ -48,6 +49,16 @@ El filtro de systemd bloquea loopback, redes privadas, Tailscale y todo IPv6.
 La imagen usa DNS públicos directamente porque el resolvedor del host también
 está bloqueado. El instalador exige cgroup v2/BPF; la prueba real de aislamiento
 sigue siendo obligatoria, un fichero de configuración no la sustituye.
+
+`audit-image.py` comprueba el hash de la base y arranca cuatro overlays sin
+credenciales. El primero verifica como `runner` permisos, toolchain, recursos,
+ausencia de dispositivos/directorios compartidos y rechazo de conexiones a
+servicios privados que ya respondían en el host. No abre puertos ni sondea otras
+máquinas. Los siguientes prueban cancelación, caída de QEMU y timeout de 90 s,
+conservando el hook de limpieza de la unidad real. Cada arranque comprueba que
+el marcador del anterior desapareció; al terminar repite hash y estado del
+host. Conserva evidencia privada en `/var/tmp/gymnasia-audit.*`. No registra
+el runner ni accede a la firma; tampoco ejecuta el workflow cloud de reversión.
 
 Ubuntu rechaza desinstalar `sudo` si root no tiene contraseña. El instalador
 usa `SUDO_FORCE_REMOVE=yes` solo dentro de esta VM desechable, que conserva las
