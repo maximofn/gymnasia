@@ -116,10 +116,10 @@ test("EAS conserva perfiles locales y publica únicamente production-apk", () =>
   assert.doesNotMatch(buildWorkflow, /inputs\.profile/);
   assert.match(buildWorkflow, /^  validate-production:$/m);
   assert.match(buildWorkflow, /^  select-transaction:$/m);
-  assert.match(buildWorkflow, /^  build-and-release:\n    needs: \[select-transaction, validate-production\]$/m);
+  assert.match(buildWorkflow, /^  prepare-production:\n    needs: \[select-transaction, validate-production\]$/m);
   const validationJob = buildWorkflow.slice(
     buildWorkflow.indexOf("  validate-production:"),
-    buildWorkflow.indexOf("  build-and-release:"),
+    buildWorkflow.indexOf("  prepare-production:"),
   );
   assert.doesNotMatch(validationJob, /^    environment:/m);
   assert.doesNotMatch(validationJob, /EXPO_TOKEN/);
@@ -134,17 +134,18 @@ test("EAS conserva perfiles locales y publica únicamente production-apk", () =>
   );
   assert.match(
     buildWorkflow,
-    /npm --prefix \.release-controller run verify:production-artifact/,
+    /npm run verify:production-artifact/,
   );
   assert.match(buildWorkflow, /production-source-evidence\.json/);
   assert.match(buildWorkflow, /production-artifact-evidence\.json/);
-  assert.match(buildWorkflow, /Create durable draft before EAS/);
+  assert.match(buildWorkflow, /Create durable draft before local compilation/);
   assert.match(buildWorkflow, /Attach verified APK and immutable evidence/);
   assert.match(buildWorkflow, /android-production-release/);
   assert.match(buildWorkflow, /cancel-in-progress: false/);
   assert.match(buildWorkflow, /release-transaction\.mjs select-remote/);
-  assert.match(buildWorkflow, /--no-wait --json/);
-  assert.match(buildWorkflow, /eas build:view/);
+  assert.doesNotMatch(buildWorkflow, /--no-wait|eas build:view|eas build:list/);
+  assert.match(buildWorkflow, /compile-android:/);
+  assert.match(buildWorkflow, /verify-and-release:/);
   assert.match(buildWorkflow, /Download APK to quarantine path/);
   assert.match(buildWorkflow, /--published-filename gymnasia\.apk/);
   assert.doesNotMatch(buildWorkflow, /Update version in app\.json/);

@@ -1,0 +1,29 @@
+[Unit]
+Description=One-job GitHub runner inside the disposable guest
+After=network-online.target cloud-final.service
+Wants=network-online.target
+ConditionPathExists=/home/runner/actions/.runner
+
+[Service]
+Type=simple
+User=runner
+Group=runner
+WorkingDirectory=/home/runner/actions
+EnvironmentFile=/etc/gymnasia-toolchain.env
+Environment=ACTIONS_RUNNER_HOOK_JOB_STARTED=/usr/local/lib/gymnasia/admit-job.sh
+ExecStart=/home/runner/actions/run.sh
+# systemd shuts the guest down after the ephemeral runner exits, never from
+# inside a job hook. The runner itself has no privilege to control systemd.
+ExecStopPost=+/usr/sbin/poweroff
+Restart=no
+RuntimeMaxSec=110min
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+CapabilityBoundingSet=
+
+# Activated only by the per-run bootstrap, never baked enabled into an image.

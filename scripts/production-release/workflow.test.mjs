@@ -34,18 +34,37 @@ test("lee el borrador duradero por ID después de adjuntar evidencias", () => {
   );
 });
 
-test("consulta EAS con filtros estables y valida la identidad localmente", () => {
-  assert.match(
-    workflow,
-    /eas build:list --platform android[\s\\]*--limit 50 --offset "\$EAS_OFFSET" --json/,
-    "la consulta preventiva debe evitar los filtros remotos que fallan en EAS",
-  );
-  assert.match(workflow, /EAS_OFFSET=\$\(\(EAS_OFFSET \+ 50\)\)/, "la consulta debe paginar todo el historial");
-  assert.match(
-    workflow,
-    /--arg profile "production-apk"[\s\S]*--arg version "\$VERSION"[\s\S]*--arg sourceCommit "\$SOURCE_COMMIT"[\s\S]*--arg message "android-v\$\{VERSION\}"/,
-    "la adopción debe comprobar perfil, versión, commit y mensaje",
-  );
+test("solo compila localmente y no consulta recursos remotos de EAS", () => {
+  assert.doesNotMatch(workflow, /eas build(?::|\s)|eas-version: latest|apk_url|build_id/);
+  const script = readFileSync(new URL("./run-local-build.mjs", import.meta.url), "utf8");
+  assert.match(script, /"eas", \["build", "--platform", "android", "--profile", "production-apk",\s*"--local", "--non-interactive", "--freeze-credentials", "--output", output\]/);
+  assert.doesNotMatch(script, /build:list|build:view|--no-wait|--auto-submit/);
+});
+
+test("solo el job de compilación usa wallabot y permisos de lectura", () => {
+  const job = workflow.slice(workflow.indexOf("  compile-android:"), workflow.indexOf("  verify-and-release:"));
+  assert.match(job, /runs-on: \[self-hosted, linux, x64, wallabot, android-build\]/);
+  assert.match(job, /github.repository == 'maximofn\/gymnasia' && github.ref == 'refs\/heads\/main'/);
+  assert.match(job, /ref: \$\{\{ needs.validate-production.outputs.source_commit \}\}/);
+  assert.match(job, /needs.validate-production.result == 'success'/);
+  assert.match(job, /environment: Production/);
+  assert.match(job, /permissions:\n      contents: read/);
+  assert.doesNotMatch(job, /contents: write|gh release|sudo|docker/);
+  assert.equal((workflow.match(/runs-on: \[self-hosted/g) ?? []).length, 1);
+  assert.doesNotMatch(workflow, /pull_request:/);
+});
+
+test("reserva antes de despachar y verifica el artifact antes de adjuntar o publicar", () => {
+  assert.ok(workflow.indexOf("Reserve local attempt durably") < workflow.indexOf("  compile-android:"));
+  const verify = workflow.indexOf("      - name: Verify quarantined Production APK");
+  assert.ok(verify > workflow.indexOf("      - name: Download APK to quarantine path"));
+  assert.ok(verify < workflow.indexOf("      - name: Attach verified APK"));
+  assert.match(workflow, /--transaction \/tmp\/android-release-transaction.json/);
+  assert.match(workflow, /--previous-evidence \/tmp\/inputs\/previous-artifact-evidence.json/);
+  assert.match(workflow, /test -f \/tmp\/quarantine\/gymnasia.apk/);
+  assert.match(workflow, /if-no-files-found: error/);
+  assert.match(workflow, /--event fail-local --reason/);
+  assert.match(workflow, /if: failure\(\) \|\| cancelled\(\)/);
 });
 
 test("verifica la cadena de hashes antes de hacer inmutable la release", () => {

@@ -1,0 +1,78 @@
+#!/bin/bash
+# Runs only while baking a credential-free image. Never registers a runner.
+set -euo pipefail
+umask 077
+exec > /var/log/gymnasia-image-install.log 2>&1
+test "$(id -u)" = 0
+test "$(systemd-detect-virt)" = kvm
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install --no-install-recommends --yes ca-certificates curl git unzip zip xz-utils file \
+  python3 jq libicu74 libssl3t64 libkrb5-3 zlib1g libstdc++6
+systemctl disable --now ssh.service ssh.socket 2>/dev/null || true
+apt-get purge --yes sudo openssh-server
+useradd --create-home --shell /bin/bash runner
+passwd -l root
+passwd -l runner
+install -d -m 0755 /opt/gymnasia/node /opt/gymnasia/java /opt/android/cmdline-tools /usr/local/lib/gymnasia
+cd /var/tmp
+download() {
+  local name="$1"
+  curl --fail --location --proto '=https' --tlsv1.2 \
+    "$(jq -r --arg key "$name" '.[$key].url' /opt/gymnasia/downloads.json)" -o "$name.download"
+  echo "$(jq -r --arg key "$name" '.[$key].sha256' /opt/gymnasia/downloads.json)  $name.download" | sha256sum -c -
+}
+download node
+tar -xJf node.download --strip-components=1 -C /opt/gymnasia/node
+download java
+tar -xzf java.download --strip-components=1 -C /opt/gymnasia/java
+download android
+unzip -q android.download -d /var/tmp/android-unpack
+mv /var/tmp/android-unpack/cmdline-tools /opt/android/cmdline-tools/19.0
+export JAVA_HOME=/opt/gymnasia/java ANDROID_HOME=/opt/android ANDROID_SDK_ROOT=/opt/android
+export PATH=/opt/gymnasia/node/bin:/opt/gymnasia/java/bin:/opt/android/cmdline-tools/19.0/bin:/opt/android/build-tools/36.0.0:/usr/local/bin:/usr/bin:/bin
+# EAS CLI selects exactly the local plugin version matching its build-job package.
+npm install --global npm@10.9.3 eas-cli@24.3.0 eas-cli-local-build-plugin@24.3.0
+set +o pipefail
+yes | sdkmanager --licenses >/dev/null
+license_status="${PIPESTATUS[1]}"
+set -o pipefail
+test "$license_status" = 0
+sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'ndk;27.1.12297006' 'cmake;3.22.1'
+download runner
+install -d -o runner -g runner -m 0700 /home/runner/actions
+tar -xzf runner.download -C /home/runner/actions
+chown -R runner:runner /home/runner/actions
+install -m 0755 /opt/gymnasia/admit-job.sh /usr/local/lib/gymnasia/admit-job.sh
+install -m 0644 /opt/gymnasia/gymnasia-runner.service /etc/systemd/system/
+cat > /etc/gymnasia-toolchain.env <<'ENV'
+PATH=/opt/gymnasia/node/bin:/opt/gymnasia/java/bin:/opt/android/cmdline-tools/19.0/bin:/opt/android/build-tools/36.0.0:/usr/local/bin:/usr/bin:/bin
+JAVA_HOME=/opt/gymnasia/java
+ANDROID_HOME=/opt/android
+ANDROID_SDK_ROOT=/opt/android
+ENV
+chmod 0644 /etc/gymnasia-toolchain.env
+# Only runtime caches belong to the runner. The toolchain and admission hook
+# stay root-owned; dependency resolution may not silently replace SDK versions.
+chmod -R a+rX /opt/gymnasia /opt/android
+test ! -e /home/runner/actions/.runner
+test ! -e /var/run/docker.sock && test ! -e /dev/nvidia0
+test "$(id -nG runner)" = runner
+# Probe the host alias from SLIRP: it must not bypass the cgroup egress policy.
+python3 - <<'PY'
+import socket, urllib.request
+with urllib.request.urlopen('https://github.com',timeout=20) as response: assert response.status==200
+for address,port in [('10.0.2.2',22),('10.0.2.2',80),('10.0.2.2',443),('10.0.2.2',2375)]:
+    try: connection=socket.create_connection((address,port),timeout=2)
+    except OSError: continue
+    connection.close()
+    raise RuntimeError('La VM alcanzó un servicio del host')
+PY
+node --version
+npm --version
+java -version
+eas --version
+rm -rf /var/tmp/*.download /var/tmp/android-unpack /root/.npm /root/.cache
+cloud-init clean --logs
+echo GYMNASIA_IMAGE_READY > /dev/ttyS0
+poweroff

@@ -1,0 +1,44 @@
+[Unit]
+Description=Disposable isolated Android builder (manual start only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=gymnasia-vm
+Group=gymnasia-vm
+SupplementaryGroups=kvm
+WorkingDirectory=/var/lib/gymnasia-android
+ExecStart=/usr/local/lib/gymnasia-android/start-vm.sh
+ExecStopPost=+/usr/local/lib/gymnasia-android/clean-current.sh
+RuntimeMaxSec=2h
+TimeoutStopSec=30
+KillMode=control-group
+Restart=no
+UMask=0077
+CPUQuota=400%
+MemoryMax=18G
+MemorySwapMax=0
+TasksMax=512
+LimitFSIZE=140G
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/gymnasia-android/current
+DevicePolicy=closed
+DeviceAllow=/dev/kvm rw
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_UNIX AF_INET
+IPAddressDeny=0.0.0.0/8 10.0.0.0/8 100.64.0.0/10 127.0.0.0/8 169.254.0.0/16 172.16.0.0/12 192.0.0.0/24 192.168.0.0/16 198.18.0.0/15 224.0.0.0/4 ::/0
+InaccessiblePaths=-/etc/ssh -/var/lib/tailscale -/var/lib/docker -/var/backups -/run/docker.sock -/run/tailscale -/dev/dri -/dev/nvidia0 -/dev/nvidia1 -/dev/nvidiactl -/dev/nvidia-uvm
+
+# Deliberately no [Install] section: no boot-time or automatic registration.
