@@ -14,6 +14,7 @@ import time
 import urllib.request
 
 inputs = json.loads(pathlib.Path(sys.argv[1]).read_text())
+print("GYMNASIA_AUDIT_PROGRESS identidad", flush=True)
 nonce = inputs["nonce"]
 assert re.fullmatch(r"[a-f0-9]{32}", nonce)
 assert os.getuid() != 0 and pwd.getpwuid(os.getuid()).pw_name == "runner"
@@ -27,6 +28,7 @@ if inputs["mode"] == "hold":
     while True:
         time.sleep(60)
 
+print("GYMNASIA_AUDIT_PROGRESS permisos", flush=True)
 status = pathlib.Path("/proc/self/status").read_text()
 assert re.search(r"^CapEff:\s+0+$", status, re.M)
 assert re.search(r"^NoNewPrivs:\s+1$", status, re.M)
@@ -40,6 +42,7 @@ assert {p.pw_name for p in pwd.getpwall() if 1000 <= p.pw_uid < 65534} == {"runn
 for mount in pathlib.Path("/proc/self/mountinfo").read_text().splitlines():
     filesystem = mount.split(" - ", 1)[1].split()[0]
     assert filesystem not in {"9p", "virtiofs", "nfs", "nfs4", "cifs", "fuse.sshfs"}
+print("GYMNASIA_AUDIT_PROGRESS toolchain-inmutable", flush=True)
 for root in ["/opt/android", "/opt/gymnasia", "/usr/local/lib/gymnasia"]:
     for directory, children, files in os.walk(root):
         for path in [directory, *(str(pathlib.Path(directory) / n) for n in children + files)]:
@@ -55,6 +58,7 @@ def output(*command):
 
 
 lock = inputs["toolchain"]
+print("GYMNASIA_AUDIT_PROGRESS versiones", flush=True)
 assert output("node", "--version") == "v" + lock["node"]
 assert output("npm", "--version") == lock["npm"]
 assert f'version "{lock["java"]}"' in output("java", "-version")
@@ -67,6 +71,7 @@ for prefix, name in [("build-tools", "androidBuildTools"), ("ndk", "androidNdk")
                      ("cmdline-tools", "androidCommandLineTools"), ("cmake", "cmake")]:
     properties = (sdk / prefix / lock[name] / "source.properties").read_text()
     assert re.search(r"^Pkg.Revision\s*=\s*(.+)$", properties, re.M)[1].strip() == lock[name]
+print("GYMNASIA_AUDIT_PROGRESS red", flush=True)
 with urllib.request.urlopen("https://github.com", timeout=25) as response:
     assert response.status == 200
 for target in inputs["targets"]:

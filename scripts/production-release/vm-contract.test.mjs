@@ -9,6 +9,7 @@ test("la VM no usa Docker, mounts del host, GPU ni puertos reenviados", () => {
   const vm = read("start-vm.sh");
   assert.match(vm, /qemu-system-x86_64/);
   assert.match(vm, /-smp 4 -m 16384/);
+  assert.match(vm, /-cpu host,-svm,-vmx/, "El guest no debe recibir virtualización anidada");
   assert.match(vm, /-netdev user,id=buildnet,ipv6=off/);
   assert.doesNotMatch(vm, /hostfwd|guestfwd|virtfs|virtiofs|9p|vfio|nvidia|docker|tap|bridge/);
   const unit = read("gymnasia-android-vm.service");

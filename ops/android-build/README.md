@@ -45,6 +45,8 @@ No inicia la preparación si wallabot tiene activo su bloqueo de mantenimiento.
 La VM tiene 4 vCPU, 16 GiB de RAM y 120 GiB de disco virtual. El host limita el
 proceso a 4 CPU, 18 GiB, sin swap, 512 tareas y dos horas. Usa SLIRP saliente,
 sin interfaces TAP, puentes, puertos reenviados, directorios compartidos o GPU.
+La CPU enmascara `svm` y `vmx`: usar `-cpu host` sin esas exclusiones hacía que
+el kernel del guest creara `/dev/kvm` para virtualización anidada.
 El filtro de systemd bloquea loopback, redes privadas, Tailscale y todo IPv6.
 La imagen usa DNS públicos directamente porque el resolvedor del host también
 está bloqueado. El instalador exige cgroup v2/BPF; la prueba real de aislamiento

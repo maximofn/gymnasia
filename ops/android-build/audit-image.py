@@ -85,11 +85,12 @@ def reachable_targets():
 
 BOOTSTRAP = """#!/bin/bash
 set -euo pipefail
-exec > /dev/ttyS0 2>&1
 trap 'status=$?; if (( status != 0 )); then echo GYMNASIA_AUDIT_FAILED; /usr/bin/systemctl --no-block poweroff; fi' EXIT
+echo GYMNASIA_AUDIT_BOOTSTRAP
 test "$(/usr/bin/passwd -S root | awk '{print $2}')" = L
 test "$(/usr/bin/passwd -S runner | awk '{print $2}')" = L
 set -a
+# shellcheck source=/dev/null
 source /etc/gymnasia-toolchain.env
 set +a
 /usr/sbin/runuser -u runner -- /usr/bin/setpriv --no-new-privs /usr/bin/python3 /opt/gymnasia/audit-guest.py /opt/gymnasia/audit-inputs.json
@@ -155,7 +156,8 @@ try:
                           "encoding": "b64", "content": base64.b64encode(data.encode()).decode()})
         config = {"users": [], "ssh_pwauth": False, "disable_root": True, "write_files": files,
                   "runcmd": [["systemd-run", "--no-block", "--unit=gymnasia-audit",
-                              "--property=After=cloud-final.service", "/bin/bash", "/opt/gymnasia/audit-bootstrap.sh"]]}
+                              "--property=After=cloud-final.service", "--property=StandardOutput=journal+console",
+                              "--property=StandardError=journal+console", "/bin/bash", "/opt/gymnasia/audit-bootstrap.sh"]]}
         (work / "user-data").write_text("#cloud-config\n" + json.dumps(config))
         (work / "meta-data").write_text(f"instance-id: gymnasia-audit-{nonce}\nlocal-hostname: android-builder\n")
         network = {"version": 2, "ethernets": {"build": {"match": {"name": "en*"}, "dhcp4": True,
