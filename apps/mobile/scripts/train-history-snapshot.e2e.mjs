@@ -20,6 +20,7 @@ const STEP_TIMEOUT_MS = 30000;
 const DEVELOPMENT_NAMESPACE = "gymnasia.development";
 const STORE_KEY = `${DEVELOPMENT_NAMESPACE}:gymnasia.mobile.local.v3`;
 const mobileRoot = dirname(dirname(fileURLToPath(import.meta.url)));
+const BACKUP_PASSWORD = "history backup password";
 
 function logStep(message) {
   console.log(`[train-history-e2e] ${message}`);
@@ -262,11 +263,22 @@ async function openDataSettings(page) {
   await clickTestId(page, "settings-tab-data");
 }
 
-async function chooseBackup(page, file) {
+async function chooseBackup(page, file, password = null) {
   const chooserPromise = page.waitForEvent("filechooser", { timeout: STEP_TIMEOUT_MS });
   await clickTestId(page, "backup-import-picker");
   const chooser = await chooserPromise;
   await chooser.setFiles(file);
+  if (password) {
+    await page.getByTestId("portable-password-input").fill("incorrect backup password");
+    await clickTestId(page, "portable-password-submit");
+    await page.getByTestId("portable-password-error")
+      .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    assert.match(await page.getByTestId("portable-password-error").innerText(), /contraseña no es correcta/i);
+    assert.equal(await page.getByTestId("backup-import-confirm").count(), 0);
+    assert.equal((await readStore(page)).workoutHistory.length, 0, "una contraseña incorrecta modificó datos");
+    await page.getByTestId("portable-password-input").fill(password);
+    await clickTestId(page, "portable-password-submit");
+  }
   await page.getByTestId("backup-import-confirm").waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await clickTestId(page, "backup-import-confirm");
 }
@@ -337,6 +349,9 @@ async function run() {
     await openDataSettings(page);
     const downloadPromise = page.waitForEvent("download", { timeout: STEP_TIMEOUT_MS });
     await clickTestId(page, "backup-export");
+    await page.getByTestId("portable-password-input").fill(BACKUP_PASSWORD);
+    await page.getByTestId("portable-password-confirm-input").fill(BACKUP_PASSWORD);
+    await clickTestId(page, "portable-password-submit");
     const download = await downloadPromise;
     const downloadPath = await download.path();
     assert.ok(downloadPath, "el navegador no conservó el paquete exportado");
@@ -352,9 +367,9 @@ async function run() {
     await openDataSettings(page);
     await chooseBackup(page, {
       name: "historial.gymnasia",
-      mimeType: "application/zip",
+      mimeType: "application/vnd.gymnasia.encrypted",
       buffer: backupBytes,
-    });
+    }, BACKUP_PASSWORD);
     await page.getByTestId("backup-result").getByText(/restaurados correctamente/i)
       .waitFor({ timeout: STEP_TIMEOUT_MS });
     let restoredStore = await waitForStore(

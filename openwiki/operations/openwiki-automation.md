@@ -11,9 +11,6 @@ openwiki:
   test_paths: [ops/openwiki-automation-template/tests/classify-openwiki-error.test.mjs]
   invariants: [La automatización solo se ejecuta en un repositorio privado; el estado OAuth se cifra fuera del checkout; los diagnósticos solo exponen categorías saneadas.]
   validation_commands: [npm --workspace ops/openwiki-automation-template test]
-verified:
-  - by: openwiki/0.4.3
-    at: 2026-09-06T11:56:49.315Z
 sources:
   - id: openwiki-source-d63b46e4983cf20d445e960a
     resource: repo://ops/openwiki-automation-template/.github/workflows/openwiki-report.yml
@@ -43,7 +40,10 @@ sources:
     resource: repo://ops/openwiki-automation-template/tests/private-state.test.mjs
   - id: openwiki-source-e204cf07a21df797f3596f66
     resource: repo://ops/openwiki-automation-template/tests/workflow.test.mjs
-generated: { by: "openwiki/0.4.3", at: "2026-09-06T11:56:49.315Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-13T07:56:37.562Z
 ---
 
 # Automatización privada de OpenWiki
@@ -65,18 +65,20 @@ flowchart TD
     OAuthRestore --> Personal["Personal Brain opcional"]
     Code --> Encrypt["Cifra estados y limpia datos en claro"]
     Personal --> Encrypt
-    Encrypt --> Publish{"Código correcto y OAuth cifrado"}
+    Encrypt --> Publish{"Paso de OpenWiki y OAuth cifrado"}
     Publish -->|"Sí"| PR["Rama y PR openwiki update"]
     Publish -->|"No"| Failure["Fallo con diagnóstico saneado"]
+    PR --> Result{"Resultado de OpenWiki"}
+    Result -->|"Fallo"| Failure
     Report["Informe diario separado"] --> Metadata["Metadatos de Actions y PR"]
     Metadata --> Telegram["Telegram saneado"]
 ```
 
-*El update publica solo documentación generada tras conservar el estado OAuth; el informe es un consumidor separado de metadatos, no de logs ni de contenido de fuentes.*
+*El update solo publica documentación tras conservar el estado OAuth; puede preservar páginas ya terminadas aunque el comando de OpenWiki informe un fallo. El informe es un consumidor separado de metadatos, no de logs ni de contenido de fuentes.*
 
-El checkout no conserva credenciales de GitHub. Antes de invocar OpenWiki, el workflow comprueba que `AGENTS.md` enlaza con `CLAUDE.md`, materializa una copia para la herramienta y, al publicar, restaura ambos archivos desde `origin/main`. El commit indexa únicamente `openwiki` y `.openwikiignore`; la rama se empuja con `--force-with-lease` contra el SHA observado y crea o actualiza una PR contra `main` solo cuando hay cambios preparados. Así se preserva la topología revisada de instrucciones y se evita que el bot publique archivos ajenos a la wiki.
+El checkout no conserva credenciales de GitHub. Antes de invocar OpenWiki, el workflow comprueba que `AGENTS.md` enlaza con `CLAUDE.md`, materializa una copia para la herramienta y, al publicar, restaura ambos archivos desde `origin/main`. El commit elimina el checkpoint transitorio `openwiki/.run.json` e indexa únicamente `openwiki` y `.openwikiignore`; la rama se empuja con `--force-with-lease` contra el SHA observado y crea o actualiza una PR contra `main` solo cuando hay cambios preparados. El paso de commit requiere que el paso de OpenWiki haya concluido y que OAuth se haya cifrado, pero puede conservar páginas duraderas terminadas si el comando devolvió un resultado de fallo; después el workflow propaga ese fallo. Así se preserva la topología revisada de instrucciones, se evita publicar archivos ajenos a la wiki y se permite reanudar el trabajo mediante la PR.
 
-La instalación efectiva requiere Node 22.22.x: tanto el manifiesto como el lockfile fijan el paquete de la plantilla en la versión 1.0.0, Node `>=22.22.0 <23` y las dependencias directas `openwiki` 0.4.3, `jsdom` 29.1.1 y `mermaid` 11.16.1. El lockfile confirma ese grafo para `npm ci`; por sí solo no demuestra un cambio de comportamiento distinto del que declaran el manifiesto y los workflows.
+La instalación efectiva requiere Node 22.22.x: tanto el manifiesto como el lockfile fijan el paquete de la plantilla en la versión 1.0.0, Node `>=22.22.0 <23` y las dependencias directas `openwiki` 0.5.0, `jsdom` 29.1.1 y `mermaid` 11.16.1. El lockfile confirma ese grafo para `npm ci`; por sí solo no demuestra un cambio de comportamiento distinto del que declaran el manifiesto y los workflows.
 
 ## Estado sensible y ciclo de vida
 
@@ -102,7 +104,7 @@ La categoría `oauth` cambia el estado abstracto de autenticación y las demás 
 
 ## Cambio y validación focalizada
 
-Cambie el workflow y sus scripts como una frontera de seguridad, no como código de la aplicación. Al ampliar la clasificación, añada patrones específicos y casos de prioridad, éxito aparente y fallo de lectura; la salida debe seguir siendo una categoría. Al ampliar el informe, limite explícitamente los campos de entrada, valide URLs y pruebe que datos privados inyectados no llegan al mensaje. Al modificar cifrado o persistencia, conserve autenticación, selección mínima de OAuth, permisos restrictivos, limpieza `always()` y el requisito de cifrado antes de publicar documentación.
+Cambie el workflow y sus scripts como una frontera de seguridad, no como código de la aplicación. Al ampliar la clasificación, añada patrones específicos y casos de prioridad, éxito aparente y fallo de lectura; la salida debe seguir siendo una categoría. Al ampliar el informe, limite explícitamente los campos de entrada, valide URLs y pruebe que datos privados inyectados no llegan al mensaje. Al modificar cifrado o persistencia, conserve autenticación, selección mínima de OAuth, permisos restrictivos y limpieza `always()`. Antes de permitir la publicación, mantenga el requisito de que el paso de OpenWiki concluya y OAuth se cifre; no vuelva a añadir `openwiki/.run.json`, pero preserve explícitamente el comportamiento deseado para páginas duraderas de una ejecución con resultado de fallo.
 
 Ejecute la suite aislada de la plantilla con:
 

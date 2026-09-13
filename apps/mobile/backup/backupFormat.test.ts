@@ -1,11 +1,13 @@
 import { createHash } from "node:crypto";
 
 import fc from "fast-check";
+import { strFromU8, strToU8, unzipSync, zipSync } from "fflate";
 import { describe, expect, it } from "vitest";
 
 import {
   BACKUP_APP_ID,
   BACKUP_SCHEMA_VERSION,
+  LEGACY_BACKUP_SCHEMA_VERSION,
   MAX_BACKUP_MANIFEST_BYTES,
   MAX_BACKUP_MEDIA_BYTES,
   MAX_BACKUP_PHOTOS,
@@ -14,11 +16,12 @@ import {
   parseBackupManifest,
   parseBackupPayloadV1,
   readAndVerifyBackupPackage,
+  readBackupManifestFromPackage,
   selectBackupMedia,
   stripJpegMetadata,
   withoutPortablePhotoUris,
   type BackupDataShape,
-  type BackupManifestV2,
+  type BackupManifestV3,
   type BackupMediaCandidate,
 } from "./backupFormat";
 
@@ -55,7 +58,7 @@ function data(): BackupDataShape {
   };
 }
 
-function manifestFor(selection: ReturnType<typeof selectBackupMedia>): BackupManifestV2 {
+function manifestFor(selection: ReturnType<typeof selectBackupMedia>): BackupManifestV3 {
   return {
     app: BACKUP_APP_ID,
     type: "backup",
@@ -115,7 +118,7 @@ describe("backup de fotos portable", () => {
     );
   });
 
-  it("crea un paquete v2 y verifica cada foto por SHA-256", async () => {
+  it("crea un paquete v3 y verifica cada foto por SHA-256", async () => {
     const photo = new Uint8Array([0xff, 0xd8, 0xff, 0xda, 0x00, 0x02, 0xff, 0xd9]);
     const selection = selectBackupMedia([
       candidate("measurement_1", "2026-08-30T12:00:00.000Z", photo),
@@ -128,6 +131,26 @@ describe("backup de fotos portable", () => {
     expect(parsed.manifest).toEqual(manifest);
     expect(parsed.filesByEntry.get(selection.assets[0].entry)).toEqual(photo);
     expect(parsed.manifest.data.store.measurements?.[0].photo_uri).toBeNull();
+  });
+
+  it("mantiene la lectura explícita de paquetes ZIP v2 heredados", async () => {
+    const manifest = manifestFor(selectBackupMedia([]));
+    const files = unzipSync(createBackupPackage(manifest, new Map()));
+    const rawManifest = JSON.parse(strFromU8(files["manifest.json"]));
+    files["manifest.json"] = strToU8(JSON.stringify({
+      ...rawManifest,
+      schemaVersion: LEGACY_BACKUP_SCHEMA_VERSION,
+    }));
+    const legacyBytes = zipSync(files);
+
+    expect(readBackupManifestFromPackage(legacyBytes, LEGACY_BACKUP_SCHEMA_VERSION).schemaVersion)
+      .toBe(LEGACY_BACKUP_SCHEMA_VERSION);
+    await expect(readAndVerifyBackupPackage(
+      legacyBytes,
+      digestHex,
+      LEGACY_BACKUP_SCHEMA_VERSION,
+    )).resolves.toMatchObject({ manifest: { schemaVersion: LEGACY_BACKUP_SCHEMA_VERSION } });
+    expect(() => readBackupManifestFromPackage(legacyBytes)).toThrow(/compatible/);
   });
 
   it("deduplica bytes iguales sin perder la relación con cada medición", () => {

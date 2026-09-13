@@ -1,11 +1,8 @@
 ---
-type: instantánea de comportamiento en ejecución
-title: Evidencia de ejecución de la automatización OpenWiki
-description: Evidencia LangSmith agregada y saneada para interpretar límites, recuperación y coste de la actualización privada de OpenWiki sin exponer contenido de ejecuciones.
-tags: [runtime, langsmith, openwiki, observability, operations]
-verified:
-  - by: openwiki/0.4.3
-    at: 2026-09-06T11:56:49.315Z
+type: comportamiento operativo
+title: Comportamiento en ejecución de la automatización OpenWiki
+description: Flujo programado de actualización, persistencia segura y publicación de la automatización privada de OpenWiki. Describe sus puertas de fallo, aislamiento de estados y el informe diario basado en metadatos.
+tags: [runtime, openwiki, automation, security, operations]
 sources:
   - id: openwiki-source-d63b46e4983cf20d445e960a
     resource: repo://ops/openwiki-automation-template/.github/workflows/openwiki-report.yml
@@ -15,82 +12,85 @@ sources:
     resource: repo://ops/openwiki-automation-template/scripts/build-daily-report.mjs
   - id: openwiki-source-6ab5faaa1bf878af7563da67
     resource: repo://ops/openwiki-automation-template/scripts/classify-openwiki-error.mjs
+  - id: openwiki-source-4ec18e249945e52b82033a07
+    resource: repo://ops/openwiki-automation-template/scripts/configure-personal-brain.mjs
+  - id: openwiki-source-5bfd59f246d16a9ee874eb84
+    resource: repo://ops/openwiki-automation-template/scripts/oauth-state.mjs
+  - id: openwiki-source-01798f36eec4fe65f6b96cd6
+    resource: repo://ops/openwiki-automation-template/scripts/private-state.mjs
   - id: openwiki-source-e4328e2b0f1708f5d2181a7f
     resource: repo://ops/openwiki-automation-template/tests/build-daily-report.test.mjs
   - id: openwiki-source-6928a24ede2e031817053598
     resource: repo://ops/openwiki-automation-template/tests/classify-openwiki-error.test.mjs
-generated: { by: "openwiki/0.4.3", at: "2026-09-06T11:56:49.315Z" }
+  - id: openwiki-source-001a02c95dceb799665ac93d
+    resource: repo://ops/openwiki-automation-template/tests/oauth-state.test.mjs
+  - id: openwiki-source-e204cf07a21df797f3596f66
+    resource: repo://ops/openwiki-automation-template/tests/workflow.test.mjs
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-13T07:56:37.562Z
 ---
 
-# Evidencia de ejecución de la automatización OpenWiki
+# Comportamiento en ejecución de la automatización OpenWiki
 
-Esta página complementa [Automatización privada de OpenWiki](openwiki-automation.md): contrasta sus límites y rutas de recuperación con una instantánea de ejecución, pero no sustituye al código ni describe el runtime de Gymnasia. Por privacidad no publica entradas, salidas, metadatos, logs, URLs de trazas, secretos ni PII; solo conserva agregados de raíces, llamadas, duración y tokens.
+La plantilla `ops/openwiki-automation-template` no es el runtime de Gymnasia: es un runner privado de GitHub Actions para actualizar el **Code Brain** público, mantener un **Personal Brain** privado y enviar un estado diario por Telegram. El workflow rechaza explícitamente un repositorio que no sea privado y no inicia el trabajo si faltan los secretos obligatorios. Sus permisos declarados son de lectura para Actions y contenidos; el token con capacidad de publicar se suministra como secreto solo en el paso que empuja la rama de Gymnasia.
 
-## Cómo interpretar la muestra
+## Ciclo de actualización
 
-La última extracción disponible del proyecto LangSmith `openwiki` se obtuvo el **25 de agosto de 2026**. Es una muestra deliberadamente sesgada por anomalías: contiene 3 raíces del bucket `error`, 0 `outlier` y 1 `baseline`. Los conteos de buckets no son tasas de fallo, uso o latencia de la flota. La única referencia de operación normal es la mediana calculada únicamente sobre `baseline`; con una raíz baseline no se puede estimar variabilidad.
-
-En el Code Brain, `Run OpenWiki` define `LANGCHAIN_PROJECT=openwiki`, usa el endpoint europeo y oculta inputs, outputs y metadata; un despacho manual puede desactivar solamente el trazado de esa ejecución. Esta frontera explica por qué la página no contiene contenido de runs y debe preservarse al añadir observabilidad.
+`OpenWiki Update` se ejecuta diariamente a las 08:00 UTC o de forma manual. Tiene un máximo de 120 minutos y su grupo de concurrencia no cancela una actualización ya iniciada. Al arrancar, define homes distintos bajo `$RUNNER_TEMP` para Code Brain y Personal Brain; el checkout no conserva credenciales.
 
 ```mermaid
 flowchart TD
-    Update["OpenWiki Update"] --> Trace["Trazado saneado del proyecto openwiki"]
-    Update --> Log["Log temporal privado"]
-    Log --> Classifier["classifyOpenWikiError"]
-    Classifier --> Category["Categoría permitida"]
-    Update --> State["Estado cifrado o limpieza"]
-    Report["OpenWiki Daily Report"] --> Metadata["Metadatos de Actions y PR"]
-    Metadata --> Daily["Informe Telegram saneado"]
+    Gate["Privacidad y secretos requeridos"] --> Homes["Homes aislados en runner temporal"]
+    Homes --> Restore["Restaura OAuth cifrado o semilla"]
+    Restore -->|"restauración correcta"| Code["openwiki code update"]
+    Restore -->|"fallo"| Stop["No ejecuta Code Brain"]
+    Code --> Personal["Configura e ingiere Personal Brain opcional"]
+    Code --> Encrypt["Cifra estados renovados"]
+    Personal --> Encrypt
+    Encrypt --> Clean["Elimina estados y logs temporales"]
+    Clean --> Publish["Publica documentación si el paso Code Brain terminó"]
+    Publish --> PR["Actualiza rama y PR fijas"]
 ```
 
-*El trazado del Code Brain y el informe diario son superficies separadas: el primero oculta contenido de ejecución y el segundo deriva estado de metadatos de Actions y PR.*
+*El flujo separa la restauración, el trabajo de ambos brains y la persistencia; una ejecución puede terminar fallida después de publicar progreso documental durable.*
 
-## Hallazgos y oportunidades de ejecución
+Antes de ejecutar el Code Brain se busca el artefacto OAuth no expirado más reciente cuya ejecución pertenezca a la rama predeterminada. Si no puede descifrarse, se intenta `OPENWIKI_OAUTH_SEED`; si no existe una fuente recuperable, el comando no se ejecuta. El `.env` restaurado y los directorios que lo contienen se crean con permisos restrictivos.
 
-1. **Prioridad máxima — los errores muestreados terminaron antes de trabajo de herramientas.**
-   - **Observado:** las 3 raíces `error` finalizaron en `ChatOpenAI`/`model_request` con 0 tokens registrados. Dos mostraron firma de autenticación expirada (`401`) y una de límite de uso (`429`); las raíces duraron entre 734 y 1.515 ms. No se observaron fallos de middleware, herramientas ni reintentos de herramientas.
-   - **Correlacionado:** `Run OpenWiki` restaura primero el OAuth cifrado y, ante un fallo de `openwiki code --update`, reduce el resultado a categorías permitidas y separa `oauth` de otras categorías. `classifyOpenWikiError` prioriza patrones OAuth fuertes, reconoce `429` como `rate-limit` y devuelve `unknown` si no puede leer el log. Sus pruebas fijan esa clasificación y que la salida no reproduzca contenido privado.
-   - **Implicación:** ante una incidencia equivalente, compruebe antes la restauración/renovación OAuth y el presupuesto del proveedor que prompts, índices o herramientas. Si amplía el clasificador, conserve la distinción OAuth/cuota y las pruebas de salida cerrada: las rutas de recuperación son distintas.
-   - **Hipótesis:** informar solo de la categoría final y de una fuente abstracta de restauración (`artifact`, `seed` o recuperación), sin logs ni tokens, reduciría diagnóstico manual. Debe verificarse contra el contrato y las pruebas de privacidad del informe.
+El comando efectivo es `openwiki code --update --language es --print`. Por defecto habilita trazas LangSmith en el proyecto `openwiki`, en el endpoint europeo y con inputs, outputs y metadatos ocultos. El único interruptor para deshabilitarlas es `disable_langsmith_tracing` en un despacho manual de diagnóstico; no es una configuración general del schedule.
 
-2. **Prioridad alta — la baseline observada no fue una única llamada de modelo.**
-   - **Observado:** la única raíz `baseline` correcta duró **286 767 ms** (4 min 46,767 s), que es también la mediana baseline de esta extracción. Incluyó varias llamadas `ChatOpenAI` exitosas de aproximadamente 6,6–7,1 s y rondas de herramientas. Raíz y LLM registraron 0 tokens: esto indica telemetría ausente o no registrada, no consumo nulo. Solo la baseline mostró herramientas y no hubo outliers correctos.
-   - **Correlacionado:** el job `update` tiene un límite de 120 minutos y ejecuta `openwiki code --update`, no una petición directa única. Incluso tras rutas posteriores a la actualización, el workflow intenta cifrar el estado OAuth; el commit de documentación requiere tanto éxito de OpenWiki como cifrado OAuth correcto. Por tanto, una modificación que añada rondas puede afectar a la latencia y a la oportunidad de publicación.
-   - **Implicación:** trate cambios de herramientas, conectores, middleware o instrucciones como potencialmente multiplicativos en rondas de modelo. Mantenga descubrimiento dirigido y lecturas acotadas; estos datos no permiten calcular coste de tokens ni optimizarlo porque todos los tokens registrados son cero.
-   - **Hipótesis:** contar de forma saneada llamadas de modelo y llamadas por tipo de herramienta por raíz permitiría detectar exploración redundante sin capturar argumentos ni resultados y sin sustituir `LANGSMITH_HIDE_*`.
+## Fallos y resultado observable
 
-3. **Prioridad media — el informe diario no debe convertirse en mecanismo de recuperación.**
-   - **Observado:** la muestra no contiene reintentos de herramientas, fallback de modelo ni outliers correctos; tampoco permite atribuir la latencia baseline a una herramienta concreta.
-   - **Correlacionado:** `buildDailyReport` construye el mensaje desde el último run, sus jobs y una PR; no ejecuta OpenWiki. Acepta URLs HTTPS de `github.com` y selecciona campos concretos. Sus pruebas inyectan campos privados y URLs no confiables para comprobar que no entren en el mensaje.
-   - **Implicación:** no añada logs de OpenWiki ni contenido de trazas al informe para diagnosticar estos casos. Si hace falta una señal nueva, añada un agregado explícito y una prueba adversarial que demuestre que entradas no confiables no se propagan a Telegram.
-   - **Hipótesis:** una futura muestra con una herramienta reintentada o un outlier correcto puede justificar instrumentar ese punto; la muestra actual no justifica cambiar el orden de middleware ni introducir reintentos.
+El paso de OpenWiki captura stdout y stderr en `$RUNNER_TEMP/openwiki.log` y conserva el control del flujo para poder sanearlo. Si el comando falla, `classify-openwiki-error.mjs` devuelve una sola categoría de una lista cerrada (`oauth`, `managed-markers`, `langsmith`, `rate-limit`, `model`, `context-limit`, `network` o `unknown`). Las señales OAuth fuertes tienen prioridad, `429` se trata como `rate-limit` y un error al leer el log también produce `unknown`; ni el workflow ni el clasificador imprimen el log.
 
-## Coste y latencia — datos volátiles de la extracción del 25 de agosto de 2026
+La diferencia importante es entre el **resultado del comando** y el **resultado del paso**. El script del paso absorbe el código de salida del CLI, guarda `result=failure` y deja que los pasos posteriores se ejecuten. Por ello, si el paso `Run OpenWiki` terminó y el cifrado OAuth tuvo éxito, el commit puede publicar páginas ya completadas aun cuando `OPENWIKI_RESULT` sea `failure`; usa entonces el mensaje `docs: preserve partial OpenWiki progress`. Se elimina `openwiki/.run.json`, que es transitorio, y el workflow termina como fallido después de las tareas de persistencia cuando cualquiera de sus condiciones críticas falló. No interprete que una PR de este tipo certifica una actualización completa.
 
-| Bucket | Raíces | Latencia y llamadas observadas | Tokens/coste atribuible |
-| --- | ---: | --- | --- |
-| `baseline` | 1 | Mediana de raíz: 286 767 ms; varias llamadas `ChatOpenAI` de ~6,6–7,1 s y rondas de herramientas. | 0 tokens registrados; no se puede inferir consumo ni coste. |
-| `error` | 3 | 734–1.515 ms por raíz; 2 firmas OAuth/401 y 1 de cuota/429; sin herramientas observadas. | 0 tokens registrados; no se puede inferir consumo ni coste. |
-| `outlier` | 0 | Sin evidencia de outlier correcto. | Sin evidencia de uso. |
+La publicación restaura `AGENTS.md` y `CLAUDE.md` desde `origin/main`, añade solamente `openwiki` y `.openwikiignore`, y empuja `openwiki/update` con `--force-with-lease`. Después crea o actualiza una única PR hacia `main`. Esta secuencia evita publicar la copia materializada de instrucciones o sobrescribir sin comprobar la revisión previa de la rama remota.
 
-Las herramientas visibles de la baseline duraron decenas de milisegundos, pero hubo varias rondas de modelo; la extracción no permite repartir fiablemente la latencia total entre herramientas y modelo. Tampoco aporta evidencia para cuantificar llamadas repetidas a una misma herramienta. Refresque estas métricas de forma aditiva: una muestra pequeña no revoca por sí sola los patrones ya respaldados.
+## Estado privado y limpieza
 
-## Límites y recuperación que deben conservarse
+El helper OAuth persiste solo los campos ChatGPT permitidos y exige refresh token y account ID. Los cifra con `aes-256-gcm`, una clave derivada por `scrypt` y AAD versionado; cualquier formato no admitido, passphrase incorrecta o modificación autenticada se rechaza. Esto también evita que variables no OAuth que convivieran en un `.env` pasen al artefacto.
 
-- `OpenWiki Update` se programa a las 08:00 UTC, tiene `timeout-minutes: 120` y su grupo `openwiki-update` no cancela una actualización ya iniciada. `OpenWiki Daily Report` se programa cuatro horas después, tiene 10 minutos y usa el grupo independiente `openwiki-daily-report`, que sí cancela informes solapados.
-- Antes de ejecutar OpenWiki, el update busca el último artefacto OAuth válido de la rama predeterminada; si no puede descifrarlo usa una semilla de recuperación si existe, y si no hay fuente recuperable no ejecuta el comando. El mecanismo es restauración de estado, no un reintento ni fallback de modelo.
-- El interruptor `disable_langsmith_tracing` solo inhabilita LangSmith en un despacho diagnóstico. El clasificador sigue trabajando sobre un log temporal y solo expone una categoría permitida; un diagnóstico sin trazas debe conservar las mismas barreras de secretos.
-- La limpieza `always()` elimina logs privados y estados OAuth en claro. Solo se cargan artefactos cifrados y la documentación se confirma únicamente si OpenWiki tuvo éxito y también lo tuvo el cifrado OAuth.
-- El informe consulta como máximo 30 ejecuciones recientes, obtiene los jobs del run más reciente y, cuando existe el token correspondiente, consulta la PR `openwiki/update`. Sus duraciones son metadatos de Actions redondeados a segundos: no las confunda con las duraciones de traza ni con coste de modelo.
+El Personal Brain solo se habilita si hay al menos una fuente seleccionada: exportación Linear de solo lectura, clon de `maximofn.com` o Tavily. Cuando hay fuentes, requiere su propia passphrase, restaura el estado privado cifrado o inicia directorios nuevos, copia el OAuth refrescado y configura fuentes locales y/o búsqueda web antes de ejecutar `openwiki ingest all --scheduled --print`. Esta fase no recibe variables de trazado LangSmith. Su estado persistible incluye wiki, conectores, onboarding e instrucciones, se empaqueta y cifra; el helper impone límites de 100 MiB en claro y 140 MiB cifrado antes de leer el archivo.
 
-## Validación al cambiar esta zona
+La limpieza con `always()` elimina los `.env` OAuth en claro, los logs de ambos comandos y ficheros intermedios. Los únicos artefactos cargados son `openwiki-oauth-state.enc` y, cuando corresponde, `openwiki-personal-state.enc`, y solo después de que sus pasos de cifrado hayan terminado correctamente. La limpieza se programa antes de los uploads y antes del commit: que el CLI haya fallado no autoriza publicar logs ni estado en claro.
 
-Ejecute la suite de la plantilla antes de modificar clasificación, informe, pasos de Actions o saneamiento:
+## Informe diario: observación sin recuperación
+
+`OpenWiki Daily Report` se programa a las 12:00 UTC —cuatro horas después—, tiene un límite de 10 minutos y usa un grupo de concurrencia distinto que cancela informes solapados. Solo continúa si el repositorio es privado y están configurados `TELEGRAM_BOT_TOKEN` y `TELEGRAM_CHAT_ID`.
+
+El informe consulta como máximo 30 ejecuciones de `openwiki-update.yml`, los jobs de la ejecución más reciente y, si hay token de Gymnasia, la PR `openwiki/update`. `buildDailyReport` construye el mensaje desde esos metadatos: estado, duración de jobs, pasos de publicación, fuentes confirmadas y estadísticas de la PR. Filtra las URLs a HTTPS con host `github.com`; no consulta logs ni contenido de OpenWiki. El informe es una superficie de observabilidad y aviso, no reintenta OAuth, OpenWiki ni una publicación.
+
+## Validación y cambios seguros
+
+Ejecute la suite de la plantilla desde `ops/openwiki-automation-template`:
 
 ```bash
-npm --workspace ops/openwiki-automation-template test
+npm ci
+npm test
 ```
 
-Las pruebas de `build-daily-report` cubren éxito, ausencia de cambios documentales, historial de fallos y la exclusión de campos privados o URLs no confiables. Las de `classify-openwiki-error` cubren familias permitidas, precedencia, salida sin eco y fallo de lectura. Esta señal local no demuestra disponibilidad de OAuth, cuota de proveedor, Telegram, GitHub Actions ni LangSmith; esos límites requieren una ejecución remota controlada.
+Las pruebas de workflow fijan el aislamiento de rutas del runner, la ausencia de impresión de logs, el interruptor de LangSmith, los límites de publicación y la posibilidad de publicar progreso parcial antes de propagar un fallo. Las pruebas de estado verifican selección restrictiva de OAuth, cifrado autenticado, rechazo de manipulación y permisos `0600`; las del informe prueban la exclusión de campos privados y URLs no confiables. Para cambiar el orden de pasos, preserve especialmente estas invariantes: no ejecutar sin OAuth recuperable, limpiar antes de upload, no subir material en claro y distinguir una publicación parcial de un run correcto.
 
-Consulte [Automatización privada de OpenWiki](openwiki-automation.md) para el ciclo de secretos, artefactos y PR; [Compilación, publicación y pruebas](build-release-and-testing.md) para el marco de validación; e [Inicio rápido](../quickstart.md) para el límite entre esta automatización y el runtime del producto.
+Consulte [Automatización privada de OpenWiki](openwiki-automation.md) para los secretos y la instalación de la plantilla.

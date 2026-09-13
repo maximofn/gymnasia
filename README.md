@@ -165,10 +165,19 @@ para verificar cada foto, admite como máximo 500 relaciones de foto, 5 MiB por 
 200 MiB de imágenes en total. Si una foto falta o no cabe, la medición numérica sigue en
 la copia y la interfaz muestra la omisión.
 
-El importador sigue aceptando los backups JSON v1. El paquete `.gymnasia` no contiene
-claves de API, pero incluye conversaciones y otros datos sensibles y no está cifrado.
+Las exportaciones nuevas se cifran y autentican con una contraseña elegida por el usuario;
+la app no la guarda y no ofrece una salida sin cifrar. El importador sigue aceptando con
+aviso los backups antiguos JSON v1 y ZIP v2. El paquete `.gymnasia` no contiene claves de
+API, pero incluye conversaciones y otros datos sensibles.
 El formato y sus invariantes están documentados en
 `docs/architecture/measurement-photo-backups.md`.
+
+Una exportación cifrada de recuperación puede abrirse localmente, sin pasar la contraseña
+como argumento ni imprimir el contenido por pantalla:
+
+```bash
+npm run decrypt:recovery -- --input copia.gymnasia --output recuperacion.json
+```
 
 ## Documentacion
 

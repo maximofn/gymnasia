@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="Gymnasia Privacy Policy">
-<meta name="gymnasia-policy-version" content="2026-09-v2">
-<meta name="gymnasia-policy-digest" content="sha256:80b527335655f590eee5aa6d25393d9eb086eb85c6a6d6fb898c136b1ec26706">
+<meta name="gymnasia-policy-version" content="2026-09-v3">
+<meta name="gymnasia-policy-digest" content="sha256:63e99b9a603fc5fae27d42c3fb6664f3d5a236e93d9201a2298b5c19afb9d958">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Gymnasia Privacy Policy</h1>
-  <p class="meta">Version 2026-09-v2 · in force since 2026-09-11 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Version 2026-09-v3 · in force since 2026-09-13 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacidad">Versión en español</a></p>
   <nav>
     <h2>Contents</h2>
@@ -169,11 +169,12 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="copias">
     <h2><a href="#copias">Backups and export</a></h2>
     <p>You can export all your data to a <code>.gymnasia</code> package from Settings, and import it back later. It is a manual action: there is no automatic backup. The app also keeps support for importing older JSON files, although an old photograph reference can only be recovered if that file is still accessible on the device.</p>
-    <p>The local recovery copy is not a cloud backup or a second portable file: it is one prior generation inside the app's own storage. It is used only when the current state cannot be read. Gymnasia then blocks writes and lets you recover the latest copy, retry, discard the affected data, or export the damaged payload. This recovery export preserves the original without sanitising it; it is particularly sensitive and may contain AI keys in the web version. It is never sent to a Gymnasia server.</p>
+    <p>The local recovery copy is not a cloud backup or a second portable file: it is one prior generation inside the app's own storage. It is used only when the current state cannot be read. Gymnasia then blocks writes and lets you recover the latest copy, retry, discard the affected data, or export the damaged payload. This recovery export preserves the original without sanitising it; it is particularly sensitive and may contain AI keys in the web version. Before saving it, Gymnasia requires you to choose a password and encrypts the file in the same way as a normal backup. It is never sent to a Gymnasia server.</p>
     <p>The exported package <strong>contains</strong>: your measurements and body fat percentages, the normalised JPEG copies of your progress photographs that fit within the app's limits, your complete diet log, your training history, your personal settings (sex, height, date of birth), the assistant's memory and <strong>the entire history of your conversations</strong>. It is the most sensitive file the app produces: store it carefully and think about who you send it to.</p>
     <p>Each photograph carries a SHA-256 checksum so it can be checked during restoration. The app accepts at most 500 photograph links, 5 MiB per normalised photograph and 200 MiB of images per backup. If a photograph is missing, damaged or does not fit, the backup keeps all numeric measurements and tells you which photographs were omitted.</p>
-    <p>The package does <strong>not</strong> contain your API keys or legacy credentials from removed features. <strong>It is not encrypted or password-protected.</strong></p>
-    <p>When exporting, the package is written to the app's temporary storage before you choose where to share it, and that temporary copy is deleted when the share sheet closes. Any file you choose to save to Drive, Dropbox, your files app or another destination is outside Gymnasia's control and must be deleted there.</p>
+    <p>The package does <strong>not</strong> contain your API keys or legacy credentials from removed features. New backups are encrypted and authenticated with XChaCha20-Poly1305; the key is derived from a password you choose using scrypt. Gymnasia neither stores nor transmits that password and cannot recover the file if you forget it. On import, the complete file is decrypted and verified before the app shows the confirmation that can replace your current data.</p>
+    <p>Gymnasia continues to accept old JSON v1 and ZIP v2 backups so that you do not lose access to your data. Those older formats were not encrypted: the app warns you before importing them, and you should use them only if you recognise the file and its origin. There is no option to create new unencrypted exports.</p>
+    <p>When exporting on mobile, only the already encrypted package is written to the app's temporary storage before you choose where to share it, and that temporary copy is deleted when the share sheet closes. Temporary copies made when selecting a file for import are also removed on completion or cancellation. Any file you choose to save to Drive, Dropbox, your files app or another destination is outside Gymnasia's control and must be deleted there.</p>
   </section>
 
   <section id="denuncia">
@@ -259,7 +260,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Gymnasia Privacy Policy · 2026-09-v2 · 2026-09-11</p>
+    <p>Gymnasia Privacy Policy · 2026-09-v3 · 2026-09-13</p>
   </footer>
 </main>
 </body>

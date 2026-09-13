@@ -3,9 +3,6 @@ type: concepto de dominio
 title: Plantillas, series y ejecución de entrenamientos
 description: Contratos de series simples y compuestas, edición transaccional de rutinas y ciclo recuperable de las sesiones de entrenamiento. Describe el cálculo de esfuerzos y resumen, los conflictos de revisión y la temporización de descansos.
 tags: [mobile, training, workout-templates, workout-execution, transactions]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
@@ -19,6 +16,10 @@ sources:
     resource: repo://apps/mobile/training/workoutExecution.test.ts
   - id: openwiki-source-75e7f1f835dd98bbe8989db6
     resource: repo://apps/mobile/training/workoutExecution.ts
+  - id: openwiki-source-3866f88db5eab632394c014a
+    resource: repo://apps/mobile/training/workoutSessionModel.ts
+  - id: openwiki-source-ab0ce5fe81f5d3ca90789cbc
+    resource: repo://apps/mobile/training/workoutTemplateContract.ts
   - id: openwiki-source-a5c358ca3c12248ad6c408ae
     resource: repo://apps/mobile/training/workoutTemplateOperations.test.ts
   - id: openwiki-source-62e7a2bef56e9f67680461d3
@@ -27,7 +28,10 @@ sources:
     resource: repo://apps/mobile/training/workoutTemplateTransactions.ts
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-13T07:56:37.562Z
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
 ---
 
 # Plantillas, series y ejecución de entrenamientos
@@ -62,7 +66,7 @@ El descanso es una transición entre unidades, no un atributo que siempre se apl
 
 El editor nunca debe mutar la rutina canónica mientras se escribe. `createWorkoutTemplateDraft` crea copias profundas de `original` y `draft`; una edición calcula su suciedad comparando la revisión funcional del borrador con `baseRevision`. La revisión cubre nombre, categoría, icono, duración, orden y contenido funcional de ejercicios, series, tempo, mini-series y enlaces de catálogo. Excluye deliberadamente el sello de esquema y los espejos derivados `sets`, `load_kg` y `rest_seconds`, para no generar conflictos falsos.
 
-Guardar valida nombre no vacío, al menos un ejercicio y alguna serie ejecutable. Para editar, el commit solo se aplica si la revisión canónica sigue siendo `baseRevision`; si falta la plantilla devuelve `missing`, y si cambió devuelve `conflict` sin escribir. Para crear, una plantilla existente con el mismo ID también es conflicto. Un borrador limpio puede recibir un `rebase`; uno sucio se conserva para no borrar trabajo local. El usuario puede recargar la versión canónica o confirmar explícitamente la sobrescritura.
+Guardar valida nombre, categoría e icono, y que cada ejercicio tenga nombre y al menos una serie con repeticiones positivas; también valida los valores numéricos, las exigencias de tipos compuestos y los enlaces de catálogo. Al aceptar, sella la versión de esquema y vuelve a derivar los espejos heredados. Para editar, el commit solo se aplica si la revisión canónica sigue siendo `baseRevision`; si falta la plantilla devuelve `missing`, y si cambió devuelve `conflict` sin escribir. Para crear, una plantilla existente con el mismo ID también es conflicto. Un borrador limpio puede recibir un `rebase`; uno sucio se conserva para no borrar trabajo local. El usuario puede recargar la versión canónica o confirmar explícitamente la sobrescritura.
 
 Las operaciones de clonación son profundas: una instantánea conserva IDs para restauración; una duplicación regenera los IDs de rutina, ejercicios, series y mini-series. Al duplicar una rutina, también reasigna los `exercise_id` internos de superseries para que apunten a los ejercicios clonados. `createSeriesAfter` copia por completo la configuración de la serie previa pero con identidades nuevas.
 
@@ -96,13 +100,13 @@ Al pedir finalizar o descartar, la sesión pasa a `paused` con una resolución p
 
 ## Resumen e historial
 
-`summarizeWorkoutExecution` cuenta claves únicas completadas y calcula repeticiones y volumen solo de esas unidades. Convierte repeticiones a enteros no negativos y peso a número no negativo; valores ilegibles aportan cero. El resultado conserva tanto el total global de esfuerzos como un desglose de principales y mini-series. El resumen actual usa `calculation_version: 2`, marca `can_recalculate: false` y guarda volumen, repeticiones, calorías estimadas y tiempos; los resúmenes heredados se mantienen como versión 1, sin desglose. El historial se añade al principio y se limita a `MAX_WORKOUT_HISTORY_ITEMS`.
+`summarizeWorkoutExecution` cuenta claves únicas completadas y calcula repeticiones y volumen solo de esas unidades. Convierte repeticiones a enteros no negativos y peso a número no negativo; valores ilegibles aportan cero. El resultado conserva tanto el total global de esfuerzos como un desglose de principales y mini-series. Un resumen con instantánea de prescripción usa el esquema 2 y `calculation_version: 2`; marca `can_recalculate: true` y guarda volumen, repeticiones, calorías estimadas y tiempos. Los resúmenes heredados se conservan con `calculation_version: 1`, sin desglose ni instantánea recalculable. El historial se añade al principio y se limita a `MAX_WORKOUT_HISTORY_ITEMS`.
 
 ## Alarmas de descanso
 
 El temporizador de sesión conserva `elapsed_seconds`, `is_resting`, `rest_seconds_left` y `rest_seconds_total`. Al terminar naturalmente un descanso, cancela la notificación pendiente y reproduce la alerta dentro de la aplicación, salvo si fue una omisión manual. Un candado breve y una marca temporal reducen alertas duplicadas cuando una notificación llega inmediatamente después.
 
-Para una alarma en segundo plano, `scheduleRestEndNotification` no hace nada si `notifications.enabled` es falso; en otro caso cancela todas las notificaciones programadas por la aplicación y agenda una notificación fechada en el canal Android `rest_end_alert`. El contenido usa el sonido elegido si `sound` está activo y el patrón de vibración solo si `vibrate` lo está. La inicialización solicita permiso, configura el modo de audio y, en Android, crea el canal con importancia máxima, vibración y el archivo fijo `rest_finished.wav`. El comportamiento final de entrega continúa sujeto a permiso y a políticas del sistema operativo.
+Para una alarma en segundo plano, `scheduleRestEndNotification` no hace nada si `notifications.enabled` es falso; en otro caso cancela las notificaciones de descanso identificadas como propias y agenda una notificación fechada en el canal Android `rest_end_alert`. Una revisión de operación evita que una programación que ya quedó obsoleta permanezca activa. El contenido usa el sonido elegido si `sound` está activo y el patrón de vibración solo si `vibrate` lo está. La inicialización solicita permiso y, en Android, crea el canal con importancia máxima, vibración, `bypassDnd` y el sonido predeterminado configurado. El comportamiento final de entrega continúa sujeto a permiso y a políticas del sistema operativo.
 
 ## Pruebas orientadas a cambios seguros
 

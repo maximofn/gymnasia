@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:d78c63bfd95e95f39f525f6bb0d4c814e5a9f20241845faa7387ab43874b1fbb",
+  "claims": [
+    {
+      "id": "claim_30492e8645b24753aa31b7f944c3000b",
+      "statement": "La salida portable actual es un archivo `.gymnasia` cifrado con MIME `application/vnd.gymnasia.encrypted`: cifra un ZIP cuyo manifiesto de backup es v3; JSON v1 y ZIP con manifiesto v2 se conservan exclusivamente como rutas explícitas de importación.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L1213-L1236",
+          "version": "repo-lines-v1:sha256:34eb3ac630ef7f0eb833d55b3e7eeb019eab070eb0826ecca1ca7fa5e7dca6e5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2YzEyZjg0Yjk3ZjI0ODljYjRmN2I4NjU2ZDgyZGYzN2RjMjYyZWViMjU4NTE3OTQ2ZmU0NDhlNzUzY2ZkZGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkOWUxMjU0NjQyNTU3NmQzZGVhZThjOWI5ZGJmMTI4ZDVkNmRkYWY1ZDdmZTg1NzkzNDkyN2RlZmZhM2I5ZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1NWJjNzFkZTIyYjlmM2MxZjUzYjg3MTRhZjBhMGVlZmM3MTI1M2I5NDY0ZjQ5YWI2OTg2ZGZmZmQzNjcxNzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzNTI0ODVjMWY5YzkwYjJmZDE0Nzg0YWI5Y2FiMzU4ZmFkZTBkZGYwMzZiZmFkYjU0MjdhMGYxNGQzOGY2ODUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4875-L4935",
+          "version": "repo-lines-v1:sha256:d4184932f81544997b51b072caf05d9308ae75ba8c3bcb7b23d9e86de083523e:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1M2M5MmUwZGEwZjMwZTZlODJmMTJlYTE4YzQ3ZDRmZmMzN2I1NmNlODg2MjQ5NzY4YWRmNTE5ZDgxYmM4MmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0YWMyYTI1OTEzOGJhZTgxMDVkY2Q3ZGRkMDgxYTcyZmZmNDQzOTdkZWU1MzQ0NzM0ZDg0ZmM2OTg5NTMzOTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlYTljNTE1MjU5MTU4MTgxMTZhM2MyNDIwNWI5MWZhZmUxYThlN2E1MmIzNDE2NjZkMzAwZDEyOGVhNDU3MGUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4971-L5018",
+          "version": "repo-lines-v1:sha256:a9f30c18f9001b1a14bde924ff73c31fccaba13171dd6de960f3eab190f7e228:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyMjdlOWQyYmZlYjY0NmZlYWIxYmU2MDA1NmYyMjUyMzVjOWY5MmRlNDcxN2FmMjU0N2I3ZmEwZDRmM2Y2ZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2YjA0NDkxNDY5NzIyZTgzNjNhOTRlNDA0NDUzOGUwMTNhMmEyMTdlMzZiMWU1NjhiYTYwYWNiN2I0YzhmMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA5MjA1NDRjZGEyMWU2YjRmYjAxMzczNjg1NDk2OWM3ZjEzZjNlZDM2ZjFjMTg4M2RkOGM0MDk5OWVhZDhkNGIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L3-L16",
+          "version": "repo-lines-v1:sha256:234e99941aae82b7a5a65a0a90d633a93444d917031e5c4b9cada4117114a48a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYjA0NjdiZjk3NGIxNmZjNzZiMmZlYzY4ZTM1YTljMzk2MTkyMzdiZjcxMGRkY2M0ODdiNGU4MjhjOGI0YTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmZGQ3NzgxYWUxYjUyYjg0YWI2YWIyYzlhYmQzNmM5ODU5OTk3MWQ3ODllNGY1NzliNzJiZWRiZTEzYzhhMGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjZDU2MWU2YTNkYWJkMTAwYmQ0YTRmMjc3MzU5NDEwYjBkYjAzYzU4NWJjZTI2Njc2YTMyYTBhYzZhOWFjZTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3NTQxZDI4YTVjMDk1YmZjOGM2OGYyOGRmMDU0YTU3NTY1OWE0YWYwYzZmOGIzZTUxNTc4ZWZlM2M1MThmZTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fb42ccba16064addb3937fe92f5b1bf6",
+      "statement": "El selector identifica primero el prefijo cifrado, y si no existe distingue ZIP por firma de JSON; acepta MIME genéricos y conserva temporalmente el archivo cifrado para pedir contraseña, mientras limita los bytes de paquete no cifrado a 220 MiB.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4804-L4853",
+          "version": "repo-lines-v1:sha256:28fee26bb99805400ae34d2cd35fad2bc46ced75e63fbaa9aa7f9976fd9e2aa2:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwNWVjNTFmZjM0MDk2ODEzNmQxODY0MjAwYWU3ZWJhNTFmNTg0MzAxODA1MTg0YTExMjgxYmU2ZWZmNzBmMDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjZTI4MWVhYWNmMzk3M2FhZjFiNmEzNTgyMTc3NjE3Y2JlZWI0NmM4OWEwNzM5NjY2YmU4ZGM5Y2FmZDlhYzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1MDJjYjU0MmY4YTc3ZDY0YmUxYjhmODE0NzhkMTY1M2E5ZTMyY2YzMDEwNTczY2ZlMTQ2YTYwMjY1ZDUwYjIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4973-L5031",
+          "version": "repo-lines-v1:sha256:43544060e37303848d2b351aab0cb66328137ed0b3fd8a729f9fd86f5262ffab:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3NTkxOTQ0ZTYyMWU4NGQ0ODFlYWEwZDY3MzUwNDJmOTRlNzFkYzVjOGQ1Njc3ZjAzOTkzNjg3ZWU5YmVlYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYzZWY1NjFiYTE0M2Q2ZjFkZWEwZWZmY2Q0OTEzMTI0NWFiZmY0NDMzMWYzMDM2NTEyOThjMmExMTUwNzU0MzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVkOTBiYjE5ZmNhODcyYjQwODM3MTQ2MzRiNDliNTczMzAzZTFkZjg5MGE3MTUxNjMyZTc0MDUxYjdiMjgyZTIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L492-L498",
+          "version": "repo-lines-v1:sha256:f739182374d7c6bf1186fd9d15a97b506a8045d0f66b0cfbf41437698179e588:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjEwM2QzMjZiMDUyNzVjM2I2MzAwMDU5ZWQ2NWZiYTc3NzAzOTNlODM0YTBmMGQyMDMzZjJhNWViOWNlNmRiNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTQ1YTQwM2M0M2MzNzVjY2RlOTc4YjRhNGVhMWZkMjMzNTA1YjlkYzlmZTkwZTYzZmViYWVkNWY3Y2IyNjEyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWUyNzc1MWY4NDMwZGNmZTY2NjI4YzJmZDkzZjQzM2Y4NDRjNmVhMzA4N2JlMTMyZDJkNGUzMzZiZmRiMzhmZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_aee7da152efa4dbaa47c5cf18af09cc7",
+      "statement": "El sobre portable v3 comienza con `GYMENC03` y una longitud de header big-endian, usa un header JSON canónico con scrypt fijo y XChaCha20-Poly1305 por fragmentos de 1 MiB, y autentica cada fragmento con el prefijo/header y su índice.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/backup/portableEncryption.ts#L125-L139",
+          "version": "repo-lines-v1:sha256:31f8b01db04cd6cdb0a3c3caa4c61de7d3f07d616a6c484c792b5ffa55acf03c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyMTUyZDllNzE3OGRhNGY4N2RmZDAwYzZlMGQxNTNmMzVjMjNkZDk0YTBjMDk1ZmViM2ZmZTUzMTI4YTAwOTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0NTMyMmM5NGZiM2FhZWYwZDYyZTk4MDA2ODZjZTNlYzY0MjYwZDNlMGZlY2Q2YTdkZjQ2MDYzZGExYWY3Y2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0Yzc2MmI5OGQyZjVhYjFmNmFiZjAyNmM0MDQ3YjQ0MTIyMmEwMTAxZjQwMWRmNzRjM2JhOTUzNzY3YzIzMDIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/portableEncryption.ts#L292-L350",
+          "version": "repo-lines-v1:sha256:4ef7455f334ed7a5f16d39690da51584c2fec48133b8817d453d0ec19b75ace9:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkMzcyOWQzZTRlNTZkNTBiYTYzYTMxYzU0ZmFlODBjMGE4NzAwY2M1YzNhMzQ3NDI3ZGJlNzE5NTk0M2RlNjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJjODI5NTM3MWMyOTEwMmNiN2Q4ZjQwYjQ0YWQxNmVjODI4ZDQwODc2ZjFjZjZkMTA5ZTJiNzBjMWZlNWVlMTYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/portableEncryption.ts#L4-L42",
+          "version": "repo-lines-v1:sha256:12d7228a3a74ce48a532436e7de4de1715ebd3f5d1a02b007b619de54ff85828:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2OWY5YTljODM1NTliYzhiNzhlZWIwYTQzYjBkMTI4MjMxMWRmZTc1NjE0MTdlYjFmNzBlYjVjZmYxZGRiNTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlNDM1Zjk5ZTBmMTFjNjcyNmYxNzY5ODFmMWIxMDM0MWI1N2E5NTk5NTZkYmQ2ODgyMjhhZTA1OGY2NDQwOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0NGJmNWVlNTFiNjQ5Y2I2ODc2NTdlNjY3MjEyM2Q4Y2Q2NjdkZGU3ZDYzOWI3OThjOGFiN2I4Yjk2ZGU0ZGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d9fa655c174f4a5c8a07c6fd8fbea2ec",
+      "statement": "El lector del sobre exige parámetros, claves y serialización canónica exactos, tamaño total exacto y plaintext positivo de hasta 220 MiB; salvo la versión no soportada, colapsa errores estructurales y de autenticación en `invalid-password-or-corrupt`.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/backup/portableEncryption.ts#L183-L267",
+          "version": "repo-lines-v1:sha256:09a35ca09660292d8278e72fe12b89a6330a37e37f7c6c17f99e11a80f882e82:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkOWQ4N2Q0MDgxNDkzZWQwOThjOWQ4YWYwZGE1ZDFjY2QzYjI3ODI0NDEyZDhlODc3MTA3YjU1MDBkZWQ4YWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiMjdhZTM1ZTIwZTI2MDgyM2JmOWY5ZDYzOGJmNmI2N2EyOTM2NjRiNzE3ZDRiOGRlZTcyOWQ0ZGRlNGM5ZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxODE5ZjQ3ZDZhZjlkYzNlN2Q4NTBmZWJiZDhlMDE0NWViMDM1YTJkZGRmYjNiYTc3NzZhNTY1ZTVkOGYyNjIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/portableEncryption.ts#L363-L416",
+          "version": "repo-lines-v1:sha256:c59e1a86d5e3306b2d9342eeda79ead0bdb117c0c9e54fab75d6ca2321069c38:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2YmQ4YTcwNmE3ODQ0NTVhNDBmZmVjOGZjZTcxZThmMTMwZWMwOWRiMTQ4NWIzZjgwMjUyNjMxZWJlZTI4YjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5OTU2ZjJlM2U2ODM2ZGM1N2JkYTY2ZWYwOTM5Mjc5OTcyZjY3MzA5NWM3MmVlOTdhYmU0ZGY4OWE2ZjE3MWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6a7f37bd34f1421bb9cc6279b0f9bed7",
+      "statement": "La contraseña para crear un portable debe tener entre 12 y 128 puntos de código y hasta 512 bytes UTF-8, sin recortar espacios; el modal exige confirmación al crearla, usa entrada secreta sin autocorrección/autocompletado y limpia su estado al cerrarse.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/backup/PortablePasswordModal.tsx#L121-L190",
+          "version": "repo-lines-v1:sha256:d21c50a95fbb5a513683fd21fc752a752ecfecd076c46e5139a8c07977b1d93b:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0OGI3NjEzOTA3NGVlZDM5Y2YxN2RlNzBjMjRkOTdjYzM2ZDIyODE0OWE5M2Q2MmUwY2NiMzlhODdmZDNjMTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiMzI5YmUzNzJkNTlhMDQ0MWFhZjgyNDAwZGM3ZDVmYjlhODRmNDAzZmIxZjEzOWY4ZWMwNmE0Njc1YTQ1MWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQzNTI2M2ZjYzI3Y2NjNWJjM2ViNzQ5YzhmYjM4OThmMGY5YmJmMDM4YWZlNmJiODFmMTM1ZDRlNjhmM2I5M2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4NTRlZjQ1OTQxM2I0NjYzMWMwOGVkYWMwNWE1Njk5Mzc3MzEzOGJmNzlhNzY5NzFlZjZjMzMwNjJhM2RjOGUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/PortablePasswordModal.tsx#L37-L66",
+          "version": "repo-lines-v1:sha256:6d6c3ecf0c5d4aabd68e4504dc1810534be3acbd3fc5432a6e674a599b68c738:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3MWQxYjQyMWE1M2FkMjAxNDNiNGFhODc5YTYxY2FkYWExZTA3ZTFlZmE1MThiZDU2MGQ2ZjM2NTAxODgyMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4MTIxZGZhYzg1ZTI3NDZhODkwODQ1ODJjNzYwNjA2MmFjY2ZlM2RkMzRkNjk0NzliMzhkMzU3NWM2ZTM3ZGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBhMDE2NmJmODEyM2VkY2NmNDA1MGE0MmVkZTVjZGIzODA5MzU2YzA3NTVlMWI4ZjJhMzZjNzY0Zjg3MTgwYjYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/portableEncryption.ts#L147-L157",
+          "version": "repo-lines-v1:sha256:864cdff1c25c75238ca44823935bdb503605796846c2bd33a890162eaf03567a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExOGJlMTk0YWE5ZDQ2ZmIxNWIzM2UxMDNlN2QwY2U2Y2Q1NzM5NjViYmZjZjQ0NTIzMGYwNmY5MTM5ZmExZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEzNzM4ZjY1NzQ2MGE4ZTU3MDA2NmM3MTRhNzI4YjJmNDQzODA2OTQ1NjE3NjNkMzhlODE1ZWVhYWQ0YmNjNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJlZGNjMmMzOTE2YTM5NDZkZDg4MWVjMTk5MzVlOTNkMGNjMjdmNGZlNzFlZjQ3MzU5MDQxZWU3YmNiMDQ3ZTMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/portableEncryption.ts#L8-L12",
+          "version": "repo-lines-v1:sha256:2f4dad5cf103a47d799b4defbccd945fad8c79c2ff62852fa9f1c2a48ea8228f:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTFlMjVlNGQyNzM0YTI4OGZhOGVhODkzYTkwOTViOGU5ODY2ZDYwNjNjMjViYjY2ODc5MDNmY2Q1YWM1NmEyYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzk0YzRkNmNmMmQ4NzBhMDZmZTRiMTc2OTQxNjYxOTNmNWZlZTAxMjRhOGZlY2ZjZmRhOGEzZDY0YmZlNTNlOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDEzYzI4YzFhMDk5NGMxYTQwN2U5N2UyM2ExYjY1Nzg3MjRmNTU0MmYyMjkyNjNmZDNiMGIwZDIyZTk5YzU0NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWMxNTJmZDNmMTczN2M5NTIxYWMwZmYwMDYyYmEwNDk0Zjc2ZTE2MGMxNjU0ZGY2ZDlmZDY3NTcwMjRiNjBlMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b464dd7bcebc47348bef6d59cbcb21fe",
+      "statement": "El formato ZIP de backup deduplica fotos por SHA-256 y prioriza las más recientes, registra omisiones sin eliminar la medición numérica y restringe fotos, medios, manifiesto y paquete a 500, 5 MiB, 200 MiB, 8 MiB y 220 MiB respectivamente.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.test.ts#L156-L184",
+          "version": "repo-lines-v1:sha256:d2426056ea667f74736b19f37e4f33fac1219ca3fa2e46566cf1c0aba4e4ff69:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2NWY5MWE2NjQxNDQ0MDM5YmIxMWVhMDE3N2RiNjkyZjk5ZjVlNTMyMWIwMGFkZGM5NDBlZTVlNTY4ZTIyZTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0YWU2MTJiYWEzNTZiM2YzNGY3MjIwYmRiMDAxOWZiNjJhMDM5YTljZmQ1MzM3MzBiNWViMTMzNDUxYjk5MGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQwN2I4MGIyMzNiMWJkOGM0YTYyOWU0YzdmOTgyZGIzZTBiOGRhYjE1MDRlODJjZDJjNjgxM2ZjMTkyY2E0ODAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.test.ts#L229-L245",
+          "version": "repo-lines-v1:sha256:7132ff2be35a1e2c1985cb72cee69234027029427ed97bcd247cd583d17245e7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4NWJhMDM2YTM3NDQ4YmRkMjMwOWJmNmQ0ZTA1MDVjZDZjNjBjNTM3YmVjMDlkNDY2YzFiOWRjMjU0YWYzMDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViNjkwOWFmZTNkNjNmMzE2NDZjNDY0ZTYzMjY1Mzk2OWE4ZTBiZTZmZWQxNGM0MmIwMDdlNDZjYTI4MjlmYzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ0MTgyZmZmNzA5NzI1ZTcyMzliNTNkZDE0YzAyMzdkMjE1MDRjODMwNzE5MWE4ODU3NTNiZmI2MGYyMjU1MGUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L10-L20",
+          "version": "repo-lines-v1:sha256:24c4177cbf69d3650cb0f9dd65af0f1745c701c840d05efbc25b21fe44bddf0d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiM2ZhZThmMmY5Yjg1MzVmMzRhMWU0MmQ1YzRiNmIzNTFkYjA4NmRiYzE0OTAyZTliN2M0M2RkY2MxNjMyN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkOWJlNDU5MDBjMDdlZTU3ZWY3YmRkYTJiOTI3NTA1NmVmYjI3M2EwNzU0Njg3Yjg1MjAyODMwMjBlOWM5ODAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViYWI1NTI3OTNiY2U0YzQyZGRmMmUxMzQ0MmFiZjdkNmUwM2RmODNkMmJhYzhiYWQyZWQ1ODI2Y2I1MDUzZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyYzFlMDczMzMyYjJjOThjZjc4NGU4NjA3ZjU3MWUyOTVkNzExOTIzYTc3MzcxODFiZDk4OWNkNWI2NmQ4ZGEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L176-L271",
+          "version": "repo-lines-v1:sha256:7401115cefcc8e670ee7b3490acb0b2ff4fad8bd5b02da28789f898ee49713b1:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiZmEwNmFmNmM4YjU2NmVkNzkyMDJiNTJkNzE0Y2U2NGMxYWViMTJjZjg4ZmVmYjc5NDg4ZWVjOTM4NTUwM2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2YzY5MjY3YTViY2E0Y2MwZGZhMDRjNjliNDgwMDgyMTBhMDE4M2JhNjUxNmFmZDljOTk0MDM4MzA1YmMxMzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc0OWQwMDA1OGEwYjEwNzRmMzFlYTBmOWNjNGM0YTllNDVhZGVjYTg2MmM3MDhhMTdlN2RiNWY2NDQ2NDcxYjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyNWRkMDliNTg5NWQ3ZjVkNGVhNjY5ZjNiYWYzMDVjNTllODMwNTJhMTRiNmU0N2Y4ZTk5NDI2ZDVlOWRlNGEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e1e9e480ab8344bea3e930dd79cdc8a2",
+      "statement": "La lectura de paquetes valida manifiesto, rutas internas, relaciones y límites; incorpora un medio solo si tamaño, hash SHA-256 y JPEG son válidos, por lo que un medio defectuoso no invalida el manifiesto ni sus mediciones.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L274-L405",
+          "version": "repo-lines-v1:sha256:aad28999f4eae3824decf2949f8375223cfe56fd006e178c11f257a87c38d6ec:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI5NzdhMDhhMDRkMTQ2YjY3YjIwZDY3YjYzNjVlODk0MTUyY2UyZjFhOTNmZDkwNGU0MzRlZWY4NjlkZjY4YWUyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJjZDc5ZWYzOTZiNTExZTZkZjc1NWJhNmI2ZGZmODdhMjNjMTEyNDg1YThlNmE2MDYyM2JmNmViOTcxODJjNTEwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzODQ5OTUyYzgwNjEzNmEwM2JjZDBkODViZTAzN2RiM2ZlZWQwOGFjZDAyNGQ5YWYzNDczZTBmMmIxYmJkYTY2In0"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.ts#L419-L489",
+          "version": "repo-lines-v1:sha256:b4303695e2caf9c9a334d56f7e697315d0dd50b2ea405d94e6fae4c9bbfc655d:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2MGUxYTc5MGRkNmY5ZTFkYjdjYmQ3MTc5ZDQ5YmViYTVmOGY3MjMxYmMyNWJmZWI3MGNkMDRiZmFlZjYyY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5M2IxN2IxMWM3MzY1ZTllYWY0NDA5ZWU0YjU3ZjE0NThlMzE3YWE2MjhhNjM3NmEyMWE2NTgzMWJkYTEzNmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3N2E2NWY3ZThiYTdmZTk5OGFhNjI4MDc5YjRkZTQzYmU0ZmVjYzhmZDUzMTZjZmMxOTA1YWYzNTQyMTM4OWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e37c875cd414c39a88d1d8e514c2977",
+      "statement": "La importación prepara una `PendingBackupImport` y solo reemplaza datos después de confirmación; al aplicar conserva claves locales y `workspace_id` de Anthropic, normaliza el store estrictamente, cierra la sesión activa y limpia buffers o temporales pendientes.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4856-L4873",
+          "version": "repo-lines-v1:sha256:d36037321a9fa2fbc232b8a77921ceebe4e4dfb9e55d7c20ea3ba9e40edb32d8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0MmE4NDhhYTEzNmQ1YzBhZmQwNWU0NzdjYmY1YzRkNmQxN2M1YzRmZTJmOWM0NTFiYTViMjI0YTYxMzE0MmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5OWY2MzMyYzJjODBmYWRkYWI5YzJiOGU1YmE3NWViYzZkNDJlYzI5MTg1MTY2ODdmNWI1Y2FmYzFmZjJhNzMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L5034-L5063",
+          "version": "repo-lines-v1:sha256:a26cf43e9a578db996d5e88a77c076ef4e7c337717c9df599a96e7ad62cfecd9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmYzM1MjQ3OWI1ODk0ZTBlMWNjODdmZGMyMzhiZWM5Njk5YTkwNmNlZDgzMmExMzEyMTJjYTczOTBlZTE0OTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxNzY1ZjBhNTNhNWVjNDRlZTJiNGZhZWNiMjk4M2U3YzA3NDE2ZTZjY2IyOTMwZmE5MDk5N2EzNmQxZjg5ZWYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L5066-L5229",
+          "version": "repo-lines-v1:sha256:9aa468ebdf18b96c3ebaf3084f78aedefb2bd23a4f602c691c69c3277b9212de:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0OTcwNDQwMTA0NmUwYmYwZThhYjNlOGM4ZDRlZGZjNTY0MDUwMzkxZDU5ZThkMjBjNWIyN2M5N2MwMzg5YzZhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxNGVkODE0NjY0NmIzMGY5NWY0YWNmNzZmYzNkOWMyM2RhNThjY2JmNWJkMjNlMTk4MjkwNzZkNTA4OTAzMTIxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5N2Q4NjMyZTU0ZTkyOThhYmI5NTg3MjdlMmQ1MTQwOGFiYWYxMzY2MDM1Mzc5MTAxNDBhYmY2NWIzMGFiNjEzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxNDNiYzMxZmFkYjBmMGMxYjUzNjY2ODJiZThlYTdmOGMyYzc0ZjAxNjFhNDFlNTk5YzFmNDIzNTI4NjBiNzBhIn0"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L5231-L5277",
+          "version": "repo-lines-v1:sha256:9e3e65c1fb09c4771e31cca4bcf5df1696c36bfc7f6e61004e9b7de3d542f0bc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhYmE1ZDNlMzk1MzFlYjBlN2MyZGUzN2NjNWRmZjYyZTM3ODVjOGQxMmI2NjIwNjhkOWQ4N2IxY2Q1NzY2OGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImExYjc4YjZkZjhhYzY4N2FjOGViMzljNGE1MjczNTliMDI5ZDFlZDUyMjc5NDkxMjU3ZDU0M2QxNmMwZDdkNjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiYTIyY2UyOGE4NTUwZDE1Mjc2MjQ5ZDcyZjJhMzkxOGZiNGNhZGY1NzVlYjAwN2MyMmM5YmRiNWVkNmM0MWIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8673-L8689",
+          "version": "repo-lines-v1:sha256:a7a0374f1103702cf758a33672684045f2eb225c5fcad7a5fb6d65f0c427fbe5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1NTI0N2QyZDM5OWNiYTBjMTk2MzdiNmRhOWI5ZTZkOGExNzk1ZGZmMDIyODM1ZjA2YzVjNDE2MzU0YzZjMDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkYTU5M2ViODNjNzlmZTljNmQyNjhkMWMxYjg3ODdhMDkyODEwODYyYjIxZmU4YTFkMTYyZjRmMWQxZjMxMWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlMGZkYjk4ZDQ1ZWM1MzI5ZTg1MGI1YzMxMWJjY2JhNTgzYmIzM2M5Y2ZjY2RmNjg3NzZiZjY3OTBmMDdlYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFkYzFlMTM5OTNhOWQ0MDQ3MjJhNmI1MWM5ZWZjZTBiMDg1YmI3NzI1M2Q3NTAyMDlhMmVmNWFiZTQ4OTBlOGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_96923595cb63432faff12c9a5561c057",
+      "statement": "La cuarentena de `LocalStore` conserva el payload problemático cuando existe, hash e incidencias saneadas, bloquea commits ordinarios y permite restaurar únicamente un snapshot con hash y estructura válidos; reintentar puede resolver explícitamente un primary reparado.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L383-L461",
+          "version": "repo-lines-v1:sha256:d49fb1ffc47f053c5b5e89b95c64ea594348b8a3ff93a9b77c2349fddd7f14d7:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZWJiZTBkYjhlZDQ0ZmUzMjY5ZWRiNmM1ZGMzYzNkYWZmMDIzZDRlMWRjM2Y0ZjE1Mzc1N2NkMzU3YmY0ZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiNzZhODgwYTE0NGQzMTAwNDBjZjU1ZWYzYzc4MzMxYjMyNWIzMjU4MGU5MTRmMDZhOTRlN2UxMDIyMjhmODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3ODRlZmEyY2UzOGRhYzc5NTUxNmM4MWE0NWY0N2MzMWE2MGIzYmY3NGQxNGZmODcxZjI4MjA3OTlkYzk1YWEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L47-L82",
+          "version": "repo-lines-v1:sha256:f5ae7afe3741abf84c7ba85390501f9ec0429faa57b50393a64e1f01abf4bd12:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzNmUwYmUyNzlmZjIxN2E0MGEzN2FmMzg0ZTlhYjQ5ZjA1ZTczYzg3YjZkOWNkMjQxYTdhODRhMmNmMDQwN2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkOWUxMjU0NjQyNTU3NmQzZGVhZThjOWI5ZGJmMTI4ZDVkNmRkYWY1ZDdmZTg1NzkzNDkyN2RlZmZhM2I5ZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhYTZiZDEzYTM5YjNhMWUzZDcxYjFhMzI2NGE3YjVjZWFkMzE5Y2ZkYzYwNjc0OTE1OGRhZjJkNjc3NjQ4YzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE5OWI0YWU4NDUxZmVjNzMxNWVjNDY3YWU3MTI2YmUwY2ZhOWQzOGI1NjQ4YjI3YmM1ZjIxNzcxYzgyNGI0ZDQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L537-L607",
+          "version": "repo-lines-v1:sha256:e3119d5fd79d4419ae35d1148aa45c2de32d89c6ffc58ad86ef8718248933335:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzN2YyNzllNGM5YmU2ODBjMTA3MTE1ZjkyNGQ1N2Y4MDFlNTAwMzkzMmY1ZTA0YjgwNTU5NjkxZWU3OTNmNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViYmFhYTgxOGNkMzdhMTRlYjgxYTI0MGVlYjVhNzE0ZTUzM2RjOTBiOTRmZjAyZjIwYjQ4NDI0OWU2NzYzYjQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L609-L729",
+          "version": "repo-lines-v1:sha256:52ca6b0470e9888b2f5839ca66c58c29c8d70461a72c079ddec9afe4e37fa20e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmZDg4YWZjOGJlOTQyM2Y0ZmJiMmQwNGNmZjUyZDgxYTJhNzdkMjExNDQzODY1NTk0NmYxYmE1Mjc0MmFiYzYxIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmMDA4YWNmNzVlZGQ5MzRmNTZlZDc1ZTM4ZWQ1YzZjMDAwZmU5Yjg2NTM1NDViZjlkYzMzMjE5ZDA0YjcyNjVhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmOGE1NGViMjdlMjg1NGFlMTliZDY1YzQyNzZlMTdjOTFhY2I2YjVhMGI4MjE4YTE3OTUwZDM1NDE5NzE0OGQ1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_2557d64af9cb4f3ead92e71844a1ef54",
+      "statement": "La exportación de cuarentena solo se hace cuando hay payload bruto, la cifra con el sobre portable y produce JSON `local-store-recovery` de esquema 1; la CLI lo descifra localmente sin eco, rechaza sobrescritura, valida su identidad, escribe con permisos 0600 y elimina resultados parciales al fallar.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8235-L8279",
+          "version": "repo-lines-v1:sha256:a423103943e7a4c4745dc3e260e18f9727d7ff92355537049f9bda8e8c05d51f:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3MWIxNGQzZmI2YmI0NzM3MjRmZjhkZTI5OWI5MjNhMWRlY2U5YjM0Y2ZlMDA5NmE1YzY1ZGJhMzdkMjdiYTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExMGJiYjExMDRjODE5OWE2NWVhMDJlNDc2NTlkOTg5ZmIxODk1NDkyNWRiYjU1OWM3NWU2ZWFlM2VmYjNhZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0ZGVmZmFlYjUyMzBjM2NmMjE4ZDYwYWYwZmEwNzVlM2FmN2RhODMxYTY2ZmI1MzRlODlmYTZmNzY4MmRmNmQifQ"
+        },
+        {
+          "resource": "repo://scripts/decrypt-recovery.ts#L118-L163",
+          "version": "repo-lines-v1:sha256:96d4d25fc444db25bc88fd3a6f37fd981b20320ffa5643ad2bb955d5c7b01f5c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0NjU2YjA3NTBhMmNlMmUwNzAxMDAyNmUyN2FmZDY0YzI5OTdlNDViZjQxNGIyMTEwY2FkMzNlMjBjNzRjNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0YThlN2QyZjQ4Njc5MGVkNmU4NTYxNzJiZTQ1NTMxZDU5ZjE4NTdkNDNmN2YzYjM5NWZjZjM0MTI0NmMzOTAifQ"
+        },
+        {
+          "resource": "repo://scripts/decrypt-recovery.ts#L21-L27",
+          "version": "repo-lines-v1:sha256:24f10c1ec221c46a45a9b3237e3cf0bcd93e95ef926945167f69d23a52cb0000:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWQ4ZjZmZjE4NjFiOWUyMWNkNTY0NTUzNGY4NWNmMWE4YzI2MDNkZDlmZjM3ZjZkYTZjZWU3ZGQ0NmQ1Y2JhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTMyMzRkN2JmMTljZjM5NGI0NzNjYzhkMmQ3Y2E3NzkxOWI3MzE4Zjc3OTFjNTVkNDk5ZTFkNGIxYjFiN2ZhZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTY4M2Q3MzM2ODM1OTYxODY4Yjk5MjQwZTMyZjNjYTYwOTY4NjUxOTAzYTQ4NGQ3MGI5NmU4ZTgwN2UyZGI5OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2QwZTdlZDE0MmMxOTk1Mjg4ZmUwNGQ0ZGIwYWQ5OGQyODE5YTZkYThkN2I5OWMxYTc3MGIxMDdkZDE5ZmQyNiJ9"
+        },
+        {
+          "resource": "repo://scripts/decrypt-recovery.ts#L50-L116",
+          "version": "repo-lines-v1:sha256:448417ca33b5a2547a6d086a349d6c8c210aa7815218ef47222f6da1979ed185:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMjcwZmY0YTU5ODhjYWJkZWFlYWVlYmIzNTllMjk5NzQ4MTZjMDQ2YmY0NTZmNDBjZDczOWM5OWYyMTM4NjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM0MzBmMDgwYzhmNzk3NDAxNDQ4NmRhMDA0OWRiYmI1NTMyZjFkMGIxOWExOWNhZDM4OTExZmUwNWRjYjJmYWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwNjU1MDhkZjI1OTBjNjE2ZGFiMjliODIzMTEzZjAxMDhiZDNmYjlkZDBjZTVmYmEyZTY1MWE4NWYzYzQxMGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f5a84be2e18a4f3cb4a1ffdab97be32b",
+      "statement": "Las pruebas focalizadas cubren el vector y los fallos del envelope, compatibilidad y verificación de paquetes, aislamiento de cuarentena, recorrido web de recuperación y garantías de la CLI; los comandos de repositorio son `test:storage-recovery:e2e` y `test:recovery-cli`.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.test.ts#L95-L154",
+          "version": "repo-lines-v1:sha256:914ae3d1e22e3f9b6f2b5d1e549904ae199eff8f16894ff1623f7cb8929fdce8:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxNzI5MTA3OTMzMmI5MDg3ZjUwYjRjOTA3ZGQ0ZDg0NTgwZmNjZTQ3MzA5MDk5MWE4NjZkMDljNjE2YWI1ZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiMjBmNzQzYzc3NmNjN2M5ODdjMDVjOTdmMTI2ODJjZGU3MTM2NTc2ODc2YzIyNTI1NTUxNmZlYmM1NTI3NjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZiNGRkOTE3NmNhNTc5ZDAwZjliMzI3NDkwZmQzZTg1ZDY3NzljZTcxNjFlNmIwMTk3NmNkZmMyZDg3NmQwZDAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/portableEncryption.test.ts#L29-L124",
+          "version": "repo-lines-v1:sha256:5f4e42c713e1d5ea8ab23de259f6b60ade3264bedc8abe9dd6ad7e27ccd12568:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZWZmYmMyOTdhYzcxZjMyN2YwYjhiY2M2ODEyNjQ4MjVkMDA3NGNkNGQ4NTYxMWRlZGIzMWQwY2ZlMjUwZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmYzM5ZGU3YWU0NDI4MGFkOTVjNmNlZjNiNzBjYjhjMzQwOWFiYWI2MTFiYjYxYTU4NWQ3NGVkZmYzN2ZmZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.test.ts#L153-L365",
+          "version": "repo-lines-v1:sha256:517637aa5257931fefb3f1ec467a07a1cbdafc5137400d61650c1f4c13be6bbd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlZGY0NjFjZDJhNTEwNTQyYThiNzkzMzA1YmE3MjkwMTJkY2U4ZmZjMjdkMmUxYWQ3NDgzMTk5ZTEyZGZiYzQ1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzZTllYmRhMWYzMDgyYjczNTBlODUwZjRhZGRlYTY5NzE5ODc5NzYwZWIwYzFiMzRlNGNiOGYxZmU5MzEyMDdkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIn0"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/storage-recovery.e2e.mjs#L176-L320",
+          "version": "repo-lines-v1:sha256:28b34d15187ec1cc67105dfdbd114f27c01dd3def305988d492a9893a54dce22:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQ1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlZDA2NjcxNzNmOTU3ZjIyZWZkZGNmM2YxYmE2YjAyNTkwZTgzYzE3OTk4ZTY5ZTAyYzc4N2YzM2MwZDIzYzFiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmZWZlODE0ODE4YjFmNDY4M2FkNjUzODg1YjE3ZjcyY2QwY2JiNjE1ODg5MTFjM2JmYmFkYWVhMzZlZDBmMWEwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzNGVjMWQzZmI2NjEyNjgzYmRmMTNkOTZlMWViY2EyZDk4Yzc4ZWI3M2M2MzQ4OThhZjY0YmZkOTNkY2VkNDRjIn0"
+        },
+        {
+          "resource": "repo://package.json#L65-L74",
+          "version": "repo-lines-v1:sha256:3eb1a728ce09aefd335f684dd3b8bbd0be3eb8c9810c1ad7af7bbd2725875dd9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmN2NhYjc2NjNjMDlmYmEzNTAzOTIwODAxYWI2ZWU4ZTU3ZDBkMmE2YzVkZWY4OTk3NzI1NTFkMjIxZjg3NGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5YzE4ZDg4MzcyMjlkMTc1OTQ4YTY5ZTUxNjNjYjIwNWZmZmY4ODRmODRkZjFkNmJiYTBmYTQ4ZmVhNWQ4MDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU5MTFkMGI5ZmQzYWM5YzQxNjY5Yjc0ZGM3Y2JhODUzMGZiMzcxOWQwYTE2MmNhOGJiNzc1NjY4M2YzMTQ2MDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE2MTYzMDg4NjMzNzE3NWZjMjMxNjg5YWZiNTBhYWI4M2VmOGIxZTcwMDY4ODk5NmVhOGViYmMwNjIxYjc2NWYifQ"
+        },
+        {
+          "resource": "repo://scripts/decrypt-recovery.test.mjs#L23-L64",
+          "version": "repo-lines-v1:sha256:742319ddd27e711be9d048b1c600966fd477b87f1ff649ad02606858a406a2ad:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmMjY1NjE4Yzc2YmQyMjU2OWMwNDY3YjliYmJhNGRkMjRlODZjNjBlZWY2MDBiODFhZTgxY2U0ZGYyYTUyNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.5.0",
+    "at": "2026-09-13T07:56:37.562Z"
+  }
+}

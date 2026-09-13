@@ -3,9 +3,6 @@ type: servicio de diagnóstico local
 title: Proxy Anthropic de depuración local
 description: Utilidad FastAPI opcional para depurar una pasarela local de Anthropic desde el navegador. La aplicación usa Anthropic directamente en web y el proxy no se despliega ni es necesario salvo que se configure explícitamente la pasarela.
 tags: [service, anthropic, proxy, cors, development, security]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
     resource: repo://.github/workflows/agent-tests.yml
@@ -31,6 +28,8 @@ sources:
     resource: repo://apps/anthropic_proxy/tests/test_streaming.py
   - id: openwiki-source-d99f0015cb0c37d04b2984ce
     resource: repo://apps/anthropic_proxy/tests/test_upstream_errors.py
+  - id: openwiki-source-9cad4ef8944c5d67ea03dec8
+    resource: repo://apps/mobile/agent/providerChatClient.ts
   - id: openwiki-source-6b9b666faa646a8fd83706ea
     resource: repo://apps/mobile/agent/providerStreamParsers.ts
   - id: openwiki-source-cc29928f3ae5e1998f27d57a
@@ -43,7 +42,10 @@ sources:
     resource: repo://scripts/anthropic-proxy/check.mjs
   - id: openwiki-source-06bd7c851908a218f4ac8a15
     resource: repo://scripts/anthropic-proxy/check.test.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-13T07:56:37.562Z
 ---
 
 # Proxy Anthropic de depuración local
@@ -93,7 +95,7 @@ apps/anthropic_proxy/.venv/bin/python apps/mobile/cors-proxy.py
 curl -sS http://127.0.0.1:8000/health
 ```
 
-Para depurar la pasarela, configure `EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:8000` antes de arrancar o exportar la web. La aplicación normaliza esa variable —elimina espacios y barras finales— y únicamente construye rutas de proxy cuando queda una base no vacía. Si se configura una base pero el proceso no responde, la interfaz indica que se compruebe o se elimine la variable para volver al acceso directo.
+Para depurar la pasarela, configure `EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:8000` antes de arrancar o exportar la web. La aplicación normaliza esa variable —elimina espacios y barras finales— y únicamente construye rutas de proxy cuando queda una base no vacía. Esa misma selección cubre la conversación, la verificación de la clave y el descubrimiento del catálogo de modelos; si se configura una base pero el proceso no responde, la interfaz indica que se compruebe o se elimine la variable para volver al acceso directo.
 
 `ANTHROPIC_PROXY_UPSTREAM_BASE_URL` sustituye el upstream fijo `https://api.anthropic.com`; se reserva para pruebas contra un servidor Anthropic falso y el script avisa al usarlo. La versión enviada a Anthropic está fijada en `2023-06-01`.
 
