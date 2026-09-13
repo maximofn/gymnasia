@@ -793,11 +793,13 @@ export const SettingsRuntimeFooter = memo(function SettingsRuntimeFooter({
 });
 
 export const BackupImportConfirmation = memo(function BackupImportConfirmation({
+  busy,
   description,
   legacy,
   onCancel,
   onConfirm,
 }: {
+  busy: boolean;
   description: string;
   legacy: boolean;
   onCancel(): void;
@@ -817,10 +819,25 @@ export const BackupImportConfirmation = memo(function BackupImportConfirmation({
           </View>
         ) : null}
         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, textAlign: "center", lineHeight: 20 }}>{description}</Text>
-        <Pressable testID="backup-import-confirm" onPress={onConfirm} style={{ width: "100%", height: 48, borderRadius: mobileTheme.radius.md, backgroundColor: "#FF8A8A", alignItems: "center", justifyContent: "center" }}>
-          <Text style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}>Sí, restaurar</Text>
+        <Pressable
+          testID="backup-import-confirm"
+          accessibilityRole="button"
+          accessibilityLabel={busy ? "Restaurando copia" : "Sí, restaurar"}
+          accessibilityState={{ busy, disabled: busy }}
+          disabled={busy}
+          onPress={onConfirm}
+          style={{ width: "100%", height: 48, borderRadius: mobileTheme.radius.md, backgroundColor: "#FF8A8A", alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8, opacity: busy ? 0.68 : 1 }}
+        >
+          {busy ? <ActivityIndicator size="small" color="#06090D" /> : null}
+          <Text
+            testID={busy ? "backup-import-loading" : undefined}
+            accessibilityLiveRegion="polite"
+            style={{ color: "#06090D", fontWeight: "700", fontSize: 15 }}
+          >
+            {busy ? "Restaurando…" : "Sí, restaurar"}
+          </Text>
         </Pressable>
-        <Pressable onPress={onCancel} style={{ width: "100%", height: 44, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, alignItems: "center", justifyContent: "center" }}>
+        <Pressable disabled={busy} onPress={onCancel} style={{ width: "100%", height: 44, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, alignItems: "center", justifyContent: "center", opacity: busy ? 0.45 : 1 }}>
           <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "600" }}>Cancelar</Text>
         </Pressable>
       </View>

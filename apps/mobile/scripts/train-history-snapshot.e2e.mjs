@@ -244,6 +244,10 @@ async function readStore(page) {
   return JSON.parse(raw);
 }
 
+async function inputType(locator) {
+  return locator.evaluate((element) => element.type);
+}
+
 async function waitForStore(page, predicate, message) {
   const startedAt = Date.now();
   while (Date.now() - startedAt < STEP_TIMEOUT_MS) {
@@ -269,7 +273,13 @@ async function chooseBackup(page, file, password = null) {
   const chooser = await chooserPromise;
   await chooser.setFiles(file);
   if (password) {
-    await page.getByTestId("portable-password-input").fill("incorrect backup password");
+    const passwordInput = page.getByTestId("portable-password-input");
+    await passwordInput.fill("incorrect backup password");
+    assert.equal(await inputType(passwordInput), "password");
+    await clickTestId(page, "portable-password-visibility-toggle");
+    assert.equal(await inputType(passwordInput), "text");
+    assert.equal(await passwordInput.inputValue(), "incorrect backup password");
+    await clickTestId(page, "portable-password-visibility-toggle");
     await clickTestId(page, "portable-password-submit");
     await page.getByTestId("portable-password-error")
       .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
@@ -280,7 +290,21 @@ async function chooseBackup(page, file, password = null) {
     await clickTestId(page, "portable-password-submit");
   }
   await page.getByTestId("backup-import-confirm").waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
-  await clickTestId(page, "backup-import-confirm");
+  await Promise.all([
+    (async () => {
+      await page.getByTestId("backup-import-loading")
+        .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+      if (password && process.env.TRAIN_HISTORY_BACKUP_LOADING_SCREENSHOT) {
+        await page.screenshot({
+          path: process.env.TRAIN_HISTORY_BACKUP_LOADING_SCREENSHOT,
+          fullPage: true,
+        });
+      }
+    })(),
+    clickTestId(page, "backup-import-confirm"),
+  ]);
+  await page.getByTestId("backup-import-confirm")
+    .waitFor({ state: "detached", timeout: STEP_TIMEOUT_MS });
 }
 
 async function run() {
@@ -347,10 +371,26 @@ async function run() {
     logStep("La prescripción sobrevive a la eliminación de la rutina");
 
     await openDataSettings(page);
-    const downloadPromise = page.waitForEvent("download", { timeout: STEP_TIMEOUT_MS });
     await clickTestId(page, "backup-export");
-    await page.getByTestId("portable-password-input").fill(BACKUP_PASSWORD);
-    await page.getByTestId("portable-password-confirm-input").fill(BACKUP_PASSWORD);
+    const exportPasswordInput = page.getByTestId("portable-password-input");
+    const exportConfirmationInput = page.getByTestId("portable-password-confirm-input");
+    await exportPasswordInput.fill(BACKUP_PASSWORD);
+    await exportConfirmationInput.fill(BACKUP_PASSWORD);
+    assert.equal(await inputType(exportPasswordInput), "password");
+    assert.equal(await inputType(exportConfirmationInput), "password");
+    await clickTestId(page, "portable-password-visibility-toggle");
+    await clickTestId(page, "portable-password-confirm-visibility-toggle");
+    assert.equal(await inputType(exportPasswordInput), "text");
+    assert.equal(await inputType(exportConfirmationInput), "text");
+    assert.equal(await exportPasswordInput.inputValue(), BACKUP_PASSWORD);
+    assert.equal(await exportConfirmationInput.inputValue(), BACKUP_PASSWORD);
+    if (process.env.TRAIN_HISTORY_BACKUP_PASSWORD_SCREENSHOT) {
+      await page.screenshot({
+        path: process.env.TRAIN_HISTORY_BACKUP_PASSWORD_SCREENSHOT,
+        fullPage: true,
+      });
+    }
+    const downloadPromise = page.waitForEvent("download", { timeout: STEP_TIMEOUT_MS });
     await clickTestId(page, "portable-password-submit");
     const download = await downloadPromise;
     const downloadPath = await download.path();
