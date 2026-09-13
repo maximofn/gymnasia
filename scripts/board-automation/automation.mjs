@@ -190,7 +190,7 @@ async function closeDuplicateIssues(request, issues) {
 export async function ensureAlertIssue(request) {
   let issues = await findAlertIssues(request);
   if (!issues.length) {
-    await request("/issues", {
+    const created = await request("/issues", {
       method: "POST",
       body: {
         title: ALERT_TITLE,
@@ -201,7 +201,7 @@ export async function ensureAlertIssue(request) {
         ].join("\n\n"),
       },
     });
-    issues = await findAlertIssues(request);
+    issues = created ? [created] : [];
   }
   const issue = await closeDuplicateIssues(request, issues);
   if (!issue) throw new Error("GitHub no devolvió la issue de alerta recién creada.");

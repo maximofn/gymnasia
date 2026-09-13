@@ -98,6 +98,23 @@ test("la issue de alerta es única y cierra duplicados previos", async () => {
   assert.equal(api.issues.find(({ number }) => number === 9).state, "closed");
 });
 
+test("usa la respuesta de creación aunque el listado tarde en mostrar la issue", async () => {
+  const calls = [];
+  const request = async (path, options = {}) => {
+    calls.push({ path, options });
+    if (path.startsWith("/issues?")) return [];
+    if (path === "/issues" && options.method === "POST") {
+      return { number: 24, state: "open", ...options.body };
+    }
+    throw new Error(`Petición falsa no contemplada: ${path}`);
+  };
+
+  const { issue } = await ensureAlertIssue(request);
+
+  assert.equal(issue.number, 24);
+  assert.equal(calls.filter(({ path }) => path.startsWith("/issues?")).length, 1);
+});
+
 test("una misma avería no publica comentarios repetidos y la salud global cierra la issue", async () => {
   const api = fakeIssueApi([
     { number: 5, state: "open", title: "[board-sync] El tablero necesita atención", body: ALERT_MARKER },
