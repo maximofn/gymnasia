@@ -6,11 +6,11 @@ okf:
   scope: Punto de entrada del repositorio y mapa de tareas
 type: guía de inicio
 title: Inicio rápido y mapa de cambios
-description: Orientación para arrancar Gymnasia, elegir el dominio responsable y seleccionar una validación proporcional. Distingue el cliente Expo local-first de catálogos, proveedores y servicios opcionales.
-tags: [quickstart, architecture, mobile, agent, operations]
+description: Orientación para arrancar Gymnasia, elegir el dominio responsable y seleccionar una validación proporcional. Encauza cambios de copias, contraseñas, importación heredada y recuperación hacia su contrato especializado.
+tags: [quickstart, architecture, mobile, agent, operations, backup, encryption]
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
+    at: 2026-09-13T07:56:37.562Z
 sources:
   - id: openwiki-source-8037e2358a2c4f9b2c722a11
     resource: repo://AGENTS.md
@@ -28,10 +28,14 @@ sources:
     resource: repo://apps/mobile/agent/signedPolicy.ts
   - id: openwiki-source-a6ba9053969a3e00cd971742
     resource: repo://apps/mobile/app.config.ts
+  - id: openwiki-source-929e8e1df23628a3f3848ff8
+    resource: repo://apps/mobile/App.tsx
   - id: openwiki-source-12bdb95b5f863aab1ff9964a
     resource: repo://apps/mobile/index.js
   - id: openwiki-source-e86fe7b76c693666bc2cb828
     resource: repo://apps/mobile/package.json
+  - id: openwiki-source-566414ee4d2c02f464360b14
+    resource: repo://apps/mobile/scripts/storage-recovery.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-b8a29657a8fc15f77c92ee7d
@@ -42,7 +46,9 @@ sources:
     resource: repo://README.md
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+  - id: openwiki-source-d7297987d11526bafa6d5df8
+    resource: repo://scripts/decrypt-recovery.ts
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
 ---
 
 # Inicio rápido y mapa de cambios
@@ -101,7 +107,10 @@ Elija primero el dominio que posee el contrato, no el archivo que parezca más c
 | --- | --- | --- |
 | Límites local-first, variantes, persistencia general o una nueva dependencia remota | [Arquitectura local-first](architecture/overview.md) | `npm test`, typecheck y el check del límite afectado. No haga que guardar datos personales dependa de red. |
 | Arranque, shell, navegación, configuración Expo o comportamiento por plataforma | [Shell de aplicación, plataformas y navegación](mobile/application-shell.md) | typecheck, `build:web`, `npm run test:shell:e2e` y la E2E del flujo afectado; pruebe nativo si toca capacidades nativas. |
-| Almacenes locales, recuperación, secretos BYOK, borrado o importación/exportación | [Estado local, recuperación, borrado y copias](mobile/local-state-and-backup.md) | `npm test`, `npm run test:storage-recovery:e2e` o `npm run test:data-deletion:e2e` según corresponda. |
+| Almacenes locales, particiones, snapshots, cuarentena, secretos BYOK o borrado | [Estado local, recuperación, borrado y copias](mobile/local-state-and-backup.md) | `npm test`; añada `npm run test:storage-recovery:e2e` para recuperación/interfaz o `npm run test:data-deletion:e2e` para un alcance de borrado. |
+| Copia portable `.gymnasia`, contraseña, sobre cifrado v3, ZIP/medios, selector o confirmación de restauración | [Cifrado portátil, importación heredada y recuperación local](mobile/portable-encryption-and-recovery.md) | `npm test` para formato/cifrado; añada `npm run test:storage-recovery:e2e` si cambia el flujo web. Pruebe en dispositivo si toca selector, archivos o compartir nativos. |
+| Detección o migración de una copia heredada JSON v1 o ZIP v2 | [Cifrado portátil, importación heredada y recuperación local](mobile/portable-encryption-and-recovery.md) | `npm test` y una prueba focalizada de la ruta de entrada; no convierta un formato heredado en una salida nueva ni acepte formatos por extensión o MIME. |
+| Exportación de cuarentena o CLI `decrypt:recovery` | [Cifrado portátil, importación heredada y recuperación local](mobile/portable-encryption-and-recovery.md) y [Estado local, recuperación, borrado y copias](mobile/local-state-and-backup.md) | `npm test` y `npm run test:storage-recovery:e2e`; añada `npm run test:recovery-cli` al cambiar la CLI, sus argumentos, permisos o validación del payload. |
 | Plantillas, series, sesiones, descansos o alertas de entrenamiento | [Plantillas, series y ejecución de entrenamientos](mobile/training.md) | La E2E concreta: `npm run test:train:e2e`, `test:train:series:e2e`, `test:train:series-operations:e2e` o `test:train:compound:e2e`. |
 | Dieta, objetivos, alimentos personales, búsqueda o estimación asistida | [Dieta y estimación de alimentos](mobile/diet-and-food-estimation.md) | `npm run test:diet:e2e`; añada pruebas del agente si una tool lee o escribe el dominio. |
 | Mediciones, fotos de progreso, gráficos o su backup | [Mediciones, fotos de progreso y respaldo](mobile/measurements.md) | Pruebas de dominio y de backup/borrado que cubran los datos cambiados. |
@@ -152,12 +161,13 @@ npm test
 npm --workspace apps/mobile exec tsc --noEmit
 npm --workspace apps/mobile run build:web
 
-# E2E web controladas, seleccione las que cubran el cambio
+# E2E web y CLI, seleccione las que cubran el cambio
 npm run test:agent:e2e
 npm run test:catalogs:e2e
 npm run test:train:e2e
 npm run test:diet:e2e
 npm run test:storage-recovery:e2e
+npm run test:recovery-cli
 
 # Fronteras especializadas
 npm run test:proxy
@@ -166,7 +176,7 @@ npm run check:catalogs
 npm run check:android-permissions
 ```
 
-`npm test` reúne la suite determinista y los controles del espejo de desarrollo; no implica que se hayan ejecutado todas las E2E ni pruebas de cada workspace. La exportación `build:web` genera `apps/mobile/dist` y es una buena señal de empaquetado web. Las E2E usan navegador y dependencias controladas: prueban una proyección web, no la disponibilidad de proveedores reales ni el hardware.
+`npm test` reúne la suite determinista y los controles del espejo de desarrollo; para copias cubre los contratos puros del paquete y del sobre, pero no implica que se hayan ejecutado todas las E2E ni pruebas de cada workspace. `npm run test:storage-recovery:e2e` cubre la recuperación y la exportación cifrada en Chromium; `npm run test:recovery-cli` ejerce el descifrado Node, los permisos de salida y los errores de la utilidad. La exportación `build:web` genera `apps/mobile/dist` y es una buena señal de empaquetado web. Las E2E usan navegador y dependencias controladas: prueban una proyección web, no la disponibilidad de proveedores reales ni el hardware.
 
 Por tanto, pruebas deterministas y exportación web **no** demuestran SecureStore nativo, permisos fusionados, instalación, notificaciones, alarmas, audio o ejecución en segundo plano. Un cambio de plugin Expo, permiso, recurso nativo, notificación o distribución requiere el guard rail aplicable y una build/prueba nativa representativa, preferiblemente en dispositivo. La guía de release explica los gates de candidato y la verificación del artefacto; tampoco una build verde sustituye la comprobación manual de las capacidades críticas.
 

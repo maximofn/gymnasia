@@ -17,12 +17,16 @@ related:
   - ../services/anthropic-proxy.md
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
+    at: 2026-09-13T07:56:37.562Z
 sources:
   - id: openwiki-source-88e87a6a49f8c4bba044cff2
     resource: repo://apps/anthropic_proxy/README.md
   - id: openwiki-source-2e89f734760be2c893fbd66e
     resource: repo://apps/mobile/agent/anthropicModels.ts
+  - id: openwiki-source-f310c5fb576ae69a7753918c
+    resource: repo://apps/mobile/agent/googleStreamTransport.ts
+  - id: openwiki-source-9cad4ef8944c5d67ea03dec8
+    resource: repo://apps/mobile/agent/providerChatClient.ts
   - id: openwiki-source-e4b8b3a3e8fb5e339227c3fd
     resource: repo://apps/mobile/agent/providerConfiguration.test.ts
   - id: openwiki-source-0d2384426991583d96044996
@@ -43,11 +47,11 @@ sources:
     resource: repo://apps/mobile/agent/providerVerification.test.ts
   - id: openwiki-source-c80e54251b903682e229caf2
     resource: repo://apps/mobile/agent/providerVerification.ts
+  - id: openwiki-source-a6ba9053969a3e00cd971742
+    resource: repo://apps/mobile/app.config.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-  - id: openwiki-source-7a047b00a95eb325eb147887
-    resource: repo://apps/mobile/environment.ts
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
 ---
 
 # Configuración BYOK de proveedores
@@ -56,7 +60,7 @@ La aplicación móvil admite credenciales aportadas por la persona usuaria (**BY
 
 Esta página cubre el contrato de configuración hasta la solicitud de proveedor. El streaming, los formatos de mensajes y las continuaciones de herramientas se describen en [Streaming de proveedores](./provider-streaming.md); el uso de las credenciales por el chat y las herramientas locales, en [Entorno de ejecución del agente](./runtime.md).
 
-Google genera mediante Interactions con `store: false` y continúa reenviando el historial local completo. La verificación y el catálogo siguen usando `/v1beta/models`; listar un modelo no garantiza que admita todas las capacidades de Interactions. Los errores de compatibilidad se muestran sin fallback de protocolo. Para validar XHR en Development existe un [servidor local con clave ficticia](../../docs/testing/google-interactions.md), aislado de Production.
+Google genera mediante Interactions con `store: false` y continúa reenviando el historial local completo. La verificación y el catálogo siguen usando `/v1beta/models`; listar un modelo no garantiza que admita todas las capacidades de Interactions. Los errores de compatibilidad se muestran sin fallback de protocolo. Un servidor local para pruebas se activa con `GOOGLE_FIXTURE_PORT` únicamente en una compilación Development BYOK con un puerto local válido; además, la ruta local exige la clave ficticia `e2e-local-fake-key`, por lo que no puede desviar por accidente una generación de producción.
 
 ## Modelo canónico, borradores e invariantes
 

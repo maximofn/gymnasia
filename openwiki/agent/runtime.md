@@ -18,7 +18,7 @@ related:
   - ../services/feedback-worker.md
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
+    at: 2026-09-13T07:56:37.562Z
 sources:
   - id: openwiki-source-192849a5973afd8b6e55db2c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
@@ -54,7 +54,7 @@ sources:
     resource: repo://apps/mobile/agent/toolOperationLedger.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
 ---
 
 # Runtime del agente y herramientas
@@ -96,7 +96,7 @@ sequenceDiagram
 
 *El lease y el filtro sanitario gobiernan todo el turno; una llamada del proveedor nunca autoriza por sí misma un efecto local.*
 
-La clasificación sanitaria bloquea directamente los riesgos `high` y `critical`, persiste el mensaje del usuario junto a una respuesta local y evita el proveedor. Para riesgo `elevated`, puede solicitar consentimiento antes de consultar el evaluador del proveedor; sin consentimiento conserva la decisión determinista. Un borrador del asistente se crea solo después de superar ese punto, con `is_streaming`, contexto de política y origen/modelo para reporte. El historial excluye mensajes locales de divulgación y se limita a los últimos 20 mensajes.
+La clasificación sanitaria bloquea directamente los riesgos `high` y `critical`, persiste el mensaje del usuario junto a una respuesta local y evita el proveedor. Para riesgo `elevated`, puede solicitar consentimiento antes de consultar el evaluador del proveedor; sin consentimiento conserva la decisión determinista. Un borrador del asistente se crea solo después de superar ese punto, con `is_streaming`, contexto de política y origen/modelo para reporte. El historial excluye mensajes locales de divulgación. OpenAI y Anthropic reciben como máximo los últimos 20 mensajes; Google conserva el historial completo para poder continuar su protocolo de interacciones.
 
 Los deltas actualizan el borrador, agrupados cada 40 ms. Un `HealthSafeStreamGate` inspecciona el agregado antes de hacerlo visible. Al finalizar, una intervención sanitaria reemplaza el texto del modelo, elimina el razonamiento y marca el origen; de otro modo se materializan contenido y razonamiento y se desactiva `is_streaming`.
 

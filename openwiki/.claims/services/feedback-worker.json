@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f845b0c60f83e405e99a0ee00139745b3f65bc31ecb51ed362eac162e2d14243",
+  "pageVersion": "sha256:3a5a86c0afb9cc00102b07a27f63579eac80a43a485e116d1ec42f1d645dbe07",
   "claims": [
     {
       "id": "claim_c3d6e3af5c6c40a497ad4b28ea0dcb9c",
@@ -224,18 +224,18 @@
     },
     {
       "id": "claim_ea2e58010ea846d4a4f18537740b1eb9",
-      "statement": "La configuración de Expo no habilita un endpoint de feedback en desarrollo y configura el mismo receptor para staging y producción; los cambios de endpoint o contrato alcanzan la frontera de distribución de la app.",
+      "statement": "Por defecto, la configuración Expo no configura un endpoint de feedback para development y configura el mismo receptor para staging y production; `FEEDBACK_API_BASE_URL` tiene prioridad como override, incluso para apuntar desarrollo a `wrangler dev`, por lo que los cambios de endpoint o contrato alcanzan la frontera de distribución de la app.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/agent/feedbackContract.contract.test.ts#L88-L151",
-          "version": "repo-lines-v1:sha256:e097db2d449e238f47fc6ae804cedfcddaebe0d5c19fcc15e56edd83fbdd401f:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmNWNlZWYwY2E3ZDNhM2EyODUwNzdlZDVlM2NmOTg3OTBjMTUzMGY3ZWIyMTQ5OTg3OTlmY2FjYmFjMGEzN2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVjY2JmY2RiZmU3MjBhZGRhN2RmMjgxNzk4NzIxYzBlNWNiYWM5ZDJkZmE1MjZkY2FlYTU3NGFhMzA4MmRkNTIifQ"
+          "resource": "repo://apps/mobile/agent/feedbackContract.contract.test.ts#L88-L150",
+          "version": "repo-lines-v1:sha256:6d66f5e9a0b80f2d589600929d792aaaa5d3f54f0e266c96d086fd035869bff3:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmNWNlZWYwY2E3ZDNhM2EyODUwNzdlZDVlM2NmOTg3OTBjMTUzMGY3ZWIyMTQ5OTg3OTlmY2FjYmFjMGEzN2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmN2JkZWZjZWMwYjE5MjhlYzQ4YzBmMmMyYWM2NDUwNWI1ZDk2Y2M3ZmVhY2E1YmY1MTcyMWM4M2YwY2NlOTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIifQ"
         },
         {
-          "resource": "repo://apps/mobile/app.config.ts#L142-L154",
-          "version": "repo-lines-v1:sha256:0fc43df8d55016703758d8ca595a22cb914f4b44c9448e1856cfaf12f0897057:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYjRmODkzNDk1MjY2MTNlMmUxNTdjNmM1YTY2NjJmYzkzM2EyMmVjM2E1OTU5YWFlMGIyNjNlYTVkNTNkOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5M2M4ZjVmYzc3ZjNiMmI1OGY0NWU2YmRjM2Y5NGE3ZWJjYjMwYmI4NWY2NjRhYTM1MWQ4MTFkZDJhNzNiN2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxYjEwZTllMTU1MDZkZGNjNzMyMGNlYzFhZjljMDhiMTVkM2RmYzJkZjU5Y2Y4NTFhNjAzZDgyZWY3M2QwMGMifQ"
+          "resource": "repo://apps/mobile/app.config.ts#L159-L172",
+          "version": "repo-lines-v1:sha256:add74037f5e9c410af43c2edb3397bcc236bbd1b340b0258dcfe0ccc01abcd57:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYjRmODkzNDk1MjY2MTNlMmUxNTdjNmM1YTY2NjJmYzkzM2EyMmVjM2E1OTU5YWFlMGIyNjNlYTVkNTNkOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM3ODU0MTJiYjcxYmVmNTIyZDZjMGZkNTY5ODUyYzAzZTc2NDk1YmYwYmIyNTY4NGFjMTdlMjMxNTAwNmU1NmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxYjEwZTllMTU1MDZkZGNjNzMyMGNlYzFhZjljMDhiMTVkM2RmYzJkZjU5Y2Y4NTFhNjAzZDgyZWY3M2QwMGMifQ"
         },
         {
-          "resource": "repo://apps/mobile/app.config.ts#L35-L65",
+          "resource": "repo://apps/mobile/app.config.ts#L36-L66",
           "version": "repo-lines-v1:sha256:3ff57f461dbf5408fa9b943f1b1136df9913ab9f2ab16379ca3b8a609efe5de9:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhMzhlZTljYzczYzlmMWYyYzhmOGM1NmQwMGJkMDBkZTViMDczNjlmMTJlMDgwYWJiZDc5YzhjNDM3NTZjMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwMWQ5ZTBhMGViYTAzYzg0OWYzYmYxN2I2ZDJhNzRkNDEwY2VlZmJiYWMxOWYzNjdmZGE0YmE3ZTk4ODZhM2YifQ"
         }
       ]
@@ -335,6 +335,6 @@
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-07T11:37:28.236Z"
+    "at": "2026-09-13T07:56:37.562Z"
   }
 }

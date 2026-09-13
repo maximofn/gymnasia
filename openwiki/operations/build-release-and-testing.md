@@ -1,11 +1,8 @@
 ---
 type: guía operativa
 title: Build, release y estrategia de validación
-description: Selecciona los comandos de desarrollo, comprobaciones deterministas, E2E controladas y gates de release según el contrato que cambia. Distingue la validación local de las operaciones remotas protegidas de políticas y APK Android.
-tags: [operations, ci, testing, release, android, policy, privacy]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
+description: Selecciona comprobaciones deterministas, E2E web y la prueba de CLI para cambios de copias cifradas y recuperación. Distingue su evidencia de la validación de un build y de un dispositivo Android o iOS.
+tags: [operations, ci, testing, release, android, backup, recovery]
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
     resource: repo://.github/workflows/agent-tests.yml
@@ -23,6 +20,10 @@ sources:
     resource: repo://apps/mobile/app.config.ts
   - id: openwiki-source-3de323c9f3752d72d82de839
     resource: repo://apps/mobile/app.json
+  - id: openwiki-source-c369f04b4bd4848feade9def
+    resource: repo://apps/mobile/backup/backupFormat.test.ts
+  - id: openwiki-source-cb3899d51b4f7908c2bcca38
+    resource: repo://apps/mobile/backup/portableEncryption.test.ts
   - id: openwiki-source-ee5b295fb9c3f0589728d747
     resource: repo://apps/mobile/eas.json
   - id: openwiki-source-e86fe7b76c693666bc2cb828
@@ -33,6 +34,10 @@ sources:
     resource: repo://apps/mobile/scripts/catalogs.e2e.mjs
   - id: openwiki-source-9b36e0d3bf6e997011395257
     resource: repo://apps/mobile/scripts/privacy-policy.e2e.mjs
+  - id: openwiki-source-566414ee4d2c02f464360b14
+    resource: repo://apps/mobile/scripts/storage-recovery.e2e.mjs
+  - id: openwiki-source-8899fbcb52b1d704245f96cc
+    resource: repo://apps/mobile/vitest.config.mts
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-c657bdb933b7ed64c860ab05
@@ -41,6 +46,10 @@ sources:
     resource: repo://scripts/catalogs/generate.mjs
   - id: openwiki-source-f807c3c379c670c5871c2b49
     resource: repo://scripts/data-inventory/inventory.mjs
+  - id: openwiki-source-3ab934c3755042efcadeb0bc
+    resource: repo://scripts/decrypt-recovery.test.mjs
+  - id: openwiki-source-d7297987d11526bafa6d5df8
+    resource: repo://scripts/decrypt-recovery.ts
   - id: openwiki-source-7718d8047e7c1e0a6137f6de
     resource: repo://scripts/production-release/policy.json
   - id: openwiki-source-24a206e2ad72f4f0a1502c09
@@ -49,7 +58,10 @@ sources:
     resource: repo://scripts/production-release/release-transaction.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-13T07:56:37.562Z
 ---
 
 # Build, release y estrategia de validación
@@ -99,13 +111,13 @@ npm --workspace apps/mobile exec tsc --noEmit
 
 Asocie cada uno a su riesgo: `expo start` sirve para iterar; `expo run:android` y `expo run:ios` ejercitan un runtime nativo de desarrollo; `build:web` detecta fallos de empaquetado web; y `tsc --noEmit` detecta incompatibilidades estáticas sin ejecutar la app. La exportación genera `apps/mobile/dist`, que reutilizan varias E2E, pero no prueba permisos fusionados, SecureStore, alarmas, notificaciones, intents, audio de fondo ni instalación en un teléfono.
 
-`app.json` define el paquete Android/iOS y la política declarativa de permisos. Permite `FOREGROUND_SERVICE`, `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`, y bloquea permisos como `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`. Para cambios en plugins Expo, dependencias nativas o permisos, ejecute además los controles de permisos y una compilación/prueba nativa representativa. Véase [Validación de permisos Android publicables](android-permissions.md).
+`app.json` define el paquete Android/iOS y la política declarativa de permisos. Declara `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`, y bloquea `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`. Para cambios en plugins Expo, dependencias nativas o permisos, ejecute además los controles de permisos y una compilación/prueba nativa representativa. Véase [Validación de permisos Android publicables](android-permissions.md).
 
 ## Matriz de validación mínima
 
 | Cambio | Comando focalizado | Contrato que valida y límite |
 | --- | --- | --- |
-| Lógica móvil determinista, agente o almacenamiento de desarrollo | `npm test` | Ejecuta `test:deterministic` y el check/tests del dev store; no agrega todas las suites del repositorio. |
+| Lógica móvil determinista, formato de copia o cifrado portable | `npm test` | Ejecuta la suite Vitest del workspace móvil, el check/tests del dev store y los límites de arquitectura móvil; no ejecuta la E2E web de recuperación ni la CLI. |
 | Prompt integrado | `npm run check:chat-prompt` | Detecta que el snapshot generado usado por la app deriva del prompt fuente; `test:deterministic` lo invoca como precheck. |
 | Salud, seguridad o prompt de política | `npm run check:health-safety && npm run test:health-safety` y/o `npm run check:prompt-policy && npm run test:prompt-policy` | Comprueba la política canónica, sus generados, contratos y regresiones; requiere además la autorización indicada en [Gobierno de cambios sensibles y política de prompt](prompt-policy-governance.md). |
 | Tipos de la app móvil | `npm --workspace apps/mobile exec tsc --noEmit` | Análisis estático del workspace móvil, no una prueba de runtime. |
@@ -115,10 +127,45 @@ Asocie cada uno a su riesgo: `expo start` sirve para iterar; `expo run:android` 
 | Catálogos y sus salidas | `npm run check:catalogs && npm run test:catalogs` | Verifica contratos de todos los dominios y que los generados estén actualizados. |
 | Consumidores de catálogos | `npm run test:catalogs:e2e` | Prueba la proyección web con fixtures e indisponibilidad simulada, sin consultar servicios externos. |
 | Chat/agente web | `npm run test:agent:e2e` | Ejecuta las E2E de chat y proveedor de desarrollo contra navegador y dependencias interceptadas; no acredita proveedores reales ni funcionalidades nativas. |
-| Entrenamiento, dieta, recuperación o preferencias web | La E2E específica: por ejemplo `npm run test:train:e2e`, `npm run test:diet:e2e` o `npm run test:storage-recovery:e2e` | Seleccione el script que cubra el flujo afectado; son pruebas web explícitas, no un requisito para iniciar Expo localmente. |
+| Recuperación de almacenamiento y exportación cifrada en web | `npm run test:storage-recovery:e2e` | Exporta web development, siembra `localStorage` y usa Chromium para comprobar el flujo de cuarentena; no ejecuta almacenamiento, selector de archivos ni compartir nativos. |
+| Descifrado externo de una exportación de recuperación | `npm run test:recovery-cli` | Lanza la CLI Node con un fixture cifrado y verifica salida, permisos y errores; no prueba la UI ni un terminal humano. |
+| Entrenamiento, dieta o preferencias web | La E2E específica: por ejemplo `npm run test:train:e2e` o `npm run test:diet:e2e` | Seleccione el script que cubra el flujo afectado; son pruebas web explícitas, no un requisito para iniciar Expo localmente. |
 | Eliminación local de datos | `npm run test:data-deletion:e2e` | Siembra datos y cachés en el almacenamiento web para comprobar el borrado visible; no demuestra el borrado de un dispositivo nativo. |
 | Proxy Anthropic | `npm run test:proxy` | Delega en el workspace Python aislado; no instala ni transforma sus dependencias en dependencias npm. |
 | Release Android | `npm run verify:production-source -- --profile production-apk --artifact-type apk --output /tmp/production-source-evidence.json` | Verificador de candidato Production que necesita checkout, GitHub y gates; el workflow es la entrada normal, no un comando local autosuficiente. |
+
+## Copias cifradas y recuperación: señal mínima y límites
+
+Para un cambio en `backup/backupFormat.ts` o `backup/portableEncryption.ts`, la primera señal es `npm test`. El script encadena `test:deterministic`, `test:dev-store` y `test:mobile-boundaries`; el primero ejecuta Vitest en Node e incluye `backup/**/*.test.ts`. Por tanto ejercita, entre otras fronteras, el ZIP v3, lectura explícita de v2/v1, hashes, límites y medios corruptos, además del vector estable del sobre v3, cifrado/descifrado por más de un fragmento, alteración, truncamiento y validación de contraseña. Es evidencia de esos contratos puros y de regresiones deterministas: no abre un navegador, no produce una descarga, no invoca `decrypt-recovery.ts` y no prueba Expo, `SecureStore`, sistema de archivos, selector o diálogo de compartir de Android/iOS.
+
+Al cambiar la pantalla, cuarentena, serialización de recuperación o la descarga web, ejecute también:
+
+```bash
+npm run test:storage-recovery:e2e
+```
+
+La E2E construye `apps/mobile/dist` con `APP_ENV=development` y `DEV_PROVIDER_MODE=fake`, lo sirve en `127.0.0.1` y usa Chromium. Siembra las claves de `localStorage`, comprueba que un JSON roto se mantiene y no genera llamadas a proveedores de IA; exporta una recuperación, comprueba el prefijo `GYMENC03` y que el texto roto no aparece en ciphertext, y descifra ese resultado con la utilidad Node. También cubre detalle saneado de error, reintento tras reparación, restauración confirmada del snapshot y descarte de `LocalStore` y sesión sin eliminar `personalData` ni preferencias independientes. Esto acredita el recorrido web simulado y su interoperación con la CLI para ese fixture; no acredita la persistencia nativa, `SecureStore`, el selector/compartir de archivos, permisos del sistema ni una recuperación en Android o iOS.
+
+Para cambiar el contrato u operación de la utilidad, ejecute además:
+
+```bash
+npm run test:recovery-cli
+```
+
+Esta prueba de Node genera un sobre con `encryptPortablePayloadToBytes`, invoca `decrypt-recovery.ts` con `--password-stdin` y verifica que la CLI recupera el JSON, crea el destino con modo `0600`, no escribe en stdout, rechaza sobrescritura y no deja salida ante contraseña errónea. El modo por stdin es una vía reservada a automatización: la operación humana usa `npm run decrypt:recovery -- --input <archivo.gymnasia> --output <destino.json>` y solicita la contraseña sin eco. La suite no comprueba un TTY interactivo real, la interfaz web ni los mecanismos nativos.
+
+```mermaid
+flowchart TD
+    Change["Cambio de copia o recuperación"] --> Unit["npm test"]
+    Change --> Web{"¿Afecta cuarentena o flujo web?"}
+    Web -->|"Sí"| E2E["test:storage-recovery:e2e"]
+    Change --> Cli{"¿Afecta la utilidad de descifrado?"}
+    Cli -->|"Sí"| CliTest["test:recovery-cli"]
+    Unit --> Native["Prueba manual Android o iOS cuando toque frontera nativa"]
+    E2E --> Native
+```
+
+*Las tres suites aportan evidencia complementaria de código, navegador y CLI; ninguna sustituye el ejercicio de las fronteras nativas.*
 
 ## Checks de privacidad, catálogos y permisos
 
@@ -146,7 +193,7 @@ Por ello, use una E2E cuando cambie la interfaz, el contrato de almacenamiento o
 
 ## Integración continua
 
-`agent-tests.yml` se activa en PR y `main` solo para sus rutas declaradas. Su job Node usa Node 22, `npm ci`, permiso `contents: read` y diez minutos para verificar prompt integrado, política sanitaria, sus tests, `npm test`, la E2E Metro del dev store, feedback worker, automatización OpenWiki y TypeScript. El proxy corre en otro job con `uv`, de modo que no forma parte del entorno Node. Un cambio fuera de esos filtros no recibe este workflow.
+`agent-tests.yml` se activa en PR y `main` solo para sus rutas declaradas. Su job Node usa Node 22, `npm ci`, permiso `contents: read` y diez minutos para verificar prompt integrado, política sanitaria y sus tests, `npm test`, límites de arquitectura móvil, la E2E Metro del dev store, feedback worker, automatización OpenWiki y TypeScript. El proxy corre en otro job con `uv`, de modo que no forma parte del entorno Node. Un cambio fuera de esos filtros no recibe este workflow.
 
 `catalog-tests.yml` también usa Node 22 y `npm ci`, instala Chromium y ejecuta `check:catalogs`, `test:catalogs` y `test:catalogs:e2e` para rutas de fuentes, generador y consumidores declaradas. Sus resultados no cubren por sí mismos permisos Android ni una release.
 

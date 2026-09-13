@@ -3,10 +3,9 @@ type: concepto
 title: Dieta y estimación de alimentos
 description: Modelo local de comidas y objetivos nutricionales, vinculación explícita con catálogos y alimentos personales, y flujo opcional de estimación asistida por IA. Distingue la nutrición validada que se persiste de datos externos o estimados que requieren confirmación y validación.
 tags: [mobile, diet, nutrition, food-estimation, catalogs, agent]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
 sources:
+  - id: openwiki-source-ece1e91de1b7e96cadcc5bc8
+    resource: repo://apps/mobile/agent/foodEstimatorClient.ts
   - id: openwiki-source-165cffcff462003cd11223e2
     resource: repo://apps/mobile/agent/toolExecutor.test.ts
   - id: openwiki-source-d3be928c369037f29888bc0b
@@ -21,6 +20,12 @@ sources:
     resource: repo://apps/mobile/catalogs/sources.ts
   - id: openwiki-source-36ac1d1b6a1d97f5db056148
     resource: repo://apps/mobile/catalogs/types.ts
+  - id: openwiki-source-0ae61ab8a9a5048a481b1eec
+    resource: repo://apps/mobile/controllers/dietController.ts
+  - id: openwiki-source-7a63325ebd6d3e0cfa0b1634
+    resource: repo://apps/mobile/diet/catalogModel.ts
+  - id: openwiki-source-8bc8bac1938308df7241b2fd
+    resource: repo://apps/mobile/diet/model.ts
   - id: openwiki-source-baabb5f135bf207cf1cd88cf
     resource: repo://apps/mobile/diet/nutritionContract.test.ts
   - id: openwiki-source-8aba0bf9311cc293c41365a3
@@ -29,7 +34,10 @@ sources:
     resource: repo://apps/mobile/scripts/diet-validation.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-13T07:56:37.562Z
 ---
 
 # Dieta y estimación de alimentos
@@ -105,7 +113,7 @@ La disponibilidad del catálogo acompaña las búsquedas del agente como `fresh`
 
 ## Alta y edición de una comida
 
-La pantalla permite formulario manual, selección desde el catálogo y estimación opcional. Todos terminan en `persistDietItem`, que crea el día o la comida si hace falta, reemplaza el elemento al editar conservando su ID, y ordena las comidas por categoría. Borrar el último elemento elimina la comida, aunque puede quedar el día vacío. Copiar una comida desde otra fecha clona los elementos con IDs nuevos y los añade a la categoría de destino; no reemplaza sus elementos existentes.
+La pantalla permite formulario manual, selección desde el catálogo y estimación opcional. Las tres rutas convergen en `persistItem` dentro de `useDietRuntime`: crea el día o la comida si hace falta, reemplaza el elemento al editar conservando su ID y ordena las comidas por categoría. Borrar el último elemento elimina la comida, aunque puede quedar el día vacío. Copiar una comida desde otra fecha clona los elementos con IDs nuevos y los añade a la categoría de destino; no reemplaza sus elementos existentes.
 
 ```mermaid
 flowchart TD
