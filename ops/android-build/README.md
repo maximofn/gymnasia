@@ -35,6 +35,11 @@ el instalador del guest termina correctamente y QEMU verifica el disco. La
 imagen Ubuntu fechada, Node, Java, herramientas Android y runner tienen hashes
 en `downloads.json`. El nombre oficial del ZIP Android termina en `_latest.zip`,
 pero **13114758 y su SHA-256 son fijos**; no se resuelve un alias dinámico.
+Muestra las fases por la consola y apaga la VM si falla la instalación. Conserva
+el diagnóstico sin credenciales, accesible solo a root, en
+`/var/tmp/gymnasia-image-evidence.*`; elimina el disco temporal también si se
+interrumpe. Comprueba listeners, forwarding y unidades fallidas al terminar.
+No inicia la preparación si wallabot tiene activo su bloqueo de mantenimiento.
 
 La VM tiene 4 vCPU, 16 GiB de RAM y 120 GiB de disco virtual. El host limita el
 proceso a 4 CPU, 18 GiB, sin swap, 512 tareas y dos horas. Usa SLIRP saliente,
