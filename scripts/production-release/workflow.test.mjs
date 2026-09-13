@@ -34,27 +34,52 @@ test("lee el borrador duradero por ID después de adjuntar evidencias", () => {
   );
 });
 
-test("consulta EAS con filtros estables y valida la identidad localmente", () => {
+test("pagina EAS y valida localmente la identidad de builds y submissions", () => {
   assert.match(
     workflow,
-    /eas build:list --platform android[\s\\]*--limit 50 --offset "\$EAS_OFFSET" --json/,
+    /eas build:list --platform android[\s\\]*--limit 50 --offset "\$offset" --json/,
     "la consulta preventiva debe evitar los filtros remotos que fallan en EAS",
   );
-  assert.match(workflow, /EAS_OFFSET=\$\(\(EAS_OFFSET \+ 50\)\)/, "la consulta debe paginar todo el historial");
-  assert.match(
-    workflow,
-    /--arg profile "production-apk"[\s\S]*--arg version "\$VERSION"[\s\S]*--arg sourceCommit "\$SOURCE_COMMIT"[\s\S]*--arg message "android-v\$\{VERSION\}"/,
-    "la adopción debe comprobar perfil, versión, commit y mensaje",
-  );
+  assert.match(workflow, /eas submit:list --platform android[\s\\]*--limit 50 --offset "\$offset" --json/);
+  assert.match(workflow, /offset=\$\(\(offset \+ 50\)\)/, "las consultas deben paginar todo el historial");
+  assert.match(workflow, /eas-release\.mjs select-build/);
+  assert.match(workflow, /--profile "\$profile"[\s\S]*--version "\$VERSION"[\s\S]*--commit "\$SOURCE_COMMIT"[\s\S]*--message "\$message"/);
+  assert.match(workflow, /eas-release\.mjs select-submission/);
+  assert.match(workflow, /--build-id "\$AAB_BUILD_ID"[\s\S]*--track internal[\s\S]*--release-status completed/);
 });
 
-test("verifica la cadena de hashes antes de hacer inmutable la release", () => {
-  const verify = workflow.indexOf("Verify draft identity, bounds, MIME and evidence chain");
-  const publish = workflow.indexOf("Publish immutable APK release");
+test("construye AAB antes que APK y fija las herramientas", () => {
+  assert.ok(workflow.indexOf("ensure_build aab production") < workflow.indexOf("ensure_build apk production-apk"));
+  assert.match(workflow, /eas-version: 24\.3\.0/);
+  assert.match(workflow, /bundletool\.sha256/);
+  assert.match(workflow, /sha256sum --check --strict/);
+});
+
+test("verifica AAB, APK y Play antes de hacer inmutable la release", () => {
+  const verify = workflow.indexOf("Verify draft identity, both artifacts and Play evidence chain");
+  const publish = workflow.indexOf("Publish immutable Android release");
   assert.ok(verify >= 0, "falta verificar la cadena de evidencia del draft");
   assert.ok(publish > verify, "la release solo puede publicarse después de verificar sus hashes");
-  assert.match(workflow, /ASSET_DIGEST production-artifact-evidence\.json/);
-  assert.match(workflow, /\.artifact\.evidenceSha256/);
+  assert.match(workflow, /production-aab-evidence\.json/);
+  assert.match(workflow, /production-apk-evidence\.json/);
+  assert.match(workflow, /production-play-evidence\.json/);
+  assert.match(workflow, /\.legs\[\$leg\]\.artifact\.evidenceSha256/);
   assert.match(workflow, /ASSET_DIGEST production-source-evidence\.json/);
   assert.match(workflow, /\.source\.evidenceSha256/);
+});
+
+test("usa Play Internal sin aprobador para el envío automático y conserva el orden recuperable", () => {
+  assert.match(workflow, /environment: Play Internal/);
+  assert.match(workflow, /PLAY_VERSION_CODE_FLOOR/);
+  assert.match(workflow, /eas submit --platform android --profile production/);
+  assert.match(workflow, /eas submit:view "\$SUBMISSION_ID" --json/);
+  assert.match(workflow, /eas submit:retry "\$SUBMISSION_ID"/);
+  assert.ok(
+    workflow.indexOf("--event intent --leg play")
+      < workflow.indexOf("eas submit --platform android --profile production"),
+    "la intención durable debe guardarse antes de crear la submission",
+  );
+  assert.match(workflow, /la intención durable impide repetirla automáticamente/i);
+  assert.match(workflow, /android-production-release/);
+  assert.match(workflow, /cancel-in-progress: false/);
 });

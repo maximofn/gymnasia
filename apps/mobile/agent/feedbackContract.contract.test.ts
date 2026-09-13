@@ -87,8 +87,8 @@ describe("create_feature_issue: contrato de la tool", () => {
 
 describe("el APK que se distribuye debe poder hablar con el backend", () => {
   // Este contrato existe por un fallo real: el workflow distribuía staging y su
-  // endpoint estaba vacío. Ahora la publicación solo admite production-apk; el
-  // test ancla tanto esa variante como su backend para que no vuelva a degradar
+  // endpoint estaba vacío. Ahora ambos artefactos usan Production; el test
+  // ancla las dos variantes y su backend para que no vuelva a degradar
   // en silencio.
   const appConfig = readFileSync(join(__dirname, "..", "app.config.ts"), "utf8");
   const buildWorkflow = readFileSync(
@@ -109,14 +109,12 @@ describe("el APK que se distribuye debe poder hablar con el backend", () => {
     return line.slice(environment.length + 1).replace(/,$/, "").trim();
   }
 
-  it("el workflow de publicación solo compila production-apk", () => {
+  it("el workflow compila AAB y APK con configuración Production", () => {
+    expect(buildWorkflow).toContain("--profile production");
     expect(buildWorkflow).toContain("--profile production-apk");
-    expect(buildWorkflow).toMatch(
-      /--arg profile "production-apk"/,
-    );
     expect(buildWorkflow).not.toContain("github.event.inputs.profile");
     expect(buildWorkflow).not.toContain("inputs.profile");
-    expect(buildWorkflow).toContain("environment: Production");
+    expect(buildWorkflow).toContain("environment: Play Internal");
     expect(buildWorkflow).toContain("--environment production");
   });
 

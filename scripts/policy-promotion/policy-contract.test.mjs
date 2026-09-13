@@ -101,15 +101,21 @@ test("el verificador confiable siempre procede de main", () => {
   assert.equal((workflow.match(/fetch --no-tags --depth=1 origin "\$GITHUB_SHA"/g) || []).length, 2);
 });
 
-test("EAS conserva perfiles locales y publica únicamente production-apk", () => {
+test("EAS compila AAB y APK de la misma Production y envía solo el AAB a Play Interno", () => {
   assert.equal(eas.build.preview.extends, "staging");
   assert.equal(eas.build.staging.env.APP_ENV, "staging");
   assert.equal(eas.build.staging.android.buildType, "apk");
   assert.equal(eas.build.production.env.APP_ENV, "production");
+  assert.equal(eas.build.production.autoIncrement, true);
   assert.equal(eas.build["production-apk"].extends, "production");
+  assert.equal(eas.build["production-apk"].autoIncrement, false);
   assert.equal(eas.build["production-apk"].android.buildType, "apk");
+  assert.equal(eas.cli.version, "24.3.0");
+  assert.equal(eas.submit.production.android.track, "internal");
+  assert.equal(eas.submit.production.android.releaseStatus, "completed");
+  assert.match(buildWorkflow, /--profile production/);
   assert.match(buildWorkflow, /--profile production-apk/);
-  assert.match(buildWorkflow, /environment: Production/);
+  assert.match(buildWorkflow, /environment: Play Internal/);
   assert.match(buildWorkflow, /Prepare new immutable policy inputs/);
   assert.match(buildWorkflow, /--environment production/);
   assert.doesNotMatch(buildWorkflow, /--environment staging/);
@@ -124,8 +130,8 @@ test("EAS conserva perfiles locales y publica únicamente production-apk", () =>
   assert.doesNotMatch(validationJob, /^    environment:/m);
   assert.doesNotMatch(validationJob, /EXPO_TOKEN/);
   assert.match(validationJob, /verify:production-source/);
-  assert.match(validationJob, /--profile production-apk/);
-  assert.match(validationJob, /--artifact-type apk/);
+  assert.doesNotMatch(validationJob, /--profile/);
+  assert.doesNotMatch(validationJob, /--artifact-type/);
   assert.match(validationJob, /--expected-version/);
   assert.match(buildWorkflow, /verify:production-artifact/);
   assert.match(
@@ -137,15 +143,19 @@ test("EAS conserva perfiles locales y publica únicamente production-apk", () =>
     /npm --prefix \.release-controller run verify:production-artifact/,
   );
   assert.match(buildWorkflow, /production-source-evidence\.json/);
-  assert.match(buildWorkflow, /production-artifact-evidence\.json/);
+  assert.match(buildWorkflow, /production-aab-evidence\.json/);
+  assert.match(buildWorkflow, /production-apk-evidence\.json/);
+  assert.match(buildWorkflow, /production-play-evidence\.json/);
   assert.match(buildWorkflow, /Create durable draft before EAS/);
-  assert.match(buildWorkflow, /Attach verified APK and immutable evidence/);
+  assert.match(buildWorkflow, /Mark both artifacts validated with one shared versionCode/);
   assert.match(buildWorkflow, /android-production-release/);
   assert.match(buildWorkflow, /cancel-in-progress: false/);
   assert.match(buildWorkflow, /release-transaction\.mjs select-remote/);
-  assert.match(buildWorkflow, /--no-wait --json/);
+  assert.match(buildWorkflow, /eas build[\s\S]*--no-wait --json/);
   assert.match(buildWorkflow, /eas build:view/);
-  assert.match(buildWorkflow, /Download APK to quarantine path/);
+  assert.match(buildWorkflow, /eas submit:view/);
+  assert.match(buildWorkflow, /Download AAB and APK to quarantine paths/);
+  assert.match(buildWorkflow, /--published-filename gymnasia\.aab/);
   assert.match(buildWorkflow, /--published-filename gymnasia\.apk/);
   assert.doesNotMatch(buildWorkflow, /Update version in app\.json/);
   assert.doesNotMatch(buildWorkflow, /Compute next version from conventional commits/);

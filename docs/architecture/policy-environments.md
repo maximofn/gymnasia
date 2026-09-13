@@ -10,9 +10,11 @@ Toda configuración Expo exige `APP_ENV`. No hay valor implícito en builds:
 | `staging` | Gymnasia Staging | `com.maximofn.gymnasia.staging` | `Staging` | BYOK |
 | `production` | Gymnasia | `com.maximofn.gymnasia` | `Production` | BYOK |
 
-`preview` extiende `staging` en EAS. El workflow de publicación usa exclusivamente
-`production-apk`, que hereda `APP_ENV=production`. Los IDs distintos permiten instalar
-las variantes a la vez; sus claves locales están separadas por namespace.
+`preview` extiende `staging` en EAS. El workflow de publicación construye primero
+`production` como AAB para Play Interno y después `production-apk` como APK para
+GitHub; los dos heredan `APP_ENV=production` y comparten `versionCode`. Los IDs
+distintos permiten instalar las variantes de desarrollo y staging a la vez; sus
+claves locales están separadas por namespace.
 
 Los comandos locales fijan development. Para comprobar un proveedor real hay que optar
 expresamente por él:

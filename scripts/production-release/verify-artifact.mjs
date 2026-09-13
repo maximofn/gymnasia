@@ -26,7 +26,7 @@ function parseArguments(argv) {
     }
     options[key.slice(2)] = value;
   }
-  for (const required of ["artifact", "kind", "source-evidence", "snapshot", "output"]) {
+  for (const required of ["artifact", "kind", "profile", "source-evidence", "snapshot", "output"]) {
     if (!options[required]) throw new Error(`Falta --${required}.`);
   }
   if (!["apk", "aab"].includes(options.kind)) throw new Error("--kind debe ser apk o aab.");
@@ -85,8 +85,11 @@ function inspectArtifact(options, policy, artifact) {
   if (options.kind === "aab") {
     const bundletoolSha256 = fileSha256(resolve(options.bundletool));
     const version = run("java", ["-jar", resolve(options.bundletool), "version"]).trim();
-    if (!version.includes(policy.bundletoolVersion)) {
-      throw new Error(`Se exige bundletool ${policy.bundletoolVersion}; recibido ${version}.`);
+    if (bundletoolSha256 !== policy.bundletool.sha256) {
+      throw new Error(`El SHA-256 de bundletool no coincide con ${policy.bundletool.sha256}.`);
+    }
+    if (!version.includes(policy.bundletool.version)) {
+      throw new Error(`Se exige bundletool ${policy.bundletool.version}; recibido ${version}.`);
     }
     run("java", ["-jar", resolve(options.bundletool), "validate", `--bundle=${artifact}`]);
     const manifestXml = run("java", [
@@ -108,7 +111,7 @@ function inspectArtifact(options, policy, artifact) {
       manifestXml,
       certificateOutput,
       notificationSounds: extractNotificationSoundsFromArchiveListing(archiveListing),
-      tools: { bundletoolVersion: policy.bundletoolVersion, bundletoolSha256 },
+      tools: { bundletoolVersion: policy.bundletool.version, bundletoolSha256 },
     };
   }
 
@@ -145,6 +148,7 @@ function main() {
   const evaluated = evaluateArtifactCandidate({
     policy,
     kind: options.kind,
+    profile: options.profile,
     sourceEvidence,
     manifest,
     appConfig: inspection.appConfig,
@@ -159,14 +163,14 @@ function main() {
     publishedFilename,
   });
   const evidence = {
-    schemaVersion: 1,
-    kind: "ProductionArtifactEvidenceV1",
+    schemaVersion: 2,
+    kind: "ProductionArtifactEvidenceV2",
     result: evaluated.violations.length === 0 ? "passed" : "failed",
     verifiedAt: new Date().toISOString(),
     source: {
       commit: sourceEvidence.commit,
       evidenceSha256: fileSha256(resolve(options["source-evidence"])),
-      profile: sourceEvidence.profile,
+      profile: options.profile,
     },
     build: readBuildMetadata(options["build-metadata"]),
     artifact: {

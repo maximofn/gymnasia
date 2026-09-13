@@ -56,8 +56,9 @@ const FEEDBACK_ENDPOINTS: Record<BuildEnvironment, string> = {
   // política del agente, no del backend de incidencias.
   //
   // Staging conserva el mismo backend para las pruebas manuales de esa variante.
-  // La release de GitHub se compila únicamente con `production-apk` y usa la
-  // entrada production (ver .github/workflows/build-apk.yml).
+  // La release Android compila `production` (AAB para Play Interno) y
+  // `production-apk` (APK para GitHub); ambas usan esta entrada production
+  // (ver .github/workflows/build-apk.yml).
   //
   // Los tests siguen aislados porque inyectan FEEDBACK_API_BASE_URL, que tiene
   // prioridad sobre estos valores por defecto.

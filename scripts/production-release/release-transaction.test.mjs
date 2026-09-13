@@ -4,6 +4,7 @@ import fc from "fast-check";
 
 import {
   assertPublishedRelease,
+  assertReleaseTransaction,
   createReleaseTransaction,
   selectReleaseAction,
   transitionReleaseTransaction,
@@ -12,41 +13,76 @@ import {
 const commit = "a".repeat(40);
 const now = "2026-09-01T10:00:00.000Z";
 
-function transaction(version = "1.2.3") {
-  return createReleaseTransaction({ version, sourceCommit: commit, now });
+function transaction(version = "1.2.3", minimumVersionCode = 16) {
+  return createReleaseTransaction({ version, sourceCommit: commit, minimumVersionCode, now });
 }
 
-test("persiste el build ID antes de observar o validar el APK", () => {
-  const submitted = transitionReleaseTransaction(transaction(), "submit", {
-    buildId: "eas-build-1",
-    now: "2026-09-01T10:01:00.000Z",
-  });
-  assert.equal(submitted.state, "build-submitted");
-  assert.equal(submitted.attempts[0].buildId, "eas-build-1");
-  const running = transitionReleaseTransaction(submitted, "observe", {
-    status: "IN_PROGRESS",
-    now: "2026-09-01T10:02:00.000Z",
-  });
-  assert.equal(running.state, "build-running");
-  const finished = transitionReleaseTransaction(running, "observe", {
+function finishArtifact(input, leg, buildId, versionCode = 17) {
+  const submitted = transitionReleaseTransaction(input, "submit", { leg, buildId, now });
+  const finished = transitionReleaseTransaction(submitted, "observe", {
+    leg,
     status: "FINISHED",
-    artifactUrl: "https://expo.dev/artifacts/eas-build-1.apk",
-    now: "2026-09-01T10:03:00.000Z",
+    artifactUrl: `https://expo.dev/artifacts/${buildId}.${leg}`,
+    now,
   });
-  const validated = transitionReleaseTransaction(finished, "validate", {
-    artifactSha256: "b".repeat(64),
+  return transitionReleaseTransaction(finished, "validate", {
+    leg,
+    artifactSha256: (leg === "aab" ? "b" : "c").repeat(64),
     artifactSize: 100_000_000,
-    evidenceSha256: "c".repeat(64),
-    now: "2026-09-01T10:04:00.000Z",
+    evidenceSha256: (leg === "aab" ? "d" : "e").repeat(64),
+    versionName: input.version,
+    versionCode,
+    now,
   });
-  assert.equal(validated.state, "validated");
-  assert.equal(validated.artifact.filename, "gymnasia.apk");
+}
+
+function validatedTransaction() {
+  let value = finishArtifact(transaction(), "aab", "aab-build");
+  value = finishArtifact(value, "apk", "apk-build");
+  value = transitionReleaseTransaction(value, "submit", {
+    leg: "play",
+    buildId: "aab-build",
+    submissionId: "play-submission",
+    now,
+  });
+  value = transitionReleaseTransaction(value, "observe", { leg: "play", status: "FINISHED", now });
+  return transitionReleaseTransaction(value, "validate", {
+    leg: "play",
+    versionCode: 17,
+    evidenceSha256: "f".repeat(64),
+    now,
+  });
+}
+
+test("persiste por separado AAB, APK y submission antes de avanzar", () => {
+  let value = transitionReleaseTransaction(transaction(), "submit", {
+    leg: "aab",
+    buildId: "aab-build",
+    now,
+  });
+  assert.equal(value.state, "building");
+  assert.equal(value.legs.aab.attempts[0].buildId, "aab-build");
+  value = finishArtifact(transaction(), "aab", "aab-build");
+  value = finishArtifact(value, "apk", "apk-build");
+  assert.equal(value.state, "artifacts-validated");
+  const submitted = transitionReleaseTransaction(value, "submit", {
+    leg: "play",
+    buildId: "aab-build",
+    submissionId: "play-submission",
+    now,
+  });
+  assert.equal(submitted.state, "submitting");
+  assert.equal(submitted.legs.play.attempts[0].submissionId, "play-submission");
 });
 
-test("la reconciliación reutiliza el mismo build y es idempotente", () => {
-  const submitted = transitionReleaseTransaction(transaction(), "submit", { buildId: "same", now });
+test("la reconciliación de un identificador ya persistido es idempotente", () => {
+  const submitted = transitionReleaseTransaction(transaction(), "submit", {
+    leg: "aab",
+    buildId: "same",
+    now,
+  });
   assert.deepEqual(
-    transitionReleaseTransaction(submitted, "submit", { buildId: "same", now }),
+    transitionReleaseTransaction(submitted, "submit", { leg: "aab", buildId: "same", now }),
     submitted,
   );
   const selected = selectReleaseAction({
@@ -56,127 +92,87 @@ test("la reconciliación reutiliza el mismo build y es idempotente", () => {
     currentCommit: commit,
   });
   assert.equal(selected.mode, "resume");
-  assert.equal(selected.transaction.attempts[0].buildId, "same");
+  assert.equal(selected.transaction.legs.aab.attempts[0].buildId, "same");
 });
 
-test("una reconciliación actualiza el hash de la evidencia, pero nunca sustituye el APK", () => {
-  const finished = transitionReleaseTransaction(
-    transitionReleaseTransaction(
-      transitionReleaseTransaction(transaction(), "submit", { buildId: "same", now }),
-      "observe",
-      {
-        status: "FINISHED",
-        artifactUrl: "https://expo.dev/artifacts/same.apk",
-        now: "2026-09-01T10:01:00.000Z",
-      },
-    ),
-    "validate",
-    {
-      artifactSha256: "b".repeat(64),
-      artifactSize: 100_000_000,
-      evidenceSha256: "c".repeat(64),
-      now: "2026-09-01T10:02:00.000Z",
-    },
-  );
-  const refreshed = transitionReleaseTransaction(finished, "validate", {
-    artifactSha256: "b".repeat(64),
-    artifactSize: 100_000_000,
-    evidenceSha256: "d".repeat(64),
-    now: "2026-09-01T10:03:00.000Z",
+test("una intención incierta queda durable y exige reintento antes de emitir otra", () => {
+  const intended = transitionReleaseTransaction(transaction(), "intent", {
+    leg: "aab",
+    message: "android-v1.2.3-aab-attempt-1",
+    now,
   });
-  assert.equal(refreshed.artifact.evidenceSha256, "d".repeat(64));
-  assert.equal(refreshed.transitions.at(-1).event, "evidence-revalidated");
-  assert.throws(() => transitionReleaseTransaction(refreshed, "validate", {
-    artifactSha256: "e".repeat(64),
-    artifactSize: 100_000_000,
-    evidenceSha256: "f".repeat(64),
-    now: "2026-09-01T10:04:00.000Z",
-  }), /no puede sustituir el APK/);
+  assert.equal(intended.state, "building");
+  assert.equal(intended.legs.aab.attempts.length, 0);
+  assert.equal(intended.legs.aab.intent.number, 1);
+  assert.throws(() => transitionReleaseTransaction(intended, "intent", {
+    leg: "aab",
+    message: "android-v1.2.3-aab-attempt-2",
+    now,
+  }), /desde intent/);
+  const failed = transitionReleaseTransaction(intended, "fail", {
+    leg: "aab",
+    reason: "La petición no apareció en EAS",
+    now,
+  });
+  assert.equal(failed.state, "failed");
+  const retried = transitionReleaseTransaction(failed, "retry", {
+    reason: "EAS confirma que no existe el build",
+    now,
+  });
+  const secondIntent = transitionReleaseTransaction(retried, "intent", {
+    leg: "aab",
+    message: "android-v1.2.3-aab-attempt-2",
+    now,
+  });
+  assert.equal(secondIntent.legs.aab.intent.number, 2);
 });
 
-function publishedFixture(overrides = {}) {
-  const sourceEvidenceSha = "e".repeat(64);
-  const artifactEvidenceSha = "d".repeat(64);
-  const artifactSha = "b".repeat(64);
-  const validated = {
-    ...transaction(),
-    state: "validated",
-    artifact: {
-      filename: "gymnasia.apk",
-      sha256: artifactSha,
-      size: 100_000_000,
-      evidenceSha256: artifactEvidenceSha,
-    },
-  };
-  const release = {
-    draft: false,
-    immutable: true,
-    target_commitish: commit,
-    assets: [
-      { name: "android-release-transaction.json", digest: `sha256:${"a".repeat(64)}` },
-      {
-        name: "gymnasia.apk",
-        digest: `sha256:${artifactSha}`,
-        content_type: "application/vnd.android.package-archive",
-        size: 100_000_000,
-      },
-      { name: "production-artifact-evidence.json", digest: `sha256:${artifactEvidenceSha}` },
-      { name: "production-source-evidence.json", digest: `sha256:${sourceEvidenceSha}` },
-    ],
-  };
-  const artifactEvidence = {
-    schemaVersion: 1,
-    kind: "ProductionArtifactEvidenceV1",
-    result: "passed",
-    source: { commit, profile: "production-apk", evidenceSha256: sourceEvidenceSha },
-    build: { id: "eas-build-1" },
-    artifact: {
-      publishedFilename: "gymnasia.apk",
-      type: "apk",
-      versionName: "1.2.3",
-      sha256: artifactSha,
-      size: 100_000_000,
-    },
-  };
-  const sourceEvidence = {
-    schemaVersion: 1,
-    kind: "ProductionSourceEvidenceV1",
-    result: "passed",
-    commit,
-    appVersion: "1.2.3",
-    profile: "production-apk",
-    artifactType: "apk",
-  };
-  validated.attempts = [{ number: 1, buildId: "eas-build-1", status: "FINISHED" }];
-  return {
-    release,
-    transaction: validated,
-    artifactEvidence,
-    sourceEvidence,
-    currentCommit: commit,
-    apkPolicy: {
-      githubMimeType: "application/vnd.android.package-archive",
-      minBytes: 90_000_000,
-      maxBytes: 110_000_000,
-    },
-    ...overrides,
-  };
-}
-
-test("la release publicada conserva la cadena exacta de hashes", () => {
-  assert.equal(assertPublishedRelease(publishedFixture()), true);
-  const brokenEvidence = publishedFixture();
-  brokenEvidence.release.assets.find((asset) => asset.name === "production-artifact-evidence.json")
-    .digest = `sha256:${"f".repeat(64)}`;
-  assert.throws(
-    () => assertPublishedRelease(brokenEvidence),
-    /evidencia publicada no coincide/,
+test("AAB y APK deben compartir una versión creciente", () => {
+  const aab = finishArtifact(transaction(), "aab", "aab-build", 17);
+  const apkFinished = transitionReleaseTransaction(
+    transitionReleaseTransaction(aab, "submit", { leg: "apk", buildId: "apk-build", now }),
+    "observe",
+    { leg: "apk", status: "FINISHED", artifactUrl: "https://expo.dev/apk", now },
   );
+  assert.throws(() => transitionReleaseTransaction(apkFinished, "validate", {
+    leg: "apk",
+    artifactSha256: "c".repeat(64),
+    artifactSize: 100_000_000,
+    evidenceSha256: "e".repeat(64),
+    versionName: "1.2.3",
+    versionCode: 18,
+    now,
+  }), /compartir versionCode/);
+  assert.throws(() => finishArtifact(transaction("1.2.3", 17), "aab", "old", 17), /no supera/);
+});
+
+test("Play solo acepta el AAB validado después de ambos artefactos", () => {
+  const aab = finishArtifact(transaction(), "aab", "aab-build");
+  assert.throws(() => transitionReleaseTransaction(aab, "submit", {
+    leg: "play",
+    buildId: "aab-build",
+    submissionId: "too-soon",
+    now,
+  }), /antes de validar AAB y APK/);
+  const complete = validatedTransaction();
+  assert.equal(complete.state, "validated");
+  assert.equal(complete.legs.play.versionCode, 17);
+  assertReleaseTransaction(complete);
 });
 
 test("un fallo terminal exige reintento o sustitución manual con motivo", () => {
-  const submitted = transitionReleaseTransaction(transaction(), "submit", { buildId: "bad", now });
-  const failed = transitionReleaseTransaction(submitted, "observe", { status: "ERRORED", now });
+  const submitted = transitionReleaseTransaction(transaction(), "submit", {
+    leg: "aab",
+    buildId: "bad",
+    now,
+  });
+  const failed = transitionReleaseTransaction(submitted, "observe", {
+    leg: "aab",
+    status: "ERRORED",
+    reason: "token=secret\nfallo remoto",
+    now,
+  });
+  assert.equal(failed.state, "failed");
   assert.throws(() => selectReleaseAction({
     transactions: [failed],
     publishedVersions: [],
@@ -192,18 +188,25 @@ test("un fallo terminal exige reintento o sustitución manual con motivo", () =>
     targetVersion: "1.2.3",
     reason: "EAS sufrió una incidencia confirmada",
   });
-  assert.equal(retry.mode, "retry");
   const prepared = transitionReleaseTransaction(failed, "retry", { reason: retry.reason, now });
   assert.equal(prepared.state, "prepared");
-  assert.equal(prepared.attempts.length, 1);
+  assert.equal(prepared.legs.aab.attempts.length, 1);
 });
 
-test("si se sustituye la versión fallida, la siguiente queda desbloqueada", () => {
+test("sustituir exige una versión posterior y desbloquea esa versión", () => {
   const failed = transitionReleaseTransaction(
-    transitionReleaseTransaction(transaction("1.2.3"), "submit", { buildId: "bad", now }),
+    transitionReleaseTransaction(transaction("1.2.3"), "submit", { leg: "apk", buildId: "bad", now }),
     "observe",
-    { status: "CANCELED", now },
+    { leg: "apk", status: "CANCELED", now },
   );
+  assert.throws(() => selectReleaseAction({
+    transactions: [failed],
+    publishedVersions: ["1.2.2"],
+    currentVersion: "1.2.3",
+    currentCommit: commit,
+    operation: "supersede-failed",
+    reason: "defecto confirmado",
+  }), /versión posterior/);
   const superseded = transitionReleaseTransaction(failed, "supersede", {
     reason: "La fuente contiene un defecto que exige una versión nueva",
     now,
@@ -213,19 +216,100 @@ test("si se sustituye la versión fallida, la siguiente queda desbloqueada", () 
     publishedVersions: ["1.2.2"],
     currentVersion: "1.2.4",
     currentCommit: commit,
+    minimumVersionCode: 17,
   });
   assert.equal(selected.mode, "new");
-  assert.equal(selected.transaction.version, "1.2.4");
-  const sameVersion = selectReleaseAction({
-    transactions: [superseded],
-    publishedVersions: ["1.2.2"],
-    currentVersion: "1.2.3",
-    currentCommit: commit,
-  });
-  assert.equal(sameVersion.action, "noop");
+  assert.equal(selected.transaction.minimumVersionCode, 17);
 });
 
-test("propiedad: la selección nunca salta la transacción semver más antigua", () => {
+function publishedFixture() {
+  const transactionValue = validatedTransaction();
+  const sourceEvidenceSha = "1".repeat(64);
+  const release = {
+    draft: false,
+    immutable: true,
+    target_commitish: commit,
+    assets: [
+      { name: "android-release-transaction.json", digest: `sha256:${"2".repeat(64)}` },
+      { name: "production-source-evidence.json", digest: `sha256:${sourceEvidenceSha}` },
+      { name: "production-aab-evidence.json", digest: `sha256:${"d".repeat(64)}` },
+      { name: "production-apk-evidence.json", digest: `sha256:${"e".repeat(64)}` },
+      { name: "production-play-evidence.json", digest: `sha256:${"f".repeat(64)}` },
+      { name: "gymnasia.aab", digest: `sha256:${"b".repeat(64)}`, content_type: "application/octet-stream", size: 100_000_000 },
+      { name: "gymnasia.apk", digest: `sha256:${"c".repeat(64)}`, content_type: "application/vnd.android.package-archive", size: 100_000_000 },
+    ],
+  };
+  const artifact = (leg) => ({
+    schemaVersion: 2,
+    kind: "ProductionArtifactEvidenceV2",
+    result: "passed",
+    source: {
+      commit,
+      profile: transactionValue.legs[leg].profile,
+      evidenceSha256: sourceEvidenceSha,
+    },
+    build: { id: transactionValue.legs[leg].attempts.at(-1).buildId },
+    artifact: {
+      publishedFilename: `gymnasia.${leg}`,
+      type: leg,
+      versionName: "1.2.3",
+      versionCode: "17",
+      sha256: transactionValue.legs[leg].artifact.sha256,
+      size: 100_000_000,
+    },
+  });
+  return {
+    release,
+    transaction: transactionValue,
+    artifactEvidences: { aab: artifact("aab"), apk: artifact("apk") },
+    sourceEvidence: {
+      schemaVersion: 2,
+      kind: "ProductionSourceEvidenceV2",
+      result: "passed",
+      commit,
+      appVersion: "1.2.3",
+    },
+    playEvidence: {
+      schemaVersion: 1,
+      kind: "ProductionPlayEvidenceV1",
+      result: "passed",
+      provider: "eas",
+      profile: "production",
+      track: "internal",
+      releaseStatus: "completed",
+      buildId: "aab-build",
+      submissionId: "play-submission",
+      status: "FINISHED",
+      versionCode: 17,
+    },
+    currentCommit: commit,
+  };
+}
+
+test("la release publicada conserva AAB, APK, Play y toda la cadena de hashes", () => {
+  const fixture = publishedFixture();
+  assert.equal(assertPublishedRelease(fixture), true);
+  fixture.release.assets.find((asset) => asset.name === "production-play-evidence.json").digest = `sha256:${"0".repeat(64)}`;
+  assert.throws(() => assertPublishedRelease(fixture), /evidencia de Play/);
+});
+
+test("mantiene lectura compatible de las transacciones V1 históricas", () => {
+  assert.doesNotThrow(() => assertReleaseTransaction({
+    schemaVersion: 1,
+    kind: "AndroidReleaseTransactionV1",
+    id: "android-v1.2.2",
+    version: "1.2.2",
+    tag: "v1.2.2",
+    sourceCommit: commit,
+    profile: "production-apk",
+    artifactType: "apk",
+    state: "validated",
+    attempts: [],
+    transitions: [],
+  }));
+});
+
+test("propiedad: nunca salta la transacción semver más antigua", () => {
   fc.assert(fc.property(
     fc.uniqueArray(fc.integer({ min: 1, max: 100 }), { minLength: 1, maxLength: 20 }),
     (patches) => {
@@ -237,6 +321,17 @@ test("propiedad: la selección nunca salta la transacción semver más antigua",
         currentCommit: commit,
       });
       assert.equal(selected.transaction.version, `3.7.${Math.min(...patches)}`);
+    },
+  ));
+});
+
+test("propiedad: ningún versionCode repetido o decreciente se valida", () => {
+  fc.assert(fc.property(
+    fc.integer({ min: 1, max: 10_000 }),
+    fc.integer({ min: 0, max: 10_000 }),
+    (minimum, candidateOffset) => {
+      const candidate = Math.min(minimum, candidateOffset);
+      assert.throws(() => finishArtifact(transaction("4.0.0", minimum), "aab", "build", candidate));
     },
   ));
 });
