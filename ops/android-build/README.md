@@ -220,6 +220,64 @@ contador nuevo ni un valor fijado en el código.
    `--disableupdate`, renovar y probar la imagen cuando GitHub exija una
    actualización del runner (normalmente dentro de los 30 días de una release).
 
+## Prueba del registro temporal: preparada, pendiente de autorización
+
+Antes de activar el workflow, `registration-control.py`, `registration-host.py`
+y el modo `register-probe` prueban el registro y la retirada de una identidad
+efímera. **No arrancan `run.sh` ni ejecutan jobs.** La consulta de preparación
+del 14-09-2026 encontró cero runners en el repositorio. No se ha solicitado
+todavía un token de registro ni realizado esta prueba contra GitHub.
+
+1. Tras la autorización expresa del mantenedor, ejecutar **en el Mac**, con la
+   sesión de GitHub existente:
+
+   ```bash
+   python3 ops/android-build/registration-control.py prepare \
+     --authorized-registration /ruta/privada/intento-nuevo
+   ```
+
+   Crea un intento exclusivo, pide una sola vez el token temporal y escribe
+   `request.json` con modo 0600. El diario `attempt.json` solo contiene identidad
+   y estado. No reintenta la emisión si se pierde la respuesta. La credencial
+   administrativa de GitHub permanece en el Mac; solo viaja el token temporal.
+2. Transferir `request.json` y `empty.bin` a un directorio privado en wallabot,
+   confirmar sus hashes y borrar la copia local de `request.json`. Conservar
+   `attempt.json` en el Mac para verificar y retirar la identidad después.
+   Ejecutar en el tmux de wallabot, desde el paquete revisado:
+
+   ```bash
+   sudo python3 registration-host.py /ruta/privada/inputs
+   ```
+
+   El controlador rechaza un intento ya usado, crea el overlay sin credenciales
+   en el seed y entrega el token por el canal limitado ya auditado. El runner
+   2.337.0 recibe `ACTIONS_RUNNER_INPUT_TOKEN` en su entorno; no en argumentos.
+   Registra con `--ephemeral --disableupdate`, nombre aleatorio y etiquetas
+   `wallabot,android-build`, sin sustituir identidades. Comprueba `.runner`, borra
+   la identidad RSA y todo el directorio de runner y apaga la VM. El host repite
+   las comprobaciones de limpieza, base y red. Solo expone el informe sin secretos.
+3. Copiar ese `report.json` al Mac y terminar desde allí:
+
+   ```bash
+   python3 ops/android-build/registration-control.py finish \
+     /ruta/privada/intento-nuevo --report /ruta/privada/report.json
+   ```
+
+   GitHub debe confirmar el mismo ID/nombre, versión y etiquetas, con estado
+   offline, sin job y efímero. Solo se elimina la identidad reservada por este
+   intento y se comprueba su ausencia. El informe del guest no elige el ID que
+   se borra. Si falló el guest o no llegó un informe, `finish` sin `--report`
+   retira esa identidad inactiva y marca el intento fallido. Nunca retira un
+   runner ocupado o conectado. Si se pierde la respuesta del borrado, repetir
+   `finish` reconcilia el mismo intento sin emitir otro token ni registrar de nuevo.
+
+Nueve pruebas sin red verifican caducidad, destino fijo, exclusión de otros
+secretos, limpieza tras error, emisión única, comparación con GitHub, negativa
+a borrar runners activos y recuperación de una respuesta perdida:
+`python3 ops/android-build/registration-test.py`. Pasan en el Mac y wallabot; la prueba
+real sigue requiriendo la autorización anterior. Esta fase no instala un
+servicio de provisión automática ni guarda un PAT permanente en wallabot.
+
 ## Transacción y fallos
 
 Antes de que el runner reciba el trabajo, el draft conserva un intento
@@ -266,12 +324,22 @@ ficheros fijos del trabajo, conservando la imagen base sin credenciales.
 No eliminar el proyecto Expo ni sus credenciales. El cambio propuesto no toca
 `prompts/` ni `policy/health-safety/`.
 
+Revisión del 14-09-2026: el respaldo coincide con el workflow cloud vigente en
+main salvo por EAS CLI, fijado a 24.3.0 en vez de `latest`. Los tests ensayan el
+paso de un fallo local a un intento cloud con motivo, conservando SHA, versión,
+perfil e historial; también rechazan convertir un APK local validado en otra
+build. Son simulaciones de transacción: no han lanzado una build cloud ni
+publicado una release. La limpieza y recuperación de la VM sí se probaron en
+el servidor mediante éxito, cancelación, caída y timeout.
+
 ## Fuentes y validación
 
 - [EAS local y sus limitaciones](https://docs.expo.dev/build-reference/local-builds/)
 - [Infraestructura oficial de Expo, SDK 54](https://docs.expo.dev/build-reference/infrastructure/)
 - [Contador remoto de versiones](https://docs.expo.dev/build-reference/app-versions/)
 - [Hooks antes y después del job](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/run-scripts)
+- [Registro temporal de runners por repositorio](https://docs.github.com/en/rest/actions/self-hosted-runners#create-a-registration-token-for-a-repository)
+- [Lectura y enmascarado del token en runner 2.337.0](https://github.com/actions/runner/blob/v2.337.0/src/Runner.Listener/CommandSettings.cs)
 - [Limpieza de cloud-init para una imagen base](https://docs.cloud-init.io/en/latest/reference/cli.html#clean)
 
 Pruebas de código: `npm run test:production-release`. Los tests deterministas no

@@ -51,8 +51,9 @@ def main():
     request = json.loads((ROOT / "request.json").read_text())
     (ROOT / "request.json").unlink()
     mode = request["mode"]
-    assert mode in ["probe", "build", "verify", "diagnose"]
+    assert mode in ["probe", "build", "verify", "diagnose", "register-probe"]
     assert mode == "build" or "expoToken" not in request
+    assert mode == "register-probe" or "registrationToken" not in request
     report = {"mode": mode, "result": "failed", "nonce": request["nonce"]}
     output = ROOT / "output.bin"
     output.touch()
@@ -60,6 +61,12 @@ def main():
         if mode == "probe":
             assert sha(ROOT / "input.bin") == request["inputSha256"]
             shutil.copyfile(ROOT / "input.bin", output)
+        elif mode == "register-probe":
+            assert (ROOT / "input.bin").stat().st_size == 0
+            progress("registro-temporal")
+            registration = SourceFileLoader("registration", "/opt/gymnasia/runner_registration.py").load_module()
+            report["registration"] = registration.probe(request, ROOT / "private.log")
+            progress("completado")
         else:
             commit = request["sourceCommit"]
             assert re.fullmatch("[a-f0-9]{40}", commit)

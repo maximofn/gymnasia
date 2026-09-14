@@ -66,6 +66,38 @@ test("un fallo conserva el intento y requiere operación manual motivada", () =>
   assert.deepEqual(resumed.attempts[0], failed.attempts[0]);
 });
 
+test("la reversión a cloud exige motivo y conserva el intento local y la fuente", () => {
+  const local = started();
+  assert.throws(() => transition(local, "submit", { buildId: "cloud-rollback-test" }), /No se puede/);
+  const failed = transition(local, "fail-local", { reason: "Ensayo: VM no disponible" });
+  assert.throws(() => transition(failed, "submit", { buildId: "cloud-rollback-test" }), /No se puede/);
+  const retry = transition(failed, "retry", { reason: "Ensayo de reversión manual a EAS cloud" });
+  const submitted = transition(retry, "submit", { buildId: "cloud-rollback-test" });
+  assert.equal(submitted.attempts[1].backend, "eas-cloud");
+  assert.equal(submitted.attempts[1].attemptId, undefined);
+  assert.deepEqual(submitted.attempts[0], failed.attempts[0]);
+  for (const field of ["id", "tag", "sourceCommit", "profile", "version"]) {
+    assert.equal(submitted[field], local[field]);
+  }
+  const finished = transition(submitted, "observe", { status: "FINISHED", artifactUrl: "https://example.com/test.apk" });
+  const validated = transition(finished, "validate", {
+    artifactSha256: "d".repeat(64), artifactSize: 102000000, evidenceSha256: "e".repeat(64),
+  });
+  assert.equal(validated.state, "validated");
+  assert.deepEqual(validated.attempts[0], failed.attempts[0]);
+  assert.equal(validated.transitions.find((item) => item.event === "retry-authorized").reason,
+    "Ensayo de reversión manual a EAS cloud");
+});
+
+test("un APK local validado se reconcilia sin sustituirlo por una build cloud", () => {
+  const finished = transition(started(), "finish-local", { metadata: metadata() });
+  const payload = { artifactSha256: "b".repeat(64), artifactSize: 102000000, evidenceSha256: "c".repeat(64) };
+  const validated = transition(finished, "validate", payload);
+  assert.throws(() => transition(validated, "retry", { reason: "Cambiar de servidor" }), /fallida/);
+  assert.throws(() => transition(validated, "submit", { buildId: "cloud-rollback-test" }), /No se puede/);
+  assert.deepEqual(transition(validated, "validate", payload), validated);
+});
+
 test("lee intentos anteriores a los SDK adicionales sin admitir campos arbitrarios", () => {
   const tx = structuredClone(started());
   delete tx.attempts[0].toolchain.androidBuildToolsAdditional;

@@ -16,6 +16,8 @@ import tempfile
 import time
 import uuid
 
+from runner_registration import validate_request
+
 SOURCE = pathlib.Path(__file__).resolve().parent
 STATE = pathlib.Path("/var/lib/gymnasia-android")
 UNIT = "gymnasia-android-smoke.service"
@@ -67,12 +69,18 @@ def main():
     assert request_path.stat().st_size <= 1024 * 1024
     request_bytes = request_path.read_bytes()
     request = json.loads(request_bytes)
-    assert request["mode"] in ["probe", "build", "verify", "diagnose"]
+    assert request["mode"] in ["probe", "build", "verify", "diagnose", "register-probe"]
     assert len(request["nonce"]) == 32
+    sensitive = request["mode"] in ["build", "register-probe"]
     if request["mode"] == "build":
         assert request.get("expoToken") and request_path.stat().st_mode & 0o077 == 0
     else:
         assert "expoToken" not in request
+    if request["mode"] == "register-probe":
+        validate_request(request)
+        assert request_path.stat().st_mode & 0o077 == 0 and input_path.stat().st_size == 0
+    else:
+        assert "registrationToken" not in request
     assert input_path.stat().st_size <= 256 * 1024 * 1024
     assert not pathlib.Path("/run/wallabot-maintenance.block").exists()
     lock = open("/run/lock/gymnasia-android-image.lock", "a")
@@ -114,6 +122,7 @@ def main():
         files = []
         for name, data in [("smoke-channel.py", (SOURCE / "smoke-channel.py").read_text()),
                            ("smoke-guest.py", (SOURCE / "smoke-guest.py").read_text()),
+                           ("runner_registration.py", (SOURCE / "runner_registration.py").read_text()),
                            ("smoke-bootstrap.sh", BOOTSTRAP)]:
             files.append({"path": "/opt/gymnasia/" + name, "permissions": "0644",
                           "encoding": "b64", "content": base64.b64encode(data.encode()).decode()})
@@ -137,10 +146,11 @@ def main():
             path = STATE / "current" / name
             shutil.chown(path, "gymnasia-vm", "gymnasia-vm")
             path.chmod(0o600)
-        if request["mode"] == "build":
+        if sensitive:
             request_path.unlink()
         request_bytes = None
         request.pop("expoToken", None)
+        request.pop("registrationToken", None)
         run("systemctl", "daemon-reload")
         run("systemctl", "start", UNIT)
         invocation = prop("InvocationID")
@@ -173,10 +183,10 @@ def main():
             console = run("journalctl", "--no-pager", f"_SYSTEMD_INVOCATION_ID={invocation}", "-o", "cat", errors="replace")
             for line in console.splitlines():
                 # Only fixed progress labels, never arbitrary guest output.
-                if line in {"GYMNASIA_SMOKE_PHASE " + name for name in
-                            ["checkout", "dependencias", "compilacion-local", "verificacion-nativa", "completado"]} and line not in seen:
-                    print(line, flush=True)
-                    seen.add(line)
+                marker = re.search(r"\b(GYMNASIA_SMOKE_PHASE (?:checkout|dependencias|compilacion-local|verificacion-nativa|registro-temporal|completado))$", line)
+                if marker and marker[1] not in seen:
+                    print(marker[1], flush=True)
+                    seen.add(marker[1])
             time.sleep(2)
         assert prop("Result") == "success", "Falló la VM o su canal; revisar el diagnóstico privado"
         report = json.loads((STATE / "current/report.json").read_text())
@@ -186,7 +196,7 @@ def main():
         print("GYMNASIA_SMOKE_RESULT " + report["result"], flush=True)
         assert report["result"] == "passed", "La prueba falló; el informe conserva solo fase y tipo de error"
     finally:
-        if request["mode"] == "build":
+        if sensitive:
             request_path.unlink(missing_ok=True)
         run("systemctl", "stop", UNIT, check=False)
         assert prop("ActiveState") not in ["active", "activating", "deactivating"]
