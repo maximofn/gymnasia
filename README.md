@@ -209,6 +209,7 @@ Contrato, pruebas y validación de XHR en Android: [Google Interactions](docs/te
 ## Compilación Android de producción
 
 La migración a una VM desechable en wallabot conserva los gates y la publicación
-en GitHub. Está preparada para revisión y pendiente de prueba firmada antes de
-activarse. Instalación, toolchain fijada, firma, contador y reversión se describen
+en GitHub. La primera build firmada ya pasó su verificación independiente;
+quedan el registro efímero y el ensayo de reversión antes de activar el flujo.
+Instalación, toolchain fijada, firma, contador y reversión se describen
 en [el runbook de builds locales](ops/android-build/README.md).

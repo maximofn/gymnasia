@@ -1,12 +1,17 @@
 # Android en wallabot
 
-**Estado: imagen y aislamiento probados, flujo sin activar.** No fusionar el cambio del
-workflow ni registrar el runner hasta completar la prueba firmada y la auditoría
-de aislamiento. No se ha ejecutado todavía ninguna build local en wallabot.
-La auditoría del 13-09-2026 pasó permisos, toolchain, red privada y descarte de
-overlays tras éxito, cancelación, caída de QEMU y timeout; el hash de la base y
-los listeners/unidades del host se mantuvieron. Falta la prueba del APK firmado
-y completar el registro efímero antes de activar.
+**Estado: primer APK local firmado y verificado, flujo sin activar.** La prueba
+del 14-09-2026 compiló `production-apk` y verificó el resultado en otra VM limpia,
+sin credenciales: versión 1.43.2, versionCode 56 y firma de producción existente.
+Se mantuvo el candidato inmutable de la prueba; no incorpora los cambios de la
+release posterior 1.43.3. El APK no se publicó.
+La auditoría de la imagen ampliada pasó permisos, toolchain, red privada y
+descarte de overlays tras éxito, cancelación, caída de QEMU y timeout. También
+tras la build y su verificación se mantuvieron base, listeners y estado del host;
+se eliminaron los temporales con credenciales. No apareció una build cloud en
+el intervalo de este reintento local. El workflow cloud de main sigue activo
+hasta fusionar la migración. Quedan el registro efímero por trabajo, el ensayo
+de reversión del flujo de publicación y la instalación manual en Android.
 
 `build-apk.yml` conserva la selección de candidato, validación, borrador,
 verificación y publicación en GitHub. Solo `compile-android` usa
@@ -127,7 +132,13 @@ Línea base consultada el 13-09-2026: release `v1.43.2`, package
 Su evidencia pública declara el certificado
 `310b3839e405f1fa9f920925767e6ee84247aaa1b8a72259479e919a4859ab31`, coincidente
 con `policy.json` y con el certificado extraído del bloque de firma del APK
-público. **Falta la verificación nativa del APK local y comparar ambas firmas**.
+público. La verificación nativa del primer APK local confirmó la misma huella,
+package, permisos, sonidos y snapshot, sin infracciones. El APK mide 102.670.309
+bytes y su SHA-256 es
+`61b268643b1333e0aaaba1db01a459c3f60512a149bcf9ad80c706a87802109b`.
+Su versionCode 56 supera el 55 de la última release pública, `v1.43.3`, cuya
+evidencia se volvió a descargar y contrastar antes del reintento. La fuente de
+esta prueba sigue siendo `c9fd7ea27849881c80b64262d2f7fe62201df125` (1.43.2).
 En cada release se descarga de nuevo la evidencia del último APK,
 se valida su digest de GitHub y se exige un versionCode superior; 53 no es un
 contador nuevo ni un valor fijado en el código.
@@ -179,8 +190,8 @@ contador nuevo ni un valor fijado en el código.
    existentes. El emisor espera un saludo del guest antes de transferir datos:
    enviar antes de que virtio abra el puerto dejó la primera prueba bloqueada.
    Las escrituras sin búfer pueden aceptar solo parte del bloque y deben
-   repetirse hasta completarlo. La prueba real de ida y vuelta y la verificación
-   nativa del APK público ya pasaron; falta terminar y verificar el APK local.
+   repetirse hasta completarlo. Las cuatro fases reales ya pasaron: transferencia,
+   verificación del APK público, build firmada y verificación nativa del APK local.
    Al interrumpir el controlador, este espera la limpieza del subproceso antes
    de cerrar su salida y eliminar sus archivos privados.
    La consola serie puede contener secuencias UTF-8 incompletas. Solo al leer
