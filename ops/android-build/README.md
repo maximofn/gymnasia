@@ -354,6 +354,14 @@ sudo bash install-controller.sh
 sudo python3 install-app.py APP_ID INSTALLATION_ID /ruta/privada/clave.pem
 ```
 
+El paquete de instalación puede incluir `SHA256SUMS` y ejecutarse mediante
+`sudo python3 prepare-controller-host.py` en tmux. Este comprueba los hashes,
+instala el controlador apagado y ensaya una transferencia sin credenciales en
+una VM bajo las restricciones reales del servicio. Conserva un informe
+privado de resultado, limpieza y estado del host; no registra runners ni
+activa el timer. Esta auditoría prueba la preparación de la VM, no sustituye
+la posterior prueba de un job real con la App autorizada.
+
 El segundo comando requiere la autorización de la App, verifica su alcance,
 instala la clave para root y elimina el archivo de entrada tras el éxito. No
 sobrescribe una credencial existente; la rotación es una operación aparte.

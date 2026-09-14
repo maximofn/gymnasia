@@ -17,7 +17,7 @@ python3 registration-test.py
 python3 smoke-channel-test.py
 install -d -o root -g root -m 0700 /etc/gymnasia-android /var/lib/gymnasia-android/control
 for file in provision-controller.py provision_contract.py provision_state.py github_app.py job_runner.py \
-  job-admission.py admit-job.sh run-smoke.py smoke-channel.py smoke-guest.py runner_registration.py; do
+  job-admission.py admit-job.sh run-smoke.py smoke-channel.py smoke-guest.py runner_registration.py audit-controller.py; do
   install -o root -g root -m 0755 "$file" "/usr/local/lib/gymnasia-android/$file"
 done
 install -o root -g root -m 0644 gymnasia-android-controller.service gymnasia-android-controller.timer /etc/systemd/system/
