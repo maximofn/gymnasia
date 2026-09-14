@@ -212,8 +212,11 @@ La migración a una VM desechable en wallabot conserva los gates y la publicaci�
 en GitHub. La primera build firmada ya pasó su verificación independiente y el
 mantenedor confirmó que se instala y funciona en su Android. También pasó el
 registro temporal en GitHub y su retirada; la reversión de transacciones se
-ensayó sin red. El workflow destina ahora la compilación a wallabot; quedan la
-provisión automática por trabajo y su validación con el workflow completo.
+ensayó sin red. El workflow destina ahora la compilación a wallabot. El
+controlador está instalado y pasó la auditoría sin credenciales bajo las
+restricciones reales de systemd. La App privada está instalada solo en Gymnasia;
+su clave está protegida para root y la autenticación del servicio está verificada.
+Quedan la validación con el workflow completo y la activación del servicio.
 Hasta completar ese paso, las compilaciones esperarán un ejecutor disponible.
 Instalación, toolchain fijada, firma, contador y reversión se describen
 en [el runbook de builds locales](ops/android-build/README.md).

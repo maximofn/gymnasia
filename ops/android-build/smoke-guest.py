@@ -51,9 +51,9 @@ def main():
     request = json.loads((ROOT / "request.json").read_text())
     (ROOT / "request.json").unlink()
     mode = request["mode"]
-    assert mode in ["probe", "build", "verify", "diagnose", "register-probe"]
+    assert mode in ["probe", "build", "verify", "diagnose", "register-probe", "run-job"]
     assert mode == "build" or "expoToken" not in request
-    assert mode == "register-probe" or "registrationToken" not in request
+    assert mode in ["register-probe", "run-job"] or "registrationToken" not in request
     report = {"mode": mode, "result": "failed", "nonce": request["nonce"]}
     output = ROOT / "output.bin"
     output.touch()
@@ -66,6 +66,12 @@ def main():
             progress("registro-temporal")
             registration = SourceFileLoader("registration", "/opt/gymnasia/runner_registration.py").load_module()
             report["registration"] = registration.probe(request, ROOT / "private.log")
+            progress("completado")
+        elif mode == "run-job":
+            assert (ROOT / "input.bin").stat().st_size == 0
+            progress("registro-temporal")
+            from job_runner import run_job
+            report["registration"] = run_job(request, ROOT / "private.log")
             progress("completado")
         else:
             commit = request["sourceCommit"]

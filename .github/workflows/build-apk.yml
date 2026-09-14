@@ -370,7 +370,7 @@ jobs:
       needs.validate-production.result == 'success' &&
       needs.validate-production.outputs.source_commit == needs.select-transaction.outputs.source_commit &&
       needs.prepare-production.outputs.should_build == 'true'
-    runs-on: [self-hosted, linux, x64, wallabot, android-build]
+    runs-on: [self-hosted, linux, x64, wallabot, android-build, "gymnasia-${{ github.run_id }}-${{ github.run_attempt }}"]
     timeout-minutes: 110
     environment: Production
     permissions:

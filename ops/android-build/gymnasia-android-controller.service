@@ -1,0 +1,44 @@
+[Unit]
+Description=Provision one isolated Gymnasia Android runner
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/etc/gymnasia-android/app.json
+ConditionPathExists=/etc/gymnasia-android/app.private-key.pem
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+WorkingDirectory=/usr/local/lib/gymnasia-android
+ExecStart=/usr/bin/python3 /usr/local/lib/gymnasia-android/provision-controller.py tick
+ExecStopPost=/usr/bin/python3 /usr/local/lib/gymnasia-android/provision-controller.py cleanup-local
+LoadCredential=github-app-key:/etc/gymnasia-android/app.private-key.pem
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=PYTHONDONTWRITEBYTECODE=1
+UMask=0077
+TimeoutStartSec=130min
+TimeoutStopSec=120
+KillMode=control-group
+Restart=no
+CPUQuota=50%
+MemoryMax=512M
+MemorySwapMax=0
+TasksMax=128
+LimitCORE=0
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/gymnasia-android/control /var/lib/gymnasia-android/current /var/tmp /run/lock /run/systemd/system
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+# run-smoke verifies the executable and credentials of the separate QEMU UID.
+CapabilityBoundingSet=CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER CAP_SYS_PTRACE
+InaccessiblePaths=-/etc/ssh -/var/lib/tailscale -/var/lib/docker -/var/backups -/run/docker.sock
+
+# No [Install]: only the timer starts this fixed, reviewed controller.

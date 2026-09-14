@@ -12,9 +12,12 @@ tras la build y su verificación se mantuvieron base, listeners y estado del hos
 se eliminaron los temporales con credenciales. No apareció una build cloud en
 el intervalo de este reintento local. El workflow destina la compilación a
 wallabot. La prueba real de registro temporal y retirada también pasó. La
-reversión de transacciones se ensayó sin red; quedan la provisión automática
-por trabajo y su validación con el workflow completo. Hasta completarlas, el
-job de compilación esperará un ejecutor disponible. La fusión de la PR no
+reversión de transacciones se ensayó sin red. La provisión automática por
+trabajo está instalada y pasó una transferencia sin credenciales bajo las
+restricciones reales del controlador, conservando el host y limpiando la VM.
+La App de GitHub está instalada y su autenticación desde el servicio pasó la
+auditoría. Queda la validación con el workflow completo. Hasta completar esa
+validación, el job de compilación esperará un ejecutor disponible. La fusión de la PR no
 instala ni arranca por sí sola un ejecutor en el servidor.
 
 `build-apk.yml` conserva la selección de candidato, validación, borrador,
@@ -294,6 +297,113 @@ de la API y recuperación de una respuesta perdida:
 `python3 ops/android-build/registration-test.py`. Pasan en el Mac y wallabot; la prueba
 real descrita arriba también pasó. Esta fase no instala un
 servicio de provisión automática ni guarda un PAT permanente en wallabot.
+
+## Provisión automática: controlador y App auditados; job real pendiente
+
+`provision-controller.py` se instala desde un paquete revisado, como código de
+root independiente de los checkouts de las builds. Un timer de systemd lo
+ejecuta aproximadamente cada minuto, solo cuando terminó el ciclo anterior.
+Consulta GitHub por HTTPS saliente; no necesita webhook, puertos abiertos ni
+un Mac encendido. El bloqueo de mantenimiento impide comenzar otro trabajo.
+
+La App privada descrita en `github-app-permissions.json` se instala **solo en
+`maximofn/gymnasia`**. GitHub exige `Administration: write` para registrar y
+retirar runners de un repositorio; este permiso permite más operaciones
+administrativas que esas dos. `Actions: read` permite consultar la cola y sus
+aprobaciones; `Metadata: read` es el permiso implícito. No se concede escritura
+de código, releases, secretos o workflows. La creación de esta App y la
+custodia de su clave requieren la autorización expresa del mantenedor.
+
+La clave RSA queda en `/etc/gymnasia-android/app.private-key.pem`, root 0600,
+dentro de un directorio 0700. systemd entrega una copia de credencial al
+controlador; ninguna VM puede leer ese directorio ni el estado del controlador.
+La configuración `app.json` contiene únicamente `appId`, `installationId` y
+`repositoryId`. El cliente comprueba instalación, permisos y repositorio antes
+de usar un token de instalación de una hora, limitado de nuevo a ese único
+repositorio. No conserva tokens de instalación en disco. Solo el token de
+registro temporal viaja al guest mediante el canal ya auditado.
+
+La instalación de la App y su custodia fueron autorizadas expresamente y se
+verificaron el 14-09-2026: permisos exactos, acceso a un solo repositorio,
+huella de la clave root y autenticación mediante `LoadCredential` bajo las
+restricciones del controlador. Las copias temporales del Mac y de entrada al
+servidor se retiraron después de comprobar el destino. El timer permanece
+deshabilitado hasta completar la prueba real. La versión 1.44.0 prepara una
+nueva transacción para esa prueba; 1.43.3 ya estaba publicada.
+
+Antes de reservar una VM, se exigen el workflow canónico, main, evento push o
+workflow_dispatch, repositorio de origen canónico y ausencia de aprobaciones
+pendientes. Los jobs `select-transaction`, `validate-production` y
+`prepare-production` deben haber terminado correctamente en el mismo intento.
+`compile-android` debe estar en cola y sin ejecutor. Su etiqueta adicional
+`gymnasia-RUN_ID-RUN_ATTEMPT` evita que otra ejecución tome esa VM; el hook de
+root comprueba además run ID, intento, SHA del workflow y el nombre del job
+antes del checkout. El SHA del candidato sigue siendo el validado por los
+controles existentes, que puede ser distinto del SHA del workflow.
+
+El diario privado en `/var/lib/gymnasia-android/control/` se sincroniza a disco
+antes de pedir el token. Cada job puede reservarse una sola vez. Un fallo de
+red con respuesta incierta, reinicio o SIGKILL recupera la misma identidad,
+destruye los temporales locales y confirma su retirada; nunca vuelve a emitir
+el token ni recompila automáticamente. La limpieza adquiere primero el lock
+compartido de la imagen. El controlador transmite ese mismo lock al proceso
+que prepara la VM, por lo que no hay una ventana para pisar una prueba manual.
+
+Durante el job se contrasta en GitHub la asignación al runner reservado. Si se
+cancela la ejecución, aparece mantenimiento, GitHub deja de responder durante
+dos minutos o vence el límite, se apaga la VM. `ExecStopPost` cubre también la
+muerte del controlador. Si GitHub todavía ve al runner conectado u ocupado,
+queda pendiente retirar **esa misma identidad**, sin arrancar otra VM. Una
+build cuyo job terminó con fallo conserva su transacción y sigue requiriendo
+las operaciones manuales motivadas del runbook de releases.
+
+Instalación, todavía sin activar el timer, desde el paquete revisado en tmux:
+
+```bash
+sudo bash install-controller.sh
+sudo python3 install-app.py APP_ID INSTALLATION_ID /ruta/privada/clave.pem
+```
+
+El paquete de instalación puede incluir `SHA256SUMS` y ejecutarse mediante
+`sudo python3 prepare-controller-host.py` en tmux. Este comprueba los hashes,
+instala el controlador apagado y ensaya una transferencia sin credenciales en
+una VM bajo las restricciones reales del servicio. Conserva un informe
+privado de resultado, limpieza y estado del host; no registra runners ni
+activa el timer. Esta auditoría prueba la preparación de la VM, no sustituye
+la posterior prueba de un job real con la App autorizada.
+
+Dos particularidades del servicio instalado: `ProtectSystem=strict` deja
+`/tmp` en solo lectura, por lo que `cloud-localds` debe recibir `TMPDIR` con
+la carpeta privada de preparación que se elimina al terminar. Además,
+systemd borra `InvocationID` cuando este servicio oneshot queda inactivo.
+La auditoría consulta solo los registros posteriores a un cursor guardado
+antes del arranque; `journalctl -n 0` no devuelve ese cursor en wallabot y
+se obtiene con `-n 1 --show-cursor`. Así, un éxito antiguo no valida otro intento.
+
+El segundo comando requiere la autorización de la App, verifica su alcance,
+instala la clave para root y elimina el archivo de entrada tras el éxito. No
+sobrescribe una credencial existente; la rotación es una operación aparte.
+Antes de activar: probar el controlador instalado bajo las restricciones
+reales de systemd, comprobar la entrega del job, el apagado y la retirada, y
+validar el workflow completo. Solo entonces:
+
+```bash
+sudo systemctl enable --now gymnasia-android-controller.timer
+systemctl status gymnasia-android-controller.timer
+sudo journalctl -u gymnasia-android-controller.service --no-pager
+```
+
+Para detener nuevas asignaciones, deshabilitar el timer. Parar además el
+servicio cancela la VM que ese controlador tenga reservada; hacerlo a propósito
+y conservar el diario para reconciliar su identidad en GitHub. Nunca borrar
+`active.json` o `job-*.json` para forzar otra compilación. La reversión a cloud
+conserva las transacciones y requiere el motivo indicado más abajo.
+
+Validación local: `python3 ops/android-build/provision-test.py` cubre admisión,
+credenciales separadas, reserva persistente, respuestas perdidas, mantenimiento
+y limpieza limitada a la identidad propia. Los tests de registro y transporte
+se conservan; CI los ejecuta en un job independiente sin credenciales. Estas
+simulaciones no sustituyen la prueba del servicio y de un job real en wallabot.
 
 ## Transacción y fallos
 

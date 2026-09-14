@@ -1,0 +1,14 @@
+{
+  "name": "Gymnasia Android Builder",
+  "owner": "maximofn",
+  "visibility": "private",
+  "repositorySelection": ["maximofn/gymnasia"],
+  "repositoryPermissions": {
+    "administration": "write",
+    "actions": "read",
+    "metadata": "read"
+  },
+  "webhooks": false,
+  "events": [],
+  "userAuthorization": false
+}
