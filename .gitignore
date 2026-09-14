@@ -59,6 +59,15 @@ Thumbs.db
 .playwright-mcp/
 .tmp-store-listing/
 .claude/worktrees/
+.release-controller/
+
+# Local Android signing and disposable VM material
+credentials.json
+*.jks
+*.keystore
+*.qcow2
+*.apk
+*.aab
 
 # Dev store persistence (web dev data)
 .dev-store.json

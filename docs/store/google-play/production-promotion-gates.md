@@ -6,7 +6,8 @@ Una publicación de Gymnasia solo es válida si conserva una transacción y dos
 evidencias JSON:
 
 - `AndroidReleaseTransactionV1`: fija versión, tag, commit fuente, perfil, cada
-  build ID de EAS y todas las transiciones hasta la validación o sustitución;
+  intento (backend, identidad local o ID EAS histórico) y todas las transiciones
+  hasta la validación o sustitución;
 
 - `ProductionSourceEvidenceV1`: identifica el commit de `main`, los controles
   remotos, la versión confirmada y todos los gates ejecutados sobre ese checkout
@@ -24,7 +25,7 @@ usuarios.
 | Entrada | Ref admitido | Gate | Environment / perfil | Salida | Destino |
 | --- | --- | --- | --- | --- | --- |
 | Push que afecta a la app | `refs/heads/main` | versión confirmada + `validate-production` completo | `Production` / `production-apk` | transacción + APK + evidencias | GitHub Release |
-| `workflow_dispatch` | Solo `refs/heads/main` | reconciliar la transacción más antigua | `Production` / `production-apk` | reutiliza el build ID; no recompila por cancelación | GitHub Release |
+| `workflow_dispatch` | Solo `refs/heads/main` | reconciliar la transacción más antigua | `Production` / `production-apk` | reutiliza el artifact terminado; un intento interrumpido exige reintento manual motivado | GitHub Release |
 | Build local para Play | HEAD limpio y alcanzable desde `origin/main` | `verify:production-source` completo | `production` | AAB + dos evidencias | Prueba interna |
 | Promoción en Play | La release ya validada | Comparar `versionCode`, SHA-256 y certificado | Sin nueva build | El mismo AAB | Interna → cerrada |
 | Rollout público | La release cerrada ya validada | Evidencia de pruebas y autorización | Sin nueva build | El mismo AAB | España → más territorios |
@@ -100,7 +101,7 @@ y su tamaño siguen siendo idénticos, y para comparar antes de publicar los
 digests de GitHub de APK, evidencia de artefacto y evidencia fuente. Una
 reconciliación no puede sustituir el APK ya validado.
 
-## Gates reejecutados antes de EAS
+## Gates reejecutados antes de compilar
 
 `npm run verify:production-source` ejecuta la lista canónica definida en
 `PRODUCTION_GATES`. Incluye:
@@ -111,9 +112,15 @@ reconciliación no puede sustituir el APK ya validado.
 4. paridad del prompt, suite determinista, OpenWiki y TypeScript;
 5. E2E del agente con proveedor falso y E2E de entrenamiento.
 
-La validación sucede en un job sin secrets ni environment. Solo después puede
-comenzar el job `build-and-release`, solicitar aprobación de `Production` y leer
-`EXPO_TOKEN`.
+La validación sucede en un job sin secrets ni environment. Después,
+`prepare-production` conserva el draft y reserva el intento; `compile-android`
+compila en la VM desechable de wallabot y `verify-and-release` verifica y publica
+en un runner administrado. Los tres conservan la puerta de `Production`; solo
+la compilación recibe `EXPO_TOKEN` y no tiene permiso de publicación.
+
+La migración queda pendiente de la prueba física firmada y de la activación.
+El [runbook de wallabot](../../../ops/android-build/README.md) describe instalación,
+versiones fijadas, firma, aislamiento, recuperación y reversión.
 
 El prebuild temporal comprueba manifest fuente, directivas de retirada,
 `MainActivity` y sonidos. El verificador posterior del APK/AAB exige además el
@@ -130,13 +137,15 @@ Conventional Commits del PR y exige una coincidencia exacta. El workflow de
 release no modifica Git ni empuja commits.
 
 La cola `android-production-release` no cancela ejecuciones anteriores. Antes de
-consumir cuota, el workflow crea un draft de GitHub y guarda la transacción, la
-evidencia fuente y los cuatro módulos del snapshot de política. EAS se invoca con
-`--no-wait`; el build ID se adjunta inmediatamente al draft. Si GitHub se cancela
-o agota su espera, `operation=reconcile` recupera ese ID, consulta `build:view` y
-continúa con el mismo artefacto.
+compilar, el draft conserva transacción, evidencia fuente y los cuatro módulos
+del snapshot. El intento local registra run ID, run attempt, SHA, perfil,
+versión, toolchain y hashes de inputs antes de despacharse. EAS se invoca con
+`--local --freeze-credentials`, sin crear un recurso de build remoto; firma y
+contador siguen dependiendo de Expo. Si el resultado terminó, reconciliar
+recupera el mismo artifact de Actions. Si un intento anterior terminó sin
+resultado verificable, se registra como fallido sin recompilar automáticamente.
 
-Un estado terminal `ERRORED` o `CANCELED` de EAS deja la versión bloqueada. Solo
+Un fallo de compilación o verificación deja la versión bloqueada. Solo
 `retry-failed` o `supersede-failed`, sobre la versión pendiente más antigua y con
 un motivo no vacío, puede avanzar. Las versiones posteriores se procesan en
 orden semántico y la siguiente se encola únicamente después de publicar o

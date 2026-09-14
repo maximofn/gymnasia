@@ -205,3 +205,15 @@ npm run decrypt:recovery -- --input copia.gymnasia --output recuperacion.json
 
 La generación con Google usa Interactions sin almacenamiento remoto de conversaciones.
 Contrato, pruebas y validación de XHR en Android: [Google Interactions](docs/testing/google-interactions.md).
+
+## Compilación Android de producción
+
+La migración a una VM desechable en wallabot conserva los gates y la publicación
+en GitHub. La primera build firmada ya pasó su verificación independiente y el
+mantenedor confirmó que se instala y funciona en su Android. También pasó el
+registro temporal en GitHub y su retirada; la reversión de transacciones se
+ensayó sin red. El workflow destina ahora la compilación a wallabot; quedan la
+provisión automática por trabajo y su validación con el workflow completo.
+Hasta completar ese paso, las compilaciones esperarán un ejecutor disponible.
+Instalación, toolchain fijada, firma, contador y reversión se describen
+en [el runbook de builds locales](ops/android-build/README.md).

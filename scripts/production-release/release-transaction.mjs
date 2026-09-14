@@ -9,6 +9,7 @@ import {
   loadReleasePolicy,
   parseSemver,
 } from "./production-release.mjs";
+import { assertLocalAttempt, assertLocalBuildMetadata, localAttemptId, localToolchain } from "./local-build.mjs";
 
 const COMMIT_PATTERN = /^[a-f0-9]{40}$/;
 const TERMINAL_BUILD_STATUSES = new Set(["ERRORED", "CANCELED"]);
@@ -65,6 +66,10 @@ export function assertReleaseTransaction(transaction) {
   if (!Array.isArray(transaction.attempts) || !Array.isArray(transaction.transitions)) {
     throw new Error("La transacción no conserva su historial.");
   }
+  for (const attempt of transaction.attempts) {
+    if (attempt.backend === "wallabot-local") assertLocalAttempt(attempt, transaction);
+    else if (attempt.backend && attempt.backend !== "eas-cloud") throw new Error("Backend desconocido.");
+  }
   if (![
     "prepared",
     "build-submitted",
@@ -98,6 +103,53 @@ export function transitionReleaseTransaction(transaction, event, payload = {}) {
   const now = timestamp(payload.now ?? new Date().toISOString());
   const attempt = currentAttempt(next);
 
+  if (event === "start-local") {
+    const attemptId = localAttemptId({ ...payload, sourceCommit: next.sourceCommit });
+    if (next.state !== "prepared") throw new Error("Un intento local solo se inicia desde prepared; no se recompila al reconciliar.");
+    if (next.attempts.some((item) => item.attemptId === attemptId)) throw new Error("El intento local ya se ha utilizado.");
+    next.attempts.push({
+      number: next.attempts.length + 1,
+      backend: "wallabot-local",
+      attemptId,
+      runId: String(payload.runId),
+      runAttempt: String(payload.runAttempt),
+      sourceCommit: next.sourceCommit,
+      profile: next.profile,
+      version: next.version,
+      toolchain: { ...localToolchain },
+      status: "IN_PROGRESS",
+      submittedAt: now,
+    });
+    next.state = "build-running";
+    record(next, "local-started", now, { attemptId });
+    return next;
+  }
+  if (event === "finish-local") {
+    assertLocalBuildMetadata(payload.metadata, next, payload.metadata?.artifact ?? {});
+    if (next.state !== "build-running" && next.state !== "build-finished" && next.state !== "validated") {
+      throw new Error("El intento local no está en ejecución.");
+    }
+    if (next.state !== "build-running") return next;
+    attempt.status = "FINISHED";
+    attempt.finishedAt = now;
+    attempt.artifact = { ...payload.metadata.artifact };
+    next.state = "build-finished";
+    record(next, "local-finished", now, { attemptId: attempt.attemptId, artifactSha256: attempt.artifact.sha256 });
+    return next;
+  }
+  if (event === "fail-local") {
+    if (attempt?.backend !== "wallabot-local" || !["build-running", "build-finished"].includes(next.state)) {
+      throw new Error("Solo un intento local pendiente puede marcarse fallido.");
+    }
+    if (!String(payload.reason ?? "").trim()) throw new Error("El fallo exige un motivo.");
+    attempt.status = "ERRORED";
+    attempt.failedAt = now;
+    attempt.reason = payload.reason;
+    next.state = "failed";
+    record(next, "local-failed", now, { attemptId: attempt.attemptId, reason: payload.reason });
+    return next;
+  }
+
   if (event === "retry") {
     if (next.state !== "failed") throw new Error("Solo una transacción fallida puede reintentarse.");
     if (!String(payload.reason ?? "").trim()) throw new Error("El reintento manual exige un motivo.");
@@ -118,6 +170,7 @@ export function transitionReleaseTransaction(transaction, event, payload = {}) {
     if (next.state !== "prepared") throw new Error(`No se puede enviar un build desde ${next.state}.`);
     next.attempts.push({
       number: next.attempts.length + 1,
+      backend: "eas-cloud",
       buildId: payload.buildId,
       submittedAt: now,
       status: "NEW",
@@ -128,6 +181,7 @@ export function transitionReleaseTransaction(transaction, event, payload = {}) {
   }
   if (event === "observe") {
     if (!attempt) throw new Error("No hay un intento EAS que observar.");
+    if (attempt.backend === "wallabot-local") throw new Error("Un intento local no consulta estados remotos de EAS.");
     const status = String(payload.status ?? "").toUpperCase();
     if (attempt.status === status && (!payload.artifactUrl || attempt.artifactUrl === payload.artifactUrl)) {
       return next;
@@ -154,6 +208,10 @@ export function transitionReleaseTransaction(transaction, event, payload = {}) {
     return next;
   }
   if (event === "validate") {
+    if (attempt?.backend === "wallabot-local" && (attempt.artifact?.sha256 !== payload.artifactSha256
+      || attempt.artifact?.size !== Number(payload.artifactSize))) {
+      throw new Error("La validación no coincide con los bytes del intento local.");
+    }
     if (!/^[a-f0-9]{64}$/.test(String(payload.artifactSha256 ?? ""))) {
       throw new Error("La validación exige el SHA-256 del APK.");
     }
@@ -239,7 +297,7 @@ export function assertPublishedRelease({
     || artifactEvidence?.result !== "passed"
     || artifactEvidence?.source?.commit !== currentCommit
     || artifactEvidence?.source?.profile !== transaction.profile
-    || artifactEvidence?.build?.id !== transaction.attempts.at(-1)?.buildId
+    || artifactEvidence?.build?.id !== (transaction.attempts.at(-1)?.attemptId ?? transaction.attempts.at(-1)?.buildId)
     || artifactEvidence?.artifact?.publishedFilename !== transaction.artifact.filename
     || artifactEvidence?.artifact?.type !== transaction.artifactType
     || artifactEvidence?.artifact?.versionName !== transaction.version
@@ -461,6 +519,9 @@ async function selectRemote(options) {
 function transition(options) {
   const transaction = JSON.parse(readFileSync(resolve(options.input), "utf8"));
   const payload = {
+    runId: options["run-id"],
+    runAttempt: options["run-attempt"],
+    metadata: options.metadata ? JSON.parse(readFileSync(resolve(options.metadata), "utf8")) : undefined,
     buildId: options["build-id"],
     status: options.status,
     artifactUrl: options["artifact-url"],
