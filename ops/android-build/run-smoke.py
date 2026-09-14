@@ -21,8 +21,8 @@ STATE = pathlib.Path("/var/lib/gymnasia-android")
 UNIT = "gymnasia-android-smoke.service"
 
 
-def run(*args, check=True):
-    return subprocess.run(args, check=check, text=True, stdout=subprocess.PIPE,
+def run(*args, check=True, errors="strict"):
+    return subprocess.run(args, check=check, text=True, errors=errors, stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT).stdout.strip()
 
 
@@ -170,7 +170,7 @@ def main():
         seen = set()
         while prop("ActiveState") in ["activating", "active", "deactivating"]:
             assert time.monotonic() - started < 121 * 60
-            console = run("journalctl", "--no-pager", f"_SYSTEMD_INVOCATION_ID={invocation}", "-o", "cat")
+            console = run("journalctl", "--no-pager", f"_SYSTEMD_INVOCATION_ID={invocation}", "-o", "cat", errors="replace")
             for line in console.splitlines():
                 # Only fixed progress labels, never arbitrary guest output.
                 if line in {"GYMNASIA_SMOKE_PHASE " + name for name in

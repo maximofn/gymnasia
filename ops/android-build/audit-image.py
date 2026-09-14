@@ -23,8 +23,8 @@ UNIT = "gymnasia-android-vm.service"
 TIMEOUT_UNIT = "gymnasia-android-audit-timeout.service"
 
 
-def run(*args, check=True):
-    return subprocess.run(args, check=check, text=True, stdout=subprocess.PIPE,
+def run(*args, check=True, errors="strict"):
+    return subprocess.run(args, check=check, text=True, errors=errors, stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT).stdout.strip()
 
 
@@ -129,7 +129,7 @@ active_invocations = {}
 def save_console(unit, mode):
     invocation = active_invocations.get(unit)
     if invocation:
-        console = run("journalctl", "--no-pager", f"_SYSTEMD_INVOCATION_ID={invocation}", "-o", "cat")
+        console = run("journalctl", "--no-pager", f"_SYSTEMD_INVOCATION_ID={invocation}", "-o", "cat", errors="replace")
         (evidence / f"{mode}-console.txt").write_text(console)
         return console
     return ""

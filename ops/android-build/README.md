@@ -183,6 +183,9 @@ contador nuevo ni un valor fijado en el código.
    nativa del APK público ya pasaron; falta terminar y verificar el APK local.
    Al interrumpir el controlador, este espera la limpieza del subproceso antes
    de cerrar su salida y eliminar sus archivos privados.
+   La consola serie puede contener secuencias UTF-8 incompletas. Solo al leer
+   ese registro se reemplazan bytes inválidos; los marcadores ASCII y las
+   comprobaciones de identidad, estado y limpieza siguen siendo obligatorios.
 4. Ejecutar todos los `PRODUCTION_GATES`, `verify:production-artifact`, contrastar
    firma con el último APK real y comprobar package, versión, permisos, sonidos,
    snapshot y hashes. Comparar el inventario de builds de Expo antes/después en
