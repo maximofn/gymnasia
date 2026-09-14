@@ -350,8 +350,9 @@ Evidencia de ese piloto:
   Confirma éxito del job y workflow, runner retirado, directorio temporal
   vacío, hash base correcto y timer habilitado.
 
-La prueba confirma este ciclo completo; la instalación humana anterior sigue
-correspondiendo al APK 1.43.2, no a una instalación de 1.44.0.
+El 14-09-2026 el mantenedor confirmó que instaló el APK publicado 1.44.0 y que
+funciona en su Android. Con la instalación humana y el ciclo automático
+verificados, la migración de builds Android a wallabot queda completada.
 
 Antes de reservar una VM, se exigen el workflow canónico, main, evento push o
 workflow_dispatch, repositorio de origen canónico y ausencia de aprobaciones
