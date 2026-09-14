@@ -274,6 +274,7 @@ async function run() {
       buffer: Buffer.from(JSON.stringify(backup)),
     });
     await page.getByTestId("backup-import-confirm").waitFor({ state: "visible", timeout: 30_000 });
+    await page.getByTestId("backup-import-legacy-warning").waitFor({ state: "visible", timeout: 30_000 });
     await page.getByTestId("backup-import-confirm").click();
     const result = page.getByTestId("backup-result");
     await result.waitFor({ state: "visible", timeout: 30_000 });

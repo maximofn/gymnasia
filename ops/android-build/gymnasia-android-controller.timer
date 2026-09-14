@@ -1,0 +1,11 @@
+[Unit]
+Description=Check the approved Gymnasia Android queue
+
+[Timer]
+OnBootSec=60
+OnUnitInactiveSec=60
+AccuracySec=15
+Unit=gymnasia-android-controller.service
+
+[Install]
+WantedBy=timers.target

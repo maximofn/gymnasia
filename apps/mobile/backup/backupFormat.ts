@@ -1,8 +1,9 @@
 import { strFromU8, strToU8, unzipSync, zipSync, type Zippable } from "fflate";
 
 export const BACKUP_APP_ID = "gymnasia" as const;
-export const BACKUP_SCHEMA_VERSION = 2 as const;
-export const BACKUP_PACKAGE_MIME = "application/zip";
+export const LEGACY_BACKUP_SCHEMA_VERSION = 2 as const;
+export const BACKUP_SCHEMA_VERSION = 3 as const;
+export const BACKUP_PACKAGE_MIME = "application/vnd.gymnasia.encrypted";
 export const BACKUP_PACKAGE_EXTENSION = ".gymnasia";
 export const BACKUP_MANIFEST_ENTRY = "manifest.json";
 
@@ -72,7 +73,7 @@ export type BackupMediaOmission = {
 export type BackupManifestV2<TData extends BackupDataShape = BackupDataShape> = {
   app: typeof BACKUP_APP_ID;
   type: "backup";
-  schemaVersion: typeof BACKUP_SCHEMA_VERSION;
+  schemaVersion: typeof LEGACY_BACKUP_SCHEMA_VERSION;
   appVersion: string;
   createdAt: string;
   data: TData;
@@ -82,6 +83,15 @@ export type BackupManifestV2<TData extends BackupDataShape = BackupDataShape> = 
     omissions: BackupMediaOmission[];
   };
 };
+
+export type BackupManifestV3<TData extends BackupDataShape = BackupDataShape> =
+  Omit<BackupManifestV2<TData>, "schemaVersion"> & {
+    schemaVersion: typeof BACKUP_SCHEMA_VERSION;
+  };
+
+export type BackupManifest<TData extends BackupDataShape = BackupDataShape> =
+  | BackupManifestV2<TData>
+  | BackupManifestV3<TData>;
 
 export type BackupMediaCandidate = {
   measurementId: string;
@@ -98,8 +108,11 @@ export type SelectedBackupMedia = {
   filesByEntry: Map<string, Uint8Array>;
 };
 
-export type ParsedBackupPackage<TData extends BackupDataShape = BackupDataShape> = {
-  manifest: BackupManifestV2<TData>;
+export type ParsedBackupPackage<
+  TData extends BackupDataShape = BackupDataShape,
+  TManifest extends BackupManifest<TData> = BackupManifestV3<TData>,
+> = {
+  manifest: TManifest;
   filesByEntry: Map<string, Uint8Array>;
 };
 
@@ -229,7 +242,7 @@ export function selectBackupMedia(candidates: BackupMediaCandidate[]): SelectedB
 }
 
 export function createBackupPackage<TData extends BackupDataShape>(
-  manifest: BackupManifestV2<TData>,
+  manifest: BackupManifestV3<TData>,
   filesByEntry: Map<string, Uint8Array>,
 ): Uint8Array {
   parseBackupManifest(manifest);
@@ -260,12 +273,21 @@ export function createBackupPackage<TData extends BackupDataShape>(
 
 export function parseBackupManifest<TData extends BackupDataShape = BackupDataShape>(
   raw: unknown,
-): BackupManifestV2<TData> {
+  expectedSchemaVersion?: typeof BACKUP_SCHEMA_VERSION,
+): BackupManifestV3<TData>;
+export function parseBackupManifest<TData extends BackupDataShape = BackupDataShape>(
+  raw: unknown,
+  expectedSchemaVersion: typeof LEGACY_BACKUP_SCHEMA_VERSION,
+): BackupManifestV2<TData>;
+export function parseBackupManifest<TData extends BackupDataShape = BackupDataShape>(
+  raw: unknown,
+  expectedSchemaVersion: typeof LEGACY_BACKUP_SCHEMA_VERSION | typeof BACKUP_SCHEMA_VERSION = BACKUP_SCHEMA_VERSION,
+): BackupManifest<TData> {
   const candidate = asRecord(raw, "El paquete no contiene un manifiesto válido.");
   if (candidate.app !== BACKUP_APP_ID || candidate.type !== "backup") {
     throw new Error("El archivo no es una copia de seguridad de Gymnasia.");
   }
-  if (candidate.schemaVersion !== BACKUP_SCHEMA_VERSION) {
+  if (candidate.schemaVersion !== expectedSchemaVersion) {
     if (typeof candidate.schemaVersion === "number" && candidate.schemaVersion > BACKUP_SCHEMA_VERSION) {
       throw new Error("Esta copia se creó con una versión más reciente de Gymnasia.");
     }
@@ -375,7 +397,7 @@ export function parseBackupManifest<TData extends BackupDataShape = BackupDataSh
   return {
     app: BACKUP_APP_ID,
     type: "backup",
-    schemaVersion: BACKUP_SCHEMA_VERSION,
+    schemaVersion: expectedSchemaVersion,
     appVersion: typeof candidate.appVersion === "string" ? candidate.appVersion : "0.0.0",
     createdAt: typeof candidate.createdAt === "string" ? candidate.createdAt : "",
     data: data as TData,
@@ -396,7 +418,16 @@ function unzipFiltered(
 
 export function readBackupManifestFromPackage<TData extends BackupDataShape = BackupDataShape>(
   bytes: Uint8Array,
-): BackupManifestV2<TData> {
+  expectedSchemaVersion?: typeof BACKUP_SCHEMA_VERSION,
+): BackupManifestV3<TData>;
+export function readBackupManifestFromPackage<TData extends BackupDataShape = BackupDataShape>(
+  bytes: Uint8Array,
+  expectedSchemaVersion: typeof LEGACY_BACKUP_SCHEMA_VERSION,
+): BackupManifestV2<TData>;
+export function readBackupManifestFromPackage<TData extends BackupDataShape = BackupDataShape>(
+  bytes: Uint8Array,
+  expectedSchemaVersion: typeof LEGACY_BACKUP_SCHEMA_VERSION | typeof BACKUP_SCHEMA_VERSION = BACKUP_SCHEMA_VERSION,
+): BackupManifest<TData> {
   if (bytes.byteLength > MAX_BACKUP_PACKAGE_BYTES) {
     throw new Error("El archivo supera el tamaño máximo permitido.");
   }
@@ -414,14 +445,29 @@ export function readBackupManifestFromPackage<TData extends BackupDataShape = Ba
   } catch {
     throw new Error("El manifiesto de la copia no es JSON válido.");
   }
-  return parseBackupManifest<TData>(parsed);
+  return expectedSchemaVersion === LEGACY_BACKUP_SCHEMA_VERSION
+    ? parseBackupManifest<TData>(parsed, LEGACY_BACKUP_SCHEMA_VERSION)
+    : parseBackupManifest<TData>(parsed, BACKUP_SCHEMA_VERSION);
 }
 
 export async function readAndVerifyBackupPackage<TData extends BackupDataShape>(
   bytes: Uint8Array,
   digestHex: (data: Uint8Array) => Promise<string>,
-): Promise<ParsedBackupPackage<TData>> {
-  const manifest = readBackupManifestFromPackage<TData>(bytes);
+  expectedSchemaVersion?: typeof BACKUP_SCHEMA_VERSION,
+): Promise<ParsedBackupPackage<TData, BackupManifestV3<TData>>>;
+export async function readAndVerifyBackupPackage<TData extends BackupDataShape>(
+  bytes: Uint8Array,
+  digestHex: (data: Uint8Array) => Promise<string>,
+  expectedSchemaVersion: typeof LEGACY_BACKUP_SCHEMA_VERSION,
+): Promise<ParsedBackupPackage<TData, BackupManifestV2<TData>>>;
+export async function readAndVerifyBackupPackage<TData extends BackupDataShape>(
+  bytes: Uint8Array,
+  digestHex: (data: Uint8Array) => Promise<string>,
+  expectedSchemaVersion: typeof LEGACY_BACKUP_SCHEMA_VERSION | typeof BACKUP_SCHEMA_VERSION = BACKUP_SCHEMA_VERSION,
+): Promise<ParsedBackupPackage<TData, BackupManifest<TData>>> {
+  const manifest = expectedSchemaVersion === LEGACY_BACKUP_SCHEMA_VERSION
+    ? readBackupManifestFromPackage<TData>(bytes, LEGACY_BACKUP_SCHEMA_VERSION)
+    : readBackupManifestFromPackage<TData>(bytes, BACKUP_SCHEMA_VERSION);
   const allowedEntries = new Map(manifest.media.assets.map((asset) => [asset.entry, asset]));
   const files = unzipFiltered(bytes, (file) => {
     const asset = allowedEntries.get(file.name);
@@ -508,8 +554,9 @@ export function stripJpegMetadata(bytes: Uint8Array): Uint8Array {
   throw new Error("La foto JPEG no contiene datos de imagen completos.");
 }
 
-export function backupFileName(now = new Date()): string {
-  const pad = (value: number) => String(value).padStart(2, "0");
-  const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
-  return `gymnasia_backup_${stamp}${BACKUP_PACKAGE_EXTENSION}`;
+export function backupFileName(randomSuffix: string): string {
+  if (!/^[a-f0-9]{12,32}$/.test(randomSuffix)) {
+    throw new Error("El sufijo aleatorio del archivo no es válido.");
+  }
+  return `gymnasia_backup_${randomSuffix}${BACKUP_PACKAGE_EXTENSION}`;
 }

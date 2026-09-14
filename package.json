@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "dev:mobile": "npm --workspace apps/mobile run start",
+    "decrypt:recovery": "tsx scripts/decrypt-recovery.ts",
     "sync:health-safety": "node scripts/health-safety/sync.mjs --write && npm run sync:chat-prompt",
     "check:health-safety": "node scripts/health-safety/check.mjs",
     "test:health-safety": "node --test scripts/health-safety/*.test.mjs",
@@ -68,11 +69,14 @@
     "test:train:history:e2e": "node apps/mobile/scripts/train-history-snapshot.e2e.mjs",
     "test:diet:e2e": "node apps/mobile/scripts/diet-validation.e2e.mjs",
     "test:storage-recovery:e2e": "node apps/mobile/scripts/storage-recovery.e2e.mjs",
+    "test:recovery-cli": "node --import tsx --test scripts/decrypt-recovery.test.mjs",
     "test:shell:e2e": "node apps/mobile/scripts/shell-navigation.e2e.mjs",
     "test:measurements:performance:e2e": "node apps/mobile/scripts/measurement-performance.e2e.mjs",
     "test:user-preferences:e2e": "node apps/mobile/scripts/user-preferences.e2e.mjs",
     "test:train:e2e:headed": "TRAIN_E2E_HEADLESS=0 npm run test:train:e2e",
     "test:openwiki": "node --test ops/openwiki-automation-template/tests/*.test.mjs",
+    "test:linear": "python3 -m unittest discover -s .claude/skills/linear-tickets/tests -p 'test_*.py'",
+    "test:board-automation": "node --test scripts/board-automation/*.test.mjs",
     "test:board": "node --test arquitectura-agente/tests/board-data.test.mjs",
     "test:board:e2e": "node arquitectura-agente/tests/board.e2e.mjs",
     "test:board:e2e:headed": "BOARD_E2E_HEADLESS=0 npm run test:board:e2e"
@@ -82,6 +86,7 @@
     "fast-check": "^4.9.0",
     "playwright": "^1.58.2",
     "sharp": "^0.35.4",
+    "tsx": "4.21.0",
     "vitest": "^4.1.10"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"

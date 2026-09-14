@@ -16,7 +16,8 @@ Si un cambio toca cualquiera de estas cosas, recórrela entera:
 - un host al que la aplicación se conecta;
 - un permiso de Android;
 - lo que se envía a un proveedor de IA;
-- el contenido del fichero de copia de seguridad;
+- el contenido o la protección del fichero de copia de seguridad, incluida la forma de
+  crear, pedir o conservar una contraseña;
 - lo que borra cualquiera de las acciones de gestión de datos;
 - una función que use cámara, galería o notificaciones;
 - añadir o quitar un proveedor de IA.

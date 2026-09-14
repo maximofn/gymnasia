@@ -2,10 +2,11 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { once } from "node:events";
 import { createServer } from "node:http";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { dirname, extname, join, normalize } from "node:path";
 import process from "node:process";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { setTimeout as sleep } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 
@@ -25,6 +26,8 @@ const SESSION_DRAFT_KEY = scopedKey("gymnasia.mobile.training.session_template_d
 const PERSONAL_DATA_KEY = scopedKey("gymnasia.mobile.personal_data.v1");
 const USER_PREFS_KEY = scopedKey("gymnasia.mobile.user_prefs.v1");
 const mobileRoot = dirname(dirname(fileURLToPath(import.meta.url)));
+const repoRoot = dirname(dirname(mobileRoot));
+const RECOVERY_PASSWORD = "recovery export password";
 
 function logStep(message) {
   console.log(`[storage-recovery-e2e] ${message}`);
@@ -192,11 +195,34 @@ async function run() {
 
       const downloadPromise = page.waitForEvent("download", { timeout: STEP_TIMEOUT_MS });
       await page.locator('[data-testid="local-store-recovery-export"]').click();
+      if (process.env.STORAGE_RECOVERY_PASSWORD_SCREENSHOT) {
+        await page.screenshot({
+          path: process.env.STORAGE_RECOVERY_PASSWORD_SCREENSHOT,
+          fullPage: true,
+        });
+      }
+      await page.getByTestId("portable-password-input").fill(RECOVERY_PASSWORD);
+      await page.getByTestId("portable-password-confirm-input").fill(RECOVERY_PASSWORD);
+      await page.getByTestId("portable-password-submit").click();
       const download = await downloadPromise;
-      const exported = JSON.parse(await readFileSync(await download.path(), "utf8"));
+      const downloadPath = await download.path();
+      assert.ok(downloadPath, "el navegador no conservó la recuperación cifrada");
+      const encrypted = readFileSync(downloadPath);
+      assert.equal(encrypted.subarray(0, 8).toString("ascii"), "GYMENC03");
+      assert.doesNotMatch(encrypted.toString("utf8"), new RegExp(corruptRaw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+      const outputDirectory = mkdtempSync(join(tmpdir(), "gymnasia-recovery-e2e-"));
+      const outputPath = join(outputDirectory, "recovery.json");
+      const decrypted = spawnSync(
+        process.execPath,
+        ["--import", "tsx", join(repoRoot, "scripts/decrypt-recovery.ts"), "--input", downloadPath, "--output", outputPath, "--password-stdin"],
+        { cwd: repoRoot, input: `${RECOVERY_PASSWORD}\n`, encoding: "utf8" },
+      );
+      assert.equal(decrypted.status, 0, decrypted.stderr);
+      const exported = JSON.parse(readFileSync(outputPath, "utf8"));
       assert.equal(exported.type, "local-store-recovery");
       assert.equal(exported.recovery.rawPayload, corruptRaw);
       assert.match(exported.warning, /sensible/i);
+      rmSync(outputDirectory, { recursive: true, force: true });
       await context.close();
     }
 

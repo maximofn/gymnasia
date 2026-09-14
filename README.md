@@ -56,6 +56,16 @@ npm --workspace apps/feedback-worker run test     # suite, sin red ni credencial
 npm --workspace apps/feedback-worker run deploy   # despliegue manual
 ```
 
+## Identificar la versión desde las trazas
+
+En Ajustes → Trazas, el texto copiado incluye `app-version` y `build-version` en
+la cabecera. `expo-application` lee estos datos del paquete instalado: en Android
+son `versionName` y `versionCode`; en iOS, la versión y el número de build.
+Cada entrada `App mounted` conserva también `version` y `buildVersion`, para
+distinguir los arranques anteriores si el historial sobrevive a una actualización.
+Las entradas antiguas se conservan sin atribuirles una compilación desconocida.
+En web y Expo Go se muestra la versión del proyecto y `build-version: unavailable`.
+
 ## Catálogos locales
 
 Cada ficha vive en su propio JSON. Los ficheros `all.json` e `index.json` son
@@ -165,10 +175,19 @@ para verificar cada foto, admite como máximo 500 relaciones de foto, 5 MiB por 
 200 MiB de imágenes en total. Si una foto falta o no cabe, la medición numérica sigue en
 la copia y la interfaz muestra la omisión.
 
-El importador sigue aceptando los backups JSON v1. El paquete `.gymnasia` no contiene
-claves de API, pero incluye conversaciones y otros datos sensibles y no está cifrado.
+Las exportaciones nuevas se cifran y autentican con una contraseña elegida por el usuario;
+la app no la guarda y no ofrece una salida sin cifrar. El importador sigue aceptando con
+aviso los backups antiguos JSON v1 y ZIP v2. El paquete `.gymnasia` no contiene claves de
+API, pero incluye conversaciones y otros datos sensibles.
 El formato y sus invariantes están documentados en
 `docs/architecture/measurement-photo-backups.md`.
+
+Una exportación cifrada de recuperación puede abrirse localmente, sin pasar la contraseña
+como argumento ni imprimir el contenido por pantalla:
+
+```bash
+npm run decrypt:recovery -- --input copia.gymnasia --output recuperacion.json
+```
 
 ## Documentacion
 
@@ -186,3 +205,18 @@ El formato y sus invariantes están documentados en
 
 La generación con Google usa Interactions sin almacenamiento remoto de conversaciones.
 Contrato, pruebas y validación de XHR en Android: [Google Interactions](docs/testing/google-interactions.md).
+
+## Compilación Android de producción
+
+Las builds Android de producción se compilan en una VM desechable en wallabot.
+GitHub conserva las validaciones, las aprobaciones de Production, la verificación
+independiente y la publicación. El controlador crea un ejecutor efímero por
+trabajo aprobado y lo retira al terminar; el Mac puede estar apagado.
+
+El ciclo completo quedó validado el 14-09-2026 con
+[Gymnasia 1.44.0](https://github.com/maximofn/gymnasia/releases/tag/v1.44.0),
+versionCode 57 y la firma de producción existente. El APK publicado coincide
+byte a byte con el generado en wallabot. La VM se limpió, el ejecutor se retiró
+y el timer quedó habilitado. Expo sigue proporcionando la firma y el contador;
+la compilación usa EAS local. Instalación, toolchain fijada y reversión se
+describen en [el runbook de builds locales](ops/android-build/README.md).

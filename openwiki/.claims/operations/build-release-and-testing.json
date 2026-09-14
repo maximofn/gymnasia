@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:6604b87495786c216cb381be8a455aa5bdf4bf3d08d9465c486faf8d3def5024",
+  "pageVersion": "sha256:7d04af42935a8e8af4de492a6e07bbe93c6e1de073f1bc150fae65a96b442dca",
   "claims": [
     {
       "id": "claim_b6ce0be648324cb693c61680ef4a75d1",
@@ -8,7 +8,7 @@
       "evidence": [
         {
           "resource": "repo://.github/workflows/agent-tests.yml#L58-L89",
-          "version": "repo-lines-v1:sha256:064e804bef6f78dd73ace3ddb4989757326ffeb6b85632928cf236b2fab61e65:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmMTg0NDBmYWY4NDg0MDBhYzAxM2RlZDMyNGYzNjU2ODdlMTZiMjYyYzZhZTBmNTM2MTA4MTAyNDUwOWNjYjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwMjQ2NTI5N2Y1ZmJiMDQ2MWU1OTE2YjY1MThjYzA3NDE3ZTM3NjhlMTYxZWMxNTkyYzVjOTdlYzJjYTBlYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdlYzNiMTk1MGJiYmZmNzIwNWY2YjQzZmNjNWU0MmI0OTlhZGRiNDk4ZDg1NzhmYjcwNTZiNTE5MDI0YmMwYjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4MDMyNTY0ZmM2MWE3Njk1NjBiYzI0ZTc4ZDQ1ZGU5MzE0NTFjMzRkYjdlMjczOWQwOTA3OGUxYmFmODZmYmMifQ"
+          "version": "repo-lines-v1:sha256:c158505217a3042999cb2c371afc3e37b9d30f089f5988f54168cd986737a667:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmMTg0NDBmYWY4NDg0MDBhYzAxM2RlZDMyNGYzNjU2ODdlMTZiMjYyYzZhZTBmNTM2MTA4MTAyNDUwOWNjYjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwMjQ2NTI5N2Y1ZmJiMDQ2MWU1OTE2YjY1MThjYzA3NDE3ZTM3NjhlMTYxZWMxNTkyYzVjOTdlYzJjYTBlYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdlYzNiMTk1MGJiYmZmNzIwNWY2YjQzZmNjNWU0MmI0OTlhZGRiNDk4ZDg1NzhmYjcwNTZiNTE5MDI0YmMwYjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4MDMyNTY0ZmM2MWE3Njk1NjBiYzI0ZTc4ZDQ1ZGU5MzE0NTFjMzRkYjdlMjczOWQwOTA3OGUxYmFmODZmYmMifQ"
         },
         {
           "resource": "repo://apps/mobile/package.json#L5-L21",
@@ -26,7 +26,7 @@
       "evidence": [
         {
           "resource": "repo://apps/mobile/app.config.ts#L101-L155",
-          "version": "repo-lines-v1:sha256:24757949c83ceba44ec586c3e266bd7da0fa8cc9606aa6abdf7efd1c6ea37b1e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmY2IxZDYyNDc3OGM5MTcxMGM0N2U0ZjFhZTgwNTA4MWJmODBjY2EwZTY3N2ZmYjBjYTYwZWVkZDM1MTk3MzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3NTk3N2Q3YTFiMWVmZjBjYThjZDBlZGI5NGNlZThmYTFjNWY3MjM1YWJmODQxNWFhYzU0MzE4Y2FhYWViNDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkOTE1MTZlMjQzMDdhMTBkNTc4MjQ2NmQ2NTRlZmU1OGZjYjlmMmRhZTYyNzJmYmQwMmEwYjA5NjY1MTJiMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAifQ"
+          "version": "repo-lines-v1:sha256:10ee59fee2387db894e26bf926fdb2f557d9205dd63ba3a95b555513a8fe8246:eyJzZWxlY3RlZExpbmVDb3VudCI6NzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmY2IxZDYyNDc3OGM5MTcxMGM0N2U0ZjFhZTgwNTA4MWJmODBjY2EwZTY3N2ZmYjBjYTYwZWVkZDM1MTk3MzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3NTk3N2Q3YTFiMWVmZjBjYThjZDBlZGI5NGNlZThmYTFjNWY3MjM1YWJmODQxNWFhYzU0MzE4Y2FhYWViNDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkOTE1MTZlMjQzMDdhMTBkNTc4MjQ2NmQ2NTRlZmU1OGZjYjlmMmRhZTYyNzJmYmQwMmEwYjA5NjY1MTJiMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAifQ"
         },
         {
           "resource": "repo://apps/mobile/app.config.ts#L7-L33",
@@ -36,19 +36,15 @@
     },
     {
       "id": "claim_4489f0caede4443898a841e21ad11458",
-      "statement": "La política declarativa de Android permite cinco permisos y bloquea `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`; sus pruebas verifican tanto la configuración como manifests de dependencias y la vivacidad del escáner.",
+      "statement": "La política declarativa de Android permite cuatro permisos (`WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`) y bloquea `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`; sus pruebas verifican tanto la configuración como manifests de dependencias y la vivacidad del escáner.",
       "evidence": [
         {
           "resource": "repo://apps/mobile/app.json#L26-L44",
-          "version": "repo-lines-v1:sha256:13d70e8b72790f4a8b2a668af905b8d05d810d6358dcbd1bee7563f06ce78019:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1NDlkYmQ3YWI3MDE5NTExMjBmZmM2NWQ0NDljZGRjMDcwZmNhYzg5NjliNjAxMmEzOTU1ZmM0MjE0ZDljZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0MjIzOWIxYmQ4MmI4NWVkNTBjMThhYmU2YjhlOTk3ODc1NWRhYzZmZDgwNDA5MjRjOGE4ODBjNTJmMDY1ZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhZjNmNzVkNDI3MTBkNTUyYjQzOWNjYzM3NTM4YTFiODBhZDY0ZWEzOGYwZGM1MmNiNzAzNTYyYWU0ZDYyYTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjYWU0NmY1ODgxODEzNmFmOWJjNDYwYzgwOGMyNjVhY2E0M2VmNGM5NjQ4ZDY4ZjlmMGI5MGViYzE2Y2JiZTgifQ"
+          "version": "repo-lines-v1:sha256:c9a298e38d6ac11081ba1de6530603c10a1af54daf283dc1b1612298b6fca7f7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1NDlkYmQ3YWI3MDE5NTExMjBmZmM2NWQ0NDljZGRjMDcwZmNhYzg5NjliNjAxMmEzOTU1ZmM0MjE0ZDljZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFhZjNmNzVkNDI3MTBkNTUyYjQzOWNjYzM3NTM4YTFiODBhZDY0ZWEzOGYwZGM1MmNiNzAzNTYyYWU0ZDYyYTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyZmNhNjM1ZmUyNDNlZTA3M2Y1YTBmNTA2ZmU1MmQ4ZTAxN2FkNGI2ZjM4NmExNWJiZjhiMDZmZTQ0YTliM2QifQ"
         },
         {
-          "resource": "repo://scripts/android-permissions/permissions.test.mjs#L101-L205",
-          "version": "repo-lines-v1:sha256:db4675a44482e4054fad1e3ceb315477191bb84e465b269d166f3929d60ceba9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjMDYzYjkxYmRmODk4OTM4ODIwMGM3YjBiNDhjYjA1OTU3Y2ZkNzNiZjZhMzdjODQ4OTYwODNlMGQwY2IzOWJhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhNzE5NjAwODIzOGU3ZDQ0MmRkNzQ0ZjA0NmViYWMxODdkYjkyZjY3NjE1MjFkOGNhNmE1ZGVjNGViODFlN2VmIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIn0"
-        },
-        {
-          "resource": "repo://scripts/android-permissions/permissions.test.mjs#L28-L97",
-          "version": "repo-lines-v1:sha256:5c47bbf0f51443d73478c466ecd3fe6b7b1a4147ef13decf510473c87c3c0760:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1OWRlNTZlZGViNzExNzVkMzYyN2VhYjg1YmM1NWQxODZjOTk0YWFhMWUwYzBjNDJlNjVkMzM5YjUzMjdhZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiY2RmMzI5NTQ2ODc5MDU1ODE4Zjc4MGEzMzg2NTRkMzJjNzI4OWQwZTBjZmQzZTQ5MTNiODBlMGQxMjUxMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3MTk2MDA4MjM4ZTdkNDQyZGQ3NDRmMDQ2ZWJhYzE4N2RiOTJmNjc2MTUyMWQ4Y2E2YTVkZWM0ZWI4MWU3ZWYifQ"
+          "resource": "repo://scripts/android-permissions/permissions.test.mjs#L28-L104",
+          "version": "repo-lines-v1:sha256:57d7e44a9cdd1d5942f78a4ba138933ffb405107b4fe9fe69cd069572619eb4f:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1OWRlNTZlZGViNzExNzVkMzYyN2VhYjg1YmM1NWQxODZjOTk0YWFhMWUwYzBjNDJlNjVkMzM5YjUzMjdhZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiY2RmMzI5NTQ2ODc5MDU1ODE4Zjc4MGEzMzg2NTRkMzJjNzI4OWQwZTBjZmQzZTQ5MTNiODBlMGQxMjUxMTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3MTk2MDA4MjM4ZTdkNDQyZGQ3NDRmMDQ2ZWJhYzE4N2RiOTJmNjc2MTUyMWQ4Y2E2YTVkZWM0ZWI4MWU3ZWYifQ"
         }
       ]
     },
@@ -78,7 +74,7 @@
       "evidence": [
         {
           "resource": "repo://apps/mobile/scripts/catalogs.e2e.mjs#L148-L189",
-          "version": "repo-lines-v1:sha256:6b5796e1c74cd46923b058d84ab0c8c48345ee8ef0a0a54c5cdd78501a88b166:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3YjdmOGZiMDljNjJkNzIyZGFiNGI0MzY0Yjc0MjRiNGQzMGRjZmQ0MTYwMjBmOTlmNTBiMjY0MGMzNWQ3YzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1NzUyMWQxNWM0YjBlN2M4YmFhZDBhODJjNWY4OWJmNDQ1NWVkMjFhMWE1ODU1MWU1OWFmZTIwMzgwMDQ4YzIifQ"
+          "version": "repo-lines-v1:sha256:bfb253ed056edccc1ef32b065cd46d6c48f960987a36b0f9ee51471e9a8f9cf2:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3YjdmOGZiMDljNjJkNzIyZGFiNGI0MzY0Yjc0MjRiNGQzMGRjZmQ0MTYwMjBmOTlmNTBiMjY0MGMzNWQ3YzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1NzUyMWQxNWM0YjBlN2M4YmFhZDBhODJjNWY4OWJmNDQ1NWVkMjFhMWE1ODU1MWU1OWFmZTIwMzgwMDQ4YzIifQ"
         },
         {
           "resource": "repo://apps/mobile/scripts/catalogs.e2e.mjs#L93-L123",
@@ -120,7 +116,7 @@
       "evidence": [
         {
           "resource": "repo://.github/workflows/agent-tests.yml#L3-L89",
-          "version": "repo-lines-v1:sha256:29b08478d0cd8b7f6a9adced9b9f5116d61bdbab2d4fc767de430cb7d3c2e209:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwMjQ2NTI5N2Y1ZmJiMDQ2MWU1OTE2YjY1MThjYzA3NDE3ZTM3NjhlMTYxZWMxNTkyYzVjOTdlYzJjYTBlYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1OWMwYzY4NTJkMTUwOGRiMTI0ZTAxYzFlOTRiNTFkZmI1NWRmMGE0OTY2OTQzODliNWJhOWY4ODg3ODlmNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4MDMyNTY0ZmM2MWE3Njk1NjBiYzI0ZTc4ZDQ1ZGU5MzE0NTFjMzRkYjdlMjczOWQwOTA3OGUxYmFmODZmYmMifQ"
+          "version": "repo-lines-v1:sha256:5ee8ab8fa00658dc8b0c0389d04e942b0c65d8077cf75e93aab7cdea97958f47:eyJzZWxlY3RlZExpbmVDb3VudCI6OTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwMjQ2NTI5N2Y1ZmJiMDQ2MWU1OTE2YjY1MThjYzA3NDE3ZTM3NjhlMTYxZWMxNTkyYzVjOTdlYzJjYTBlYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1OWMwYzY4NTJkMTUwOGRiMTI0ZTAxYzFlOTRiNTFkZmI1NWRmMGE0OTY2OTQzODliNWJhOWY4ODg3ODlmNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4MDMyNTY0ZmM2MWE3Njk1NjBiYzI0ZTc4ZDQ1ZGU5MzE0NTFjMzRkYjdlMjczOWQwOTA3OGUxYmFmODZmYmMifQ"
         },
         {
           "resource": "repo://.github/workflows/agent-tests.yml#L91-L112",
@@ -168,7 +164,7 @@
         },
         {
           "resource": "repo://scripts/production-release/production-release.mjs#L16-L45",
-          "version": "repo-lines-v1:sha256:45cea106c25933be6739c7205fb7fdd37f65416df1af885ce8bd39a05409910f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxODYwZTk3YTQ5ZjdiZGQ0MGZkMDhhYjA0NWZmYzRjNmNmZDUyZjRkNDAxNGE0OTQ1MDBkZjM0ZmM3M2MxMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZTI2Y2Q5MjM2NmY2MGQ4ZWQ5MmQwMjM5ZjA3ZmVmNzRjYWMxNGFhNjlhZGRmOWMyY2MwZDExZWIwMGE0NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1ZjNhZjUzNDBiYzk4ODY4YTU4YzM5MmRkNDMzYWU0NzQwYjkzMjE1OTUxOWJmMzBhZWRmZjY4ZjYwZmVmZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MmIxNWM2ZjkxMjg0MTBiMTFmNDNkZDg1MGM5NTE0ZmIxNzNhYTBhNzhjMWI1NTUzODljZjEzZWJmMjA2MDIifQ"
+          "version": "repo-lines-v1:sha256:d037a91b7d456b63bdb216834089a0ba42197ab3e8172fd644da5932b095eb05:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxODYwZTk3YTQ5ZjdiZGQ0MGZkMDhhYjA0NWZmYzRjNmNmZDUyZjRkNDAxNGE0OTQ1MDBkZjM0ZmM3M2MxMDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZTI2Y2Q5MjM2NmY2MGQ4ZWQ5MmQwMjM5ZjA3ZmVmNzRjYWMxNGFhNjlhZGRmOWMyY2MwZDExZWIwMGE0NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1ZjNhZjUzNDBiYzk4ODY4YTU4YzM5MmRkNDMzYWU0NzQwYjkzMjE1OTUxOWJmMzBhZWRmZjY4ZjYwZmVmZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MmIxNWM2ZjkxMjg0MTBiMTFmNDNkZDg1MGM5NTE0ZmIxNzNhYTBhNzhjMWI1NTUzODljZjEzZWJmMjA2MDIifQ"
         },
         {
           "resource": "repo://scripts/production-release/verify-source.mjs#L137-L247",
@@ -182,7 +178,7 @@
       "evidence": [
         {
           "resource": "repo://.github/workflows/build-apk.yml#L397-L574",
-          "version": "repo-lines-v1:sha256:c76d171f9cfaa730e14853f83a7b7948893ed6e4af55945ac4c28de86d93b9d7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTc4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmNTUxNTNlNTU4NzEzY2RiOWZiMmFmMmE4Y2EzZTk4MWQzZDc1MDUzZWFmMzNiYThjMGIyYWQyMGVjZmIzZjNmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0NzgwOWIyOTAzOWUzN2E4OWNmN2IyMzM5NzRkMDI3MjJmOWI5MDExNjdiOWE1OTMwNTUyNjVjOTE4NzM5NjU1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhNzdkOTY3YmM2ZTI4NjJiYTM5NGRlZTBkOTJiNzgxMWE5NGEwMjk1ZmJjMGIwMjhkYmFmNzdmYWE5OGQzMDUyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzMzRmYWYyYmJlMDAxMmVkYzU2ZjZjNzE3MDYwM2NmZjAwMmM2OGQ1OWJhNzM4NjIzMDVjMzkwODlkMmMwMzE4In0"
+          "version": "repo-lines-v1:sha256:65d25612055874eb4f4707aeca8735435ef600e64773457005368270bef99c5f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTg3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmNTUxNTNlNTU4NzEzY2RiOWZiMmFmMmE4Y2EzZTk4MWQzZDc1MDUzZWFmMzNiYThjMGIyYWQyMGVjZmIzZjNmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0NzgwOWIyOTAzOWUzN2E4OWNmN2IyMzM5NzRkMDI3MjJmOWI5MDExNjdiOWE1OTMwNTUyNjVjOTE4NzM5NjU1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhNzdkOTY3YmM2ZTI4NjJiYTM5NGRlZTBkOTJiNzgxMWE5NGEwMjk1ZmJjMGIwMjhkYmFmNzdmYWE5OGQzMDUyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzMzRmYWYyYmJlMDAxMmVkYzU2ZjZjNzE3MDYwM2NmZjAwMmM2OGQ1OWJhNzM4NjIzMDVjMzkwODlkMmMwMzE4In0"
         },
         {
           "resource": "repo://scripts/production-release/policy.json#L13-L58",
@@ -200,15 +196,15 @@
     },
     {
       "id": "claim_2b4f58c532ec45d3ad12aa93a259e107",
-      "statement": "El repositorio organiza la validación de la app móvil como scripts npm de workspace: `npm test` encadena la suite determinista y la del dev store, mientras que typecheck, E2E, privacidad, catálogos, permisos e inventario de datos tienen entradas separadas.",
+      "statement": "El repositorio organiza la validación de la app móvil como scripts npm de workspace: `npm test` encadena la suite determinista, los checks/tests del dev store y los tests de límites de arquitectura móvil, mientras que typecheck, E2E, privacidad, catálogos, permisos e inventario de datos tienen entradas separadas.",
       "evidence": [
         {
           "resource": "repo://apps/mobile/package.json#L5-L21",
           "version": "repo-lines-v1:sha256:baa7270cc11da230de44d45d5956aa49a1d5155c41a811de0e67de5ce32c8e31:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0ODMzZDU5NDljMDNhNDBjYTk1MjQ5MTYxMGE2NjU5NjQ0YjNhYTQ2NjM2MmY3OTkwMjBkYmYxOTgxNTQ3ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4NzMyYjg2MzkzODYzMjA5NGEzZjZlYmM1NTNjZDI1NWNlMTdhN2E5MzVlYmYzYzVlZmEzMGY4ZWYyMTgwNzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjNmFkN2E3NWZmNzc4YTc0N2M4M2E0MjljNTc0YjFmMTgyMmZlZTFiNmUyYWUyMjNkYzZiNTk0MTc4ZjJhZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBjMGMxZmVkZGViOTg2YjhkZTYyYmZjNzNiYjY0OTI5NmNhOWRkZDEzMjk5NmU5MGMxMDBkYjc5YmY3ODlhMjMifQ"
         },
         {
-          "resource": "repo://package.json#L7-L71",
-          "version": "repo-lines-v1:sha256:5e3aaaf4e0cf23c9bb2c83445840c12a1a5fa791169cc2a1bf6f6189bf0b66ae:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0ODMzZDU5NDljMDNhNDBjYTk1MjQ5MTYxMGE2NjU5NjQ0YjNhYTQ2NjM2MmY3OTkwMjBkYmYxOTgxNTQ3ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRmNGYwOGY4OWRhN2VjYTZlNmY4ODAxOTZhZmUwNzMwNGQ4YzYyNjZjNDRlNDZjYzQ2ZDBiNDdmODQ2YmEwNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
+          "resource": "repo://package.json#L47-L80",
+          "version": "repo-lines-v1:sha256:462fe721b11046118d4e3c5f649933fc46b59fed026373ae7b95b3a21b5f4695:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YzI3ZjNjNWJjOTJkYzU0YjAxYjQ0YTk1YTFjYWVkZDM4YzQyZTVmM2JiMGMzNDlkZDAwZTg0MzcyYjM2ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2OTRlY2NhNzkyMjVlNGY1ZGZmMzViZmNlYzhkOThiNTlhZGJmMTUzOWRkMzkxNzQ2NjE2NGQzOWI5NzFmNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
         }
       ]
     },
@@ -262,7 +258,7 @@
         },
         {
           "resource": "repo://.github/workflows/build-apk.yml#L451-L574",
-          "version": "repo-lines-v1:sha256:bfcd9fb3cb5483535fc072ba4d88d84d6121719d374c9f47a0a7532f5291e320:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiZDQ5ZGQ3NDczMzBhY2ZkZTg0MDQxYWE0YzAyYWIyMDc5MGZmZmNmZmI0NDQ2MTM2ZmQ0MDgzOWQyMDg2ZGJiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0NzgwOWIyOTAzOWUzN2E4OWNmN2IyMzM5NzRkMDI3MjJmOWI5MDExNjdiOWE1OTMwNTUyNjVjOTE4NzM5NjU1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYmY3NWNhYTQzMWM3MGE5NjM3ZTBhNWNhNmY2MDMyNDMyMTdkMWFlMWJiMzkzZjA4ZDEzMzI2YmFmYzRiZGY3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzMzRmYWYyYmJlMDAxMmVkYzU2ZjZjNzE3MDYwM2NmZjAwMmM2OGQ1OWJhNzM4NjIzMDVjMzkwODlkMmMwMzE4In0"
+          "version": "repo-lines-v1:sha256:7786f9178e1f8da3d595432bd5209bd3ad4eef5ed76cdb44fc3d56e612165959:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiZDQ5ZGQ3NDczMzBhY2ZkZTg0MDQxYWE0YzAyYWIyMDc5MGZmZmNmZmI0NDQ2MTM2ZmQ0MDgzOWQyMDg2ZGJiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0NzgwOWIyOTAzOWUzN2E4OWNmN2IyMzM5NzRkMDI3MjJmOWI5MDExNjdiOWE1OTMwNTUyNjVjOTE4NzM5NjU1IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYmY3NWNhYTQzMWM3MGE5NjM3ZTBhNWNhNmY2MDMyNDMyMTdkMWFlMWJiMzkzZjA4ZDEzMzI2YmFmYzRiZGY3IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzMzRmYWYyYmJlMDAxMmVkYzU2ZjZjNzE3MDYwM2NmZjAwMmM2OGQ1OWJhNzM4NjIzMDVjMzkwODlkMmMwMzE4In0"
         },
         {
           "resource": "repo://.github/workflows/build-apk.yml#L89-L143",
@@ -276,7 +272,7 @@
       "evidence": [
         {
           "resource": "repo://scripts/production-release/production-release.mjs#L22-L45",
-          "version": "repo-lines-v1:sha256:db3a488babb189a4aeeb1a40ff3119d9a68ac6d8c3c953f052e073c475393b6e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYTdlZDQ5NTg5OTEzNWMxYjc0Zjc5YjU3YjY0YWQwM2I1MDIwZTU2YzU5YWQzYjg1YTI3NTQ0NTIwMmMxZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZTI2Y2Q5MjM2NmY2MGQ4ZWQ5MmQwMjM5ZjA3ZmVmNzRjYWMxNGFhNjlhZGRmOWMyY2MwZDExZWIwMGE0NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1OWMwOTA2MDI0YmRiZjMxOWI3Y2MzYjU5NWVjZjVkYTI1NGI2YzQ0YjY2ZWY1ZmYzNGMzZTZlZWZkMTMyOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MmIxNWM2ZjkxMjg0MTBiMTFmNDNkZDg1MGM5NTE0ZmIxNzNhYTBhNzhjMWI1NTUzODljZjEzZWJmMjA2MDIifQ"
+          "version": "repo-lines-v1:sha256:c852761381ce44231fce166d3d0cb4c9ca564de8e574c06562e404b8b2a1c405:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYTdlZDQ5NTg5OTEzNWMxYjc0Zjc5YjU3YjY0YWQwM2I1MDIwZTU2YzU5YWQzYjg1YTI3NTQ0NTIwMmMxZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZTI2Y2Q5MjM2NmY2MGQ4ZWQ5MmQwMjM5ZjA3ZmVmNzRjYWMxNGFhNjlhZGRmOWMyY2MwZDExZWIwMGE0NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1OWMwOTA2MDI0YmRiZjMxOWI3Y2MzYjU5NWVjZjVkYTI1NGI2YzQ0YjY2ZWY1ZmYzNGMzZTZlZWZkMTMyOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MmIxNWM2ZjkxMjg0MTBiMTFmNDNkZDg1MGM5NTE0ZmIxNzNhYTBhNzhjMWI1NTUzODljZjEzZWJmMjA2MDIifQ"
         },
         {
           "resource": "repo://scripts/production-release/verify-source.mjs#L117-L135",
@@ -287,10 +283,158 @@
           "version": "repo-lines-v1:sha256:b39c9a38fb9f931995552edd7cb4738fabf7d842e69393f06e02ba452cf82205:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiNTc3NzJiYjJlMDNmMmI5YmIyNjViMTY0NGQ2ZGU0MWE1NmE2ZGNjMGY4MTg2N2Q1ODE3YTJlMzJhOTgxZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyMTRhM2M5ZDYyN2NhY2RiOGIwMmI2MDcyZmMwNjFiZmJmZDYyOWM0NTg3ZWVhNzVmYjNhZGU5OWI4MDdlZjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlYjZlMTAxMDVhY2MzNTVmODRiODRlMDFhYjk2MzBmODgyMWE2YjY2ZTkxYjU2MWY4YWE0OTAzYzFlNGE3NTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkOTJlZGQ1ZTU5Y2ZhN2U4MjU3OGIxMzA5NDdmZDY5NmRkMjU3ZmUwZTY4N2QzODVkNDE3NTQwNTQwNTA4MGIifQ"
         }
       ]
+    },
+    {
+      "id": "claim_1865a150cdd0411b893caf70ce7f8585",
+      "statement": "Para cambios de formato de copia o cifrado portable, `npm test` ejecuta Vitest sobre `backup/**/*.test.ts`; esas pruebas cubren formatos v3/v2/v1, límites y validación de medios, y el vector, fragmentos autenticados y fallos de integridad del sobre v3, pero no ejercitan navegador, descarga, CLI ni fronteras nativas.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/backup/backupFormat.test.ts#L95-L272",
+          "version": "repo-lines-v1:sha256:bf5c7e58f491701d185bc8f6277b86ed20c6b3de331621471b492f1848151025:eyJzZWxlY3RlZExpbmVDb3VudCI6MTc4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiMTcyOTEwNzkzMzJiOTA4N2Y1MGI0YzkwN2RkNGQ4NDU4MGZjY2U0NzMwOTA5OTFhODY2ZDA5YzYxNmFiNWVjIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlMjgxMTVlOWUzN2I4NTA0ZTJmYTkyYjEzOGE0ZTc5MThmMWM4YmE4MTYzNDViMDIzNzMxYWYzZGQ4MWRhZjAyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjIwZjc0M2M3NzZjYzdjOTg3YzA1Yzk3ZjEyNjgyY2RlNzEzNjU3Njg3NmMyMjUyNTU1MTZmZWJjNTUyNzYzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0ZDdiMjAzNzE0MGUwYjllNjlhY2E1OTM4YmY2YmYzZjVjMTc3YzA0OTJhN2FjMjBiMTAzYTBiYWJlOWI2YzY1In0"
+        },
+        {
+          "resource": "repo://apps/mobile/backup/portableEncryption.test.ts#L29-L124",
+          "version": "repo-lines-v1:sha256:5f4e42c713e1d5ea8ab23de259f6b60ade3264bedc8abe9dd6ad7e27ccd12568:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZWZmYmMyOTdhYzcxZjMyN2YwYjhiY2M2ODEyNjQ4MjVkMDA3NGNkNGQ4NTYxMWRlZGIzMWQwY2ZlMjUwZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmYzM5ZGU3YWU0NDI4MGFkOTVjNmNlZjNiNzBjYjhjMzQwOWFiYWI2MTFiYjYxYTU4NWQ3NGVkZmYzN2ZmZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/vitest.config.mts#L3-L21",
+          "version": "repo-lines-v1:sha256:196731ab23dde5c6fb0ec23cc76b700a711c017e2eba3a38534de158ec48a025:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyY2VjYjE0NGE0NmY1ZGNmMTJhNjE2OWZjZWVkNzY5NWU4Mjk0YjA5MGRlNzZmMzY2MWNkZDAyNDkzMDAxNDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwNmQ1NjlkMTVkZjJlMGU3NTI1MmRmNWIxZjRmZGRlOTI1MDM0NjE2OTVhYjMwYzY0ZTEwYTVhYTExMGRkNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://package.json#L47-L52",
+          "version": "repo-lines-v1:sha256:b3d15c2b8fd9846a3c63accfbbbedbaa47234641437825d8e8da5eeb6129b7cc:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzljMjdmM2M1YmM5MmRjNTRiMDFiNDRhOTVhMWNhZWRkMzhjNDJlNWYzYmIwYzM0OWRkMDBlODQzNzJiMzZlZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjc5NzJiNDFlOGZlZjlmMGU5YTU5YmIyZDI1ZDQ4YTU5Y2NmZWRjNWJlYWFkMTE3Y2ZjZGM1ODQyMGU1ZWZhNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDY5NGVjY2E3OTIyNWU0ZjVkZmYzNWJmY2VjOGQ5OGI1OWFkYmYxNTM5ZGQzOTE3NDY2MTY0ZDM5Yjk3MWY0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmRlNTQ5NTcwODg5ZDYwZjkwYjE2YjA3MGM2M2YwY2NiNzliMjkzODQzMTRkYzY3Nzk2ZWFmOWZiOTJjMDgxZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_14fb7adf6de341a7928b764bc9ddefcc",
+      "statement": "`npm run test:storage-recovery:e2e` exporta y sirve la app web development con proveedor falso, usa Chromium y `localStorage` para comprobar cuarentena, exportación cifrada, reintento, restauración y descarte; además descifra el fichero descargado mediante la utilidad Node, sin ejercitar almacenamiento, selector o compartición nativos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/storage-recovery.e2e.mjs#L176-L319",
+          "version": "repo-lines-v1:sha256:eeea566e09fb4ef4660dd19168c6e7d667f31513d729cc6403784cc7fa2e5252:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQ0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlZDA2NjcxNzNmOTU3ZjIyZWZkZGNmM2YxYmE2YjAyNTkwZTgzYzE3OTk4ZTY5ZTAyYzc4N2YzM2MwZDIzYzFiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJiYzlkMmYwYWU2YTI1MjA1N2ZhNTNiMTdjNTlkOGE2YzI1YTYzMmVjNmZjNzg1OTkwMmVlMDUwMmViNjVlNTgzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmZWZlODE0ODE4YjFmNDY4M2FkNjUzODg1YjE3ZjcyY2QwY2JiNjE1ODg5MTFjM2JmYmFkYWVhMzZlZDBmMWEwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmYjU4MGU5NjRmODNhNDczZjQzZDQ0Mzg0NjI5NDlkNjhiNTYwMGZkYTc4N2YxNjM3NDVkMDBkZTg5Y2JmMzZhIn0"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/storage-recovery.e2e.mjs#L80-L164",
+          "version": "repo-lines-v1:sha256:bc96199f85544acc9d2d45c008d3f399d14993b4e44ef85e04b364eb05f07459:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5ZjM1MDUxNWM0YTM4NGY5OGM2OGE4MWZmMWU3NzYwZDkzMDk5YmY5NzZmMzZkODhkNmVkYzE1M2Y4OTg1MmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk4Y2I3YmRjOTk0N2E4ZmY1ZGZmZjdmNmRlY2NkMDhjMjJiZDQ5ZDgwOTYwMTBjNzZkMWI5ZDU5ZDE0YmMzYTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1ZmExYTU3N2E1Y2FhYWZkNzc3MGVjYTEwMTA3OTcxNjdhMmEyMWM1ZDY3NDExN2YzZDZjZmM0MmRhYzgxNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjMDI5ZmUxODM0NTVmNWUzMjlhMjJiZTk5MzQ3Y2ExNDg0NjM5MDg2ZmIyYTZhYjQyZTI5YjRkM2JlZDA5MjIifQ"
+        },
+        {
+          "resource": "repo://package.json#L71-L72",
+          "version": "repo-lines-v1:sha256:977cf61aa344552a359baa12047157d1dcbeed2899fa8a8115d489a1eb1af636:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGM4OTI4MjM0ZDc2YzM4ZmMwMDZiODAyY2ZhMTNkYzU4N2ZmYzE5MmJiZjU2M2U0NTE3YTZhYWZhYzFkMjJlZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2RhNGIzYTQwYjRlYjk4MmZlNmIxNmRjZjI3OGM1ZmY5NmJkNmQ5OWQyZGIxMGY0YWJlZWE2NTg3YzA1Nzg1NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjc5ZjY0N2Q3MWQyOGM4MDgyZDc3Y2VkNGYxODJjZWZhNmQ2YWI3ODAwZmIzYTQ4Y2I3MGNkYTIyMTkwZjI0YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjg1YzUwMTNkZWQxOGUxZTBmNGRiNTY0M2RlMzhmYTQ4MzdkOTQxZDRkZTk3ZmI2NGYwN2JmZTczNjg0NTllMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4bf9df8f32384e11936f25930fbbe21e",
+      "statement": "`npm run test:recovery-cli` ejecuta una prueba Node que invoca `decrypt-recovery.ts` sobre un fixture cifrado y verifica recuperación, modo `0600`, ausencia de sobrescritura y fallo con contraseña errónea; la CLI reserva `--password-stdin` para automatización y solicita sin eco la contraseña en el uso interactivo.",
+      "evidence": [
+        {
+          "resource": "repo://package.json#L71-L72",
+          "version": "repo-lines-v1:sha256:977cf61aa344552a359baa12047157d1dcbeed2899fa8a8115d489a1eb1af636:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGM4OTI4MjM0ZDc2YzM4ZmMwMDZiODAyY2ZhMTNkYzU4N2ZmYzE5MmJiZjU2M2U0NTE3YTZhYWZhYzFkMjJlZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2RhNGIzYTQwYjRlYjk4MmZlNmIxNmRjZjI3OGM1ZmY5NmJkNmQ5OWQyZGIxMGY0YWJlZWE2NTg3YzA1Nzg1NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjc5ZjY0N2Q3MWQyOGM4MDgyZDc3Y2VkNGYxODJjZWZhNmQ2YWI3ODAwZmIzYTQ4Y2I3MGNkYTIyMTkwZjI0YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjg1YzUwMTNkZWQxOGUxZTBmNGRiNTY0M2RlMzhmYTQ4MzdkOTQxZDRkZTk3ZmI2NGYwN2JmZTczNjg0NTllMiJ9"
+        },
+        {
+          "resource": "repo://package.json#L9-L9",
+          "version": "repo-lines-v1:sha256:48ef7ac6702649f2c57a3afa6b3093a330b6d15303040a64c4703011357eb8b9:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDhlZjdhYzY3MDI2NDlmMmM1N2EzYWZhNmIzMDkzYTMzMGI2ZDE1MzAzMDQwYTY0YzQ3MDMwMTEzNTdlYjhiOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDhlZjdhYzY3MDI2NDlmMmM1N2EzYWZhNmIzMDkzYTMzMGI2ZDE1MzAzMDQwYTY0YzQ3MDMwMTEzNTdlYjhiOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzFmMDRlMmUzNjQxYzdkMjkyMmY1MWNkNGVhNjA5MTBhYWUyZjhmZGFmNTU5YTFjYzZlZDgwNDYyNDNhOThmZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDY2ODhkZjg0Zjg0NWE0ZWFkM2FlYmJiMGQyNjQ2NTY1NzIwNDcxMmNmZjM3MDdiZjFlZGFmYWRiMzc1MGIzZCJ9"
+        },
+        {
+          "resource": "repo://scripts/decrypt-recovery.test.mjs#L23-L64",
+          "version": "repo-lines-v1:sha256:742319ddd27e711be9d048b1c600966fd477b87f1ff649ad02606858a406a2ad:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmMjY1NjE4Yzc2YmQyMjU2OWMwNDY3YjliYmJhNGRkMjRlODZjNjBlZWY2MDBiODFhZTgxY2U0ZGYyYTUyNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://scripts/decrypt-recovery.ts#L118-L163",
+          "version": "repo-lines-v1:sha256:96d4d25fc444db25bc88fd3a6f37fd981b20320ffa5643ad2bb955d5c7b01f5c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0NjU2YjA3NTBhMmNlMmUwNzAxMDAyNmUyN2FmZDY0YzI5OTdlNDViZjQxNGIyMTEwY2FkMzNlMjBjNzRjNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0YThlN2QyZjQ4Njc5MGVkNmU4NTYxNzJiZTQ1NTMxZDU5ZjE4NTdkNDNmN2YzYjM5NWZjZjM0MTI0NmMzOTAifQ"
+        },
+        {
+          "resource": "repo://scripts/decrypt-recovery.ts#L21-L27",
+          "version": "repo-lines-v1:sha256:24f10c1ec221c46a45a9b3237e3cf0bcd93e95ef926945167f69d23a52cb0000:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWQ4ZjZmZjE4NjFiOWUyMWNkNTY0NTUzNGY4NWNmMWE4YzI2MDNkZDlmZjM3ZjZkYTZjZWU3ZGQ0NmQ1Y2JhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTMyMzRkN2JmMTljZjM5NGI0NzNjYzhkMmQ3Y2E3NzkxOWI3MzE4Zjc3OTFjNTVkNDk5ZTFkNGIxYjFiN2ZhZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTY4M2Q3MzM2ODM1OTYxODY4Yjk5MjQwZTMyZjNjYTYwOTY4NjUxOTAzYTQ4NGQ3MGI5NmU4ZTgwN2UyZGI5OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2QwZTdlZDE0MmMxOTk1Mjg4ZmUwNGQ0ZGIwYWQ5OGQyODE5YTZkYThkN2I5OWMxYTc3MGIxMDdkZDE5ZmQyNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_dfac8e89c29b407ba932fee8b31bd782",
+      "statement": "`board-ci.yml` se activa en pull requests y en `main` solo para rutas del tablero y sus dependencias declaradas; tras `npm ci` e instalar Chromium ejecuta `test:linear`, `test:board-automation`, `test:board` y `test:board:e2e` con permiso de solo lectura.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/board-ci.yml#L25-L62",
+          "version": "repo-lines-v1:sha256:bc72566ad807cce83502339adf514d5cf55e8a8ea49e8ab8a12428617ffee2fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5ZDgwMTU0ZWQ0MmZjNWM3NzliMTMzMTU3OGI1OGI4OWM4MDFlYWNlNzRmMjRjZDQ4ZWI0YTIzNTc5NDBhOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMmEyNjk1OTBkMjE3MWFiOTY1ZDAwOWM0NjE0NzlhY2YzOGI1MzNlNTQxN2UzMThjM2RmMDdlYTlkZDQ3OWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMWQ3MGQ3MmJhZDIzMWQ0M2M1NzVhY2VmNjk0NjU4MGU0MzljODc5Nzk0ZWQyZWExZjRhNDAzNDAyNDUxNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/board-ci.yml#L3-L23",
+          "version": "repo-lines-v1:sha256:62969060d5d59d7cbbdc757b15384df1acc8705b7801c8bd32ee6c26a0bc6c30:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5ZWNlZGMxOGVjYWYxZGFmOWU3YmVmYjlmZDc5ZTJjM2NmMTU1OTllNTNlNzljZGJkOTAxZWU2ZTJjOTc5ZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ZDc3NGQzNzQzYzI2NTQ3ZmFhMTQ2ZTA3YjBiMDUxN2VjMGE5ZWEwZmI3YjBmZmY4MTAxNmU3MTllMjhjMzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjZjhhZGY1MzBlNTgyNDAyOWYwMGU1MTA1YWZjZWEzYTRkM2E5ZWM5MTRhODBmZGQ3MTBkODg2N2M0OTQ2NWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3313e42ad0b54f4fb8559c8f611eb0ed",
+      "statement": "Los contratos de automatización del tablero impiden que su CI reciba secretos o permisos de escritura, exigen los cuatro gates y fijan las Actions de terceros a commits; los workflows evitan `actions/checkout` para no recorrer gitlinks heredados.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/board-automation/workflow-contract.test.mjs#L49-L57",
+          "version": "repo-lines-v1:sha256:287ea02f4946bb7b93cc6776ac8283ff11ded9fe21b30d3e699453e29d0bd6bf:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTIwYjUyMTE3OWVjMWM2YzgxMzgyNDRiMWMxNjA5NzkwMTRiYTZkNjkzNzhmMzZkNjc5MzUwZDIxNDkzODY2NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjZmNWI0MGIxNTg0NTdkMTc4NjRmMjE3OTA3ODZkZDVhMmVjZGI2NGI2NmE2NTFmNzg4ZDRlMjVjZDMzMDNkMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzlhOGUzZDYzNjRkZmRlNmNhNTBlNDEzMmRkZTA3NzEyMWVhYjk1YTU3MGQ4ZWVjZjhjNGM1OTVmMmRiZjY1MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://scripts/board-automation/workflow-contract.test.mjs#L8-L17",
+          "version": "repo-lines-v1:sha256:0afce2b5332ae950c706b5f4532c8d6c4636bd7bf887dd90cad8008b923125aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmMDk5MmQxYjNmYmRiMWFlYTc1NzAwNTc5ZDk1YzYwZDU0YTNiYTVkYzU2ZTA1ZWU3MDAxYzg3MjI5Zjk5MTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwYWVjYzBhZDVjMzExNmNjMTcyN2Y5NzI2YmRjMWU3YjY5YmFjZDIyMzBmNjk1MjkxMjc0Y2NjZGZmOGVlNzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZmYjU3MzIyNDM5OGIxNWFlNzVkMTIxM2YwODQ3YzcwODJhNTE1ODIwNjVmN2YxNjIxZjExZjM2YWU4NjQzYzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ba87c2423e99465fb1b1113d05daba96",
+      "statement": "El workflow de despliegue del tablero vuelve a ejecutar los cuatro gates antes de desplegar en el environment `Board Production`, comprueba que Vercel resolvió el proyecto esperado y compara repetidamente el SHA-256 local de `board.json` con la URL canónica; ante diferencia reporta `production-mismatch` y conserva evidencia durante 30 días.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/board-deploy.yml#L19-L61",
+          "version": "repo-lines-v1:sha256:d8e5a2ce888f21d60c5e023d767a2192a443924a1c64b35b9e818aac6aad0071:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0YWZlMjRkYWYzNGQxYjVjZjgzZmNhYTNmNTZhYTRjMTA3YzA1ODAzOWM4NTdiY2I2ZDUxNmQ2MjE5NDdmMDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3NzVjZDFjNGJlZjFjNzZjMTEzZWY3MDBlMzhmODY1MTU5NTU5YWJmOTQxMjA5NTk3NTViNmNlMTAwZDg1NWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4ZDhiN2EyYjk4MzkwMjhjMjA4MmU0ZTg1N2Q1Y2RmNzBiMjU0ZjgzM2E2NWQ1YWIzZGFiOGU2Y2RlY2I3MzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczNmJkOTEyMWMyNjBmY2Y0ZjM3OGEyYTc5YzQ1ZTFjOWFlYzQ4OTBkMzYyMjkzOGE3N2JhYTM2Yzk2ZTlmZjAifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/board-deploy.yml#L63-L141",
+          "version": "repo-lines-v1:sha256:a12acacd0916ba5e85a3c9f7bedeee3758928b468e6352e81bab31cf94e394be:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjZGFiNzlkMTg0ZDczZTg3MmQ3NmQ5MGI5ZDliZDdlZWNhYjI2NDdiNzc1ZWI5ZDI2M2I1OGZkZDI2N2MwYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkMzJhYzIwODBhMTM0NWM2NDY4ZDBlMGUwOWE0OTMyMDE1MTc2NzQzZjkyYTUyNTM1NWNmZGZkNTg5N2NmZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjZmM3M2E0YTk3MGQ4N2YyYmE4YTQzOTYzNjJiM2NmMmFkYjk2Mjg3ZDAwY2YyOWRlOTk0NWZkMDg4YmE1MGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjOTgxZTQ5NjA4ZDMzM2RiNWNmMzZjN2M0ZDAzMmQxYWU4Y2RiMTkyMjZlNWI3NjI3Y2JjOTk3YjQ5MjM3MjMifQ"
+        },
+        {
+          "resource": "repo://scripts/board-automation/verify-production.mjs#L24-L79",
+          "version": "repo-lines-v1:sha256:a4641a6eccd39e5c31f049738e706742ff255a918f689a9126704f0494148a37:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiYmU1ZDhlZTA1YTEyMDIzMzA5NGNmYmE2NzkzNWM4Y2Q0MTFhYzhjYWZlZTM0NjkyOTM1ZDNhM2ZkOTUwNmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjMTMzYzNjODY4NGY2OTFiMzAwNDBhZDY0ZjBiODM0MDhjZjE0NTRjMTVlN2RjNGI5MzRlNDQ4N2RmMTBmNmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxNGFlYjdiODQyMTJlMGRhNGVmZmE1NjFmMGZhZDA1ZjAxM2MwZGJhZmNmNWJhYWJhODE4MTFlMjg4YzNkYjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyMjk2Yjk3NWFlYmU5N2FmNTU4Yzc0OWNjZTM0YWExMDE5MTVjNDBlYjBlYTExNTMxYzRiNWQzMDM0OWIwYTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_056e984a52ef494fa51331aa625c3ee0",
+      "statement": "La conciliación del tablero se ejecuta cada seis horas o manualmente desde `main`: detiene los casos `review_required` sin aplicar cambios parciales y, para `safe_changes`, vuelve a validar el tablero y crea o actualiza una PR con `--force-with-lease`, sin auto-merge.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/board-reconcile.yml#L3-L15",
+          "version": "repo-lines-v1:sha256:6b3fcc4b2b2c673d677877965993a0dfb2b00b1fa6de60decbae36987cc3acd0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0YTc5NmEwMWY4NDU4Yzg5OWQ1YjIyODkwZTVkZjQ0ODAzY2E0ZDgwMTdjMzg3OGQ3Zjg3OTQ0NDkxMjBjOGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyMjBiNmY3NzkzNDBkMWFjNWFmMjdmMGU0MDU2MmM4NzVmZDczNDdkZGExZGU1ZGEwZWZlNTA3MTYyMTczY2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyMWUwNmNmZjc4NjdkODIwNzA4MDdkYmZlZGU0YTk2MzIyM2U2ZGZmZThiYWEzOGRiZjRmYjM5NjY4OWYyZjUifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/board-reconcile.yml#L45-L70",
+          "version": "repo-lines-v1:sha256:aeb741a9b688a1629c5ca19a4a6eb03b5d813a1ab188a5c4678340c82b9ec359:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3MDI2YWUxOWU3OGY3MWRjY2M3MDJhN2I5MTUzOGZhYjA3ODNjNGNlNDY1NTgwMzQ1YjIzMDVkM2M5NmE5NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxODdjZTRmMDJhYjRmY2Y3Y2Q4MTc2ODMxNTgzNDVjN2ZjNTI0OTc5MzEwMWMxYWVkNWM4NGMxNGViMjg3ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkMjVlMzRlNjM5NGQxN2NmZWExNGVmOTM2NWZmNTJjMzBlODE1ODU0MGFlMWQ3MGE2NDFlY2Y2ZjMwMGI2NzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmODMyMzAxZDc4YWUzODMzYTcyMTU2NjFmZDYxMTFkMjYxY2M5OWQwYWM4NTIzM2VhODg1NGEwMjVjMDYxYjQifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/board-reconcile.yml#L93-L158",
+          "version": "repo-lines-v1:sha256:e2e5b2585c37e05d4acac916682fcd813ca37c87c6479b700ac7446ce99a3a8e:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhZTRmYzUxY2UzMTcwMzgzMGE3ODFlNDQzZTVmMjllOTljMGUzODBmZTMxZTE5ZDQwNmNhNDk1NTRkNDlhYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmNTU5NzljZTczMDIwMzNlNmIyZmQ3ZDg4ZjUzN2EzYjhlMDkxZWEzMDVjODExZmZhMTI3NGJmNTc2NGVhNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI0MmZhMGI3YTNmY2U2YTUzNTc3OTcwNzlhODRlNzczNDhmODRjMTYxNTJiODVjMThlMTdiYTliNjc3ZDhkNTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyMTczMDg0ZjZlMTY4ZWFmMTRiYzg5ZmFiY2YwMjVjODU3Yzc2M2I1Y2UyZTc4NTkwNzc0ZWQ5MGZhNzY1MWEifQ"
+        },
+        {
+          "resource": "repo://scripts/board-automation/workflow-contract.test.mjs#L19-L34",
+          "version": "repo-lines-v1:sha256:70e3d56b151244ba2da9a312d867279447292d1a36439f6eb9d699f923d3e128:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmMjk4NjZiNDk4MzgwZWUyMTgxODgzMDUzMDE5NWFiMTdlYzljM2M3Zjc0MGVlMjRiOWU3NjQyZjE2YzRkZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViMWVhMTVhMGY3YjFkNzc0MWMwOTJkZTgwMmQzOWZkYTQ0MzRlY2YwNWY5NDM1OGM2ZjM2OWNhOTExNmUyMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY1M2U4ODdiOTdhMDVkNWE5NWVmM2ZiZjUzMWE3MThkNmM3M2IxMDU0ZTBkNzA1NzMyMGQ4NjJmYTVjYzVlZDcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a1617af1367640aa9f58fd184fceac61",
+      "statement": "`test:board:e2e` sirve el directorio estático del tablero y usa Chromium para verificar que los datos de `board.json` se renderizan en pantalla; esa prueba local no verifica la publicación en Vercel ni consulta Linear.",
+      "evidence": [
+        {
+          "resource": "repo://arquitectura-agente/tests/board.e2e.mjs#L1-L8",
+          "version": "repo-lines-v1:sha256:3b52692617073859e44a43055480e94324fe6687fdd9566ac5c0c22734e77922:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTcyYTQyOTM4MmIyZTE0NzE4ZTBlMzdiMDU3MGE4YTE3MDI5OTFmY2Q4NDk4Y2Q4NDA2MGE4YmY0ZjA1MDE3YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzEwNTgyOGM2NDMzM2MzYTc5MDc5NGE3NTU0MTA1NTI3YTM1ZDZhNGQ5MjRlMTI0OTUzZDFkNDE5NWUzMDgxYyJ9"
+        },
+        {
+          "resource": "repo://arquitectura-agente/tests/board.e2e.mjs#L36-L90",
+          "version": "repo-lines-v1:sha256:c01f6cf43cfece64988a2f8eaa603e426d3de0b1949917a4c4ba4a0190d0085d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2ODI1ZGZlMDZjNjg1Y2IzNTExYTRlMjY2YzEzOGQ0MTVlNTVmZmYxN2ZjNTZjODM0MzdkMDIyZmZhN2RlOWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkY2NiOWNhZGY4N2M2ZDBiMDVlYmEzMWRlYTFiYTQ2ZjgwYjNiMjg1ZWRiMTAxYmZhNjhiNTc3NzVhNDc5ZjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkMjlmZmY3OGQyMTMzMGU4NGIyYmQ0MmFhZmU3NzM3NjY1NWVkNjUwMDZiY2UwYWUwZGY4OWViM2M3YzU0NjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE2NWExOGUzYWRhMDU0NDMwYzI2MTBhMzM2MTk5YzVjZGU5Mzc3OWM1NTYxOTk0YmE5NWYyYTI0ZjhhNzY1NzMifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-07T11:37:28.236Z"
+    "at": "2026-09-13T12:53:55.207Z"
   }
 }

@@ -8,7 +8,7 @@ este documento conserva las respuestas verificadas contra el código y la polít
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-09-v3` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-09-v4` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |

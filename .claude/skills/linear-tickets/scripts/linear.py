@@ -29,8 +29,9 @@ import json
 import os
 import re
 import sys
+import tempfile
 import urllib.request
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 API_URL = "https://api.linear.app/graphql"
@@ -526,32 +527,72 @@ def board_state_id(linear_state_name: str) -> str:
     return BOARD_STATE_ALIASES.get(slug, slug)
 
 
-def cmd_board(args):
-    """Compara el tablero espejo con Linear y, con --apply, sincroniza los estados.
+def _identifier_sort_key(identifier: str):
+    match = re.match(r"^([A-Za-z]+)-(\d+)$", identifier)
+    return (match.group(1), int(match.group(2))) if match else (identifier, 0)
 
-    El tablero (arquitectura-agente/) es una pagina estatica que no llama a la API:
-    los datos se generan aqui y se despliegan como JSON. Este comando solo toca los
-    estados y meta.updated; resumenes, dependencias y relaciones se escriben a mano
-    porque requieren criterio, asi que los tickets nuevos se reportan pero no se
-    inventan.
-    """
-    path = repo_root().joinpath(*BOARD_PATH)
-    if not path.exists():
-        sys.exit(f"No existe el tablero en {path}")
 
-    raw = path.read_text()
-    board = json.loads(raw)
-    ignore = set(board["meta"].get("ignore", []))
-
-    entries = {
-        t["id"]: (t, group)
-        for group in board["groups"]
-        for t in group["tickets"]
-    }
+def board_entries(board: dict) -> dict:
+    """Indexa tickets y epicas y rechaza identificadores ambiguos."""
+    entries = {}
     for group in board["groups"]:
+        candidates = list(group["tickets"])
         if group.get("kind") == "epic":
-            entries.setdefault(group["id"], (group, None))
+            candidates.append(group)
+        for item in candidates:
+            identifier = item["id"]
+            if identifier in entries:
+                raise ValueError(f"El identificador {identifier} esta duplicado en el tablero.")
+            entries[identifier] = item
+    return entries
 
+
+def build_board_report(board: dict, nodes: list, team: str = "GYM", checked_at: str | None = None) -> dict:
+    """Construye un diff estable y serializable sin tocar el disco."""
+    ignore = set(board["meta"].get("ignore", []))
+    entries = board_entries(board)
+    live = {node["identifier"]: node for node in nodes if node["identifier"] not in ignore}
+    states, titles, missing_from_board, missing_from_linear = [], [], [], []
+
+    for identifier, node in sorted(live.items(), key=lambda pair: _identifier_sort_key(pair[0])):
+        item = entries.get(identifier)
+        if item is None:
+            missing_from_board.append({
+                "id": identifier,
+                "state": node["state"]["name"],
+                "title": node["title"],
+            })
+            continue
+        expected_state = board_state_id(node["state"]["name"])
+        if item.get("state") != expected_state:
+            states.append({"id": identifier, "from": item.get("state"), "to": expected_state})
+        if item.get("title") != node["title"]:
+            titles.append({"id": identifier, "from": item.get("title"), "to": node["title"]})
+
+    for identifier in sorted(entries, key=_identifier_sort_key):
+        if identifier not in live and identifier not in ignore:
+            missing_from_linear.append({"id": identifier})
+
+    safe_count = len(states) + len(titles)
+    review_count = len(missing_from_board) + len(missing_from_linear)
+    status = "review_required" if review_count else "safe_changes" if safe_count else "clean"
+    return {
+        "schemaVersion": 1,
+        "checkedAt": checked_at or datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
+        "team": team.upper(),
+        "status": status,
+        "changes": {
+            "states": states,
+            "titles": titles,
+            "missingFromBoard": missing_from_board,
+            "missingFromLinear": missing_from_linear,
+        },
+        "safeChangeCount": safe_count,
+        "reviewRequiredCount": review_count,
+    }
+
+
+def fetch_board_nodes(team: str) -> list:
     gql = """
     query($key:String!,$first:Int){
       issues(filter:{team:{key:{eq:$key}}}, first:$first){
@@ -559,83 +600,218 @@ def cmd_board(args):
       }
     }
     """
-    nodes = query(gql, {"key": args.team.upper(), "first": 250})["issues"]["nodes"]
-    live = {n["identifier"]: n for n in nodes if n["identifier"] not in ignore}
+    return query(gql, {"key": team.upper(), "first": 250})["issues"]["nodes"]
 
-    drift_state, faltan, sobran, drift_title = [], [], [], []
 
-    for ident, node in sorted(live.items(), key=lambda kv: int(kv[0].split("-")[1])):
-        entry = entries.get(ident)
-        if entry is None:
-            faltan.append((ident, node["state"]["name"], node["title"]))
+def print_board_report(report: dict):
+    changes = report["changes"]
+    for change in changes["states"]:
+        print(f"{change['id']:<10} estado  {change['from']} -> {change['to']}")
+    for change in changes["titles"]:
+        print(f"{change['id']:<10} titulo  {change['from']!r}\n{'':<10}     -> {change['to']!r}")
+    for change in changes["missingFromBoard"]:
+        print(f"{change['id']:<10} FALTA en el tablero [{change['state']}] {change['title']}")
+    for change in changes["missingFromLinear"]:
+        print(f"{change['id']:<10} SOBRA: esta en el tablero pero no en Linear")
+
+
+def _enclosing_object_start(raw: str, position: int) -> int:
+    stack = []
+    in_string = False
+    escaped = False
+    for index, char in enumerate(raw[:position + 1]):
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
             continue
-        item, _group = entry
-        expected = board_state_id(node["state"]["name"])
-        if item.get("state") != expected:
-            drift_state.append((ident, item.get("state"), expected))
-        if item.get("title") != node["title"]:
-            drift_title.append((ident, item.get("title"), node["title"]))
+        if char == '"':
+            in_string = True
+        elif char == "{":
+            stack.append(index)
+        elif char == "}" and stack:
+            stack.pop()
+    if not stack:
+        raise ValueError("No se pudo localizar el objeto JSON que contiene el identificador.")
+    return stack[-1]
 
-    for ident in entries:
-        if ident not in live and ident not in ignore:
-            sobran.append(ident)
 
-    for ident, old, new in drift_state:
-        print(f"{ident:<10} estado  {old} -> {new}")
-    for ident, old, new in drift_title:
-        print(f"{ident:<10} titulo  {old!r}\n{'':<10}     -> {new!r}")
-    for ident, state, title in faltan:
-        print(f"{ident:<10} FALTA en el tablero [{state}] {title}")
-    for ident in sorted(sobran, key=lambda i: int(i.split("-")[1])):
-        print(f"{ident:<10} SOBRA: esta en el tablero pero no en Linear")
+def _object_field_span(raw: str, object_start: int, field: str):
+    """Devuelve (valor, inicio, fin) de un campo directo de un objeto JSON."""
+    decoder = json.JSONDecoder()
+    parsed, object_end = decoder.raw_decode(raw, object_start)
+    if not isinstance(parsed, dict):
+        raise ValueError("El valor localizado no es un objeto JSON.")
+    index = object_start + 1
+    while index < object_end:
+        while index < object_end and (raw[index].isspace() or raw[index] == ","):
+            index += 1
+        if index >= object_end or raw[index] == "}":
+            break
+        key, key_end = decoder.raw_decode(raw, index)
+        if not isinstance(key, str):
+            raise ValueError("Se encontro una clave JSON no textual.")
+        index = key_end
+        while index < object_end and raw[index].isspace():
+            index += 1
+        if index >= object_end or raw[index] != ":":
+            raise ValueError(f"El campo {key!r} no tiene separador JSON.")
+        index += 1
+        while index < object_end and raw[index].isspace():
+            index += 1
+        value_start = index
+        value, value_end = decoder.raw_decode(raw, value_start)
+        if key == field:
+            return value, value_start, value_end
+        index = value_end
+    raise ValueError(f"No se pudo localizar el campo {field!r} en su objeto JSON.")
 
-    total = len(drift_state) + len(drift_title) + len(faltan) + len(sobran)
-    if not total:
-        print("El tablero coincide con Linear.")
+
+def _entry_object_start(raw: str, identifier: str) -> int:
+    encoded = re.escape(json.dumps(identifier, ensure_ascii=False))
+    matches = list(re.finditer(r'"id"\s*:\s*' + encoded, raw))
+    starts = {_enclosing_object_start(raw, match.start()) for match in matches}
+    valid = []
+    decoder = json.JSONDecoder()
+    for start in starts:
+        parsed, _end = decoder.raw_decode(raw, start)
+        if isinstance(parsed, dict) and parsed.get("id") == identifier:
+            valid.append(start)
+    if len(valid) != 1:
+        raise ValueError(
+            f"Se esperaba exactamente una entrada para {identifier}; se encontraron {len(valid)}."
+        )
+    return valid[0]
+
+
+def _replace_entry_string_field(raw: str, identifier: str, field: str, value: str) -> str:
+    object_start = _entry_object_start(raw, identifier)
+    old_value, value_start, value_end = _object_field_span(raw, object_start, field)
+    if not isinstance(old_value, str):
+        raise ValueError(f"El campo {field!r} de {identifier} no es texto.")
+    encoded = json.dumps(value, ensure_ascii=False)
+    return raw[:value_start] + encoded + raw[value_end:]
+
+
+def _replace_meta_updated(raw: str, value: str) -> str:
+    root_start = len(raw) - len(raw.lstrip())
+    meta, meta_start, _meta_end = _object_field_span(raw, root_start, "meta")
+    if not isinstance(meta, dict):
+        raise ValueError("meta no es un objeto JSON.")
+    old_value, updated_start, updated_end = _object_field_span(raw, meta_start, "updated")
+    if not isinstance(old_value, str):
+        raise ValueError("meta.updated no es texto.")
+    return raw[:updated_start] + json.dumps(value) + raw[updated_end:]
+
+
+def apply_board_report(raw: str, report: dict, include_titles: bool, updated_on: str | None = None) -> str:
+    """Aplica el diff en memoria; cualquier incoherencia aborta antes de escribir."""
+    if include_titles and report["status"] == "review_required":
+        raise ValueError("Hay altas o bajas pendientes; --apply-safe no aplica cambios parciales.")
+
+    changes = report["changes"]
+    selected = [(change, "state") for change in changes["states"]]
+    if include_titles:
+        selected.extend((change, "title") for change in changes["titles"])
+    if not selected:
+        return raw
+
+    updated = raw
+    for change, field in selected:
+        updated = _replace_entry_string_field(updated, change["id"], field, change["to"])
+    updated = _replace_meta_updated(updated, updated_on or date.today().isoformat())
+
+    check = json.loads(updated)
+    entries = board_entries(check)
+    for change, field in selected:
+        actual = entries[change["id"]].get(field)
+        if actual != change["to"]:
+            raise ValueError(
+                f"La sustitucion de {change['id']} no cuadra ({actual!r} != {change['to']!r})."
+            )
+    return updated
+
+
+def atomic_write_text(path: Path, content: str):
+    temporary_path = None
+    original_mode = path.stat().st_mode
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            delete=False,
+        ) as handle:
+            temporary_path = Path(handle.name)
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(temporary_path, original_mode)
+        os.replace(temporary_path, path)
+    finally:
+        if temporary_path and temporary_path.exists():
+            temporary_path.unlink()
+
+
+def cmd_board(args):
+    """Compara el tablero con Linear y aplica solo cambios mecanicos autorizados."""
+    path = repo_root().joinpath(*BOARD_PATH)
+    if not path.exists():
+        sys.exit(f"No existe el tablero en {path}")
+
+    raw = path.read_text(encoding="utf-8")
+    try:
+        board = json.loads(raw)
+        report = build_board_report(board, fetch_board_nodes(args.team), args.team)
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
+        sys.exit(f"No se pudo comparar el tablero: {error}")
+
+    output_format = getattr(args, "format", "human")
+    apply_legacy = getattr(args, "apply", False)
+    apply_safe = getattr(args, "apply_safe", False)
+    if output_format == "json":
+        print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
+    else:
+        print_board_report(report)
+
+    if report["status"] == "clean":
+        if output_format == "human":
+            print("El tablero coincide con Linear.")
         return
 
-    if not args.apply:
-        print(f"\n{total} diferencia(s). Repite con --apply para sincronizar los estados.")
+    if not apply_legacy and not apply_safe:
+        if output_format == "json":
+            return
+        total = report["safeChangeCount"] + report["reviewRequiredCount"]
+        print(
+            f"\n{total} diferencia(s). Usa --apply-safe para estados y titulos "
+            "cuando no haya altas ni bajas."
+        )
         sys.exit(1)
 
-    # Escritura quirurgica: el JSON tiene objetos compactos escritos a mano y un
-    # json.dump completo los reformatearia entero. Se sustituye solo el valor de
-    # "state" que sigue al id, que es unico y no cruza el objeto (no hay llaves
-    # anidadas dentro de un ticket).
-    nuevo = raw
-    for ident, _old, new in drift_state:
-        pattern = re.compile(
-            r'("id":\s*"' + re.escape(ident) + r'"[^}]*?"state":\s*")[a-z_]+(")'
+    try:
+        updated = apply_board_report(raw, report, include_titles=apply_safe)
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
+        sys.exit(f"No se ha escrito nada: {error}")
+
+    if updated != raw:
+        atomic_write_text(path, updated)
+
+    if output_format == "human":
+        state_count = len(report["changes"]["states"])
+        title_count = len(report["changes"]["titles"]) if apply_safe else 0
+        print(
+            f"\n{state_count} estado(s) y {title_count} titulo(s) sincronizado(s) "
+            f"en {path.relative_to(repo_root())}."
         )
-        nuevo, hits = pattern.subn(r"\g<1>" + new + r"\g<2>", nuevo, count=1)
-        if not hits:
-            sys.exit(f"No se pudo localizar el estado de {ident} en el JSON; revisalo a mano.")
-
-    if drift_state:
-        nuevo = re.sub(r'("updated":\s*")\d{4}-\d{2}-\d{2}(")',
-                       r"\g<1>" + date.today().isoformat() + r"\g<2>", nuevo, count=1)
-
-    # Releer lo escrito antes de tocar el disco: una sustitucion mal hecha rompe
-    # el tablero entero y el fallo no se veria hasta desplegar.
-    check = json.loads(nuevo)
-    aplicados = {
-        t["id"]: t.get("state")
-        for group in check["groups"]
-        for t in group["tickets"]
-    }
-    for ident, _old, new in drift_state:
-        got = aplicados.get(ident, next(
-            (g.get("state") for g in check["groups"] if g["id"] == ident), None
-        ))
-        if got != new:
-            sys.exit(f"La sustitucion de {ident} no cuadra ({got!r} != {new!r}); no se ha escrito nada.")
-
-    path.write_text(nuevo)
-    print(f"\n{len(drift_state)} estado(s) sincronizado(s) en {path.relative_to(repo_root())}.")
-    pendiente = len(drift_title) + len(faltan) + len(sobran)
-    if pendiente:
-        print(f"Quedan {pendiente} diferencia(s) que requieren edicion a mano (titulos, altas y bajas).")
-    print("Recuerda desplegar: npm exec --yes -- vercel@latest deploy --prod --yes --cwd arquitectura-agente")
+        pending = report["reviewRequiredCount"] + (0 if apply_safe else len(report["changes"]["titles"]))
+        if pending:
+            print(f"Quedan {pending} diferencia(s) que requieren edicion a mano.")
+        print("La automatizacion desplegara el tablero cuando el cambio llegue a main.")
 
 
 def cmd_comment(args):
@@ -844,8 +1020,23 @@ def main():
 
     pb = sub.add_parser("board", help="comparar/sincronizar el tablero espejo con Linear")
     pb.add_argument("--team", default="GYM", help="team key, por defecto GYM")
-    pb.add_argument("--apply", action="store_true",
-                    help="escribir los estados en board.json (sin esto, solo informa)")
+    pb.add_argument(
+        "--format",
+        choices=("human", "json"),
+        default="human",
+        help="salida humana (por defecto) o contrato JSON para automatizacion",
+    )
+    apply_group = pb.add_mutually_exclusive_group()
+    apply_group.add_argument(
+        "--apply",
+        action="store_true",
+        help="compatibilidad: escribir solo estados y meta.updated",
+    )
+    apply_group.add_argument(
+        "--apply-safe",
+        action="store_true",
+        help="escribir estados y titulos solo si no hay altas ni bajas",
+    )
     pb.set_defaults(func=cmd_board)
 
     pm = sub.add_parser("comment", help="comentar un issue")

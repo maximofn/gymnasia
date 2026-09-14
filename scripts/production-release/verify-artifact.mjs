@@ -15,6 +15,7 @@ import {
   parseManifestXml,
   repositoryRoot,
 } from "./production-release.mjs";
+import { assertLocalBuildMetadata, assertVersionCodeProgression } from "./local-build.mjs";
 
 function parseArguments(argv) {
   const options = {};
@@ -61,10 +62,24 @@ function extractJsonFromArchive(artifact, paths) {
   throw new Error(`El artefacto no contiene ${paths.join(" ni ")}.`);
 }
 
-function readBuildMetadata(path) {
+function readBuildMetadata(path, options, artifact, manifest) {
   if (!path) return {};
   const parsed = JSON.parse(readFileSync(resolve(path), "utf8"));
   const build = Array.isArray(parsed) ? parsed[0] : parsed;
+  if (build?.backend === "wallabot-local") {
+    if (!options.transaction || !options["previous-evidence"]) {
+      throw new Error("La build local exige transacción y evidencia del último APK publicado.");
+    }
+    const transaction = JSON.parse(readFileSync(resolve(options.transaction), "utf8"));
+    assertLocalBuildMetadata(build, transaction, artifact);
+    const previous = JSON.parse(readFileSync(resolve(options["previous-evidence"]), "utf8"));
+    if (previous.result !== "passed" || previous.artifact?.packageName !== manifest.packageName) {
+      throw new Error("La evidencia del APK anterior no corresponde a Production.");
+    }
+    assertVersionCodeProgression(manifest.versionCode, previous.artifact.versionCode);
+    return { id: build.attemptId, backend: build.backend, toolchain: build.toolchain };
+  }
+  if (options.transaction) throw new Error("Una build local exige metadatos locales; no acepta un ID remoto.");
   return {
     id: build?.id ?? null,
     url: build?.artifacts?.applicationArchiveUrl ?? build?.artifacts?.buildUrl ?? null,
@@ -168,7 +183,7 @@ function main() {
       evidenceSha256: fileSha256(resolve(options["source-evidence"])),
       profile: sourceEvidence.profile,
     },
-    build: readBuildMetadata(options["build-metadata"]),
+    build: readBuildMetadata(options["build-metadata"], options, { sha256, size }, manifest),
     artifact: {
       filename: basename(artifact),
       publishedFilename,

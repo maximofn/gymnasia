@@ -478,21 +478,125 @@
       "kind": "epic",
       "title": "Internacionalizar la app con idiomas independientes por superficie",
       "state": "todo",
-      "summary": "Separar el idioma de la interfaz y del agente de los idiomas de los catálogos de alimentos y ejercicios, empezando por español e inglés sin usar textos traducidos como identidad.",
+      "summary": "Separar el idioma de la interfaz, los catálogos y las respuestas del agente, empezando por español e inglés sin traducir conversaciones ni usar textos visibles como identidad.",
       "dependsOn": [],
       "tickets": [
+        {
+          "id": "GYM-237",
+          "title": "Crear el runtime tipado de localización y migrar las preferencias de idioma",
+          "state": "todo",
+          "summary": "Crear el registro local de idiomas, detectar instalaciones nuevas y migrar, persistir y respaldar tres preferencias independientes sin traducir todavía pantallas ni catálogos.",
+          "dependsOn": [],
+          "related": [
+            "GYM-24",
+            "GYM-147",
+            "GYM-148",
+            "GYM-149",
+            "GYM-166"
+          ]
+        },
+        {
+          "id": "GYM-238",
+          "title": "Traducir al inglés el shell y las superficies compartidas de la app",
+          "state": "todo",
+          "summary": "Localizar navegación, Home, Ajustes, modales y el marco del chat, con cambio en vivo y sin modificar mensajes, historial ni datos escritos por el usuario.",
+          "dependsOn": [
+            "GYM-237"
+          ],
+          "related": [
+            "GYM-147",
+            "GYM-160",
+            "GYM-184",
+            "GYM-203"
+          ]
+        },
+        {
+          "id": "GYM-239",
+          "title": "Traducir al inglés las pantallas de dieta, entrenamiento y medidas",
+          "state": "todo",
+          "summary": "Localizar las tres áreas funcionales y sus overlays sin cambiar catálogos, nombres personalizados, IDs, unidades persistidas ni contenido de conversación.",
+          "dependsOn": [
+            "GYM-237"
+          ],
+          "related": [
+            "GYM-147",
+            "GYM-148",
+            "GYM-149",
+            "GYM-171",
+            "GYM-179"
+          ]
+        },
+        {
+          "id": "GYM-240",
+          "title": "Localizar formatos, accesibilidad, notificaciones y enlaces legales",
+          "state": "todo",
+          "summary": "Aplicar el locale de la app a formatos y superficies transversales, manteniendo las alertas sanitarias en el idioma detectado en el mensaje de riesgo.",
+          "dependsOn": [
+            "GYM-237"
+          ],
+          "related": [
+            "GYM-143",
+            "GYM-147",
+            "GYM-177",
+            "GYM-190",
+            "GYM-203"
+          ]
+        },
+        {
+          "id": "GYM-241",
+          "title": "Automatizar la cobertura de recursos y la QA de internacionalización",
+          "state": "todo",
+          "summary": "Añadir checks de recursos y copy hardcodeado, documentación y un E2E integral que pruebe ambos idiomas sin depender de un LLM ni de servicios remotos.",
+          "dependsOn": [
+            "GYM-238",
+            "GYM-239",
+            "GYM-240"
+          ],
+          "related": [
+            "GYM-34",
+            "GYM-121",
+            "GYM-123",
+            "GYM-147",
+            "GYM-203"
+          ]
+        },
         {
           "id": "GYM-147",
           "title": "Configurar de forma independiente el idioma de la aplicación",
           "state": "todo",
-          "summary": "Localizar interfaz, formatos, accesibilidad, notificaciones y conversación del agente mediante una preferencia persistente que no cambie los idiomas de los catálogos.",
-          "dependsOn": [],
+          "summary": "Coordinar y cerrar la localización de la interfaz en español e inglés sin traducir conversaciones, gobernar el idioma del agente ni cambiar los idiomas de los catálogos.",
+          "dependsOn": [
+            "GYM-241"
+          ],
           "related": [
             "GYM-24",
             "GYM-105",
             "GYM-137",
             "GYM-139",
-            "GYM-143"
+            "GYM-143",
+            "GYM-237",
+            "GYM-238",
+            "GYM-239",
+            "GYM-240",
+            "GYM-242"
+          ]
+        },
+        {
+          "id": "GYM-242",
+          "title": "Responder en el idioma del usuario con fallback al idioma de la app",
+          "state": "todo",
+          "summary": "Hacer que cada respuesta nueva siga el idioma del mensaje y use el idioma de la app solo ante duda, con español como último fallback y sin reescribir el historial.",
+          "dependsOn": [
+            "GYM-237"
+          ],
+          "related": [
+            "GYM-105",
+            "GYM-137",
+            "GYM-139",
+            "GYM-143",
+            "GYM-145",
+            "GYM-147",
+            "GYM-150"
           ]
         },
         {
@@ -501,7 +605,7 @@
           "state": "todo",
           "summary": "Mostrar y buscar alimentos en el idioma elegido conservando por ID los nutrientes, imágenes, procedencia y snapshots históricos, sin traducir alimentos personales.",
           "dependsOn": [
-            "GYM-147"
+            "GYM-237"
           ],
           "related": [
             "GYM-15",
@@ -522,7 +626,7 @@
           "state": "todo",
           "summary": "Localizar nombres, instrucciones y filtros de ejercicios y enlazar rutinas, imágenes y tools mediante IDs estables en vez de nombres traducidos.",
           "dependsOn": [
-            "GYM-147"
+            "GYM-237"
           ],
           "related": [
             "GYM-12",
@@ -1968,7 +2072,7 @@
         {
           "id": "GYM-172",
           "title": "Automatizar la sincronización y despliegue del tablero de Linear",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Evitar que el espejo estático quede obsoleto automatizando altas, cambios y un deploy verificable.",
           "dependsOn": [],
           "related": [
@@ -2199,7 +2303,7 @@
         {
           "id": "GYM-234",
           "title": "Cifrar las copias portables y las exportaciones de recuperación",
-          "state": "todo",
+          "state": "done",
           "summary": "Proteger backups, fotos y cuarentenas sensibles con cifrado autenticado y compatibilidad de importación.",
           "dependsOn": [],
           "related": [
@@ -3138,10 +3242,16 @@
     },
     {
       "id": "internacionalizacion",
-      "title": "Internacionalización con tres idiomas independientes",
-      "why": "Después de cerrar el bloque sanitario, GYM-147 crea el contrato compartido de locales, preferencias y fallback. Con esa base, alimentos y ejercicios pueden localizarse en paralelo sin convertir los nombres traducidos en IDs ni romper datos guardados.",
+      "title": "Internacionalización por interfaz, catálogos y conversación",
+      "why": "El runtime común crea tres preferencias independientes. La interfaz, los catálogos y la regla lingüística del agente avanzan como alcances separados: cambiar la app nunca traduce el historial y ningún texto localizado se convierte en identidad.",
       "tickets": [
+        "GYM-237",
+        "GYM-238",
+        "GYM-239",
+        "GYM-240",
+        "GYM-241",
         "GYM-147",
+        "GYM-242",
         "GYM-148",
         "GYM-149"
       ]

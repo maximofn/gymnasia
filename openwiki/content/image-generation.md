@@ -3,10 +3,9 @@ type: guía operativa
 title: Generación y validación de imágenes de catálogo
 description: Flujo operativo para generar imágenes de alimentos y ejercicios con Hugging Face, conservar las referencias de catálogo y validar WebP, proporción y artefactos derivados antes de publicar.
 tags: [content, images, generation, catalogs, validation]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
 sources:
+  - id: openwiki-source-bd210931c947e300164b7a63
+    resource: repo://apps/mobile/scripts/catalogs.e2e.mjs
   - id: openwiki-source-d54ece17be93a2b0fabf9d35
     resource: repo://ejercicios/SOURCES.md
   - id: openwiki-source-9cb1426cf6b2e16bd4b0b262
@@ -19,14 +18,19 @@ sources:
     resource: repo://scripts/catalogs/catalogs.mjs
   - id: openwiki-source-869bed5ee1bbd205948cf49e
     resource: repo://scripts/catalogs/catalogs.test.mjs
+  - id: openwiki-source-87ef8bdaf847493a7f3a10e0
+    resource: repo://scripts/catalogs/exercise-pagination.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-13T07:56:37.562Z
+generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
 ---
 
 # Generación y validación de imágenes de catálogo
 
-La generación de imágenes es una operación manual, externa y no determinista para los catálogos versionados; no forma parte de la ejecución de la aplicación móvil. El script Python `image-generation/generate_images.py` produce recursos para **alimentos** y **ejercicios**, y después delega la validación y la regeneración de agregados en el generador común `scripts/catalogs/generate.mjs`. La aplicación publica y consume los agregados validados, no el resultado directo de un backend de IA.
+La generación de imágenes es una operación manual, externa y no determinista para los catálogos versionados; no forma parte de la ejecución de la aplicación móvil. El script Python `image-generation/generate_images.py` produce recursos para **alimentos** y **ejercicios**, y después delega la validación y la regeneración de agregados en el generador común `scripts/catalogs/generate.mjs`. Los clientes consumen los agregados versionados y validados, no el resultado directo de un backend de IA.
 
 Este es el flujo generador actual. Los archivos `alimentos/prompts.md` y `ejercicios/prompts.md` y los ejemplos históricos del docstring pueden servir de orientación, pero las asignaciones y plantillas ejecutables en `generate_images.py` son las que controlan la operación.
 
@@ -57,7 +61,7 @@ flowchart TD
     G --> H
     H --> I{"Contratos e imágenes válidos"}
     I -->|"No"| J["No escribir agregados y corregir"]
-    I -->|"Sí"| K["Escribir agregados del dominio"]
+    I -->|"Sí"| K["Publicar artefactos del dominio"]
     K --> L["Comprobar deriva, pruebas y consumidor móvil"]
 ```
 
@@ -106,9 +110,9 @@ node scripts/catalogs/generate.mjs --write --domain ejercicios
 node scripts/catalogs/generate.mjs --write --domain alimentos
 ```
 
-Antes de escribir, ese comando inspecciona **los cuatro dominios**. Si cualquiera viola el contrato, falla y no publica los agregados seleccionados. Si pasa, solo reemplaza `all.json` e `index.json` del dominio indicado mediante archivos temporales y renombres; el escritor revierte los artefactos ya sustituidos si ocurre un fallo. Esto reemplaza el mecanismo histórico que reconstruía agregados directamente desde Python: no hay un segundo formato de agregados.
+Antes de escribir, ese comando inspecciona **los cuatro dominios**. Si cualquiera viola el contrato, falla y no publica los artefactos seleccionados. Si pasa, `--domain` limita la escritura al dominio solicitado: alimentos genera `all.json` e `index.json`; productos comerciales y recetas solo `all.json`; y ejercicios genera además de `all.json` e `index.json` el catálogo paginado `catalog-v1/`. Sin `--domain`, también se actualiza el schema TypeScript generado para el cliente móvil. El escritor prepara temporales, publica primero el contenido y deja el manifiesto de ejercicios para el final; elimina las páginas paginadas obsoletas y revierte sustituciones o borrados si falla la operación. Esto reemplaza el mecanismo histórico que reconstruía agregados directamente desde Python: no hay un segundo formato de agregados.
 
-Después de una operación de imágenes —incluida una ejecución de un único ID— ejecute la comprobación completa, que además detecta artefactos derivados obsoletos:
+Después de una operación de imágenes —incluida una ejecución de un único ID— ejecute la comprobación completa, que además detecta artefactos derivados ausentes, con deriva o páginas de ejercicio obsoletas:
 
 ```bash
 npm run check:catalogs
@@ -116,7 +120,7 @@ npm run test:catalogs
 npm run test:catalogs:e2e
 ```
 
-`check:catalogs` no acepta limitar el dominio porque su propósito es bloquear una publicación inconsistente entre catálogos y schemas generados. `test:catalogs` usa fixtures y cubre, entre otros casos, generación estable, schema e IDs, mayúsculas, MIME falso, corrupción, proporción y huérfanos. El E2E valida el consumo web con respuestas controladas; no sustituye la inspección en cliente nativo.
+`check:catalogs` no acepta limitar el dominio porque su propósito es bloquear una publicación inconsistente entre catálogos y schemas generados. `test:catalogs` usa fixtures y cubre, entre otros casos, generación estable de agregados, páginas paginadas obsoletas, schema e IDs, rutas seguras, mayúsculas, MIME falso, corrupción, proporción, huérfanos y rollback de escritura. El E2E exporta el cliente web de desarrollo y sustituye las respuestas remotas por fixtures controladas para comprobar el consumo de alimentos y del catálogo paginado de ejercicios, caché y disponibilidad sin red; no sustituye la inspección en cliente nativo.
 
 ## Procedimiento seguro de cambio
 

@@ -111,9 +111,12 @@ describe("el APK que se distribuye debe poder hablar con el backend", () => {
 
   it("el workflow de publicación solo compila production-apk", () => {
     expect(buildWorkflow).toContain("--profile production-apk");
-    expect(buildWorkflow).toMatch(
-      /--arg profile "production-apk"/,
+    const localBuild = readFileSync(
+      new URL("../../../scripts/production-release/run-local-build.mjs", import.meta.url),
+      "utf8",
     );
+    expect(localBuild).toContain('"--profile", "production-apk"');
+    expect(localBuild).toContain('"--local", "--non-interactive", "--freeze-credentials"');
     expect(buildWorkflow).not.toContain("github.event.inputs.profile");
     expect(buildWorkflow).not.toContain("inputs.profile");
     expect(buildWorkflow).toContain("environment: Production");
