@@ -208,15 +208,15 @@ Contrato, pruebas y validación de XHR en Android: [Google Interactions](docs/te
 
 ## Compilación Android de producción
 
-La migración a una VM desechable en wallabot conserva los gates y la publicación
-en GitHub. La primera build firmada ya pasó su verificación independiente y el
-mantenedor confirmó que se instala y funciona en su Android. También pasó el
-registro temporal en GitHub y su retirada; la reversión de transacciones se
-ensayó sin red. El workflow destina ahora la compilación a wallabot. El
-controlador está instalado y pasó la auditoría sin credenciales bajo las
-restricciones reales de systemd. La App privada está instalada solo en Gymnasia;
-su clave está protegida para root y la autenticación del servicio está verificada.
-Quedan la validación con el workflow completo y la activación del servicio.
-Hasta completar ese paso, las compilaciones esperarán un ejecutor disponible.
-Instalación, toolchain fijada, firma, contador y reversión se describen
-en [el runbook de builds locales](ops/android-build/README.md).
+Las builds Android de producción se compilan en una VM desechable en wallabot.
+GitHub conserva las validaciones, las aprobaciones de Production, la verificación
+independiente y la publicación. El controlador crea un ejecutor efímero por
+trabajo aprobado y lo retira al terminar; el Mac puede estar apagado.
+
+El ciclo completo quedó validado el 14-09-2026 con
+[Gymnasia 1.44.0](https://github.com/maximofn/gymnasia/releases/tag/v1.44.0),
+versionCode 57 y la firma de producción existente. El APK publicado coincide
+byte a byte con el generado en wallabot. La VM se limpió, el ejecutor se retiró
+y el timer quedó habilitado. Expo sigue proporcionando la firma y el contador;
+la compilación usa EAS local. Instalación, toolchain fijada y reversión se
+describen en [el runbook de builds locales](ops/android-build/README.md).
