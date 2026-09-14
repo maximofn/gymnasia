@@ -38,6 +38,9 @@ class FakeGitHub:
     def __call__(self, method, endpoint, **kwargs):
         self.calls.append((method, endpoint))
         if method == "GET":
+            if endpoint == control.ENDPOINT + "/123":
+                assert not kwargs
+                return next(x for x in self.runners if x["id"] == 123)
             assert endpoint == control.ENDPOINT + "?per_page=100" and kwargs == {"paginate": True}
             return [{"runners": self.runners[:1]}, {"runners": self.runners[1:]}]
         if method == "POST":
@@ -74,7 +77,8 @@ class RegistrationTests(unittest.TestCase):
             settings = {"agentId": 123, "agentName": argv[argv.index("--name") + 1],
                         "gitHubUrl": "https://github.com/maximofn/gymnasia", "ephemeral": True,
                         "disableUpdate": True, "workFolder": "_work"}
-            (actions / ".runner").write_text(json.dumps(settings))
+            # Match the real runner's Encoding.UTF8 output, including its BOM.
+            (actions / ".runner").write_text(json.dumps(settings), encoding="utf-8-sig")
             (actions / ".credentials_rsaparams").write_text(TOKEN)
             (actions / "_diag").mkdir()
             (actions / "_diag/private.log").write_text(TOKEN)
@@ -152,6 +156,24 @@ class RegistrationTests(unittest.TestCase):
                 with self.assertRaises(AssertionError):
                     control.finish(root, report, api)
                 self.assertFalse(any(x[0] == "DELETE" for x in api.calls))
+
+    def test_missing_api_fields_use_explicit_guest_evidence_not_assumptions(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = pathlib.Path(folder) / "attempt"; api = FakeGitHub(); report = self.setup_attempt(root, api)
+            del api.runners[-1]["ephemeral"]
+            del api.runners[-1]["version"]
+            self.assertEqual(control.finish(root, report, api)["state"], "verified-and-removed")
+            sources = json.loads((root / "attempt.json").read_text())["verificationSources"]
+            self.assertEqual(sources["ephemeral"], "guest-config")
+            self.assertEqual(sources["version"], "guest-binary")
+
+    def test_contradictory_api_fields_fail_even_with_valid_guest_report(self):
+        for patch in [{"ephemeral": False}, {"version": "0.0.0"}]:
+            with self.subTest(patch=patch), tempfile.TemporaryDirectory() as folder:
+                root = pathlib.Path(folder) / "attempt"; api = FakeGitHub(); report = self.setup_attempt(root, api)
+                api.runners[-1].update(patch)
+                self.assertEqual(control.finish(root, report, api)["state"], "failed-and-removed")
+                self.assertEqual([x["id"] for x in api.runners], [999])
 
     def test_bad_report_cannot_select_another_runner_for_deletion(self):
         for invalid in ["{", '[]', json.dumps({"registration": {"id": 999}})]:

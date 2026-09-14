@@ -79,6 +79,9 @@ def finish(directory, report_path=None, call=api):
         # resolved from the random name reserved before token issuance.
         if runner:
             assert type(runner["id"]) is int and runner["id"] > 0
+            listed_id = runner["id"]
+            runner = call("GET", ENDPOINT + "/" + str(listed_id))
+            assert runner["id"] == listed_id and runner["name"] == ledger["runnerName"]
             assert runner["busy"] is False and runner["status"] == "offline", "No retirar un runner ocupado o activo"
             if ledger["state"] != "removal-requested":
                 try:
@@ -95,9 +98,17 @@ def finish(directory, report_path=None, call=api):
                     and info == {"id": runner["id"], "name": ledger["runnerName"], "ephemeral": True,
                                  "disableUpdate": True, "version": RUNNER_VERSION, "listenerStarted": False,
                                  "credentialsRemoved": True}
-                    and runner.get("ephemeral") is True
-                    and runner.get("version") == RUNNER_VERSION
+                    # GitHub's list response does not expose these fields;
+                    # some API versions also omit them on the detail endpoint.
+                    # The trusted guest verifies both via config.sh + .runner.
+                    # Reject any contradictory value when the API supplies it.
+                    and (runner.get("ephemeral") is None or runner["ephemeral"] is True)
+                    and (runner.get("version") is None or runner["version"] == RUNNER_VERSION)
                     and labels == {"self-hosted", "linux", "x64", "wallabot", "android-build"})
+                ledger["verificationSources"] = {
+                    "identityAndLabels": "github-api-and-guest",
+                    "ephemeral": "github-api-and-guest" if runner.get("ephemeral") is not None else "guest-config",
+                    "version": "github-api-and-guest" if runner.get("version") is not None else "guest-binary"}
             else:
                 assert ledger["runnerId"] == runner["id"]
             ledger.update({"state": "removal-requested", "runnerId": runner["id"]})

@@ -43,7 +43,9 @@ def probe(request, log_path, actions=pathlib.Path("/home/runner/actions"), execu
                      "--name", name, "--ephemeral", "--disableupdate", "--labels", "wallabot,android-build",
                      "--work", "_work"], cwd=actions, env=env, stdout=log, stderr=log,
                     stdin=subprocess.DEVNULL, timeout=300, check=True)
-        settings = json.loads((actions / ".runner").read_text())
+        # IOUtil.SaveObject in runner 2.337.0 writes Encoding.UTF8 with a BOM.
+        # Decode that format explicitly; do not relax JSON or identity checks.
+        settings = json.loads((actions / ".runner").read_text(encoding="utf-8-sig"))
         assert settings["agentName"] == name and settings["gitHubUrl"] == "https://github.com/" + REPOSITORY
         assert settings["ephemeral"] is True and settings["disableUpdate"] is True
         assert settings["workFolder"] == "_work"

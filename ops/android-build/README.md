@@ -11,8 +11,10 @@ descarte de overlays tras éxito, cancelación, caída de QEMU y timeout. Tambi�
 tras la build y su verificación se mantuvieron base, listeners y estado del host;
 se eliminaron los temporales con credenciales. No apareció una build cloud en
 el intervalo de este reintento local. El workflow cloud de main sigue activo
-hasta fusionar la migración. Quedan el registro efímero por trabajo y el ensayo
-de reversión del flujo de publicación antes de activar el cambio.
+hasta fusionar la migración. La prueba real de registro temporal y retirada
+también pasó. La reversión de transacciones se ensayó sin red; quedan la
+provisión automática por trabajo y su validación con el workflow completo
+antes de activar el cambio.
 
 `build-apk.yml` conserva la selección de candidato, validación, borrador,
 verificación y publicación en GitHub. Solo `compile-android` usa
@@ -220,13 +222,15 @@ contador nuevo ni un valor fijado en el código.
    `--disableupdate`, renovar y probar la imagen cuando GitHub exija una
    actualización del runner (normalmente dentro de los 30 días de una release).
 
-## Prueba del registro temporal: preparada, pendiente de autorización
+## Prueba del registro temporal: verificada y retirada
 
 Antes de activar el workflow, `registration-control.py`, `registration-host.py`
 y el modo `register-probe` prueban el registro y la retirada de una identidad
-efímera. **No arrancan `run.sh` ni ejecutan jobs.** La consulta de preparación
-del 14-09-2026 encontró cero runners en el repositorio. No se ha solicitado
-todavía un token de registro ni realizado esta prueba contra GitHub.
+efímera. **No arrancan `run.sh` ni ejecutan jobs.** El 14-09-2026, con autorización
+expresa del mantenedor, el registro real pasó y su identidad se retiró de
+GitHub. El estado final fue `verified-and-removed`, con cero runners en el
+repositorio. Se comprobó la eliminación de credenciales, peticiones, overlay
+y seed, la VM apagada y la imagen base y configuración del host sin cambios.
 
 1. Tras la autorización expresa del mantenedor, ejecutar **en el Mac**, con la
    sesión de GitHub existente:
@@ -263,19 +267,31 @@ todavía un token de registro ni realizado esta prueba contra GitHub.
      /ruta/privada/intento-nuevo --report /ruta/privada/report.json
    ```
 
-   GitHub debe confirmar el mismo ID/nombre, versión y etiquetas, con estado
-   offline, sin job y efímero. Solo se elimina la identidad reservada por este
-   intento y se comprueba su ausencia. El informe del guest no elige el ID que
+   La lista y la consulta individual de GitHub deben confirmar el mismo
+   ID/nombre, las etiquetas esperadas y estado offline, sin job. El guest
+   comprueba el modo efímero y las actualizaciones desactivadas en `.runner`,
+   además de la versión del binario fijado. Si GitHub expone versión o modo
+   efímero, también deben coincidir; la API real omitió ambos campos. El diario
+   distingue el origen de cada comprobación. Solo se elimina la identidad
+   reservada por este intento y se comprueba su ausencia. El informe del guest no elige el ID que
    se borra. Si falló el guest o no llegó un informe, `finish` sin `--report`
    retira esa identidad inactiva y marca el intento fallido. Nunca retira un
    runner ocupado o conectado. Si se pierde la respuesta del borrado, repetir
    `finish` reconcilia el mismo intento sin emitir otro token ni registrar de nuevo.
 
-Nueve pruebas sin red verifican caducidad, destino fijo, exclusión de otros
+El primer intento registró la identidad, pero el verificador rechazó el BOM
+UTF-8 que el runner escribe al guardar `.runner`. Se retiró esa identidad y se
+documentó el motivo antes de repetir con otro intento. La lectura usa ahora
+`utf-8-sig`, conservando las comprobaciones estrictas de JSON e identidad.
+El reintento con esta corrección pasó; no se inició ningún job en ninguno de
+los dos intentos.
+
+Once pruebas sin red verifican caducidad, destino fijo, exclusión de otros
 secretos, limpieza tras error, emisión única, comparación con GitHub, negativa
-a borrar runners activos y recuperación de una respuesta perdida:
+a borrar runners activos, lectura de BOM, campos omitidos o contradictorios
+de la API y recuperación de una respuesta perdida:
 `python3 ops/android-build/registration-test.py`. Pasan en el Mac y wallabot; la prueba
-real sigue requiriendo la autorización anterior. Esta fase no instala un
+real descrita arriba también pasó. Esta fase no instala un
 servicio de provisión automática ni guarda un PAT permanente en wallabot.
 
 ## Transacción y fallos
@@ -340,6 +356,7 @@ el servidor mediante éxito, cancelación, caída y timeout.
 - [Hooks antes y después del job](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/run-scripts)
 - [Registro temporal de runners por repositorio](https://docs.github.com/en/rest/actions/self-hosted-runners#create-a-registration-token-for-a-repository)
 - [Lectura y enmascarado del token en runner 2.337.0](https://github.com/actions/runner/blob/v2.337.0/src/Runner.Listener/CommandSettings.cs)
+- [Escritura UTF-8 de la configuración del runner](https://github.com/actions/runner/blob/v2.337.0/src/Runner.Sdk/Util/IOUtil.cs)
 - [Limpieza de cloud-init para una imagen base](https://docs.cloud-init.io/en/latest/reference/cli.html#clean)
 
 Pruebas de código: `npm run test:production-release`. Los tests deterministas no
