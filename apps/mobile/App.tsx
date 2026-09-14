@@ -791,6 +791,22 @@ function normalizeHealthSafetyConsentState(value: unknown): HealthSafetyConsentS
 // --- GYM-5 (ticket para exportar e importar copias manuales) ---
 // Almacena la fecha del último backup manual realizado por el usuario.
 const BACKUP_META_KEY = scopedStorageKey("gymnasia.mobile.backup_meta.v1");
+const BACKUP_IMPORT_MIN_BUSY_MS = 300;
+const BACKUP_BUSY_PAINT_SETTLE_MS = 250;
+
+async function waitForBackupBusyPaint(): Promise<void> {
+  await new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+  });
+  await new Promise<void>((resolve) => setTimeout(resolve, BACKUP_BUSY_PAINT_SETTLE_MS));
+}
+
+async function keepBackupBusyVisibleSince(startedAt: number): Promise<void> {
+  const remainingBusyMs = BACKUP_IMPORT_MIN_BUSY_MS - (Date.now() - startedAt);
+  if (remainingBusyMs > 0) {
+    await new Promise<void>((resolve) => setTimeout(resolve, remainingBusyMs));
+  }
+}
 // Identificador y versión del formato de backup. Bump BACKUP_SCHEMA_VERSION si el
 // esquema de datos cambia de forma incompatible; el importador rechaza versiones
 // superiores a la que conoce esta build.
@@ -3005,7 +3021,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const shellBackHandlers = {
     "training-template-conflict": () => { setTrainingTemplateConflict(null); return true; },
     "training-template-discard": () => { setConfirmDiscardTemplateDraft(false); return true; },
-    "backup-import-confirmation": () => { cancelPendingBackupImport(); return true; },
+    "backup-import-confirmation": () => {
+      if (backupBusy !== "import") cancelPendingBackupImport();
+      return true;
+    },
     "data-deletion": () => { if (!dataDeletionBusyRef.current) closeDataDeletion(); return true; },
     "training-partial-finish": trainingSessionController.back.handlers["training-partial-finish"],
     "workout-completion": trainingSessionController.back.handlers["workout-completion"],
@@ -5035,9 +5054,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     asset: PlatformDocumentPickerAsset,
     password: string,
   ): Promise<void> {
+    const busyStartedAt = Date.now();
     setBackupBusy("import");
     setPortablePasswordError(null);
     try {
+      // El descifrado hace trabajo intensivo en el hilo JS. Esperar dos frames
+      // garantiza que Android pinte el loader antes de derivar la clave.
+      await waitForBackupBusyPaint();
       const packageBytes = await withPickedBackupSource(
         asset,
         (source) => decryptPortablePayload(source, password),
@@ -5051,6 +5074,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       } finally {
         packageBytes.fill(0);
       }
+      // Mantén este modal visible durante el mínimo completo antes de pasar a la
+      // confirmación. Con copias pequeñas, cerrar aquí ocultaría el loader casi
+      // inmediatamente aunque el estado busy se hubiera pintado correctamente.
+      await keepBackupBusyVisibleSince(busyStartedAt);
       setPendingImport({ kind: "v3", parsed });
       setPortablePasswordRequest(null);
       deletePickedBackupCopy(asset);
@@ -5059,6 +5086,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         error instanceof Error ? error.message : "No se pudo abrir la copia cifrada.",
       );
     } finally {
+      await keepBackupBusyVisibleSince(busyStartedAt);
       setBackupBusy(null);
     }
   }
@@ -5068,11 +5096,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   async function applyPendingImport() {
     const pending = pendingImport;
     if (!pending) return;
-    setPendingImport(null);
+    const busyStartedAt = Date.now();
     setBackupBusy("import");
     setBackupResult(null);
     beginProviderConfigurationMutation();
     try {
+      // Deja que React pinte el estado de carga antes de iniciar una restauración
+      // que puede bloquear brevemente el hilo al procesar fotos y almacenamiento.
+      await waitForBackupBusyPaint();
       let data: BackupData;
       const details: BackupResultDetail[] = [];
       if (pending.kind !== "v1") {
@@ -5273,7 +5304,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       if (pending.kind === "v2" && pending.sourceUri) {
         deletePickedBackupCopy({ uri: pending.sourceUri });
       }
+      await keepBackupBusyVisibleSince(busyStartedAt);
       setBackupBusy(null);
+      setPendingImport(null);
     }
   }
 
@@ -8672,6 +8705,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       {pendingImport ? (
         <BackupImportConfirmation
+          busy={backupBusy === "import"}
           legacy={pendingBackupIsLegacy(pendingImport)}
           description={`Se sustituirán TODOS tus datos actuales por los de la copia${pendingBackupCreatedAt(pendingImport)
             ? ` del ${new Date(pendingBackupCreatedAt(pendingImport)).toLocaleString("es-ES", {

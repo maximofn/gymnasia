@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-12",
+    "updated": "2026-09-14",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -2072,7 +2072,7 @@
         {
           "id": "GYM-172",
           "title": "Automatizar la sincronización y despliegue del tablero de Linear",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Evitar que el espejo estático quede obsoleto automatizando altas, cambios y un deploy verificable.",
           "dependsOn": [],
           "related": [
@@ -2303,7 +2303,7 @@
         {
           "id": "GYM-234",
           "title": "Cifrar las copias portables y las exportaciones de recuperación",
-          "state": "todo",
+          "state": "done",
           "summary": "Proteger backups, fotos y cuarentenas sensibles con cifrado autenticado y compatibilidad de importación.",
           "dependsOn": [],
           "related": [

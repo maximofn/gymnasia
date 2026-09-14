@@ -36,12 +36,16 @@ export function PortablePasswordModal({
 }: PortablePasswordModalProps) {
   const [password, setPassword] = useState("");
   const [confirmation, setConfirmation] = useState("");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [confirmationVisible, setConfirmationVisible] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!visible) {
       setPassword("");
       setConfirmation("");
+      setPasswordVisible(false);
+      setConfirmationVisible(false);
       setLocalError(null);
     }
   }, [visible]);
@@ -118,55 +122,22 @@ export function PortablePasswordModal({
             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
               Contraseña
             </Text>
-            <TextInput
-              testID="portable-password-input"
-              accessibilityLabel="Contraseña de la copia cifrada"
-              value={password}
-              onChangeText={(value) => {
-                setPassword(value);
-                setLocalError(null);
-              }}
-              editable={!busy}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="off"
-              textContentType="none"
-              placeholder={mode === "create" ? "Mínimo 12 caracteres" : "Contraseña de la copia"}
-              placeholderTextColor="#697384"
-              style={{
-                minHeight: 48,
-                borderRadius: mobileTheme.radius.md,
-                borderWidth: 1,
-                borderColor: mobileTheme.color.borderSubtle,
-                backgroundColor: mobileTheme.color.bgApp,
-                color: mobileTheme.color.textPrimary,
-                paddingHorizontal: 13,
-                fontSize: 15,
-              }}
-              onSubmitEditing={mode === "unlock" ? submit : undefined}
-            />
-          </View>
-          {mode === "create" ? (
-            <View style={{ gap: 6 }}>
-              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
-                Repite la contraseña
-              </Text>
+            <View style={{ position: "relative" }}>
               <TextInput
-                testID="portable-password-confirm-input"
-                accessibilityLabel="Repite la contraseña de la copia cifrada"
-                value={confirmation}
+                testID="portable-password-input"
+                accessibilityLabel="Contraseña de la copia cifrada"
+                value={password}
                 onChangeText={(value) => {
-                  setConfirmation(value);
+                  setPassword(value);
                   setLocalError(null);
                 }}
                 editable={!busy}
-                secureTextEntry
+                secureTextEntry={!passwordVisible}
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoComplete="off"
                 textContentType="none"
-                placeholder="La misma contraseña"
+                placeholder={mode === "create" ? "Mínimo 12 caracteres" : "Contraseña de la copia"}
                 placeholderTextColor="#697384"
                 style={{
                   minHeight: 48,
@@ -175,11 +146,98 @@ export function PortablePasswordModal({
                   borderColor: mobileTheme.color.borderSubtle,
                   backgroundColor: mobileTheme.color.bgApp,
                   color: mobileTheme.color.textPrimary,
-                  paddingHorizontal: 13,
+                  paddingLeft: 13,
+                  paddingRight: 52,
                   fontSize: 15,
                 }}
-                onSubmitEditing={submit}
+                onSubmitEditing={mode === "unlock" ? submit : undefined}
               />
+              <Pressable
+                testID="portable-password-visibility-toggle"
+                accessibilityRole="button"
+                accessibilityLabel={passwordVisible ? "Ocultar contraseña" : "Mostrar contraseña"}
+                disabled={busy}
+                hitSlop={6}
+                onPress={() => setPasswordVisible((current) => !current)}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  width: 48,
+                  height: 48,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: busy ? 0.45 : 1,
+                }}
+              >
+                <Feather
+                  name={passwordVisible ? "eye-off" : "eye"}
+                  size={19}
+                  color={mobileTheme.color.textSecondary}
+                />
+              </Pressable>
+            </View>
+          </View>
+          {mode === "create" ? (
+            <View style={{ gap: 6 }}>
+              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>
+                Repite la contraseña
+              </Text>
+              <View style={{ position: "relative" }}>
+                <TextInput
+                  testID="portable-password-confirm-input"
+                  accessibilityLabel="Repite la contraseña de la copia cifrada"
+                  value={confirmation}
+                  onChangeText={(value) => {
+                    setConfirmation(value);
+                    setLocalError(null);
+                  }}
+                  editable={!busy}
+                  secureTextEntry={!confirmationVisible}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  autoComplete="off"
+                  textContentType="none"
+                  placeholder="La misma contraseña"
+                  placeholderTextColor="#697384"
+                  style={{
+                    minHeight: 48,
+                    borderRadius: mobileTheme.radius.md,
+                    borderWidth: 1,
+                    borderColor: mobileTheme.color.borderSubtle,
+                    backgroundColor: mobileTheme.color.bgApp,
+                    color: mobileTheme.color.textPrimary,
+                    paddingLeft: 13,
+                    paddingRight: 52,
+                    fontSize: 15,
+                  }}
+                  onSubmitEditing={submit}
+                />
+                <Pressable
+                  testID="portable-password-confirm-visibility-toggle"
+                  accessibilityRole="button"
+                  accessibilityLabel={confirmationVisible ? "Ocultar contraseña repetida" : "Mostrar contraseña repetida"}
+                  disabled={busy}
+                  hitSlop={6}
+                  onPress={() => setConfirmationVisible((current) => !current)}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    width: 48,
+                    height: 48,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    opacity: busy ? 0.45 : 1,
+                  }}
+                >
+                  <Feather
+                    name={confirmationVisible ? "eye-off" : "eye"}
+                    size={19}
+                    color={mobileTheme.color.textSecondary}
+                  />
+                </Pressable>
+              </View>
             </View>
           ) : null}
           {mode === "create" ? (
@@ -211,9 +269,19 @@ export function PortablePasswordModal({
               opacity: busy ? 0.58 : 1,
             }}
           >
-            {busy ? <ActivityIndicator size="small" color="#06090D" /> : <Feather name={mode === "create" ? "shield" : "unlock"} size={17} color="#06090D" />}
-            <Text style={{ color: "#06090D", fontSize: 15, fontWeight: "800" }}>
-              {busy ? "Procesando…" : mode === "create" ? "Cifrar y guardar" : "Desbloquear copia"}
+            {busy ? (
+              <ActivityIndicator testID="portable-password-loading" size="small" color="#06090D" />
+            ) : (
+              <Feather name={mode === "create" ? "shield" : "unlock"} size={17} color="#06090D" />
+            )}
+            <Text
+              testID={busy ? "portable-password-loading-label" : undefined}
+              accessibilityLiveRegion="polite"
+              style={{ color: "#06090D", fontSize: 15, fontWeight: "800" }}
+            >
+              {busy
+                ? mode === "create" ? "Cifrando…" : "Desbloqueando…"
+                : mode === "create" ? "Cifrar y guardar" : "Desbloquear copia"}
             </Text>
           </Pressable>
           <Pressable
