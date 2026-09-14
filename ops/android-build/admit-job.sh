@@ -11,3 +11,4 @@ for group in sudo docker kvm libvirt; do
   if id -nG | tr ' ' '\n' | grep -qx "$group"; then exit 1; fi
 done
 test ! -e /var/run/docker.sock && test ! -e /dev/nvidia0 && test ! -e /dev/kvm
+/usr/bin/python3 /usr/local/lib/gymnasia/job-admission.py

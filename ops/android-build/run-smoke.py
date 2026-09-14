@@ -17,6 +17,7 @@ import time
 import uuid
 
 from runner_registration import validate_request
+from provision_contract import request_identity
 
 SOURCE = pathlib.Path(__file__).resolve().parent
 STATE = pathlib.Path("/var/lib/gymnasia-android")
@@ -61,7 +62,7 @@ chmod 0600 /dev/virtio-ports/gymnasia.transfer
 
 def main():
     assert os.getuid() == 0, "Ejecutar con sudo"
-    assert len(sys.argv) == 3, "run-smoke.py request.json input.bin"
+    assert len(sys.argv) in [3, 4], "run-smoke.py request.json input.bin [inherited-lock-fd]"
     os.umask(0o077)
     signal.signal(signal.SIGTERM, lambda *_: sys.exit(143))
     request_path = pathlib.Path(sys.argv[1]).resolve()
@@ -69,9 +70,9 @@ def main():
     assert request_path.stat().st_size <= 1024 * 1024
     request_bytes = request_path.read_bytes()
     request = json.loads(request_bytes)
-    assert request["mode"] in ["probe", "build", "verify", "diagnose", "register-probe"]
+    assert request["mode"] in ["probe", "build", "verify", "diagnose", "register-probe", "run-job"]
     assert len(request["nonce"]) == 32
-    sensitive = request["mode"] in ["build", "register-probe"]
+    sensitive = request["mode"] in ["build", "register-probe", "run-job"]
     if request["mode"] == "build":
         assert request.get("expoToken") and request_path.stat().st_mode & 0o077 == 0
     else:
@@ -79,11 +80,26 @@ def main():
     if request["mode"] == "register-probe":
         validate_request(request)
         assert request_path.stat().st_mode & 0o077 == 0 and input_path.stat().st_size == 0
+    elif request["mode"] == "run-job":
+        expected = request_identity(request)
+        assert request_path.stat().st_mode & 0o077 == 0 and input_path.stat().st_size == 0
+        lease = json.loads((STATE / "control/active.json").read_text())
+        assert lease["identity"] == expected
     else:
         assert "registrationToken" not in request
+    if request["mode"] != "run-job":
+        assert not (STATE / "control/active.json").exists(), "Hay un trabajo automático reservado"
     assert input_path.stat().st_size <= 256 * 1024 * 1024
     assert not pathlib.Path("/run/wallabot-maintenance.block").exists()
-    lock = open("/run/lock/gymnasia-android-image.lock", "a")
+    if request["mode"] == "run-job":
+        assert len(sys.argv) == 4 and sys.argv[3].isdigit()
+        lock = os.fdopen(os.dup(int(sys.argv[3])), "a")
+        actual = os.fstat(lock.fileno())
+        expected_lock = os.stat("/run/lock/gymnasia-android-image.lock")
+        assert (actual.st_dev, actual.st_ino) == (expected_lock.st_dev, expected_lock.st_ino)
+    else:
+        assert len(sys.argv) == 3
+        lock = open("/run/lock/gymnasia-android-image.lock", "a")
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     for other in [UNIT, "gymnasia-android-vm.service", "gymnasia-android-image.service"]:
         assert run("systemctl", "show", "-p", "ActiveState", "--value", other) == "inactive"
@@ -109,23 +125,37 @@ def main():
     invocation = None
     try:
         installed = pathlib.Path("/usr/local/lib/gymnasia-android/smoke-channel.py")
-        shutil.copyfile(SOURCE / "smoke-channel.py", installed)
-        installed.chmod(0o755)
+        if not installed.exists() or installed.read_bytes() != (SOURCE / "smoke-channel.py").read_bytes():
+            shutil.copyfile(SOURCE / "smoke-channel.py", installed)
+            installed.chmod(0o755)
         definition = pathlib.Path("/etc/systemd/system/gymnasia-android-vm.service").read_text()
         definition = definition.replace("ExecStart=/usr/local/lib/gymnasia-android/start-vm.sh",
                                         "ExecStart=/usr/bin/python3 /usr/local/lib/gymnasia-android/smoke-channel.py")
         definition = definition.replace("ExecStopPost=+/usr/local/lib/gymnasia-android/clean-current.sh",
                                         "ExecStopPost=+/usr/local/lib/gymnasia-android/clean-current.sh\n"
                                         "ExecStopPost=+/usr/bin/rm -f /var/lib/gymnasia-android/current/request.json")
+        if request["mode"] == "run-job":
+            definition = definition.replace("[Unit]", "[Unit]\nPartOf=gymnasia-android-controller.service")
+            definition += "\nInaccessiblePaths=-/etc/gymnasia-android -/var/lib/gymnasia-android/control\n"
         assert "ExecStart=/usr/bin/python3" in definition
         unit_path.write_text(definition)
         files = []
         for name, data in [("smoke-channel.py", (SOURCE / "smoke-channel.py").read_text()),
                            ("smoke-guest.py", (SOURCE / "smoke-guest.py").read_text()),
                            ("runner_registration.py", (SOURCE / "runner_registration.py").read_text()),
+                           ("provision_contract.py", (SOURCE / "provision_contract.py").read_text()),
+                           ("job_runner.py", (SOURCE / "job_runner.py").read_text()),
                            ("smoke-bootstrap.sh", BOOTSTRAP)]:
             files.append({"path": "/opt/gymnasia/" + name, "permissions": "0644",
                           "encoding": "b64", "content": base64.b64encode(data.encode()).decode()})
+        if request["mode"] == "run-job":
+            for path, data, permissions in [
+                ("/etc/gymnasia-job.json", json.dumps(expected), "0644"),
+                ("/usr/local/lib/gymnasia/admit-job.sh", (SOURCE / "admit-job.sh").read_text(), "0755"),
+                ("/usr/local/lib/gymnasia/job-admission.py", (SOURCE / "job-admission.py").read_text(), "0755"),
+            ]:
+                files.append({"path": path, "permissions": permissions, "encoding": "b64",
+                              "content": base64.b64encode(data.encode()).decode()})
         config = {"users": [], "ssh_pwauth": False, "disable_root": True, "write_files": files,
                   "runcmd": [["systemd-run", "--no-block", "--unit=gymnasia-smoke",
                               "--property=After=cloud-final.service", "--property=StandardOutput=journal+console",

@@ -43,7 +43,7 @@ test("solo compila localmente y no consulta recursos remotos de EAS", () => {
 
 test("solo el job de compilación usa wallabot y permisos de lectura", () => {
   const job = workflow.slice(workflow.indexOf("  compile-android:"), workflow.indexOf("  verify-and-release:"));
-  assert.match(job, /runs-on: \[self-hosted, linux, x64, wallabot, android-build\]/);
+  assert.match(job, /runs-on: \[self-hosted, linux, x64, wallabot, android-build, "gymnasia-\$\{\{ github.run_id \}\}-\$\{\{ github.run_attempt \}\}"\]/);
   assert.match(job, /github.repository == 'maximofn\/gymnasia' && github.ref == 'refs\/heads\/main'/);
   assert.match(job, /ref: \$\{\{ needs.validate-production.outputs.source_commit \}\}/);
   assert.match(job, /needs.validate-production.result == 'success'/);

@@ -213,7 +213,9 @@ en GitHub. La primera build firmada ya pasó su verificación independiente y el
 mantenedor confirmó que se instala y funciona en su Android. También pasó el
 registro temporal en GitHub y su retirada; la reversión de transacciones se
 ensayó sin red. El workflow destina ahora la compilación a wallabot; quedan la
-provisión automática por trabajo y su validación con el workflow completo.
-Hasta completar ese paso, las compilaciones esperarán un ejecutor disponible.
+instalación de la provisión automática por trabajo y su validación con el
+workflow completo. El controlador y sus pruebas están preparados; la App de
+GitHub y la activación del servicio siguen pendientes. Hasta completar ese
+paso, las compilaciones esperarán un ejecutor disponible.
 Instalación, toolchain fijada, firma, contador y reversión se describen
 en [el runbook de builds locales](ops/android-build/README.md).
