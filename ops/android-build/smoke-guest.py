@@ -43,8 +43,11 @@ def main():
     os.umask(0o077)
     ROOT.mkdir(mode=0o700)
     stream = open("/dev/virtio-ports/gymnasia.transfer", "r+b", buffering=0)
+    channel.write_all(stream, b"READY\n")
+    print("GYMNASIA_SMOKE_GUEST_READY", flush=True)
     channel.receive(stream, ROOT / "request.json", 1024 * 1024)
     channel.receive(stream, ROOT / "input.bin", channel.LIMIT)
+    print("GYMNASIA_SMOKE_INPUTS_RECEIVED", flush=True)
     request = json.loads((ROOT / "request.json").read_text())
     (ROOT / "request.json").unlink()
     mode = request["mode"]

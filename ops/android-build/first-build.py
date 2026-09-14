@@ -7,6 +7,7 @@ import pathlib
 import pwd
 import resource
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -35,12 +36,21 @@ def main():
         request_path = private / (uuid.uuid4().hex + ".json")
         request_path.write_text(json.dumps(request))
         process = subprocess.Popen(["python3", str(SOURCE / "run-smoke.py"), str(request_path), str(artifact)],
-                                   stdout=subprocess.PIPE, text=True)
+                                   stdout=subprocess.PIPE, text=True, start_new_session=True)
         evidence = None
-        for line in process.stdout:
-            print(line, end="", flush=True)
-            if line.startswith("GYMNASIA_SMOKE_STARTED "):
-                evidence = pathlib.Path(line.strip().split(" ", 2)[2])
+        try:
+            for line in process.stdout:
+                print(line, end="", flush=True)
+                if line.startswith("GYMNASIA_SMOKE_STARTED "):
+                    evidence = pathlib.Path(line.strip().split(" ", 2)[2])
+        except BaseException:
+            # Let the controller complete cleanup before closing its stdout
+            # pipe or removing the private request directory.
+            if process.poll() is None:
+                process.send_signal(signal.SIGINT)
+            remaining, _ = process.communicate(timeout=60)
+            print(remaining, end="", flush=True)
+            raise
         status = process.wait()
         assert status == 0 and evidence is not None, "Fallo de la prueba; no se reintenta ni se publica"
         report = json.loads((evidence / "report.json").read_text())

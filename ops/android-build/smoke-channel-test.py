@@ -14,6 +14,19 @@ spec.loader.exec_module(channel)
 
 
 class TransportTests(unittest.TestCase):
+    def test_partial_writes_do_not_drop_bytes(self):
+        class PartialWriter(io.BytesIO):
+            def write(self, data):
+                return super().write(data[:3])
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "input"
+            data = bytes(range(256)) * 4
+            path.write_bytes(data)
+            stream = PartialWriter()
+            channel.send(stream, path)
+            self.assertEqual(stream.getvalue(), struct.pack(">Q", len(data)) + data)
+
     def test_chunked_binary_roundtrip(self):
         with tempfile.TemporaryDirectory() as directory:
             source, target = [pathlib.Path(directory) / name for name in ["source", "target"]]

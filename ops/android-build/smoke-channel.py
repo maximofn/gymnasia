@@ -44,11 +44,20 @@ def send(stream, path):
     size = path.stat().st_size
     if size > LIMIT:
         raise ValueError("Entrada demasiado grande")
-    stream.write(struct.pack(">Q", size))
+    write_all(stream, struct.pack(">Q", size))
     with path.open("rb") as source:
         while chunk := source.read(65536):
-            stream.write(chunk)
+            write_all(stream, chunk)
     stream.flush()
+
+
+def write_all(stream, data):
+    remaining = memoryview(data)
+    while remaining:
+        written = stream.write(remaining)
+        if not written:
+            raise EOFError("Canal cerrado al escribir")
+        remaining = remaining[written:]
 
 
 def main():
@@ -88,15 +97,21 @@ def main():
             errors.append("input-transfer")
             process.terminate()
 
-    thread = threading.Thread(target=deliver, daemon=True)
-    thread.start()
     try:
+        # virtio serial may discard input before the guest opens its port.
+        # Wait for the receiver, then send inputs; this also bounds startup.
+        left.settimeout(180)
+        assert exact(incoming, 6) == b"READY\n"
+        left.settimeout(110 * 60)
+        print("GYMNASIA_SMOKE_CHANNEL_READY", flush=True)
+        thread = threading.Thread(target=deliver, daemon=True)
+        thread.start()
         result = receive(incoming, STATE / "report.json", 64 * 1024)
         artifact = receive(incoming, STATE / "output.bin", LIMIT)
         # The receiver never interprets an APK, archive, path, or command from
         # the guest. Output stays quarantined until a fresh VM verifies it.
         (STATE / "transfer.json").write_text(json.dumps({"report": result, "artifact": artifact}))
-        outgoing.write(b"OK")
+        write_all(outgoing, b"OK")
         outgoing.flush()
         thread.join(timeout=5)
         assert not errors and not thread.is_alive()

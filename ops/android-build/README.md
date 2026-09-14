@@ -159,8 +159,14 @@ contador nuevo ni un valor fijado en el código.
    disco del guest. Los bytes quedan en cuarentena hasta que otro overlay
    ejecuta el verificador nativo y comprueba el incremento de versión y ambas
    firmas. Los tests del transporte cubren tamaños excesivos, truncamiento,
-   integridad binaria y rechazo de archivos/symlinks existentes. **La prueba
-   real del canal y del APK sigue pendiente hasta ejecutar esta secuencia.**
+   integridad binaria, escrituras parciales y rechazo de archivos/symlinks
+   existentes. El emisor espera un saludo del guest antes de transferir datos:
+   enviar antes de que virtio abra el puerto dejó la primera prueba bloqueada.
+   Las escrituras sin búfer pueden aceptar solo parte del bloque y deben
+   repetirse hasta completarlo. La prueba real de ida y vuelta y la verificación
+   nativa del APK público ya pasaron; falta terminar y verificar el APK local.
+   Al interrumpir el controlador, este espera la limpieza del subproceso antes
+   de cerrar su salida y eliminar sus archivos privados.
 4. Ejecutar todos los `PRODUCTION_GATES`, `verify:production-artifact`, contrastar
    firma con el último APK real y comprobar package, versión, permisos, sonidos,
    snapshot y hashes. Comparar el inventario de builds de Expo antes/después en
