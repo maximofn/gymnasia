@@ -8,7 +8,7 @@ este documento conserva las respuestas verificadas contra el código y la polít
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-09-v2` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-09-v3` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |
@@ -30,11 +30,15 @@ los resultados de herramientas que el usuario autoriza y, en el estimador, hasta
 fotografías. Ese contexto puede incluir datos personales, de salud, entrenamiento,
 nutrición y medidas.
 
-Con Google se reenvía el historial completo, incluidos los pasos, firmas técnicas y
-resultados de herramientas de los turnos nuevos. Interactions lleva `store: false`;
-esto no cambia la declaración conservadora `Processed ephemerally: No` ni añade un
-tercero o una categoría de datos a la tabla. Los asistentes de alimentos conservan
-ese contexto solo durante su sesión; el chat principal lo incluye en su backup local.
+Con Google se reenvían como máximo los diez intercambios más recientes, con límites
+adicionales de tamaño y conservando completos los pasos, firmas técnicas y resultados
+de herramientas de cada intercambio incluido. Las imágenes solo permanecen durante
+las rondas del turno en el que se adjuntaron; al existir un mensaje posterior se
+conservan el texto y la respuesta, pero no se reenvían sus bytes. Interactions lleva
+`store: false`; esto no cambia la declaración conservadora `Processed ephemerally: No`
+ni añade un tercero o una categoría de datos a la tabla. Los asistentes de alimentos
+conservan ese contexto solo durante su sesión; el chat principal mantiene su historial
+íntegro en el dispositivo y en su backup local.
 
 El backend opcional de incidencias recibe, tras vista previa y confirmación, la pregunta
 anterior, la respuesta denunciada y detalles opcionales. También trata la IP de conexión

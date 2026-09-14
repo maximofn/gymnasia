@@ -309,7 +309,7 @@ async function assertPersonalDataKeptAsPlainData(page) {
 }
 
 async function assertGoogleFoodInteractions(page) {
-  logStep("Google: estimador, extracción JSON y asistente personal con historial firmado");
+  logStep("Google: estimador sin reenvío de fotos antiguas, extracción JSON e historial firmado");
   const bodies = [];
   await page.route("https://generativelanguage.googleapis.com/v1beta/interactions", async (route) => {
     const body = route.request().postDataJSON();
@@ -336,12 +336,29 @@ async function assertGoogleFoodInteractions(page) {
 
   await page.locator('[data-testid="nav-tab-diet"]').click();
   await page.locator('[data-testid="open-food-estimator-desayuno"]').click();
+  const imageBase64 =
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/gL+3MxZ5wAAAABJRU5ErkJggg==";
+  const chooserPromise = page.waitForEvent("filechooser", { timeout: STEP_TIMEOUT_MS });
+  await page.getByRole("button", { name: "Subir foto para estimar la comida" }).click();
+  const chooser = await chooserPromise;
+  await chooser.setFiles({
+    name: "food.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(imageBase64, "base64"),
+  });
+  await page.getByRole("button", { name: "Quitar foto de la estimación" })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   for (const [index, text] of ["Estima una comida de 100 gramos", "Mantén la misma cantidad"].entries()) {
     await page.locator('[data-testid="food-estimator-input"]').fill(text);
     await page.locator('[data-testid="food-estimator-send"]').click();
     await page.locator('[data-testid="chat-message-list-food-estimator"]')
       .getByText(`Estimación E2E ${index + 1}: 100 gramos y 100 kcal.`, { exact: true }).waitFor();
   }
+  assert(bodies[0].input.some((step) => step.content?.some((part) =>
+    part.type === "image" && part.data === imageBase64)));
+  assert(!bodies[1].input.some((step) => step.content?.some((part) => part.type === "image")),
+    "la segunda consulta no debe volver a enviar la foto ya analizada");
+  assert(JSON.stringify(bodies[1]).includes("Estima una comida de 100 gramos"));
   assert(bodies[1].input.some((step) => step.signature === "opaque-1=="));
   assert(bodies[0].tools.some((tool) => tool.type === "function"));
   await page.getByText("Añadir alimento", { exact: true }).last().click();
@@ -949,10 +966,17 @@ async function runAgentChatE2E(
   assert.equal(requestBodies.length, 3, `${provider} debe responder también a la comprobación de identidad.`);
   if (provider === "google") {
     const history = requestBodies[2].input;
-    assert(history.length > 24, "Google debe recibir más de 20 mensajes");
-    assert(history.some((step) => step.content?.some((part) => part.text === "Mensaje antiguo 0")));
+    assert.equal(history.filter((step) => step.type === "user_input").length, 10,
+      "Google debe recibir como máximo los diez intercambios más recientes");
+    assert(!history.some((step) => step.content?.some((part) => part.text === "Mensaje antiguo 0")));
+    assert(history.some((step) => step.content?.some((part) => part.text === "¿Eres humano?")));
     assert.equal(history.filter((step) => step.type === "function_result").length, 1);
     assert.equal(history.filter((step) => step.type === "function_call").length, 1);
+    const localHistory = await page.evaluate((key) => JSON.stringify(
+      JSON.parse(localStorage.getItem(key)).messagesByThread,
+    ), STORE_KEY);
+    assert(localHistory.includes("Mensaje antiguo 0"),
+      "el límite de envío no debe borrar el historial guardado en el dispositivo");
   }
   const identitySystemPrompt = providerSystemPrompt(provider, requestBodies[2]);
   assert.equal(transparencyMarkerCount(identitySystemPrompt), 1);

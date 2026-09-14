@@ -15,7 +15,7 @@ related:
   - ../services/anthropic-proxy.md
 verified:
   - by: manual-code-review
-    at: 2026-09-11T00:00:00.000Z
+    at: 2026-09-14T00:00:00.000Z
   - by: openwiki/0.5.0
     at: 2026-09-07T11:37:28.236Z
 sources:
@@ -25,6 +25,8 @@ sources:
     resource: repo://apps/mobile/agent/googleStreamTransport.ts
   - id: google-interactions-tests
     resource: repo://apps/mobile/agent/googleInteractions.test.ts
+  - id: google-context-budget
+    resource: repo://apps/mobile/agent/googleContextBudget.ts
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
   - id: openwiki-source-c65a19b98fa314cba98ace44
@@ -129,17 +131,25 @@ Anthropic registra si recibió `message_stop`. `finish()` devuelve `truncated: t
 
 ### Google Interactions sin almacenamiento remoto
 
-`buildGoogleInteractionRequest` en `providerTransport.ts` construye **todas** las generaciones de Google: chat principal, estimador de alimentos, asistente de alimentos personales, extracción nutricional JSON y evaluación sanitaria opcional. Envía `POST /v1beta/interactions`, `model`, `input`, `stream: true`, `store: false` y, cuando procede, `system_instruction`, herramientas planas `type: function`, `generation_config` y `response_format`. No envía `previous_interaction_id` ni vuelve al protocolo anterior ante un error. `googleStreamTransport.ts` comparte esa construcción entre Fetch web y XHR nativo.
+`buildGoogleInteractionRequest` en `googleContextBudget.ts` construye **todas** las generaciones de Google: chat principal, estimador de alimentos, asistente de alimentos personales, extracción nutricional JSON y evaluación sanitaria opcional. Envía `POST /v1beta/interactions`, `model`, `input`, `stream: true`, `store: false` y, cuando procede, `system_instruction`, herramientas planas `type: function`, `generation_config` y `response_format`. No envía `previous_interaction_id` ni vuelve al protocolo anterior ante un error. Antes de elegir Fetch web o XHR nativo, `prepareGoogleInteractionRequest` prepara esa carga dentro de un presupuesto común para todas las superficies.
 
 `interaction.created` abre el turno. Cada paso se ensambla por índice y recorre `step.start` → `step.delta` → `step.stop`. Los pasos admitidos son `model_output`, `thought` y `function_call`; los deltas de argumentos se analizan únicamente al cerrar el paso y deben formar un objeto JSON. Las firmas son opacas: se preservan literalmente, junto con campos adicionales del paso, resúmenes de pensamiento y estadísticas de uso. Repetir una apertura idéntica o un cierre no reinicia ni duplica el paso. Un delta de texto repetido sí es texto, y se conserva.
 
 El cierre `interaction.completed` admite `completed` para una respuesta final y `requires_action` para devolver herramientas. Este último es una continuación válida, no un fallo. Antes de despachar herramientas se exige que todos los pasos estén cerrados y que el estado coincida con las llamadas recibidas. Eventos inválidos o incompatibles, firmas ausentes, argumentos incompletos, índices contradictorios, estados de error o un stream truncado producen un error explícito.
 
-El bucle añade al historial todos los pasos de cada respuesta y luego los `function_result`, conservando `name` y `call_id` igual al `id` de la llamada. Reenvía el historial entero en cada ronda; reutiliza el resultado de una interacción repetida y rechaza IDs de llamada reutilizados en una interacción distinta. El ledger de operaciones sigue evitando repetir efectos al reintentar una petición completa con nuevos IDs del proveedor. No se ejecuta ninguna herramienta por restaurar un historial.
+El bucle añade al historial todos los pasos de cada respuesta y luego los `function_result`, conservando `name` y `call_id` igual al `id` de la llamada. Cada ronda entrega ese candidato completo al preparador de contexto, que mantiene indivisible el intercambio activo y cualquier pareja llamada/resultado incluida. El bucle reutiliza el resultado de una interacción repetida y rechaza IDs de llamada reutilizados en una interacción distinta. El ledger de operaciones sigue evitando repetir efectos al reintentar una petición completa con nuevos IDs del proveedor. No se ejecuta ninguna herramienta por restaurar un historial.
 
-`GoogleConversationTurn` en `googleInteractions.ts` guarda pasos e interacciones junto al mensaje del asistente. El chat principal persiste esos metadatos en su almacén existente, los incluye en las copias de seguridad y los borra con la actividad. Reabrir Google recupera la conversación guardada. Los mensajes antiguos sin metadatos se convierten en pasos de texto; Google reenvía toda la conversación, sin el recorte a 20 mensajes que mantiene el chat de OpenAI/Anthropic. Los asistentes de alimentos mantienen su historial solo en memoria; las imágenes se incluyen en `user_input` y se reenvían durante esa sesión. Una respuesta sustituida por el filtro sanitario conserva los pasos de protocolo, mientras la interfaz muestra exclusivamente la intervención local.
+`GoogleConversationTurn` en `googleInteractions.ts` guarda pasos e interacciones junto al mensaje del asistente. El chat principal persiste esos metadatos en su almacén existente, los incluye en las copias de seguridad y los borra con la actividad. Reabrir Google recupera la conversación guardada. Los mensajes antiguos sin metadatos se convierten en pasos de texto. El historial local no se recorta, pero cada petición incluye como máximo los diez intercambios más recientes y puede retirar más intercambios antiguos por tamaño. Los asistentes de alimentos mantienen su historial solo en memoria; la imagen del último `user_input` se conserva durante sus rondas de herramientas y sus bytes se omiten cuando ya existe un mensaje de usuario posterior. Una respuesta sustituida por el filtro sanitario conserva los pasos de protocolo, mientras la interfaz muestra exclusivamente la intervención local.
 
-`store: false` evita guardar el objeto de conversación en Interactions. No significa que dejen de aplicar las condiciones generales de tratamiento de datos de Google. La política de privacidad explica tanto el historial local ampliado como su reenvío completo.
+`store: false` evita guardar el objeto de conversación en Interactions. No significa que dejen de aplicar las condiciones generales de tratamiento de datos de Google. La política de privacidad distingue el historial local íntegro del subconjunto reciente que se envía.
+
+### Presupuesto de contexto de Google
+
+`prepareGoogleInteractionRequest` aplica tres límites antes de abrir la red: diez intercambios, 512 KiB para el JSON sin datos inline de imagen y 19.000.000 bytes para el cuerpo JSON completo. La medida incluye instrucciones del sistema, herramientas, configuración de razonamiento y esquema de respuesta. Un intercambio empieza en `user_input` y conserva todos sus pasos hasta el siguiente; el turno activo nunca se divide.
+
+La preparación retira primero los bytes de imágenes de intercambios anteriores —conservando su texto y la respuesta, o insertando un marcador neutro si el usuario solo había enviado una imagen— y después selecciona los diez intercambios más recientes. Si aún no cabe, elimina intercambios completos desde el más antiguo. Si el último por sí solo excede un límite, lanza `GoogleContextBudgetError` antes de Fetch/XHR, con un mensaje específico para imágenes activas demasiado grandes y otro para el resto del contexto imprescindible. El historial persistido o en memoria no se modifica.
+
+`App.tsx` recibe un reporte allowlist por cada preparación y lo guarda en la traza local como `googleContext/request-prepared` o `googleContext/request-rejected`. Solo contiene resultado, motivos y contadores de intercambios, bytes e imágenes retiradas; nunca mensajes, base64, firmas ni argumentos de herramientas. Un fallo al registrar el diagnóstico no altera la petición.
 
 Referencias del protocolo: [visión general](https://ai.google.dev/gemini-api/docs/interactions-overview), [streaming](https://ai.google.dev/gemini-api/docs/streaming) y [salida estructurada](https://ai.google.dev/gemini-api/docs/structured-output).
 
@@ -153,7 +163,7 @@ Referencias del protocolo: [visión general](https://ai.google.dev/gemini-api/do
 
 ## Pruebas que protegen el contrato
 
-`googleInteractions.test.ts` añade contratos REST, firmas, replays, fragmentación UTF-8, permutaciones inválidas y paridad Fetch/XHR. El E2E comprueba Google con lectura/escritura, recarga y más de 20 mensajes. La prueba del ledger usa efectos reales simulados con reintentos completos. La [guía de validación de Google](../../docs/testing/google-interactions.md) separa la evidencia de navegador de la validación pendiente en un Android con XHR real.
+`googleInteractions.test.ts` añade contratos REST, firmas, replays, fragmentación UTF-8, permutaciones inválidas, paridad Fetch/XHR y el presupuesto por intercambios y bytes. Sus propiedades comprueban orden, inmutabilidad y parejas completas de herramientas; otra regresión verifica el rechazo anterior a red y que el reporte no filtre contenido. El E2E comprueba Google con lectura/escritura, recarga de un historial largo limitado a diez intercambios y una imagen que deja de reenviarse después del turno que la analiza. La prueba del ledger usa efectos reales simulados con reintentos completos. La [guía de validación de Google](../../docs/testing/google-interactions.md) separa la evidencia de navegador de la validación pendiente en un Android con XHR real.
 
 `providerPipeline.test.ts` reproduce fixtures SSE crudos de los tres proveedores y los reparte en tamaños de red repetidos y también en particiones arbitrarias generadas. Cubre el recorrido parser → herramienta → continuación, los `call_id` de OpenAI, `tool_use_id` de Anthropic, los identificadores de Google, deltas, razonamiento, argumentos inválidos, errores explícitos y streams truncados de Anthropic. Esta es la prueba más útil al modificar un dialecto o una carga útil de continuación.
 
