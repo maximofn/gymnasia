@@ -1,17 +1,18 @@
 # Android en wallabot
 
-**Estado: primer APK local firmado y verificado, flujo sin activar.** La prueba
+**Estado: primer APK local firmado, verificado y probado en Android; flujo sin activar.** La prueba
 del 14-09-2026 compiló `production-apk` y verificó el resultado en otra VM limpia,
 sin credenciales: versión 1.43.2, versionCode 56 y firma de producción existente.
 Se mantuvo el candidato inmutable de la prueba; no incorpora los cambios de la
-release posterior 1.43.3. El APK no se publicó.
+release posterior 1.43.3. El APK no se publicó. El mantenedor confirmó el
+14-09-2026 que lo instaló en su Android y funciona bien.
 La auditoría de la imagen ampliada pasó permisos, toolchain, red privada y
 descarte de overlays tras éxito, cancelación, caída de QEMU y timeout. También
 tras la build y su verificación se mantuvieron base, listeners y estado del host;
 se eliminaron los temporales con credenciales. No apareció una build cloud en
 el intervalo de este reintento local. El workflow cloud de main sigue activo
-hasta fusionar la migración. Quedan el registro efímero por trabajo, el ensayo
-de reversión del flujo de publicación y la instalación manual en Android.
+hasta fusionar la migración. Quedan el registro efímero por trabajo y el ensayo
+de reversión del flujo de publicación antes de activar el cambio.
 
 `build-apk.yml` conserva la selección de candidato, validación, borrador,
 verificación y publicación en GitHub. Solo `compile-android` usa
