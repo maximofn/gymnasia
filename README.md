@@ -212,7 +212,8 @@ La migración a una VM desechable en wallabot conserva los gates y la publicaci�
 en GitHub. La primera build firmada ya pasó su verificación independiente y el
 mantenedor confirmó que se instala y funciona en su Android. También pasó el
 registro temporal en GitHub y su retirada; la reversión de transacciones se
-ensayó sin red. Quedan la provisión automática por trabajo y su validación con
-el workflow completo antes de activar el flujo.
+ensayó sin red. El workflow destina ahora la compilación a wallabot; quedan la
+provisión automática por trabajo y su validación con el workflow completo.
+Hasta completar ese paso, las compilaciones esperarán un ejecutor disponible.
 Instalación, toolchain fijada, firma, contador y reversión se describen
 en [el runbook de builds locales](ops/android-build/README.md).
