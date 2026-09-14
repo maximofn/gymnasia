@@ -18,6 +18,10 @@ const eas = JSON.parse(readFileSync(
   new URL("../../apps/mobile/eas.json", import.meta.url),
   "utf8",
 ));
+const localBuild = readFileSync(
+  new URL("../production-release/run-local-build.mjs", import.meta.url),
+  "utf8",
+);
 
 test("staging y producción ejecutan la puerta sanitaria determinista", () => {
   assert.equal((workflow.match(/^\s+npm run check:health-safety\s*$/gm) || []).length, 2);
@@ -101,18 +105,25 @@ test("el verificador confiable siempre procede de main", () => {
   assert.equal((workflow.match(/fetch --no-tags --depth=1 origin "\$GITHUB_SHA"/g) || []).length, 2);
 });
 
-test("EAS conserva perfiles locales y publica únicamente production-apk", () => {
+test("EAS conserva los perfiles locales y publica el AAB de Production en Play Interno", () => {
   assert.equal(eas.build.preview.extends, "staging");
   assert.equal(eas.build.staging.env.APP_ENV, "staging");
   assert.equal(eas.build.staging.android.buildType, "apk");
   assert.equal(eas.build.production.env.APP_ENV, "production");
+  assert.equal(eas.build.production.autoIncrement, true);
   assert.equal(eas.build["production-apk"].extends, "production");
+  assert.equal(eas.build["production-apk"].autoIncrement, false);
   assert.equal(eas.build["production-apk"].android.buildType, "apk");
-  assert.match(buildWorkflow, /--profile production-apk/);
-  assert.match(buildWorkflow, /environment: Production/);
+  assert.deepEqual(eas.submit.production.android, {
+    track: "internal",
+    releaseStatus: "completed",
+  });
+  assert.match(localBuild, /aab: \{ profile: "production"/);
+  assert.match(localBuild, /apk: \{ profile: "production-apk"/);
+  assert.match(localBuild, /"--local", "--non-interactive", "--freeze-credentials"/);
+  assert.equal((buildWorkflow.match(/environment: Production/g) || []).length, 1);
+  assert.equal((buildWorkflow.match(/environment: Play Internal/g) || []).length, 1);
   assert.match(buildWorkflow, /Prepare new immutable policy inputs/);
-  assert.match(buildWorkflow, /--environment production/);
-  assert.doesNotMatch(buildWorkflow, /--environment staging/);
   assert.doesNotMatch(buildWorkflow, /inputs\.profile/);
   assert.match(buildWorkflow, /^  validate-production:$/m);
   assert.match(buildWorkflow, /^  select-transaction:$/m);
@@ -124,8 +135,6 @@ test("EAS conserva perfiles locales y publica únicamente production-apk", () =>
   assert.doesNotMatch(validationJob, /^    environment:/m);
   assert.doesNotMatch(validationJob, /EXPO_TOKEN/);
   assert.match(validationJob, /verify:production-source/);
-  assert.match(validationJob, /--profile production-apk/);
-  assert.match(validationJob, /--artifact-type apk/);
   assert.match(validationJob, /--expected-version/);
   assert.match(buildWorkflow, /verify:production-artifact/);
   assert.match(
@@ -137,17 +146,21 @@ test("EAS conserva perfiles locales y publica únicamente production-apk", () =>
     /npm run verify:production-artifact/,
   );
   assert.match(buildWorkflow, /production-source-evidence\.json/);
-  assert.match(buildWorkflow, /production-artifact-evidence\.json/);
+  assert.match(buildWorkflow, /production-aab-evidence\.json/);
+  assert.match(buildWorkflow, /production-apk-evidence\.json/);
+  assert.match(buildWorkflow, /production-play-evidence\.json/);
   assert.match(buildWorkflow, /Create durable draft before local compilation/);
-  assert.match(buildWorkflow, /Attach verified APK and immutable evidence/);
+  assert.match(buildWorkflow, /Verify durable draft contains both validated artifacts/);
+  assert.match(buildWorkflow, /Submit only the validated wallabot AAB/);
   assert.match(buildWorkflow, /android-production-release/);
   assert.match(buildWorkflow, /cancel-in-progress: false/);
   assert.match(buildWorkflow, /release-transaction\.mjs select-remote/);
-  assert.doesNotMatch(buildWorkflow, /--no-wait|eas build:view|eas build:list/);
+  assert.doesNotMatch(buildWorkflow, /eas build:view|eas build:list/);
   assert.match(buildWorkflow, /compile-android:/);
-  assert.match(buildWorkflow, /verify-and-release:/);
-  assert.match(buildWorkflow, /Download APK to quarantine path/);
-  assert.match(buildWorkflow, /--published-filename gymnasia\.apk/);
+  assert.match(buildWorkflow, /verify-artifacts:/);
+  assert.match(buildWorkflow, /submit-play-and-release:/);
+  assert.match(buildWorkflow, /Download new local results to quarantine/);
+  assert.match(buildWorkflow, /--published-filename "gymnasia\.\$\{LEG\}"/);
   assert.doesNotMatch(buildWorkflow, /Update version in app\.json/);
   assert.doesNotMatch(buildWorkflow, /Compute next version from conventional commits/);
   const snapshotScript = readFileSync(

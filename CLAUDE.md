@@ -265,16 +265,15 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   external PR that touches a sensitive path from `.github/prompt-policy.json`
   requires a current-commit approval from `@maximofn`; all merges remain manual.
 - If a PR touches build-triggering files under `apps/mobile/**`, ask for explicit
-  confirmation before merging because Expo quota is limited.
-- **El entorno de build móvil por defecto es Producción.** Mientras el mantenedor
-  pruebe directamente en Producción y no haya usuarios, interpreta cualquier
-  petición genérica de compilar, generar un APK o lanzar una build como
-  `production-apk` (APK instalable con configuración de Producción). Usa
-  `production` solo cuando se pida un AAB para Google Play. No lances ni apruebes
-  una build `staging` salvo que el mantenedor solicite Staging explícitamente. Si
-  el push a `main` deja esperando la build automática de Staging, no la apruebes
-  por defecto: lanza y aprueba manualmente `production-apk`.
-- **Qué dispara realmente el build de Expo**: no todo push a `main`. El workflow
+  confirmation before merging: la fusión inicia una compilación Android real.
+- **El entorno de build móvil por defecto es Producción.** Para una petición
+  aislada de APK instalable usa `production-apk`; para un AAB usa `production`.
+  El workflow normal de release compila automáticamente primero el AAB y después
+  el APK en wallabot con el mismo `versionCode`, envía el AAB a Play Interno y
+  publica ambos en GitHub. No lances una build `staging` salvo que el mantenedor
+  solicite Staging explícitamente. Las promociones desde Play Interno a pruebas
+  cerradas o producción siguen siendo manuales.
+- **Qué dispara realmente el build Android**: no todo push a `main`. El workflow
   `.github/workflows/build-apk.yml` filtra por rutas:
   ```yaml
   push:
@@ -288,12 +287,9 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   Es decir, solo compila si el push toca `apps/mobile/**`, y ni siquiera entonces
   si son únicamente scripts, markdown o ficheros de `public/`. Cambios en
   `.claude/`, `CLAUDE.md`, `arquitectura-agente/`, `ejercicios/`, `alimentos/` o
-  `.github/` **no gastan build**. `apps/mobile/public/` tampoco: solo lo consume
-  `expo export --platform web`, EAS no lo empaqueta en el AAB, y ahí vive la
-  política de privacidad publicada, que debe poder republicarse sin gastar cuota.
-  El plan de Expo es de pago desde septiembre de 2026, así que una build ya no es
-  el recurso escaso que era; sigue siendo finita, así que verifica el filtro antes
-  de asumir que un push es caro — y pide confirmación igualmente.
+  `.github/` **no lanzan wallabot**. `apps/mobile/public/` tampoco: solo lo consume
+  `expo export --platform web`, no se empaqueta en el AAB, y ahí vive la política
+  de privacidad publicada, que debe poder republicarse sin compilar Android.
 - PR description should include: summary, impacted paths, commands executed, and screenshots for UI updates.
 
 ## Security & Configuration Tips
@@ -422,10 +418,9 @@ Only non-obvious gotchas that could recur are kept here.
 - `interruptionModeAndroid: DuckOthers` requests `AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK` when a `Sound` plays. Keeping a reusable `Sound` around can leave vendor-specific Android audio focus active longer than the alert and attenuate other apps during a rest.
 - Fix: do not preload or cache the rest-alert `Sound`. Create it only when the foreground alert must play, then stop and unload that exact instance as soon as playback finishes. Background alerts stay native notifications.
 
-### Una build parada casi nunca es la cola de Expo: mira antes la puerta de aprobación
-El plan de Expo **es de pago desde septiembre de 2026**. La cola del plan gratuito, que
-antes explicaba casi cualquier espera, ya no es la sospechosa por defecto: empezar por ahí
-hace perder el tiempo. Diagnostica en este orden.
+### Una build parada no está en la cola de Expo: mira Production y wallabot
+Android se compila localmente en wallabot; EAS solo aporta credenciales, contador y
+submission. Diagnostica en este orden.
 
 **1. ¿Hay una ejecución anterior esperando aprobación?** Es la causa más frecuente y la
 menos visible. `build-apk.yml` declara `concurrency: android-production-release` con
@@ -459,15 +454,15 @@ Las comillas simples en `environment_ids[]` son obligatorias: sin ellas zsh inte
 expandir los corchetes y falla con `no matches found`. Aprobar es el mismo comando con
 `state=approved`.
 
-**2. Si ya está corriendo y muere por tiempo**, entonces sí puede ser la espera de EAS.
-`eas build` espera a que termine, así que un job que agota `timeout-minutes` (hoy 120) sale
-como `cancelled` con `##[error]The operation was canceled` en el paso "Build APK on EAS";
-los pasos siguientes (Download APK / Create Release / Commit version bump) quedan
-`skipped`, así que **no hay Release ni commit de versión** — pero la build sigue viva en
-Expo por su cuenta. Compruébalo con `eas build:view <build-id>` o la URL que imprime el
-log: si sigue `in queue`/`in progress`, el APK acabará y se descarga desde Expo. Si esto
-se repite pese al plan de pago, considera `eas build --no-wait` publicando la release desde
-un webhook de Expo, o compila en local con la skill `build-apk`.
+**2. Si ya pasó la aprobación**, comprueba el controlador de wallabot y el runner efímero
+con el runbook `ops/android-build/README.md`. Una build local interrumpida no sigue viva en
+Expo: el overlay se destruye y la transacción queda fallida. Si AAB o APK ya estaban
+validados, se conservan; `retry-failed` recompila únicamente la pata pendiente.
+
+**3. Si ambos binarios están validados**, mira el submission con
+`eas submit:view <submission-id> --json`. Un timeout con ID conocido se reconcilia sin
+otra subida. Una intención sin ID queda bloqueada a propósito: localiza el ID con páginas
+de `eas submit:list` y usa `adopt-submission`; nunca repitas `eas submit --path` a ciegas.
 
 ### `test:train:e2e` es intermitente por diseño, y además **miente en su código de salida**
 Dos trampas distintas del mismo script (`apps/mobile/scripts/train-usability.e2e.mjs`),
@@ -668,18 +663,19 @@ gh pr create
 ```
 Do not push directly to `main`. Wait for the required checks and merge the pull
 request manually. If it touches build-triggering files under `apps/mobile/**`,
-ask for explicit confirmation before merging because Expo quota is limited.
+ask for explicit confirmation before merging because it starts the real
+wallabot/Play flow.
 
-Un push a `main` **solo** dispara el build de APK si toca `apps/mobile/**`
+Un push a `main` **solo** dispara el build Android si toca `apps/mobile/**`
 (excluyendo `apps/mobile/scripts/**` y los `.md`). Ver el filtro de rutas en
-"Commit & Pull Request Guidelines". Un push que sí entre en el filtro gasta build;
-el resto, no. La cuota de Expo es finita aunque el plan sea de pago, y sobre todo
-las builds se ejecutan de una en una: ver "Una build parada casi nunca es la cola
-de Expo" en el Solved Problems Log.
+"Commit & Pull Request Guidelines". Un push que sí entre en el filtro reserva
+wallabot, genera AAB y APK, y envía el AAB a Play Interno; el resto no. Las builds
+se ejecutan de una en una: ver "Una build parada no está en la cola de Expo" en
+el Solved Problems Log.
 
-The APK workflow changes `apps/mobile/app.json` only inside the build workspace;
-the GitHub tag and Release persist the published version. It must never commit a
-version bump directly to `main`.
+The Android workflow never changes `apps/mobile/app.json`; the publishable
+version must already be committed on `main`. It must never commit a version bump
+directly to `main`.
 
 <!-- OPENWIKI:START -->
 

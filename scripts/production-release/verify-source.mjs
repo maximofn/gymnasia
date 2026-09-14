@@ -23,12 +23,12 @@ function parseArguments(argv) {
     const key = argv[index];
     const value = argv[index + 1];
     if (!key?.startsWith("--") || value === undefined) {
-      throw new Error("Uso: verify-source.mjs --profile production|production-apk --artifact-type aab|apk --output RUTA");
+      throw new Error("Uso: verify-source.mjs --output RUTA [--expected-commit SHA] [--expected-version X.Y.Z]");
     }
     options[key.slice(2)] = value;
   }
-  if (!options.profile || !options["artifact-type"] || !options.output) {
-    throw new Error("Faltan --profile, --artifact-type o --output.");
+  if (!options.output) {
+    throw new Error("Falta --output.");
   }
   return options;
 }
@@ -85,6 +85,8 @@ async function readRemoteControls(policy, checkedOutSha) {
   const environments = await githubJson(policy.repository, "/environments");
   const productionEnvironment = environments.environments
     ?.find((environment) => environment.name === policy.environment) ?? null;
+  const playEnvironment = environments.environments
+    ?.find((environment) => environment.name === policy.playEnvironment) ?? null;
   const associatedPulls = await githubJson(policy.repository, `/commits/${checkedOutSha}/pulls`);
   const pullRequest = associatedPulls.find((pull) =>
     pull.merged_at && pull.base?.ref === policy.productionBranch) ?? null;
@@ -102,6 +104,7 @@ async function readRemoteControls(policy, checkedOutSha) {
   return {
     rulesets: ruleset ? [ruleset] : [],
     productionEnvironment,
+    playEnvironment,
     pullRequest,
     statuses,
     checkRuns,
@@ -151,8 +154,7 @@ async function main() {
   const remote = await readRemoteControls(policy, checkedOutSha);
   const evaluated = evaluateSourceCandidate({
     policy,
-    profile: options.profile,
-    artifactType: options["artifact-type"],
+    targets: Object.entries(policy.profiles).map(([profile, artifactType]) => ({ profile, artifactType })),
     ref: process.env.GITHUB_REF ?? "",
     headSha: expectedCommit,
     checkedOutSha,
@@ -169,13 +171,12 @@ async function main() {
   }
 
   const evidence = {
-    schemaVersion: 1,
-    kind: "ProductionSourceEvidenceV1",
+    schemaVersion: 2,
+    kind: "ProductionSourceEvidenceV2",
     repository: policy.repository,
     commit: checkedOutSha,
     ref: process.env.GITHUB_REF || `refs/remotes/origin/${policy.productionBranch}`,
-    profile: options.profile,
-    artifactType: options["artifact-type"],
+    targets: Object.entries(policy.profiles).map(([profile, artifactType]) => ({ profile, artifactType })),
     appVersion,
     auditedAt: new Date().toISOString(),
     source: {
@@ -188,9 +189,21 @@ async function main() {
       rulesetName: evaluated.ruleset?.name ?? null,
       rulesetEnforcement: evaluated.ruleset?.enforcement ?? null,
       bypassActors: evaluated.ruleset?.bypass_actors ?? [],
-      environment: remote.productionEnvironment?.name ?? null,
-      protectedBranchesOnly:
-        remote.productionEnvironment?.deployment_branch_policy?.protected_branches === true,
+      environments: {
+        production: {
+          name: remote.productionEnvironment?.name ?? null,
+          protectedBranchesOnly:
+            remote.productionEnvironment?.deployment_branch_policy?.protected_branches === true,
+        },
+        playInternal: {
+          name: remote.playEnvironment?.name ?? null,
+          protectedBranchesOnly:
+            remote.playEnvironment?.deployment_branch_policy?.protected_branches === true,
+          reviewerCount: remote.playEnvironment?.protection_rules
+            ?.filter((rule) => rule.type === "required_reviewers")
+            .flatMap((rule) => rule.reviewers ?? []).length ?? 0,
+        },
+      },
       ownerReviewer: policy.owner,
       preventSelfReview: remote.productionEnvironment?.protection_rules
         ?.find((rule) => rule.type === "required_reviewers")?.prevent_self_review ?? null,
