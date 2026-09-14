@@ -269,9 +269,19 @@ export function PortablePasswordModal({
               opacity: busy ? 0.58 : 1,
             }}
           >
-            {busy ? <ActivityIndicator size="small" color="#06090D" /> : <Feather name={mode === "create" ? "shield" : "unlock"} size={17} color="#06090D" />}
-            <Text style={{ color: "#06090D", fontSize: 15, fontWeight: "800" }}>
-              {busy ? "Procesando…" : mode === "create" ? "Cifrar y guardar" : "Desbloquear copia"}
+            {busy ? (
+              <ActivityIndicator testID="portable-password-loading" size="small" color="#06090D" />
+            ) : (
+              <Feather name={mode === "create" ? "shield" : "unlock"} size={17} color="#06090D" />
+            )}
+            <Text
+              testID={busy ? "portable-password-loading-label" : undefined}
+              accessibilityLiveRegion="polite"
+              style={{ color: "#06090D", fontSize: 15, fontWeight: "800" }}
+            >
+              {busy
+                ? mode === "create" ? "Cifrando…" : "Desbloqueando…"
+                : mode === "create" ? "Cifrar y guardar" : "Desbloquear copia"}
             </Text>
           </Pressable>
           <Pressable

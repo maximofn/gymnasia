@@ -248,6 +248,19 @@ async function inputType(locator) {
   return locator.evaluate((element) => element.type);
 }
 
+async function submitPortablePasswordAndWaitForLoading(page, screenshotPath = null) {
+  await Promise.all([
+    (async () => {
+      await page.getByTestId("portable-password-loading")
+        .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+      if (screenshotPath) {
+        await page.screenshot({ path: screenshotPath, fullPage: true });
+      }
+    })(),
+    clickTestId(page, "portable-password-submit"),
+  ]);
+}
+
 async function waitForStore(page, predicate, message) {
   const startedAt = Date.now();
   while (Date.now() - startedAt < STEP_TIMEOUT_MS) {
@@ -280,14 +293,17 @@ async function chooseBackup(page, file, password = null) {
     assert.equal(await inputType(passwordInput), "text");
     assert.equal(await passwordInput.inputValue(), "incorrect backup password");
     await clickTestId(page, "portable-password-visibility-toggle");
-    await clickTestId(page, "portable-password-submit");
+    await submitPortablePasswordAndWaitForLoading(
+      page,
+      process.env.TRAIN_HISTORY_BACKUP_UNLOCK_LOADING_SCREENSHOT ?? null,
+    );
     await page.getByTestId("portable-password-error")
       .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
     assert.match(await page.getByTestId("portable-password-error").innerText(), /contraseña no es correcta/i);
     assert.equal(await page.getByTestId("backup-import-confirm").count(), 0);
     assert.equal((await readStore(page)).workoutHistory.length, 0, "una contraseña incorrecta modificó datos");
     await page.getByTestId("portable-password-input").fill(password);
-    await clickTestId(page, "portable-password-submit");
+    await submitPortablePasswordAndWaitForLoading(page);
   }
   await page.getByTestId("backup-import-confirm").waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await Promise.all([
