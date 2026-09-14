@@ -87,9 +87,9 @@ describe("create_feature_issue: contrato de la tool", () => {
 
 describe("el APK que se distribuye debe poder hablar con el backend", () => {
   // Este contrato existe por un fallo real: el workflow distribuía staging y su
-  // endpoint estaba vacío. Ahora la publicación solo admite production-apk; el
-  // test ancla tanto esa variante como su backend para que no vuelva a degradar
-  // en silencio.
+  // endpoint estaba vacío. Ahora wallabot compila tanto el AAB production como
+  // el APK production-apk con APP_ENV=production; el test ancla ese entorno y
+  // su backend para que no vuelva a degradar en silencio.
   const appConfig = readFileSync(join(__dirname, "..", "app.config.ts"), "utf8");
   const buildWorkflow = readFileSync(
     join(repositoryRoot, ".github", "workflows", "build-apk.yml"),
@@ -109,18 +109,21 @@ describe("el APK que se distribuye debe poder hablar con el backend", () => {
     return line.slice(environment.length + 1).replace(/,$/, "").trim();
   }
 
-  it("el workflow de publicación solo compila production-apk", () => {
-    expect(buildWorkflow).toContain("--profile production-apk");
+  it("wallabot compila AAB y APK con los perfiles de Production", () => {
     const localBuild = readFileSync(
       new URL("../../../scripts/production-release/run-local-build.mjs", import.meta.url),
       "utf8",
     );
-    expect(localBuild).toContain('"--profile", "production-apk"');
+    expect(localBuild).toContain('aab: { profile: "production"');
+    expect(localBuild).toContain('apk: { profile: "production-apk"');
+    expect(localBuild).toContain('"--profile", target.profile');
     expect(localBuild).toContain('"--local", "--non-interactive", "--freeze-credentials"');
+    expect(localBuild).toContain('APP_ENV: "production"');
     expect(buildWorkflow).not.toContain("github.event.inputs.profile");
     expect(buildWorkflow).not.toContain("inputs.profile");
     expect(buildWorkflow).toContain("environment: Production");
-    expect(buildWorkflow).toContain("--environment production");
+    expect(buildWorkflow).toContain("Build AAB first and APK second inside the disposable VM");
+    expect(buildWorkflow).toContain("environment: Play Internal");
   });
 
   it("staging y production tienen endpoint configurado", () => {

@@ -209,14 +209,19 @@ Contrato, pruebas y validación de XHR en Android: [Google Interactions](docs/te
 ## Compilación Android de producción
 
 Las builds Android de producción se compilan en una VM desechable en wallabot.
-GitHub conserva las validaciones, las aprobaciones de Production, la verificación
-independiente y la publicación. El controlador crea un ejecutor efímero por
-trabajo aprobado y lo retira al terminar; el Mac puede estar apagado.
+Tras la aprobación humana de `Production`, wallabot genera primero el AAB y
+después el APK con el mismo `versionCode`. GitHub los verifica de forma
+independiente, envía el AAB a Play Interno mediante EAS Submit y solo entonces
+publica ambos en una Release. Las promociones posteriores continúan siendo
+manuales. El controlador crea un ejecutor efímero por trabajo aprobado y lo
+retira al terminar; el Mac puede estar apagado.
 
 El ciclo completo quedó validado el 14-09-2026 con
 [Gymnasia 1.44.0](https://github.com/maximofn/gymnasia/releases/tag/v1.44.0),
 versionCode 57 y la firma de producción existente. El APK publicado coincide
 byte a byte con el generado en wallabot. La VM se limpió, el ejecutor se retiró
-y el timer quedó habilitado. Expo sigue proporcionando la firma y el contador;
-la compilación usa EAS local. Instalación, toolchain fijada y reversión se
-describen en [el runbook de builds locales](ops/android-build/README.md).
+y el timer quedó habilitado. Expo sigue proporcionando la firma, el contador y
+la pasarela de envío, pero no capacidad de compilación. Instalación, toolchain,
+credenciales, recuperación y reversión se describen en
+[el runbook de builds locales](ops/android-build/README.md) y en
+[el contrato de publicación](docs/store/google-play/production-promotion-gates.md).

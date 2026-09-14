@@ -1,4 +1,4 @@
-name: Build Production APK & Publish Release
+name: Build Android APK + AAB on wallabot & Publish Play Internal
 
 on:
   workflow_dispatch:
@@ -6,15 +6,19 @@ on:
       operation:
         description: Reconcile, retry or supersede the oldest failed version
         type: choice
-        options: [reconcile, retry-failed, supersede-failed]
+        options: [reconcile, retry-failed, adopt-submission, supersede-failed]
         default: reconcile
         required: true
       target_version:
-        description: Required for retry/supersede (for example 1.31.3)
+        description: Required for retry/supersede (for example 1.44.1)
         type: string
         required: false
       reason:
         description: Required reason for retry/supersede
+        type: string
+        required: false
+      submission_id:
+        description: EAS submission ID required to recover an uncertain Play request
         type: string
         required: false
   push:
@@ -65,9 +69,14 @@ jobs:
           OPERATION: ${{ inputs.operation || 'reconcile' }}
           TARGET_VERSION: ${{ inputs.target_version || '' }}
           REASON: ${{ inputs.reason || '' }}
+          SUBMISSION_ID: ${{ inputs.submission_id || '' }}
+          PLAY_VERSION_CODE_FLOOR: ${{ vars.PLAY_VERSION_CODE_FLOOR }}
         shell: bash
         run: |
           set -euo pipefail
+          [[ "$PLAY_VERSION_CODE_FLOOR" =~ ^[1-9][0-9]*$ ]] || {
+            echo "::error::Configura PLAY_VERSION_CODE_FLOOR con el mayor versionCode real de Play Console."; exit 1;
+          }
           CURRENT_VERSION="$(node -p 'require("./apps/mobile/app.json").expo.version')"
           CURRENT_COMMIT="$(git rev-parse HEAD)"
           node scripts/production-release/release-transaction.mjs select-remote \
@@ -76,6 +85,7 @@ jobs:
             --operation "$OPERATION" \
             --target-version "$TARGET_VERSION" \
             --reason "$REASON" \
+            --submission-id "$SUBMISSION_ID" \
             --output /tmp/production-release-selection.json \
             --github-output "$GITHUB_OUTPUT"
 
@@ -117,7 +127,7 @@ jobs:
       - name: Install Chromium for Production E2E
         run: npm exec -- playwright install --with-deps chromium
 
-      - name: Validate exact source and re-run every Production gate
+      - name: Validate one source for both Android artifacts
         id: source
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -127,8 +137,6 @@ jobs:
         run: |
           set -euo pipefail
           npm run verify:production-source -- \
-            --profile production-apk \
-            --artifact-type apk \
             --expected-commit "$SOURCE_COMMIT" \
             --expected-version "$EXPECTED_VERSION" \
             --output /tmp/production-source-evidence.json
@@ -152,13 +160,15 @@ jobs:
        (needs.select-transaction.outputs.action == 'build' && needs.validate-production.result == 'success'))
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: Production
+    # This job only prepares the durable draft. The compile job below is the
+    # single Production deployment, so GitHub asks for human approval once.
     permissions:
       contents: write
-
     outputs:
       release_id: ${{ needs.select-transaction.outputs.release_id || steps.draft.outputs.release_id }}
       should_build: ${{ steps.reserve.outputs.should_build }}
+      has_local_results: ${{ steps.reserve.outputs.has_local_results }}
+      build_legs: ${{ steps.reserve.outputs.build_legs }}
       artifact_name: ${{ steps.reserve.outputs.artifact_name }}
       artifact_run_id: ${{ steps.reserve.outputs.artifact_run_id }}
 
@@ -206,10 +216,22 @@ jobs:
           node .release-controller/scripts/production-release/release-transaction.mjs transition \
             --input /tmp/android-release-transaction.json \
             --output /tmp/android-release-transaction.json \
-            --event "$MODE" \
-            --reason "$REASON"
-          gh release upload "$TAG" /tmp/android-release-transaction.json \
-            --repo "$GITHUB_REPOSITORY" --clobber
+            --event "$MODE" --reason "$REASON"
+          gh release upload "$TAG" /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
+
+      - name: Adopt a manually reconciled uncertain submission
+        if: needs.select-transaction.outputs.mode == 'adopt'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.select-transaction.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          SUBMISSION_ID="$(jq -r '.submissionId' /tmp/selection/production-release-selection.json)"
+          node .release-controller/scripts/production-release/release-transaction.mjs transition \
+            --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
+            --event adopt-submission --leg play --submission-id "$SUBMISSION_ID" --status NEW
+          gh release upload "$TAG" /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
 
       - name: Stop after recording supersession
         if: needs.select-transaction.outputs.action == 'supersede'
@@ -231,9 +253,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node scripts/policy-promotion/prepare-policy-snapshot.mjs \
-            --environment production \
-            --github-env "$GITHUB_ENV"
+          node scripts/policy-promotion/prepare-policy-snapshot.mjs --environment production --github-env "$GITHUB_ENV"
           cp apps/mobile/agent/generated/policySnapshot.generated.json /tmp/production-policy-snapshot.json
           tar -czf /tmp/production-policy-bundle.tar.gz \
             apps/mobile/agent/generated/chatSystemPrompt.generated.ts \
@@ -251,19 +271,23 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/policy
           gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
-            --pattern production-policy-snapshot.json \
-            --pattern production-policy-bundle.tar.gz \
-            --dir /tmp/policy
+            --pattern production-policy-snapshot.json --pattern production-policy-bundle.tar.gz --dir /tmp/policy
           cp /tmp/policy/production-policy-snapshot.json /tmp/production-policy-snapshot.json
           cp /tmp/policy/production-policy-bundle.tar.gz /tmp/production-policy-bundle.tar.gz
           tar -xzf /tmp/production-policy-bundle.tar.gz -C .
-          # shellcheck disable=SC2016
-          node -e '
-            const fs = require("node:fs");
-            const p = require("/tmp/production-policy-snapshot.json");
-            fs.appendFileSync(process.env.GITHUB_ENV,
-              `APP_ENV=production\nPOLICY_CANDIDATE=${p.candidate}\nPOLICY_SHA256=${p.sha256}\nPOLICY_DEPLOYMENT_ID=${p.deploymentId}\n`);
-          '
+
+      - name: Restore the original source evidence for an existing transaction
+        if: needs.select-transaction.outputs.action == 'build' && needs.select-transaction.outputs.mode != 'new'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.select-transaction.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/original-source
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --pattern production-source-evidence.json --dir /tmp/original-source
+          cp /tmp/original-source/production-source-evidence.json /tmp/source/production-source-evidence.json
 
       - name: Create durable draft before local compilation
         id: draft
@@ -278,6 +302,7 @@ jobs:
           set -euo pipefail
           BODY_FILE="$(mktemp)"
           TRANSACTION_BASE64="$(base64 < /tmp/android-release-transaction.json | tr -d '\n')"
+          # shellcheck disable=SC2016
           {
             echo "## Gymnasia ${VERSION}"
             echo
@@ -285,73 +310,46 @@ jobs:
             echo
             echo "<!-- android-release-transaction:${TRANSACTION_BASE64} -->"
             echo "### Changes"
-            # Sin tuberías a propósito. Con `set -o pipefail`, un `git ... | head -N`
-            # puede tumbar el paso: `head` cierra la tubería al llegar a N, `git` recibe
-            # SIGPIPE y sale con 141. Solo ocurre si la salida no cabe entera en el búfer
-            # de la tubería, así que es un fallo latente que aparece sin avisar cuando
-            # crece el historial. `--max-count` y `sed` recortan sin cerrar nada.
             LATEST_TAG="$(git tag --list 'v*' --sort=-version:refname | sed -n '1p')"
-            if [ -n "$LATEST_TAG" ]; then
-              git log "$LATEST_TAG"..HEAD --max-count=30 --pretty=format:'- %s'
-            fi
+            if [ -n "$LATEST_TAG" ]; then git log "$LATEST_TAG"..HEAD --max-count=30 --pretty=format:'- %s'; fi
             echo
             echo "### Install"
-            # shellcheck disable=SC2016
-            echo 'Download `gymnasia.apk` and install it on Android.'
+            echo 'Download `gymnasia.apk` for direct installation. The same version is sent as `gymnasia.aab` to Play Internal.'
           } > "$BODY_FILE"
-          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
-            --target "$SOURCE_COMMIT" --title "Gymnasia ${VERSION}" \
-            --notes-file "$BODY_FILE" --draft
-          gh release upload "$TAG" \
-            /tmp/android-release-transaction.json \
-            /tmp/source/production-source-evidence.json \
-            /tmp/production-policy-snapshot.json \
-            /tmp/production-policy-bundle.tar.gz \
-            --repo "$GITHUB_REPOSITORY" --clobber
-          # `select-transaction` calcula el release_id antes de que este borrador
-          # exista, asi que en una version nueva llega vacio y la subida del APK
-          # acaba en un 404 con el binario ya compilado. Se resuelve aqui.
-          # No sirve `releases/tags/<tag>`: ese endpoint no encuentra borradores.
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$SOURCE_COMMIT" \
+            --title "Gymnasia ${VERSION}" --notes-file "$BODY_FILE" --draft
+          gh release upload "$TAG" /tmp/android-release-transaction.json \
+            /tmp/source/production-source-evidence.json /tmp/production-policy-snapshot.json \
+            /tmp/production-policy-bundle.tar.gz --repo "$GITHUB_REPOSITORY" --clobber
           RELEASE_ID="$(gh api --paginate "/repos/${GITHUB_REPOSITORY}/releases" \
             --jq "[.[] | select(.tag_name == \"${TAG}\")] | first | .id // empty")"
-          test -n "$RELEASE_ID" || {
-            echo "::error::No se pudo resolver el id del borrador ${TAG}."; exit 1;
-          }
+          test -n "$RELEASE_ID"
           echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
 
-      - name: Refresh durable source evidence
-        if: needs.select-transaction.outputs.action == 'build' && needs.select-transaction.outputs.mode != 'new'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ needs.select-transaction.outputs.tag }}
-        run: |
-          gh release upload "$TAG" /tmp/source/production-source-evidence.json \
-            --repo "$GITHUB_REPOSITORY" --clobber
-
-      - name: Reserve local attempt durably before dispatch
+      - name: Reserve local AAB/APK attempts durably before dispatch
         if: needs.select-transaction.outputs.action == 'build'
         id: reserve
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.select-transaction.outputs.tag }}
+          PLAY_VERSION_CODE_FLOOR: ${{ vars.PLAY_VERSION_CODE_FLOOR }}
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/inputs
           cp /tmp/android-release-transaction.json /tmp/production-policy-* /tmp/inputs/
           cp /tmp/source/production-source-evidence.json /tmp/inputs/
-          STATE="$(jq -r '.state' /tmp/inputs/android-release-transaction.json)"
-          if [ "$STATE" = prepared ]; then
+          if [ "${{ needs.select-transaction.outputs.mode }}" = new ]; then
             node .release-controller/scripts/production-release/local-controller.mjs baseline /tmp/inputs
           else
             gh release download "$TAG" --repo "$GITHUB_REPOSITORY" \
-              --pattern previous-artifact-evidence.json --dir /tmp/inputs
+              --pattern previous-apk-evidence.json --pattern version-code-baseline.json --dir /tmp/inputs
           fi
-          # Persist a recovered failure even when reserve refuses to dispatch.
           RESERVE_STATUS=0
           node .release-controller/scripts/production-release/local-controller.mjs reserve /tmp/inputs || RESERVE_STATUS=$?
           gh release upload "$TAG" /tmp/inputs/android-release-transaction.json \
-            /tmp/inputs/previous-artifact-evidence.json --repo "$GITHUB_REPOSITORY" --clobber
+            /tmp/inputs/previous-apk-evidence.json /tmp/inputs/version-code-baseline.json \
+            --repo "$GITHUB_REPOSITORY" --clobber
           exit "$RESERVE_STATUS"
 
       - name: Preserve immutable local inputs
@@ -372,6 +370,8 @@ jobs:
       needs.prepare-production.outputs.should_build == 'true'
     runs-on: [self-hosted, linux, x64, wallabot, android-build, "gymnasia-${{ github.run_id }}-${{ github.run_attempt }}"]
     timeout-minutes: 110
+    # The only job that references Production: approval unlocks its EXPO_TOKEN
+    # and dispatches the local build to wallabot.
     environment: Production
     permissions:
       contents: read
@@ -406,18 +406,20 @@ jobs:
           npm ci --no-audit --no-fund
           tar -xzf "$RUNNER_TEMP/inputs/production-policy-bundle.tar.gz" -C .
 
-      - name: Build synchronously inside the disposable VM
+      - name: Build AAB first and APK second inside the disposable VM
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: node "$RUNNER_TEMP/release-controller/scripts/production-release/run-local-build.mjs" "$RUNNER_TEMP/inputs"
 
-      - name: Transfer untrusted APK for independent verification
+      - name: Transfer untrusted binaries for independent verification
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ${{ needs.prepare-production.outputs.artifact_name }}
           path: |
+            ${{ runner.temp }}/gymnasia.aab
             ${{ runner.temp }}/gymnasia.apk
-            ${{ runner.temp }}/local-build-metadata.json
+            ${{ runner.temp }}/local-build-aab-metadata.json
+            ${{ runner.temp }}/local-build-apk-metadata.json
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
@@ -431,16 +433,14 @@ jobs:
           test -n "$RUNNER_TEMP" && test "$RUNNER_TEMP" != /
           find "$GITHUB_WORKSPACE" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
           find "$RUNNER_TEMP" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
-          # The host destroys the VM overlay after every job, including hard kills.
 
-  verify-and-release:
+  verify-artifacts:
     needs: [select-transaction, validate-production, prepare-production, compile-android]
     if: >-
       always() && needs.prepare-production.result == 'success' &&
       needs.select-transaction.outputs.action == 'build'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    environment: Production
+    timeout-minutes: 25
     permissions:
       contents: write
       actions: read
@@ -462,7 +462,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node scripts/production-release/local-controller.mjs check-inputs /tmp/inputs
           cp /tmp/inputs/android-release-transaction.json /tmp/
           cp /tmp/inputs/production-policy-* /tmp/
           mkdir -p /tmp/source /tmp/quarantine
@@ -474,7 +473,8 @@ jobs:
           BUILD_RESULT: ${{ needs.compile-android.result }}
         run: test "$SHOULD_BUILD" != true || test "$BUILD_RESULT" = success
 
-      - name: Download APK to quarantine path
+      - name: Download new local results to quarantine
+        if: needs.prepare-production.outputs.has_local_results == 'true'
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: ${{ needs.prepare-production.outputs.artifact_name }}
@@ -482,19 +482,24 @@ jobs:
           github-token: ${{ github.token }}
           path: /tmp/quarantine
 
-      - name: Require complete local result and bind it to the attempt
+      - name: Bind complete local results to their attempts
+        if: needs.prepare-production.outputs.has_local_results == 'true'
+        env:
+          BUILD_LEGS: ${{ needs.prepare-production.outputs.build_legs }}
         shell: bash
         run: |
           set -euo pipefail
-          test -f /tmp/quarantine/gymnasia.apk && test ! -L /tmp/quarantine/gymnasia.apk
-          test -f /tmp/quarantine/local-build-metadata.json
-          test "$(find /tmp/quarantine -type f | wc -l)" = 2
-          mv /tmp/quarantine/gymnasia.apk /tmp/gymnasia.apk.download
-          node scripts/production-release/release-transaction.mjs transition \
-            --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
-            --event finish-local --metadata /tmp/quarantine/local-build-metadata.json
+          IFS=',' read -ra LEGS <<< "$BUILD_LEGS"
+          for LEG in "${LEGS[@]}"; do
+            test -f "/tmp/quarantine/gymnasia.${LEG}" && test ! -L "/tmp/quarantine/gymnasia.${LEG}"
+            test -f "/tmp/quarantine/local-build-${LEG}-metadata.json"
+            mv "/tmp/quarantine/gymnasia.${LEG}" "/tmp/gymnasia.${LEG}.download"
+            node scripts/production-release/release-transaction.mjs transition \
+              --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
+              --event finish-local --leg "$LEG" --metadata "/tmp/quarantine/local-build-${LEG}-metadata.json"
+          done
 
-      - name: Expose Android artifact tools
+      - name: Expose Android artifact tools and verify bundletool checksum
         shell: bash
         run: |
           set -euo pipefail
@@ -502,75 +507,56 @@ jobs:
           test -n "$ANDROID_BUILD_TOOLS"
           echo "$ANDROID_BUILD_TOOLS" >> "$GITHUB_PATH"
           echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          BUNDLETOOL_URL="$(jq -r '.bundletool.url' scripts/production-release/policy.json)"
+          BUNDLETOOL_SHA="$(jq -r '.bundletool.sha256' scripts/production-release/policy.json)"
+          curl --fail --location "$BUNDLETOOL_URL" --output /tmp/bundletool.jar
+          echo "${BUNDLETOOL_SHA}  /tmp/bundletool.jar" | sha256sum --check --strict
 
-      - name: Persist completed attempt before verification
+      - name: Persist completed local attempts before verification
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.select-transaction.outputs.tag }}
         run: gh release upload "$TAG" /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
 
-      - name: Verify quarantined Production APK
+      - name: Verify new AAB and APK independently
         env:
-          HTTP_MIME: application/octet-stream
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm run verify:production-artifact -- \
-            --artifact /tmp/gymnasia.apk.download \
-            --published-filename gymnasia.apk \
-            --http-mime "$HTTP_MIME" \
-            --kind apk \
-            --source-evidence /tmp/source/production-source-evidence.json \
-            --snapshot /tmp/production-policy-snapshot.json \
-            --build-metadata /tmp/quarantine/local-build-metadata.json \
-            --transaction /tmp/android-release-transaction.json \
-            --previous-evidence /tmp/inputs/previous-artifact-evidence.json \
-            --output /tmp/production-artifact-evidence.json
-          mv /tmp/gymnasia.apk.download gymnasia.apk
-
-      - name: Mark transaction validated
-        shell: bash
-        run: |
-          set -euo pipefail
-          ARTIFACT_SHA="$(jq -r '.artifact.sha256' /tmp/production-artifact-evidence.json)"
-          ARTIFACT_SIZE="$(jq -r '.artifact.size' /tmp/production-artifact-evidence.json)"
-          EVIDENCE_SHA="$(sha256sum /tmp/production-artifact-evidence.json | cut -d' ' -f1)"
-          node scripts/production-release/release-transaction.mjs transition \
-            --input /tmp/android-release-transaction.json \
-            --output /tmp/android-release-transaction.json \
-            --event validate \
-            --artifact-sha256 "$ARTIFACT_SHA" \
-            --artifact-size "$ARTIFACT_SIZE" \
-            --evidence-sha256 "$EVIDENCE_SHA"
-
-      - name: Attach verified APK and immutable evidence
-        env:
-          GH_TOKEN: ${{ github.token }}
+          BUILD_LEGS: ${{ needs.prepare-production.outputs.build_legs }}
           TAG: ${{ needs.select-transaction.outputs.tag }}
-          RELEASE_ID: ${{ needs.prepare-production.outputs.release_id }}
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
-          gh release upload "$TAG" \
-            /tmp/android-release-transaction.json \
-            /tmp/source/production-source-evidence.json \
-            /tmp/production-artifact-evidence.json \
-            /tmp/production-policy-snapshot.json \
-            /tmp/production-policy-bundle.tar.gz \
-            --repo "$GITHUB_REPOSITORY" --clobber
-          gh api "/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" > /tmp/github-release.json
-          EXISTING_APK_ID="$(jq -r '.assets[] | select(.name == "gymnasia.apk") | .id' /tmp/github-release.json)"
-          if [ -n "$EXISTING_APK_ID" ]; then
-            gh api --method DELETE "/repos/${GITHUB_REPOSITORY}/releases/assets/${EXISTING_APK_ID}"
-          fi
-          curl --fail-with-body --request POST \
-            --header "Authorization: Bearer ${GH_TOKEN}" \
-            --header "Accept: application/vnd.github+json" \
-            --header "X-GitHub-Api-Version: 2022-11-28" \
-            --header "Content-Type: application/vnd.android.package-archive" \
-            --data-binary @gymnasia.apk \
-            "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}/assets?name=gymnasia.apk" \
-            > /tmp/github-apk-asset.json
+          set -euo pipefail
+          IFS=',' read -ra LEGS <<< "$BUILD_LEGS"
+          for LEG in "${LEGS[@]}"; do
+            if [ "$LEG" = aab ]; then PROFILE=production; BUNDLETOOL="--bundletool /tmp/bundletool.jar"; MIME=application/octet-stream; else PROFILE=production-apk; BUNDLETOOL=; MIME=application/octet-stream; fi
+            # shellcheck disable=SC2086
+            npm run verify:production-artifact -- \
+              --artifact "/tmp/gymnasia.${LEG}.download" --published-filename "gymnasia.${LEG}" \
+              --http-mime "$MIME" --kind "$LEG" --profile "$PROFILE" $BUNDLETOOL \
+              --source-evidence /tmp/source/production-source-evidence.json \
+              --snapshot /tmp/production-policy-snapshot.json \
+              --build-metadata "/tmp/quarantine/local-build-${LEG}-metadata.json" \
+              --transaction /tmp/android-release-transaction.json \
+              --version-code-baseline /tmp/inputs/version-code-baseline.json \
+              --output "/tmp/production-${LEG}-evidence.json"
+            mv "/tmp/gymnasia.${LEG}.download" "gymnasia.${LEG}"
+            ARTIFACT_SHA="$(jq -r '.artifact.sha256' "/tmp/production-${LEG}-evidence.json")"
+            ARTIFACT_SIZE="$(jq -r '.artifact.size' "/tmp/production-${LEG}-evidence.json")"
+            VERSION_CODE="$(jq -r '.artifact.versionCode' "/tmp/production-${LEG}-evidence.json")"
+            EVIDENCE_SHA="$(sha256sum "/tmp/production-${LEG}-evidence.json" | cut -d' ' -f1)"
+            FLOOR="$(jq -r '.minimumExclusive' /tmp/inputs/version-code-baseline.json)"
+            node scripts/production-release/release-transaction.mjs transition \
+              --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
+              --event validate-artifact --leg "$LEG" --artifact-sha256 "$ARTIFACT_SHA" \
+              --artifact-size "$ARTIFACT_SIZE" --evidence-sha256 "$EVIDENCE_SHA" \
+              --version-code "$VERSION_CODE" --version-code-floor "$FLOOR"
+            gh release upload "$TAG" "gymnasia.${LEG}" "/tmp/production-${LEG}-evidence.json" \
+              /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
+          done
+          STATE="$(jq -r '.state' /tmp/android-release-transaction.json)"
+          test "$STATE" = artifacts-validated || test "$STATE" = submitting
 
-      - name: Verify draft identity, bounds, MIME and evidence chain
+      - name: Verify durable draft contains both validated artifacts
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_ID: ${{ needs.prepare-production.outputs.release_id }}
@@ -579,38 +565,18 @@ jobs:
         run: |
           set -euo pipefail
           gh api "/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" > /tmp/github-release.json
-          test "$(jq -r '.draft' /tmp/github-release.json)" = "true"
+          test "$(jq -r '.draft' /tmp/github-release.json)" = true
           test "$(jq -r '.target_commitish' /tmp/github-release.json)" = "$SOURCE_COMMIT"
-          APK_POLICY="$(jq -c '.artifacts.apk' scripts/production-release/policy.json)"
-          APK="$(jq -c '.assets[] | select(.name == "gymnasia.apk")' /tmp/github-release.json)"
-          test "$(jq -r '.content_type' <<<"$APK")" = "$(jq -r '.githubMimeType' <<<"$APK_POLICY")"
-          APK_SIZE="$(jq -r '.size' <<<"$APK")"
-          test "$APK_SIZE" -ge "$(jq -r '.minBytes' <<<"$APK_POLICY")"
-          test "$APK_SIZE" -le "$(jq -r '.maxBytes' <<<"$APK_POLICY")"
-          for ASSET in android-release-transaction.json production-source-evidence.json production-artifact-evidence.json; do
-            jq -e --arg name "$ASSET" '.assets[] | select(.name == $name)' /tmp/github-release.json >/dev/null
+          for LEG in aab apk; do
+            ASSET_SHA="$(jq -r --arg name "gymnasia.${LEG}" '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json)"
+            test "$ASSET_SHA" = "sha256:$(jq -r ".legs.${LEG}.artifact.sha256" /tmp/android-release-transaction.json)"
+            EVIDENCE_SHA="$(jq -r --arg name "production-${LEG}-evidence.json" '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json)"
+            test "$EVIDENCE_SHA" = "sha256:$(jq -r ".legs.${LEG}.artifact.evidenceSha256" /tmp/android-release-transaction.json)"
           done
-          ASSET_DIGEST() {
-            jq -r --arg name "$1" '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json
-          }
-          test "$(ASSET_DIGEST gymnasia.apk)" = "sha256:$(jq -r '.artifact.sha256' /tmp/android-release-transaction.json)"
-          test "$APK_SIZE" = "$(jq -r '.artifact.size' /tmp/android-release-transaction.json)"
-          test "$(ASSET_DIGEST production-artifact-evidence.json)" = "sha256:$(jq -r '.artifact.evidenceSha256' /tmp/android-release-transaction.json)"
-          test "$(ASSET_DIGEST production-source-evidence.json)" = "sha256:$(jq -r '.source.evidenceSha256' /tmp/production-artifact-evidence.json)"
-          test "$(ASSET_DIGEST android-release-transaction.json)" = "sha256:$(sha256sum /tmp/android-release-transaction.json | cut -d' ' -f1)"
-          for INPUT in production-policy-snapshot.json production-policy-bundle.tar.gz previous-artifact-evidence.json; do
-            test "$(ASSET_DIGEST "$INPUT")" = "sha256:$(jq -r --arg name "$INPUT" '.attempts[-1].inputs[$name]' /tmp/android-release-transaction.json)"
-          done
-          test "$(jq -r '.source.commit' /tmp/production-artifact-evidence.json)" = "$SOURCE_COMMIT"
-          test "$(jq -r '.result' /tmp/production-artifact-evidence.json)" = "passed"
+          test "$(jq -r '.legs.aab.artifact.versionCode' /tmp/android-release-transaction.json)" = \
+            "$(jq -r '.legs.apk.artifact.versionCode' /tmp/android-release-transaction.json)"
 
-      - name: Publish immutable APK release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ needs.select-transaction.outputs.tag }}
-        run: gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
-
-      - name: Preserve failed transaction without deleting the draft
+      - name: Preserve failed build legs without deleting the draft
         if: failure() || cancelled()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -619,23 +585,261 @@ jobs:
         run: |
           set -euo pipefail
           test -f /tmp/android-release-transaction.json || cp /tmp/inputs/android-release-transaction.json /tmp/
-          STATE="$(jq -r '.state' /tmp/android-release-transaction.json)"
-          if [ "$STATE" = build-running ] || [ "$STATE" = build-finished ]; then
-            node scripts/production-release/release-transaction.mjs transition \
+          for LEG in aab apk; do
+            STATE="$(jq -r ".legs.${LEG}.state" /tmp/android-release-transaction.json)"
+            if [ "$STATE" = building ] || [ "$STATE" = built ]; then
+              node scripts/production-release/release-transaction.mjs transition \
+                --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
+                --event fail-local --leg "$LEG" \
+                --reason 'Falló la compilación o verificación local; requiere reintento manual motivado.'
+            fi
+          done
+          gh release upload "$TAG" /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
+
+  submit-play-and-release:
+    needs: [select-transaction, prepare-production, verify-artifacts]
+    if: needs.verify-artifacts.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    # No second reviewer: Production was already approved before wallabot ran.
+    environment: Play Internal
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout immutable source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ needs.select-transaction.outputs.source_commit }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout trusted release controller
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+          path: .release-controller
+
+      - name: Setup pinned EAS CLI
+        uses: expo/expo-github-action@c7b66a9c327a43a8fa7c0158e7f30d6040d2481e # v8
+        with:
+          eas-version: 24.3.0
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Restore validated AAB and durable evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.select-transaction.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/release
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir /tmp/release \
+            --pattern android-release-transaction.json --pattern gymnasia.aab \
+            --pattern production-source-evidence.json --pattern production-aab-evidence.json \
+            --pattern production-apk-evidence.json
+          cp /tmp/release/android-release-transaction.json /tmp/
+          test "$(jq -r '.state' /tmp/android-release-transaction.json)" = artifacts-validated || \
+            test "$(jq -r '.state' /tmp/android-release-transaction.json)" = submitting
+
+      - name: Persist submission intent before contacting EAS
+        id: intent
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.select-transaction.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PLAY_STATE="$(jq -r '.legs.play.state' /tmp/android-release-transaction.json)"
+          if [ "$PLAY_STATE" = prepared ]; then
+            node .release-controller/scripts/production-release/release-transaction.mjs transition \
               --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
-              --event fail-local --reason 'Falló la compilación o verificación local; requiere reintento manual motivado.'
+              --event prepare-play --leg play \
+              --artifact-sha256 "$(jq -r '.legs.aab.artifact.sha256' /tmp/android-release-transaction.json)" \
+              --version-code "$(jq -r '.versionCode' /tmp/android-release-transaction.json)"
+            echo "operation=submit" >> "$GITHUB_OUTPUT"
+          elif [ "$PLAY_STATE" = retry-pending ]; then
+            RETRY_OF="$(jq -r '.legs.play.attempts[-1].submissionId' /tmp/android-release-transaction.json)"
+            node .release-controller/scripts/production-release/release-transaction.mjs transition \
+              --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
+              --event start-play-retry --leg play
+            echo "operation=retry" >> "$GITHUB_OUTPUT"
+            echo "retry_of=$RETRY_OF" >> "$GITHUB_OUTPUT"
+          else
+            echo "operation=reconcile" >> "$GITHUB_OUTPUT"
           fi
           gh release upload "$TAG" /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
 
+      - name: Submit only the validated wallabot AAB
+        if: steps.intent.outputs.operation == 'submit'
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: node .release-controller/scripts/production-release/eas-submit.mjs submit --artifact /tmp/release/gymnasia.aab --output /tmp/eas-submit-created.json
+
+      - name: Retry the known failed submission without uploading again
+        if: steps.intent.outputs.operation == 'retry'
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: node .release-controller/scripts/production-release/eas-submit.mjs retry --submission-id "${{ steps.intent.outputs.retry_of }}" --output /tmp/eas-submit-created.json
+
+      - name: Adopt the exact submission ID durably
+        if: steps.intent.outputs.operation == 'submit' || steps.intent.outputs.operation == 'retry'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.select-transaction.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node .release-controller/scripts/production-release/release-transaction.mjs transition \
+            --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
+            --event adopt-submission --leg play \
+            --submission-id "$(jq -r '.id' /tmp/eas-submit-created.json)" \
+            --status "$(jq -r '.status' /tmp/eas-submit-created.json)"
+          gh release upload "$TAG" /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
+
+      - name: Refuse to duplicate an uncertain path submission
+        shell: bash
+        run: |
+          set -euo pipefail
+          SUBMISSION_ID="$(jq -r '.legs.play.attempts[-1].submissionId // empty' /tmp/android-release-transaction.json)"
+          test -n "$SUBMISSION_ID" || {
+            echo "::error::Existe una intención de Play sin submission ID. No se subirá de nuevo automáticamente."; exit 1;
+          }
+          echo "SUBMISSION_ID=$SUBMISSION_ID" >> "$GITHUB_ENV"
+
+      - name: Reconcile the known submission until terminal state
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: node .release-controller/scripts/production-release/eas-submit.mjs wait --submission-id "$SUBMISSION_ID" --output /tmp/eas-submit-final.json --timeout-ms 2700000
+
+      - name: Observe the last known EAS state durably
+        if: always() && env.SUBMISSION_ID != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.select-transaction.outputs.tag }}
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f /tmp/eas-submit-final.json ]; then
+            node .release-controller/scripts/production-release/eas-submit.mjs view \
+              --submission-id "$SUBMISSION_ID" --output /tmp/eas-submit-final.json
+          fi
+          STATUS="$(jq -r '.status' /tmp/eas-submit-final.json)"
+          REASON="$(jq -r '.error.message // ("EAS Submit está en " + .status)' /tmp/eas-submit-final.json)"
+          node .release-controller/scripts/production-release/release-transaction.mjs transition \
+            --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
+            --event observe-play --leg play --submission-id "$SUBMISSION_ID" --status "$STATUS" --reason "$REASON"
+          gh release upload "$TAG" /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
+
+      - name: Create and bind Play evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.select-transaction.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node .release-controller/scripts/production-release/create-play-evidence.mjs \
+            --transaction /tmp/android-release-transaction.json --submission /tmp/eas-submit-final.json \
+            --output /tmp/production-play-evidence.json
+          EVIDENCE_SHA="$(sha256sum /tmp/production-play-evidence.json | cut -d' ' -f1)"
+          node .release-controller/scripts/production-release/release-transaction.mjs transition \
+            --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
+            --event validate-play --leg play --evidence-sha256 "$EVIDENCE_SHA"
+          gh release upload "$TAG" /tmp/android-release-transaction.json /tmp/production-play-evidence.json \
+            --repo "$GITHUB_REPOSITORY" --clobber
+
+      - name: Verify the full release, write summary and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.select-transaction.outputs.tag }}
+          RELEASE_ID: ${{ needs.prepare-production.outputs.release_id }}
+          SOURCE_COMMIT: ${{ needs.select-transaction.outputs.source_commit }}
+          VERSION: ${{ needs.select-transaction.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" > /tmp/github-release.json
+          test "$(jq -r '.draft' /tmp/github-release.json)" = true
+          test "$(jq -r '.target_commitish' /tmp/github-release.json)" = "$SOURCE_COMMIT"
+          for ASSET in gymnasia.aab gymnasia.apk production-source-evidence.json production-aab-evidence.json production-apk-evidence.json production-play-evidence.json android-release-transaction.json; do
+            jq -e --arg name "$ASSET" '.assets[] | select(.name == $name and .digest != null)' /tmp/github-release.json >/dev/null
+          done
+          test "$(jq -r '.state' /tmp/android-release-transaction.json)" = validated
+          for LEG in aab apk; do
+            ASSET="$(jq -c --arg name "gymnasia.${LEG}" '.assets[] | select(.name == $name)' /tmp/github-release.json)"
+            POLICY="$(jq -c ".artifacts.${LEG}" .release-controller/scripts/production-release/policy.json)"
+            test "$(jq -r '.digest' <<< "$ASSET")" = "sha256:$(jq -r ".legs.${LEG}.artifact.sha256" /tmp/android-release-transaction.json)"
+            test "$(jq -r '.size' <<< "$ASSET")" = "$(jq -r ".legs.${LEG}.artifact.size" /tmp/android-release-transaction.json)"
+            test "$(jq -r '.content_type' <<< "$ASSET")" = "$(jq -r '.githubMimeType' <<< "$POLICY")"
+            test "$(jq -r '.size' <<< "$ASSET")" -ge "$(jq -r '.minBytes' <<< "$POLICY")"
+            test "$(jq -r '.size' <<< "$ASSET")" -le "$(jq -r '.maxBytes' <<< "$POLICY")"
+            EVIDENCE_DIGEST="$(jq -r --arg name "production-${LEG}-evidence.json" '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json)"
+            test "$EVIDENCE_DIGEST" = "sha256:$(jq -r ".legs.${LEG}.artifact.evidenceSha256" /tmp/android-release-transaction.json)"
+          done
+          PLAY_DIGEST="$(jq -r --arg name production-play-evidence.json '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json)"
+          test "$PLAY_DIGEST" = "sha256:$(jq -r '.legs.play.evidenceSha256' /tmp/android-release-transaction.json)"
+          SOURCE_DIGEST="$(jq -r --arg name production-source-evidence.json '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json)"
+          test "$SOURCE_DIGEST" = "sha256:$(jq -r '.source.evidenceSha256' /tmp/release/production-aab-evidence.json)"
+          test "$(jq -r '.source.evidenceSha256' /tmp/release/production-aab-evidence.json)" = \
+            "$(jq -r '.source.evidenceSha256' /tmp/release/production-apk-evidence.json)"
+          BODY_FILE="$(mktemp)"
+          # shellcheck disable=SC2016
+          {
+            echo "## Gymnasia ${VERSION}"
+            echo
+            echo "- versionCode: \`$(jq -r '.versionCode' /tmp/android-release-transaction.json)\`"
+            echo "- commit: \`${SOURCE_COMMIT}\`"
+            echo "- AAB SHA-256: \`$(jq -r '.legs.aab.artifact.sha256' /tmp/android-release-transaction.json)\`"
+            echo "- APK SHA-256: \`$(jq -r '.legs.apk.artifact.sha256' /tmp/android-release-transaction.json)\`"
+            echo "- wallabot AAB: \`$(jq -r '.legs.aab.attempts[-1].attemptId' /tmp/android-release-transaction.json)\`"
+            echo "- wallabot APK: \`$(jq -r '.legs.apk.attempts[-1].attemptId' /tmp/android-release-transaction.json)\`"
+            echo "- EAS submission: \`$(jq -r '.legs.play.submission.id' /tmp/android-release-transaction.json)\`"
+            echo "- Play: \`internal / completed / FINISHED\`"
+            echo
+            echo "### Changes"
+            LATEST_TAG="$(git tag --list 'v*' --sort=-version:refname | grep -v "^${TAG}$" | sed -n '1p')"
+            if [ -n "$LATEST_TAG" ]; then git log "$LATEST_TAG".."$SOURCE_COMMIT" --max-count=30 --pretty=format:'- %s'; fi
+            echo
+            echo "### Install"
+            echo 'Download `gymnasia.apk` for direct installation. `gymnasia.aab` is the exact bundle submitted to Play Internal.'
+          } > "$BODY_FILE"
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --notes-file "$BODY_FILE"
+          cat "$BODY_FILE" >> "$GITHUB_STEP_SUMMARY"
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --draft=false --latest
+
+      - name: Preserve uncertain Play intent without uploading twice
+        if: failure() || cancelled()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.select-transaction.outputs.tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f /tmp/android-release-transaction.json ]; then
+            PLAY_STATE="$(jq -r '.legs.play.state' /tmp/android-release-transaction.json)"
+            SUBMISSION_ID="$(jq -r '.legs.play.attempts[-1].submissionId // empty' /tmp/android-release-transaction.json)"
+            if [ "$PLAY_STATE" = submitting ] && [ -z "$SUBMISSION_ID" ]; then
+              node .release-controller/scripts/production-release/release-transaction.mjs transition \
+                --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
+                --event fail-play --leg play --uncertain true \
+                --reason 'EAS pudo aceptar el AAB sin devolver un ID; reconciliar manualmente antes de cualquier reintento.'
+            fi
+            gh release upload "$TAG" /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
+          fi
+
   enqueue-next:
-    needs: [select-transaction, prepare-production, verify-and-release]
-    if: always() && (needs.verify-and-release.result == 'success' || (needs.prepare-production.result == 'success' && needs.select-transaction.outputs.action == 'supersede'))
+    needs: [select-transaction, prepare-production, submit-play-and-release]
+    if: >-
+      always() &&
+      (needs.submit-play-and-release.result == 'success' ||
+       (needs.prepare-production.result == 'success' && needs.select-transaction.outputs.action == 'supersede'))
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
       actions: write
       contents: read
-
     steps:
       - name: Checkout latest main
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -656,5 +860,5 @@ jobs:
             'import { compareSemver } from "./scripts/production-release/production-release.mjs"; process.exit(compareSemver(process.argv[1], process.argv[2]) > 0 ? 0 : 1)' \
             "$CURRENT_VERSION" "$PROCESSED_VERSION"; then
             gh workflow run build-apk.yml --repo "$GITHUB_REPOSITORY" --ref main \
-              -f operation=reconcile -f target_version= -f reason=
+              -f operation=reconcile -f target_version= -f reason= -f submission_id=
           fi

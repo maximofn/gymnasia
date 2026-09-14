@@ -220,20 +220,22 @@ el canal de avisos.
 
 ## Builds y funcionamiento sin red
 
-Production contiene su `EXPO_TOKEN` de environment. Antes de invocar EAS, el workflow
+Production contiene su `EXPO_TOKEN` de environment para firma y contador. El
+environment automático `Play Internal` contiene otro token para EAS Submit; la
+cuenta de servicio de Google permanece en EAS. Antes de invocar EAS local, el workflow
 resuelve el deployment Production y ejecuta:
 
 ```bash
 node scripts/policy-promotion/prepare-policy-snapshot.mjs --environment production
 ```
 
-El script verifica las firmas y evidencias y genera en el APK el paquete firmado completo,
+El script verifica las firmas y evidencias y genera en AAB y APK el paquete firmado completo,
 además de los módulos de prompt y política sanitaria. Si falta un artefacto o no coincide,
 la build falla.
 
 Una build manual de Producción debe reproducir ese mismo orden: primero ejecutar las
-comprobaciones normales sobre las fuentes y después preparar el snapshot con el comando
-anterior, inmediatamente antes de invocar EAS. `check:chat-prompt` se ejecuta antes de
+comprobaciones normales sobre las fuentes, preparar el snapshot, compilar el AAB con
+`production` y compilar después el APK con `production-apk`. `check:chat-prompt` se ejecuta antes de
 sustituir los módulos generados. Si se lanza EAS sin esta preparación, el AAB puede ser
 válido y estar bien firmado, pero el snapshot queda vacío y una instalación sin caché
 deshabilita el chat porque no dispone de una política firmada. Tras la build se restauran
@@ -243,8 +245,8 @@ El procedimiento canónico ya no es una lista informal: `npm run
 verify:production-source` reejecuta los gates sobre un checkout limpio de `main`, y
 `npm run verify:production-artifact` valida el manifest fusionado, la firma, la versión,
 el snapshot y el hash del binario. Los comandos completos y la matriz de promoción están
-en `docs/store/google-play/production-promotion-gates.md`. Un AAB sin ambas evidencias no
-se sube a Play Console.
+en `docs/store/google-play/production-promotion-gates.md`. El AAB no se sube a
+Play Interno hasta que ambos binarios y su `versionCode` común estén acreditados.
 
 En ejecución, la app selecciona en este orden:
 
