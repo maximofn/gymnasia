@@ -26,7 +26,11 @@ export function assertLocalAttempt(attempt, transaction) {
   assert.equal(attempt.profile, transaction.profile, "El intento cambia el perfil.");
   // Historical attempts remain readable after a toolchain update or rollback.
   // The build worker separately requires equality with the current lock.
-  assert.deepEqual(Object.keys(attempt.toolchain ?? {}).sort(), Object.keys(localToolchain).sort());
+  const keys = Object.keys(attempt.toolchain ?? {}).sort();
+  const currentKeys = Object.keys(localToolchain).sort();
+  const originalKeys = currentKeys.filter((key) => !["androidBuildToolsAdditional", "androidPlatformTools"].includes(key));
+  assert.ok(JSON.stringify(keys) === JSON.stringify(currentKeys) || JSON.stringify(keys) === JSON.stringify(originalKeys),
+    "Campos de toolchain no permitidos o incompletos.");
   assert.equal(attempt.toolchain.schemaVersion, 1);
   for (const [key, value] of Object.entries(attempt.toolchain)) {
     if (key !== "schemaVersion") assert.match(value, /^\d+(?:\.\d+){0,3}$/, "Versión de toolchain inválida.");

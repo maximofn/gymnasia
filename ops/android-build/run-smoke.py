@@ -67,7 +67,7 @@ def main():
     assert request_path.stat().st_size <= 1024 * 1024
     request_bytes = request_path.read_bytes()
     request = json.loads(request_bytes)
-    assert request["mode"] in ["probe", "build", "verify"]
+    assert request["mode"] in ["probe", "build", "verify", "diagnose"]
     assert len(request["nonce"]) == 32
     if request["mode"] == "build":
         assert request.get("expoToken") and request_path.stat().st_mode & 0o077 == 0

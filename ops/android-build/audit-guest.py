@@ -67,10 +67,12 @@ assert output("/home/runner/actions/bin/Runner.Listener", "--version") == inputs
 sdk = pathlib.Path("/opt/android")
 platform = (sdk / f'platforms/android-{lock["androidPlatform"]}/source.properties').read_text()
 assert re.search(r"^AndroidVersion.ApiLevel\s*=\s*" + lock["androidPlatform"] + r"\s*$", platform, re.M)
-for prefix, name in [("build-tools", "androidBuildTools"), ("ndk", "androidNdk"),
+for prefix, name in [("build-tools", "androidBuildTools"), ("build-tools", "androidBuildToolsAdditional"), ("ndk", "androidNdk"),
                      ("cmdline-tools", "androidCommandLineTools"), ("cmake", "cmake")]:
     properties = (sdk / prefix / lock[name] / "source.properties").read_text()
     assert re.search(r"^Pkg.Revision\s*=\s*(.+)$", properties, re.M)[1].strip() == lock[name]
+properties = (sdk / "platform-tools/source.properties").read_text()
+assert re.search(r"^Pkg.Revision\s*=\s*(.+)$", properties, re.M)[1].strip() == lock["androidPlatformTools"]
 print("GYMNASIA_AUDIT_PROGRESS red", flush=True)
 with urllib.request.urlopen("https://github.com", timeout=25) as response:
     assert response.status == 200

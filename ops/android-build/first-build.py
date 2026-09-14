@@ -75,9 +75,16 @@ def main():
         assert build["mode"] == "build" and build["sourceCommit"] == baseline["sourceCommit"]
         build["expoToken"] = credential
         credential = None
-        marker.write_text(json.dumps({"nonce": build["nonce"], "sourceCommit": build["sourceCommit"], "state": "started"}))
-        evidence, build_report = stage(build, inputs / "empty.bin")
+        attempt = {"nonce": build["nonce"], "sourceCommit": build["sourceCommit"], "state": "started"}
+        marker.write_text(json.dumps(attempt))
+        try:
+            evidence, build_report = stage(build, inputs / "empty.bin")
+        except BaseException:
+            marker.write_text(json.dumps({**attempt, "state": "failed"}))
+            raise
         build.pop("expoToken", None)
+        marker.write_text(json.dumps({**attempt, "state": "built", "artifactSha256": build_report["artifactSha256"],
+                                      "quarantine": str(evidence / "output.bin")}))
         verify = {**baseline, "nonce": uuid.uuid4().hex, "requireProgression": True,
                   "inputSha256": build_report["artifactSha256"]}
         _, report = stage(verify, evidence / "output.bin")

@@ -66,6 +66,22 @@ test("un fallo conserva el intento y requiere operación manual motivada", () =>
   assert.deepEqual(resumed.attempts[0], failed.attempts[0]);
 });
 
+test("lee intentos anteriores a los SDK adicionales sin admitir campos arbitrarios", () => {
+  const tx = structuredClone(started());
+  delete tx.attempts[0].toolchain.androidBuildToolsAdditional;
+  delete tx.attempts[0].toolchain.androidPlatformTools;
+  const oldMetadata = { ...metadata(), toolchain: { ...tx.attempts[0].toolchain } };
+  assertLocalBuildMetadata(oldMetadata, tx, oldMetadata.artifact);
+  for (const field of ["token", "environment", "path"]) {
+    const altered = structuredClone(tx);
+    altered.attempts[0].toolchain[field] = "123";
+    assert.throws(() => assertLocalBuildMetadata(oldMetadata, altered, oldMetadata.artifact), /no permitidos/);
+  }
+  const incomplete = structuredClone(started());
+  delete incomplete.attempts[0].toolchain.androidPlatformTools;
+  assert.throws(() => assertLocalBuildMetadata(metadata(), incomplete, metadata().artifact), /incompletos/);
+});
+
 test("la evidencia debe superar versionCode 52; rechaza códigos inválidos", () => {
   assertVersionCodeProgression("53", "52");
   for (const value of ["52", "51", "0", "-1", "abc", "1.2", "53x", "99999999999999999999", "2100000001"]) {

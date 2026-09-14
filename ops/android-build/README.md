@@ -81,10 +81,26 @@ cloud-init desde su propio script también rompía la escritura de su estado fin
 
 `toolchain.json` es la lista comprobada antes de compilar: Node 22.23.1,
 npm 10.9.3, Temurin 17.0.20.1, EAS CLI y plugin local 24.3.0, plataforma Android
-36, build-tools 36.0.0, NDK 27.1.12297006, command-line-tools 19.0 y CMake 3.22.1.
+36, build-tools 36.0.0 y 35.0.0, platform-tools 37.0.1, NDK 27.1.12297006,
+command-line-tools 19.0 y CMake 3.22.1.
 React Native 0.81.5 del lockfile exige plataforma 36, build-tools 36.0.0 y ese
 NDK; coincide con la referencia de Expo SDK 54. Node 22 está por encima de su
 mínimo y permite conservar la familia usada por los controles de GitHub.
+
+El primer diagnóstico nativo encontró un requisito adicional: aunque el
+proyecto raíz declara build-tools 36.0.0, módulos de Expo piden 35.0.0 y el SDK
+necesita platform-tools. Gradle intentaba instalarlos en el SDK de solo lectura
+y fallaba en `:expo:generateReleaseRFile`. Se fijan ambas versiones de
+build-tools y se instala platform-tools desde su ZIP numerado y SHA-256,
+contrastado con el tamaño/checksum del manifiesto oficial de Google. No se
+permite al runner modificar el SDK para resolverlo.
+
+`sudo bash bake-image.sh --extend-clean-base` añade esos paquetes a un overlay
+de la base limpia verificada, sin firma ni checkout. Conserva la base anterior
+y solo sustituye la vigente después de sellar/comprobar el nuevo disco. Nunca
+parte del overlay de una build. Después hay que repetir `audit-image.py` y la
+compilación de prueba. `run-smoke.py` admite `diagnose`: prebuild y compilación
+de fuentes Release sin tareas de firma ni credenciales, con diagnóstico acotado.
 
 Las versiones se instalan dentro de la VM; EAS local ignora los campos de
 toolchain de `eas.json`. La imagen no tiene sudo, SSH, Docker, GPU ni KVM

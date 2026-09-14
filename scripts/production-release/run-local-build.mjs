@@ -54,6 +54,8 @@ try {
   for (const [directory, version] of [
     [`platforms/android-${localToolchain.androidPlatform}`, null],
     [`build-tools/${localToolchain.androidBuildTools}`, localToolchain.androidBuildTools],
+    [`build-tools/${localToolchain.androidBuildToolsAdditional}`, localToolchain.androidBuildToolsAdditional],
+    ["platform-tools", localToolchain.androidPlatformTools],
     [`ndk/${localToolchain.androidNdk}`, localToolchain.androidNdk],
     [`cmdline-tools/${localToolchain.androidCommandLineTools}`, localToolchain.androidCommandLineTools],
     [`cmake/${localToolchain.cmake}`, localToolchain.cmake],

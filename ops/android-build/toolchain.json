@@ -6,6 +6,8 @@
   "easCli": "24.3.0",
   "androidPlatform": "36",
   "androidBuildTools": "36.0.0",
+  "androidBuildToolsAdditional": "35.0.0",
+  "androidPlatformTools": "37.0.1",
   "androidNdk": "27.1.12297006",
   "androidCommandLineTools": "19.0",
   "cmake": "3.22.1"

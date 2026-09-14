@@ -62,7 +62,11 @@ yes | sdkmanager --licenses >/dev/null
 license_status="${PIPESTATUS[1]}"
 set -o pipefail
 test "$license_status" = 0
-sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'ndk;27.1.12297006' 'cmake;3.22.1'
+sdkmanager 'platforms;android-36' 'build-tools;36.0.0' 'build-tools;35.0.0' 'ndk;27.1.12297006' 'cmake;3.22.1'
+# sdkmanager's platform-tools name is a moving target. Install a numbered,
+# checksummed archive instead; Expo modules also require build-tools 35.
+download androidPlatformTools
+unzip -q androidPlatformTools.download -d /opt/android
 progress runner-sin-registrar
 download runner
 install -d -o runner -g runner -m 0700 /home/runner/actions
@@ -71,7 +75,7 @@ chown -R runner:runner /home/runner/actions
 install -m 0755 /opt/gymnasia/admit-job.sh /usr/local/lib/gymnasia/admit-job.sh
 install -m 0644 /opt/gymnasia/gymnasia-runner.service /etc/systemd/system/
 cat > /etc/gymnasia-toolchain.env <<'ENV'
-PATH=/opt/gymnasia/node/bin:/opt/gymnasia/java/bin:/opt/android/cmdline-tools/19.0/bin:/opt/android/build-tools/36.0.0:/usr/local/bin:/usr/bin:/bin
+PATH=/opt/gymnasia/node/bin:/opt/gymnasia/java/bin:/opt/android/cmdline-tools/19.0/bin:/opt/android/build-tools/36.0.0:/opt/android/platform-tools:/usr/local/bin:/usr/bin:/bin
 JAVA_HOME=/opt/gymnasia/java
 ANDROID_HOME=/opt/android
 ANDROID_SDK_ROOT=/opt/android

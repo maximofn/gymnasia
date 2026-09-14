@@ -51,7 +51,8 @@ def main():
     request = json.loads((ROOT / "request.json").read_text())
     (ROOT / "request.json").unlink()
     mode = request["mode"]
-    assert mode in ["probe", "build", "verify"]
+    assert mode in ["probe", "build", "verify", "diagnose"]
+    assert mode == "build" or "expoToken" not in request
     report = {"mode": mode, "result": "failed", "nonce": request["nonce"]}
     output = ROOT / "output.bin"
     output.touch()
@@ -78,12 +79,16 @@ def main():
             assert evidence["result"] == "passed" and evidence["commit"] == commit
             assert evidence["repository"] == "maximofn/gymnasia" and evidence["ref"] == "refs/heads/main"
             assert evidence["profile"] == "production-apk" and all(g["result"] == "passed" for g in evidence["gates"])
-            if mode == "build":
+            if mode in ["build", "diagnose"]:
                 assert subprocess.check_output(["node", "--version"], text=True).strip() == "v22.23.1"
                 assert subprocess.check_output(["npm", "--version"], text=True).strip() == "10.9.3"
                 assert "eas-cli/24.3.0 " in subprocess.check_output(["eas", "--version"], text=True)
                 java = subprocess.run(["java", "-version"], capture_output=True, text=True, check=True)
                 assert 'version "17.0.20.1"' in java.stderr
+                for directory, revision in [("build-tools/36.0.0", "36.0.0"), ("build-tools/35.0.0", "35.0.0"),
+                                            ("platform-tools", "37.0.1")]:
+                    properties = (pathlib.Path("/opt/android") / directory / "source.properties").read_text()
+                    assert re.search(r"^Pkg.Revision\s*=\s*(.+)$", properties, re.M)[1].strip() == revision
                 assert json.loads((SOURCE / "apps/mobile/eas.json").read_text())["cli"]["appVersionSource"] == "remote"
                 progress("dependencias")
                 run(["npm", "ci", "--no-audit", "--no-fund"])
@@ -97,6 +102,22 @@ def main():
                     assert hashlib.sha256(data).hexdigest() == request["snapshotDigests"][name]
                     (SOURCE / "apps/mobile/agent/generated" / name).write_bytes(data)
                 assert len(request["snapshotFiles"]) == 4
+            if mode == "diagnose":
+                # A fresh credential-free guest can safely return compiler
+                # diagnostics. This runs no signing task and never contacts
+                # Expo's credential manager or version counter.
+                progress("diagnostico-sin-firma")
+                env = {key: os.environ[key] for key in ["PATH", "HOME", "JAVA_HOME", "ANDROID_HOME", "ANDROID_SDK_ROOT"]}
+                env.update({"APP_ENV": "production", "CI": "1", "EXPO_NO_TELEMETRY": "1",
+                       "ANDROID_NDK_HOME": "/opt/android/ndk/27.1.12297006",
+                       "GRADLE_USER_HOME": str(ROOT / "gradle"),
+                       "GRADLE_OPTS": "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=4 -Dorg.gradle.jvmargs=-Xmx4g"})
+                assert "EXPO_TOKEN" not in env
+                run(["npm", "--workspace", "apps/mobile", "exec", "--", "expo", "prebuild",
+                     "--platform", "android", "--no-install"], env=env)
+                run(["./gradlew", ":app:compileReleaseSources", "-x", "lint", "-x", "test", "--console=plain"],
+                    cwd=SOURCE / "apps/mobile/android", env=env, timeout=30 * 60)
+            elif mode == "build":
                 progress("compilacion-local")
                 env = {key: os.environ[key] for key in ["PATH", "HOME", "JAVA_HOME", "ANDROID_HOME", "ANDROID_SDK_ROOT"]}
                 env.update({"LANG": "C.UTF-8", "CI": "1", "APP_ENV": "production", "EXPO_NO_TELEMETRY": "1",
@@ -136,6 +157,10 @@ def main():
         output.write_bytes(b"")
     finally:
         request.clear()
+        if mode == "diagnose" and (ROOT / "private.log").exists():
+            # At most 8,000 characters, even for a verbose compiler failure.
+            # This mode has never received credentials or run a signing task.
+            report["credentialFreeDiagnostics"] = (ROOT / "private.log").read_text(errors="replace")[-8000:]
         (ROOT / "private.log").unlink(missing_ok=True)
         (ROOT / "report.json").write_text(json.dumps(report))
         channel.send(stream, ROOT / "report.json")
