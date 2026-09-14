@@ -15,8 +15,9 @@ wallabot. La prueba real de registro temporal y retirada también pasó. La
 reversión de transacciones se ensayó sin red. La provisión automática por
 trabajo está instalada y pasó una transferencia sin credenciales bajo las
 restricciones reales del controlador, conservando el host y limpiando la VM.
-Quedan la App de GitHub y la validación con el workflow completo. Hasta completar esa validación, el
-job de compilación esperará un ejecutor disponible. La fusión de la PR no
+La App de GitHub está instalada y su autenticación desde el servicio pasó la
+auditoría. Queda la validación con el workflow completo. Hasta completar esa
+validación, el job de compilación esperará un ejecutor disponible. La fusión de la PR no
 instala ni arranca por sí sola un ejecutor en el servidor.
 
 `build-apk.yml` conserva la selección de candidato, validación, borrador,
@@ -297,7 +298,7 @@ de la API y recuperación de una respuesta perdida:
 real descrita arriba también pasó. Esta fase no instala un
 servicio de provisión automática ni guarda un PAT permanente en wallabot.
 
-## Provisión automática: controlador instalado y auditado; App y job real pendientes
+## Provisión automática: controlador y App auditados; job real pendiente
 
 `provision-controller.py` se instala desde un paquete revisado, como código de
 root independiente de los checkouts de las builds. Un timer de systemd lo
@@ -321,6 +322,14 @@ La configuración `app.json` contiene únicamente `appId`, `installationId` y
 de usar un token de instalación de una hora, limitado de nuevo a ese único
 repositorio. No conserva tokens de instalación en disco. Solo el token de
 registro temporal viaja al guest mediante el canal ya auditado.
+
+La instalación de la App y su custodia fueron autorizadas expresamente y se
+verificaron el 14-09-2026: permisos exactos, acceso a un solo repositorio,
+huella de la clave root y autenticación mediante `LoadCredential` bajo las
+restricciones del controlador. Las copias temporales del Mac y de entrada al
+servidor se retiraron después de comprobar el destino. El timer permanece
+deshabilitado hasta completar la prueba real. La versión 1.44.0 prepara una
+nueva transacción para esa prueba; 1.43.3 ya estaba publicada.
 
 Antes de reservar una VM, se exigen el workflow canónico, main, evento push o
 workflow_dispatch, repositorio de origen canónico y ausencia de aprobaciones
