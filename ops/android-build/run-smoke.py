@@ -24,8 +24,8 @@ STATE = pathlib.Path("/var/lib/gymnasia-android")
 UNIT = "gymnasia-android-smoke.service"
 
 
-def run(*args, check=True, errors="strict"):
-    return subprocess.run(args, check=check, text=True, errors=errors, stdout=subprocess.PIPE,
+def run(*args, check=True, errors="strict", env=None):
+    return subprocess.run(args, check=check, text=True, errors=errors, env=env, stdout=subprocess.PIPE,
                           stderr=subprocess.STDOUT).stdout.strip()
 
 
@@ -169,7 +169,10 @@ def main():
         run("qemu-img", "create", "-f", "qcow2", "-F", "qcow2", "-b", str(STATE / "base.qcow2"),
             str(STATE / "current/disk.qcow2"))
         run("cloud-localds", "--network-config=" + str(work / "network-config"),
-            str(STATE / "current/seed.img"), str(work / "user-data"), str(work / "meta-data"))
+            str(STATE / "current/seed.img"), str(work / "user-data"), str(work / "meta-data"),
+            # ProtectSystem=strict keeps /tmp read-only. Keep cloud-localds'
+            # temporary files within our private, writable cleanup directory.
+            env={**os.environ, "TMPDIR": str(work)})
         (STATE / "current/request.json").write_bytes(request_bytes)
         shutil.copyfile(input_path, STATE / "current/input.bin")
         for name in ["disk.qcow2", "seed.img", "request.json", "input.bin"]:

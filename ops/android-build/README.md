@@ -13,8 +13,9 @@ se eliminaron los temporales con credenciales. No apareció una build cloud en
 el intervalo de este reintento local. El workflow destina la compilación a
 wallabot. La prueba real de registro temporal y retirada también pasó. La
 reversión de transacciones se ensayó sin red. La provisión automática por
-trabajo está implementada en la rama de continuación, pendiente de instalar
-y validar con el workflow completo. Hasta completar esa validación, el
+trabajo está instalada y pasó una transferencia sin credenciales bajo las
+restricciones reales del controlador, conservando el host y limpiando la VM.
+Quedan la App de GitHub y la validación con el workflow completo. Hasta completar esa validación, el
 job de compilación esperará un ejecutor disponible. La fusión de la PR no
 instala ni arranca por sí sola un ejecutor en el servidor.
 
@@ -296,7 +297,7 @@ de la API y recuperación de una respuesta perdida:
 real descrita arriba también pasó. Esta fase no instala un
 servicio de provisión automática ni guarda un PAT permanente en wallabot.
 
-## Provisión automática: código preparado, instalación y prueba real pendientes
+## Provisión automática: controlador instalado y auditado; App y job real pendientes
 
 `provision-controller.py` se instala desde un paquete revisado, como código de
 root independiente de los checkouts de las builds. Un timer de systemd lo
@@ -361,6 +362,14 @@ una VM bajo las restricciones reales del servicio. Conserva un informe
 privado de resultado, limpieza y estado del host; no registra runners ni
 activa el timer. Esta auditoría prueba la preparación de la VM, no sustituye
 la posterior prueba de un job real con la App autorizada.
+
+Dos particularidades del servicio instalado: `ProtectSystem=strict` deja
+`/tmp` en solo lectura, por lo que `cloud-localds` debe recibir `TMPDIR` con
+la carpeta privada de preparación que se elimina al terminar. Además,
+systemd borra `InvocationID` cuando este servicio oneshot queda inactivo.
+La auditoría consulta solo los registros posteriores a un cursor guardado
+antes del arranque; `journalctl -n 0` no devuelve ese cursor en wallabot y
+se obtiene con `-n 1 --show-cursor`. Así, un éxito antiguo no valida otro intento.
 
 El segundo comando requiere la autorización de la App, verifica su alcance,
 instala la clave para root y elimina el archivo de entrada tras el éxito. No

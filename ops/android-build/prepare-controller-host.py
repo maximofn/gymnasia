@@ -41,20 +41,28 @@ def main():
     # point and absent App credential differ from the installed service.
     unit.write_text(definition)
     result = None
+    probe_passed = False
     try:
         run("systemctl", "daemon-reload")
+        # journalctl emits no cursor at -n 0 on the installed systemd.
+        cursor_line = run("journalctl", "--no-pager", "-n", "1", "--show-cursor").splitlines()[-1]
+        require(cursor_line.startswith("-- cursor: "))
+        cursor = cursor_line.removeprefix("-- cursor: ")
         print("CONTROLLER_NATIVE_AUDIT_STARTING", flush=True)
         started = subprocess.run(["systemctl", "start", name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         result = run("systemctl", "show", "--value", "-p", "Result", name)
-        logs = run("journalctl", "--no-pager", "-u", name, "-o", "cat")
-        require(started.returncode == 0 and result == "success" and "CONTROLLER_NATIVE_AUDIT_PASSED" in logs)
+        # A oneshot's InvocationID is cleared when it becomes inactive. Read
+        # only new records so an earlier successful audit cannot satisfy this one.
+        logs = run("journalctl", "--no-pager", "-u", name, "--after-cursor", cursor, "-o", "cat")
+        probe_passed = started.returncode == 0 and result == "success" and "CONTROLLER_NATIVE_AUDIT_PASSED" in logs
+        require(probe_passed)
     finally:
         run("systemctl", "stop", name, check=False)
         run("systemctl", "reset-failed", name, check=False)
         unit.unlink(missing_ok=True)
         run("systemctl", "daemon-reload")
         after = snapshot()
-        audit = {"result": result, "hostUnchanged": before == after,
+        audit = {"result": result, "probePassed": probe_passed, "hostUnchanged": before == after,
                  "currentEmpty": not list(pathlib.Path("/var/lib/gymnasia-android/current").iterdir())}
         pathlib.Path("/var/lib/gymnasia-android/control/native-audit.json").write_text(json.dumps(audit, indent=2))
         require(before == after and audit["currentEmpty"])
