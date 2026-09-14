@@ -135,10 +135,32 @@ contador nuevo ni un valor fijado en el código.
      --local --non-interactive --freeze-credentials --output /tmp/gymnasia.apk
    ```
 
-   La transferencia segura de esta prueba y su evidencia aún está pendiente de
-   validar. Nunca montar en el host el disco de un guest que haya ejecutado
-   código de un job; extraer ficheros con una herramienta aislada o usar una
-   subida saliente limitada a esos archivos, sin credencial de publicación.
+   `first-build.py INPUTS CREDENTIAL_FILE` prepara una prueba manual con cuatro
+   VMs consecutivas: transferencia de datos de prueba, verificación nativa del
+   APK público anterior, compilación firmada y verificación del nuevo APK en un
+   overlay limpio sin credencial. Requiere ejecutar con sudo desde tmux y haber
+   autorizado previamente el acceso a la firma. No registra un runner ni publica.
+   Los inputs fijan el SHA validado y los cuatro archivos exactos del snapshot;
+   se contrastan con los hashes de los assets públicos de la release.
+
+   El archivo de credencial debe ser privado (0600). El controlador lo consume y
+   borra al empezar; guarda temporalmente la petición de build en `/run`, con
+   permisos solo para root. El token se entrega por un descriptor conectado de
+   QEMU, separado del seed y del registro de consola, y solo se añade al entorno
+   del proceso EAS. No se incorpora a Git, cloud-init ni evidencia. El overlay
+   y la petición se eliminan al terminar, incluso si QEMU falla. Un marcador
+   impide repetir automáticamente un intento firmado: investigar y documentar
+   el motivo antes de preparar otra prueba; nunca reutilizar un versionCode.
+
+   `smoke-channel.py` usa un socketpair anónimo y un puerto virtio serie. No abre
+   listeners, puertos de red, montajes ni un intérprete de órdenes para el guest.
+   El receptor solo acepta un informe de hasta 64 KiB y un binario de hasta
+   256 MiB, con destinos fijos y creación exclusiva. No analiza ni monta el
+   disco del guest. Los bytes quedan en cuarentena hasta que otro overlay
+   ejecuta el verificador nativo y comprueba el incremento de versión y ambas
+   firmas. Los tests del transporte cubren tamaños excesivos, truncamiento,
+   integridad binaria y rechazo de archivos/symlinks existentes. **La prueba
+   real del canal y del APK sigue pendiente hasta ejecutar esta secuencia.**
 4. Ejecutar todos los `PRODUCTION_GATES`, `verify:production-artifact`, contrastar
    firma con el último APK real y comprobar package, versión, permisos, sonidos,
    snapshot y hashes. Comparar el inventario de builds de Expo antes/después en
