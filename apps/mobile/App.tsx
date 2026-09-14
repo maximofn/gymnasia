@@ -61,10 +61,10 @@ import {
   type GoogleConversationTurn,
 } from "./agent/googleInteractions";
 import type { StreamingHandlers } from "./agent/providerStreamParsers";
-import type { GoogleContextReport } from "./agent/googleContextBudget";
 import {
   requestProviderText,
   type ChatInputMessage,
+  type GoogleContextReport,
   type ProviderChatResult as AnthropicChatResult,
 } from "./agent/providerChatClient";
 import { requestProviderToolChat } from "./agent/providerToolClient";

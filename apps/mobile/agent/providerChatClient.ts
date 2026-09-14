@@ -31,6 +31,8 @@ import {
 } from "./providerTransport";
 import type { GoogleContextReport } from "./googleContextBudget";
 
+export type { GoogleContextReport } from "./googleContextBudget";
+
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
 const ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE =
