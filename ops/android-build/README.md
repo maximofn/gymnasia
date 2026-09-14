@@ -1,24 +1,25 @@
 # Android en wallabot
 
-**Estado: workflow local incorporado; provisión automática pendiente.** La prueba
-del 14-09-2026 compiló `production-apk` y verificó el resultado en otra VM limpia,
-sin credenciales: versión 1.43.2, versionCode 56 y firma de producción existente.
-Se mantuvo el candidato inmutable de la prueba; no incorpora los cambios de la
-release posterior 1.43.3. El APK no se publicó. El mantenedor confirmó el
-14-09-2026 que lo instaló en su Android y funciona bien.
-La auditoría de la imagen ampliada pasó permisos, toolchain, red privada y
-descarte de overlays tras éxito, cancelación, caída de QEMU y timeout. También
-tras la build y su verificación se mantuvieron base, listeners y estado del host;
-se eliminaron los temporales con credenciales. No apareció una build cloud en
-el intervalo de este reintento local. El workflow destina la compilación a
-wallabot. La prueba real de registro temporal y retirada también pasó. La
-reversión de transacciones se ensayó sin red. La provisión automática por
-trabajo está instalada y pasó una transferencia sin credenciales bajo las
-restricciones reales del controlador, conservando el host y limpiando la VM.
-La App de GitHub está instalada y su autenticación desde el servicio pasó la
-auditoría. Queda la validación con el workflow completo. Hasta completar esa
-validación, el job de compilación esperará un ejecutor disponible. La fusión de la PR no
-instala ni arranca por sí sola un ejecutor en el servidor.
+**Estado: operativo y validado el 14-09-2026.** La
+[ejecución 34834445062](https://github.com/maximofn/gymnasia/actions/runs/34834445062)
+compiló `production-apk` en wallabot, pasó la verificación independiente y
+publicó [Gymnasia 1.44.0](https://github.com/maximofn/gymnasia/releases/tag/v1.44.0).
+Conserva la firma de producción; su versionCode 57 supera tanto el APK público
+anterior (55) como la primera prueba local instalada por el mantenedor (56).
+La descarga publicada y el artifact del ejecutor tienen los mismos bytes.
+
+El controlador cerró el intento correctamente, retiró el runner efímero de
+GitHub y comprobó que la VM estaba apagada, sin overlay, seed, petición ni
+lease activo, y con el hash de la imagen base intacto. Después se habilitó
+`gymnasia-android-controller.timer`. Las próximas compilaciones aprobadas
+recibirán su propio ejecutor sin depender de un Mac encendido.
+
+La preparación anterior verificó toolchain, permisos, bloqueo de redes privadas
+y descarte de overlays tras éxito, cancelación, caída de QEMU y timeout.
+El mantenedor instaló la primera prueba firmada (1.43.2, código 56) y confirmó
+que funcionaba en su Android. La reversión de transacciones se ensayó sin red.
+La App está instalada solo en Gymnasia y su clave queda protegida para root;
+las copias de entrada se eliminaron después de comprobar su autenticación.
 
 `build-apk.yml` conserva la selección de candidato, validación, borrador,
 verificación y publicación en GitHub. Solo `compile-android` usa
@@ -150,7 +151,7 @@ En cada release se descarga de nuevo la evidencia del último APK,
 se valida su digest de GitHub y se exige un versionCode superior; 53 no es un
 contador nuevo ni un valor fijado en el código.
 
-## Activación pendiente: completar en orden
+## Preparación y validación de una instalación
 
 1. Instalar y hornear la VM sin credenciales. Registrar estado y pruebas en la
    documentación privada de wallabot, coordinando cambios con su securización.
@@ -219,9 +220,10 @@ contador nuevo ni un valor fijado en el código.
    en el host. El servicio `gymnasia-runner.service` del guest ejecuta `run.sh`
    como `runner` y apaga la VM al terminar; `admit-job.sh` rechaza cualquier job
    ajeno a `compile-android` del workflow canónico en main antes del checkout.
-7. Revisar/fusionar la PR y activar ese único runner. El ciclo de provisión por
-   trabajo y la entrega segura del token efímero se terminarán y probarán antes
-   de esta activación; no se instala un PAT permanente en wallabot por defecto.
+7. Instalar y validar el controlador y la App descritos en la sección de
+   provisión automática. Activar el timer solo después de probar el workflow
+   completo, incluida la retirada del ejecutor. Cada trabajo recibe una nueva
+   VM y un runner efímero; no se instala un PAT permanente en wallabot.
    No dejar un runner persistente como sustituto de ese ciclo. Al fijar
    `--disableupdate`, renovar y probar la imagen cuando GitHub exija una
    actualización del runner (normalmente dentro de los 30 días de una release).
@@ -298,7 +300,7 @@ de la API y recuperación de una respuesta perdida:
 real descrita arriba también pasó. Esta fase no instala un
 servicio de provisión automática ni guarda un PAT permanente en wallabot.
 
-## Provisión automática: controlador y App auditados; job real pendiente
+## Provisión automática: activa y validada con un job real
 
 `provision-controller.py` se instala desde un paquete revisado, como código de
 root independiente de los checkouts de las builds. Un timer de systemd lo
@@ -327,9 +329,29 @@ La instalación de la App y su custodia fueron autorizadas expresamente y se
 verificaron el 14-09-2026: permisos exactos, acceso a un solo repositorio,
 huella de la clave root y autenticación mediante `LoadCredential` bajo las
 restricciones del controlador. Las copias temporales del Mac y de entrada al
-servidor se retiraron después de comprobar el destino. El timer permanece
-deshabilitado hasta completar la prueba real. La versión 1.44.0 prepara una
-nueva transacción para esa prueba; 1.43.3 ya estaba publicada.
+servidor se retiraron después de comprobar el destino. El piloto 1.44.0 pasó
+el workflow completo y la limpieza; solo después se habilitó el timer.
+
+Evidencia de ese piloto:
+
+- PR [#234](https://github.com/maximofn/gymnasia/pull/234), fuente
+  `7d8c95086eb71573b14ddb75a5807c6e4e23e038`; 20 controles de producción correctos.
+- Job `103946629202`, runner efímero ID 23: asignación exclusiva, compilación
+  correcta y retirada confirmadas mediante la API de GitHub.
+- APK de 102.670.709 bytes, SHA-256
+  `16e3b9631392d745bca2d67c9b856a1eb9904a59e7c386aeb3dc917957d51b1e`.
+- Certificado SHA-256
+  `310b3839e405f1fa9f920925767e6ee84247aaa1b8a72259479e919a4859ab31`;
+  package `com.maximofn.gymnasia`, versión 1.44.0 y versionCode 57.
+- Release publicada e inmutable; hashes de todos sus assets, fuente,
+  snapshot y transacción contrastados tras descargar el APK publicado.
+- Informe privado del host:
+  `/var/lib/gymnasia-android/control/production-pilot-34834445062.json`.
+  Confirma éxito del job y workflow, runner retirado, directorio temporal
+  vacío, hash base correcto y timer habilitado.
+
+La prueba confirma este ciclo completo; la instalación humana anterior sigue
+correspondiendo al APK 1.43.2, no a una instalación de 1.44.0.
 
 Antes de reservar una VM, se exigen el workflow canónico, main, evento push o
 workflow_dispatch, repositorio de origen canónico y ausencia de aprobaciones
@@ -432,9 +454,12 @@ ficheros fijos del trabajo, conservando la imagen base sin credenciales.
 
 ## Reversión
 
-1. Deshabilitar el runner en GitHub y parar `gymnasia-android-vm.service`; el
-   overlay y su seed se destruyen. Conservar la imagen base y sus hashes hasta
-   verificar la recuperación. No retirar paquetes compartidos de wallabot.
+1. Deshabilitar `gymnasia-android-controller.timer` para impedir nuevas
+   asignaciones. Si hay una build activa, parar a propósito
+   `gymnasia-android-controller.service`: su limpieza detiene la VM y elimina
+   overlay y seed. Conservar el diario del intento y reconciliar la retirada
+   de su runner en GitHub antes de cerrar la recuperación. Conservar también
+   la imagen base y sus hashes; no retirar paquetes compartidos de wallabot.
 2. Si hay un intento local en ejecución, esperar a su estado final o marcarlo
    fallido con motivo mediante `fail-local` y guardar esa transacción en su
    draft. No convertir su ID en un build ID remoto. Un intento local validado
@@ -448,11 +473,11 @@ ficheros fijos del trabajo, conservando la imagen base sin credenciales.
    fuente, snapshot, historial, credenciales y contador. Esto volverá a consumir
    cuota de Expo: requiere decisión explícita del mantenedor.
 
-No eliminar el proyecto Expo ni sus credenciales. El cambio propuesto no toca
+No eliminar el proyecto Expo ni sus credenciales. La migración no modifica
 `prompts/` ni `policy/health-safety/`.
 
-Revisión del 14-09-2026: el respaldo coincide con el workflow cloud vigente en
-main salvo por EAS CLI, fijado a 24.3.0 en vez de `latest`. Los tests ensayan el
+Revisión del 14-09-2026: el respaldo coincide con el workflow cloud anterior a
+la migración salvo por EAS CLI, fijado a 24.3.0 en vez de `latest`. Los tests ensayan el
 paso de un fallo local a un intento cloud con motivo, conservando SHA, versión,
 perfil e historial; también rechazan convertir un APK local validado en otra
 build. Son simulaciones de transacción: no han lanzado una build cloud ni
