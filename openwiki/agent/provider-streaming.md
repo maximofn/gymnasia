@@ -12,6 +12,8 @@ related:
   - ./runtime.md
   - ./provider-configuration.md
 verified:
+  - by: manual-code-review
+    at: 2026-09-14T00:00:00.000Z
   - by: openwiki/0.5.0
     at: 2026-09-13T12:53:55.207Z
 sources:
@@ -23,6 +25,8 @@ sources:
     resource: repo://apps/mobile/agent/googleInteractions.ts
   - id: openwiki-source-f310c5fb576ae69a7753918c
     resource: repo://apps/mobile/agent/googleStreamTransport.ts
+  - id: google-context-budget
+    resource: repo://apps/mobile/agent/googleContextBudget.ts
   - id: openwiki-source-c65a19b98fa314cba98ace44
     resource: repo://apps/mobile/agent/providerPipeline.test.ts
   - id: openwiki-source-6b9b666faa646a8fd83706ea
@@ -103,11 +107,21 @@ La configuración de thinking de Anthropic protege la compatibilidad de modelos:
 
 ### Google Interactions sin estado remoto
 
-`buildGoogleInteractionRequest` usa `stream: true` y `store: false`, y envía el historial como `input`; no usa `previous_interaction_id`. El parser de Google es deliberadamente estricto: requiere `interaction.created`, pasos con índices ordenados y ciclo `step.start`/`step.delta`/`step.stop`, y un `interaction.completed` coherente. Rechaza JSON, argumentos, firmas, índices, estados, orden o cierre inválidos antes de que el bucle reciba el turno para ejecutar herramientas. Aperturas y cierres repetidos del mismo paso no reinician ni duplican lo ya acumulado.
+`buildGoogleInteractionRequest` en `googleContextBudget.ts` usa `stream: true` y `store: false`, y envía el historial como `input`; no usa `previous_interaction_id`. El parser de Google es deliberadamente estricto: requiere `interaction.created`, pasos con índices ordenados y ciclo `step.start`/`step.delta`/`step.stop`, y un `interaction.completed` coherente. Rechaza JSON, argumentos, firmas, índices, estados, orden o cierre inválidos antes de que el bucle reciba el turno para ejecutar herramientas. Aperturas y cierres repetidos del mismo paso no reinician ni duplican lo ya acumulado.
 
-El bucle conserva los pasos de respuesta y añade un `function_result` con el mismo `call_id` para cada `function_call`; cada continuación vuelve a enviar el historial completo. Conserva las firmas y campos opacos del proveedor. Detecta una identidad de interacción contradictoria, evita ejecutar dos veces un replay identificado y rechaza IDs de llamada reutilizados entre rondas. Como `store: false` puede producir un identificador vacío, ese valor no se usa para reconocer replays entre rondas.
+El bucle conserva los pasos de respuesta y añade un `function_result` con el mismo `call_id` para cada `function_call`; cada continuación vuelve a entregar el historial candidato al preparador de contexto. Conserva las firmas y campos opacos del proveedor. Detecta una identidad de interacción contradictoria, evita ejecutar dos veces un replay identificado y rechaza IDs de llamada reutilizados entre rondas. Como `store: false` puede producir un identificador vacío, ese valor no se usa para reconocer replays entre rondas.
 
 El resultado Google se guarda como `GoogleConversationTurn` en el mensaje de asistente. Al reconstruir el historial, un turno almacenado válido aporta sus pasos técnicos; los mensajes sin esos metadatos se convierten en pasos de texto. La validación de restauración no acepta llamadas pendientes, firmas de pensamiento ausentes ni correlaciones `function_result` inválidas, por lo que hidratar un chat no dispara herramientas.
+
+### Presupuesto de contexto de Google
+
+`prepareGoogleInteractionRequest` aplica tres límites antes de abrir la red: diez intercambios, 512 KiB para el JSON sin datos inline de imagen y 19.000.000 bytes para el cuerpo JSON completo. La medida incluye instrucciones del sistema, herramientas, configuración de razonamiento y esquema de respuesta. Un intercambio empieza en `user_input` y conserva todos sus pasos hasta el siguiente; el turno activo nunca se divide.
+
+La preparación selecciona los diez intercambios más recientes y retira los bytes de imágenes de todos salvo el activo, conservando su texto y la respuesta o insertando un marcador neutro si el usuario solo había enviado una imagen. Si el candidato aún no cabe, elimina intercambios completos desde el más antiguo. Si el último por sí solo excede un límite, lanza `GoogleContextBudgetError` antes de Fetch/XHR, con un mensaje específico para imágenes activas demasiado grandes y otro para el resto del contexto imprescindible. El historial persistido o en memoria no se modifica.
+
+`App.tsx` recibe un reporte allowlist por cada preparación y lo guarda en la traza local como `googleContext/request-prepared` o `googleContext/request-rejected`. Solo contiene resultado, motivos y contadores de intercambios, bytes e imágenes retiradas; nunca mensajes, base64, firmas ni argumentos de herramientas. Un fallo al registrar el diagnóstico no altera la petición.
+
+Esta política queda aislada en el adaptador de Google. GYM-51 (ticket para compactar el contexto para todos los proveedores) podrá sustituirla por una estrategia común sin depender del transporte genérico.
 
 ## Límites, errores y cambios seguros
 
@@ -119,7 +133,7 @@ Al añadir un dialecto o cambiar un evento, actualice conjuntamente el parser, e
 
 `providerPipeline.test.ts` reproduce SSE crudo de los tres proveedores en tamaños repetidos y en particiones aleatorias. Verifica el recorrido parser → herramienta → continuación, correlación de IDs, argumentos inválidos, errores de proveedor y truncamiento de Anthropic.
 
-`googleInteractions.test.ts` cubre las permutaciones de ciclo inválidas y truncadas antes de herramientas, replays, firmas opacas, IDs vacíos con `store:false`, historial completo y la paridad Fetch/XHR. También verifica que el fallback bufferizado nativo solo se hace antes de que exista contenido visible. `sse.test.ts` protege el encuadre compartido y `providerTransport.test.ts` la selección de thinking de Anthropic.
+`googleInteractions.test.ts` cubre las permutaciones de ciclo inválidas y truncadas antes de herramientas, replays, firmas opacas, IDs vacíos con `store:false`, historial completo, presupuesto de contexto y paridad Fetch/XHR. Sus propiedades comprueban orden, inmutabilidad y parejas completas de herramientas; otra regresión verifica el rechazo anterior a red y que el reporte no filtre contenido. El E2E comprueba un historial largo limitado a diez intercambios y una imagen que deja de reenviarse después del turno que la analiza. También verifica que el fallback bufferizado nativo solo se hace antes de que exista contenido visible. `sse.test.ts` protege el encuadre compartido y `providerTransport.test.ts` la selección de thinking de Anthropic.
 
 Ejecute desde la raíz:
 

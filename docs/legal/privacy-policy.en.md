@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v3
-effective_date: 2026-09-13
+version: 2026-09-v4
+effective_date: 2026-09-14
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -81,9 +81,12 @@ All of the following is stored on your device only:
   for the optional additional health-safety evaluation.
 - **AI provider configuration**: the selected model and, when Anthropic requires it for
   an identity-linked key, the workspace identifier (`wrkspc_…`).
-- **Debug log**: a technical record of up to 1000 entries covering the rest-timer alerts
-  delivered, which include the exercise name and set number. It is never sent over the
-  network; you can view and clear it from Settings.
+- **Debug log**: a technical record of up to 1000 entries covering delivered rest-timer
+  alerts, which include the exercise name and set number; technical policy-selection
+  events; and counters for context prepared for Google, such as exchange count, bytes
+  and the number of old images omitted. Those Google diagnostics contain no messages,
+  images, tool arguments or keys. The log is never sent over the network; you can view
+  and clear it from Settings.
 - **Local recovery copies**: the app keeps one verified copy of its main state. If it
   finds data that it cannot read safely, it quarantines the original payload instead of
   overwriting it. Both copies remain on the device and are replaced or removed when the
@@ -141,9 +144,11 @@ When you use the assistant, your device connects **directly** to the provider yo
 The request includes:
 
 - the assistant's system instructions;
-- in the main chat, **the complete history for Google**, including response and tool
-  steps from new turns; for OpenAI and Anthropic, **the last 20 messages**. Food
-  assistants send the history of their session;
+- in the main chat, for Google, **up to the 10 most recent exchanges**, including the
+  response and tool steps that belong to them; an additional size limit may remove
+  complete exchanges starting with the oldest. For OpenAI and Anthropic, **the last 20
+  messages** are sent. Food assistants send their recent session history with the same
+  limit when they use Google;
 - the results of the tools the assistant uses at your request, which may include your
   weight, your body fat percentage, your measurements, the day's meals or your routines;
 - in the food estimator, **the images you provide**, encoded within the request.
@@ -158,9 +163,10 @@ locally as high or critical risk are intercepted on the device and are not sent 
 provider.
 
 All generation requests to Google disable Interactions conversation storage using
-`store: false`. The app resends context from the device with each request and does not
-use a conversation stored at Google to continue the dialogue. This setting does not
-replace the provider's general terms.
+`store: false`. The app resends the recent context that fits within those limits from
+the device and does not use a conversation stored at Google to continue the dialogue.
+The complete history remains stored on the device and is not deleted when preparing a
+smaller request. This setting does not replace the provider's general terms.
 
 That content is subject to the privacy policy and terms of the provider you chose, under
 your own account with them:
@@ -179,9 +185,11 @@ differently:
 
 - **Food estimator**: the images you select (up to six) are sent to the AI provider to
   estimate nutritional values. They are not stored in the app and are not uploaded
-  anywhere else. When continuing an analysis with Google, images remain in memory
-  and are resent during that session; they are discarded when the session is reset.
-  Technical history from these temporary assistants is not added to persistent chat.
+  anywhere else. To complete the same turn with Google, they remain available during
+  any tool rounds. When you send a later message, the app keeps the earlier text and
+  answer as context but no longer resends those image bytes. Images are discarded when
+  the session is reset. Technical history from these temporary assistants is not added
+  to persistent chat.
 - **Progress photographs** attached to a measurement: the app creates a JPEG copy in
   its private storage, limits its longest edge to 2048 pixels and removes EXIF, XMP,
   IPTC and comment metadata, including any location carried by the original. It does

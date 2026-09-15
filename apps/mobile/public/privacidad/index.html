@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Política de privacidad de Gymnasia">
-<meta name="gymnasia-policy-version" content="2026-09-v3">
-<meta name="gymnasia-policy-digest" content="sha256:ebb4ce9e15a9de286e997d786514670674005bbb9ab42d3a25cf82a61fe8e961">
+<meta name="gymnasia-policy-version" content="2026-09-v4">
+<meta name="gymnasia-policy-digest" content="sha256:a4844153a76897d82d319c6e90b8fbec131bd3d2c4fd4f1b1327e2f0dab8c898">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Política de privacidad de Gymnasia</h1>
-  <p class="meta">Versión 2026-09-v3 · en vigor desde 2026-09-13 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Versión 2026-09-v4 · en vigor desde 2026-09-14 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
   <nav>
     <h2>Contenido</h2>
@@ -98,7 +98,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Credenciales heredadas de funciones retiradas</strong>: si una versión anterior guardó credenciales en el llavero seguro, una actualización normal puede conservarlas cifradas para reutilizarlas si la función vuelve. La versión actual no las lee ni las transmite. «Borrar todos mis datos» las elimina.</li>
       <li><strong>Preferencias</strong>: ajustes de la interfaz y de las notificaciones, y tu consentimiento por proveedor para la evaluación adicional opcional de seguridad sanitaria.</li>
       <li><strong>Configuración de proveedores de IA</strong>: el modelo elegido y, si Anthropic lo exige para una clave vinculada a identidad, el identificador del workspace (<code>wrkspc_…</code>).</li>
-      <li><strong>Registro de depuración</strong>: un histórico técnico de hasta 1000 entradas con los avisos de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de serie. Nunca se envía por red; puedes verlo y borrarlo desde Ajustes.</li>
+      <li><strong>Registro de depuración</strong>: un histórico técnico de hasta 1000 entradas con los avisos de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de serie; eventos técnicos de selección de políticas; y contadores del contexto preparado para Google, como número de intercambios, bytes y cantidad de imágenes antiguas omitidas. Esos diagnósticos de Google no contienen mensajes, imágenes, argumentos de herramientas ni claves. El registro nunca se envía por red; puedes verlo y borrarlo desde Ajustes.</li>
       <li><strong>Copias locales de recuperación</strong>: la aplicación conserva una única copia verificada del estado principal. Si encuentra datos que no puede leer con seguridad, mantiene el payload original en cuarentena para no sobrescribirlo. Ambas copias permanecen solo en el dispositivo y se sustituyen o eliminan al completar la recuperación.</li>
       <li><strong>Control de operaciones del asistente</strong>: un registro técnico local impide que un reintento del proveedor añada dos veces una comida, una medida o una rutina, o envíe dos veces una propuesta. Conserva hasta 256 operaciones durante siete días: huellas técnicas, el nombre de la acción, el resultado que recibió el modelo y las fechas. No guarda los argumentos, mensajes, instrucciones ni claves de API, no sale del dispositivo y no se incluye en las copias exportadas.</li>
     </ul>
@@ -131,13 +131,13 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <p>Cuando usas el asistente, tu dispositivo se conecta <strong>directamente</strong> con el proveedor que hayas elegido. La petición incluye:</p>
     <ul>
       <li>las instrucciones del sistema del asistente;</li>
-      <li>en el chat principal, <strong>el historial completo para Google</strong>, incluidos los pasos de respuesta y herramientas de los turnos nuevos; para OpenAI y Anthropic, <strong>los últimos 20 mensajes</strong>. Los asistentes de alimentos envían el historial de su sesión;</li>
+      <li>en el chat principal, para Google, <strong>hasta los 10 intercambios más recientes</strong>, con los pasos de respuesta y herramientas que pertenezcan a ellos; un límite adicional de tamaño puede retirar intercambios completos empezando por el más antiguo. Para OpenAI y Anthropic se envían <strong>los últimos 20 mensajes</strong>. Los asistentes de alimentos envían el historial reciente de su sesión con el mismo límite cuando usan Google;</li>
       <li>los resultados de las herramientas que el asistente utiliza a petición tuya, que pueden incluir tu peso, tu porcentaje de grasa, tus perímetros, las comidas del día o tus rutinas;</li>
       <li>en el estimador de comida, <strong>las imágenes que le proporcionas</strong>, codificadas dentro de la petición.</li>
       <li>para Anthropic, el identificador del workspace, únicamente si lo has configurado porque el tipo de clave lo requiere.</li>
     </ul>
     <p>Si activas en Ajustes la <strong>evaluación adicional de seguridad sanitaria</strong> para un proveedor, el texto actual puede enviarse a ese mismo proveedor en una petición de clasificación separada antes de generar la respuesta normal. Esta opción está desactivada por defecto, requiere consentimiento independiente para cada proveedor y puedes revocarla en cualquier momento. Los mensajes que la comprobación local clasifica como riesgo alto o crítico se interceptan en el dispositivo y no se envían al proveedor.</p>
-    <p>Todas las consultas de generación a Google desactivan el guardado de conversaciones de Interactions mediante <code>store: false</code>. La app vuelve a enviar el contexto desde el dispositivo en cada petición y no utiliza una conversación almacenada en Google para continuar el diálogo. Este ajuste no sustituye los términos generales del proveedor.</p>
+    <p>Todas las consultas de generación a Google desactivan el guardado de conversaciones de Interactions mediante <code>store: false</code>. La app vuelve a enviar desde el dispositivo el contexto reciente que cabe dentro de esos límites y no utiliza una conversación almacenada en Google para continuar el diálogo. El historial íntegro sigue guardado en el dispositivo y no se borra al preparar una petición más pequeña. Este ajuste no sustituye los términos generales del proveedor.</p>
     <p>Ese contenido queda sujeto a la política de privacidad y a los términos del proveedor que hayas elegido, bajo tu propia cuenta con él:</p>
     <ul>
       <li><a href="https://openai.com/policies/privacy-policy" rel="noopener noreferrer">OpenAI</a></li>
@@ -151,7 +151,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <h2><a href="#fotos">Fotografías</a></h2>
     <p>Gymnasia usa la cámara y la galería en dos sitios, y los trata de forma distinta:</p>
     <ul>
-      <li><strong>Estimador de comida</strong>: las imágenes que eliges (hasta seis) se envían al proveedor de IA para estimar los valores nutricionales. No se guardan en la aplicación ni se suben a ningún otro sitio. Para continuar un análisis con Google, las imágenes se mantienen en memoria y se reenvían durante esa sesión; se descartan al reiniciarla. El historial técnico de estos asistentes temporales no se incorpora al chat persistente.</li>
+      <li><strong>Estimador de comida</strong>: las imágenes que eliges (hasta seis) se envían al proveedor de IA para estimar los valores nutricionales. No se guardan en la aplicación ni se suben a ningún otro sitio. Para completar ese mismo turno con Google, se mantienen durante sus posibles rondas de herramientas. Cuando envías un mensaje posterior, la app conserva el texto y la respuesta anterior como contexto, pero ya no vuelve a enviar los bytes de aquellas imágenes. Se descartan al reiniciar la sesión. El historial técnico de estos asistentes temporales no se incorpora al chat persistente.</li>
       <li><strong>Fotografías de progreso</strong> asociadas a una medición: la aplicación crea una copia JPEG en su almacenamiento privado, limita su lado largo a 2048 píxeles y elimina los metadatos EXIF, XMP, IPTC y comentarios, incluida la ubicación que pudiera llevar el original. No las envía automáticamente a ningún servidor. Solo salen del dispositivo si tú exportas y compartes una copia de seguridad manual; el asistente puede ver la referencia local si consulta esa medición.</li>
     </ul>
   </section>
@@ -260,7 +260,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Política de privacidad de Gymnasia · 2026-09-v3 · 2026-09-13</p>
+    <p>Política de privacidad de Gymnasia · 2026-09-v4 · 2026-09-14</p>
   </footer>
 </main>
 </body>

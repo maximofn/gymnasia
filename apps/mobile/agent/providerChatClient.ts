@@ -29,6 +29,9 @@ import {
   createFakeProviderResult,
   explainAnthropicError,
 } from "./providerTransport";
+import type { GoogleContextReport } from "./googleContextBudget";
+
+export type { GoogleContextReport } from "./googleContextBudget";
 
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
@@ -56,6 +59,7 @@ export type ProviderChatRuntime = {
   environment?: string;
   googleFixturePort?: number;
   anthropicWebProxyUrl?: string;
+  onGoogleContextReport?: (report: GoogleContextReport) => void;
 };
 
 export function requestGoogleProviderInteraction(
@@ -67,7 +71,10 @@ export function requestGoogleProviderInteraction(
     thinking?: boolean;
     responseSchema?: Record<string, unknown>;
   },
-  runtime: Pick<ProviderChatRuntime, "platform" | "environment" | "googleFixturePort">,
+  runtime: Pick<
+    ProviderChatRuntime,
+    "platform" | "environment" | "googleFixturePort" | "onGoogleContextReport"
+  >,
   handlers?: StreamingHandlers,
 ): Promise<GoogleInteractionTurn> {
   return requestGoogleInteraction({
@@ -77,7 +84,7 @@ export function requestGoogleProviderInteraction(
     platform: runtime.platform,
     environment: runtime.environment,
     fixturePort: runtime.googleFixturePort,
-  }, handlers);
+  }, handlers, runtime.onGoogleContextReport);
 }
 
 async function callAnthropicViaWebProxy(
@@ -247,6 +254,7 @@ export async function requestProviderText(
     platform: runtime.platform,
     environment: runtime.environment,
     googleFixturePort: runtime.googleFixturePort,
+    onGoogleContextReport: runtime.onGoogleContextReport,
   });
   if (turn.status !== "completed" || !turn.content) {
     throw new Error("Google AI no devolvió contenido completo.");

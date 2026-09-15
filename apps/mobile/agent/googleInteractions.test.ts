@@ -3,7 +3,11 @@ import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 import { buildGoogleHistory, isGoogleConversationTurn, type GoogleContent, type GoogleStep } from "./googleInteractions";
 import { createGoogleStreamParser } from "./providerStreamParsers";
-import { buildGoogleInteractionRequest } from "./providerTransport";
+import {
+  buildGoogleInteractionRequest,
+  GoogleContextBudgetError,
+  prepareGoogleInteractionRequest,
+} from "./googleContextBudget";
 import { runGoogleToolLoop } from "./providerToolLoop";
 import { googleInteractionEndpoint, requestGoogleInteraction } from "./googleStreamTransport";
 import { identifyToolOperation, ToolOperationLedgerRepository } from "./toolOperationLedger";
@@ -160,7 +164,7 @@ describe("Google stateless continuation", () => {
     expect(result.interactions.map((interaction) => interaction.id)).toEqual(["", ""]);
   });
 
-  it("replays full local history, keeps legacy text and isolates each snapshot", async () => {
+  it("builds the full local candidate history, keeps legacy text and isolates each snapshot", async () => {
     const first = parse(raw);
     const user: GoogleStep = { type: "user_input", content: [{ type: "text", text: "añade café" }] };
     const requests: Record<string, unknown>[] = [];
@@ -207,6 +211,233 @@ describe("Google stateless continuation", () => {
     await expect(attempt(raw, true)).rejects.toThrow("network timeout");
     await attempt(raw.replaceAll("call-1", "call-retry").replaceAll("test-1", "test-retry"), false);
     expect(effect).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("Google request context budget", () => {
+  const textStep = (type: "user_input" | "model_output", text: string): GoogleStep => ({
+    type,
+    content: [{ type: "text", text }],
+  });
+
+  it("keeps the latest ten complete exchanges without changing local history", () => {
+    const history = Array.from({ length: 12 }, (_, index): GoogleStep[] => [
+      textStep("user_input", `user-${index}`),
+      { type: "function_call", id: `call-${index}`, name: "lookup", arguments: { index } },
+      {
+        type: "function_result",
+        call_id: `call-${index}`,
+        name: "lookup",
+        result: [{ type: "text", text: `result-${index}` }],
+      },
+      textStep("model_output", `assistant-${index}`),
+    ]).flat();
+    const snapshot = structuredClone(history);
+
+    const prepared = prepareGoogleInteractionRequest({ model: "gemini-3.8-flash", history });
+    const sent = prepared.body.input as GoogleStep[];
+
+    expect(sent.filter((step) => step.type === "user_input")).toHaveLength(10);
+    expect(sent[0]).toEqual(textStep("user_input", "user-2"));
+    expect(sent.at(-1)).toEqual(textStep("model_output", "assistant-11"));
+    expect(prepared.report).toMatchObject({
+      outcome: "prepared",
+      originalExchanges: 12,
+      sentExchanges: 10,
+      droppedExchanges: 2,
+      reasons: ["exchange_limit"],
+    });
+    expect(history).toEqual(snapshot);
+  });
+
+  it("removes old inline image bytes but keeps their text, answer and active image", () => {
+    const oldImage = "old-secret-image-data";
+    const activeImage = "active-image-data";
+    const history: GoogleStep[] = [
+      {
+        type: "user_input",
+        content: [
+          { type: "text", text: "Analiza la foto anterior" },
+          { type: "image", mime_type: "image/jpeg", data: oldImage },
+        ],
+      },
+      textStep("model_output", "La foto anterior contiene arroz."),
+      {
+        type: "user_input",
+        content: [
+          { type: "text", text: "Analiza esta otra" },
+          { type: "image", mime_type: "image/png", data: activeImage },
+        ],
+      },
+    ];
+
+    const prepared = prepareGoogleInteractionRequest({ model: "gemini-3.8-flash", history });
+    const serialized = JSON.stringify(prepared.body);
+
+    expect(serialized).not.toContain(oldImage);
+    expect(serialized).toContain("Analiza la foto anterior");
+    expect(serialized).toContain("La foto anterior contiene arroz.");
+    expect(serialized).toContain(activeImage);
+    expect(prepared.report).toMatchObject({
+      outcome: "prepared",
+      removedImageCount: 1,
+      removedImageEncodedBytes: oldImage.length,
+      reasons: ["stale_images"],
+    });
+  });
+
+  it("leaves a neutral marker when an old user turn contained only an image", () => {
+    const prepared = prepareGoogleInteractionRequest({
+      model: "gemini-3.8-flash",
+      history: [
+        { type: "user_input", content: [{ type: "image", mime_type: "image/jpeg", data: "old" }] },
+        textStep("model_output", "Ya la analicé."),
+        textStep("user_input", "Continúa"),
+      ],
+    });
+
+    expect(prepared.body.input).toEqual([
+      textStep("user_input", "Imagen anterior omitida después de su análisis."),
+      textStep("model_output", "Ya la analicé."),
+      textStep("user_input", "Continúa"),
+    ]);
+  });
+
+  it("drops whole old exchanges until the non-image request fits", () => {
+    const latest = textStep("user_input", "latest-" + "x".repeat(180));
+    const latestOnly = buildGoogleInteractionRequest({
+      model: "gemini-3.8-flash",
+      history: [latest],
+    });
+    const maxNonImageBytes = new TextEncoder().encode(JSON.stringify(latestOnly)).byteLength;
+    const prepared = prepareGoogleInteractionRequest({
+      model: "gemini-3.8-flash",
+      history: [
+        textStep("user_input", "old-" + "y".repeat(180)),
+        textStep("model_output", "old answer"),
+        latest,
+      ],
+    }, { maxExchanges: 10, maxNonImageBytes, maxRequestBytes: 10_000 });
+
+    expect(prepared.body.input).toEqual([latest]);
+    expect(prepared.report.reasons).toContain("non_image_bytes");
+    expect(prepared.report.droppedExchanges).toBe(1);
+    expect(prepared.report.sentNonImageBytes).toBeLessThanOrEqual(maxNonImageBytes);
+  });
+
+  it("counts system instructions, tools and response configuration in the byte limits", () => {
+    const history = [textStep("user_input", "Consulta breve")];
+    const baseline = prepareGoogleInteractionRequest({
+      model: "gemini-3.8-flash",
+      history,
+    }).report.sentNonImageBytes;
+
+    expect(() => prepareGoogleInteractionRequest({
+      model: "gemini-3.8-flash",
+      history,
+      systemInstruction: "system-" + "s".repeat(200),
+      tools: [{ type: "function", name: "lookup", description: "t".repeat(200) }],
+      thinking: true,
+      responseSchema: { type: "object", description: "r".repeat(200) },
+    }, { maxExchanges: 10, maxNonImageBytes: baseline + 50, maxRequestBytes: 10_000 }))
+      .toThrowError(GoogleContextBudgetError);
+  });
+
+  it("rejects an oversized active image before opening the network and reports only counters", async () => {
+    const secretImage = "secret-base64-" + "z".repeat(800);
+    const fetchMock = vi.fn();
+    const reports: unknown[] = [];
+    vi.stubGlobal("fetch", fetchMock);
+    try {
+      await expect(requestGoogleInteraction({
+        model: "gemini-3.8-flash",
+        history: [
+          { type: "user_input", content: [
+            { type: "text", text: "latest secret prompt" },
+            { type: "image", mime_type: "image/jpeg", data: secretImage },
+          ] },
+          { type: "thought", signature: "secret-thought-signature" },
+          {
+            type: "function_call",
+            id: "secret-call-id",
+            name: "lookup",
+            arguments: { privateArgument: "secret-tool-argument" },
+          },
+        ],
+        apiKey: "test",
+        platform: "web",
+        contextBudget: { maxExchanges: 10, maxNonImageBytes: 10_000, maxRequestBytes: 500 },
+      }, undefined, (report) => reports.push(report))).rejects.toMatchObject({
+        name: "GoogleContextBudgetError",
+        code: "google_images_too_large",
+      });
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect(reports).toHaveLength(1);
+      expect(reports[0]).toMatchObject({ outcome: "rejected", reasons: ["request_bytes"] });
+      expect(JSON.stringify(reports[0])).not.toContain("latest secret prompt");
+      expect(JSON.stringify(reports[0])).not.toContain(secretImage);
+      expect(JSON.stringify(reports[0])).not.toContain("secret-thought-signature");
+      expect(JSON.stringify(reports[0])).not.toContain("secret-tool-argument");
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("rejects indispensable text with the context-specific error", () => {
+    expect(() => prepareGoogleInteractionRequest({
+      model: "gemini-3.8-flash",
+      history: [textStep("user_input", "x".repeat(500))],
+    }, { maxExchanges: 10, maxNonImageBytes: 100, maxRequestBytes: 10_000 }))
+      .toThrowError(GoogleContextBudgetError);
+    try {
+      prepareGoogleInteractionRequest({
+        model: "gemini-3.8-flash",
+        history: [textStep("user_input", "x".repeat(500))],
+      }, { maxExchanges: 10, maxNonImageBytes: 100, maxRequestBytes: 10_000 });
+    } catch (error) {
+      expect(error).toMatchObject({
+        code: "google_context_too_large",
+        message: "El contexto imprescindible de esta consulta es demasiado grande para enviarlo a Google. Reduce el contenido o inicia una conversación nueva.",
+      });
+    }
+  });
+
+  it("always preserves the latest exchange and complete tool pairs", () => {
+    fc.assert(fc.property(
+      fc.array(fc.string({ maxLength: 80 }), { minLength: 1, maxLength: 18 }),
+      fc.integer({ min: 1, max: 10 }),
+      (texts, maxExchanges) => {
+        const history = texts.flatMap((text, index): GoogleStep[] => [
+          textStep("user_input", `user-${index}-${text}`),
+          { type: "function_call", id: `call-${index}`, name: "lookup", arguments: { text } },
+          {
+            type: "function_result",
+            call_id: `call-${index}`,
+            name: "lookup",
+            result: [{ type: "text", text: `result-${index}` }],
+          },
+          textStep("model_output", `assistant-${index}`),
+        ]);
+        const snapshot = structuredClone(history);
+        const prepared = prepareGoogleInteractionRequest({ model: "gemini-3.8-flash", history }, {
+          maxExchanges,
+          maxNonImageBytes: 100_000,
+          maxRequestBytes: 100_000,
+        });
+        const sent = prepared.body.input as GoogleStep[];
+        const calls = new Set(sent.filter((step) => step.type === "function_call")
+          .map((step) => step.type === "function_call" ? step.id : ""));
+        const results = sent.filter((step) => step.type === "function_result");
+
+        expect(sent.filter((step) => step.type === "user_input").length)
+          .toBeLessThanOrEqual(maxExchanges);
+        expect(sent.at(-1)).toEqual(textStep("model_output", `assistant-${texts.length - 1}`));
+        expect(results.every((step) => step.type === "function_result" && calls.has(step.call_id)))
+          .toBe(true);
+        expect(prepared.report.sentRequestBytes).toBeLessThanOrEqual(100_000);
+        expect(history).toEqual(snapshot);
+      },
+    ), { numRuns: 100 });
   });
 });
 

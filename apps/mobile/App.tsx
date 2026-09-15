@@ -64,6 +64,7 @@ import type { StreamingHandlers } from "./agent/providerStreamParsers";
 import {
   requestProviderText,
   type ChatInputMessage,
+  type GoogleContextReport,
   type ProviderChatResult as AnthropicChatResult,
 } from "./agent/providerChatClient";
 import { requestProviderToolChat } from "./agent/providerToolClient";
@@ -592,6 +593,14 @@ function toChatInput(message: ChatInputMessage): ChatInputMessage {
   };
 }
 
+function recordGoogleContextReport(report: GoogleContextReport): void {
+  void pushTrace(
+    "googleContext",
+    report.outcome === "prepared" ? "request-prepared" : "request-rejected",
+    report,
+  );
+}
+
 function callProviderChatAPI(
   provider: AIKey,
   messages: ChatInputMessage[],
@@ -607,6 +616,7 @@ function callProviderChatAPI(
       environment: Constants.expoConfig?.extra?.environment,
       googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
       anthropicWebProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/messages"),
+      onGoogleContextReport: recordGoogleContextReport,
     },
     surface,
     onGoogleTurn,
@@ -1528,6 +1538,7 @@ async function callProviderChatAPIWithTools(
       environment: Constants.expoConfig?.extra?.environment,
       googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
       anthropicWebProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/messages"),
+      onGoogleContextReport: recordGoogleContextReport,
     },
     {
       executionId: options?.executionId,
@@ -1555,6 +1566,7 @@ async function callFoodEstimatorAPI(
       environment: Constants.expoConfig?.extra?.environment,
       googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
       anthropicWebProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/messages"),
+      onGoogleContextReport: recordGoogleContextReport,
     },
     options,
     skipImages,
@@ -5691,6 +5703,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         environment: Constants.expoConfig?.extra?.environment,
         googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
         anthropicWebProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/messages"),
+        onGoogleContextReport: recordGoogleContextReport,
       },
     );
   }
