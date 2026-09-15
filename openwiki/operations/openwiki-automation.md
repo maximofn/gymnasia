@@ -102,6 +102,15 @@ La categoría `oauth` cambia el estado abstracto de autenticación y las demás 
 
 `buildDailyReport.mjs` deriva estado global, duración redondeada, racha de fallos, estado de Code Brain, persistencia OAuth, Personal Brain, fuentes confirmadas y resumen de la PR a partir de nombres y conclusiones de pasos y campos seleccionados. Acepta enlaces únicamente si son HTTPS de `github.com`, filtra los destacados a rutas Markdown bajo `openwiki/` y no usa cuerpo o título de PR. El archivo temporal del informe se crea con permisos privados y se transmite a Telegram como formulario; si falla la generación antes de enviar, la notificación de respaldo solo contiene el enlace canónico al workflow.
 
+<!-- OPENWIKI_RUNTIME_TELEMETRY:START -->
+## Telemetría agregada de los últimos 7 días
+
+> ⚠️ La consulta más reciente a LangSmith no estuvo disponible el 15 sept 2026, 16:53. Se conserva la última muestra válida sin bloquear la actualización documental.
+
+Todavía no existe una muestra válida. El runner publicará aquí únicamente agregados saneados cuando complete su primera consulta.
+
+<!-- OPENWIKI_RUNTIME_TELEMETRY:END -->
+
 ## Cambio y validación focalizada
 
 Cambie el workflow y sus scripts como una frontera de seguridad, no como código de la aplicación. Al ampliar la clasificación, añada patrones específicos y casos de prioridad, éxito aparente y fallo de lectura; la salida debe seguir siendo una categoría. Al ampliar el informe, limite explícitamente los campos de entrada, valide URLs y pruebe que datos privados inyectados no llegan al mensaje. Al modificar cifrado o persistencia, conserve autenticación, selección mínima de OAuth, permisos restrictivos y limpieza `always()`. Antes de permitir la publicación, mantenga el requisito de que el paso de OpenWiki concluya y OAuth se cifre; no vuelva a añadir `openwiki/.run.json`, pero preserve explícitamente el comportamiento deseado para páginas duraderas de una ejecución con resultado de fallo.

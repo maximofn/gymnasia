@@ -1,3 +1,3 @@
 # Archivos
 
-- [Integraciones VivaGym y actualizaciones](vivagym-and-updates.md) - Delimita la retirada ejecutable de VivaGym y del actualizador de APK, el tratamiento de credenciales heredadas y la publicación externa de APK de Production.
+- [VivaGym heredado y actualizaciones](vivagym-and-updates.md) - Distingue la retirada verificable de VivaGym y del actualizador dentro del cliente del pipeline externo que compila, verifica y publica APK de Production.

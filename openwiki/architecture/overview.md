@@ -8,14 +8,22 @@ sources:
     resource: repo://AGENTS.md
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
+  - id: openwiki-source-2f2b35de05051a97e2e7987a
+    resource: repo://apps/feedback-worker/src/contract.ts
   - id: openwiki-source-00f3917787dfe248860adc3b
     resource: repo://apps/feedback-worker/src/index.ts
+  - id: openwiki-source-90f9c6e8aac4277c48587a94
+    resource: repo://apps/feedback-worker/src/schema.ts
+  - id: openwiki-source-519bdc8c718693b11dfef037
+    resource: repo://apps/feedback-worker/src/storage.ts
   - id: openwiki-source-3cfa88bf1d888145532ec324
     resource: repo://apps/feedback-worker/test/handler.test.ts
   - id: openwiki-source-08bfc20c1f23c70bb8990d47
     resource: repo://apps/feedback-worker/wrangler.jsonc
   - id: openwiki-source-0c30fc96b9e7c8b57c35473c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
+  - id: openwiki-source-742e2ba85404d0ff40adc087
+    resource: repo://apps/mobile/agent/feedbackClient.ts
   - id: openwiki-source-2d700f6a4bc31347c3488941
     resource: repo://apps/mobile/agent/policyDeployment.ts
   - id: openwiki-source-9cad4ef8944c5d67ea03dec8
@@ -50,10 +58,10 @@ sources:
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
+generated: { by: "openwiki/0.5.0", at: "2026-09-15T14:17:12.687Z" }
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-13T12:53:55.207Z
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
+    at: 2026-09-15T14:17:12.687Z
 ---
 
 # Arquitectura local-first
@@ -135,9 +143,11 @@ En modo BYOK, OpenAI, Anthropic y Google se consumen desde el cliente con la cla
 
 La URL de feedback queda vacía por defecto en desarrollo y se configura con el endpoint HTTPS del Worker para Staging y Production; un override solo sirve para desarrollo. El resolver rechaza URLs inválidas, credenciales embebidas, query o fragmento, y solo permite HTTP loopback en desarrollo. Si falta o falla la validación, devuelve `unavailable` sin impedir el arranque.
 
-El Worker expone salud y acepta únicamente `POST /feedback/issues`. Puede apagarse con `FEEDBACK_ENABLED=false`, aplica CORS a orígenes configurados, valida el payload y limita la tasa con un identificador de IP pseudonimizado mediante HMAC. Reserva una clave de idempotencia antes de crear la issue: un reintento ya completado devuelve la misma issue y una reserva en curso solicita reintento, evitando duplicados. El token y el repositorio de GitHub viven exclusivamente en el entorno del Worker.
+El Worker expone `GET /health`, `POST /feedback/issues` y `GET /feedback/issues/status`. La consulta de estado requiere una clave de operación de 64 caracteres y permite distinguir una operación ausente, pendiente o creada después de un timeout o de una reserva concurrente. Puede apagarse con `FEEDBACK_ENABLED=false`; el endpoint de creación y el de estado requieren `x-gymnasia-app` si se configuró `APP_SHARED_SECRET`, aunque ese valor incluido en el cliente es una ofuscación y no una credencial de servidor. Aplica CORS únicamente a orígenes configurados, valida un esquema cerrado de cinco campos y limita la tasa con un identificador de IP pseudonimizado mediante HMAC; si falta `RATE_LIMIT_SALT`, falla cerrado sin contactar GitHub.
 
-La tarea programada redacta informes que superan 30 días y poda contadores de límite de tasa. D1 conserva solo lo necesario para idempotencia, límites y ese ciclo de retención. No amplíe este Worker hacia perfiles, sesiones, telemetría de producto o copias de los dominios locales sin una excepción de arquitectura explícita y sus controles de privacidad.
+Antes de crear la issue, D1 reserva la clave de idempotencia y calcula un hash de tipo, título y resumen ya saneados. Un reintento con una clave creada devuelve la misma referencia; una reserva en curso pide reintentar; y una issue creada con el mismo contenido en las últimas 24 horas se deduplica aunque cambie la clave. Si GitHub falla, libera la reserva para que se pueda reintentar y no expone al cliente detalles del upstream. Repositorio, método y etiquetas se determinan en el servidor, y el token y el repositorio de GitHub viven exclusivamente en el entorno del Worker.
+
+La tarea programada redacta el cuerpo de las denuncias (`report`) que alcanzan 30 días —no las propuestas ordinarias— y solo marca la limpieza tras un `PATCH` correcto a GitHub; también poda contadores HMAC antes de 48 horas. Cada ejecución procesa como máximo 40 denuncias. D1 conserva lo necesario para idempotencia, límites y ese ciclo de retención. No amplíe este Worker hacia perfiles, sesiones, telemetría de producto o copias de los dominios locales sin una excepción de arquitectura explícita y sus controles de privacidad.
 
 ## Invariantes para cambios seguros
 

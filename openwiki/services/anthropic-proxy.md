@@ -1,15 +1,15 @@
 ---
 type: servicio de diagnóstico local
 title: Proxy Anthropic de depuración local
-description: Utilidad FastAPI opcional para depurar una pasarela local de Anthropic desde el navegador. La aplicación usa Anthropic directamente en web y el proxy no se despliega ni es necesario salvo que se configure explícitamente la pasarela.
+description: Utilidad FastAPI opcional para diagnosticar el contrato de Anthropic desde el navegador mediante una pasarela local. La aplicación usa Anthropic directamente de forma predeterminada y el proxy no se despliega ni es una dependencia de producto.
 tags: [service, anthropic, proxy, cors, development, security]
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
     resource: repo://.github/workflows/agent-tests.yml
-  - id: openwiki-source-8037e2358a2c4f9b2c722a11
-    resource: repo://AGENTS.md
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
+  - id: openwiki-source-88e87a6a49f8c4bba044cff2
+    resource: repo://apps/anthropic_proxy/README.md
   - id: openwiki-source-d550f6066db7bafec880982f
     resource: repo://apps/anthropic_proxy/tests/conftest.py
   - id: openwiki-source-2ec770d1bf0123c0ed14b89f
@@ -28,6 +28,8 @@ sources:
     resource: repo://apps/anthropic_proxy/tests/test_streaming.py
   - id: openwiki-source-d99f0015cb0c37d04b2984ce
     resource: repo://apps/anthropic_proxy/tests/test_upstream_errors.py
+  - id: openwiki-source-2e89f734760be2c893fbd66e
+    resource: repo://apps/mobile/agent/anthropicModels.ts
   - id: openwiki-source-9cad4ef8944c5d67ea03dec8
     resource: repo://apps/mobile/agent/providerChatClient.ts
   - id: openwiki-source-6b9b666faa646a8fd83706ea
@@ -42,52 +44,56 @@ sources:
     resource: repo://scripts/anthropic-proxy/check.mjs
   - id: openwiki-source-06bd7c851908a218f4ac8a15
     resource: repo://scripts/anthropic-proxy/check.test.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-15T14:17:12.687Z" }
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
+    at: 2026-09-15T14:17:12.687Z
 ---
 
 # Proxy Anthropic de depuración local
 
 ## Propósito y límite arquitectónico
 
-`apps/anthropic_proxy/cors-proxy.py` es una utilidad FastAPI de escritorio para diagnosticar el contrato de pasarela de Anthropic desde el navegador. No es un backend de producto: la única superficie de producto es `apps/mobile`, que funciona sin un backend obligatorio; el único servicio de apoyo autorizado es el worker de incidencias. El proxy no tiene persistencia, sesiones, identidad de aplicación ni almacén de credenciales.
+`apps/anthropic_proxy/cors-proxy.py` es una utilidad FastAPI para diagnosticar, desde la web de desarrollo, el contrato que Gymnasia puede usar para Anthropic. No es un backend de producto: no guarda datos, sesiones ni claves, y no debe convertirse en un intermediario compartido de claves BYOK.
 
-**No se despliega y no es necesario para Anthropic en web.** El transporte de la aplicación añade la cabecera `anthropic-dangerous-direct-browser-access` en las llamadas web directas; con ella Anthropic permite que el navegador lea la respuesta CORS. Por ello, tanto la web como las plataformas nativas pueden llamar directamente a `https://api.anthropic.com`. La pasarela solo se selecciona si se configura expresamente `EXPO_PUBLIC_API_BASE_URL`; su valor predeterminado es vacío para que una exportación web estática no intente contactar el `localhost` de quien la abre.
+La aplicación es **local-first y no depende de este proceso**. En web, si no se configura una pasarela, sus solicitudes directas a Anthropic incluyen `anthropic-dangerous-direct-browser-access`, que permite al navegador leer la respuesta CORS. En plataformas nativas tampoco hay barrera CORS. `EXPO_PUBLIC_API_BASE_URL` tiene por defecto el valor vacío para que la exportación web estática no contacte accidentalmente el `localhost` de otra persona.
 
-`apps/mobile/cors-proxy.py` es el enlace simbólico usado por el runbook hacia la implementación canónica. El proxy se mantiene deliberadamente en un único archivo: al arrancarlo mediante ese enlace, `sys.path[0]` es el directorio móvil, por lo que importar módulos hermanos del directorio del proxy rompería el arranque aunque las pruebas que cargan el archivo real pasaran.
+Solo cuando esa variable contiene una base no vacía y la plataforma es web, `App.tsx` entrega al cliente las rutas locales de mensajes y verificación. Esta selección también alcanza el catálogo de modelos a través de la configuración del proveedor. Por tanto, configurar una base caída cambia deliberadamente el comportamiento: la interfaz no hace fallback silencioso al acceso directo; hay que arrancar el proxy o retirar la variable.
 
 ```mermaid
 sequenceDiagram
     participant Browser as Cliente web Expo
-    participant App as Transporte móvil
+    participant Client as Cliente de proveedor
     participant Proxy as Proxy local opcional
     participant Anthropic as API Anthropic
-    alt Sin pasarela configurada
-        Browser->>App: Solicitud Anthropic
-        App->>Anthropic: API directa con cabecera de navegador
-    else Pasarela configurada explícitamente
-        Browser->>Proxy: Solicitud local con credenciales
-        Proxy->>Anthropic: Solicitud con credenciales en cabeceras
+    alt Sin EXPO_PUBLIC_API_BASE_URL
+        Browser->>Client: Solicitud Anthropic
+        Client->>Anthropic: Solicitud directa con cabecera de navegador
+        Anthropic-->>Client: JSON o SSE
+    else Base configurada en web
+        Browser->>Client: Solicitud Anthropic
+        Client->>Proxy: Ruta local con credenciales en JSON
+        Proxy->>Anthropic: Credenciales en cabeceras
         Anthropic-->>Proxy: JSON o SSE
-        Proxy-->>Browser: JSON o SSE
+        Proxy-->>Client: JSON o SSE
     end
 ```
 
-*La pasarela es una rama explícita de depuración; el recorrido normal de Anthropic en web es directo.*
+*La pasarela solo es una rama explícita de depuración; el recorrido normal de Anthropic en web es directo.*
 
-## Aislamiento local y controles de despliegue
+La implementación canónica es un único archivo. `apps/mobile/cors-proxy.py` es el enlace simbólico que usa el arranque documentado. Al invocarlo, `sys.path[0]` sería `apps/mobile`, no el directorio del proxy; por eso añadir importaciones de módulos hermanos rompería el entrypoint aunque las pruebas, que cargan el archivo real, siguieran pasando.
 
-Al ejecutarse como script, lee `ANTHROPIC_PROXY_HOST` y `ANTHROPIC_PROXY_PORT`, con valores predeterminados `127.0.0.1` y `8000`. Si el host solicitado no es loopback, termina con código 2 en vez de corregirlo silenciosamente. Además, un middleware comprueba cada cliente: una IP demostrablemente no local recibe `403` antes de validación o de cualquier contacto con Anthropic. Hosts ausentes o no interpretables como IP se aceptan para permitir el cliente de pruebas y sockets Unix; no constituyen una prueba de acceso remoto.
+## Límite de exposición: solo loopback y sin despliegue
 
-La defensa no depende solo de cómo se lanzó Uvicorn. Incluso si un operador intenta `--host 0.0.0.0`, un contenedor o un túnel, el middleware rechaza a clientes con IP remota. CORS sigue permitiendo cualquier origen, método y cabecera, pero solo dentro de ese límite de cliente loopback: es apropiado para el navegador local de desarrollo, no para publicar el proceso.
+El proceso escucha por defecto en `127.0.0.1:8000`. `ANTHROPIC_PROXY_HOST` y `ANTHROPIC_PROXY_PORT` permiten cambiar host y puerto, pero un host que no sea loopback hace que el script termine con código 2. La protección se repite por solicitud: el middleware devuelve `403` antes de validar o contactar el upstream cuando la IP del cliente es demostrablemente remota. Se admiten host ausente o no interpretable como IP para `TestClient` y sockets Unix; eso no demuestra que sean clientes remotos.
 
-`npm run check:anthropic-proxy` aplica el límite en el repositorio: falla si detecta infraestructura de despliegue junto al proxy, workflows que lo arranquen o publiquen, o un endpoint del proxy declarado como destino fijo en el inventario de red. Un puente compartido futuro requeriría una excepción explícita de backend y un diseño de seguridad propio; no debe derivarse de esta herramienta.
+CORS permite cualquier origen, método y cabecera para servir al navegador local, pero no rebaja el requisito de cliente loopback. Esta combinación no es un diseño para exponer mediante `0.0.0.0`, contenedores o túneles: incluso si se logra iniciar el servidor de otra forma, la petición remota se rechaza.
 
-## Inicio y configuración deliberada
+Además de la barrera de ejecución, `npm run check:anthropic-proxy` impide que el repositorio declare un despliegue accidental. Busca ficheros de infraestructura en el directorio del proxy, líneas de workflows que lo arranquen o publiquen y un proxy como destino fijo en el inventario de red. Un puente compartido futuro requiere una excepción explícita de backend y un diseño de seguridad propio; no debe evolucionar este proceso local hacia ese papel.
 
-Prepare el entorno una vez y ejecute el intérprete del proyecto a través del enlace móvil:
+## Inicio y configuración
+
+Prepare el entorno Python del proyecto y ejecute el enlace móvil:
 
 ```bash
 uv sync --project apps/anthropic_proxy --extra dev
@@ -95,58 +101,65 @@ apps/anthropic_proxy/.venv/bin/python apps/mobile/cors-proxy.py
 curl -sS http://127.0.0.1:8000/health
 ```
 
-Para depurar la pasarela, configure `EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:8000` antes de arrancar o exportar la web. La aplicación normaliza esa variable —elimina espacios y barras finales— y únicamente construye rutas de proxy cuando queda una base no vacía. Esa misma selección cubre la conversación, la verificación de la clave y el descubrimiento del catálogo de modelos; si se configura una base pero el proceso no responde, la interfaz indica que se compruebe o se elimine la variable para volver al acceso directo.
+Para seleccionar la pasarela en la web, defina antes de iniciar o exportar:
 
-`ANTHROPIC_PROXY_UPSTREAM_BASE_URL` sustituye el upstream fijo `https://api.anthropic.com`; se reserva para pruebas contra un servidor Anthropic falso y el script avisa al usarlo. La versión enviada a Anthropic está fijada en `2023-06-01`.
+```bash
+EXPO_PUBLIC_API_BASE_URL=http://127.0.0.1:8000
+```
 
-## Contrato y recorrido de solicitud
+La aplicación recorta espacios y barras finales de esa variable. `ANTHROPIC_PROXY_UPSTREAM_BASE_URL` sustituye `https://api.anthropic.com` y está destinado a un Anthropic falso local; el script avisa en consola cuando se usa. La versión que el proxy envía al upstream permanece fijada en `2023-06-01`.
 
-| Ruta local | Entrada validada | Operación ascendente | Resultado |
+## Contrato HTTP y privacidad de credenciales
+
+| Ruta local | Entrada | Operación ascendente | Tiempo de espera |
 |---|---|---|---|
-| `GET /health` | ninguna | ninguna | `200 {"ok": true}` |
-| `POST /chat/providers/anthropic/verify` | `api_key`, `workspace_id?`, `model?` | `POST /v1/messages` con mensaje mínimo | `{"ok": true, "model": ...}` |
-| `POST /chat/providers/anthropic/models` | `api_key`, `workspace_id?` | `GET /v1/models` paginado | catálogo agregado y estado de paginación |
-| `POST /chat/providers/anthropic/messages` | credenciales y subconjunto obligatorio de Messages | `POST /v1/messages` | JSON o SSE |
+| `GET /health` | ninguna | ninguna | — |
+| `POST /chat/providers/anthropic/verify` | `api_key`, `workspace_id?`, `model?` | `POST /v1/messages` mínimo | 15 s |
+| `POST /chat/providers/anthropic/models` | `api_key`, `workspace_id?` | `GET /v1/models` paginado | 15 s por página |
+| `POST /chat/providers/anthropic/messages` | credenciales y Messages | `POST /v1/messages` | 120 s |
 
-Las tres rutas ascendentes convierten `api_key` en `x-api-key` y, cuando existe, `workspace_id` en `anthropic-workspace-id`; `upstream_body` excluye ambos campos del JSON reenviado. También fija `anthropic-version`, `content-type` y, para streaming, `accept: text/event-stream`.
+Las rutas ascendentes convierten `api_key` en `x-api-key` y, si existe, `workspace_id` en `anthropic-workspace-id`. `upstream_body` excluye ambos campos centralmente antes de serializar el JSON, de modo que las credenciales no se reenvían en el cuerpo. Las cabeceras incluyen `anthropic-version` y `content-type`; las solicitudes de stream añaden `accept: text/event-stream`.
 
-`/verify` y `/models` son contratos propios y rechazan campos desconocidos. `/messages` es una pasarela compatible hacia delante: exige `model`, `max_tokens`, una lista no vacía de mensajes válidos y `stream`, pero permite y retransmite campos adicionales de Messages como herramientas, sistema o razonamiento. Las credenciales están limitadas a 400 caracteres; los modelos a 200, los mensajes a 500, la salida a 200.000 tokens y el cuerpo declarado a 4 MiB. El límite de tamaño se evalúa desde `content-length` antes de procesar el cuerpo.
+`/verify` y `/models` son contratos controlados por el proxy y prohíben campos desconocidos. `/messages` valida lo esencial —modelo, `max_tokens`, mensajes no vacíos y `stream`— pero permite campos adicionales de Messages para seguir siendo compatible con herramientas, sistema, razonamiento y extensiones futuras. Los límites son: clave de 400 caracteres, modelo de 200, hasta 500 mensajes, hasta 200.000 tokens de salida y cuerpo declarado de 4 MiB. `content-length` inválido produce `400`; si supera el límite, `413`, antes de procesar el cuerpo.
 
-### Catálogo de modelos completo o señalado
+Los errores de validación tienen estado `422`, forma `error.message` legible y detalles acotados que no reflejan los valores rechazados. Los errores HTTP JSON de Anthropic conservan estado y cuerpo; un cuerpo de error no JSON se encapsula como `upstream_non_json`. Timeouts, problemas de red y JSON de éxito ilegible se clasifican como `504 upstream_timeout`, `502 upstream_unreachable` y `502 upstream_invalid_json`. Antes de devolver texto de excepciones o upstream no estructurado, el proxy redacciona la clave de la solicitud y patrones conocidos de secretos, y trunca el mensaje.
 
-La ruta de modelos solicita páginas de hasta 100 elementos y recorre como máximo 20. Deduplica por `id` y utiliza `last_id` como cursor. Si la primera página falla o tiene una forma inválida, devuelve el error; si falla una página posterior, devuelve los modelos ya acumulados pero marca `pagination.partial` y adjunta el motivo. También marca `pagination.truncated` si se alcanza el límite, falta o se repite el cursor, o una página no agrega modelos. Así una lista incompleta conserva `has_more: true` y no se presenta como catálogo completo.
+## Catálogo de modelos: completo o marcado como incompleto
 
-## Streaming, cierre y errores
+El proxy pide páginas de hasta 100 modelos y como máximo 20, deduplicando por `id` y usando `last_id` como cursor. Si la primera página falla o no tiene la forma esperada, devuelve el error. Si falla después de haber acumulado resultados, devuelve lo reunido con `pagination.partial` y un resumen de error; si alcanza el límite, falta o repite cursor, o una página no añade modelos, marca `pagination.truncated`.
 
-Para Messages no transmitido, el proxy abre el upstream con un límite de 120 segundos, analiza el JSON y cierra la respuesta. Para `stream: true`, devuelve una `StreamingResponse` SSE con `Cache-Control: no-cache` y `X-Accel-Buffering: no`; lee bloques de 1024 bytes y siempre cierra la respuesta ascendente. Los límites de los fragmentos no son límites de eventos SSE: el consumidor debe separar eventos por el protocolo SSE.
+El resultado nunca presenta una lista incompleta como completa: cuando existe truncado o fallo parcial, `has_more` es `true` y `pagination` informa páginas obtenidas, truncado, parcial y error. El cliente móvil aplica el mismo principio al consultar Anthropic directamente, mientras que el cliente web reconoce el envoltorio ya agregado por el proxy y conserva su aviso de catálogo incompleto.
 
-El proxy busca `message_stop` en los bytes reenviados para distinguir un final correcto de un stream truncado. Conserva 32 bytes de solapamiento entre lecturas, de modo que un marcador dividido entre bloques no se confunda con un corte. Si la lectura falla o el upstream termina sin marcador, ya no puede cambiar el `200` cuyos encabezados se enviaron: inyecta un evento SSE `error` con `upstream_stream_error` o `truncated_stream`. El parser móvil convierte cualquier evento o carga con tipo `error` en una excepción, por lo que no muestra una respuesta parcial como satisfactoria.
+## Streaming y cierre
 
-Los errores de entrada —JSON inválido, campos ausentes o incompatibles— se devuelven como `422` con `error.message` legible y detalles acotados que no reproducen valores del cuerpo. Un `content-length` inválido da `400`; uno que excede 4 MiB, `413`. La capa CORS envuelve también errores de validación y de tamaño para que el navegador pueda leerlos.
+En Messages sin streaming, el proxy lee JSON y cierra la respuesta upstream. Con `stream: true`, devuelve `StreamingResponse` SSE con `Cache-Control: no-cache` y `X-Accel-Buffering: no`, retransmite bloques de 1024 bytes y cierra siempre el upstream.
 
-Los errores HTTP JSON de Anthropic preservan su estado y cuerpo. Un error HTTP no JSON se envuelve como `upstream_non_json`; timeouts se distinguen como `504 upstream_timeout`; problemas de conectividad como `502 upstream_unreachable`; y JSON de éxito ilegible como `502 upstream_invalid_json`. Antes de devolver texto de excepciones o de upstream no estructurado, el proxy sustituye la clave de la solicitud y patrones de secretos conocidos, y limita el mensaje a 2.000 caracteres. Esta redacción reduce fugas por respuestas, pero no convierte el proceso local ni su infraestructura en un custodio apropiado para credenciales compartidas.
+Un stream ya iniciado no puede cambiar su estado HTTP de `200` si el upstream falla. El proxy detecta `message_stop` en los bytes retransmitidos, conservando 32 bytes de solapamiento para que un marcador partido entre bloques no parezca ausente. Si falla la lectura, inyecta un evento SSE `error` de tipo `upstream_stream_error`; si el flujo termina sin el marcador, inyecta `truncated_stream`. El parser móvil trata un evento o carga de tipo `error` como excepción: una respuesta parcial no puede terminar como una conversación satisfactoria.
 
-## Pruebas enfocadas
+## Validación independiente en CI
 
-Ejecute la suite aislada, sin red ni claves reales:
+La orden local de la suite es:
 
 ```bash
 npm run test:proxy
 ```
 
-La suite Pytest sustituye `urlopen` por un upstream registrable para comprobar las rutas básicas, cabeceras, retirada de credenciales, errores, validación, CORS, paginación y streaming. Las pruebas de propiedades generan cuerpos y páginas arbitrarias para preservar dos invariantes: no hay `500` no clasificado y una clave no se reenvía en el cuerpo; también prueban que la paginación termina, no duplica y señala datos incompletos.
+Ese atajo ejecuta el script de pruebas del workspace `apps/anthropic_proxy`. La mayoría de pruebas sustituyen `urlopen` por un upstream registrable: no usan red ni claves reales y validan rutas, cabeceras, eliminación de credenciales, CORS, validación, paginación, errores y streaming. Las pruebas de propiedades generan cuerpos y páginas para mantener invariantes: ningún cuerpo causa un `500` sin clasificar, la clave no viaja en el cuerpo ascendente y la paginación termina, no duplica y señala resultados incompletos.
 
-`test_e2e.py` complementa esos dobles con un proceso real del proxy, un servidor HTTP local que simula Anthropic y solicitudes HTTP reales. Cubre el arranque documentado, health, verificación, tres páginas de modelos, JSON, preflight CORS y el aviso inyectado en un SSE truncado. La CI ejecuta esta suite Python en un job independiente del conjunto Node, y los tests del guard rail validan que el repositorio no admita una vía de despliegue accidental.
+`test_e2e.py` complementa esos dobles: inicia el proxy como proceso real, lo apunta a un servidor HTTP Anthropic falso en loopback y realiza solicitudes HTTP reales. Cubre health, verificación, tres páginas de catálogo, mensajes JSON, preflight CORS y la inyección de error en un SSE truncado.
+
+En `.github/workflows/agent-tests.yml`, el job `anthropic-proxy` es independiente del job Node y no ejecuta `npm ci`: instala `uv` y corre `uv run --project apps/anthropic_proxy --extra dev pytest apps/anthropic_proxy`. Así la cobertura del proxy conserva su entorno Python aislado y se ejecuta cuando cambian sus rutas incluidas en el workflow.
 
 ## Relación con otras áreas
 
-- [Configuración del proveedor](../agent/provider-configuration.md) describe la selección, verificación y catálogo de modelos que consumen estas rutas solo cuando se activa la pasarela.
-- [Transmisión del proveedor](../agent/provider-streaming.md) explica el parser y el bucle que consumen el SSE, incluido el tratamiento de errores de stream.
-- [Visión general de arquitectura](../architecture/overview.md) y [Comportamiento de ejecución](../operations/runtime-behavior.md) sitúan esta utilidad fuera de los servicios necesarios para operar la aplicación.
+- [Configuración del proveedor](../agent/provider-configuration.md) explica la selección, verificación y catálogo de modelos que usan estas rutas solo en la rama de pasarela web.
+- [Transmisión del proveedor](../agent/provider-streaming.md) describe el parser SSE y el tratamiento de errores que hace visible un stream truncado.
+- [Visión general de arquitectura](../architecture/overview.md) sitúa esta herramienta fuera de los componentes necesarios para operar la aplicación.
+- [Compilación, release y pruebas](../operations/build-release-and-testing.md) cubre la ejecución de validaciones en CI.
 
 ## Fuente de verdad
 
-- `apps/anthropic_proxy/cors-proxy.py`: contrato, validación, límites, aislamiento loopback, llamadas ascendentes y streaming.
-- `apps/mobile/agent/providerTransport.ts`, `apps/mobile/agent/providerVerification.ts` y `apps/mobile/App.tsx`: acceso directo de Anthropic en web y selección explícita de la pasarela.
-- `apps/anthropic_proxy/tests/` y `.github/workflows/agent-tests.yml`: cobertura determinista, E2E local y ejecución en CI.
-- `scripts/anthropic-proxy/check.mjs`: guard rail que impide declarar despliegue para la herramienta.
+- `apps/anthropic_proxy/cors-proxy.py`: contrato, validación, límites, aislamiento loopback, upstream y streaming.
+- `apps/mobile/App.tsx`, `apps/mobile/agent/providerTransport.ts`, `apps/mobile/agent/providerVerification.ts` y `apps/mobile/agent/anthropicModels.ts`: selección explícita de proxy y acceso directo.
+- `apps/anthropic_proxy/tests/` y `.github/workflows/agent-tests.yml`: pruebas deterministas, E2E local y job Python de CI.
+- `scripts/anthropic-proxy/check.mjs`: guard rail contra el despliegue de la herramienta.

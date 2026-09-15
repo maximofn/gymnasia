@@ -1,7 +1,7 @@
 ---
 type: límites de integración y distribución
-title: Integraciones VivaGym y actualizaciones
-description: Delimita la retirada ejecutable de VivaGym y del actualizador de APK, el tratamiento de credenciales heredadas y la publicación externa de APK de Production.
+title: VivaGym heredado y actualizaciones
+description: Distingue la retirada verificable de VivaGym y del actualizador dentro del cliente del pipeline externo que compila, verifica y publica APK de Production.
 tags: [integrations, vivagym, updates, android, releases]
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
@@ -36,85 +36,91 @@ sources:
     resource: repo://scripts/android-permissions/permissions.test.mjs
   - id: openwiki-source-64cfb10f64bc60a5e55e4ded
     resource: repo://scripts/android-permissions/policy.json
+  - id: openwiki-source-5bb7a7442c09c2e571325b53
+    resource: repo://scripts/production-release/local-controller.mjs
+  - id: openwiki-source-eca432bcfe70b04e1d09e3d3
+    resource: repo://scripts/production-release/release-transaction.mjs
+  - id: openwiki-source-71e03e0099e7b28d5a243456
+    resource: repo://scripts/production-release/run-local-build.mjs
   - id: openwiki-source-a43fcdd54439cd4258ab69e4
     resource: repo://scripts/production-release/verify-artifact.mjs
+generated: { by: "openwiki/0.5.0", at: "2026-09-15T14:17:12.687Z" }
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-13T12:53:55.207Z
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
+    at: 2026-09-15T14:17:12.687Z
 ---
 
-# Integraciones VivaGym y actualizaciones
+# VivaGym heredado y actualizaciones
 
-Gymnasia no necesita VivaGym ni un servicio de actualización para arrancar, navegar o conservar sus dominios locales. Ambas superficies están **retiradas del runtime**: VivaGym es una referencia histórica aislada y las releases de APK son artefactos externos que el cliente no descubre, descarga ni instala. Esta separación evita que una integración de tercero o el canal de distribución se conviertan en una dependencia obligatoria del producto local-first. Véase también [Arquitectura local-first](../architecture/overview.md), [Shell de aplicaciones móviles y web](../mobile/application-shell.md) y [Compilación, publicación y pruebas](../operations/build-release-and-testing.md).
+Gymnasia es local-first y no requiere VivaGym ni un servidor de actualizaciones para arrancar, navegar o conservar los dominios locales. Ambas superficies están retiradas del *runtime*: VivaGym queda como dato histórico controlado y la distribución de APK es un proceso externo. Esta página separa esos límites de los componentes de release ejecutables. Véanse también [Arquitectura local-first](../architecture/overview.md), [Estado local y copias de seguridad](../mobile/local-state-and-backup.md), [Permisos Android](../operations/android-permissions.md) y [Compilación, publicación y pruebas](../operations/build-release-and-testing.md).
 
-## Estado actual y frontera de VivaGym
+## VivaGym: retirada, no integración latente
 
-No hay pestaña de Ajustes, flujo de autenticación, endpoint de MyVitale, petición de QR ni componente de QR activos. El contrato recorre las fuentes TypeScript/TSX de runtime —excluyendo pruebas y scripts— y rechaza los símbolos, host, rutas HTTP, textos de interfaz y la dependencia `react-native-qrcode-svg`; además comprueba que dicha dependencia no está declarada. Por tanto, la mera existencia de nombres heredados no autoriza una conexión ni el envío de credenciales. Esta retirada es intencionalmente verificable: antes de reintroducir una integración no basta con eliminar el contrato de ausencia.
+No hay flujo activo de VivaGym: el contrato analiza las fuentes TypeScript/TSX de runtime —sin pruebas ni scripts— y prohíbe la UI, los símbolos de autenticación/QR, el host MyVitale, sus rutas HTTP y `react-native-qrcode-svg`; también exige que la dependencia no esté declarada. En consecuencia, los nombres o documentos heredados no autorizan una conexión ni el tratamiento de credenciales.
 
-```mermaid
-flowchart TD
-    Legacy["Instalación anterior"] --> Secure["SecureStore con claves heredadas"]
-    Secure --> Normal["Uso y actualización normal"]
-    Normal --> Retain["Conserva sin leer ni transmitir"]
-    Secure --> Full["Borrado de todos los datos"]
-    Full --> Delete["Elimina y verifica cada clave"]
-    Retain --> Future["Posible reintroducción autorizada"]
-```
-
-*Figura 1. Las credenciales históricas se conservan pasivamente hasta un borrado total; no forman parte del flujo actual de VivaGym.*
-
-### Credenciales heredadas y ciclo de vida
-
-La lista cerrada `RETAINED_LEGACY_SECURE_STORE_KEYS` contiene únicamente `vivagym.email` y `vivagym.password`. Una versión anterior pudo haberlas escrito en SecureStore. La aplicación retirada no las lee ni las escribe durante la hidratación: `clearLegacyStorageData` elimina marcas de AsyncStorage y prefijos de claves de proveedores antiguos, pero no consume esas dos claves.
-
-El ámbito de las claves sigue las variantes de la aplicación. Production usa la clave literal; Development y Staging añaden el *namespace* de su variante mediante `scopedSecureStoreKey`. Esto impide que los espacios de almacenamiento de variantes no productivas se confundan con Production; no equivale a migrar credenciales entre identificadores de aplicación.
-
-La acción de borrado parcial de actividad conserva estas credenciales. En el borrado `all-personal`, `LOCAL_SECURE_DATA_MANIFEST` las incorpora como destinos literales: para cada una se ejecuta `SecureStore.deleteItemAsync` y después `SecureStore.getItemAsync` debe devolver `null`. Si SecureStore no está disponible en una plataforma nativa, el borrado total se informa como incompleto en vez de declarar eliminado un secreto que no pudo comprobarse. El borrado ejecuta las tareas en paralelo con timeout por destino y devuelve un informe completo o incompleto; los fallos distinguen borrado, verificación y timeout, para que la UI pueda ofrecer recuperación en vez de asumir atomicidad.
-
-### Referencia histórica, no contrato de producción
-
-`docs/research/GYM-6-vivagym-qr.md` describe una investigación anterior sobre MyVitale, autenticación y QR. El propio documento declara que la integración está retirada y que no describe funcionalidad incluida; debe tratarse como contexto histórico y no como especificación para copiar protocolos, secretos, endpoints o flujos al cliente.
-
-Una reintroducción segura sería un trabajo de integración nuevo: necesita autorización y revisión de términos, un límite de módulo explícito, diseño de almacenamiento y borrado, controles para peticiones y QR sensibles, tratamiento de errores/cancelación/concurrencia y declaraciones de privacidad/tienda actualizadas. Debe añadir pruebas que demuestren el comportamiento habilitado y no limitarse a eliminar los tests de retirada.
-
-## Actualizaciones: cliente sin actualizador propio
-
-`App.tsx` no conserva servicio, estado, comprobación manual, pestaña de Ajustes, diálogo ni enlace para comparar versiones o abrir una descarga de APK. En particular, el contrato rechaza `releases/latest` y los identificadores/textos del actualizador anterior. La única marca `gymnasia.mobile.lastUpdateCheck` permanece en `LEGACY_STORAGE_KEYS` y en el manifiesto de datos locales para eliminarla al arrancar y durante un borrado total; no se vuelve a escribir ni condiciona ninguna solicitud.
-
-El permiso Android `REQUEST_INSTALL_PACKAGES` no está declarado y sí figura en `blockedPermissions`. La política y sus pruebas exigen ambas condiciones; el comprobador también recorre los manifests de dependencias y falla ante contribuciones bloqueadas no reconocidas. `blockedPermissions` es la barrera de configuración frente al *manifest merger*, mientras que el escaneo evita que una nueva contribución pase desapercibida. Esta defensa no impide que una persona instale manualmente un APK que haya obtenido fuera de la aplicación; impide que **Gymnasia** solicite instalar paquetes externos. El escaneo del checkout no sustituye la inspección del APK fusionado que hace el gate de release.
+La lista cerrada `RETAINED_LEGACY_SECURE_STORE_KEYS` contiene exclusivamente `vivagym.email` y `vivagym.password`. Una instalación anterior pudo haberlas guardado en SecureStore. La aplicación actual no las lee ni escribe; el uso normal y el borrado de actividad las preservan. Solo el borrado explícito `all-personal` las incorpora como claves literales a `LOCAL_SECURE_DATA_MANIFEST`, borra cada destino y verifica su ausencia. Las tareas se ejecutan en paralelo, con timeout por destino, y el informe distingue fallos de borrado, verificación y timeout: un resultado `incomplete` no debe presentarse como eliminación confirmada.
 
 ```mermaid
 flowchart TD
-    Client["Cliente Gymnasia"] --> NoCheck["No consulta GitHub Releases"]
-    NoCheck --> NoOffer["No muestra actualización ni descarga"]
-    Pipeline["Workflow de publicación"] --> EAS["EAS production-apk"]
-    EAS --> Verify["Cuarentena y verificación de APK"]
-    Verify --> Release["Release de GitHub con gymnasia.apk"]
-    Release --> Manual["Obtención e instalación fuera del cliente"]
+    Prior["Instalación anterior"] --> Keys["Claves SecureStore heredadas"]
+    Keys --> Normal["Uso normal o borrado de actividad"]
+    Normal --> Keep["Conservar sin leer ni transmitir"]
+    Keys --> Full["Borrado all-personal"]
+    Full --> Delete["Borrar y verificar ausencia"]
+    Delete --> Report["Informe complete o incomplete"]
 ```
 
-*Figura 2. La publicación de APK es un proceso externo; no hay flujo de actualización desde el runtime de la app hacia una release.*
+*Figura 1. Las credenciales heredadas son pasivas hasta un borrado total verificable.*
 
-## Publicación manual de APK de Production
+Las variantes aíslan sus claves seguras: Production usa la clave base y Development/Staging añaden un namespace mediante `scopedSecureStoreKey`. Esto delimita almacenes de variantes, no migra credenciales entre identificadores de aplicación.
 
-El workflow `.github/workflows/build-apk.yml` se activa manualmente o tras cambios elegibles bajo `apps/mobile/` en `main`; excluye scripts, documentación, recursos públicos y tests. Serializa transacciones en el grupo `android-production-release`. La entrada manual permite `reconcile`, `retry-failed` o `supersede-failed` y exige versión/motivo cuando corresponde. La validación de fuente y el envío a EAS usan `production-apk`. Ese perfil extiende `production`, fija `APP_ENV=production`, habilita el incremento automático y añade `android.buildType: apk`; la variante resultante usa el identificador `com.maximofn.gymnasia`, canal `Production` y modo BYOK.
+Los documentos de investigación sobre MyVitale o QR son contexto histórico, no especificación de producción. Reintroducir VivaGym exige una integración nueva y autorizada: revisión de términos y privacidad, límite de módulo, modelo de secretos y borrado, control de peticiones/QR, cancelación y errores, además de pruebas de comportamiento habilitado. Eliminar el contrato de ausencia no basta.
 
-El pipeline no publica inmediatamente un binario sin verificar. Selecciona una transacción durable y valida el commit y versión exactos antes de crear o recuperar un borrador de release. Después adopta o envía un único build EAS que coincida con perfil, versión, commit y mensaje; lo reconcilia hasta un estado terminal y descarga el APK a una ruta de cuarentena. `verify:production-artifact` recibe el artefacto, su MIME, evidencia de fuente, snapshot de política y metadatos de EAS. Inspecciona el manifiesto, firma, paquete, versión, permisos y otros atributos del APK antes de adjuntar `gymnasia.apk` y las evidencias al borrador. El workflow comprueba además que el borrador conserva commit, MIME, tamaño, hashes y cadena de evidencia correctos antes de publicar la release.
+## Cliente sin actualizador propio
 
-Existe un perfil `production` para AAB y una entrada de `submit` de Production en `eas.json`, pero son rutas distintas del workflow de APK. Hay una inconsistencia documental que debe corregirse al modificar esta zona: el texto explicativo de `REQUEST_INSTALL_PACKAGES` en `scripts/android-permissions/policy.json` dice que Production se actualiza exclusivamente por Google Play, mientras que el workflow ejecutable publica expresamente `gymnasia.apk` en GitHub. El comportamiento operativo verificable es el workflow; ninguno de los dos mecanismos reintroduce comprobación, descarga o instalación automática dentro del cliente.
+`App.tsx` no conserva servicio, estado, comprobación, interfaz ni navegación para comparar releases, descargar un APK o abrir GitHub Releases. El contrato prohíbe además `/releases/latest`. La clave antigua `gymnasia.mobile.lastUpdateCheck` solo permanece para eliminarse como dato heredado al arrancar y en el borrado total; ya no se vuelve a escribir ni dirige una solicitud.
 
-## Contratos ejecutables y validación enfocada
+Android bloquea `REQUEST_INSTALL_PACKAGES` en `app.json`; la política y sus pruebas exigen tanto la ausencia de la declaración como su presencia en `blockedPermissions`, y revisan contribuciones de dependencias. Por ello Gymnasia no puede solicitar instalar paquetes externos. Esta barrera no impide que una persona obtenga e instale manualmente un APK fuera del cliente. La inspección del APK final complementa el control de configuración frente al *manifest merger*.
 
-Las pruebas separan ausencia de integración de referencias históricas:
+La razón textual de ese permiso aún afirma que Production se actualiza exclusivamente mediante Google Play, pero el workflow ejecutable publica `gymnasia.apk` en GitHub Releases. Es una contradicción documental que debe corregirse al cambiar esta política; no cambia la frontera de runtime: el cliente no descubre, descarga ni instala el paquete.
 
-- `apps/mobile/agent/vivagymRemoval.contract.test.ts` bloquea la superficie VivaGym del runtime y la dependencia QR, restringe las dos claves heredadas y exige que solo el borrado total las consuma; también comprueba que las declaraciones públicas no anuncien VivaGym.
-- `apps/mobile/agent/updateRemoval.contract.test.ts` bloquea símbolos, UI y consulta de releases del actualizador, exige limpiar la marca heredada y confirma que el workflow mantiene la publicación manual con `production-apk`.
-- `apps/mobile/scripts/development-provider.e2e.mjs` exporta Development, navega por Chat y Ajustes y falla si aparece la pestaña VivaGym o si se solicita MyVitale, GitHub Releases o un proveedor real en modo falso.
-- `apps/mobile/scripts/update-removal.e2e.mjs` exporta Production, vacía `localStorage`, intercepta GitHub y verifica que Inicio y Ajustes no muestren la interfaz retirada ni soliciten `https://api.github.com/repos/maximofn/gymnasia/releases/latest`.
-- `scripts/android-permissions/permissions.test.mjs` comprueba el bloqueo de `REQUEST_INSTALL_PACKAGES`; el workflow incorpora además las puertas `verify:production-source` y `verify:production-artifact` antes de publicar el APK.
+## Pipeline externo de APK Production
 
-Para modificar estas fronteras, ejecute al menos:
+El workflow `.github/workflows/build-apk.yml` se ejecuta manualmente o ante cambios elegibles de `apps/mobile/` en `main`, excluyendo scripts, documentación, recursos públicos y tests. Su grupo de concurrencia `android-production-release` no cancela ejecuciones ya iniciadas. El perfil `production-apk` hereda Production, fija `APP_ENV=production`, activa incremento automático y produce un APK; la política de release fija identidad, canal Production, modo BYOK, certificado esperado y límites de tamaño/MIME.
+
+La unidad durable es `AndroidReleaseTransactionV1`, asociada a una versión, tag, SHA fuente, perfil `production-apk` y tipo `apk`. El selector procesa la transacción pendiente más antigua por orden semver y no permite saltarla: una fallida requiere `retry-failed` o `supersede-failed` con motivo; una transacción sustituida no se compila. El input `target_version` sirve para restringir la operación a esa transacción, pero no es una sustitución del control de orden. La transacción y sus evidencias se conservan como assets del borrador de GitHub para posibilitar reconciliación auditable.
+
+```mermaid
+flowchart TD
+    Select["Seleccionar transacción durable"] --> Source["Verificar SHA y gates Production"]
+    Source --> Draft["Crear o recuperar borrador"]
+    Draft --> Reserve["Reservar intento e inputs inmutables"]
+    Reserve --> Build["Compilar APK local en VM desechable"]
+    Build --> Quarantine["Transferir APK a cuarentena"]
+    Quarantine --> Verify["Inspeccionar APK y generar evidencia"]
+    Verify --> Attach["Adjuntar APK y evidencias al borrador"]
+    Attach --> Check["Comprobar identidad y cadena de hashes"]
+    Check --> Publish["Publicar release inmutable"]
+```
+
+*Figura 2. La release se publica solo después de enlazar una transacción durable, el APK local y su evidencia verificable.*
+
+La compilación actual no adopta ni envía un build EAS remoto. Tras reservar el intento, `compile-android` usa un runner autoalojado desechable y `eas build --local --profile production-apk --freeze-credentials`. El script comprueba repositorio, rama, identidad no privilegiada del proceso, SHA y versión de la transacción, toolchain fijada e integridad de los inputs. El APK y sus metadatos se transfieren para verificación independiente; al finalizar el trabajo se eliminan checkout y material de compilación. El controlador impide duplicar un intento activo y marca un intento interrumpido como fallido para que requiera un reintento manual motivado.
+
+En `verify-and-release`, el workflow descarga exactamente los dos ficheros esperados a cuarentena, liga los metadatos al intento mediante `finish-local` y ejecuta `verify:production-artifact`. El verificador inspecciona configuración incluida, manifiesto, certificado, recursos, paquete, versiones, permisos, tamaño, SHA-256 y MIME contra la política, evidencia de fuente y snapshot de política. Solo si pasa, la transacción alcanza `validated`, se adjuntan APK y evidencias, y el borrador debe conservar SHA fuente, MIME y tamaño admitidos y la cadena de digests antes de dejar de ser borrador. Ante fallo o cancelación se conserva el borrador y se persiste la transacción fallida; no se publica una release parcial.
+
+El perfil `production` para AAB y `submit.production` en `eas.json` existen, pero no son la ruta que ejecuta este workflow de APK.
+
+## Validación enfocada y cambios seguros
+
+Los contratos separan la ausencia de integraciones del contexto heredado:
+
+- `apps/mobile/agent/vivagymRemoval.contract.test.ts` bloquea la superficie VivaGym y QR, restringe las dos claves heredadas y exige que solo el borrado total las consuma.
+- `apps/mobile/agent/updateRemoval.contract.test.ts` bloquea servicio, UI y consulta de releases, exige limpiar la marca antigua y confirma que la publicación de Production permanece separada del cliente.
+- Las E2E Development y Production fallan si aparecen las superficies retiradas o se solicitan MyVitale o la URL histórica de GitHub Releases.
+- `scripts/android-permissions/permissions.test.mjs` comprueba `REQUEST_INSTALL_PACKAGES`; el pipeline añade gates de fuente, inputs y artefacto sobre el APK real.
+
+Para cambios en estos límites, ejecute como mínimo:
 
 ```bash
 npm --workspace apps/mobile run test:deterministic
@@ -124,4 +130,4 @@ npm run check:android-permissions
 npm run test:android-permissions
 ```
 
-`test:deterministic` contiene los contratos de retirada y de borrado; las E2E ejercitan las exportaciones web Development o Production. Un cambio en publicación de Production debe además pasar las verificaciones de fuente y artefacto que invoca el workflow. Una prueba web no demuestra el manifest fusionado ni el comportamiento de instalación de un dispositivo Android; la inspección del artefacto de Production sigue siendo la barrera para permisos, identidad y cadena de evidencia.
+Para modificar release, preserve los invariantes de transacción, SHA fuente, inputs inmóviles, toolchain y evidencia; no convierta una E2E web o el escaneo de manifests en sustituto de inspeccionar el APK Production final.

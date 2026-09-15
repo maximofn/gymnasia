@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:428149bd9c7ef81490eccf5b634759a4a4ed8d23178978a0ae4437cdae42662b",
+  "pageVersion": "sha256:585a10eff481b0978824d1b0a1d3c2eafe06eadde5bcd7276ddbbb1201bb3c19",
   "claims": [
     {
       "id": "claim_aca396b7cc1e477696babb6c28b70e97",
@@ -110,7 +110,7 @@
       "evidence": [
         {
           "resource": "repo://apps/mobile/App.tsx#L2947-L3085",
-          "version": "repo-lines-v1:sha256:ba13cf6cf39533af7b9a5f13dbb31aa8dec1d97209883e6ae0f675e6878f3e01:eyJzZWxlY3RlZExpbmVDb3VudCI6MTM5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyYjJhOTE2ZDM1ZTZlNTVkNzI2NzUzMTdmZGU4Y2NlNjM5YjlhZjNjOWZmMDEwNWExOTkxOGZmYjI3MmEyMDVhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmZGM1MmYwOGIzOWIwOGIwMWM4ZDMwOGJmODgwYjBiZWYwMmZkMWRmY2M5ZDlhYTkzYTRkMWI1ZjRkNThiNmNiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwOGE3ZjJhNDdhNTc0OGE5ZjRmMzdmNjlmYmZjNzBmMjVjMGRjYzg5Yjg5YTMxZWQ5YmYyN2E5OWIwNTYwZjVkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwZDc0MWQyYmRhMTRkYmM2ZWI0MTNhNjk2ODNjNDRhYWUwMGUwMjJkOTVlMjE2ZjIxMjUyMmQyMDBjN2M1ZDliIn0"
+          "version": "repo-lines-v1:sha256:a0176c21507f7ebfbfeec0341797b43b337cbaadf023524d8810a69c55f88fe4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyYjJhOTE2ZDM1ZTZlNTVkNzI2NzUzMTdmZGU4Y2NlNjM5YjlhZjNjOWZmMDEwNWExOTkxOGZmYjI3MmEyMDVhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmZGM1MmYwOGIzOWIwOGIwMWM4ZDMwOGJmODgwYjBiZWYwMmZkMWRmY2M5ZDlhYTkzYTRkMWI1ZjRkNThiNmNiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwOGE3ZjJhNDdhNTc0OGE5ZjRmMzdmNjlmYmZjNzBmMjVjMGRjYzg5Yjg5YTMxZWQ5YmYyN2E5OWIwNTYwZjVkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwZDc0MWQyYmRhMTRkYmM2ZWI0MTNhNjk2ODNjNDRhYWUwMGUwMjJkOTVlMjE2ZjIxMjUyMmQyMDBjN2M1ZDliIn0"
         },
         {
           "resource": "repo://apps/mobile/shell/shellRegistry.ts#L122-L172",
@@ -191,10 +191,50 @@
           "version": "repo-lines-v1:sha256:a1f39006241030148f1f3044027cecc90cf74a6fa356ac0d57b55b3ed28180b9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIifQ"
         }
       ]
+    },
+    {
+      "id": "claim_8cfc63a9581e4737be29b7c1e1f42686",
+      "statement": "La política `scripts/mobile-boundaries/policy.json` clasifica el cliente móvil por capas, restringe sus dependencias y entradas públicas, y prohíbe APIs de React/React Native/Expo en los módulos de dominio indicados; `check.mjs` analiza imports y reexports estáticos, `require` e imports dinámicos y falla ante infracciones de capas, entradas privadas, APIs prohibidas, módulos no resueltos o sin clasificar, excepciones heredadas obsoletas y ciclos locales.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/mobile-boundaries/check.mjs#L185-L288",
+          "version": "repo-lines-v1:sha256:c3028dc67e863e35f21ac3dd5f3d56c89950acda51ba959c4702599e7c9e688c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiZGU0ZmIxNGFlN2UyMmMwNzE4N2ViOWZhMmM4YTE4OTljNDM4N2YyYjY1ZTgxYWVlOTBmZTE3NDBkMjJjMGFhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJiNDk4YzhlOTgwYWIzZGQyNDg2MzI5YjM3Y2FkODM2NjNlMTk4MGI0NWI1NDJlYmY4OTM4YzIxMTkwYzY2MWJjIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5ZGViOGNlNmY0MzU5ZWY4ZTdiM2M3YmMxMTBlMzAzMzU0NjM1YjA5MTYxNjg1YTcwMGQzNWM3ZGFkYzUyMjY2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3NDAyMmEyNjY1YTA2OWU0YWYzMjZlYTUyZGFmZjU5NzU2NTAxOGExZWUyMDJiOTUzYzE2ODY2YjUwZWEyMTI5In0"
+        },
+        {
+          "resource": "repo://scripts/mobile-boundaries/check.mjs#L297-L310",
+          "version": "repo-lines-v1:sha256:896537a3783c26a2423138706692a70d8437f9c1e155e420cd07580c7f96cfda:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlODIwMGViZDE3MDliNmE2NzViZWNiM2JlOWYzOWU1M2JiYWMwMmNjOTI3MjM0NjJjMDU0NjhlYjBkYTZhMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0N2Q2OWU4MTM1NzZkYTYyODA2Y2RmOTFhMjIyMDEyODlhYjQ4NzJiMDA5Njg2YjQyNWRhZjY5NTk3ZmI5MTQifQ"
+        },
+        {
+          "resource": "repo://scripts/mobile-boundaries/check.mjs#L54-L91",
+          "version": "repo-lines-v1:sha256:963313c8edd8c24897d38e3ea23638f071e65f00e1163600029d636ded6c3e39:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAyODBjMjBhMTcyMzRmMzYxNzU1MjgwYjYwMmRlZjc1OTRkYjNkYWYwMzY2YTQzNTQ1ZTE3OWJjMjIxMWE3MzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3ZTVlMzIxNTg2ZWY5NGJkOTdkZjhhMTcxZTM0MGYzNGNlZDc4ZjkwN2ZlY2M3MWQyMGJjZmI1NTE4ZjdjN2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4OWM3MjljYzI0ZmVkMjJiYWY4N2JmNGE4NmRhOGM2OTRiYWNiOGY1NWFlM2M1MzdmMTM2MTY4NDMzMDJkOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3NWRmMWQ5NjM0YWNjZmQzYWRkOTAwZDc4MTE5ZmU5MDFiYTBlYzJlNjEzMzY5YjBiYmU5ZTdlNzQ2ZGE4ZTEifQ"
+        },
+        {
+          "resource": "repo://scripts/mobile-boundaries/policy.json#L1-L65",
+          "version": "repo-lines-v1:sha256:2464ac483919086744801246522f010716039fa5a7d6872b7585043a896209ec:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlNjFlN2U0OWYxNTE1OTQ3YjA0MDA5ZWExN2ZiNGI0ZTUwMjFiOWE1YTA4MWVhMTE5YTdiOWIzM2QzMGYwNjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d3cfe1a3240f4107baf75eaf820cca58",
+      "statement": "La E2E de navegación exporta el bundle web de desarrollo, prueba los formatos compacto a 390 px y de escritorio a 960 px, recorre los seis destinos y verifica que al cerrar capas anidadas se conserva el estado subyacente de medidas y Configuración.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L129-L190",
+          "version": "repo-lines-v1:sha256:09c26efc848c79032e17d30717c70cb5276ad386b98c84bd9a241b20ab49d38b:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhYmU0MDJjOWIzMDg1ZjQ3ZDkzNTA3ZTk2MGQ2YTgzZWRmNTZkN2I4ZDEwNDBjZmE1ZDFhZTUzZTdjMTY1ZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM0NmQ2YjEzMDcyMzZiNDI0NzExMTJhM2YxMDA3ODI2YzkwNjQyYzlhNGU5ZjIyNmYyNWNkYjAxMDZkZjQ3MTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4ZDE5MzdkYWVlNjdmNjllZTczYjMyNjhjMmM3NTk3NGNhMDljYmQ5MThiMzUxMDI0Y2ZmZWRmM2ZmY2VhZDAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L192-L239",
+          "version": "repo-lines-v1:sha256:31318ca42ab414f3e566b72ce5b973cc8fe11299972a498dc48c707b534d5cef:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2ODY4ZmI0YzUyZmI5NmZkMWFjOWQxZGQ3ZmU1YTdhZTg4NDU0NTMyZWI3NzExZjFiZGRkMWM4NmMwYWMwZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1MzIwNzNiYWEyNDg0OGU5YWI5OGNmYWU1OWUxMzllN2U1ZDIzNmQ4NjFmM2ZiZjgzNmEyOTNlZDcwOWZiNTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0ZWMxZDNmYjY2MTI2ODNiZGYxM2Q5NmUxZWJjYTJkOThjNzhlYjczYzYzNDg5OGFmNjRiZmQ5M2RjZWQ0NGMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L55-L85",
+          "version": "repo-lines-v1:sha256:eee591b123a3373ab7b8985e48a20081dae7bde9d43a1b3a7d674ee094804b12:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhNzQwOWNmODJlYTYxNWUxYmQ5MGEzOTM0ZjU1ZmRjYTFhZTZhM2VkMGYyMTRhNWI4MmIxYzJlM2JmNzJlNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3N2NjODY0ZGM3YTU2MmU1YTU0OTNmZjI2ODM2MjUxNjM5ZmE1ODk3Y2M4ZDNkZTQyNTE2ZGU3MTJlMzU1MDkifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-13T07:56:37.562Z"
+    "at": "2026-09-15T14:17:12.687Z"
   }
 }
