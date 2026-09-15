@@ -79,6 +79,29 @@ jobs:
         # share a filesystem with the plaintext refresh token.
         run: npm ci
 
+      - name: Restore previous sanitized runtime telemetry
+        id: telemetry_restore
+        if: steps.preflight.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          artifact_id="$(
+            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=openwiki-runtime-telemetry&per_page=100" \
+              --jq ".artifacts | map(select(.expired == false and .workflow_run.head_branch == \"$DEFAULT_BRANCH\")) | sort_by(.created_at) | last | .id // empty"
+          )"
+          if [ -z "$artifact_id" ]; then
+            exit 0
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" \
+            > "$RUNNER_TEMP/openwiki-runtime-telemetry.zip"
+          unzip -p "$RUNNER_TEMP/openwiki-runtime-telemetry.zip" \
+            openwiki-runtime-telemetry.json \
+            > "$RUNNER_TEMP/openwiki-runtime-telemetry.previous.json"
+
       - name: Clone Gymnasia
         if: steps.preflight.outcome == 'success'
         run: git clone --no-tags https://github.com/maximofn/gymnasia.git target
@@ -219,6 +242,69 @@ jobs:
         env:
           FAILURE_CATEGORY: ${{ steps.openwiki.outputs.failure_category }}
         run: echo "::error title=OpenWiki update failed::Failure category:$FAILURE_CATEGORY"
+
+      - name: Collect sanitized runtime telemetry
+        id: telemetry
+        if: steps.preflight.outcome == 'success'
+        shell: bash
+        env:
+          LANGSMITH_ENDPOINT: "https://eu.api.smith.langchain.com"
+          OPENWIKI_LANGSMITH_API_KEY: ${{ secrets.OPENWIKI_LANGSMITH_API_KEY }}
+        run: |
+          set -euo pipefail
+          previous="$RUNNER_TEMP/openwiki-runtime-telemetry.previous.json"
+          output="$RUNNER_TEMP/openwiki-runtime-telemetry.json"
+          if ! node scripts/openwiki-telemetry.mjs "$previous" "$output" \
+            > "$RUNNER_TEMP/openwiki-runtime-telemetry.status"; then
+            printf '%s\n' '{"schemaVersion":1,"project":"openwiki","latestAttempt":{"status":"unavailable","at":null,"failureCategory":"langsmith"},"sample":null}' \
+              > "$output"
+          fi
+          status="$(jq -r '.latestAttempt.status' "$output")"
+          case "$status" in
+            available|unavailable) ;;
+            *) status=unavailable ;;
+          esac
+          failure_category="$(jq -r '.latestAttempt.failureCategory // "none"' "$output")"
+          case "$failure_category" in
+            oauth|managed-markers|langsmith|rate-limit|model|context-limit|network|unknown|none) ;;
+            *) failure_category=unknown ;;
+          esac
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "failure_category=$failure_category" >> "$GITHUB_OUTPUT"
+
+      - name: Mark runtime telemetry unavailable
+        if: steps.telemetry.outputs.status == 'unavailable'
+        env:
+          FAILURE_CATEGORY: ${{ steps.telemetry.outputs.failure_category }}
+        run: echo "::warning title=Runtime telemetry unavailable::Category:$FAILURE_CATEGORY. The last valid aggregate sample was retained when possible."
+
+      - name: Decide whether to publish runtime evidence
+        id: telemetry_publish
+        if: steps.telemetry.outcome == 'success'
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] || [ "$(date -u +%u)" = "1" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish weekly runtime telemetry evidence
+        id: telemetry_page
+        if: steps.telemetry_publish.outputs.enabled == 'true'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -m 644 "$RUNNER_TEMP/openwiki-runtime-telemetry.json" \
+            target/ops/openwiki-runtime-telemetry.json
+          node scripts/render-openwiki-telemetry.mjs target
+
+      - name: Mark runtime evidence publication failure
+        if: steps.telemetry_page.outcome == 'failure'
+        run: echo "::warning title=Runtime evidence was not published::The OpenWiki update can continue; review the telemetry renderer."
 
       - name: Prepare selected Personal Brain sources
         id: personal_sources
@@ -439,7 +525,9 @@ jobs:
             "$RUNNER_TEMP/openwiki-personal.log" \
             "$RUNNER_TEMP/openwiki-personal-state.tar.gz" \
             "$RUNNER_TEMP/openwiki-personal-state.zip" \
-            "$RUNNER_TEMP/openwiki-oauth-state.zip"
+            "$RUNNER_TEMP/openwiki-oauth-state.zip" \
+            "$RUNNER_TEMP/openwiki-runtime-telemetry.zip" \
+            "$RUNNER_TEMP/openwiki-runtime-telemetry.status"
 
       - name: Persist encrypted OAuth state
         if: always() && steps.encrypt_oauth.outcome == 'success'
@@ -456,6 +544,15 @@ jobs:
         with:
           name: openwiki-personal-state
           path: ${{ runner.temp }}/openwiki-personal-state.enc
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Persist sanitized runtime telemetry
+        if: always() && steps.telemetry.outcome == 'success'
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: openwiki-runtime-telemetry
+          path: ${{ runner.temp }}/openwiki-runtime-telemetry.json
           if-no-files-found: error
           retention-days: 30
 
@@ -478,6 +575,9 @@ jobs:
           # Publish that progress, but never its transient active-run checkpoint.
           rm -f -- openwiki/.run.json
           git add -A -- openwiki .openwikiignore
+          if [ -f ops/openwiki-runtime-telemetry.json ]; then
+            git add -- ops/openwiki-runtime-telemetry.json
+          fi
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0

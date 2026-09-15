@@ -55,6 +55,7 @@ jobs:
         shell: bash
         env:
           AUTOMATION_GH_TOKEN: ${{ github.token }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
           GYMNASIA_REPO_TOKEN: ${{ secrets.GYMNASIA_REPO_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -95,6 +96,8 @@ jobs:
           runs_path="$RUNNER_TEMP/openwiki-runs.json"
           jobs_path="$RUNNER_TEMP/openwiki-jobs.json"
           pull_requests_path="$RUNNER_TEMP/openwiki-pull-requests.json"
+          telemetry_path="$RUNNER_TEMP/openwiki-runtime-telemetry.json"
+          telemetry_zip="$RUNNER_TEMP/openwiki-runtime-telemetry.zip"
           report_path="$RUNNER_TEMP/openwiki-daily-report.txt"
 
           GH_TOKEN="$AUTOMATION_GH_TOKEN" \
@@ -119,7 +122,30 @@ jobs:
             printf '%s\n' '[]' > "$pull_requests_path"
           fi
 
+          artifact_id="$(
+            GH_TOKEN="$AUTOMATION_GH_TOKEN" \
+              gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=openwiki-runtime-telemetry&per_page=100" \
+                --jq ".artifacts | map(select(.expired == false and .workflow_run.head_branch == \"$DEFAULT_BRANCH\")) | sort_by(.created_at) | last | .id // empty" \
+                2> /dev/null || true
+          )"
+          if [ -n "$artifact_id" ]; then
+            if GH_TOKEN="$AUTOMATION_GH_TOKEN" \
+              gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" \
+                > "$telemetry_zip" 2> /dev/null && \
+              unzip -p "$telemetry_zip" openwiki-runtime-telemetry.json \
+                > "$telemetry_path" 2> /dev/null; then
+              :
+            else
+              artifact_id=""
+            fi
+          fi
+          if [ -z "$artifact_id" ]; then
+            printf '%s\n' '{"schemaVersion":1,"project":"openwiki","latestAttempt":{"status":"unavailable","at":null,"failureCategory":"langsmith"},"sample":null}' \
+              > "$telemetry_path"
+          fi
+
           node scripts/build-daily-report.mjs \
-            "$runs_path" "$jobs_path" "$pull_requests_path" "$report_path"
+            "$runs_path" "$jobs_path" "$pull_requests_path" \
+            "$telemetry_path" "$report_path"
           send_telegram_file "$report_path"
           sent=true

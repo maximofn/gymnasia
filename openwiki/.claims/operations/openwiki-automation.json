@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f5de6eb3f08b9d968a15d55e617ac65ba14a0b391db969657374938dd50c20d9",
+  "pageVersion": "sha256:424c3f985096c1b872809c38384f89b5a43bddbbc50e16abaf9f7f163eb7d8aa",
   "claims": [
     {
       "id": "claim_b78ae34fdf464ce1aa6860aa6eeef8e6",
@@ -18,7 +18,7 @@
     },
     {
       "id": "claim_c4f48c9e1f894c8ab1ccec35940baa77",
-      "statement": "El workflow clona Gymnasia, fuerza `openwiki/update` desde `origin/main`, restaura `AGENTS.md` y `CLAUDE.md` desde la rama base, elimina `openwiki/.run.json` e indexa solo `openwiki` y `.openwikiignore`; el push usa `--force-with-lease` antes de crear o actualizar la PR. El commit requiere que el paso de OpenWiki concluya y que OAuth se haya cifrado, pero puede publicar páginas duraderas cuando el comando produjo un resultado de fallo, que el workflow propaga después.",
+      "statement": "El workflow clona Gymnasia, fuerza `openwiki/update` desde `origin/main`, restaura `AGENTS.md` y `CLAUDE.md` desde la rama base, elimina `openwiki/.run.json` e indexa `openwiki`, `.openwikiignore` y el JSON saneado de telemetría cuando se renueva; el push usa `--force-with-lease` antes de crear o actualizar la PR.",
       "evidence": [
         {
           "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L414-L540",
@@ -36,7 +36,7 @@
     },
     {
       "id": "claim_9a1a5becf09442f899099f74ceace466",
-      "statement": "La plantilla declara Node `>=22.22.0 <23` y dependencias directas exactas `openwiki` 0.5.0, `jsdom` 29.1.1 y `mermaid` 11.16.1; el lockfile v3 repite ese manifiesto, por lo que `npm ci` instala el grafo bloqueado.",
+      "statement": "La plantilla declara Node `>=22.22.0 <23` y dependencias directas exactas `openwiki` 0.5.0, `langsmith` 0.7.17, `jsdom` 29.1.1 y `mermaid` 11.16.1; el lockfile v3 repite ese manifiesto, por lo que `npm ci` instala el grafo bloqueado.",
       "evidence": [
         {
           "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L69-L80",
@@ -86,7 +86,7 @@
     },
     {
       "id": "claim_f1d2956e53034a6a957d47d752b7379f",
-      "statement": "Tras restaurar OAuth, el workflow intenta recifrarlo incluso en rutas posteriores de error, elimina estados en claro y logs temporales, y conserva únicamente artefactos cifrados con retención de 30 días.",
+      "statement": "Tras restaurar OAuth, el workflow intenta recifrarlo incluso en rutas posteriores de error, elimina estados en claro y logs temporales, conserva los estados privados cifrados y guarda la telemetría saneada en un artefacto separado con retención de 30 días.",
       "evidence": [
         {
           "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L414-L460",
@@ -140,7 +140,7 @@
     },
     {
       "id": "claim_829aa4ed2f984bae804477285f9ff3a2",
-      "statement": "El Code Brain configura LangSmith para el proyecto `openwiki` y endpoint europeo, oculta inputs, outputs y metadatos, y solo permite desactivar trazado en un despacho manual diagnóstico.",
+      "statement": "El Code Brain configura LangSmith para el proyecto `openwiki` y endpoint europeo, oculta inputs, outputs y metadatos, y un collector posterior reduce una ventana de 7 días a métricas estructurales permitidas con límites de 900 spans y 60 segundos.",
       "evidence": [
         {
           "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L160-L181",
@@ -180,7 +180,7 @@
     },
     {
       "id": "claim_b5e035c07f274553aef8ae0c5b14cfe3",
-      "statement": "El informe diario es un workflow independiente programado a las 12:00 UTC, con concurrencia propia y límite de 10 minutos; se ejecuta solo en un repositorio privado con Telegram configurado y consulta metadatos de runs, jobs y una PR en lugar de logs.",
+      "statement": "El informe diario es un workflow independiente programado a las 12:00 UTC, con concurrencia propia y límite de 10 minutos; se ejecuta solo en un repositorio privado con Telegram configurado y combina metadatos de runs, jobs y PR con el artefacto saneado, sin acceso directo a LangSmith ni logs.",
       "evidence": [
         {
           "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-report.yml#L1-L54",
@@ -198,7 +198,7 @@
     },
     {
       "id": "claim_8db21ca7bb224a799168d8f391d9021c",
-      "statement": "`buildDailyReport` deriva el informe de campos de metadatos permitidos, admite solo URLs HTTPS de `github.com` y filtra destacados a Markdown bajo `openwiki/`; las pruebas comprueban que campos privados y URLs no confiables no se propaguen.",
+      "statement": "`buildDailyReport` deriva el informe de campos de metadatos y agregados permitidos, admite solo URLs HTTPS de `github.com` y filtra destacados a Markdown bajo `openwiki/`; las pruebas comprueban que campos privados, agregados inválidos y URLs no confiables no se propaguen.",
       "evidence": [
         {
           "resource": "repo://ops/openwiki-automation-template/scripts/build-daily-report.mjs#L127-L136",
@@ -220,7 +220,7 @@
     },
     {
       "id": "claim_ea0736e46a654defb99e49f5d64fd8ef",
-      "statement": "La suite de la plantilla se expone como `node --test tests/*.test.mjs`, por lo que valida contratos locales de scripts y workflows pero no acredita la disponibilidad de integraciones remotas.",
+      "statement": "La suite de la plantilla se expone como `node --test tests/*.test.mjs` y valida clasificación, cifrado, agregación, renderizado, informe y workflows, pero no acredita la disponibilidad de integraciones remotas.",
       "evidence": [
         {
           "resource": "repo://ops/openwiki-automation-template/package.json#L6-L11",
