@@ -195,7 +195,7 @@ describe("ejecutor de tools", () => {
     }, {
       exercisesRepo: [],
       resolveExerciseCatalogIds,
-      setStore: (updater) => { store = updater(store); },
+      commitStore: async (updater) => { store = updater(store); },
     }));
     expect(resolveExerciseCatalogIds).toHaveBeenCalledWith(["sentadilla"]);
     expect(routineOutput.status).toBe("created");
@@ -307,7 +307,7 @@ describe("ejecutor de tools", () => {
         throw new Error("storage unavailable");
       },
     });
-    expect(result.status).toBe("failed_before_commit");
+    expect(result.status).toBe("indeterminate");
     expect(result.output).not.toContain("correctamente");
   });
 
@@ -327,7 +327,7 @@ describe("ejecutor de tools", () => {
 
   it("guarda un alimento válido aunque todos sus valores nutricionales sean cero", async () => {
     let store = createEmptyStore();
-    const setStore = vi.fn((updater: (previous: ToolStore) => ToolStore) => {
+    const commitStore = vi.fn(async (updater: (previous: ToolStore) => ToolStore) => {
       store = updater(store);
     });
     const execute = createAgentToolExecutor(createDependencies());
@@ -342,10 +342,10 @@ describe("ejecutor de tools", () => {
         carbs_g: 0,
         fat_g: 0,
       }),
-    }, { setStore });
+    }, { commitStore });
 
     expect(result).toContain('Alimento "Agua"');
-    expect(setStore).toHaveBeenCalledOnce();
+    expect(commitStore).toHaveBeenCalledOnce();
     expect(store.dietByDate["2026-04-11"].meals[0]).toEqual(expect.objectContaining({
       title: "Desayuno",
       items: [expect.objectContaining({ title: "Agua", calories_kcal: 0 })],
@@ -366,7 +366,7 @@ describe("ejecutor de tools", () => {
       }),
     }, {
       foodsRepo: foods,
-      setStore: (updater) => { store = updater(store); },
+      commitStore: async (updater) => { store = updater(store); },
     });
 
     expect(store.dietByDate["2026-09-03"].meals[0].items[0]).toEqual(expect.objectContaining({
@@ -437,7 +437,10 @@ describe("ejecutor de tools", () => {
           series: [{ type: "normal", reps: 10, weight_kg: 60, rest_seconds: 90 }],
         }],
       },
-    }, { exercisesRepo: exercises, setStore: (updater) => { store = updater(store); } });
+    }, {
+      exercisesRepo: exercises,
+      commitStore: async (updater) => { store = updater(store); },
+    });
     expect(JSON.parse(created)).toMatchObject({
       status: "created",
       written: true,
@@ -589,6 +592,12 @@ describe("ejecutor de tools", () => {
     expect(store.dietByDate["2026-09-01"].meals[0].items[0].id).toBe(
       `food_op_${"a".repeat(24)}`,
     );
+    expect(store.toolOperationReceipts).toEqual([
+      expect.objectContaining({
+        operationId: "a".repeat(64),
+        toolName: "add_meal_food",
+      }),
+    ]);
   });
 
   it("no confirma una escritura si la persistencia falla", async () => {
@@ -611,7 +620,7 @@ describe("ejecutor de tools", () => {
       },
     });
 
-    expect(result.status).toBe("failed_before_commit");
+    expect(result.status).toBe("indeterminate");
     expect(result.output).toContain("no se ha completado");
   });
 
@@ -627,6 +636,9 @@ describe("ejecutor de tools", () => {
         deduplicated: false,
       }),
     }));
+    const ambiguous = createDetailedAgentToolExecutor(createDependencies({
+      submitFeedbackIssue: async () => ({ status: "error", reason: "operation_pending" }),
+    }));
     const args = { title: "Mejora", summary: "Añadir una mejora solicitada." };
 
     await expect(unavailable("create_feature_issue", args)).resolves.toMatchObject({
@@ -634,6 +646,9 @@ describe("ejecutor de tools", () => {
     });
     await expect(created("create_feature_issue", args)).resolves.toMatchObject({
       status: "committed",
+    });
+    await expect(ambiguous("create_feature_issue", args)).resolves.toMatchObject({
+      status: "indeterminate",
     });
   });
 });

@@ -19,6 +19,7 @@ describe("local store model", () => {
     expect(store.messagesByThread["thread-fixed"]).toHaveLength(1);
     expect(store.templates).toEqual([]);
     expect(store.measurements).toEqual([]);
+    expect(store.toolOperationReceipts).toEqual([]);
   });
 
   it("keeps credentials out of the general aggregate serialization", () => {
@@ -42,5 +43,6 @@ describe("local store model", () => {
     expect(reset.dietSettings.daily_calories).toBe("2200");
     expect(reset.chatProvider).toBe("anthropic");
     expect(reset.workoutHistory).toEqual([]);
+    expect(reset.toolOperationReceipts).toEqual([]);
   });
 });

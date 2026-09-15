@@ -41,6 +41,14 @@ function makeRequest(body: unknown, headers: Record<string, string> = {}): Reque
   });
 }
 
+function makeStatusRequest(idempotencyKey: string): Request {
+  return new Request(
+    "https://gymnasia-feedback.maximofn.com/feedback/issues/status?idempotency_key="
+      + encodeURIComponent(idempotencyKey),
+    { headers: { origin: ORIGIN } },
+  );
+}
+
 function validBody(overrides: Record<string, unknown> = {}) {
   return {
     schema_version: 1,
@@ -95,6 +103,14 @@ describe("POST /feedback/issues", () => {
       url: "https://github.com/x/y/issues/41",
       deduplicated: false,
     });
+  });
+
+  it("acepta claves de operación de 64 caracteres sin romper las antiguas", async () => {
+    const { env } = makeEnv();
+    const operationResponse = await worker.fetch(makeRequest(validBody({
+      idempotency_key: `v1:feature:${"b".repeat(64)}`,
+    })), env);
+    expect(operationResponse.status).toBe(201);
   });
 
   it("fija repositorio, método y etiquetas en el servidor", async () => {
@@ -272,6 +288,56 @@ describe("POST /feedback/issues", () => {
         headers: { "content-type": "application/json" },
         body: "{no es json",
       }),
+      env,
+    );
+    expect(response.status).toBe(400);
+  });
+});
+
+describe("GET /feedback/issues/status", () => {
+  it("distingue ausente, pendiente y creada para una operación", async () => {
+    const key = `v1:feature:${"c".repeat(64)}`;
+    const { env, issues } = makeEnv();
+
+    const absent = await worker.fetch(makeStatusRequest(key), env);
+    expect(absent.status).toBe(404);
+    await expect(absent.json()).resolves.toEqual({ status: "absent" });
+
+    issues.set(key, {
+      idempotency_key: key,
+      kind: "feature",
+      content_hash: "hash",
+      state: "pending",
+      issue_number: null,
+      issue_url: null,
+      created_at: Date.now(),
+      redacted_at: null,
+    });
+    const pending = await worker.fetch(makeStatusRequest(key), env);
+    expect(pending.status).toBe(202);
+    await expect(pending.json()).resolves.toEqual({ status: "pending" });
+
+    const row = issues.get(key) as {
+      state: string;
+      issue_number: number | null;
+      issue_url: string | null;
+    };
+    row.state = "created";
+    row.issue_number = 71;
+    row.issue_url = "https://github.com/x/y/issues/71";
+    const created = await worker.fetch(makeStatusRequest(key), env);
+    expect(created.status).toBe(200);
+    await expect(created.json()).resolves.toEqual({
+      status: "created",
+      number: 71,
+      url: "https://github.com/x/y/issues/71",
+    });
+  });
+
+  it("rechaza consultar claves de contenido antiguas", async () => {
+    const { env } = makeEnv();
+    const response = await worker.fetch(
+      makeStatusRequest(`v1:feature:${"a".repeat(16)}`),
       env,
     );
     expect(response.status).toBe(400);

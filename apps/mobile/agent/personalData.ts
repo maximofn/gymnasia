@@ -1,5 +1,6 @@
 /**
- * Frontera de forma de los datos personales locales (GYM-139).
+ * Frontera de forma de los datos personales locales (GYM-139, ticket para
+ * impedir que la memoria persistente altere el system prompt).
  *
  * Los campos de "Memoria del coach" son datos que el agente consulta mediante
  * tools; nunca son texto que se anexe al system prompt. Esa garantía NO vive
@@ -18,10 +19,23 @@
  * bloquearlo sería arbitrario y sugeriría que el mecanismo sigue existiendo.
  */
 
+import {
+  appendToolOperationReceipt,
+  isToolOperationReceipt,
+  normalizeToolOperationReceipts,
+  type ToolOperationReceipt,
+} from "./toolOperationReceipts";
+
 export type PersonalDataField = {
   key: string;
   description: string;
   value: string;
+};
+
+export type PersonalDataStore = {
+  schemaVersion: 2;
+  fields: PersonalDataField[];
+  toolOperationReceipts: ToolOperationReceipt[];
 };
 
 function coerceText(value: unknown): string | null {
@@ -70,4 +84,66 @@ export function sanitizePersonalDataFields(input: unknown): PersonalDataField[] 
 export function countDiscardedPersonalDataFields(input: unknown): number {
   const total = Array.isArray(input) ? input.length : 0;
   return total - sanitizePersonalDataFields(input).length;
+}
+
+export function parsePersonalDataStore(raw: string | null): PersonalDataStore {
+  if (!raw) return { schemaVersion: 2, fields: [], toolOperationReceipts: [] };
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (Array.isArray(parsed)) {
+      return {
+        schemaVersion: 2,
+        fields: sanitizePersonalDataFields(parsed),
+        toolOperationReceipts: [],
+      };
+    }
+    if (!parsed || typeof parsed !== "object") {
+      return { schemaVersion: 2, fields: [], toolOperationReceipts: [] };
+    }
+    const candidate = parsed as Record<string, unknown>;
+    if (candidate.schemaVersion !== 2) {
+      return { schemaVersion: 2, fields: [], toolOperationReceipts: [] };
+    }
+    return {
+      schemaVersion: 2,
+      fields: sanitizePersonalDataFields(candidate.fields),
+      toolOperationReceipts: normalizeToolOperationReceipts(
+        candidate.toolOperationReceipts,
+      ),
+    };
+  } catch {
+    return { schemaVersion: 2, fields: [], toolOperationReceipts: [] };
+  }
+}
+
+export function personalDataStoreReceiptsAreValid(raw: string): boolean {
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (Array.isArray(parsed)) return true;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return false;
+    const candidate = parsed as Record<string, unknown>;
+    return candidate.schemaVersion === 2
+      && Array.isArray(candidate.toolOperationReceipts)
+      && candidate.toolOperationReceipts.every(isToolOperationReceipt);
+  } catch {
+    return false;
+  }
+}
+
+export function buildPersonalDataStore(
+  fields: unknown,
+  currentReceipts: unknown,
+  operationId?: string,
+): PersonalDataStore {
+  return {
+    schemaVersion: 2,
+    fields: sanitizePersonalDataFields(fields),
+    toolOperationReceipts: operationId
+      ? appendToolOperationReceipt(
+          currentReceipts,
+          operationId,
+          "save_personal_data",
+        )
+      : normalizeToolOperationReceipts(currentReceipts),
+  };
 }

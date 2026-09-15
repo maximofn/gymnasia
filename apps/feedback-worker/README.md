@@ -27,9 +27,13 @@ herramienta devuelve `unavailable` y el agente lo dice; nada más se degrada.
   "kind": "feature" | "food" | "exercise" | "report",
   "title": "string, 1..120",
   "summary": "string, 1..4000 (1..16000 para report)",
-  "idempotency_key": "v1:<kind>:<16 hex>"
+  "idempotency_key": "v1:<kind>:<16 o 64 hex>"
 }
 ```
+
+Las claves de 16 hexadecimales mantienen el contrato de los formularios y denuncias.
+La tool `create_feature_issue` usa 64 hexadecimales derivados de su identidad de
+operación, para poder consultar el mismo intento después de una interrupción.
 
 | Respuesta | Significado |
 | --- | --- |
@@ -40,7 +44,19 @@ herramienta devuelve `unavailable` y el agente lo dice; nada más se degrada.
 | `503 {status:"unavailable"}` | Interruptor apagado |
 | `502 {status:"error", reason:"upstream_failed"}` | GitHub falló |
 
-`GET /health` devuelve `{"ok": true}`.
+`GET /feedback/issues/status?idempotency_key=v1:feature:<64 hex>` reconcilia una
+operación de la tool sin volver a crearla:
+
+| Respuesta | Significado |
+| --- | --- |
+| `200 {status:"created", number, url}` | La issue quedó creada |
+| `202 {status:"pending"}` | El resultado todavía no es concluyente |
+| `404 {status:"absent"}` | No existe una reserva con esa identidad |
+| `400 {status:"rejected", reason:"invalid_idempotency_key"}` | La clave no es una identidad de operación válida |
+
+La consulta comparte el interruptor, el secreto opcional, CORS y `no-store` con el
+endpoint de escritura, pero no consume rate limit ni acepta claves heredadas de 16
+hexadecimales. `GET /health` devuelve `{"ok": true}`.
 
 El **repositorio, la ruta, el método y las etiquetas los fija el servidor**. El
 endpoint no puede usarse como proxy genérico de GitHub ni para tocar issues
@@ -107,6 +123,11 @@ Implementado:
    Es ofuscación reconocida como tal: sube el listón de "hago un curl a la URL"
    a "descomprimo el APK y busco la cadena". No es un control de seguridad.
 3. **Deduplicación** por clave de idempotencia y por hash de contenido (24 h).
+
+La reserva también actúa como recibo durable de una operación del agente. Si el cliente
+pierde la respuesta del `POST`, consulta su estado: solo una referencia creada permite
+confirmar el efecto; `pending` o una consulta inaccesible quedan como resultado
+indeterminado y no disparan otro `POST` automático.
 
 En reserva, **no implementadas**, por si aparece abuso real:
 
@@ -186,6 +207,14 @@ después de verificar cada cambio y deja constancia del incidente sin copiar el 
 npm --workspace apps/feedback-worker run test
 ```
 
-Cubre esquema, saneado, idempotencia, deduplicación, rate limiting, mapeo de
-errores, CORS y fuzzing con `fast-check`. No necesita red ni credenciales: usa un
-doble en memoria de D1 y un `fetch` simulado.
+Cubre esquema, saneado, idempotencia, consulta de estados ausente/pendiente/creado,
+deduplicación, rate limiting, mapeo de errores, CORS y fuzzing con `fast-check`. No
+necesita red ni credenciales: usa un doble en memoria de D1 y un `fetch` simulado.
+
+## Orden de despliegue para el contrato de reconciliación
+
+Despliega primero el Worker y comprueba `/health` antes de distribuir la app que consulta
+`/feedback/issues/status`. El Worker nuevo es compatible con clientes antiguos porque
+sigue aceptando claves de 16 hexadecimales; el cliente nuevo, en cambio, falla cerrado si
+el endpoint de estado aún no existe. Después puede publicarse la app. Este orden evita
+que una respuesta perdida se convierta en una segunda issue.

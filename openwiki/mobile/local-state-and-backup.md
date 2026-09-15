@@ -50,17 +50,17 @@ Hay tres límites que no conviene mezclar:
 
 ## Mapa de persistencia y propiedad
 
-`LocalStore` se persiste bajo `gymnasia.mobile.local.v3` (con namespace de entorno). Incluye plantillas e historial de entrenamiento, dieta y ajustes, mediciones, hilos y mensajes, y metadatos no secretos de proveedores. Sus contenedores raíz antiguos ausentes se completan durante la migración; antes de una escritura gestionada, la validación rechaza campos raíz desconocidos, proveedores fuera de `openai`, `anthropic` y `google`, y formas incompatibles. Los diagnósticos usan rutas saneadas y no revelan valores ni nombres desconocidos.
+`LocalStore` se persiste bajo `gymnasia.mobile.local.v3` (con namespace de entorno). Incluye plantillas e historial de entrenamiento, dieta y ajustes, mediciones, hilos y mensajes, metadatos no secretos de proveedores y recibos mínimos de escrituras efectuadas por tools. Sus contenedores raíz antiguos ausentes se completan durante la migración; antes de una escritura gestionada, la validación rechaza campos raíz desconocidos, recibos malformados, proveedores fuera de `openai`, `anthropic` y `google`, y formas incompatibles. Los diagnósticos usan rutas saneadas y no revelan valores ni nombres desconocidos.
 
 | Partición o recurso | Propiedad y ciclo de vida |
 |---|---|
 | `gymnasia.mobile.local.last_good.v1` | Snapshot del payload validado con SHA-256. Es la última alternativa verificable para recuperar el agregado. |
 | `gymnasia.mobile.local.quarantine.v1` | Payload problemático, hash e incidencias saneadas. Una cuarentena válida bloquea escrituras aunque la clave principal parezca válida en un arranque posterior. |
 | `gymnasia.mobile.training.session.v1`, `session_template_snapshot` y `session_template_draft` | Trabajo de sesión activa dependiente del agregado. No se exporta y se elimina al descartar recuperación, restaurar una copia o borrar actividad. |
-| `gymnasia.mobile.personal_data.v1`, `personal_foods.v1` y `user_prefs.v1` | Memoria del coach, alimentos propios y preferencias: son particiones independientes, pero se proyectan al backup de usuario. |
+| `gymnasia.mobile.personal_data.v1`, `personal_foods.v1` y `user_prefs.v1` | Memoria del coach, alimentos propios y preferencias: son particiones independientes, pero se proyectan al backup de usuario. La memoria usa un sobre versionado con recibos de tools; la copia exporta sus campos, no esos recibos. |
 | Diario `gymnasia.mobile.v4.provider_configuration` | Configuración y secretos de proveedores: `SecureStore` es la autoridad en nativo; el espejo de `AsyncStorage` no debe convertirse en fuente de secretos. |
 | `gymnasia_measurement_media_v1` | Directorio de documentos privado en nativo para JPEG de mediciones propiedad de la aplicación, no una clave de `AsyncStorage`. |
-| Operaciones del agente, cachés de catálogos, trazas, consentimiento, salud de alarmas y metadatos de backup | Estado operativo, de diagnóstico o caché. Está fuera del paquete portable y su borrado se decide expresamente en el manifiesto. |
+| `gymnasia.mobile.agent.tool_operations.v1`, cachés de catálogos, trazas, consentimiento, salud de alarmas y metadatos de backup | Estado operativo, de diagnóstico o caché. Está fuera del paquete portable y su borrado se decide expresamente en el manifiesto. El journal de tools se escribe antes del efecto y conserva operaciones ambiguas hasta reconciliarlas o borrar actividad. |
 
 Las credenciales VivaGym heredadas no participan en el funcionamiento actual ni en un backup; el borrado total las inventaría para que no sobrevivan a un restablecimiento.
 
@@ -86,7 +86,7 @@ flowchart TD
 
 `LocalStoreRecoveryRepository` serializa sus operaciones. Al inspeccionar distingue estado vacío, válido, recuperable —hay snapshot válido— y corrupto. Un snapshot es utilizable solo si versión, JSON, forma y SHA-256 coinciden. La cuarentena conserva el payload original byte a byte cuando existe y su hash; si el almacenamiento no se puede leer, registra el fallo sin fingir que está vacío.
 
-Un commit valida el serializado, comprueba que sea seguro reemplazar el primario, escribe, relee y exige igualdad exacta y forma válida antes de actualizar el snapshot. Si la verificación falla, deja cuarentena y comunica un commit ambiguo. Si solo falla la escritura del snapshot, el primario puede haberse guardado, pero se informa que la copia de recuperación no se actualizó. `restoreSnapshot()` repone un snapshot comprobado y solo entonces elimina la cuarentena; `discardAffected()` elimina el agregado, sus auxiliares y las claves dependientes, y crea un estado inicial con la configuración actual de proveedores.
+Un commit valida el serializado, comprueba que sea seguro reemplazar el primario, escribe, relee y exige igualdad exacta y forma válida antes de actualizar el snapshot. Las tools que mutan comida, mediciones o rutinas añaden en ese mismo valor un recibo con identidad SHA-256, nombre y fecha, de modo que una recuperación puede distinguir un efecto ya comprometido de uno que no ocurrió. Si la verificación falla, deja cuarentena y comunica un commit ambiguo. Si solo falla la escritura del snapshot, el primario puede haberse guardado, pero se informa que la copia de recuperación no se actualizó. `restoreSnapshot()` repone un snapshot comprobado y solo entonces elimina la cuarentena; `discardAffected()` elimina el agregado, sus auxiliares y las claves dependientes, y crea un estado inicial con la configuración actual de proveedores.
 
 La pantalla `LocalStoreRecoveryScreen` ofrece restaurar la última copia íntegra, reintentar tras una reparación externa, guardar el payload dañado o descartarlo con confirmación. El reintento ignora deliberadamente una cuarentena previa para aceptar un primario reparado; el resto del flujo la respeta como bloqueo. La normalización semántica que falla después de la validación estructural también manda el payload a cuarentena en vez de intentar una reparación no verificable.
 
@@ -152,7 +152,7 @@ La restauración **no es atómica** entre React, `AsyncStorage`, `SecureStore` y
 
 ### Exclusiones y privacidad
 
-Nunca se exportan API keys BYOK, el diario seguro de proveedores, sesión activa ni sus borradores, cachés de catálogo, trazas, consentimiento, diagnóstico de alarmas, metadatos de backup o credenciales VivaGym heredadas. Las fotos incluidas ya no contienen los metadatos JPEG retirados, pero siguen siendo datos personales. `lastBackupAt` se actualiza después del flujo de compartir/descargar: indica que la aplicación creó la copia, no que el usuario la haya conservado.
+Nunca se exportan API keys BYOK, el diario seguro de proveedores, sesión activa ni sus borradores, el journal ni los recibos de operaciones de tools, cachés de catálogo, trazas, consentimiento, diagnóstico de alarmas, metadatos de backup o credenciales VivaGym heredadas. El paquete sí puede contener actividad, dieta, mediciones, conversaciones, preferencias, alimentos y los campos de memoria personal; debe tratarse como información sensible. Las fotos incluidas ya no contienen los metadatos JPEG retirados, pero siguen siendo datos personales. Un backup v1 puede portar URI antiguas: se intenta normalizarlas durante la importación y se advierte si no se pueden recuperar. Al importar, los recibos técnicos del dispositivo actual se conservan en vez de leerlos de la copia, porque el journal local también sobrevive a la importación y una operación anterior ambigua no debe reejecutarse sobre los datos restaurados. `lastBackupAt` se actualiza después del flujo de compartir/descargar: indica que la aplicación creó la copia, no que el usuario la haya conservado.
 
 ## Borrado verificable
 
@@ -163,7 +163,16 @@ El manifiesto de runtime asigna cada destino a uno de dos alcances:
 
 Cada destino ejecuta `delete` y luego `verify`, con timeout de 5 s por fase. Las tareas se ejecutan en paralelo: un error, timeout o valor aún presente produce un informe `incomplete`, no cancela los demás y permite reintentar. En nativo se cancelan y descartan también las notificaciones; tras el informe se reinicia el runtime para que referencias y borradores de React no reescriban datos borrados.
 
-El alcance local no borra paquetes ya exportados, fotos fuera del directorio propiedad de Gymnasia, permisos o canales del sistema, registros del sistema operativo ni datos enviados antes a un proveedor externo.
+Antes de empezar, el runtime bloquea persistencias nuevas y espera a que terminen las que
+ya estaban en cola. Esta barrera incluye la escritura posterior del espejo de desarrollo:
+sin ella, una persistencia antigua podría completar después del borrado y volver a poblar
+ese espejo con el estado previo aunque el agregado principal ya se hubiera limpiado.
+
+El borrado de actividad elimina el journal y los recibos de tools dentro de `LocalStore`
+y del sobre de memoria, pero conserva los campos de memoria personal. El alcance local
+no puede borrar paquetes ya exportados, fotos fuera del directorio propiedad de la app,
+permisos o canales del sistema, registros del sistema operativo, ni información enviada
+anteriormente a un proveedor externo.
 
 ## Pruebas y cambios seguros
 

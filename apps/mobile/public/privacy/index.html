@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="Gymnasia Privacy Policy">
-<meta name="gymnasia-policy-version" content="2026-09-v4">
-<meta name="gymnasia-policy-digest" content="sha256:970e9d6c70a48274259a9144a33b0e7bc560efd25df074d6ad4738887a8440d4">
+<meta name="gymnasia-policy-version" content="2026-09-v5">
+<meta name="gymnasia-policy-digest" content="sha256:1943aabfb857a4d55bdb28c69966f34c61d89593085edd65f5b304a599253524">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Gymnasia Privacy Policy</h1>
-  <p class="meta">Version 2026-09-v4 · in force since 2026-09-14 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Version 2026-09-v5 · in force since 2026-09-15 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacidad">Versión en español</a></p>
   <nav>
     <h2>Contents</h2>
@@ -100,7 +100,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>AI provider configuration</strong>: the selected model and, when Anthropic requires it for an identity-linked key, the workspace identifier (<code>wrkspc_…</code>).</li>
       <li><strong>Debug log</strong>: a technical record of up to 1000 entries covering delivered rest-timer alerts, which include the exercise name and set number; technical policy-selection events; and counters for context prepared for Google, such as exchange count, bytes and the number of old images omitted. Those Google diagnostics contain no messages, images, tool arguments or keys. The log is never sent over the network; you can view and clear it from Settings.</li>
       <li><strong>Local recovery copies</strong>: the app keeps one verified copy of its main state. If it finds data that it cannot read safely, it quarantines the original payload instead of overwriting it. Both copies remain on the device and are replaced or removed when the recovery is completed.</li>
-      <li><strong>Assistant operation control</strong>: a local technical record prevents a provider retry from adding a meal, measurement or routine twice, or submitting a suggestion twice. It keeps up to 256 operations for seven days: technical fingerprints, the action name, the result returned to the model and timestamps. It stores no arguments, messages, instructions or API keys, never leaves the device and is excluded from exported backups.</li>
+      <li><strong>Assistant operation control</strong>: before a write, the app leaves a local technical mark. For data on the device, it stores another mark with the data when the write finishes; for a suggestion, it queries the issue service with the technical identifier described below. This lets it check an interruption before deciding whether a retry is safe. The each local record is limited to 256 operations. Confirmed ones expire after seven days; an operation whose result cannot be verified is kept until it can be resolved or you delete activity. Local marks contain technical fingerprints, the action name and timestamps; only a confirmed operation's record also keeps the result returned to the model. They store no arguments, messages, instructions or API keys, never leave the device and are excluded from exported backups.</li>
     </ul>
   </section>
 
@@ -206,7 +206,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="conservacion">
     <h2><a href="#conservacion">How long your data is kept</a></h2>
-    <p>Except for the technical operation-control record described above, which expires after seven days, local data is kept indefinitely for as long as you keep it. Gymnasia does not synchronise it or retain it on its own server: you keep and delete it, both on the device and anywhere you choose to send a manual backup.</p>
+    <p>Confirmed technical operations described above expire after seven days. An unresolved operation is kept until the app can verify its result or until you delete activity, so that an automatic retry cannot duplicate its effect. Other local data is kept indefinitely for as long as you keep it. Gymnasia does not synchronise it or retain it on its own server: you keep and delete it, both on the device and anywhere you choose to send a manual backup.</p>
     <p>Data you have sent to an AI provider is governed by that provider's retention period, under your account with them.</p>
     <p>Suggestions remain in the private repository for as long as needed to manage the project. For assistant-response reports, the body containing the question and response is scheduled for automatic deletion when it reaches 30 days. Technical rate-limit records based on the IP HMAC are deleted within 48 hours.</p>
   </section>
@@ -260,7 +260,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Gymnasia Privacy Policy · 2026-09-v4 · 2026-09-14</p>
+    <p>Gymnasia Privacy Policy · 2026-09-v5 · 2026-09-15</p>
   </footer>
 </main>
 </body>

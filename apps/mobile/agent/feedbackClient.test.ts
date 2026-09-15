@@ -1,6 +1,10 @@
 import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
-import { createFeedbackIssueClient, mapFeedbackResponse } from "./feedbackClient";
+import {
+  createFeedbackIssueClient,
+  mapFeedbackResponse,
+  mapFeedbackStatusResponse,
+} from "./feedbackClient";
 import type { FeedbackIssueDraft } from "./feedbackIssues";
 
 const draft: FeedbackIssueDraft = {
@@ -139,6 +143,55 @@ describe("createFeedbackIssueClient", () => {
     const first = JSON.parse(String((calls[0][1] as RequestInit).body)).idempotency_key;
     const second = JSON.parse(String((calls[1][1] as RequestInit).body)).idempotency_key;
     expect(first).toBe(second);
+  });
+
+  it("usa el operationId completo para una escritura de tool", async () => {
+    const fetchImpl = respondWith(201, { number: 1, url: "https://github.com/a/b/issues/1" });
+    const client = createFeedbackIssueClient({ baseUrl: "https://backend.example", fetchImpl });
+    const operationId = "a".repeat(64);
+    await client.submitIssue(draft, operationId);
+    const body = JSON.parse(String(
+      ((fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls[0][1] as RequestInit).body,
+    ));
+    expect(body.idempotency_key).toBe(`v1:feature:${operationId}`);
+  });
+
+  it("reconcilia una reserva pendiente antes de clasificar un 429", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce(new Response("", { status: 429 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ status: "pending" }), { status: 202 }));
+    const fetchImpl = fetchMock as unknown as typeof fetch;
+    const client = createFeedbackIssueClient({ baseUrl: "https://backend.example", fetchImpl });
+
+    await expect(client.submitIssue(draft, "b".repeat(64))).resolves.toEqual({
+      status: "error",
+      reason: "operation_pending",
+    });
+    const calls = (fetchImpl as unknown as ReturnType<typeof vi.fn>).mock.calls;
+    expect(calls[1][0]).toContain("/feedback/issues/status?");
+    expect((calls[1][1] as RequestInit).method).toBe("GET");
+  });
+});
+
+describe("mapFeedbackStatusResponse", () => {
+  it("solo confirma una referencia verificable", () => {
+    expect(mapFeedbackStatusResponse(404, '{"status":"absent"}')).toEqual({ status: "absent" });
+    expect(mapFeedbackStatusResponse(202, '{"status":"pending"}')).toEqual({ status: "pending" });
+    expect(mapFeedbackStatusResponse(
+      200,
+      '{"status":"created","number":12,"url":"https://github.com/a/b/issues/12"}',
+    )).toEqual({
+      status: "created",
+      issueNumber: 12,
+      issueUrl: "https://github.com/a/b/issues/12",
+    });
+    expect(mapFeedbackStatusResponse(200, '{"status":"created"}')).toEqual({
+      status: "indeterminate",
+    });
+    expect(mapFeedbackStatusResponse(
+      200,
+      '{"status":"pending","number":99,"url":"https://github.com/a/b/issues/99"}',
+    )).toEqual({ status: "indeterminate" });
   });
 });
 

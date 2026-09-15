@@ -146,6 +146,10 @@ describe("LOCAL_DATA_MANIFEST", () => {
           activity: "delete",
         }),
         expect.objectContaining({
+          key: "gymnasia.mobile.personal_data.v1",
+          activity: "rewrite",
+        }),
+        expect.objectContaining({
           key: "gymnasia.mobile.agent.tool_operations.v1",
           activity: "delete",
         }),

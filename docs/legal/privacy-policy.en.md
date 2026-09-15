@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v4
-effective_date: 2026-09-14
+version: 2026-09-v5
+effective_date: 2026-09-15
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -91,12 +91,16 @@ All of the following is stored on your device only:
   finds data that it cannot read safely, it quarantines the original payload instead of
   overwriting it. Both copies remain on the device and are replaced or removed when the
   recovery is completed.
-- **Assistant operation control**: a local technical record prevents a provider retry
-  from adding a meal, measurement or routine twice, or submitting a suggestion twice.
-  It keeps up to 256 operations for seven days: technical fingerprints, the action name,
-  the result returned to the model and timestamps. It stores no arguments, messages,
-  instructions or API keys, never leaves the device and is excluded from exported
-  backups.
+- **Assistant operation control**: before a write, the app leaves a local technical mark.
+  For data on the device, it stores another mark with the data when the write finishes;
+  for a suggestion, it queries the issue service with the technical identifier described
+  below. This lets it check an interruption before deciding whether a retry is safe. The
+  each local record is limited to 256 operations. Confirmed ones expire after seven days;
+  an operation whose result cannot be verified is kept until it can be resolved or you
+  delete activity. Local marks contain technical fingerprints, the action name and
+  timestamps; only a confirmed operation's record also keeps the result returned to the
+  model. They store no arguments, messages, instructions or API keys, never leave the
+  device and are excluded from exported backups.
 
 ## Where it is stored {#almacenamiento-local}
 
@@ -316,10 +320,12 @@ should know about:
 
 ## How long your data is kept {#conservacion}
 
-Except for the technical operation-control record described above, which expires after
-seven days, local data is kept indefinitely for as long as you keep it. Gymnasia does
-not synchronise it or retain it on its own server: you keep and delete it, both on the
-device and anywhere you choose to send a manual backup.
+Confirmed technical operations described above expire after seven days. An unresolved
+operation is kept until the app can verify its result or until you delete activity, so
+that an automatic retry cannot duplicate its effect. Other local data is kept
+indefinitely for as long as you keep it. Gymnasia does not synchronise it or retain it
+on its own server: you keep and delete it, both on the device and anywhere you choose to
+send a manual backup.
 
 Data you have sent to an AI provider is governed by that provider's retention period,
 under your account with them.

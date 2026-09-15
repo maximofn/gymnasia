@@ -7,7 +7,7 @@ openwiki:
   roles: [integration, operations, domain]
   change_kinds: [public-api, persistence, privacy]
   source_paths: [apps/feedback-worker/src/index.ts, apps/feedback-worker/src/contract.ts, apps/feedback-worker/src/sanitize.ts, apps/mobile/agent/feedbackIssues.ts]
-  symbols: [handleCreateIssue, redactExpiredReports, sanitizeFeedbackDraft, buildIdempotencyKey]
+  symbols: [handleCreateIssue, handleIssueStatus, redactExpiredReports, sanitizeFeedbackDraft, buildIdempotencyKey]
   test_paths: [apps/feedback-worker/test/handler.test.ts, apps/mobile/agent/feedbackContract.contract.test.ts]
   invariants: [El cliente no elige repositorio ni etiquetas; una respuesta creada debe incluir número y URL verificables; la misma clave o contenido no crea una incidencia duplicada.]
   validation_commands: [npm --workspace apps/feedback-worker run test, npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/feedbackContract.contract.test.ts]
@@ -58,7 +58,12 @@ El Worker es **opcional**. Si no hay endpoint configurado, el servicio está des
 
 ## Contrato público y límites de autoridad
 
-El receptor expone `POST /feedback/issues` y `GET /health`, que devuelve `{ "ok": true }`. Rutas distintas devuelven `404` y otro método sobre la ruta de escritura, `405`. `OPTIONS` devuelve `204`; las cabeceras CORS de permiso solo se añaden cuando `Origin` figura en `ALLOWED_ORIGINS`. Todas las respuestas incluyen `cache-control: no-store` y `vary: Origin`.
+El receptor expone `POST /feedback/issues`,
+`GET /feedback/issues/status?idempotency_key=…` y `GET /health`, que devuelve
+`{ "ok": true }`. Rutas distintas devuelven `404` y métodos no admitidos, `405`.
+`OPTIONS` devuelve `204`; las cabeceras CORS de permiso solo se añaden cuando `Origin`
+figura en `ALLOWED_ORIGINS`. Todas las respuestas incluyen `cache-control: no-store` y
+`vary: Origin`.
 
 El cuerpo de `POST` es un esquema cerrado de exactamente cinco claves:
 
@@ -68,9 +73,13 @@ El cuerpo de `POST` es un esquema cerrado de exactamente cinco claves:
   "kind": "feature" | "food" | "exercise" | "report",
   "title": "string, 1..120",
   "summary": "string, 1..4000 (1..16000 para report)",
-  "idempotency_key": "v1:<kind>:<16 hex>"
+  "idempotency_key": "v1:<kind>:<16 o 64 hex>"
 }
 ```
+
+Las claves de 16 hexadecimales pertenecen a formularios y denuncias. Una tool usa la
+identidad completa de operación, de 64 hexadecimales. La consulta de estado solo acepta
+esta forma larga: la corta no identifica inequívocamente el intento de una tool.
 
 Una clave extra, una versión, tipo o clave inválidos, una clave cuyo tipo no coincida con `kind`, o texto vacío tras el saneado se rechazan. El servicio rechaza como `too_long` un título o resumen de más de cuatro veces su límite; el exceso menor se normaliza y trunca. `apps/feedback-worker/src/contract.ts` es la fuente de verdad. La réplica móvil en `apps/mobile/agent/feedbackIssues.ts` y `feedbackContract.contract.test.ts` anclan ruta, versión, tipos, límites y las cinco claves: extender el contrato requiere modificar ambos extremos y esa prueba, no aceptar campos de forma silenciosa.
 
@@ -81,8 +90,13 @@ El cliente solo propone `kind`, `title` y `summary`. El Worker fija el repositor
 ```mermaid
 flowchart TD
     App["Aplicación móvil"] --> Draft["Sanea borrador y deriva clave"]
-    Draft --> Post["POST con cinco claves"]
-    Post --> Gate{"Servicio habilitado y secreto opcional válido"}
+    Draft --> Kind{"¿Identidad de tool?"}
+    Kind -->|"Sí"| Status["GET de estado"]
+    Kind -->|"No"| Post
+    Status -->|"created"| StatusCreated["Referencia existente"]
+    Status -->|"pending o inaccesible"| Stop["No repetir automáticamente"]
+    Status -->|"absent fresco"| Post
+    Post["POST con cinco claves"] --> Gate{"Servicio habilitado y secreto opcional válido"}
     Gate -- "No" --> Unavailable["Respuesta no exitosa"]
     Gate -- "Sí" --> Limit["HMAC de IP y rate limit D1"]
     Limit -- "Excedido" --> Limited["429 con reintento"]
@@ -99,7 +113,14 @@ flowchart TD
 
 *La propuesta local solo sale tras la confirmación de usuario; el Worker toma las decisiones privilegiadas y no filtra los detalles del upstream al fallo.*
 
-La app sanea el borrador y calcula una clave determinista a partir de `kind`, título y resumen. El Worker vuelve a normalizar y redactar antes de generar el hash de contenido y hablar con GitHub. Una reserva `pending` en D1 se crea antes de la llamada remota: una repetición de una reserva completada retorna su número y URL, y una repetición mientras está en vuelo recibe `429` y debe reintentar. Si GitHub falla, se borra la reserva pendiente para permitirlo. Además, un hash de contenido creado en las últimas 24 horas se deduplica aunque llegue otra clave.
+La app sanea el borrador. Los formularios calculan una clave determinista a partir de
+`kind`, título y resumen; una tool usa su identidad de operación. El Worker vuelve a
+normalizar y redactar antes de generar el hash de contenido y hablar con GitHub. Una
+reserva `pending` en D1 se crea antes de la llamada remota: una repetición de una reserva
+completada retorna su número y URL, y una repetición mientras está en vuelo recibe `429`.
+Si GitHub falla, se borra la reserva pendiente para permitir un reintento explícito.
+Además, un hash de contenido creado en las últimas 24 horas se deduplica aunque llegue
+otra clave.
 
 La tabla `issues` retiene clave, tipo, hash, estado `pending` o `created`, referencia de la issue y fecha; no guarda el título ni el resumen del feedback. La referencia se completa después de una respuesta útil del upstream. El Worker considera útil un número entero positivo y una URL no vacía; el cliente aplica la comprobación adicional de que la URL comience por `https://github.com/` antes de devolver `created`.
 
@@ -116,7 +137,19 @@ La tabla `issues` retiene clave, tipo, hash, estado `pending` o `created`, refer
 | `502` | `error` con `upstream_failed`; no revela estado ni detalle de GitHub. |
 | `503` | `unavailable` con el interruptor apagado o sin sal de rate limit. |
 
-`createFeedbackIssueClient` limita su petición a 15 segundos y distingue `timeout` de `transport`. Convierte `503` en `unavailable`, los rechazos HTTP en `rejected` y otros fallos en `error`. Incluso ante un `2xx`, un cuerpo sin número positivo o URL válida para GitHub resulta en `malformed_response`, no en creación. Las funciones de presentación para modelo y usuario solo afirman registro en la rama `created`; las demás informan que no se creó nada u ofrecen reintentar. Esto evita que una caída del Worker rompa un turno de chat o produzca una confirmación falsa.
+La consulta de estado responde `200 created` con la referencia, `202 pending`, `404
+absent` o `400` si la identidad larga es inválida. Usa el mismo secreto opcional y las
+mismas reglas CORS, pero no consume rate limit ni crea una reserva. `absent` solo autoriza
+el primer `POST` de una operación fresca; una operación que ya quedó sin resolver no se
+repite automáticamente por una ausencia remota.
+
+`createFeedbackIssueClient` limita su petición a 15 segundos y distingue `timeout` de
+`transport`. Tras una respuesta de creación ambigua —incluido transporte, timeout,
+rate limit o error remoto— consulta el estado con la identidad de operación. Una reserva
+creada recupera la referencia; una pendiente produce `operation_pending`; una ausencia
+conserva el error original. Incluso ante un `2xx`, un cuerpo sin número positivo o URL
+válida para GitHub resulta en `malformed_response`, no en creación. Las funciones de
+presentación para modelo y usuario solo afirman registro en la rama `created`.
 
 ## Antiabuso y secreto compartido
 
@@ -145,10 +178,19 @@ npm --workspace apps/feedback-worker run migrate:remote
 npm --workspace apps/feedback-worker run deploy
 ```
 
-La suite no usa red ni credenciales: emplea un doble de D1 y `fetch` simulado. Cubre esquema cerrado, saneamiento y propiedades con fuzzing, CORS, métodos y rutas, secreto opcional, interruptor, HMAC pseudonimizado, límites, idempotencia, deduplicación de contenido, liberación tras fallo de GitHub, ausencia de éxito ante una referencia inválida y retención con reintento. Ejecute:
+La suite no usa red ni credenciales: emplea un doble de D1 y `fetch` simulado. Cubre
+esquema cerrado, saneamiento y propiedades con fuzzing, CORS, métodos y rutas, secreto
+opcional, interruptor, HMAC pseudonimizado, límites, idempotencia, consulta de estados,
+deduplicación de contenido, liberación tras fallo de GitHub, ausencia de éxito ante una
+referencia inválida y retención con reintento. Ejecute:
 
 ```bash
 npm --workspace apps/feedback-worker run test
 ```
 
 Al cambiar la frontera móvil, ejecute también la prueba de contrato indicada en el frontmatter y `feedbackClient`/`feedbackPipeline`: esta última reproduce proveedor, tool, ejecutor y cliente HTTP para asegurar que un error remoto o una respuesta malformada nunca confirme una issue.
+
+El contrato se despliega de forma compatible en un solo sentido: primero el Worker, que
+sigue aceptando clientes antiguos con claves cortas; después la app, que depende de la
+ruta de estado para fallar cerrado. Publicar la app antes hace que una tool nueva vea la
+consulta como inaccesible y se detenga, sin duplicar la issue pero sin poder completarla.
