@@ -2328,7 +2328,7 @@
         {
           "id": "GYM-236",
           "title": "Renovar la telemetría agregada y saneada del runner de OpenWiki",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Actualizar métricas estructurales de fiabilidad, latencia y rondas sin publicar contenido privado de las trazas.",
           "dependsOn": [],
           "related": [
