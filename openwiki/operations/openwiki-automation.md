@@ -6,10 +6,10 @@ tags: [openwiki, github-actions, langsmith, oauth, automation]
 openwiki:
   roles: [operations, workflow, testing]
   change_kinds: [ci, security, observability]
-  source_paths: [ops/openwiki-automation-template/.github/workflows/openwiki-update.yml, ops/openwiki-automation-template/.github/workflows/openwiki-report.yml, ops/openwiki-automation-template/scripts/classify-openwiki-error.mjs]
-  symbols: [classifyOpenWikiError]
-  test_paths: [ops/openwiki-automation-template/tests/classify-openwiki-error.test.mjs]
-  invariants: [La automatización solo se ejecuta en un repositorio privado; el estado OAuth se cifra fuera del checkout; los diagnósticos solo exponen categorías saneadas.]
+  source_paths: [ops/openwiki-automation-template/.github/workflows/openwiki-update.yml, ops/openwiki-automation-template/.github/workflows/openwiki-report.yml, ops/openwiki-automation-template/scripts/classify-openwiki-error.mjs, ops/openwiki-automation-template/scripts/openwiki-telemetry.mjs, ops/openwiki-automation-template/scripts/render-openwiki-telemetry.mjs, ops/openwiki-runtime-telemetry.json]
+  symbols: [classifyOpenWikiError, aggregateRuns, buildDailyReport, renderTelemetryPage]
+  test_paths: [ops/openwiki-automation-template/tests/classify-openwiki-error.test.mjs, ops/openwiki-automation-template/tests/openwiki-telemetry.test.mjs, ops/openwiki-automation-template/tests/render-openwiki-telemetry.test.mjs]
+  invariants: [La automatización solo se ejecuta en un repositorio privado; el estado OAuth se cifra fuera del checkout; los diagnósticos solo exponen categorías y agregados saneados.]
   validation_commands: [npm --workspace ops/openwiki-automation-template test]
 sources:
   - id: openwiki-source-d63b46e4983cf20d445e960a
@@ -40,6 +40,12 @@ sources:
     resource: repo://ops/openwiki-automation-template/tests/private-state.test.mjs
   - id: openwiki-source-e204cf07a21df797f3596f66
     resource: repo://ops/openwiki-automation-template/tests/workflow.test.mjs
+  - id: openwiki-source-5f54a5d73b084f492a32d739
+    resource: repo://ops/openwiki-runtime-telemetry.json
+  - id: openwiki-source-0a13a298cbfa4034a28c8e67
+    resource: repo://ops/openwiki-automation-template/scripts/openwiki-telemetry.mjs
+  - id: openwiki-source-92686d2e99f44496bf2c35a1
+    resource: repo://ops/openwiki-automation-template/scripts/render-openwiki-telemetry.mjs
 generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
 verified:
   - by: openwiki/0.5.0
@@ -50,7 +56,7 @@ verified:
 
 `ops/openwiki-automation-template` es un runner documental privado, separado de la aplicación Gymnasia. Mantiene dos ámbitos: el **Code Brain**, que puede proponer cambios exclusivamente bajo `openwiki/` y `.openwikiignore` en la rama `openwiki/update`, y un **Personal Brain** que permanece privado. Ninguno es una dependencia de ejecución de `apps/mobile`, del agente ni de los Workers del producto. Para el runtime y la entrega de Gymnasia, consulte [Inicio rápido](../quickstart.md) y [Compilación, publicación y validación](build-release-and-testing.md).
 
-La evidencia observada, incluidos métricas, fallos, latencia y coste de la muestra LangSmith, pertenece a [Evidencia de ejecución](runtime-behavior.md). Esta guía documenta el contrato estático, las barreras y los puntos de diagnóstico; no interpreta una muestra como comportamiento garantizado del producto.
+La evidencia observada del runner —muestra, fallos, latencia, rondas y coste— se renueva en [Telemetría agregada](#telemetría-agregada-de-los-últimos-7-días). Esta guía no interpreta una muestra como comportamiento garantizado del producto; [Comportamiento en ejecución](runtime-behavior.md) documenta por separado el runtime móvil.
 
 ## Entradas, cadencia y frontera de publicación
 
@@ -76,9 +82,9 @@ flowchart TD
 
 *El update solo publica documentación tras conservar el estado OAuth; puede preservar páginas ya terminadas aunque el comando de OpenWiki informe un fallo. El informe es un consumidor separado de metadatos, no de logs ni de contenido de fuentes.*
 
-El checkout no conserva credenciales de GitHub. Antes de invocar OpenWiki, el workflow comprueba que `AGENTS.md` enlaza con `CLAUDE.md`, materializa una copia para la herramienta y, al publicar, restaura ambos archivos desde `origin/main`. El commit elimina el checkpoint transitorio `openwiki/.run.json` e indexa únicamente `openwiki` y `.openwikiignore`; la rama se empuja con `--force-with-lease` contra el SHA observado y crea o actualiza una PR contra `main` solo cuando hay cambios preparados. El paso de commit requiere que el paso de OpenWiki haya concluido y que OAuth se haya cifrado, pero puede conservar páginas duraderas terminadas si el comando devolvió un resultado de fallo; después el workflow propaga ese fallo. Así se preserva la topología revisada de instrucciones, se evita publicar archivos ajenos a la wiki y se permite reanudar el trabajo mediante la PR.
+El checkout no conserva credenciales de GitHub. Antes de invocar OpenWiki, el workflow comprueba que `AGENTS.md` enlaza con `CLAUDE.md`, materializa una copia para la herramienta y, al publicar, restaura ambos archivos desde `origin/main`. El commit elimina el checkpoint transitorio `openwiki/.run.json` e indexa únicamente `openwiki`, `.openwikiignore` y, cuando se renueva, `ops/openwiki-runtime-telemetry.json`; la rama se empuja con `--force-with-lease` contra el SHA observado y crea o actualiza una PR contra `main` solo cuando hay cambios preparados. El paso de commit requiere que el paso de OpenWiki haya concluido y que OAuth se haya cifrado, pero puede conservar páginas duraderas terminadas si el comando devolvió un resultado de fallo; después el workflow propaga ese fallo. Así se preserva la topología revisada de instrucciones, se evita publicar archivos ajenos a la wiki y se permite reanudar el trabajo mediante la PR.
 
-La instalación efectiva requiere Node 22.22.x: tanto el manifiesto como el lockfile fijan el paquete de la plantilla en la versión 1.0.0, Node `>=22.22.0 <23` y las dependencias directas `openwiki` 0.5.0, `jsdom` 29.1.1 y `mermaid` 11.16.1. El lockfile confirma ese grafo para `npm ci`; por sí solo no demuestra un cambio de comportamiento distinto del que declaran el manifiesto y los workflows.
+La instalación efectiva requiere Node 22.22.x: tanto el manifiesto como el lockfile fijan el paquete de la plantilla en la versión 1.0.0, Node `>=22.22.0 <23` y las dependencias directas `openwiki` 0.5.0, `langsmith` 0.7.17, `jsdom` 29.1.1 y `mermaid` 11.16.1. El lockfile confirma ese grafo para `npm ci`; por sí solo no demuestra un cambio de comportamiento distinto del que declaran el manifiesto y los workflows.
 
 ## Estado sensible y ciclo de vida
 
@@ -90,7 +96,7 @@ El Personal Brain es opcional y no publica en Gymnasia. Cuando se habilita una f
 
 ## Trazado, fallos y diagnóstico seguro
 
-El Code Brain configura el proyecto LangSmith `openwiki` y el endpoint europeo. El trazado está activo por defecto, pero oculta entradas, salidas y metadatos. El único interruptor `workflow_dispatch`, `disable_langsmith_tracing`, lo desactiva para una ejecución diagnóstica concreta; no cambia proveedor, modelo ni crea un mecanismo de recuperación. Por ello, un diagnóstico debe usar estados de pasos, categorías y agregados autorizados, nunca prompts, trazas, URLs de trazas ni logs.
+El Code Brain configura el proyecto LangSmith `openwiki` y el endpoint europeo. El trazado está activo por defecto, pero oculta entradas, salidas y metadatos. El único interruptor `workflow_dispatch`, `disable_langsmith_tracing`, lo desactiva para una ejecución diagnóstica concreta; no cambia proveedor, modelo ni crea un mecanismo de recuperación. Después del Code Brain, un collector con clave de lectura consulta como máximo 900 spans y 60 segundos de una ventana móvil de 7 días. Solo persiste raíces correctas/fallidas, categorías, percentiles, rondas, categorías de herramientas y cobertura de tokens/coste; descarta nombres, identificadores, contenido, argumentos, resultados, rutas, URLs y errores. Por ello, un diagnóstico debe usar estados de pasos, categorías y agregados autorizados, nunca prompts, trazas, URLs de trazas ni logs.
 
 Cuando `openwiki code --update` falla, su salida se guarda en un archivo temporal y `classifyOpenWikiError` emite una sola categoría de una lista cerrada: `oauth`, `managed-markers`, `langsmith`, `rate-limit`, `model`, `context-limit`, `network` o `unknown`. La precedencia evita atribuir a OAuth una mera mención exitosa de trazado o renovación: primero reconoce señales OAuth fuertes, después categorías específicas y finalmente señales OAuth amplias. También cierra a `unknown` si no puede leer el fichero, de modo que ni la ruta ni el contenido del log se propagan al workflow.
 
@@ -98,9 +104,16 @@ La categoría `oauth` cambia el estado abstracto de autenticación y las demás 
 
 ## Informe diario saneado
 
-`OpenWiki Daily Report` es un workflow independiente: se programa a las 12:00 UTC, cancela informes solapados del grupo `openwiki-daily-report` y tiene un límite de 10 minutos. Solo continúa en un repositorio privado si está configurada la entrega Telegram. Lee hasta 30 ejecuciones recientes del workflow de actualización, los jobs de la más reciente y, de estar autorizado, metadatos limitados de la PR `openwiki/update`; no invoca OpenWiki ni descarga logs de ejecución.
+`OpenWiki Daily Report` es un workflow independiente: se programa a las 12:00 UTC, cancela informes solapados del grupo `openwiki-daily-report` y tiene un límite de 10 minutos. Solo continúa en un repositorio privado si está configurada la entrega Telegram. Lee hasta 30 ejecuciones recientes del workflow de actualización, los jobs de la más reciente, el último artefacto saneado `openwiki-runtime-telemetry` y, de estar autorizado, metadatos limitados de la PR `openwiki/update`; no invoca OpenWiki, no recibe la clave de LangSmith ni descarga logs de ejecución.
 
 `buildDailyReport.mjs` deriva estado global, duración redondeada, racha de fallos, estado de Code Brain, persistencia OAuth, Personal Brain, fuentes confirmadas y resumen de la PR a partir de nombres y conclusiones de pasos y campos seleccionados. Acepta enlaces únicamente si son HTTPS de `github.com`, filtra los destacados a rutas Markdown bajo `openwiki/` y no usa cuerpo o título de PR. El archivo temporal del informe se crea con permisos privados y se transmite a Telegram como formulario; si falla la generación antes de enviar, la notificación de respaldo solo contiene el enlace canónico al workflow.
+
+<!-- OPENWIKI_RUNTIME_TELEMETRY:START -->
+## Telemetría agregada de los últimos 7 días
+
+Todavía no existe una muestra válida. El runner publicará aquí únicamente agregados saneados cuando complete su primera consulta.
+
+<!-- OPENWIKI_RUNTIME_TELEMETRY:END -->
 
 ## Cambio y validación focalizada
 
@@ -112,4 +125,4 @@ Ejecute la suite aislada de la plantilla con:
 npm --workspace ops/openwiki-automation-template test
 ```
 
-Sus pruebas cubren clasificación sin eco de logs, selección y cifrado autenticado del OAuth, rechazo de manipulación o frase de paso errónea, estado privado, configuración de conectores, formato del informe y restricciones estructurales de los workflows. Son pruebas locales de contrato: no prueban disponibilidad de GitHub Actions, Telegram, LangSmith, OAuth ni proveedores remotos. Esas integraciones requieren una ejecución remota controlada y un diagnóstico que preserve las mismas fronteras de privacidad.
+Sus pruebas cubren clasificación sin eco de logs, selección y cifrado autenticado del OAuth, rechazo de manipulación o frase de paso errónea, estado privado, configuración de conectores, agregación y validación de telemetría, renderizado determinista, formato del informe y restricciones estructurales de los workflows. Son pruebas locales de contrato: no prueban disponibilidad de GitHub Actions, Telegram, LangSmith, OAuth ni proveedores remotos. Esas integraciones requieren una ejecución remota controlada y un diagnóstico que preserve las mismas fronteras de privacidad.

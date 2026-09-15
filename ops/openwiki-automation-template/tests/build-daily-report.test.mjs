@@ -100,6 +100,60 @@ function successfulPayload() {
         url: "https://github.com/maximofn/gymnasia/pull/18",
       },
     ],
+    telemetry: {
+      schemaVersion: 1,
+      project: "openwiki",
+      latestAttempt: {
+        status: "available",
+        at: "2026-08-20T10:00:00.000Z",
+        failureCategory: null,
+      },
+      sample: {
+        collectedAt: "2026-08-20T10:00:00.000Z",
+        windowStartAt: "2026-08-13T10:00:00.000Z",
+        windowEndAt: "2026-08-20T10:00:00.000Z",
+        truncated: false,
+        roots: { total: 14, succeeded: 12, failed: 2, unknown: 0 },
+        failures: {
+          oauth: 1,
+          "managed-markers": 0,
+          langsmith: 0,
+          "rate-limit": 1,
+          model: 0,
+          "context-limit": 0,
+          network: 0,
+          unknown: 0,
+        },
+        durationMs: {
+          roots: { count: 14, unknown: 0, p50: 286767, p95: 480000, max: 520000 },
+          models: { count: 70, unknown: 0, p50: 6800, p95: 12000, max: 18000 },
+          tools: { count: 74, unknown: 0, p50: 42, p95: 900, max: 1400 },
+        },
+        llm: {
+          calls: 70,
+          callsPerRoot: { count: 14, unknown: 0, p50: 5, p95: 8, max: 9 },
+          tokens: {
+            state: "unavailable",
+            coverage: "partial",
+            observedCalls: 0,
+            prompt: 0,
+            completion: 0,
+            total: 0,
+          },
+          cost: {
+            state: "unavailable",
+            coverage: "partial",
+            observedCalls: 0,
+            totalUsd: 0,
+          },
+        },
+        tools: {
+          total: 74,
+          categories: { search: 18, read: 42, write: 9, command: 3, other: 2 },
+          unknownNames: 2,
+        },
+      },
+    },
   };
 }
 
@@ -111,6 +165,15 @@ test("builds a useful successful report from metadata only", () => {
   assert.match(report, /✅ Code Brain actualizado · 4 min 4 s/u);
   assert.match(report, /📝 Rama de documentación y PR actualizadas/u);
   assert.match(report, /🇪🇺 LangSmith · inputs, outputs y metadatos ocultos/u);
+  assert.match(report, /📊 TELEMETRÍA · 7 días/u);
+  assert.match(report, /Muestra: 14 ejecuciones · 12 correctas · 2 fallidas/u);
+  assert.match(report, /Fallos: OAuth 1 · límite de uso 1/u);
+  assert.match(report, /Rondas: 70 llamadas de modelo · p50 5 por ejecución/u);
+  assert.match(
+    report,
+    /Herramientas: búsqueda 18 · lectura 42 · escritura 9 · comandos 3 · otras 2/u,
+  );
+  assert.match(report, /Tokens: no disponibles · coste: no disponible/u);
   assert.match(report, /✅ OAuth: sesión válida · estado cifrado persistido/u);
   assert.match(report, /✅ Personal Brain actualizado y cifrado · 2 min 30 s/u);
   assert.match(
@@ -183,6 +246,39 @@ test("reports OAuth failure without copying untrusted fields", () => {
   assert.match(report, /✅ Última PR conocida: #18 fusionada/u);
   assert.doesNotMatch(report, new RegExp(secret, "u"));
   assert.doesNotMatch(report, /example\.com/u);
+});
+
+test("retains the last valid telemetry sample without copying untrusted fields", () => {
+  const payload = successfulPayload();
+  const secret = "private-trace-name-and-error";
+  payload.telemetry.latestAttempt = {
+    status: "unavailable",
+    at: "2026-08-20T11:00:00.000Z",
+    failureCategory: "langsmith",
+    error: secret,
+  };
+  payload.telemetry.traceName = secret;
+
+  const report = buildDailyReport({ ...payload, now });
+
+  assert.match(
+    report,
+    /⚠️ Consulta no disponible · última muestra válida: 20 ago, 12:00/u,
+  );
+  assert.match(report, /Muestra: 14 ejecuciones/u);
+  assert.doesNotMatch(report, new RegExp(secret, "u"));
+  assert.ok(report.length < 4096);
+});
+
+test("rejects malformed numeric telemetry instead of rendering its content", () => {
+  const payload = successfulPayload();
+  const secret = "private-malformed-token-field";
+  payload.telemetry.sample.llm.tokens.total = secret;
+
+  const report = buildDailyReport({ ...payload, now });
+
+  assert.match(report, /⚠️ Telemetría no disponible/u);
+  assert.doesNotMatch(report, new RegExp(secret, "u"));
 });
 
 test("reports when no successful run appears in the retained history", () => {

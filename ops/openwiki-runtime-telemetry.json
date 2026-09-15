@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "project": "openwiki",
+  "latestAttempt": {
+    "status": "unavailable",
+    "at": null,
+    "failureCategory": "langsmith"
+  },
+  "sample": null
+}

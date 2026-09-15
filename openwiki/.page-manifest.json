@@ -114,7 +114,7 @@
       "sourceFingerprint": "sha256:dd31d182ea7498deadf9149cb3805a62093c2c777af8e57b28b9ab96171043ed"
     },
     "/openwiki/operations/openwiki-automation.md": {
-      "pageVersion": "sha256:f5de6eb3f08b9d968a15d55e617ac65ba14a0b391db969657374938dd50c20d9",
+      "pageVersion": "sha256:424c3f985096c1b872809c38384f89b5a43bddbbc50e16abaf9f7f163eb7d8aa",
       "completedBy": "openwiki/0.5.0",
       "completedRunId": "dcffb62a-0a13-43c1-93fa-9eccaede4c69",
       "gitHead": "4336a49fa4d57cac31081c860264dafce44aadb9",

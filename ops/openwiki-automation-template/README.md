@@ -19,10 +19,13 @@ repositorio no tiene visibilidad privada.
 ## Flujos
 
 - `OpenWiki Update`: 08:00 UTC y ejecución manual. Usa la suscripción de
-  ChatGPT, actualiza `openwiki/update`, mantiene una única PR y cifra el estado.
+  ChatGPT, actualiza `openwiki/update`, mantiene una única PR, cifra el estado y
+  conserva un agregado saneado de los últimos 7 días de LangSmith. Los lunes y
+  en ejecuciones manuales renueva la evidencia pública.
 - `OpenWiki Daily Report`: 12:00 UTC y ejecución manual. Envía duración, estado
-  de ambos brains, fuentes confirmadas y estadísticas de la PR usando solo
-  metadatos sanitizados.
+  de ambos brains, fuentes confirmadas, estadísticas de la PR y el resumen de
+  telemetría usando solo metadatos y agregados sanitizados. Descarga el
+  artefacto del update y no tiene acceso directo a LangSmith.
 - `Tests`: valida cada push y PR de este repositorio privado.
 
 Personal Brain admite exactamente las fuentes acordadas: Linear de solo

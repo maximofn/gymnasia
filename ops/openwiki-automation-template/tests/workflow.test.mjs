@@ -90,6 +90,11 @@ test("preserves reviewed repository instructions when publishing docs", async ()
     /git restore --source=origin\/main -- AGENTS\.md CLAUDE\.md/u,
   );
   assert.match(workflow, /git add -A -- openwiki \.openwikiignore/u);
+  assert.match(
+    workflow,
+    /git add -- ops\/openwiki-runtime-telemetry\.json/u,
+  );
+  assert.doesNotMatch(workflow, /git add -A -- ops/u);
   assert.doesNotMatch(
     workflow,
     /git add -A -- openwiki \.openwikiignore AGENTS\.md CLAUDE\.md/u,
@@ -136,9 +141,31 @@ test("builds the Telegram report from sanitized metadata", async () => {
     /--json additions,changedFiles,deletions,files,mergedAt,number,state,updatedAt,url/u,
   );
   assert.match(workflow, /--data-urlencode "text@\$\{report_file\}"/u);
+  assert.match(
+    workflow,
+    /artifacts\?name=openwiki-runtime-telemetry&per_page=100/u,
+  );
+  assert.match(workflow, /"\$telemetry_path" "\$report_path"/u);
   assert.doesNotMatch(workflow, /gh run view[^\n]+--log/u);
   assert.doesNotMatch(workflow, /--json[^\n]+(?:body|title)/u);
   assert.doesNotMatch(workflow, /openwiki(?:-personal)?\.log/u);
+  assert.doesNotMatch(workflow, /OPENWIKI_LANGSMITH_API_KEY/u);
+  assert.doesNotMatch(workflow, /LANGSMITH_API_KEY/u);
+});
+
+test("collects bounded telemetry and publishes only sanitized aggregates", async () => {
+  const workflow = await readFile(workflowUrl, "utf8");
+
+  assert.match(workflow, /name: Collect sanitized runtime telemetry/u);
+  assert.match(workflow, /OPENWIKI_LANGSMITH_API_KEY/u);
+  assert.match(workflow, /https:\/\/eu\.api\.smith\.langchain\.com/u);
+  assert.match(workflow, /name: openwiki-runtime-telemetry/u);
+  assert.match(workflow, /retention-days: 30/u);
+  assert.match(workflow, /name: Publish weekly runtime telemetry evidence/u);
+  assert.match(workflow, /EVENT_NAME.*workflow_dispatch/su);
+  assert.match(workflow, /date -u \+%u/u);
+  assert.match(workflow, /render-openwiki-telemetry\.mjs target/u);
+  assert.doesNotMatch(workflow, /cat[^\n]+openwiki-runtime-telemetry/u);
 });
 
 test("the public repository keeps exactly one OpenWiki marker pair", async (t) => {
