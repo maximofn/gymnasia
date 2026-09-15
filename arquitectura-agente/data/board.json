@@ -2316,7 +2316,7 @@
         {
           "id": "GYM-235",
           "title": "Cerrar la ventana de duplicación posterior al commit de herramientas",
-          "state": "todo",
+          "state": "done",
           "summary": "Impedir que un fallo al registrar un efecto ya aplicado permita repetirlo después de reiniciar la app.",
           "dependsOn": [],
           "related": [
@@ -2328,7 +2328,7 @@
         {
           "id": "GYM-236",
           "title": "Renovar la telemetría agregada y saneada del runner de OpenWiki",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Actualizar métricas estructurales de fiabilidad, latencia y rondas sin publicar contenido privado de las trazas.",
           "dependsOn": [],
           "related": [
