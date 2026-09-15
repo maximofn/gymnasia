@@ -1,16 +1,17 @@
 ---
-type: observabilidad de runtime
-title: Comportamiento en ejecución y oportunidades
-description: Complemento operativo para interpretar la muestra LangSmith del agente móvil sin exponer contenido de runs. Separa los datos observados de los límites estáticos, los fallos y las decisiones seguras al cambiar el chat, las herramientas o su persistencia.
-tags: [runtime, observability, langsmith, mobile, agent, tools]
+type: "Referencia"
+title: "Comportamiento en ejecución y oportunidades"
+openwiki_generated: true
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-13T12:53:55.207Z
+    at: 2026-09-15T14:17:12.687Z
 sources:
   - id: openwiki-source-0c30fc96b9e7c8b57c35473c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
-  - id: openwiki-source-abc6fea468a7de09acfb0c4f
-    resource: repo://apps/mobile/agent/providerToolClient.ts
+  - id: openwiki-source-dc42304b20e8518ef65b4b63
+    resource: repo://apps/mobile/agent/googleContextBudget.ts
+  - id: openwiki-source-f310c5fb576ae69a7753918c
+    resource: repo://apps/mobile/agent/googleStreamTransport.ts
   - id: openwiki-source-b14a4ecd65e83b5561f88e2a
     resource: repo://apps/mobile/agent/providerToolLoop.ts
   - id: openwiki-source-d3be928c369037f29888bc0b
@@ -21,87 +22,97 @@ sources:
     resource: repo://apps/mobile/agent/toolOperationLedger.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-15T14:17:12.687Z" }
 ---
+
 
 # Comportamiento en ejecución y oportunidades
 
-Esta es la vista operativa del agente de `apps/mobile`, no del runner que materializa la wiki. El punto de entrada conversacional construye el contexto del turno, adquiere una política, llama al proveedor BYOK y, si este solicita herramientas, aplica efectos locales bajo guardas e idempotencia. Para los formatos SSE y las continuaciones de cada proveedor, consulte [Streaming de proveedores](../agent/provider-streaming.md); para configuración y secretos BYOK, [Configuración BYOK de proveedores](../agent/provider-configuration.md); para el contrato completo del agente, [Runtime del agente y herramientas](../agent/runtime.md).
+Esta página es la única vista consolidada para contrastar la evidencia LangSmith del agente móvil con su implementación. No sustituye [Runtime del agente y herramientas](../agent/runtime.md), que documenta el contrato estático; enlaza además con [Streaming de proveedores](../agent/provider-streaming.md), [Configuración BYOK de proveedores](../agent/provider-configuration.md), [Estado local y copias](../mobile/local-state-and-backup.md) y el [Worker de feedback](../services/feedback-worker.md).
 
-## Alcance y privacidad de la muestra
+## Contrastes anclados en código
 
-La configuración de OpenWiki declara los proyectos LangSmith `gymnasia-app-agent` y `gymnasia-food-agent` en el endpoint europeo. No hay un dump LangSmith extraído y legible en los recursos disponibles para esta actualización; por tanto, **no se publican conteos, URLs de trazas, latencias, tokens, costes, llamadas repetidas ni secuencias**. La configuración no prueba tráfico ni comportamiento observado.
+Antes de interpretar latencia, tokens o repeticiones, compruebe estos límites y supuestos ejecutables:
 
-Nunca copie prompts, entradas, salidas, argumentos de tools, razonamiento ni contenido de un run. Si se proporciona el dump ya extraído, registre solo agregados y firmas: ventana y filtros, número de runs, URL de traza cuando sea autorizada, proveedor/ruta, estado, llamadas y mediana de latencia por tool, tokens de entrada/salida y coste cuando existan, además de repeticiones agrupadas por `executionId`, tool y operación. Los buckets **error**, **outlier** y **baseline** son una muestra sesgada por filtros, entorno, proveedor y selección: no son tasas de población ni evidencia causal. La mediana de `baseline` es una referencia normal de esa muestra, no una garantía.
-
-### Observado
-
-No hay observaciones cuantitativas verificables en esta actualización. No se observaron en la muestra disponible fallos, reintentos, límites alcanzados, outliers ni una clase de hallazgo, porque no hay muestra legible que los establezca.
-
-### Correlacionado
-
-Los siguientes límites y rutas proceden del código. Sirven para contrastar una observación futura; no convierten una hipótesis en diagnóstico.
+- **Forma y tamaño de contexto Google.** Aunque `sendMessage` entrega a Google todo el historial filtrado, `prepareGoogleInteractionRequest` lo divide por entradas de usuario, conserva como máximo los diez intercambios más recientes, retira imágenes de intercambios anteriores y limita la petición a 512 KiB sin imágenes y 19 MB totales. Si ni un único intercambio cabe, rechaza la petición antes de red. Por tanto, atribuir tokens o tamaño a «todo el historial» es incorrecto: el informe de contexto es la frontera efectiva. [Código: `prepareGoogleInteractionRequest`](repo://apps/mobile/agent/googleContextBudget.ts#L181-L271), [envío desde `sendMessage`](repo://apps/mobile/App.tsx#L4886-L4887).
+- **Reintento de turno, no de efecto.** El chat prueba hasta tres intentos solo para firmas transitorias de transporte y espera 2 s y 4 s antes de los intentos segundo y tercero. Reutiliza el id del mensaje de usuario como `executionId`; las escrituras se coordinan por esa identidad. Una multiplicidad de llamadas remotas puede ser reintento o continuación y no prueba una multiplicidad de mutaciones. [Código: `sendMessage`](repo://apps/mobile/App.tsx#L4911-L4945), [identidad de operación](repo://apps/mobile/agent/toolOperationLedger.ts#L147-L168).
+- **Fallback instalado.** En React Native, la ruta Google de XHR con progreso vuelve a solicitar el turno mediante XHR buffered solo si falla antes de emitir contenido visible; no aplica tras empezar a mostrar contenido. Es una segunda llamada posible que una traza de proveedor puede revelar, y no debe confundirse con una ronda de tools. [Código: `requestGoogleInteraction`](repo://apps/mobile/agent/googleStreamTransport.ts#L28-L80).
+- **Supuesto de rondas.** Cada proveedor ejecuta secuencialmente las calls de una ronda. El máximo por defecto es `MAX_TOOL_ROUNDS = 10`; Google lanza error si sigue pendiente, mientras OpenAI y Anthropic retornan el último turno cuando agotan su bucle. OpenAI necesita `responseId`; Google rechaza reutilizar IDs de tool entre rondas nuevas. [Código: `providerToolLoop`](repo://apps/mobile/agent/providerToolLoop.ts#L8-L71), [OpenAI](repo://apps/mobile/agent/providerToolLoop.ts#L117-L161), [Anthropic](repo://apps/mobile/agent/providerToolLoop.ts#L186-L227).
+- **Efecto durable y recuperación.** Solo una llamada del handler a `markEffectCommitted` genera estado `committed`; una excepción se convierte en resultado controlado y queda como `failed_before_commit`, salvo que el handler ya hubiera marcado commit o indeterminación. Para escrituras, el ledger se prepara y verifica antes del efecto; una lectura corrupta o fallida impide llegar al handler. [Código: `createDetailedAgentToolExecutor`](repo://apps/mobile/agent/toolExecutor.ts#L731-L781), [coordinación](repo://apps/mobile/agent/toolOperationLedger.ts#L576-L665).
 
 ```mermaid
 sequenceDiagram
-    participant UI as Chat UI
+    participant Chat as sendMessage
     participant Policy as Policy lease
-    participant Client as Provider tool client
-    participant Provider as BYOK provider
-    participant Guard as Safety and operation guard
-    participant Store as Local store
-    UI->>Policy: acquire lease for turn
-    Policy-->>UI: immutable prompt and safety policy
-    UI->>Client: send history and execution ID
-    Client->>Provider: initial streamed turn
-    Provider-->>UI: content and thinking deltas
-    alt provider requests a tool
-        Provider-->>Client: tool call
-        Client->>Guard: validate safety and operation
-        Guard->>Store: commit allowed local effect
-        Guard-->>Client: tool result or replay
-        Client->>Provider: continuation
-    else turn completes
-        Client-->>UI: final content
+    participant Provider as Provider loop
+    participant Guard as Tool guard
+    participant Ledger as Operation coordinator
+    participant Domain as Tool handler
+
+    Chat->>Policy: acquire lease
+    Chat->>Provider: request turn
+    alt provider requests tool
+        Provider->>Guard: name and arguments
+        Guard->>Ledger: execute effectful call
+        Ledger->>Domain: execute or replay
+        Domain-->>Provider: tool result
+        Provider->>Provider: request continuation
+    else transient transport error
+        Chat->>Provider: retry same execution ID
     end
 ```
 
-*El diagrama muestra el recorrido de un turno del chat principal y la frontera entre la respuesta remota y un efecto local.*
+*El diagrama resume fronteras de control verificadas; no representa una traza ni contenido conversacional.*
 
-- **Política por turno.** `acquireAgentPolicyLease` devuelve un objeto congelado que reúne prompt, política de salud-seguridad, contexto y estado de selección. En canal `Local` se construye desde los artefactos integrados; en canales firmados se rechaza una política sanitaria cuyo contrato no pueda fusionarse. `App` usa el lease antes de preparar el mensaje y de aplicar los guardrails.
-- **Riesgo sanitario antes y durante el turno.** `callProviderChatAPIWithTools` no contacta al proveedor ante un riesgo bloqueante. Para cada tool vuelve a clasificar `nombre + argumentos` y rechaza tanto una tool desconocida como una incompatible, devolviendo un resultado de bloqueo al loop en vez de mutar estado. El evaluador remoto opcional tiene un timeout de 10 s y, ante fallo o resultado inválido, conserva la decisión local base.
-- **Reintentos y latencia visible.** El envío de chat intenta hasta tres veces errores de red, timeout, sobrecarga o estados 429/503/529; espera 2 s y 4 s antes de los reintentos y reinicia el borrador. La interfaz agrupa actualizaciones de streaming con 40 ms. Por ello, varios requests o una espera visible no equivalen por sí solos a varias escrituras ni a la duración de una sola tool.
-- **Continuaciones y límite.** OpenAI, Anthropic y Google ejecutan las calls de cada ronda secuencialmente. `MAX_TOOL_ROUNDS` es 10; Google arroja un error si continúa requiriendo tools al alcanzarlo. El flujo OpenAI exige `responseId` para continuar, y Google rechaza IDs de tool reutilizados entre rondas. Cada continuación puede sumar latencia y consumo remoto aunque el handler local sea rápido.
-- **Historial por proveedor.** Antes de llamar al cliente, `App` limita a los últimos 20 mensajes el historial de OpenAI y Anthropic, mientras que Google recibe todo el historial reconstruido. Compare proveedor y tamaño efectivo de conversación antes de atribuir tokens de entrada elevados a una tool.
-- **Efectos locales.** El ejecutor solo devuelve `committed` si un handler llamó `markEffectCommitted`; validaciones sin efecto y fallos previos al commit no entran en el ledger. Un error del handler se transforma en resultado para el modelo, evitando abortar todo el loop; si el handler ya marcó el efecto, su estado sigue siendo `committed`.
-- **Idempotencia de escritura.** Para effects distintos de lectura, el coordinador identifica una operación mediante versión, `executionId`, proveedor, tool, argumentos JSON canónicos y ocurrencia; `providerCallId` no forma parte de la identidad. Reutiliza ejecuciones concurrentes y reproduce un resultado ya comprometido desde memoria o desde el ledger persistente. Las lecturas no se deduplican. El ledger conserva hasta 256 commits durante siete días, falla antes del efecto si no puede leerse y no deshace una mutación si falla la escritura posterior del ledger.
+## Muestra LangSmith y privacidad
+
+La configuración apunta al endpoint europeo y declara `gymnasia-app-agent`, `gymnasia-food-agent` y `openwiki`; esa configuración no demuestra tráfico. [Configuración](repo://openwiki/.langsmith.json#L1-L18).
+
+### Observado
+
+No hay ítems crudos de LangSmith legibles mediante los recursos disponibles en esta actualización. Por ello no se publican conteos de llamadas, latencias, tokens, coste, URLs de trazas, secuencias ni repeticiones; tampoco se observó una clase de fallo, outlier o capacidad sin ejercitar. No se infieren resultados desde el código ni desde la configuración.
+
+Cuando haya dump autorizado, registre únicamente agregados: ventana, filtros, número de runs, proveedor/ruta/estado, llamadas, latencia por tool, tokens de entrada/salida, coste y repeticiones por `executionId`, tool y ocurrencia. Nunca copie prompts, entradas, salidas, argumentos de tools ni razonamiento.
+
+La extracción usa buckets `error`, `outlier` y `baseline`: su composición está sesgada por diseño y no es una tasa de flota. Las medianas de `baseline` solo son referencia normal de esa muestra, no objetivo ni garantía.
+
+### Correlacionado
+
+- `sendMessage` adquiere un único `AgentPolicyLease` antes de clasificar y preparar el turno. El lease profundo-congelado contiene prompt, política sanitaria, contexto y estado; una política sanitaria firmada incompatible falla al crear el lease. [Código: `sendMessage`](repo://apps/mobile/App.tsx#L4773-L4783), [`acquireAgentPolicyLease`](repo://apps/mobile/agent/agentPolicyRuntime.ts#L108-L123), [`createSignedAgentPolicyLease`](repo://apps/mobile/agent/agentPolicyRuntime.ts#L126-L171).
+- Una decisión sanitaria bloqueante evita contactar al proveedor. Para cada tool, `executeGuardedTool` obtiene su efecto y reclasifica nombre y argumentos; una tool desconocida o no autorizada devuelve un bloqueo y no alcanza el coordinador ni el ejecutor. El evaluador remoto opcional vence a los 10 s y, ante error o respuesta inválida, conserva la decisión local. [Código: `callProviderChatAPIWithTools`](repo://apps/mobile/App.tsx#L1626-L1709), [`evaluateHealthSafetyWithProvider`](repo://apps/mobile/App.tsx#L1564-L1623).
+- OpenAI y Anthropic reciben los últimos 20 mensajes tras excluir divulgaciones locales. Google parte del historial completo filtrado en este nivel, pero su adaptador impone el presupuesto indicado arriba; compare proveedor, intercambio enviado y tamaño efectivo antes de diagnosticar tokens de entrada. [Código: `sendMessage`](repo://apps/mobile/App.tsx#L4886-L4887), [presupuesto Google](repo://apps/mobile/agent/googleContextBudget.ts#L193-L271).
+- Las escrituras se deduplican por versión, `executionId`, proveedor, nombre, argumentos JSON canónicos y ocurrencia, sin `providerCallId`; el coordinador une ejecuciones simultáneas y reproduce commits desde memoria o ledger. Las lecturas no se deduplican. El ledger mantiene hasta 256 entradas y los commits duran siete días; los estados no resueltos se conservan y bloquean expulsión por capacidad. [Código: identidad](repo://apps/mobile/agent/toolOperationLedger.ts#L147-L168), [coordinador](repo://apps/mobile/agent/toolOperationLedger.ts#L460-L665), [retención](repo://apps/mobile/agent/toolOperationLedger.ts#L76-L79), [pruebas](repo://apps/mobile/agent/toolOperationLedger.test.ts#L205-L285).
 
 ### Hipótesis de diagnóstico
 
-1. **Latencia o coste altos con varias rondas:** contrastar el número de continuaciones y el límite de diez rondas antes de optimizar un handler individual.
-2. **Más de un request por mensaje:** separar los reintentos de transporte, el evaluador sanitario consentido y las continuaciones de tools usando `executionId`, proveedor y ocurrencia.
-3. **Tool repetida pero un único efecto durable:** comprobar si fue una unión `inFlight` o un replay de memoria/ledger. Una operación `no_effect` o `failed_before_commit` puede ejecutarse de nuevo porque no hay commit que reproducir.
-4. **Tokens de entrada crecientes:** comparar la ruta Google con OpenAI/Anthropic y el historial efectivo, no solo el nombre de la tool.
-5. **Error después de una escritura:** distinguir fallo previo al commit, fallo de persistencia local y fallo de escritura del ledger. Este último deja un riesgo de deduplicación tras reinicio, no evidencia un rollback.
+1. **Latencia o coste alto con múltiples llamadas:** separar reintentos de transporte, fallback buffered de Google y continuaciones de tools por `executionId`, proveedor y ronda antes de optimizar un handler.
+2. **Tool repetida con un solo efecto durable:** verificar si fue unión `inFlight`, replay de memoria o replay del ledger. `no_effect` y `failed_before_commit` se pueden ejecutar de nuevo porque descartan el `prepared`.
+3. **Error tras una escritura:** revisar primero el recibo de dominio y la reconciliación. Un fallo en el registro final no prueba rollback; el coordinador reconcilia y, si no confirma, devuelve estado indeterminado para evitar duplicar.
+4. **Tokens de Google inesperados:** inspeccionar el `GoogleContextReport` agregado —intercambios enviados, bytes y razones—, no el contenido. Una aproximación a 10 intercambios, 512 KiB o 19 MB justifica cambiar presupuesto o UX; sin ella, no atribuya causalidad al adaptador.
 
-## Hallazgos y oportunidades de runtime
+## Runtime findings & opportunities
 
-No hay hallazgos priorizados en esta revisión: falta evidencia de trazas que pueda emparejarse con un archivo, símbolo e implicación operativa. No se infieren outliers, fallos ni oportunidades desde límites estáticos.
+No hay hallazgos priorizados basados en trazas en esta actualización: no hay evidencia agregada legible que permita emparejar una observación con código e implicación. En particular, no se afirman fallos, outliers, límites alcanzados, coste ni capacidades no ejercitadas.
 
-Cuando exista evidencia autorizada, cada hallazgo debe contener estrictamente: **Observado** (agregado y URL de traza), **Correlacionado** (archivo y símbolo), **Hipótesis** (si aún no hay causalidad) e **implicación** concreta para quien cambie esa zona. Elimine cualquier observación que no cambie un plan de modificación o validación.
+Al refrescar la muestra, ordenar solo hallazgos que incluyan:
+
+1. **Observado:** agregado volátil de traza —bucket, llamadas, latencia, tokens, coste o repetición— sin contenido sensible.
+2. **Correlacionado:** archivo y símbolo leídos que establecen una ruta o límite relevante.
+3. **Hipótesis:** causalidad propuesta, marcada como tal si la traza no la prueba.
+4. **Implicación:** prueba, instrumentación o frontera concreta que quien modifique esa zona debe preservar.
 
 ## Cambios seguros y validación focalizada
 
-1. Mantenga un único lease inmutable por turno: no mezcle prompt, guardrail y `PolicyContext` de candidatos distintos.
-2. Al añadir una tool, actualice su definición y efecto, el handler y el adaptador de continuación del proveedor. Valide argumentos antes de mutar y marque el commit inmediatamente después del efecto irreversible.
-3. No incorpore `providerCallId` a la identidad de operación y no elimine `occurrence`: el primero cambiaría con un reintento remoto y el segundo distingue dos calls idénticas intencionales dentro de un turno.
-4. Instrumente agregados de proveedor, ruta, estado, duración, número de rondas y estado de commit; no instrumente contenido sensible ni razonamiento.
-5. Si se modifica el streaming o el protocolo, conserve IDs de llamada, bloques y firmas que el proveedor exige para continuar; el transporte y el loop cambian juntos.
+1. Mantenga el lease como snapshot único del turno; no combine prompt, política sanitaria o `PolicyContext` de selecciones distintas.
+2. Al cambiar Google, preserve el informe de contexto y pruebe tanto reducción como rechazo; no quite el fallback XHR sin una prueba de plataforma que cubra fallo previo a contenido visible.
+3. Una tool nueva requiere definición, efecto, handler, adaptación de continuación y reconciliador si escribe. Marque el commit inmediatamente después de la mutación durable y su recibo.
+4. No incorpore `providerCallId` a la identidad ni elimine `occurrence`: el primero cambia con reintentos remotos y el segundo distingue calls idénticas intencionales.
+5. Instrumente solo agregados de proveedor, ruta, rondas, duración, reporte de contexto y estado de commit; nunca contenido sensible ni razonamiento.
 
 Ejecute desde la raíz:
 
 ```bash
-npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/providerToolClient.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/providerPipeline.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts
+npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/googleInteractions.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts
 ```
 
-Estas pruebas fijan contratos locales —lease, continuaciones, límite de tools, resultados de handler e idempotencia—, no disponibilidad, coste ni latencia de proveedores remotos. Para cambios que afecten el recorrido visible, añada `npm run test:agent:e2e` como indica el [Inicio rápido](../quickstart.md).
+Estas pruebas fijan contratos locales de lease, presupuesto Google, loops, commits e idempotencia; no prueban disponibilidad, latencia ni coste de proveedores remotos.

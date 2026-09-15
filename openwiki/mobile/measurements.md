@@ -5,8 +5,8 @@ okf:
   status: grounded
   scope: Contrato de mediciones, fotos privadas de progreso y su proyección al paquete de respaldo en apps/mobile
 type: concepto
-title: Mediciones, fotos de progreso y respaldo
-description: Contrato compartido de las mediciones móviles, incluidas sus reglas de fecha, validación y lecturas derivadas. Explica el ciclo de vida de fotos privadas y cómo se exportan e importan en respaldos portables cifrados.
+title: Mediciones y fotos de progreso
+description: Contrato local de las mediciones móviles, sus fotos privadas y las operaciones del agente que las leen o escriben. Describe la persistencia transaccional, los resúmenes derivados y la copia portable cifrada.
 summary: Measurement contract, private progress-photo lifecycle, and portable backup projection.
 tags: [mobile, measurements, backup, privacy, media]
 related:
@@ -16,6 +16,8 @@ related:
 sources:
   - id: openwiki-source-ce025f2f0f394ccba9235558
     resource: repo://apps/mobile/agent/toolDefinitions.ts
+  - id: openwiki-source-165cffcff462003cd11223e2
+    resource: repo://apps/mobile/agent/toolExecutor.test.ts
   - id: openwiki-source-d3be928c369037f29888bc0b
     resource: repo://apps/mobile/agent/toolExecutor.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
@@ -26,29 +28,33 @@ sources:
     resource: repo://apps/mobile/backup/measurementMedia.ts
   - id: openwiki-source-8756ebcba5040e69bc188ab4
     resource: repo://apps/mobile/backup/portableEncryption.ts
+  - id: openwiki-source-38706b8a9c8db94990f38e34
+    resource: repo://apps/mobile/controllers/measurementsController.ts
   - id: openwiki-source-7008ede2c23cd79f4d2e7f43
     resource: repo://apps/mobile/measurements/measurementContract.ts
+  - id: openwiki-source-ca9d8aba8612e46df10beb95
+    resource: repo://apps/mobile/scripts/measurement-performance.e2e.mjs
 verified:
   - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+    at: 2026-09-15T14:17:12.687Z
+generated: { by: "openwiki/0.5.0", at: "2026-09-15T14:17:12.687Z" }
 ---
 
-# Mediciones, fotos de progreso y respaldo
+# Mediciones y fotos de progreso
 
-Una medición es un registro identificado por `id`, con una fecha de calendario (`measured_on`), un instante técnico (`measured_at`), diez métricas opcionales y una foto opcional. `apps/mobile/measurements/measurementContract.ts` es el límite compartido para validar, mutar y derivar datos: la interfaz, el agente y la importación no deberían reinterpretar fechas, métricas o duplicados. La foto tampoco es solo un URI: se normaliza y, en nativo, queda bajo almacenamiento privado; el respaldo no transporta rutas locales.
+Una medición es un registro local identificado por `id`, con el día de calendario `measured_on`, el instante técnico `measured_at`, diez métricas opcionales y `photo_uri` opcional. `apps/mobile/measurements/measurementContract.ts` es el límite compartido: la interfaz, el agente y la importación deben usarlo para no reinterpretar fechas, métricas, límites ni conflictos heredados. La foto es un recurso privado separado del registro; una copia portable jamás conserva su ruta local.
 
-## Modelo e invariantes
+## Contrato e invariantes
 
 | Parte | Regla efectiva |
 |---|---|
-| Fecha | `measured_on` debe ser una fecha real `AAAA-MM-DD` y no futura. Si falta en datos antiguos, se deriva de un `measured_at` válido. Al crear o cambiar de día se usa el mediodía local para `measured_at`; un timestamp válido existente se conserva. |
-| Métricas | Las diez claves de `MEASUREMENT_METRIC_KEYS` son `number \| null`. Los números han de ser finitos y positivos, se redondean a dos decimales y `body_fat_pct` no supera 100. Las cadenas numéricas, incluida la coma decimal, solo se admiten donde se pide compatibilidad heredada. |
-| Contenido | Una medición ha de tener al menos una métrica no nula o una foto. Para retirar el último contenido hay que borrar el registro por `id`, no escribir un registro vacío. |
-| Colección | Se ordena por día descendente, después por `measured_at` e `id`, y conserva como máximo 1.826 registros. Las mutaciones devuelven los registros desplazados por ese límite. |
-| Duplicados | Los datos heredados pueden conservar varios registros del mismo día y el contrato los detecta. Un `upsert` en un día ambiguo falla; una edición puede mantenerse en su día duplicado, pero no trasladarse a un día ocupado. |
+| Día e instante | `measured_on` debe ser una fecha real `AAAA-MM-DD` que no sea futura. Si falta en datos heredados se deriva de un `measured_at` válido. Al crear o mover de día se genera `measured_at` al mediodía local; un timestamp válido existente se conserva. |
+| Métricas | Las diez claves de `MEASUREMENT_METRIC_KEYS` son `number \| null`: solo números finitos, positivos y redondeados a dos decimales; `body_fat_pct` no puede superar 100. Las cadenas numéricas —incluida coma decimal— se aceptan únicamente en compatibilidad heredada o en la presentación. |
+| Contenido | Debe quedar al menos una métrica o una foto. Para retirar el último contenido se elimina el registro por `id`; no se persiste una medición vacía. |
+| Colección | La colección se ordena por día descendente, `measured_at` e `id`, y retiene como máximo 1.826 entradas. Las mutaciones devuelven las entradas expulsadas para que el llamador pueda limpiar sus fotos. |
+| Duplicados | Pueden existir días repetidos de datos antiguos. Un `upsert` sobre un día ambiguo falla; una edición puede permanecer en su día duplicado, pero no moverse a un día ya ocupado. |
 
-La normalización de una colección es deliberadamente estricta: una entrada que no sea objeto, una fecha inválida o futura, o una métrica inválida genera incidencias en vez de inventar datos. En cambio, `upsertMeasurementByDate` es un parche: cuando hay exactamente un registro para la fecha, mantiene las métricas y la foto omitidas. `replaceMeasurementById` es el mecanismo de edición completa y reemplaza todos los valores del formulario.
+La normalización de una colección no inventa datos: objetos, fechas y métricas inválidos producen incidencias. `upsertMeasurementByDate` es deliberadamente un parche y conserva métricas y foto omitidas del único registro de ese día. `replaceMeasurementById` es la edición completa del formulario y sustituye los valores de la ficha.
 
 ```mermaid
 flowchart TD
@@ -60,67 +66,80 @@ flowchart TD
     Limit --> Commit["Commit del LocalStore"]
 ```
 
-*Las entradas se validan y resuelven antes de la mutación; el límite se aplica al resultado ordenado.*
+*Las validaciones y el conflicto se resuelven antes de mutar; el límite se aplica al resultado ordenado.*
 
-## Escritura y lectura por el agente
+## Interfaz, persistencia y ciclo de fotos
 
-La interfaz y el agente comparten el contrato. `read_measurement` valida la fecha y rechaza primero un día duplicado; su respuesta elimina `id`, `photo_uri` y `measured_at`, por lo que no expone esa identidad técnica ni la ubicación de la foto. `write_measurement` declara un objeto `data` con las métricas admitidas y `clear_fields`; los campos no incluidos permanecen y solo los solicitados explícitamente se llevan a `null`. El analizador también rechaza campos desconocidos, un parche vacío y el intento de actualizar y borrar a la vez el mismo campo.
+`useMeasurementsRuntime` prepara el historial con `useMemo` dependiente de `store.measurements`; el resumen vuelve a calcularse si cambian el historial, la altura efectiva o el sexo. La altura efectiva prioriza la última altura medida y usa el ajuste de dieta como respaldo. Este diseño evita ordenar y recorrer las mediciones por interacciones no relacionadas.
 
-El ejecutor aplica el parche mediante `context.commitStore`, no con una actualización local directa. En la aplicación ese callback se adapta a `useLocalStoreRuntime().commit`, por lo que la herramienta entra por el mismo límite de persistencia del almacén. Si no hay un committer o la mutación informa un conflicto, devuelve un error y no marca el efecto como confirmado. Al añadir una métrica hay que actualizar tanto `MEASUREMENT_METRIC_KEYS` como el esquema de `write_measurement`; de otro modo el contrato rechazará el campo.
-
-## Lecturas derivadas y coste
-
-Los selectores preparan una historia ordenada una sola vez y, para cada métrica, toman el primer valor finito de cada fecha. Así el peso, altura, pares actual/anterior y puntos de gráfico no dependen del orden de entrada aun cuando haya duplicados heredados. Los gráficos usan un intervalo inclusivo de días de calendario y devuelven los puntos en orden cronológico.
-
-El porcentaje de grasa explícito prevalece. Si falta, `estimateMeasurementBodyFatPercentage` calcula una estimación con cintura, cuello y altura —propia o alternativa—; para `female` necesita además cadera. Si faltan prerrequisitos o las diferencias no son positivas devuelve `null`; el resultado se redondea a un decimal y queda entre 3 y 60. La preparación y el resumen recorren la colección linealmente después de una ordenación, un comportamiento cubierto por pruebas de coste y equivalencia.
-
-## Fotos privadas: normalización y limpieza
-
-`normalizeAndStoreMeasurementPhoto` verifica dimensiones, reduce el lado mayor a 2048 px, vuelve a codificar JPEG con calidad 0,8 y elimina segmentos EXIF, XMP, IPTC y comentarios. Rechaza bytes vacíos y cualquier resultado que exceda 5 MiB, y calcula SHA-256 sobre los bytes saneados.
-
-En Android e iOS, los bytes se escriben como `Paths.document/gymnasia_measurement_media_v1/<sha256>.jpg`. Es un directorio privado de la aplicación direccionado por contenido: los mismos bytes reutilizan archivo. Si el URI ya pertenece a ese directorio, se verifica que sea JPEG sin metadatos inesperados antes de reutilizarlo. En web el resultado conserva el URI de origen y se marca como no poseído; no hay garantía de restauración persistente.
-
-`deleteOwnedMeasurementPhotoIfUnreferenced` y `sweepOrphanedMeasurementPhotos` son utilidades tolerantes a fallos: solo borran URIs del directorio propiedad de la app que no estén referenciados y capturan errores de archivos. La aplicación invoca el barrido después de aplicar una importación; por ello la limpieza no bloquea una restauración aunque falle. Los llamadores que retiren o sustituyan mediciones deben usar la primera utilidad con las referencias restantes para evitar borrar un archivo compartido o dejar huérfanos.
-
-## Respaldo portable: ZIP interno y envoltorio cifrado
-
-La exportación actual crea un manifiesto de respaldo **v3** y un ZIP interno con `manifest.json` y entradas `media/<sha256>.jpg`; después cifra el ZIP antes de compartir el archivo `.gymnasia`. En el manifiesto, `data.store.measurements` siempre lleva `photo_uri: null`. Las relaciones `links` asocian un `measurementId` a un asset SHA-256, y `omissions` registran por qué no se transportó una foto. Así se preservan las mediciones numéricas sin filtrar rutas privadas y se deduplican bytes idénticos.
+Al guardar desde el formulario, el controlador valida todas las entradas antes de iniciar la escritura. Si hay foto, primero la normaliza y persiste; después invoca `localStore.commit` para aplicar `upsertMeasurementByDate` o `replaceMeasurementById`. Si el commit falla o el contrato rechaza la mutación, informa el fallo y elimina el archivo recién creado si ya no está referenciado. Tras una edición, borrado o expulsión por límite, solo borra una foto propiedad de la app cuando ninguna medición restante usa el mismo URI.
 
 ```mermaid
 sequenceDiagram
-    participant UI as Exportación
-    participant Media as Fotos privadas
-    participant Selector as Selector de medios
-    participant ZIP as ZIP interno
-    participant Cifrado as Cifrado portable
-    UI->>Media: Leer y normalizar foto
-    Media-->>UI: JPEG saneado y SHA-256
-    UI->>Selector: Candidatos por fecha
-    Selector-->>UI: Assets enlaces y omisiones
-    UI->>ZIP: Crear manifiesto sin photo_uri
-    UI->>Cifrado: Cifrar ZIP con contraseña
-    Cifrado-->>UI: Archivo .gymnasia compartible
+    participant Form as Formulario
+    participant Media as Medio privado
+    participant Contract as Contrato
+    participant Store as LocalStore
+    Form->>Media: Normalizar foto opcional
+    Media-->>Form: URI privado o error
+    Form->>Store: commit con mutación
+    Store->>Contract: upsert o replace
+    Contract-->>Store: registros y desplazados
+    Store-->>Form: Persistido o error
+    Form->>Media: Limpiar URI sin referencias
 ```
 
-*La ruta local termina en el dispositivo: el paquete enlaza bytes por hash y el archivo que se comparte es el ZIP cifrado.*
+*La foto se puede generar antes del commit, pero únicamente una referencia persistida conserva su archivo privado.*
 
-La selección prioriza las fotos más recientes y limita los enlaces a 500, cada archivo a 5 MiB y los bytes únicos a 200 MiB; el ZIP interno no puede superar 220 MiB. Una foto ausente, ilegible, inválida o fuera de presupuesto se omite sin descartar su medición y la interfaz presenta una advertencia. El manifiesto valida IDs de medición únicos, rutas internas `media/<hash>.jpg`, hashes, tamaños, límites, enlaces no ambiguos y motivos de omisión conocidos.
+`normalizeAndStoreMeasurementPhoto` comprueba dimensiones, reduce el lado mayor a 2048 px, recodifica JPEG con calidad 0,8 y elimina metadatos JPEG. Rechaza resultados vacíos o mayores de 5 MiB y calcula SHA-256 sobre los bytes saneados. En Android e iOS escribe en `Paths.document/gymnasia_measurement_media_v1/<sha256>.jpg`: es un directorio privado y direccionado por contenido, por lo que bytes iguales reutilizan archivo. Un URI ya propio se vuelve a validar y se rechaza si contiene metadatos inesperados. En web conserva el URI de origen como no poseído; por ello no promete persistencia al cerrar el navegador.
 
-El envoltorio portable v3 exige una contraseña de 12 a 128 puntos de código (y como máximo 512 bytes UTF-8). Deriva una clave de 32 bytes con `scrypt` y cifra bloques de 1 MiB con `xchacha20-poly1305`; cada bloque autentica también la cabecera y su índice. La importación comprueba formato, límites y tamaño exacto antes de descifrar, y comunica el mismo error para una contraseña incorrecta o contenido corrupto. Las claves, sal y nonces temporales se sobrescriben al terminar el cifrado o descifrado.
+Al hidratar, el controlador intenta migrar fotos heredadas al directorio privado en nativo y muestra un aviso si alguna no se puede copiar. Tanto esa migración como una importación ejecutan un barrido oportunista de huérfanos; sus fallos se absorben para no bloquear la aplicación. `clearMeasurementMedia` es la operación explícita que elimina todo el directorio, apropiada para el borrado global de datos, no para eliminar un registro individual.
 
-## Importación y compatibilidad
+## Herramientas del agente: lectura, escritura e idempotencia
 
-Al elegir un archivo, la aplicación distingue el prefijo cifrado actual de los formatos antiguos. Un respaldo cifrado se descifra con la contraseña y entonces se valida el ZIP y manifiesto v3; también se conserva una ruta explícita para ZIP v2 y para JSON v1. El manifiesto v3 se valida antes de aplicar la importación; cada asset declarado se vuelve a comprobar por tamaño, SHA-256 y estructura JPEG. Los bytes o enlaces que fallen esa comprobación no producen URI: se conserva la medición con `photo_uri: null` y se informa una advertencia.
+`read_measurement` valida el día y rechaza un día duplicado antes de responder. Cuando encuentra el registro, elimina `id`, `photo_uri` y `measured_at`; así el modelo recibe solamente día y medidas, sin identidad técnica, ubicación de la foto ni timestamp.
 
-Los JPEG válidos se guardan de nuevo en el directorio privado nativo, verificando de nuevo su hash. En web `storeImportedMeasurementPhoto` devuelve `null`, por lo que las fotos se notifican como no persistentes. Después se normaliza el almacén importado y se reemplaza el estado; la sesión de entrenamiento activa se cierra para no mezclarla con los nuevos datos y se ejecuta el barrido de medios huérfanos. Si la importación estructural falla, la ruta de aplicación aborta antes de reemplazar el almacén.
+`write_measurement` está declarado como `local_write` y recibe `date`, `data` estructurado y `clear_fields`. Los campos omitidos no se borran; `clear_fields` los lleva explícitamente a `null`. El analizador rechaza claves desconocidas, un parche vacío y actualizar y borrar simultáneamente el mismo campo. La herramienta no puede escribir fotos: esta frontera evita que el agente introduzca URIs o bytes de imágenes en el almacén.
 
-## Pruebas relevantes
+La escritura exige `context.commitStore`, aplica el mismo `upsertMeasurementByDate` dentro del commit y añade un recibo `toolOperationReceipts` para `write_measurement`. Cuando hay `operationId`, el ID creado es determinista (`measurement_op_` más los primeros 24 caracteres), de modo que reintentos de la misma operación no duplican el registro. Solo llama a `markEffectCommitted` después de que el commit termine y no haya error de mutación; una excepción de persistencia se traduce en resultado indeterminado, nunca en éxito.
 
-`measurementContract.test.ts` cubre fechas reales y futuras, redondeo, migración desde timestamp, parches heredados, conflicto de duplicados, edición, borrado, límite, gráficos y estimación de grasa. `measurementSummary.test.ts` añade equivalencia frente a la implementación de referencia, invariancia ante historiales generados y un límite de trabajo para la preparación compartida.
+## Lecturas derivadas y coste
 
-`backupFormat.test.ts` cubre el manifiesto v3, compatibilidad explícita con ZIP v2 y JSON v1, SHA-256, deduplicación, prioridad y presupuestos, saneamiento JPEG, rutas/enlaces maliciosos y la conservación de la medición si el medio está corrupto. `portableEncryption.test.ts` prueba el vector estable, autenticación por bloques, manipulación, truncamiento y contraseñas. Para cambios en estos límites ejecute:
+`prepareMeasurementHistory` ordena una vez y localiza la última medición con peso y altura. `resolveMeasurementSummary` recorre ese historial y, por cada métrica, usa como actual y anterior el primer valor finito de días distintos. Los gráficos aplican el mismo criterio de un valor por día, filtran con un intervalo inclusivo de días de calendario y devuelven el orden cronológico. Esto hace estables los resultados ante duplicados heredados y ante el orden de entrada.
+
+El porcentaje explícito de grasa prevalece. Si falta, `estimateMeasurementBodyFatPercentage` usa cintura, cuello y altura (medida o alternativa); para `female` también exige cadera. Si faltan prerrequisitos, las diferencias no son positivas o el cálculo no es finito devuelve `null`; de otro modo redondea a un decimal y restringe el resultado a 3–60. Los contadores de rendimiento solo se habilitan en web de desarrollo con `EXPO_PUBLIC_MEASUREMENT_PERF_TEST=1`: no contienen valores, no persisten ni envían telemetría.
+
+## Copia portable: datos, medios e importación
+
+La exportación actual genera un manifiesto v3 y un ZIP interno con `manifest.json` y entradas `media/<sha256>.jpg`, que luego se cifra en el archivo `.gymnasia`. Antes de crear el manifiesto se sustituyen todos los `photo_uri` de `data.store.measurements` por `null`. `links` relaciona cada `measurementId` con un asset SHA-256 y `omissions` explica una foto no transportada. Se deduplican bytes idénticos y se conservan siempre las métricas aunque una foto falte.
+
+```mermaid
+sequenceDiagram
+    participant Export as Exportación
+    participant Media as Fotos privadas
+    participant Package as Paquete ZIP
+    participant Crypto as Cifrado portable
+    Export->>Media: Leer y sanear candidatos
+    Media-->>Export: JPEG y SHA-256
+    Export->>Package: Manifiesto sin URI local
+    Export->>Package: Assets por hash y enlaces
+    Package->>Crypto: ZIP interno
+    Crypto-->>Export: Archivo .gymnasia
+```
+
+*El vínculo portable es un hash y no una ruta de archivos del dispositivo.*
+
+La selección toma primero las fotos más recientes y limita enlaces a 500, cada archivo a 5 MiB, bytes únicos a 200 MiB y el ZIP a 220 MiB. El parser del manifiesto exige IDs de medición únicos, assets JPEG con hash/ruta/tamaño válidos, enlaces no ambiguos y motivos de omisión conocidos. Durante la lectura, cada entrada admitida se verifica por tamaño, SHA-256 y estructura JPEG antes de ponerse a disposición de la restauración.
+
+Al importar, el prefijo portable actual conduce al descifrado y a la validación de v3; las rutas de compatibilidad siguen aceptando ZIP v2 y JSON v1. Para cada enlace v2/v3, si el asset falta, falla checksum, JPEG o escritura privada, la medición importada recibe `photo_uri: null` y se añade un detalle de advertencia. En web `storeImportedMeasurementPhoto` devuelve `null`, por lo que también advierte que no puede persistir la foto. Solo después de preparar medios se normaliza el almacén importado en modo estricto y se reemplaza el estado; si falla esa validación estructural, el estado actual queda intacto. La importación conserva el journal local de recibos de tools, nunca API keys del respaldo, invalida la memoria cargada, cierra una sesión de entrenamiento activa y barre medios huérfanos.
+
+## Pruebas y operaciones focalizadas
+
+- `measurementContract.test.ts` cubre fechas, métricas, normalización heredada, parches, duplicados, reemplazo, borrado, límite, gráficos y estimación de grasa. `measurementSummary.test.ts` cubre equivalencia, invariancia y trabajo lineal tras ordenar.
+- `toolExecutor.test.ts` verifica el contrato estructurado de `write_measurement`, el parche que preserva valores, borrado explícito, rechazo sin persistir y que un fallo de commit no se confirma.
+- `measurementMedia.test.ts`, `backupFormat.test.ts` y `portableEncryption.test.ts` cubren saneamiento, límites, deduplicación, manifiestos/enlaces hostiles, medios corruptos, autenticación y compatibilidad. `scripts/measurement-performance.e2e.mjs` siembra 1.826 registros, comprueba que interacciones ajenas no recalculan medidas, y verifica guardar, editar, borrar, importar, recuperar y borrar datos a través de la UI web.
 
 ```bash
-npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/measurements/measurementContract.test.ts apps/mobile/measurements/measurementSummary.test.ts apps/mobile/backup/backupFormat.test.ts apps/mobile/backup/measurementMedia.test.ts apps/mobile/backup/portableEncryption.test.ts
+npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/measurements/measurementContract.test.ts apps/mobile/measurements/measurementSummary.test.ts apps/mobile/measurements/presentationModel.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/backup/backupFormat.test.ts apps/mobile/backup/measurementMedia.test.ts apps/mobile/backup/portableEncryption.test.ts
 npx tsc --noEmit -p apps/mobile/tsconfig.json
 ```

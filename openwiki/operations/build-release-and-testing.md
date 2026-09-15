@@ -3,9 +3,6 @@ type: guía operativa
 title: Build, release y estrategia de validación
 description: Selecciona comprobaciones deterministas, E2E web, validación del tablero y gates de release para cambios de Gymnasia. Distingue la evidencia de navegador y checks estáticos de la que exige un binario o dispositivo nativo.
 tags: [operations, ci, testing, release, android, backup, recovery, board]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T12:53:55.207Z
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
     resource: repo://.github/workflows/agent-tests.yml
@@ -49,6 +46,12 @@ sources:
     resource: repo://apps/mobile/vitest.config.mts
   - id: openwiki-source-90e4eb523a83656a5e292747
     resource: repo://arquitectura-agente/tests/board.e2e.mjs
+  - id: openwiki-source-d851a3b576631bfd0d132a7d
+    resource: repo://ops/android-build/admit-job.sh
+  - id: openwiki-source-27b82ef03881fed5e7a5f789
+    resource: repo://ops/android-build/gymnasia-android-vm.service
+  - id: openwiki-source-f03f3df55b6c0d652d7b50a7
+    resource: repo://ops/android-build/start-vm.sh
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-c657bdb933b7ed64c860ab05
@@ -65,15 +68,20 @@ sources:
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-  - id: openwiki-source-7718d8047e7c1e0a6137f6de
-    resource: repo://scripts/production-release/policy.json
   - id: openwiki-source-24a206e2ad72f4f0a1502c09
     resource: repo://scripts/production-release/production-release.mjs
   - id: openwiki-source-eca432bcfe70b04e1d09e3d3
     resource: repo://scripts/production-release/release-transaction.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
+  - id: openwiki-source-fcf341cb7be3a3304b37a528
+    resource: repo://scripts/production-release/vm-contract.test.mjs
+  - id: openwiki-source-b368a0060923f31656ab90b3
+    resource: repo://scripts/production-release/workflow.test.mjs
+generated: { by: "openwiki/0.5.0", at: "2026-09-15T14:17:12.687Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-15T14:17:12.687Z
 ---
 
 # Build, release y estrategia de validación
@@ -85,7 +93,7 @@ La validación debe ser proporcional al cambio y al contrato que podría rompers
 1. **Checks locales deterministas:** tipos, contratos, artefactos generados y regresiones con fixtures. Son la señal inicial reproducible tras `npm ci`.
 2. **E2E web controlada:** exporta React Native Web, sirve `apps/mobile/dist` y usa Playwright. Comprueba interfaz, estado y recuperación bajo respuestas simuladas; no valida Android ni iOS.
 3. **Gates de release:** combinan checks locales con controles de identidad, estado de GitHub y evidencia del binario. Se ejecutan para un candidato exacto, no como sustituto de una revisión ordinaria.
-4. **Actos remotos protegidos:** EAS, environments de GitHub, releases y promoción de política requieren credenciales y aprobación. No son necesarios para desarrollar ni para que la app funcione localmente.
+4. **Actos protegidos:** el environment de GitHub, el acceso de firma de EAS local, los releases y la promoción de política requieren credenciales y aprobación. No son necesarios para desarrollar ni para que la app funcione localmente.
 
 ```mermaid
 flowchart TD
@@ -96,7 +104,7 @@ flowchart TD
     Web --> Review
     Review --> Sensitive{"¿Política o release Android?"}
     Sensitive -->|"Política"| Signed["Promoción firmada y aprobada"]
-    Sensitive -->|"Android"| Release["Gates Production y EAS"]
+    Sensitive -->|"Android"| Release["Gates Production y build local aislada"]
     Sensitive -->|"Tablero"| Board["CI, despliegue y verificación del tablero"]
     Sensitive -->|"No"| Done["Validación terminada"]
 ```
@@ -208,7 +216,7 @@ Por ello, use una E2E cuando cambie la interfaz, el contrato de almacenamiento o
 
 ## Integración continua
 
-`agent-tests.yml` se activa en PR y `main` solo para sus rutas declaradas. Su job Node usa Node 22, `npm ci`, permiso `contents: read` y diez minutos para verificar prompt integrado, política sanitaria y sus tests, `npm test`, límites de arquitectura móvil, la E2E Metro del dev store, feedback worker, automatización OpenWiki y TypeScript. El proxy corre en otro job con `uv`, de modo que no forma parte del entorno Node. Un cambio fuera de esos filtros no recibe este workflow.
+`agent-tests.yml` se activa en PR y `main` solo para sus rutas declaradas. Su job Node usa Node 22, `npm ci`, permiso `contents: read` y diez minutos para verificar prompt integrado, política sanitaria y sus tests, `npm test`, límites de arquitectura móvil, la E2E Metro del dev store, feedback worker, automatización OpenWiki, los contratos de release Android y TypeScript. Los controladores de build se prueban en un job Ubuntu 24.04 separado, sin credenciales ni acceso al host, mediante sus pruebas de provisión, registro y transporte. El proxy corre en otro job con `uv`, de modo que no forma parte del entorno Node. Un cambio fuera de esos filtros no recibe este workflow.
 
 `catalog-tests.yml` también usa Node 22 y `npm ci`, instala Chromium y ejecuta `check:catalogs`, `test:catalogs` y `test:catalogs:e2e` para rutas de fuentes, generador y consumidores declaradas. Sus resultados no cubren por sí mismos permisos Android ni una release.
 
@@ -250,24 +258,22 @@ El perfil EAS `production` tiene `APP_ENV=production` e incremento remoto de ver
 ```mermaid
 stateDiagram-v2
     [*] --> prepared
-    prepared --> build_submitted: submit EAS build ID
-    build_submitted --> build_running: observe IN_PROGRESS
-    build_submitted --> build_finished: observe FINISHED
-    build_running --> build_finished: observe FINISHED
-    build_submitted --> failed: observe ERRORED or CANCELED
-    build_running --> failed: observe ERRORED or CANCELED
+    prepared --> build_running: reserve local attempt
+    build_running --> build_finished: accept build metadata
+    build_running --> failed: record local failure
+    build_finished --> failed: verification failure
     failed --> prepared: retry with reason
     failed --> superseded: supersede with reason
-    build_finished --> validated: verify artifact
+    build_finished --> validated: verify quarantined APK
     validated --> [*]
     superseded --> [*]
 ```
 
-*La transacción durable permite reconciliar un timeout sin recompilar; un fallo terminal exige una decisión manual motivada.*
+*La transacción durable reserva el intento antes de la VM y permite reconciliar un artifact terminado sin recompilar; un fallo requiere una decisión manual motivada.*
 
-`build-apk.yml` se activa por push a `main` en rutas empaquetadas o manualmente con `reconcile`, `retry-failed` o `supersede-failed`; su concurrencia no cancela una ejecución en curso. Antes de usar `EXPO_TOKEN`, valida el SHA exacto y ejecuta todos los `PRODUCTION_GATES`: políticas, permisos, inventario de datos, legal, prompt, pruebas, OpenWiki, tipos, export Android de desarrollo y E2E de agente/entrenamiento. Si un gate falla o ensucia el checkout, el candidato no es publicable.
+`build-apk.yml` se activa por push a `main` en rutas empaquetadas o manualmente con `reconcile`, `retry-failed` o `supersede-failed`; su concurrencia no cancela una ejecución en curso. Antes de usar `EXPO_TOKEN`, valida el SHA exacto y ejecuta todos los `PRODUCTION_GATES`: políticas, permisos, inventario de datos, legal, prompt, pruebas, OpenWiki, tipos, export Android de desarrollo y E2E de agente/entrenamiento. `verify:production-source` también contrasta el origen, alcance desde `main`, ruleset, environment, PR fusionada y estados remotos requeridos. Si un gate falla o ensucia el checkout, el candidato no es publicable.
 
-Después crea o recupera una transacción durable en un draft de GitHub, adopta como máximo un build EAS que coincida con perfil, versión, SHA y mensaje, y observa EAS hasta terminar. El APK se descarga a cuarentena y `verify:production-artifact` inspecciona su estructura, manifest, firma, tamaño, MIME, paquete, SDK, permisos, configuración y snapshot de política antes de adjuntarlo como `gymnasia.apk` y publicar el draft. La operación exige el environment `Production` y sus controles remotos; una comprobación local no puede reemplazarlos.
+Después crea o recupera una transacción durable en un draft de GitHub. El workflow reserva el intento antes de despacharlo y compila con `eas build --local` en una VM KVM efímera de wallabot, no mediante una build cloud observada: el único job autoalojado acepta el SHA ya validado, tiene solo `contents: read` y entrega el APK junto con metadatos como artifact de Actions. Un job independiente descarga exactamente esos dos ficheros a cuarentena, los vincula al intento durable y ejecuta `verify:production-artifact`. Este inspecciona estructura, manifest, firma, tamaño, MIME, paquete, SDK, permisos, configuración, snapshot de política, metadatos y progresión de `versionCode` antes de adjuntar `gymnasia.apk`. Solo tras comprobar en el borrador la identidad, los límites y los hashes de APK, transacción y evidencias se publica la release inmutable. La operación exige el environment `Production` y sus controles remotos; una comprobación local no puede reemplazarlos.
 
 Incluso con todos los gates verdes, instale el APK en un dispositivo representativo antes de distribuirlo y compruebe versión, migración/conservación de datos, notificaciones, alarmas y ejecución en segundo plano. La app no implementa un actualizador desde GitHub; la instalación directa es manual y distinta de Play.
 

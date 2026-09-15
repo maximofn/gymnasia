@@ -3,30 +3,28 @@ okf:
   version: 1
   kind: code-wiki
   status: grounded
-  scope: provider stream transports, parsers, and continuation protocols
+  scope: transportes de streaming, parsers y protocolos de continuación de proveedores
 type: arquitectura de streaming
-title: Streaming de proveedores
-description: Describe el flujo SSE y los bucles de herramientas de OpenAI, Anthropic y Google en el cliente móvil, incluidos sus contratos de continuación, validación y fallos.
+title: Transporte y streaming de proveedores
+description: Explica cómo el cliente móvil transmite SSE de OpenAI, Anthropic y Google, convierte los eventos en turnos y continúa las llamadas de herramientas sin perder los datos de protocolo.
 tags: [agent, streaming, sse, openai, anthropic, google]
 related:
   - ./runtime.md
   - ./provider-configuration.md
 verified:
-  - by: manual-code-review
-    at: 2026-09-14T00:00:00.000Z
   - by: openwiki/0.5.0
-    at: 2026-09-13T12:53:55.207Z
+    at: 2026-09-15T14:17:12.687Z
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
+  - id: openwiki-source-dc42304b20e8518ef65b4b63
+    resource: repo://apps/mobile/agent/googleContextBudget.ts
   - id: openwiki-source-63dae4a27346d91c6139697b
     resource: repo://apps/mobile/agent/googleInteractions.test.ts
   - id: openwiki-source-df22d5c1fa6f9ff9bb908437
     resource: repo://apps/mobile/agent/googleInteractions.ts
   - id: openwiki-source-f310c5fb576ae69a7753918c
     resource: repo://apps/mobile/agent/googleStreamTransport.ts
-  - id: google-context-budget
-    resource: repo://apps/mobile/agent/googleContextBudget.ts
   - id: openwiki-source-c65a19b98fa314cba98ace44
     resource: repo://apps/mobile/agent/providerPipeline.test.ts
   - id: openwiki-source-6b9b666faa646a8fd83706ea
@@ -47,10 +45,10 @@ sources:
     resource: repo://apps/mobile/agent/sse.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-15T14:17:12.687Z" }
 ---
 
-# Streaming de proveedores
+# Transporte y streaming de proveedores
 
 El chat principal entra por `callProviderChatAPIWithTools` en `apps/mobile/App.tsx`, que aplica la política de seguridad antes de delegar en `requestProviderToolChat`. Este cliente separa el prompt de sistema, abre una solicitud por turno, convierte los eventos SSE en un resultado del proveedor y ejecuta el bucle de herramientas. El ejecutor y la coordinación de efectos no pertenecen al transporte: se inyectan como `executeTool`.
 
@@ -121,7 +119,7 @@ La preparación selecciona los diez intercambios más recientes y retira los byt
 
 `App.tsx` recibe un reporte allowlist por cada preparación y lo guarda en la traza local como `googleContext/request-prepared` o `googleContext/request-rejected`. Solo contiene resultado, motivos y contadores de intercambios, bytes e imágenes retiradas; nunca mensajes, base64, firmas ni argumentos de herramientas. Un fallo al registrar el diagnóstico no altera la petición.
 
-Esta política queda aislada en el adaptador de Google. GYM-51 (ticket para compactar el contexto para todos los proveedores) podrá sustituirla por una estrategia común sin depender del transporte genérico.
+Esta política está aislada en el adaptador de Google: no modifica el historial persistido o en memoria y no es una regla del transporte genérico.
 
 ## Límites, errores y cambios seguros
 

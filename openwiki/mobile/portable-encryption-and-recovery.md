@@ -1,11 +1,8 @@
 ---
 type: referencia técnica
-title: Cifrado portátil, importación heredada y recuperación local
-description: Contrato del sobre cifrado portable v3 de Gymnasia, el empaquetado de copias, la importación explícita de formatos heredados y el rescate local de una cuarentena. Describe límites, fallos seguros y validaciones para operar o cambiar estos flujos sin exponer datos sensibles.
+title: Cifrado portátil e importación
+description: Contrato del sobre cifrado portable v3 de Gymnasia, del empaquetado de copias y de la importación explícita de formatos heredados. Incluye la exportación de cuarentena, sus límites y validaciones para operar o cambiar estos flujos sin exponer datos sensibles.
 tags: [mobile, backup, encryption, recovery, privacy, local-storage]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
 sources:
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
@@ -31,7 +28,10 @@ sources:
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-15T14:17:12.687Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-15T14:17:12.687Z
 ---
 
 # Cifrado portátil, importación heredada y recuperación local
@@ -97,7 +97,7 @@ Una entrada v3 se descifra y verifica antes de convertirse en `PendingBackupImpo
 
 La comprobación ZIP limita la descompresión a entradas permitidas: valida identidad de Gymnasia y versión esperada, mediciones con IDs únicos, lista de medios, rutas exactas `media/<sha256>.jpg`, MIME JPEG, tamaños y presupuesto, hashes, enlaces sin ambigüedad y causas de omisión conocidas. Solo incorpora un JPEG cuyo tamaño y SHA-256 coinciden y cuya estructura es válida; un medio fallido queda fuera, con `photo_uri: null`, sin invalidar sus datos numéricos. En web no hay URI propia persistente para restaurar la foto; también queda en `null`. El JSON v1 conserva sus URI como ruta de migración y trata de normalizarlas en el dispositivo receptor.
 
-La confirmación anuncia que sustituirá todos los datos y que no se puede deshacer. Al aplicarla, la app normaliza estrictamente el agregado antes de publicar el reemplazo, conserva las API keys locales y el `workspace_id` local de Anthropic, y exige que el commit de configuración de proveedores siga vigente. Después normaliza preferencias, reemplaza alimentos y memoria, invalida la caché de memoria, cierra la sesión activa y realiza una barrida oportunista de fotos huérfanas. La restauración cruza React, `AsyncStorage`, `SecureStore` y el sistema de archivos: **no es una transacción atómica**; los cambios deben preservar validación previa y comunicar fallos parciales, no prometer rollback.
+La confirmación anuncia que sustituirá todos los datos y que no se puede deshacer. Al aplicarla, la app normaliza estrictamente el agregado antes de publicar el reemplazo, conserva las API keys locales y el `workspace_id` local de Anthropic, y aborta si el commit de configuración de proveedores detecta un cambio concurrente. También conserva el journal local de `toolOperationReceipts`, para que una operación previa ambigua no se repita automáticamente sobre los datos restaurados. Después normaliza preferencias, reemplaza alimentos y memoria, invalida la caché de memoria, cierra la sesión activa y realiza una barrida oportunista de fotos huérfanas. La restauración cruza React, `AsyncStorage`, `SecureStore` y el sistema de archivos: **no es una transacción atómica**; los cambios deben preservar validación previa y comunicar fallos parciales, no prometer rollback.
 
 ## Contrato interoperable del sobre v3
 

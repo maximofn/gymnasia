@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:44175cb133588d45a5ed808099b2b56abd1bfadbd83503f6287a0ec18e53e058",
+  "pageVersion": "sha256:05efd2e7012dec7afd082faced1139be58c094dcdfb572aba86fcb71e3aa09d2",
   "claims": [
     {
       "id": "claim_593d6e5c167c4d37bb621397b1ddd1a3",
@@ -255,16 +255,16 @@
       "statement": "Las claves BYOK se excluyen del agregado general y de las copias de seguridad; al importar, la aplicación conserva las credenciales y el Workspace ID Anthropic ya presentes en el dispositivo en vez de aceptar secretos del archivo.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/App.tsx#L1256-L1264",
-          "version": "repo-lines-v1:sha256:e5c0e16b949d41b6c9f3f1a57a5c1e8c690a290aea0e6d7f000172c2c27c2566:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODMxMmQ5NzI1YTllOGUzNDE4ZThhYzhmZDMyYTFiNTVmOTk5ZGJhYTdkMmVjMWYxNGQ5MTMyNmY4ODlkNWIxZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzg2Y2Y0ODU1MzBjMjBlM2JjNTk3ZjliNDhlNTg4NDdiNjFjZDg2N2U1YWQ3YTRmNDZjNzQ1NWFmZDllZWZlNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzNkMWI3MGY0NDZkNTIwOTBmMGM2YmZiNjE3M2JiMzY5MTdjMjcxODQ4MDcwYTNjYTAzYzgwODlmNWM2ZDg5YiJ9"
-        },
-        {
-          "resource": "repo://apps/mobile/App.tsx#L5163-L5203",
-          "version": "repo-lines-v1:sha256:3c9220687f5d2f69dfb4b2ad9d75d94b9bfe63835fd3eb0bbc7adae020c1ee1c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiNDE2MGJjN2I0NDg1MGNiODdmYjQzNGE0MWIyYzhiZTAxZTZiYTEwY2I2YjhjZmEwMWVhOGU2NGYxODY2ZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5MjBjYWYzZjA5NDkyZGZjZjgxYmQyMzI4NGQ0YWMyYTFiZTc5MWVjYmQ2NDQ5ZThiZjM4MmM5MmNiOTIyOWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkOWM1MTIyYTgxZmU2ZTE5M2VlNTAzODUzMmU0OTliMmVkZDgxMmIxYTEzZDE1MDM1ZTA1YzJiMTE5ZTBhMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0ZjQ3YTcxN2JjMTM3MTZiZjhlZWRiZTU1NmQ0M2UyNmI1ZTA4ZmMwMzFkNGM3YTRmMTNlODA2YTA4ZTA5ZjYifQ"
+          "resource": "repo://apps/mobile/App.tsx#L5392-L5433",
+          "version": "repo-lines-v1:sha256:9d76b274bf71ee2cc9405d710f995974873ee22071fcbcb493a85cbc5fd07cef:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiNDE2MGJjN2I0NDg1MGNiODdmYjQzNGE0MWIyYzhiZTAxZTZiYTEwY2I2YjhjZmEwMWVhOGU2NGYxODY2ZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlMzNkYzczMWU3ZDA3YjFmMGMwNWNmZWJkN2UxOTIyMDIzZTYwNzdiYzBhZTdiYTMwMTQ4ZjUwODMzYTI1YTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkOWM1MTIyYTgxZmU2ZTE5M2VlNTAzODUzMmU0OTliMmVkZDgxMmIxYTEzZDE1MDM1ZTA1YzJiMTE5ZTBhMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0MWJkZmYxN2E2NmE4MDlkNzgwZjlkNjRlNGEzZmE0YjAzYzE3ZGYwZDQ0YWI0ZDc4MzgxYTVlMmM2MTk2ZTgifQ"
         },
         {
           "resource": "repo://apps/mobile/agent/providerCredentials.ts#L27-L35",
           "version": "repo-lines-v1:sha256:53cf8061589712fde37f5b84b0a906ca270ba77a0888c96b1a0db3efc7ec12a0:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTcyMDZiZjY0YzcyMDE4ZmNjZjk2MTM2MTY2ZWQzMTk2OTNkOTZiZjBmMGQ5MGFkYThmODY1MTZlNTQ4OGU3MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2QxMDhhOWEyNDhiMjU5MTk5ZmU2OWFlODMxODM4YjMxMTMzZDNmN2FmZjBhNjFkMzYxMTgwMzUyODRhNGIyOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGQ3MTU4MzhjM2NjZDBkZTU4MjcyMWY3NTI5MjNkN2MwZGQzZjI3ZDM0MmY5YzBmNjAxMjE5YThlOGMyMzRiYiJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreModel.ts#L86-L88",
+          "version": "repo-lines-v1:sha256:feb91192d7f76864da49d0ff06efc2031bdbe162b389d6bbabcabc57ba166d9f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmE3YTIxYmFiNGZlNjZjNWExZjU4NTcwOWM1ZjVmMzA2YTVmZmQ0OWQ5Yzc1MGU0NGNhZjQ3Y2U3NDgyZmI2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDk4ZjU5Mzc5YjdiMGFhZjUzM2U4NDlhOWI0ZDNjY2E4MzA3MTk3NzY4N2FkZDA1ZWExMjY3M2U4YWU1ODAxNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2M1ZjA0ZmVmYTkwNDdkZTQ1MmJlMGI1YmRkN2NiOWNkYjkwNmJjZjQwYzQwNjhlN2JhNWE5MzQ4NDk5ZWUyMiJ9"
         }
       ]
     },
@@ -316,15 +316,15 @@
     },
     {
       "id": "claim_5f77b12c552ca09e31d7e93894764bf9",
-      "statement": "El endpoint local de Google solo admite Development con clave ficticia; la generación real usa Interactions sin persistencia remota.",
+      "statement": "El endpoint local de Google solo admite Development con la clave ficticia `e2e-local-fake-key`; tanto esa ruta como la real usan Interactions, y la solicitud de generación fija `store: false`.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L12-L19",
-          "version": "repo-lines-v1:sha256:31853015bd40de1a5768c7f658e0cae33d9c48266e14c61ae528f1a6fece7149:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDk5MWI2M2ZjOTE5MGVhMWM2NTdkNTVlYjJlYzYzYTkxY2EzYTExMWQwNzAzZDg0NDc1MzhhYmY0NzRkMDIwOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmMwNjExZjVmMTgwNTY1NWJlZDdhMDBiODVmOTZjNmE1ODcyMDFlZDVjN2Q3MGMwZmQ3NzlkZWUyZTBkMDhjOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmY3ZTc3YjhlMWI3NGFkYWM1ZTJmMWFjNTFiYzY1ZjhmZTZmYjE0NWEwMWRhODY4MTM0ODc5NjgyMDI1NWJlMiJ9"
+          "resource": "repo://apps/mobile/agent/googleContextBudget.ts#L164-L178",
+          "version": "repo-lines-v1:sha256:4b8a74b752ca4422ca52daf8de96bbcedc4dbfe171d47a303f0ff61ad7a3b94d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyZTRlY2IzY2VmZmEyYjM3ZmE3N2JiZWM4ZjBhNjNiOWEzYjlhNDQ4MWFiNDMwZDZmOWY5NjlkMTYwMzljMGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkNGRjMzk0OWQ1MTVmNzYyYTI1NmU5MzNlZDE3ZDllZmRjMWE1NWJiZTMwNzNkZTMxZDg5Y2EwYzRkNDdjNzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxYWMyNTVmNzJiZjllMzMzNDZmZmIzYjQwMmVlMDkyYTIwOGJmOWM1ZWRiNWFmYjc4OTc0OTY4YmFiMzQ5MGUifQ"
         },
         {
-          "resource": "repo://apps/mobile/agent/providerTransport.ts#L3-L24",
-          "version": "repo-lines-v1:sha256:d3742d42f37692c5d20dbe6a9ce5b8046a6a714511154c0f248abaca2341555b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkOTA2NDE2ZjUyOTczNGQwZWVmMDljMTQzYmQyNzcwZTFlZmJjMmQxMTlhY2NjZjVjNDFhYmYyN2U2NzRkMTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM1OWI4OWRlY2ZjMmZhODI1YTNjYzE4MDU5MWFiYjlkMjMxNDZmNzk2YjU4MGQ0ODc0YzY3ZWVmODc3ZDQ0OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzNTkzMGY4MTRlOTg1YzRiMzNkN2RkNDA0ZDdkODFiODcwMWRlYTEwYTg0MmJmYzQ1NzBiMTcxMzM3ZDI1NjcifQ"
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L19-L26",
+          "version": "repo-lines-v1:sha256:31853015bd40de1a5768c7f658e0cae33d9c48266e14c61ae528f1a6fece7149:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDk5MWI2M2ZjOTE5MGVhMWM2NTdkNTVlYjJlYzYzYTkxY2EzYTExMWQwNzAzZDg0NDc1MzhhYmY0NzRkMDIwOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmMwNjExZjVmMTgwNTY1NWJlZDdhMDBiODVmOTZjNmE1ODcyMDFlZDVjN2Q3MGMwZmQ3NzlkZWUyZTBkMDhjOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmI4YmRlN2EyNDhmMDlhZmJmMTY4YWI4Zjg0OTFlMTIwMjRjNGI2ZGRhYjhjMzYyNTUyYzdkYjMyYWVlMmZjMCJ9"
         },
         {
           "resource": "repo://apps/mobile/app.config.ts#L122-L128",
@@ -345,10 +345,28 @@
           "version": "repo-lines-v1:sha256:13409198eeb2931d80794343bf50236d4771f7b89b592847f48b52b9564e5894:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRhMzdjN2ZmZWZiOTQxZWVhMGUxYjVkYmIwMzg0OTZjOWUwZDMzMGIzYmYzNDU2ZmE2OWZhZDFmYmZjNDFjMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjdlNTc4OGQ1ZDlkNzNkMjRhODFkYmMwYTVhNzRiZmE4MmM5YzNiM2FmOTllNTJhZjc5NmU5MGI0NjhhOGEzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTIwNDBlMDk1YTk0ZTJhZGE3NGU0MjFmMzcxODc1MWE5MWE4MTBiZmQ2NmY0OGY0ZTkzOWM3Yjc0ODBlYjY3MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDI2ZTA5Y2RiYjI0ZjY0YTkwNGNkNGI4NmNlZWQyNjI1ZDI0YzY3ODc0ZDRiMTdlMTMzYzA0YjI1MThmOWZlMyJ9"
         }
       ]
+    },
+    {
+      "id": "claim_e1820f0a9b6149aca6f6812f8b6fd896",
+      "statement": "El timeout de 15 segundos de solicitudes de configuración no se aplica al streaming de Google: las rutas XHR de generación usan un timeout de 120 segundos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L144-L209",
+          "version": "repo-lines-v1:sha256:7a90968a8ac6b41ca0caa1789f93cd04507d2905b0fdf1201996f12c96a37c6e:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyMmY1ZWZkOGVlY2Y2OWNhOWY3Yjk2NmM0NjcxMGJhNTBhZDNiMTY2ZjZhNDlkMTMzNmQ5M2RlN2Q5YTRjNzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkOWUxMjU0NjQyNTU3NmQzZGVhZThjOWI5ZGJmMTI4ZDVkNmRkYWY1ZDdmZTg1NzkzNDkyN2RlZmZhM2I5ZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmZTY5Zjc5N2IwNjQ5MWFhOGFjZTEzMTA0ZThhNDNlY2EzNTdkNjk0MTQwYmU5NjEwMTY4MmQwODZkYjIwYzAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L83-L141",
+          "version": "repo-lines-v1:sha256:4633a92c6e0ac74361f65a113676fe5ed2f877f7b88f948aa3f05f3c8983aae4:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4YjRkZDNkNDFkNWJlNmE0ZmEzMjBkMTYxN2IyYjRhYWRkMzI3YjIyZDM5OWNhZTk5YTMwNTU0NmFiNzJmYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0NmM0NTViMjQ2NGMyZDM2ZmRjMDc3NTcwMTZjZmJlODRmZGU2NTUxODNlMjM0OWY1ODM1MDNmMzA1YjliMDEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerTransport.ts#L180-L197",
+          "version": "repo-lines-v1:sha256:b4e6b255d1c35ebdb74a3852803d2a2a75d0211cf8066bfcf40e625b069581b9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmZjUyZjY3ZDhhNzUxYWQwODVkZGYxNzYyZmFiZTE3ZmNmN2MwZjY4MWQzZjQzMjZkNWRiNjNlNjBhMmI2NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNiMDM4MDVjZTBjNmUyODlkNDc4Mjk3NDA1MzIyZmE0YmMyOWRlYTExOTA4OTJlOTU5ZTYzNWUyZWVkZjQzNTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.5.0",
-    "at": "2026-09-13T07:56:37.562Z"
+    "at": "2026-09-15T14:17:12.687Z"
   }
 }

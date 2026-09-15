@@ -3,14 +3,15 @@ type: guía de inicio
 title: Inicio rápido y mapa de cambios
 description: Orientación para iniciar Gymnasia, localizar el contrato responsable de cada cambio y elegir una validación proporcional. Distingue el producto Expo local-first de las integraciones opcionales y del tablero estático.
 tags: [quickstart, architecture, mobile, agent, operations, local-first]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T12:53:55.207Z
 sources:
+  - id: openwiki-source-338e77d1d6cb373155f08ceb
+    resource: repo://.github/workflows/agent-tests.yml
   - id: openwiki-source-bb129131b6b18c7d2257c58a
     resource: repo://.github/workflows/board-deploy.yml
   - id: openwiki-source-fe0c9d29131f1d556c715974
     resource: repo://.github/workflows/board-reconcile.yml
+  - id: openwiki-source-0b86c93537ee4ff0031996d7
+    resource: repo://.github/workflows/build-apk.yml
   - id: openwiki-source-8037e2358a2c4f9b2c722a11
     resource: repo://AGENTS.md
   - id: openwiki-source-88e87a6a49f8c4bba044cff2
@@ -49,7 +50,10 @@ sources:
     resource: repo://scripts/catalogs/generate.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
+generated: { by: "openwiki/0.5.0", at: "2026-09-15T14:17:12.687Z" }
+verified:
+  - by: openwiki/0.5.0
+    at: 2026-09-15T14:17:12.687Z
 ---
 
 # Inicio rápido y mapa de cambios
@@ -117,7 +121,8 @@ Elija el dominio que posee el contrato antes de editar el archivo cercano. Ejecu
 | Clave, proveedor, modelo, transporte o streaming | [Configuración BYOK](agent/provider-configuration.md) y [Transporte y streaming](agent/provider-streaming.md) | typecheck, pruebas deterministas del adaptador y E2E de agente para el flujo afectado. |
 | Prompt, reglas sanitarias, firma, activación o fallback de política | [Gobierno de prompts y política](operations/prompt-policy-governance.md) | `check:health-safety`, `test:health-safety`, `check:prompt-policy`, `test:prompt-policy`, `policy:bundle:check` y `check:policy-trust`. |
 | Fichas, imágenes o agregados de catálogos | [Repositorios de contenido](content/repositories.md) | `sync:catalogs`, `check:catalogs`, `test:catalogs` y `test:catalogs:e2e`. |
-| Permisos, plugins Expo, notificaciones, build o release Android | [Build, release y validación](operations/build-release-and-testing.md) | `check:android-permissions`, `test:android-permissions`, controles de privacidad y build/prueba nativa. |
+| Permisos, plugins Expo o notificaciones | [Build, release y validación](operations/build-release-and-testing.md) | `check:android-permissions`, `test:android-permissions`, controles de privacidad y build/prueba nativa. |
+| Candidato o entrega de APK Android | [Build, release y validación](operations/build-release-and-testing.md) | No improvise una publicación local: deje que `build-apk.yml` valide el SHA candidato, gestione la transacción durable, compile y verifique el APK. Complete con instalación en dispositivo. |
 | Inventario de datos, texto legal o política publicada | [Build, release y validación](operations/build-release-and-testing.md) | `check:data-inventory`, `test:data-inventory`, `check:legal`, `test:legal` y la E2E aplicable. |
 | Proxy CORS de Anthropic | [Proxy Anthropic](services/anthropic-proxy.md) | `npm run test:proxy` y `npm run check:anthropic-proxy`; no lo despliegue. |
 | Feedback que crea incidencias | [Worker de feedback](services/feedback-worker.md) | `npm --workspace apps/feedback-worker run test` y pruebas de contrato cliente afectadas. |
@@ -145,7 +150,9 @@ apps/anthropic_proxy/.venv/bin/python apps/mobile/cors-proxy.py
 curl -sS http://127.0.0.1:8000/health
 ```
 
-El proxy escucha en loopback, rechaza clientes remotos y no es infraestructura desplegable. El Worker `apps/feedback-worker` es la excepción remota limitada: custodia la credencial de GitHub para convertir feedback voluntario en incidencias privadas. Está vacío en Development y configurado en Staging/Production; si falta, está apagado o falla, el envío queda indisponible sin afectar el producto. No lo convierta en autenticación, base de datos ni sincronización.
+El proxy escucha en loopback, rechaza clientes remotos y no es infraestructura desplegable. El Worker `apps/feedback-worker` es la excepción remota limitada: custodia la credencial de GitHub para convertir feedback voluntario en incidencias privadas. Development no configura endpoint; Staging y Production usan el mismo endpoint HTTPS, y `FEEDBACK_API_BASE_URL` solo permite un override de desarrollo. Si falta, está apagado o falla, el envío queda indisponible sin afectar el producto. No lo convierta en autenticación, base de datos ni sincronización.
+
+El contrato del Worker es cerrado: `POST /feedback/issues` solo acepta versión, tipo, título, resumen y clave de idempotencia; el servidor reserva la clave antes de crear la issue y solo informa `created` con número y URL de GitHub. Una repetición recupera la referencia creada, una reserva pendiente pide reintentar y el fallo de GitHub libera la reserva sin filtrar detalles. Para una tool con identidad larga, `GET /feedback/issues/status` permite reconciliar el resultado sin repetir automáticamente el `POST`. La validación, saneamiento, límite de tasa HMAC y retención de denuncias pertenecen a [Worker de feedback](services/feedback-worker.md).
 
 ### Tablero estático, no runtime del producto
 
@@ -176,9 +183,11 @@ npm run check:catalogs
 npm run check:android-permissions
 ```
 
-`npm test` encadena la suite determinista móvil, el dev store y los límites arquitectónicos móviles. Las E2E son scripts explícitos: agente, catálogos, entrenamiento, dieta y recuperación no se ejecutan por ese comando. `build:web` genera `apps/mobile/dist`; las E2E web ejercitan navegador y dependencias controladas, no proveedores reales ni hardware.
+`npm test` encadena la suite determinista móvil, el dev store y los límites arquitectónicos móviles. Las E2E son scripts explícitos: agente, catálogos, entrenamiento, dieta y recuperación no se ejecutan por ese comando. `build:web` genera `apps/mobile/dist`; las E2E web ejercitan navegador y dependencias controladas, no proveedores reales ni hardware. En CI, `agent-tests.yml` usa Node 22 y `npm ci`; además de los checks de prompt y seguridad, ejecuta la suite raíz, límites móviles, E2E Metro del dev store, tests del Worker, contratos de release y typecheck. Sus filtros de rutas importan: un cambio fuera de ellos no activa ese workflow.
 
 Por ello, pruebas deterministas y exportación web **no** demuestran SecureStore nativo, permisos fusionados, instalación, notificaciones, alarmas, audio o ejecución en segundo plano. Un cambio de plugin Expo, permiso, recurso nativo, notificación o distribución requiere su guard rail y una build/prueba nativa representativa, preferiblemente en dispositivo. La guía de release define además los gates y la verificación del artefacto.
+
+La entrega Android no se reduce a ejecutar EAS: `build-apk.yml` solo actúa desde `main` para rutas empaquetadas o mediante despacho manual, serializa ejecuciones y selecciona una transacción durable. Valida el commit candidato antes de la compilación, reserva el intento y sus inputs de política, compila el APK con `eas build --local` en una VM efímera, y descarga el binario a cuarentena para una verificación independiente antes de publicar la release. Un retry o una sustitución de un fallo requiere un motivo explícito; no use un APK local no verificado como equivalente de ese flujo.
 
 ## Ejecutable frente a planificación histórica
 
