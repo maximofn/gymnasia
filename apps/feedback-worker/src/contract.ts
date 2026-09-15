@@ -8,6 +8,7 @@
 
 export const FEEDBACK_SCHEMA_VERSION = 1 as const;
 export const FEEDBACK_ISSUE_PATH = "/feedback/issues" as const;
+export const FEEDBACK_ISSUE_STATUS_PATH = "/feedback/issues/status" as const;
 
 export const FEEDBACK_ISSUE_KINDS = ["feature", "food", "exercise", "report"] as const;
 export type FeedbackIssueKind = (typeof FEEDBACK_ISSUE_KINDS)[number];
@@ -15,7 +16,8 @@ export type FeedbackIssueKind = (typeof FEEDBACK_ISSUE_KINDS)[number];
 export const TITLE_MAX_LENGTH = 120;
 export const SUMMARY_MAX_LENGTH = 4000;
 export const REPORT_SUMMARY_MAX_LENGTH = 16000;
-export const IDEMPOTENCY_KEY_PATTERN = /^v1:(feature|food|exercise|report):[0-9a-f]{16}$/;
+export const IDEMPOTENCY_KEY_PATTERN = /^v1:(feature|food|exercise|report):(?:[0-9a-f]{16}|[0-9a-f]{64})$/;
+export const OPERATION_IDEMPOTENCY_KEY_PATTERN = /^v1:(feature|food|exercise|report):[0-9a-f]{64}$/;
 
 /** Las cinco únicas claves que el cliente puede enviar. Cualquier otra se rechaza. */
 export const ALLOWED_REQUEST_KEYS = [
@@ -47,9 +49,15 @@ export type FeedbackIssueResponse =
   | { status: "unavailable" }
   | { status: "error"; reason: "upstream_failed" | "internal" };
 
+export type FeedbackIssueStatusResponse =
+  | { status: "absent" }
+  | { status: "pending" }
+  | { status: "created"; number: number; url: string };
+
 /**
  * Traducción tipo -> prefijo de título y etiquetas. Vive SOLO en el servidor:
- * el cliente no puede elegir etiquetas ni repositorio (GYM-54).
+ * el cliente no puede elegir etiquetas ni repositorio (GYM-54, ticket para
+ * sustituir los escritores no-op de GitHub Issues por un flujo verificable).
  */
 export const ISSUE_PRESENTATION: Record<
   FeedbackIssueKind,

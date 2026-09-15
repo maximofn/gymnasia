@@ -9,6 +9,7 @@ import {
   SUMMARY_MAX_LENGTH,
   TITLE_MAX_LENGTH,
   buildIdempotencyKey,
+  buildOperationIdempotencyKey,
   describeOutcomeForModel,
   describeOutcomeForUser,
   findPreviousUserMessage,
@@ -101,6 +102,16 @@ describe("buildIdempotencyKey", () => {
         const again = sanitizeFeedbackDraft(draft);
         expect(again && buildIdempotencyKey(again)).toBe(buildIdempotencyKey(draft));
       }),
+    );
+  });
+
+  it("usa el SHA-256 completo de una operación de tool", () => {
+    const operationId = "d".repeat(64);
+    expect(buildOperationIdempotencyKey("feature", operationId)).toBe(
+      `v1:feature:${operationId}`,
+    );
+    expect(() => buildOperationIdempotencyKey("feature", "corto")).toThrow(
+      /identificador de operación/,
     );
   });
 });

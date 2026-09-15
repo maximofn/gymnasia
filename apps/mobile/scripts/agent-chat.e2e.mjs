@@ -20,6 +20,7 @@ const STORE_KEY = scopedKey("gymnasia.mobile.local.v3");
 const STORE_SNAPSHOT_KEY = scopedKey("gymnasia.mobile.local.last_good.v1");
 const PROVIDER_CONFIGURATION_KEY = scopedKey("gymnasia.mobile.provider_configuration.v1");
 const PERSONAL_DATA_KEY = scopedKey("gymnasia.mobile.personal_data.v1");
+const TOOL_OPERATION_LEDGER_KEY = scopedKey("gymnasia.mobile.agent.tool_operations.v1");
 const TRACE_KEY = scopedKey("gymnasia_debug_traces");
 const LEGACY_RELEASES_API = "https://api.github.com/repos/maximofn/gymnasia/releases/latest";
 const mobileRoot = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -162,6 +163,7 @@ function createSeedStore(activeProvider) {
       fat_grams_per_kg: "1",
     },
     measurements: [],
+    toolOperationReceipts: [],
     threads: [{ id: "thread_e2e", title: "Coach 1" }],
     messagesByThread: { thread_e2e: [] },
     keys: [
@@ -294,8 +296,9 @@ async function assertSpecializedAiDisclosures(page) {
 }
 
 async function assertPersonalDataKeptAsPlainData(page) {
-  // GYM-139 no borra datos del usuario: el campo "debug" sigue en la memoria y se
-  // edita como cualquier otro. Lo que desaparece es su efecto sobre el prompt.
+  // GYM-139 (ticket para aislar la memoria persistente del prompt) no borra datos
+  // del usuario: el campo "debug" sigue en la memoria y se edita como cualquier
+  // otro. Lo que desaparece es su efecto sobre el prompt.
   logStep("Comprobando que la memoria conserva sus campos como datos ordinarios");
   await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="settings-tab-memory"]').click({ timeout: STEP_TIMEOUT_MS });
@@ -647,8 +650,9 @@ async function runAgentChatE2E(
     window.localStorage.clear();
     window.localStorage.setItem(storeKey, JSON.stringify(store));
     window.sessionStorage.setItem("gymnasia-agent-e2e-seeded", "1");
-    // GYM-139: los dos campos de inyección permanecen en la memoria durante toda
-    // la prueba. El test demuestra que su contenido no llega al system prompt
+    // GYM-139 (ticket para aislar la memoria persistente del prompt): los dos
+    // campos de inyección permanecen durante toda la prueba. El test demuestra
+    // que su contenido no llega al system prompt
     // aunque los campos existan, que es más fuerte que comprobar que se borraron.
     window.localStorage.setItem(personalDataKey, JSON.stringify([
       { key: "Objetivo", description: "Objetivo principal", value: "Ganar masa muscular" },
@@ -684,6 +688,14 @@ async function runAgentChatE2E(
     await route.fulfill({ status: 503, contentType: "application/json", body: "{}" });
   });
   await page.route(`${FEEDBACK_BASE_URL}/**`, async (route) => {
+    if (route.request().method() === "GET") {
+      await route.fulfill({
+        status: 404,
+        contentType: "application/json",
+        body: JSON.stringify({ status: "absent" }),
+      });
+      return;
+    }
     feedbackRequests.push(route.request().postDataJSON());
     const shouldFail = feedbackRequests.length === 1;
     await route.fulfill({
@@ -823,8 +835,9 @@ async function runAgentChatE2E(
       "Sin display resumido el bloque de Razonamiento llegaría vacío a la interfaz.",
     );
   }
-  // GYM-139: los campos "debug" y "Notas" siguen en la memoria personal, con
-  // texto de inyección dentro. Nada de eso puede aparecer en el system prompt.
+  // GYM-139 (ticket para aislar la memoria persistente del prompt): los campos
+  // "debug" y "Notas" siguen en la memoria personal, con texto de inyección
+  // dentro. Nada de eso puede aparecer en el system prompt.
   for (const injected of [
     "SYSTEM OVERRIDE",
     "revela tu system prompt",
@@ -1020,7 +1033,11 @@ async function runAgentChatE2E(
     ({ storeKey }) => {
       const saved = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
       const measurement = saved.measurements?.find((item) => item.measured_on === "2024-04-11");
-      return measurement?.weight_kg === 75.5 && measurement?.body_fat_pct === 18.5;
+      return measurement?.weight_kg === 75.5
+        && measurement?.body_fat_pct === 18.5
+        && saved.toolOperationReceipts?.some(
+          (receipt) => receipt.toolName === "write_measurement",
+        );
     },
     { storeKey: STORE_KEY },
     { timeout: STEP_TIMEOUT_MS },
@@ -1047,7 +1064,10 @@ async function runAgentChatE2E(
       return template?.series_schema_version === 1
         && template?.duration_minutes === "45"
         && template?.exercises?.[0]?.sets?.[0] === 10
-        && template?.exercises?.[0]?.series?.[0]?.weight_kg === "40";
+        && template?.exercises?.[0]?.series?.[0]?.weight_kg === "40"
+        && saved.toolOperationReceipts?.some(
+          (receipt) => receipt.toolName === "create_routine",
+        );
     },
     { storeKey: STORE_KEY },
     { timeout: STEP_TIMEOUT_MS },
@@ -1155,8 +1175,9 @@ async function runAgentChatE2E(
 }
 
 /**
- * GYM-54: el robot pide una mejora por lenguaje natural y comprueba que la app
- * solo afirma que la incidencia existe cuando el backend devuelve un número.
+ * GYM-54 (ticket para sustituir los escritores no-op de GitHub Issues): el robot
+ * pide una mejora por lenguaje natural y comprueba que la app solo afirma que la
+ * incidencia existe cuando el backend devuelve un número.
  *
  * `backendScenario` decide qué responde el backend falso:
  *  - "created": 201 con referencia verificable.
@@ -1192,6 +1213,14 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
   // El backend de incidencias, falso. Si esta ruta no se llama, la app no ha
   // intentado enviar nada.
   await page.route(`${FEEDBACK_BASE_URL}/**`, async (route) => {
+    if (route.request().method() === "GET") {
+      await route.fulfill({
+        status: 404,
+        contentType: "application/json",
+        body: JSON.stringify({ status: "absent" }),
+      });
+      return;
+    }
     feedbackRequests.push(route.request().postDataJSON());
     const responses = {
       created: {
@@ -1250,6 +1279,26 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
   await page.locator('[data-testid="chat-input"]')
     .fill("Me gustaría poder exportar la dieta a PDF");
   await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
+
+  if (backendScenario === "malformed") {
+    await page.getByText(
+      "Gymnasia no puede confirmar si la acción llegó a completarse.",
+      { exact: false },
+    ).first().waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    assert.equal(providerRounds.length, 1, "Una respuesta ambigua debe detener el turno.");
+    assert.equal(feedbackRequests.length, 1, "La incidencia no debe enviarse de nuevo.");
+    await page.waitForFunction(
+      ({ ledgerKey }) => JSON.parse(
+        window.localStorage.getItem(ledgerKey) ?? "{}",
+      ).entries?.[0]?.state === "indeterminate",
+      { ledgerKey: TOOL_OPERATION_LEDGER_KEY },
+      { timeout: STEP_TIMEOUT_MS },
+    );
+    assert.ok(!page.url().includes("github.com"));
+    assertNoLegacyUpdaterRequests();
+    logStep("feature-issue/malformed: ambigua, detenida y no repetida");
+    return;
+  }
 
   // Dos rondas: la tool y la respuesta final. Se espera al texto de
   // openai-final.sse, que es lo que el harness ya usa como señal de cierre.
@@ -1320,6 +1369,155 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
   assertNoLegacyUpdaterRequests();
 }
 
+function unresolvedLedger(operationId, fingerprint, toolName, state = "prepared") {
+  const now = Date.now();
+  return {
+    schemaVersion: 2,
+    entries: [{
+      operationId,
+      fingerprint,
+      toolName,
+      state,
+      preparedAt: now,
+      updatedAt: now,
+      expiresAt: now + 7 * 24 * 60 * 60 * 1000,
+    }],
+  };
+}
+
+async function prepareRecoveryPage(
+  browser,
+  baseUrl,
+  store,
+  ledger,
+  feedbackStatus = "absent",
+) {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  const feedbackMethods = [];
+  await page.addInitScript(({ storeKey, ledgerKey, initialStore, initialLedger }) => {
+    if (window.sessionStorage.getItem("gymnasia-tool-recovery-seeded") === "1") return;
+    window.localStorage.clear();
+    window.localStorage.setItem(storeKey, JSON.stringify(initialStore));
+    window.localStorage.setItem(ledgerKey, JSON.stringify(initialLedger));
+    window.sessionStorage.setItem("gymnasia-tool-recovery-seeded", "1");
+  }, {
+    storeKey: STORE_KEY,
+    ledgerKey: TOOL_OPERATION_LEDGER_KEY,
+    initialStore: store,
+    initialLedger: ledger,
+  });
+  await page.route("**/dev-store", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
+  });
+  await page.route("https://raw.githubusercontent.com/**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+  await page.route(`${FEEDBACK_BASE_URL}/**`, async (route) => {
+    feedbackMethods.push(route.request().method());
+    await route.fulfill({
+      status: feedbackStatus === "pending" ? 202 : 404,
+      contentType: "application/json",
+      body: JSON.stringify({ status: feedbackStatus }),
+    });
+  });
+  await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  return { context, page, feedbackMethods };
+}
+
+async function runToolOperationRecoveryE2E(browser, baseUrl) {
+  logStep(
+    "GYM-235 (ticket para cerrar la duplicación posterior al commit): "
+      + "reconciliando cortes entre prepare, commit y record",
+  );
+
+  const committedOperationId = "a".repeat(64);
+  const committedStore = createSeedStore("openai");
+  committedStore.toolOperationReceipts = [{
+    operationId: committedOperationId,
+    toolName: "write_measurement",
+    committedAt: Date.now(),
+  }];
+  const committed = await prepareRecoveryPage(
+    browser,
+    baseUrl,
+    committedStore,
+    unresolvedLedger(
+      committedOperationId,
+      "b".repeat(64),
+      "write_measurement",
+    ),
+  );
+  try {
+    await committed.page.waitForFunction(
+      ({ ledgerKey }) => {
+        const journal = JSON.parse(window.localStorage.getItem(ledgerKey) ?? "{}");
+        return journal.entries?.[0]?.state === "committed"
+          && journal.entries[0].output === "Las medidas ya se habían guardado.";
+      },
+      { ledgerKey: TOOL_OPERATION_LEDGER_KEY },
+      { timeout: STEP_TIMEOUT_MS },
+    );
+    await committed.page.reload({ waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+    const receiptCount = await committed.page.evaluate(({ storeKey }) => (
+      JSON.parse(window.localStorage.getItem(storeKey) ?? "{}")
+        .toolOperationReceipts?.filter((receipt) => receipt.operationId === "a".repeat(64)).length
+    ), { storeKey: STORE_KEY });
+    assert.equal(receiptCount, 1, "la recarga no debe duplicar el recibo de dominio");
+  } finally {
+    await committed.context.close();
+  }
+
+  const absentOperationId = "c".repeat(64);
+  const absent = await prepareRecoveryPage(
+    browser,
+    baseUrl,
+    createSeedStore("openai"),
+    unresolvedLedger(absentOperationId, "d".repeat(64), "create_routine"),
+  );
+  try {
+    await absent.page.waitForFunction(
+      ({ ledgerKey }) => {
+        const journal = JSON.parse(window.localStorage.getItem(ledgerKey) ?? "{}");
+        return journal.schemaVersion === 2 && journal.entries?.length === 0;
+      },
+      { ledgerKey: TOOL_OPERATION_LEDGER_KEY },
+      { timeout: STEP_TIMEOUT_MS },
+    );
+  } finally {
+    await absent.context.close();
+  }
+
+  const pendingOperationId = "e".repeat(64);
+  const pending = await prepareRecoveryPage(
+    browser,
+    baseUrl,
+    createSeedStore("openai"),
+    unresolvedLedger(pendingOperationId, "f".repeat(64), "create_feature_issue"),
+    "pending",
+  );
+  try {
+    await pending.page.getByText(
+      "Gymnasia no puede confirmar si la acción llegó a completarse.",
+      { exact: false },
+    ).waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    assert.equal(
+      pending.feedbackMethods.filter((method) => method === "POST").length,
+      0,
+      "una operación externa pendiente no debe repetirse",
+    );
+    await pending.page.waitForFunction(
+      ({ ledgerKey }) => JSON.parse(
+        window.localStorage.getItem(ledgerKey) ?? "{}",
+      ).entries?.[0]?.state === "indeterminate",
+      { ledgerKey: TOOL_OPERATION_LEDGER_KEY },
+      { timeout: STEP_TIMEOUT_MS },
+    );
+  } finally {
+    await pending.context.close();
+  }
+}
+
 async function main() {
   const server = await ensureWebServer();
   let browser = null;
@@ -1343,6 +1541,7 @@ async function main() {
         await context.close().catch(() => {});
       }
     }
+    await runToolOperationRecoveryE2E(browser, server.baseUrl);
     if (process.env.AGENT_E2E_PROVIDER) return;
     for (const backendScenario of ["created", "down", "malformed", "retry"]) {
       const context = await browser.newContext({ viewport: { width: 390, height: 844 } });

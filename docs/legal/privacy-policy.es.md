@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v4
-effective_date: 2026-09-14
+version: 2026-09-v5
+effective_date: 2026-09-15
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -93,12 +93,17 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
   del estado principal. Si encuentra datos que no puede leer con seguridad, mantiene el
   payload original en cuarentena para no sobrescribirlo. Ambas copias permanecen solo en
   el dispositivo y se sustituyen o eliminan al completar la recuperación.
-- **Control de operaciones del asistente**: un registro técnico local impide que un
-  reintento del proveedor añada dos veces una comida, una medida o una rutina, o envíe
-  dos veces una propuesta. Conserva hasta 256 operaciones durante siete días: huellas
-  técnicas, el nombre de la acción, el resultado que recibió el modelo y las fechas. No
-  guarda los argumentos, mensajes, instrucciones ni claves de API, no sale del dispositivo
-  y no se incluye en las copias exportadas.
+- **Control de operaciones del asistente**: antes de una escritura, la app deja una marca
+  técnica local. En los datos del dispositivo guarda otra marca junto con el dato cuando
+  la escritura termina; para una propuesta consulta al servicio de incidencias con el
+  identificador técnico descrito más adelante. Así puede comprobar una interrupción antes
+  de decidir si es seguro reintentar. Cada registro local está limitado a 256
+  operaciones. Las confirmadas caducan a los siete días; una operación cuyo resultado no
+  puede comprobarse se conserva hasta que pueda resolverse o borres la actividad. Las marcas
+  locales contienen huellas técnicas, el nombre de la acción y las fechas; solo el
+  registro de una operación confirmada conserva además el resultado que recibió el
+  modelo. No guardan los argumentos, mensajes, instrucciones ni claves de API, no salen
+  del dispositivo y no se incluyen en las copias exportadas.
 
 ## Dónde se guarda {#almacenamiento-local}
 
@@ -327,9 +332,11 @@ diferencias que debes conocer:
 
 ## Cuánto tiempo se conservan tus datos {#conservacion}
 
-Salvo el control técnico de operaciones descrito arriba, que caduca a los siete días,
-los datos locales se conservan indefinidamente mientras tú los mantengas. Gymnasia no
-los sincroniza ni conserva en un servidor propio: los conservas y borras tú, tanto en
+Las operaciones técnicas confirmadas descritas arriba caducan a los siete días. Una
+operación sin resolver se conserva hasta que la app pueda comprobar su resultado o hasta
+que borres la actividad, para que una repetición automática no duplique el efecto. El
+resto de los datos locales se conserva indefinidamente mientras tú lo mantengas. Gymnasia
+no los sincroniza ni conserva en un servidor propio: los conservas y borras tú, tanto en
 el dispositivo como en los lugares a los que decidas enviar una copia manual.
 
 Los datos que hayas enviado a un proveedor de IA se rigen por el plazo de conservación

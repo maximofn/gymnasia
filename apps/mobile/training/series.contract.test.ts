@@ -68,10 +68,10 @@ describe("contrato de series con App.tsx", () => {
   it("la versión del esquema de series no se cuela en la raíz del almacén", () => {
     // Una clave raíz desconocida hace que validateLocalStoreTree emita
     // unknown_root_field y la app arranque en la pantalla de recuperación.
-    expect(LOCAL_STORE_ROOT_FIELDS).toHaveLength(10);
+    expect(LOCAL_STORE_ROOT_FIELDS).toHaveLength(11);
     expect(LOCAL_STORE_ROOT_FIELDS).not.toContain("series_schema_version");
     const policy = JSON.parse(policySource) as { allowedRootFields: string[] };
-    expect(policy.allowedRootFields).toHaveLength(10);
+    expect(policy.allowedRootFields).toHaveLength(11);
     expect(policy.allowedRootFields).not.toContain("series_schema_version");
   });
 

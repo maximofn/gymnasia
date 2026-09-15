@@ -1,10 +1,14 @@
 import {
   FEEDBACK_ISSUE_PATH,
+  FEEDBACK_ISSUE_STATUS_PATH,
   FEEDBACK_SCHEMA_VERSION,
   buildIdempotencyKey,
+  buildOperationIdempotencyKey,
   isVerifiedIssueReference,
   type FeedbackIssueDraft,
   type FeedbackIssueOutcome,
+  type FeedbackIssueKind,
+  type FeedbackOperationStatusOutcome,
 } from "./feedbackIssues";
 
 export type FeedbackClientConfig = {
@@ -18,7 +22,14 @@ export type FeedbackClientConfig = {
 };
 
 export type FeedbackIssueClient = {
-  submitIssue: (draft: FeedbackIssueDraft) => Promise<FeedbackIssueOutcome>;
+  submitIssue: (
+    draft: FeedbackIssueDraft,
+    operationId?: string,
+  ) => Promise<FeedbackIssueOutcome>;
+  getOperationStatus: (
+    kind: FeedbackIssueKind,
+    operationId: string,
+  ) => Promise<FeedbackOperationStatusOutcome>;
 };
 
 /**
@@ -30,8 +41,48 @@ const DEFAULT_TIMEOUT_MS = 15_000;
 export function createFeedbackIssueClient(
   config: FeedbackClientConfig,
 ): FeedbackIssueClient {
+  const requestHeaders = (): Record<string, string> => {
+    const headers: Record<string, string> = { "content-type": "application/json" };
+    if (config.appSecret) headers["x-gymnasia-app"] = config.appSecret;
+    return headers;
+  };
+
+  const getOperationStatus = async (
+    kind: FeedbackIssueKind,
+    operationId: string,
+  ): Promise<FeedbackOperationStatusOutcome> => {
+    const fetchImpl = config.fetchImpl ?? fetch;
+    const controller =
+      typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timeout = setTimeout(
+      () => controller?.abort(),
+      config.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+    );
+    try {
+      const key = buildOperationIdempotencyKey(kind, operationId);
+      const response = await fetchImpl(
+        `${config.baseUrl}${FEEDBACK_ISSUE_STATUS_PATH}?idempotency_key=${encodeURIComponent(key)}`,
+        {
+          method: "GET",
+          headers: requestHeaders(),
+          signal: controller?.signal,
+        },
+      );
+      const rawBody = await response.text().catch(() => "");
+      return mapFeedbackStatusResponse(response.status, rawBody);
+    } catch {
+      return { status: "indeterminate" };
+    } finally {
+      clearTimeout(timeout);
+    }
+  };
+
   return {
-    async submitIssue(draft: FeedbackIssueDraft): Promise<FeedbackIssueOutcome> {
+    getOperationStatus,
+    async submitIssue(
+      draft: FeedbackIssueDraft,
+      operationId?: string,
+    ): Promise<FeedbackIssueOutcome> {
       const fetchImpl = config.fetchImpl ?? fetch;
       // La guarda de `typeof` existe porque React Native antiguo no siempre
       // trae AbortController. Mismo patrón que el streaming de proveedores.
@@ -43,14 +94,9 @@ export function createFeedbackIssueClient(
       );
 
       try {
-        const headers: Record<string, string> = {
-          "content-type": "application/json",
-        };
-        if (config.appSecret) headers["x-gymnasia-app"] = config.appSecret;
-
         const response = await fetchImpl(config.baseUrl + FEEDBACK_ISSUE_PATH, {
           method: "POST",
-          headers,
+          headers: requestHeaders(),
           // Estas cinco claves y ninguna más. Cualquier campo extra sería un
           // canal por el que sale información que el usuario no ha confirmado.
           body: JSON.stringify({
@@ -58,23 +104,87 @@ export function createFeedbackIssueClient(
             kind: draft.kind,
             title: draft.title,
             summary: draft.summary,
-            idempotency_key: buildIdempotencyKey(draft),
+            idempotency_key: operationId
+              ? buildOperationIdempotencyKey(draft.kind, operationId)
+              : buildIdempotencyKey(draft),
           }),
           signal: controller?.signal,
         });
 
         const rawBody = await response.text().catch(() => "");
-        return mapFeedbackResponse(response.status, rawBody);
+        const outcome = mapFeedbackResponse(response.status, rawBody);
+        if (
+          operationId
+          && (
+            outcome.status === "error"
+            || (outcome.status === "rejected" && outcome.reason === "rate_limited")
+          )
+        ) {
+          const status = await getOperationStatus(draft.kind, operationId);
+          if (status.status === "created") {
+            return {
+              status: "created",
+              issueNumber: status.issueNumber,
+              issueUrl: status.issueUrl,
+              deduplicated: true,
+            };
+          }
+          if (status.status === "pending") {
+            return { status: "error", reason: "operation_pending" };
+          }
+        }
+        return outcome;
       } catch (error) {
         const name = (error as { name?: string } | null)?.name;
-        return name === "AbortError"
+        const failure: FeedbackIssueOutcome = name === "AbortError"
           ? { status: "error", reason: "timeout" }
           : { status: "error", reason: "transport" };
+        if (operationId) {
+          const status = await getOperationStatus(draft.kind, operationId);
+          if (status.status === "created") {
+            return {
+              status: "created",
+              issueNumber: status.issueNumber,
+              issueUrl: status.issueUrl,
+              deduplicated: true,
+            };
+          }
+          if (status.status === "pending") {
+            return { status: "error", reason: "operation_pending" };
+          }
+        }
+        return failure;
       } finally {
         clearTimeout(timeout);
       }
     },
   };
+}
+
+export function mapFeedbackStatusResponse(
+  status: number,
+  rawBody: string,
+): FeedbackOperationStatusOutcome {
+  const body = parseJsonSafely(rawBody);
+  if (status === 404 && (body as { status?: unknown } | null)?.status === "absent") {
+    return { status: "absent" };
+  }
+  if (status === 202 && (body as { status?: unknown } | null)?.status === "pending") {
+    return { status: "pending" };
+  }
+  if (
+    status >= 200
+    && status < 300
+    && (body as { status?: unknown } | null)?.status === "created"
+    && isVerifiedIssueReference(body)
+  ) {
+    return {
+      status: "created",
+      issueNumber: body.number,
+      issueUrl: body.url,
+    };
+  }
+  return { status: "indeterminate" };
 }
 
 /**

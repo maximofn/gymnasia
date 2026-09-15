@@ -111,15 +111,28 @@ function seedStore() {
     ],
     chatProvider: "openai",
     foodAIProvider: "google",
+    toolOperationReceipts: [{
+      operationId: "a".repeat(64),
+      toolName: "write_measurement",
+      committedAt: Date.now(),
+    }],
   };
 }
 
 function seedEntries() {
   return {
     [keys.store]: JSON.stringify(seedStore()),
-    [keys.personalData]: JSON.stringify([
-      { key: "objetivo", description: "Dato marcado", value: `memory-${marker}` },
-    ]),
+    [keys.personalData]: JSON.stringify({
+      schemaVersion: 2,
+      fields: [
+        { key: "objetivo", description: "Dato marcado", value: `memory-${marker}` },
+      ],
+      toolOperationReceipts: [{
+        operationId: "b".repeat(64),
+        toolName: "save_personal_data",
+        committedAt: Date.now(),
+      }],
+    }),
     [keys.personalFoods]: JSON.stringify([
       { id: "food-e2e", name: `food-${marker}`, calories_kcal: 10, protein_g: 1, carbs_g: 1, fat_g: 0 },
     ]),
@@ -274,6 +287,7 @@ async function run() {
 
     const partial = await storageSnapshot(page);
     assert.match(partial[keys.personalData] ?? "", new RegExp(`memory-${marker}`));
+    assert.deepEqual(JSON.parse(partial[keys.personalData]).toolOperationReceipts, []);
     assert.match(partial[keys.personalFoods] ?? "", new RegExp(`food-${marker}`));
     for (const cacheKey of [keys.foodsCacheV2, keys.productsCacheV2, keys.recipesCacheV2, keys.exercisesCacheV3]) {
       assert.ok(partial[cacheKey], `el borrado parcial debe conservar ${cacheKey}`);
@@ -296,6 +310,7 @@ async function run() {
     assert.equal(partial[keys.sessionTemplateDraft], undefined);
     assert.doesNotMatch(devStore, new RegExp(marker));
     assert.equal(JSON.parse(partial[keys.store]).dietSettings.daily_calories, "2200");
+    assert.deepEqual(JSON.parse(partial[keys.store]).toolOperationReceipts, []);
     assert.equal(JSON.parse(partial[keys.preferences]).chartPeriod, "6m");
 
     log("Comprobando la confirmación reforzada y el borrado total");

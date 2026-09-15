@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Política de privacidad de Gymnasia">
-<meta name="gymnasia-policy-version" content="2026-09-v4">
-<meta name="gymnasia-policy-digest" content="sha256:a4844153a76897d82d319c6e90b8fbec131bd3d2c4fd4f1b1327e2f0dab8c898">
+<meta name="gymnasia-policy-version" content="2026-09-v5">
+<meta name="gymnasia-policy-digest" content="sha256:a83d6d94f94bd87aaea530bf4297740175ea725af3b410d7a9ef5310774ea944">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Política de privacidad de Gymnasia</h1>
-  <p class="meta">Versión 2026-09-v4 · en vigor desde 2026-09-14 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Versión 2026-09-v5 · en vigor desde 2026-09-15 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
   <nav>
     <h2>Contenido</h2>
@@ -100,7 +100,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Configuración de proveedores de IA</strong>: el modelo elegido y, si Anthropic lo exige para una clave vinculada a identidad, el identificador del workspace (<code>wrkspc_…</code>).</li>
       <li><strong>Registro de depuración</strong>: un histórico técnico de hasta 1000 entradas con los avisos de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de serie; eventos técnicos de selección de políticas; y contadores del contexto preparado para Google, como número de intercambios, bytes y cantidad de imágenes antiguas omitidas. Esos diagnósticos de Google no contienen mensajes, imágenes, argumentos de herramientas ni claves. El registro nunca se envía por red; puedes verlo y borrarlo desde Ajustes.</li>
       <li><strong>Copias locales de recuperación</strong>: la aplicación conserva una única copia verificada del estado principal. Si encuentra datos que no puede leer con seguridad, mantiene el payload original en cuarentena para no sobrescribirlo. Ambas copias permanecen solo en el dispositivo y se sustituyen o eliminan al completar la recuperación.</li>
-      <li><strong>Control de operaciones del asistente</strong>: un registro técnico local impide que un reintento del proveedor añada dos veces una comida, una medida o una rutina, o envíe dos veces una propuesta. Conserva hasta 256 operaciones durante siete días: huellas técnicas, el nombre de la acción, el resultado que recibió el modelo y las fechas. No guarda los argumentos, mensajes, instrucciones ni claves de API, no sale del dispositivo y no se incluye en las copias exportadas.</li>
+      <li><strong>Control de operaciones del asistente</strong>: antes de una escritura, la app deja una marca técnica local. En los datos del dispositivo guarda otra marca junto con el dato cuando la escritura termina; para una propuesta consulta al servicio de incidencias con el identificador técnico descrito más adelante. Así puede comprobar una interrupción antes de decidir si es seguro reintentar. Cada registro local está limitado a 256 operaciones. Las confirmadas caducan a los siete días; una operación cuyo resultado no puede comprobarse se conserva hasta que pueda resolverse o borres la actividad. Las marcas locales contienen huellas técnicas, el nombre de la acción y las fechas; solo el registro de una operación confirmada conserva además el resultado que recibió el modelo. No guardan los argumentos, mensajes, instrucciones ni claves de API, no salen del dispositivo y no se incluyen en las copias exportadas.</li>
     </ul>
   </section>
 
@@ -206,7 +206,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="conservacion">
     <h2><a href="#conservacion">Cuánto tiempo se conservan tus datos</a></h2>
-    <p>Salvo el control técnico de operaciones descrito arriba, que caduca a los siete días, los datos locales se conservan indefinidamente mientras tú los mantengas. Gymnasia no los sincroniza ni conserva en un servidor propio: los conservas y borras tú, tanto en el dispositivo como en los lugares a los que decidas enviar una copia manual.</p>
+    <p>Las operaciones técnicas confirmadas descritas arriba caducan a los siete días. Una operación sin resolver se conserva hasta que la app pueda comprobar su resultado o hasta que borres la actividad, para que una repetición automática no duplique el efecto. El resto de los datos locales se conserva indefinidamente mientras tú lo mantengas. Gymnasia no los sincroniza ni conserva en un servidor propio: los conservas y borras tú, tanto en el dispositivo como en los lugares a los que decidas enviar una copia manual.</p>
     <p>Los datos que hayas enviado a un proveedor de IA se rigen por el plazo de conservación de ese proveedor, según tu cuenta con él.</p>
     <p>Las propuestas permanecen en el repositorio privado mientras sean necesarias para gestionar el proyecto. En las denuncias de respuestas, el cuerpo que contiene la pregunta y la respuesta se programa para borrarse automáticamente al cumplir 30 días. Los registros técnicos de limitación de uso basados en el HMAC de la IP se eliminan en un máximo de 48 horas.</p>
   </section>
@@ -260,7 +260,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Política de privacidad de Gymnasia · 2026-09-v4 · 2026-09-14</p>
+    <p>Política de privacidad de Gymnasia · 2026-09-v5 · 2026-09-15</p>
   </footer>
 </main>
 </body>

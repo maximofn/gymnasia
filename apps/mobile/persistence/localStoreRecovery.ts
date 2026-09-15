@@ -1,4 +1,5 @@
 import { isGoogleConversationTurn } from "../agent/googleInteractions";
+import { isToolOperationReceipt } from "../agent/toolOperationReceipts";
 
 export const LOCAL_STORE_RECOVERY_RECORD_VERSION = 1 as const;
 
@@ -13,6 +14,7 @@ export const LOCAL_STORE_ROOT_FIELDS = [
   "keys",
   "chatProvider",
   "foodAIProvider",
+  "toolOperationReceipts",
 ] as const;
 
 export type LocalStoreValidationIssue = {
@@ -290,6 +292,26 @@ function validateProviderKey(
   }
 }
 
+function validateToolOperationReceipt(
+  value: Record<string, unknown>,
+  path: string,
+  issues: LocalStoreValidationIssue[],
+): void {
+  if (!isToolOperationReceipt(value)) {
+    pushIssue(
+      issues,
+      path,
+      "normalization_failed",
+      "El recibo de operación no tiene una forma verificable.",
+    );
+    return;
+  }
+  ["operationId", "toolName"].forEach((key) =>
+    validateOptionalScalar(value, key, path, "string", issues),
+  );
+  validateOptionalScalar(value, "committedAt", path, "number", issues);
+}
+
 export function migrateLocalStoreTree(value: unknown): unknown {
   if (!isRecord(value)) return value;
   return {
@@ -302,6 +324,7 @@ export function migrateLocalStoreTree(value: unknown): unknown {
     threads: value.threads ?? [],
     messagesByThread: value.messagesByThread ?? {},
     keys: value.keys ?? [],
+    toolOperationReceipts: value.toolOperationReceipts ?? [],
   };
 }
 
@@ -337,6 +360,12 @@ export function validateLocalStoreTree(value: unknown): LocalStoreValidationIssu
   });
   validateMessagesByThread(value.messagesByThread, "$.messagesByThread", issues);
   validateRecordArray(value.keys, "$.keys", issues, validateProviderKey);
+  validateRecordArray(
+    value.toolOperationReceipts,
+    "$.toolOperationReceipts",
+    issues,
+    validateToolOperationReceipt,
+  );
 
   ["chatProvider", "foodAIProvider"].forEach((key) => {
     if (value[key] === undefined || value[key] === null) return;

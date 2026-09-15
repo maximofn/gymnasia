@@ -204,7 +204,7 @@ describe("Google stateless continuation", () => {
       executeTool: async (name, _args, call) => {
         const identity = identifyToolOperation(call); const found = await ledger.find(identity);
         if (found.kind === "replay") return found.output;
-        effect(); await ledger.record(identity, name, "saved"); return "saved";
+        await ledger.prepare(identity, name); effect(); await ledger.commit(identity, name, "saved"); return "saved";
       },
       requestNextTurn: async () => { if (fail) throw new Error("network timeout"); return parse(finalRaw); },
     });

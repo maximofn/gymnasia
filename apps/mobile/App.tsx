@@ -29,6 +29,9 @@ import {
 import { pushTrace, pushAppStartTrace, clearTraces, getTraces } from "./trace";
 import { agentToolEffect } from "./agent/toolDefinitions";
 import {
+  buildPersonalDataStore,
+  parsePersonalDataStore,
+  personalDataStoreReceiptsAreValid,
   sanitizePersonalDataFields,
   type PersonalDataField,
 } from "./agent/personalData";
@@ -39,9 +42,17 @@ import {
 } from "./agent/toolExecutor";
 import {
   ToolOperationCoordinator,
+  ToolOperationIndeterminateError,
   ToolOperationLedgerRepository,
+  TOOL_OPERATION_INDETERMINATE_MESSAGE,
   type ToolCallEnvelope,
+  type ToolOperationReconciliationContext,
+  type ToolOperationReconciliationOutcome,
 } from "./agent/toolOperationLedger";
+import {
+  canProveToolOperationReceiptAbsent,
+  hasToolOperationReceipt,
+} from "./agent/toolOperationReceipts";
 import { resolveFeedbackEndpoint } from "./environment";
 import { createFeedbackIssueClient } from "./agent/feedbackClient";
 import {
@@ -923,7 +934,8 @@ const EMPTY_CUSTOM_EXERCISE_DRAFT: CustomExerciseDraft = {
 type ExerciseRepoEntry = ExerciseCatalogEntry;
 type FoodRepoEntry = FoodCatalogEntry;
 
-// Las incidencias se crean a través del backend de recepción (GYM-54), que es
+// Las incidencias se crean a través del backend de recepción (GYM-54, ticket
+// para sustituir los escritores no-op de GitHub Issues), que es
 // quien custodia la credencial de GitHub. Un cliente estático nunca puede
 // llevar un token de escritura. Toda la lógica testeable vive en
 // agent/feedbackIssues.ts y agent/feedbackClient.ts.
@@ -943,6 +955,7 @@ const feedbackProposalStore = createFeedbackProposalStore({ createId: () => uid(
 
 async function submitFeedbackIssue(
   draft: FeedbackIssueDraft,
+  operationId?: string,
 ): Promise<FeedbackIssueOutcome> {
   if (!feedbackIssueClient) {
     return {
@@ -950,7 +963,7 @@ async function submitFeedbackIssue(
       reason: feedbackEndpoint.available ? "disabled" : feedbackEndpoint.reason,
     };
   }
-  return feedbackIssueClient.submitIssue(draft);
+  return feedbackIssueClient.submitIssue(draft, operationId);
 }
 
 function getExerciseImageUrl(entry: ExerciseRepoEntry, gender: "male" | "female"): string {
@@ -963,8 +976,7 @@ function getExerciseImageUrl(entry: ExerciseRepoEntry, gender: "male" | "female"
 async function loadPersonalData(): Promise<PersonalDataField[]> {
   try {
     const raw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
-    if (!raw) return [];
-    return sanitizePersonalDataFields(JSON.parse(raw));
+    return parsePersonalDataStore(raw).fields;
   } catch {
     return [];
   }
@@ -972,11 +984,149 @@ async function loadPersonalData(): Promise<PersonalDataField[]> {
 
 // Acepta unknown a propósito: el backup importado llega sin validar y no debe
 // fingir que ya tiene la forma correcta.
-async function savePersonalData(fields: unknown): Promise<void> {
-  await AsyncStorage.setItem(
-    PERSONAL_DATA_STORAGE_KEY,
-    JSON.stringify(sanitizePersonalDataFields(fields)),
-  );
+let personalDataWriteQueue: Promise<void> = Promise.resolve();
+
+async function updatePersonalDataStore(
+  update: (current: ReturnType<typeof parsePersonalDataStore>) => ReturnType<typeof parsePersonalDataStore>,
+): Promise<void> {
+  const run = personalDataWriteQueue.then(async () => {
+    const currentRaw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
+    if (currentRaw !== null && !personalDataStoreReceiptsAreValid(currentRaw)) {
+      throw new ToolOperationIndeterminateError();
+    }
+    const current = parsePersonalDataStore(currentRaw);
+    const raw = JSON.stringify(update(current));
+    await AsyncStorage.setItem(PERSONAL_DATA_STORAGE_KEY, raw);
+    const verified = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
+    if (verified !== raw) throw new ToolOperationIndeterminateError();
+  });
+  personalDataWriteQueue = run.catch(() => undefined);
+  return run;
+}
+
+async function savePersonalData(fields: unknown, operationId?: string): Promise<void> {
+  await updatePersonalDataStore((current) => buildPersonalDataStore(
+    fields,
+    current.toolOperationReceipts,
+    operationId,
+  ));
+}
+
+async function clearPersonalDataOperationReceipts(): Promise<void> {
+  const run = personalDataWriteQueue.then(async () => {
+    const currentRaw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
+    if (currentRaw === null) return;
+    const parsed = JSON.parse(currentRaw) as unknown;
+    if (
+      !Array.isArray(parsed)
+      && (
+        !parsed
+        || typeof parsed !== "object"
+        || (parsed as { schemaVersion?: unknown }).schemaVersion !== 2
+      )
+    ) {
+      throw new Error("No se pudo conservar la memoria personal durante el borrado.");
+    }
+    const current = parsePersonalDataStore(currentRaw);
+    const raw = JSON.stringify({ ...current, toolOperationReceipts: [] });
+    await AsyncStorage.setItem(PERSONAL_DATA_STORAGE_KEY, raw);
+    if (await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY) !== raw) {
+      throw new Error("No se pudo verificar el borrado de recibos de la memoria.");
+    }
+  });
+  personalDataWriteQueue = run.catch(() => undefined);
+  return run;
+}
+
+const RECONCILED_TOOL_OUTPUTS: Record<string, string> = {
+  save_personal_data: "Los datos personales ya se habían guardado.",
+  write_measurement: "Las medidas ya se habían guardado.",
+  add_meal_food: "El alimento ya se había añadido.",
+  create_routine: "La rutina ya se había creado.",
+};
+
+async function reconcileToolOperation(
+  operationId: string,
+  toolName: string,
+  context: ToolOperationReconciliationContext,
+): Promise<ToolOperationReconciliationOutcome> {
+  if (toolName === "create_feature_issue") {
+    if (!feedbackIssueClient) {
+      return context.source === "fresh"
+        ? { status: "not_committed" }
+        : { status: "indeterminate" };
+    }
+    const outcome = await feedbackIssueClient.getOperationStatus("feature", operationId);
+    if (outcome.status === "created") {
+      return {
+        status: "committed",
+        output: `Incidencia registrada con el número ${outcome.issueNumber}. Comunica al usuario ese número. No inventes ningún otro dato.`,
+      };
+    }
+    if (outcome.status === "absent") {
+      return context.source === "fresh"
+        ? { status: "not_committed" }
+        : { status: "indeterminate" };
+    }
+    return { status: "indeterminate" };
+  }
+
+  if (toolName === "save_personal_data") {
+    try {
+      const raw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
+      if (!raw) {
+        return context.source === "fresh"
+          || (context.preparedAt !== undefined
+            && canProveToolOperationReceiptAbsent([], context.preparedAt))
+          ? { status: "not_committed" }
+          : { status: "indeterminate" };
+      }
+      if (!personalDataStoreReceiptsAreValid(raw)) {
+        return { status: "indeterminate" };
+      }
+      const store = parsePersonalDataStore(raw);
+      if (hasToolOperationReceipt(store.toolOperationReceipts, operationId, toolName)) {
+        return { status: "committed", output: RECONCILED_TOOL_OUTPUTS[toolName] };
+      }
+      return context.source === "fresh"
+        || (context.preparedAt !== undefined
+          && canProveToolOperationReceiptAbsent(
+            store.toolOperationReceipts,
+            context.preparedAt,
+          ))
+        ? { status: "not_committed" }
+        : { status: "indeterminate" };
+    } catch {
+      return { status: "indeterminate" };
+    }
+  }
+
+  if (Object.hasOwn(RECONCILED_TOOL_OUTPUTS, toolName)) {
+    try {
+      const inspection = await localStoreRecoveryRepository.inspect();
+      if (inspection.status === "empty") {
+        return context.source === "fresh"
+          || (context.preparedAt !== undefined
+            && canProveToolOperationReceiptAbsent([], context.preparedAt))
+          ? { status: "not_committed" }
+          : { status: "indeterminate" };
+      }
+      if (inspection.status !== "valid") return { status: "indeterminate" };
+      const receipts = inspection.candidate.value.toolOperationReceipts;
+      if (hasToolOperationReceipt(receipts, operationId, toolName)) {
+        return { status: "committed", output: RECONCILED_TOOL_OUTPUTS[toolName] };
+      }
+      return context.source === "fresh"
+        || (context.preparedAt !== undefined
+          && canProveToolOperationReceiptAbsent(receipts, context.preparedAt))
+        ? { status: "not_committed" }
+        : { status: "indeterminate" };
+    } catch {
+      return { status: "indeterminate" };
+    }
+  }
+
+  return { status: "indeterminate" };
 }
 
 async function loadMeasurementsFromStorage(): Promise<Measurement[]> {
@@ -1280,9 +1430,14 @@ type BackupResult = {
 type BackupMeta = { lastBackupAt: string | null };
 
 function buildBackupData(data: BackupExportData): BackupExportData {
+  const sanitizedStore = sanitizeDevStoreValue(data.store);
+  const {
+    toolOperationReceipts: _toolOperationReceipts,
+    ...backupStore
+  } = sanitizedStore;
   return {
     // Nunca escribir API keys ni otros campos de credencial al paquete exportado.
-    store: sanitizeDevStoreValue(data.store),
+    store: backupStore as LocalStore,
     userPrefs: normalizeUserPreferences(data.userPrefs).preferences,
     personalFoods: data.personalFoods,
     personalData: data.personalData,
@@ -1509,7 +1664,7 @@ async function callProviderChatAPIWithTools(
         message: "La herramienta no está permitida para esta consulta.",
       });
     }
-    return toolOperationCoordinator.execute(
+    const outcome = await toolOperationCoordinator.execute(
       call,
       effect !== "read",
       (operationId) => executeChatTool(
@@ -1527,7 +1682,12 @@ async function callProviderChatAPIWithTools(
         options?.resolveExerciseCatalogIds,
         options?.getExerciseCatalogAvailability,
       ),
+      reconcileToolOperation,
     );
+    if (outcome.status === "indeterminate") {
+      throw new ToolOperationIndeterminateError();
+    }
+    return outcome.output;
   };
   return requestProviderToolChat(
     provider,
@@ -1911,6 +2071,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [localStoreRecoveryError, setLocalStoreRecoveryError] = useState<string | null>(null);
   const [localStoreStartupError, setLocalStoreStartupError] = useState<string | null>(null);
   const localStoreHydrationAttemptRef = useRef(0);
+  const toolOperationReconciliationStartedRef = useRef(false);
   const [secureStoreAvailable, setSecureStoreAvailable] = useState(true);
   // GYM-5 (ticket para exportar e importar copias manuales), en Configuración → Datos.
   const [backupBusy, setBackupBusy] = useState<null | "export" | "import">(null);
@@ -4079,6 +4240,27 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }, [isHydrated]);
 
   useEffect(() => {
+    if (!isHydrated) {
+      toolOperationReconciliationStartedRef.current = false;
+      return;
+    }
+    if (
+      dataDeletionBusyRef.current
+      || toolOperationReconciliationStartedRef.current
+    ) return;
+    toolOperationReconciliationStartedRef.current = true;
+    void toolOperationCoordinator.reconcileUnresolved(reconcileToolOperation)
+      .then((summary) => {
+        if (summary.indeterminate > 0) {
+          setError(TOOL_OPERATION_INDETERMINATE_MESSAGE);
+        }
+      })
+      .catch(() => {
+        setError("No se pudo comprobar el estado de las últimas acciones del agente.");
+      });
+  }, [isHydrated]);
+
+  useEffect(() => {
     if (!isHydrated || providerSettingsInitializedRef.current) return;
     setProviderDraftByProvider(createProviderDraftMap(store.keys));
     setProviderConnectionStatus(createProviderConnectionStatusMap(store.keys));
@@ -4703,8 +4885,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
 
       const allHistory = excludeLocalDisclosureMessages([...threadMessages, userMessage]);
       const history = (activeProvider.provider === "google" ? allHistory : allHistory.slice(-20)).map(toChatInput);
-      // GYM-139: el system prompt procede exclusivamente de la política
-      // seleccionada más la política local de transparencia que añade
+      // GYM-139 (ticket para impedir que la memoria persistente altere el
+      // system prompt): el prompt procede exclusivamente de la política
+      // seleccionada más la transparencia local que añade
       // composeAiSystemPrompt. Ningún dato local puede sumar texto aquí, así que
       // esta ruta no lee la memoria personal en absoluto.
       void pushTrace("chatPrompt", "chat-request", {
@@ -4805,7 +4988,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       updateThreadMessage(threadId, assistantMessageId, (current) => ({
         ...current,
         kind: "technical_error",
-        content: `Error de proveedor: ${message}`,
+        content: err instanceof ToolOperationIndeterminateError
+          || message === TOOL_OPERATION_INDETERMINATE_MESSAGE
+          ? TOOL_OPERATION_INDETERMINATE_MESSAGE
+          : `Error de proveedor: ${message}`,
         thinking: null,
         is_streaming: false,
       }));
@@ -5236,6 +5422,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       }
       const mergedStore: LocalStore = {
         ...importedStore,
+        // Los recibos no viajan en la copia, pero el journal local sí sobrevive
+        // a la importación. Conservarlos impide que una operación anterior y
+        // ambigua se repita automáticamente sobre los datos restaurados.
+        toolOperationReceipts: storeRef.current.toolOperationReceipts,
         keys: providerCommit.snapshot.keys,
         chatProvider:
           providerCommit.snapshot.keys.find((item) => item.is_active)?.provider
@@ -8091,6 +8281,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           verify: async () => (await loadDevStoreFile()) === serializedDevStore,
         });
       }
+      tasks.push({
+        id: "personal-data-tool-receipts",
+        label: "Control de operaciones de la memoria del coach",
+        delete: clearPersonalDataOperationReceipts,
+        verify: async () => {
+          const raw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
+          return raw === null
+            || parsePersonalDataStore(raw).toolOperationReceipts.length === 0;
+        },
+      });
     } else {
       const secureStoreAvailableNow = await isSecureStoreAvailable();
       const preservedKeys = new Set(
@@ -8251,6 +8451,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setDataDeletionReport(null);
     let report: LocalDataDeletionReport;
     try {
+      // Bloquea nuevas persistencias y espera las que ya habían superado su guard.
+      // Sin esta barrera, una escritura antigua podía terminar después del borrado
+      // y repoblar el espejo de desarrollo con conversaciones y recibos eliminados.
+      await localStoreRuntimeHandle.enqueuePersistence(async () => undefined);
       const tasks = await buildDataDeletionTasks(scope);
       report = await runLocalDataDeletion(scope, tasks);
     } catch (error) {

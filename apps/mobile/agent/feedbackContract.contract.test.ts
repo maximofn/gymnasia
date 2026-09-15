@@ -5,6 +5,7 @@ import { AGENT_TOOL_DEFINITIONS } from "./toolDefinitions";
 import {
   FEEDBACK_ISSUE_KINDS,
   FEEDBACK_ISSUE_PATH,
+  FEEDBACK_ISSUE_STATUS_PATH,
   FEEDBACK_SCHEMA_VERSION,
   REPORT_SUMMARY_MAX_LENGTH,
   SUMMARY_MAX_LENGTH,
@@ -42,6 +43,12 @@ describe("contrato cliente <-> Worker", () => {
   it("la ruta del endpoint coincide", () => {
     expect(workerContract).toContain(
       `export const FEEDBACK_ISSUE_PATH = "${FEEDBACK_ISSUE_PATH}" as const;`,
+    );
+  });
+
+  it("la ruta de reconciliación coincide", () => {
+    expect(workerContract).toContain(
+      `export const FEEDBACK_ISSUE_STATUS_PATH = "${FEEDBACK_ISSUE_STATUS_PATH}" as const;`,
     );
   });
 

@@ -11,6 +11,7 @@
 
 export const FEEDBACK_SCHEMA_VERSION = 1 as const;
 export const FEEDBACK_ISSUE_PATH = "/feedback/issues" as const;
+export const FEEDBACK_ISSUE_STATUS_PATH = "/feedback/issues/status" as const;
 
 export const FEEDBACK_ISSUE_KINDS = ["feature", "food", "exercise", "report"] as const;
 export type FeedbackIssueKind = (typeof FEEDBACK_ISSUE_KINDS)[number];
@@ -78,7 +79,16 @@ export type FeedbackIssueOutcome =
       status: "rejected";
       reason: "invalid_input" | "too_long" | "rate_limited" | "forbidden";
     }
-  | { status: "error"; reason: "timeout" | "transport" | "server" | "malformed_response" };
+  | {
+      status: "error";
+      reason: "timeout" | "transport" | "server" | "malformed_response" | "operation_pending";
+    };
+
+export type FeedbackOperationStatusOutcome =
+  | { status: "absent" }
+  | { status: "pending" }
+  | { status: "created"; issueNumber: number; issueUrl: string }
+  | { status: "indeterminate" };
 
 const LINE_FEED = 0x0a;
 const UNIT_SEPARATOR = 0x1f;
@@ -280,6 +290,16 @@ export function formatAiResponseReport(input: AiResponseReportInput): FeedbackIs
 export function buildIdempotencyKey(draft: FeedbackIssueDraft): string {
   const canonical = draft.kind + " " + draft.title + " " + draft.summary;
   return "v1:" + draft.kind + ":" + hash64Hex(canonical);
+}
+
+export function buildOperationIdempotencyKey(
+  kind: FeedbackIssueKind,
+  operationId: string,
+): string {
+  if (!/^[a-f0-9]{64}$/.test(operationId)) {
+    throw new Error("El identificador de operación no es válido.");
+  }
+  return `v1:${kind}:${operationId}`;
 }
 
 /** Dos pasadas FNV-1a de 32 bits. Sin BigInt ni WebCrypto: puro y síncrono. */
