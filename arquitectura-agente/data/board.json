@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-14",
+    "updated": "2026-09-15",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -303,7 +303,7 @@
         {
           "id": "GYM-226",
           "title": "Automatizar la subida a Google Play de los cambios fusionados",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Hoy nada de lo que se fusiona llega a Play: el workflow compila un APK y publica una release de GitHub, sin AAB ni subida. Automatizarlo hasta el canal de pruebas internas.",
           "dependsOn": [],
           "related": [
@@ -2290,7 +2290,7 @@
         {
           "id": "GYM-233",
           "title": "Acotar el contexto reenviado a Google Interactions",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Limitar mensajes e imágenes reenviados a Google sin romper firmas, pasos ni continuaciones de herramientas.",
           "dependsOn": [],
           "related": [
