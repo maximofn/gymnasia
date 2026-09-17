@@ -69,6 +69,14 @@
           "summary": "Un tester ve un aviso rojo en la pestaña Coach y el agente no contesta: el APK instalado salió sin el snapshot firmado de políticas. Hay que identificar el artefacto, impedir que se publique otro así y hacer el mensaje accionable.",
           "dependsOn": [],
           "related": []
+        },
+        {
+          "id": "GYM-245",
+          "title": "Permitir introducir el peso desde el plan de dieta y propagarlo a Medidas, Home y el agente",
+          "state": "todo",
+          "summary": "Un tester pulsa la casilla Peso del plan de dieta y no pasa nada porque es de solo lectura. Debe aceptar el peso, guardarlo como medición de hoy y que Home, Medidas, Calcular y el agente lean el mismo valor.",
+          "dependsOn": [],
+          "related": []
         }
       ]
     },
@@ -3170,9 +3178,10 @@
     {
       "id": "incidencias-testers",
       "title": "Prioridad absoluta: incidencias de los testers",
-      "why": "Los testers son la única señal real de Producción y su feedback alimenta el cuestionario de acceso a producción. GYM-244 (ticket para arreglar el Coach que no responde por falta de snapshot firmado) bloquea el chat entero para quien lo sufre, así que va primero.",
+      "why": "Los testers son la única señal real de Producción y su feedback alimenta el cuestionario de acceso a producción. GYM-244 (ticket para arreglar el Coach que no responde por falta de snapshot firmado) bloquea el chat entero para quien lo sufre, así que va primero. GYM-245 (ticket para permitir introducir el peso desde el plan de dieta) impide calcular las calorías a quien no pasa antes por Medidas.",
       "tickets": [
-        "GYM-244"
+        "GYM-244",
+        "GYM-245"
       ]
     },
     {
