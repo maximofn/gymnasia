@@ -2583,6 +2583,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     isWeb: Platform.OS === "web",
     isIos: Platform.OS === "ios",
     setError,
+    createId: uid,
   });
   const dietSettingsController = dietSettingsRuntime.controller;
   const savedDietPlanEvaluation = dietSettingsRuntime.planning.savedEvaluation;

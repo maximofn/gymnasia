@@ -1076,6 +1076,18 @@ async function runAgentChatE2E(
   await page.getByText("75.5 kg", { exact: false }).first()
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
 
+  logStep(`${provider}: el peso registrado por el agente aparece en el plan de dieta`);
+  await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
+  const dietSettingsTab = page.locator('[data-testid="settings-tab-diet"]');
+  await dietSettingsTab.scrollIntoViewIfNeeded();
+  await dietSettingsTab.click({ timeout: STEP_TIMEOUT_MS });
+  await page.waitForFunction(
+    () => document.querySelector('[data-testid="diet-plan-weight-input"]')?.value === "75.5",
+    undefined,
+    { timeout: STEP_TIMEOUT_MS },
+  );
+  await page.locator('[data-testid="nav-tab-measures"]').click({ timeout: STEP_TIMEOUT_MS });
+
   if (provider === "openai") {
     logStep("Comprobando validación del formulario y actualización parcial del mismo día");
     await page.locator('[data-testid="measurement-add"]').click({ timeout: STEP_TIMEOUT_MS });
