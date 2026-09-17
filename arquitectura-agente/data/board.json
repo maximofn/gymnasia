@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-15",
+    "updated": "2026-09-17",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -51,6 +51,27 @@
     }
   ],
   "groups": [
+    {
+      "id": "GYM-243",
+      "kind": "epic",
+      "title": "Resolver las incidencias comunicadas por los testers (épica de máxima prioridad)",
+      "state": "todo",
+      "summary": "Recoge cada fallo que los testers externos comunican durante la prueba cerrada, lo reproduce y lo corrige antes que cualquier otro trabajo; va por delante incluso de las demás épicas urgentes.",
+      "dependsOn": [],
+      "related": [
+        "GYM-200"
+      ],
+      "tickets": [
+        {
+          "id": "GYM-244",
+          "title": "El Coach no responde: «La compilación no contiene un snapshot firmado»",
+          "state": "todo",
+          "summary": "Un tester ve un aviso rojo en la pestaña Coach y el agente no contesta: el APK instalado salió sin el snapshot firmado de políticas. Hay que identificar el artefacto, impedir que se publique otro así y hacer el mensaje accionable.",
+          "dependsOn": [],
+          "related": []
+        }
+      ]
+    },
     {
       "id": "GYM-228",
       "kind": "epic",
@@ -3146,6 +3167,14 @@
     }
   ],
   "recommendedOrder": [
+    {
+      "id": "incidencias-testers",
+      "title": "Prioridad absoluta: incidencias de los testers",
+      "why": "Los testers son la única señal real de Producción y su feedback alimenta el cuestionario de acceso a producción. GYM-244 (ticket para arreglar el Coach que no responde por falta de snapshot firmado) bloquea el chat entero para quien lo sufre, así que va primero.",
+      "tickets": [
+        "GYM-244"
+      ]
+    },
     {
       "id": "rendimiento-interactivo",
       "title": "Prioridad absoluta: recuperar la respuesta inmediata de la app",
