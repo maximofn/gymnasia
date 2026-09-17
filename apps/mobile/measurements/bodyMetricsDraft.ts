@@ -1,7 +1,7 @@
 import {
   validateMeasurementMetric,
   type MeasurementPatch,
-} from "../measurements/measurementContract";
+} from "./measurementContract";
 
 /**
  * Peso y altura escritos en el plan de dieta.

@@ -30,7 +30,7 @@ import type {
   GkgMacroKey,
 } from "../diet/model";
 import { parseNonNegativeNumberInput } from "../diet/model";
-import { formatBodyMetricInput, resolveBodyMetricsDraft } from "../diet/bodyMetricsDraft";
+import { formatBodyMetricInput, resolveBodyMetricsDraft } from "../measurements/bodyMetricsDraft";
 import { buildDietPlanningModel, type DietPlanningModel } from "../diet/planningModel";
 import type { DietMacroMode, NutritionValidationIssue } from "../diet/nutritionContract";
 import {

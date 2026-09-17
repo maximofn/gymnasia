@@ -9,7 +9,7 @@ import {
 import {
   upsertMeasurementByDate,
   type Measurement,
-} from "../measurements/measurementContract";
+} from "./measurementContract";
 
 const noLatest = { latestWeightKg: null, latestHeightCm: null };
 
