@@ -159,8 +159,7 @@ function activeRulesetDetails(rulesets, expectedName) {
 
 export function evaluateSourceCandidate({
   policy,
-  profile,
-  artifactType,
+  targets,
   ref,
   headSha,
   checkedOutSha,
@@ -169,18 +168,22 @@ export function evaluateSourceCandidate({
   reachableFromProduction,
   rulesets,
   productionEnvironment,
+  playEnvironment,
   pullRequest,
   statuses,
   checkRuns,
 }) {
   const violations = [];
-  const expectedType = policy.profiles?.[profile];
-  if (!expectedType) {
-    violations.push({ code: "profile", message: `El perfil ${profile || "(vacío)"} no es publicable.` });
-  } else if (expectedType !== artifactType) {
+  const expectedTargets = Object.entries(policy.profiles ?? {})
+    .map(([profile, artifactType]) => ({ profile, artifactType }))
+    .sort((left, right) => left.profile.localeCompare(right.profile));
+  const receivedTargets = (targets ?? [])
+    .map(({ profile, artifactType }) => ({ profile, artifactType }))
+    .sort((left, right) => left.profile.localeCompare(right.profile));
+  if (JSON.stringify(receivedTargets) !== JSON.stringify(expectedTargets)) {
     violations.push({
-      code: "artifact-profile",
-      message: `El perfil ${profile} debe producir ${expectedType}, no ${artifactType}.`,
+      code: "targets",
+      message: "La fuente debe autorizar conjuntamente production/aab y production-apk/apk.",
     });
   }
 
@@ -251,6 +254,27 @@ export function evaluateSourceCandidate({
     }
   }
 
+  if (playEnvironment?.name !== policy.playEnvironment) {
+    violations.push({ code: "play-environment", message: `No existe el environment ${policy.playEnvironment}.` });
+  } else {
+    const reviewers = (playEnvironment.protection_rules ?? [])
+      .filter((rule) => rule.type === "required_reviewers")
+      .flatMap((rule) => rule.reviewers ?? []);
+    if (reviewers.length > 0) {
+      violations.push({
+        code: "play-environment-reviewer",
+        message: `${policy.playEnvironment} no debe exigir aprobación para el canal interno automático.`,
+      });
+    }
+    const branchPolicy = playEnvironment.deployment_branch_policy;
+    if (!branchPolicy?.protected_branches || branchPolicy?.custom_branch_policies) {
+      violations.push({
+        code: "play-environment-branch",
+        message: `${policy.playEnvironment} debe admitir únicamente ramas protegidas.`,
+      });
+    }
+  }
+
   if (!pullRequest
     || pullRequest.state !== "closed"
     || !pullRequest.merged_at
@@ -282,7 +306,7 @@ export function evaluateSourceCandidate({
     }
   }
 
-  return { expectedType, ruleset, violations };
+  return { expectedTargets, ruleset, violations };
 }
 
 export function parseManifestXml(xml) {
@@ -345,6 +369,7 @@ export function extractCertificateDigest(output) {
 export function evaluateArtifactCandidate({
   policy,
   kind,
+  profile,
   sourceEvidence,
   manifest,
   appConfig,
@@ -359,9 +384,10 @@ export function evaluateArtifactCandidate({
   publishedFilename,
 }) {
   const violations = [];
-  const expectedKind = policy.profiles?.[sourceEvidence?.profile];
-  if (sourceEvidence?.schemaVersion !== 1 || sourceEvidence?.kind !== "ProductionSourceEvidenceV1") {
-    violations.push({ code: "source-evidence", message: "La evidencia de fuente no cumple ProductionSourceEvidenceV1." });
+  const target = sourceEvidence?.targets?.find((candidate) => candidate.profile === profile);
+  const expectedKind = policy.profiles?.[target?.profile];
+  if (sourceEvidence?.schemaVersion !== 2 || sourceEvidence?.kind !== "ProductionSourceEvidenceV2") {
+    violations.push({ code: "source-evidence", message: "La evidencia de fuente no cumple ProductionSourceEvidenceV2." });
   }
   if (sourceEvidence?.result !== "passed") {
     violations.push({ code: "source-result", message: "La evidencia de fuente no terminó correctamente." });
@@ -376,7 +402,14 @@ export function evaluateArtifactCandidate({
   );
   const expectedGates = productionGateLabels();
   const observedGates = sourceEvidence?.gates ?? [];
+  const expectedTargets = Object.entries(policy.profiles ?? {})
+    .map(([candidateProfile, artifactType]) => ({ profile: candidateProfile, artifactType }))
+    .sort((left, right) => left.profile.localeCompare(right.profile));
+  const observedTargets = (sourceEvidence?.targets ?? [])
+    .map(({ profile: candidateProfile, artifactType }) => ({ profile: candidateProfile, artifactType }))
+    .sort((left, right) => left.profile.localeCompare(right.profile));
   const sourceContractValid = GIT_COMMIT_PATTERN.test(String(sourceEvidence?.commit ?? ""))
+    && JSON.stringify(observedTargets) === JSON.stringify(expectedTargets)
     && allowedRefs.has(sourceEvidence?.ref)
     && sourceEvidence?.source?.clean === true
     && sourceEvidence?.source?.cleanAfterGates === true
@@ -385,9 +418,12 @@ export function evaluateArtifactCandidate({
     && sourceEvidence?.remoteControls?.rulesetName === policy.rulesetName
     && sourceEvidence?.remoteControls?.rulesetEnforcement === "active"
     && (sourceEvidence?.remoteControls?.bypassActors ?? []).length === 0
-    && sourceEvidence?.remoteControls?.environment === policy.environment
-    && sourceEvidence?.remoteControls?.protectedBranchesOnly === true
+    && sourceEvidence?.remoteControls?.environments?.production?.name === policy.environment
+    && sourceEvidence?.remoteControls?.environments?.production?.protectedBranchesOnly === true
     && sourceEvidence?.remoteControls?.ownerReviewer === policy.owner
+    && sourceEvidence?.remoteControls?.environments?.playInternal?.name === policy.playEnvironment
+    && sourceEvidence?.remoteControls?.environments?.playInternal?.protectedBranchesOnly === true
+    && sourceEvidence?.remoteControls?.environments?.playInternal?.reviewerCount === 0
     && sourceEvidence?.remoteControls?.pullRequest?.headSha
     && policy.requiredStatusChecks.every((context) => sourceStatuses.get(context) === true)
     && observedGates.length === expectedGates.length
@@ -401,7 +437,7 @@ export function evaluateArtifactCandidate({
       message: "La evidencia no conserva el commit, los controles remotos y todos los gates canónicos.",
     });
   }
-  if (expectedKind !== kind || sourceEvidence?.artifactType !== kind) {
+  if (expectedKind !== kind || target?.artifactType !== kind) {
     violations.push({ code: "artifact-kind", message: "El artefacto no corresponde al perfil validado." });
   }
   const artifactPolicy = policy.artifacts?.[kind];

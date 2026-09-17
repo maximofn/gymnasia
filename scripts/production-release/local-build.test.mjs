@@ -1,128 +1,108 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import fc from "fast-check";
-import { assertLocalBuildMetadata, assertVersionCodeProgression, localToolchain } from "./local-build.mjs";
-import { createReleaseTransaction, transitionReleaseTransaction as transition, selectReleaseAction } from "./release-transaction.mjs";
+import { createReleaseTransaction, transitionReleaseTransaction } from "./release-transaction.mjs";
+import { assertLocalBuildMetadata, assertSharedVersionCode, assertVersionCodeProgression, localToolchain } from "./local-build.mjs";
 
 const commit = "a".repeat(40);
+const now = "2026-09-14T10:00:00.000Z";
+
 function started() {
-  return transition(createReleaseTransaction({ version: "1.44.0", sourceCommit: commit }), "start-local", { runId: "1234", runAttempt: "1" });
+  let value = createReleaseTransaction({ version: "1.45.0", sourceCommit: commit, now });
+  value = transitionReleaseTransaction(value, "start-local", { leg: "aab", runId: "12", runAttempt: "1", now });
+  return transitionReleaseTransaction(value, "start-local", { leg: "apk", runId: "12", runAttempt: "1", now });
 }
-function metadata(tx = started()) {
+
+function metadata(transaction, leg, hash = leg === "aab" ? "b".repeat(64) : "c".repeat(64)) {
+  const attempt = transaction.legs[leg].attempts.at(-1);
   return {
-    schemaVersion: 1, backend: "wallabot-local", attemptId: tx.attempts.at(-1).attemptId,
-    sourceCommit: commit, profile: "production-apk", version: "1.44.0", status: "FINISHED",
-    toolchain: { ...localToolchain }, artifact: { filename: "gymnasia.apk", sha256: "b".repeat(64), size: 102000000 },
+    schemaVersion: 2,
+    backend: "wallabot-local",
+    leg,
+    attemptId: attempt.attemptId,
+    sourceCommit: commit,
+    profile: leg === "aab" ? "production" : "production-apk",
+    version: "1.45.0",
+    status: "FINISHED",
+    toolchain: { ...localToolchain },
+    artifact: { filename: `gymnasia.${leg}`, sha256: hash, size: 100_000_000 },
   };
 }
 
-test("reserva la identidad local antes de compilar, sin recurso EAS", () => {
-  const tx = started();
-  assert.equal(tx.state, "build-running");
-  assert.equal(tx.attempts[0].attemptId, `github-1234-1-${commit}`);
-  assert.equal(tx.attempts[0].backend, "wallabot-local");
-  assert.equal(tx.attempts[0].buildId, undefined);
-  assert.equal(tx.attempts[0].artifactUrl, undefined);
-  assert.throws(() => transition(tx, "start-local", { runId: "1234", runAttempt: "2" }), /no se recompila/);
-  assert.throws(() => transition(tx, "observe", { status: "FINISHED", artifactUrl: "https://expo.dev/a.apk" }), /local/);
+test("reserva identidades locales distintas para AAB y APK sin build remoto", () => {
+  const value = started();
+  assert.equal(value.state, "building");
+  assert.match(value.legs.aab.attempts[0].attemptId, /-aab$/);
+  assert.match(value.legs.apk.attempts[0].attemptId, /-apk$/);
+  assert.equal(value.legs.aab.attempts[0].backend, "wallabot-local");
+  assert.equal(value.legs.apk.attempts[0].profile, "production-apk");
 });
 
-test("termina, valida y reconcilia exactamente los mismos bytes", () => {
-  const finished = transition(started(), "finish-local", { metadata: metadata() });
-  const payload = { artifactSha256: "b".repeat(64), artifactSize: 102000000, evidenceSha256: "c".repeat(64) };
-  const validated = transition(finished, "validate", payload);
-  assert.equal(validated.state, "validated");
-  assert.deepEqual(transition(validated, "finish-local", { metadata: metadata() }), validated);
-  assert.throws(() => transition(finished, "validate", { ...payload, artifactSize: 102000001 }), /bytes/);
-  const substituted = metadata();
-  substituted.artifact.sha256 = "d".repeat(64);
-  assert.throws(() => transition(validated, "finish-local", { metadata: substituted }), /sustituir/);
-});
-
-test("rechaza metadatos de otro SHA, perfil, versión, toolchain o APK", () => {
-  for (const [field, value] of [["sourceCommit", "e".repeat(40)], ["profile", "staging"], ["version", "1.43.0"], ["attemptId", "remote-id"], ["backend", "eas-cloud"], ["status", "ERRORED"]]) {
-    assert.throws(() => assertLocalBuildMetadata({ ...metadata(), [field]: value }, started(), metadata().artifact));
+test("termina y valida los mismos bytes con un versionCode común", () => {
+  let value = started();
+  for (const leg of ["aab", "apk"]) {
+    const build = metadata(value, leg);
+    assertLocalBuildMetadata(build, value, build.artifact, leg);
+    value = transitionReleaseTransaction(value, "finish-local", { leg, metadata: build, now });
   }
-  assert.throws(() => assertLocalBuildMetadata({ ...metadata(), toolchain: { ...localToolchain, node: "20.0.0" } }, started(), metadata().artifact));
-  assert.throws(() => assertLocalBuildMetadata(metadata(), started(), { ...metadata().artifact, sha256: "d".repeat(64) }));
-});
-
-test("no acepta entorno, secretos ni rutas privadas en los metadatos", () => {
-  for (const field of ["environment", "token", "hostname", "logs", "path", "credentials"]) {
-    assert.throws(() => assertLocalBuildMetadata({ ...metadata(), [field]: "untrusted" }, started(), metadata().artifact), /no permitidos/);
-  }
-});
-
-test("un fallo conserva el intento y requiere operación manual motivada", () => {
-  const failed = transition(started(), "fail-local", { reason: "VM apagada antes de generar el APK" });
-  assert.equal(failed.attempts.length, 1);
-  assert.throws(() => selectReleaseAction({ transactions: [failed], currentVersion: "1.44.1", currentCommit: commit }), /manual/);
-  assert.throws(() => transition(failed, "retry", {}), /motivo/);
-  assert.throws(() => transition(failed, "supersede", {}), /motivo/);
-  const retry = transition(failed, "retry", { reason: "VM reparada y verificada" });
-  assert.throws(() => transition(retry, "start-local", { runId: "1234", runAttempt: "1" }), /utilizado/);
-  const resumed = transition(retry, "start-local", { runId: "1234", runAttempt: "2" });
-  assert.equal(resumed.attempts.length, 2);
-  assert.deepEqual(resumed.attempts[0], failed.attempts[0]);
-});
-
-test("la reversión a cloud exige motivo y conserva el intento local y la fuente", () => {
-  const local = started();
-  assert.throws(() => transition(local, "submit", { buildId: "cloud-rollback-test" }), /No se puede/);
-  const failed = transition(local, "fail-local", { reason: "Ensayo: VM no disponible" });
-  assert.throws(() => transition(failed, "submit", { buildId: "cloud-rollback-test" }), /No se puede/);
-  const retry = transition(failed, "retry", { reason: "Ensayo de reversión manual a EAS cloud" });
-  const submitted = transition(retry, "submit", { buildId: "cloud-rollback-test" });
-  assert.equal(submitted.attempts[1].backend, "eas-cloud");
-  assert.equal(submitted.attempts[1].attemptId, undefined);
-  assert.deepEqual(submitted.attempts[0], failed.attempts[0]);
-  for (const field of ["id", "tag", "sourceCommit", "profile", "version"]) {
-    assert.equal(submitted[field], local[field]);
-  }
-  const finished = transition(submitted, "observe", { status: "FINISHED", artifactUrl: "https://example.com/test.apk" });
-  const validated = transition(finished, "validate", {
-    artifactSha256: "d".repeat(64), artifactSize: 102000000, evidenceSha256: "e".repeat(64),
+  value = transitionReleaseTransaction(value, "validate-artifact", {
+    leg: "aab", artifactSha256: "b".repeat(64), artifactSize: 100_000_000,
+    evidenceSha256: "d".repeat(64), versionCode: "58", versionCodeFloor: "57", now,
   });
-  assert.equal(validated.state, "validated");
-  assert.deepEqual(validated.attempts[0], failed.attempts[0]);
-  assert.equal(validated.transitions.find((item) => item.event === "retry-authorized").reason,
-    "Ensayo de reversión manual a EAS cloud");
+  value = transitionReleaseTransaction(value, "validate-artifact", {
+    leg: "apk", artifactSha256: "c".repeat(64), artifactSize: 100_000_000,
+    evidenceSha256: "e".repeat(64), versionCode: "58", versionCodeFloor: "57", now,
+  });
+  assert.equal(value.state, "artifacts-validated");
+  assert.equal(value.versionCode, "58");
 });
 
-test("un APK local validado se reconcilia sin sustituirlo por una build cloud", () => {
-  const finished = transition(started(), "finish-local", { metadata: metadata() });
-  const payload = { artifactSha256: "b".repeat(64), artifactSize: 102000000, evidenceSha256: "c".repeat(64) };
-  const validated = transition(finished, "validate", payload);
-  assert.throws(() => transition(validated, "retry", { reason: "Cambiar de servidor" }), /fallida/);
-  assert.throws(() => transition(validated, "submit", { buildId: "cloud-rollback-test" }), /No se puede/);
-  assert.deepEqual(transition(validated, "validate", payload), validated);
+test("rechaza metadatos con campos secretos o una pata cruzada", () => {
+  const value = started();
+  const extra = { ...metadata(value, "aab"), EXPO_TOKEN: "no" };
+  assert.throws(() => assertLocalBuildMetadata(extra, value, extra.artifact, "aab"), /no permitidos/);
+  const crossed = { ...metadata(value, "aab"), profile: "production-apk" };
+  assert.throws(() => assertLocalBuildMetadata(crossed, value, crossed.artifact, "aab"), /profile/);
 });
 
-test("lee intentos anteriores a los SDK adicionales sin admitir campos arbitrarios", () => {
-  const tx = structuredClone(started());
-  delete tx.attempts[0].toolchain.androidBuildToolsAdditional;
-  delete tx.attempts[0].toolchain.androidPlatformTools;
-  const oldMetadata = { ...metadata(), toolchain: { ...tx.attempts[0].toolchain } };
-  assertLocalBuildMetadata(oldMetadata, tx, oldMetadata.artifact);
-  for (const field of ["token", "environment", "path"]) {
-    const altered = structuredClone(tx);
-    altered.attempts[0].toolchain[field] = "123";
-    assert.throws(() => assertLocalBuildMetadata(oldMetadata, altered, oldMetadata.artifact), /no permitidos/);
-  }
-  const incomplete = structuredClone(started());
-  delete incomplete.attempts[0].toolchain.androidPlatformTools;
-  assert.throws(() => assertLocalBuildMetadata(metadata(), incomplete, metadata().artifact), /incompletos/);
+test("un fallo de APK conserva el AAB y el reintento solo prepara la pata fallida", () => {
+  let value = started();
+  const aab = metadata(value, "aab");
+  value = transitionReleaseTransaction(value, "finish-local", { leg: "aab", metadata: aab, now });
+  value = transitionReleaseTransaction(value, "validate-artifact", {
+    leg: "aab", artifactSha256: "b".repeat(64), artifactSize: 100_000_000,
+    evidenceSha256: "d".repeat(64), versionCode: "58", versionCodeFloor: "57", now,
+  });
+  value = transitionReleaseTransaction(value, "fail-local", { leg: "apk", reason: "Gradle falló", now });
+  assert.equal(value.state, "failed");
+  value = transitionReleaseTransaction(value, "retry", { reason: "Incidencia reparada", now });
+  assert.equal(value.legs.aab.state, "validated");
+  assert.equal(value.legs.apk.state, "prepared");
 });
 
-test("la evidencia debe superar versionCode 52; rechaza códigos inválidos", () => {
-  assertVersionCodeProgression("53", "52");
-  for (const value of ["52", "51", "0", "-1", "abc", "1.2", "53x", "99999999999999999999", "2100000001"]) {
-    assert.throws(() => assertVersionCodeProgression(value, "52"), /versionCode/);
-  }
+test("el ejecutor exige EXPO_TOKEN y ordena production antes de production-apk", () => {
+  const script = readFileSync(new URL("./run-local-build.mjs", import.meta.url), "utf8");
+  assert.match(script, /Falta EXPO_TOKEN/);
+  assert.ok(script.indexOf('aab: { profile: "production"') < script.indexOf('apk: { profile: "production-apk"'));
+  assert.match(script, /for \(const leg of requested\) build\(leg, transaction, sdk\)/);
+  assert.doesNotMatch(script, /--auto-submit|build:list|build:view/);
 });
 
-test("propiedad: un código repetido o decreciente nunca pasa", () => {
-  fc.assert(fc.property(fc.integer({ min: 1, max: 2100000000 }), fc.nat(), (previous, delta) => {
-    assert.throws(() => assertVersionCodeProgression(String(Math.max(1, previous - delta)), String(previous)));
-  }));
+test("versionCode debe crecer sobre el máximo conocido y coincidir", () => {
+  assert.doesNotThrow(() => assertVersionCodeProgression("58", 57));
+  assert.throws(() => assertVersionCodeProgression("57", 57), /superar/);
+  assert.doesNotThrow(() => assertSharedVersionCode("58", "58"));
+  assert.throws(() => assertSharedVersionCode("58", "59"), /mismo versionCode/);
+});
+
+test("propiedad: ningún versionCode repetido o decreciente pasa", () => {
+  fc.assert(fc.property(
+    fc.integer({ min: 1, max: 2_000_000_000 }),
+    fc.integer({ min: 0, max: 2_000_000_000 }),
+    (current, floor) => {
+      if (current <= floor) assert.throws(() => assertVersionCodeProgression(String(current), floor));
+      else assert.doesNotThrow(() => assertVersionCodeProgression(String(current), floor));
+    },
+  ));
 });

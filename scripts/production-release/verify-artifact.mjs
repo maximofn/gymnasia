@@ -27,7 +27,7 @@ function parseArguments(argv) {
     }
     options[key.slice(2)] = value;
   }
-  for (const required of ["artifact", "kind", "source-evidence", "snapshot", "output"]) {
+  for (const required of ["artifact", "kind", "profile", "source-evidence", "snapshot", "output"]) {
     if (!options[required]) throw new Error(`Falta --${required}.`);
   }
   if (!["apk", "aab"].includes(options.kind)) throw new Error("--kind debe ser apk o aab.");
@@ -67,16 +67,16 @@ function readBuildMetadata(path, options, artifact, manifest) {
   const parsed = JSON.parse(readFileSync(resolve(path), "utf8"));
   const build = Array.isArray(parsed) ? parsed[0] : parsed;
   if (build?.backend === "wallabot-local") {
-    if (!options.transaction || !options["previous-evidence"]) {
-      throw new Error("La build local exige transacción y evidencia del último APK publicado.");
+    if (!options.transaction || !options["version-code-baseline"]) {
+      throw new Error("La build local exige transacción y referencia de versionCode.");
     }
     const transaction = JSON.parse(readFileSync(resolve(options.transaction), "utf8"));
-    assertLocalBuildMetadata(build, transaction, artifact);
-    const previous = JSON.parse(readFileSync(resolve(options["previous-evidence"]), "utf8"));
-    if (previous.result !== "passed" || previous.artifact?.packageName !== manifest.packageName) {
-      throw new Error("La evidencia del APK anterior no corresponde a Production.");
+    assertLocalBuildMetadata(build, transaction, artifact, options.kind);
+    const baseline = JSON.parse(readFileSync(resolve(options["version-code-baseline"]), "utf8"));
+    if (baseline.schemaVersion !== 2 || !Number.isSafeInteger(baseline.minimumExclusive)) {
+      throw new Error("La referencia de versionCode no corresponde a Production.");
     }
-    assertVersionCodeProgression(manifest.versionCode, previous.artifact.versionCode);
+    if (options.kind === "aab") assertVersionCodeProgression(manifest.versionCode, baseline.minimumExclusive);
     return { id: build.attemptId, backend: build.backend, toolchain: build.toolchain };
   }
   if (options.transaction) throw new Error("Una build local exige metadatos locales; no acepta un ID remoto.");
@@ -100,8 +100,11 @@ function inspectArtifact(options, policy, artifact) {
   if (options.kind === "aab") {
     const bundletoolSha256 = fileSha256(resolve(options.bundletool));
     const version = run("java", ["-jar", resolve(options.bundletool), "version"]).trim();
-    if (!version.includes(policy.bundletoolVersion)) {
-      throw new Error(`Se exige bundletool ${policy.bundletoolVersion}; recibido ${version}.`);
+    if (bundletoolSha256 !== policy.bundletool.sha256) {
+      throw new Error(`El SHA-256 de bundletool no coincide con ${policy.bundletool.sha256}.`);
+    }
+    if (!version.includes(policy.bundletool.version)) {
+      throw new Error(`Se exige bundletool ${policy.bundletool.version}; recibido ${version}.`);
     }
     run("java", ["-jar", resolve(options.bundletool), "validate", `--bundle=${artifact}`]);
     const manifestXml = run("java", [
@@ -123,7 +126,7 @@ function inspectArtifact(options, policy, artifact) {
       manifestXml,
       certificateOutput,
       notificationSounds: extractNotificationSoundsFromArchiveListing(archiveListing),
-      tools: { bundletoolVersion: policy.bundletoolVersion, bundletoolSha256 },
+      tools: { bundletoolVersion: policy.bundletool.version, bundletoolSha256 },
     };
   }
 
@@ -160,6 +163,7 @@ function main() {
   const evaluated = evaluateArtifactCandidate({
     policy,
     kind: options.kind,
+    profile: options.profile,
     sourceEvidence,
     manifest,
     appConfig: inspection.appConfig,
@@ -174,14 +178,14 @@ function main() {
     publishedFilename,
   });
   const evidence = {
-    schemaVersion: 1,
-    kind: "ProductionArtifactEvidenceV1",
+    schemaVersion: 2,
+    kind: "ProductionArtifactEvidenceV2",
     result: evaluated.violations.length === 0 ? "passed" : "failed",
     verifiedAt: new Date().toISOString(),
     source: {
       commit: sourceEvidence.commit,
       evidenceSha256: fileSha256(resolve(options["source-evidence"])),
-      profile: sourceEvidence.profile,
+      profile: options.profile,
     },
     build: readBuildMetadata(options["build-metadata"], options, { sha256, size }, manifest),
     artifact: {
