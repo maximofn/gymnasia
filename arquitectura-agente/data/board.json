@@ -77,6 +77,14 @@
           "summary": "Un tester pulsa la casilla Peso del plan de dieta y no pasa nada porque es de solo lectura. Debe aceptar el peso, guardarlo como medición de hoy y que Home, Medidas, Calcular y el agente lean el mismo valor.",
           "dependsOn": [],
           "related": []
+        },
+        {
+          "id": "GYM-246",
+          "title": "Ajustes → Preferencias muestra «notifications: [object Object]» y claves internas en crudo",
+          "state": "todo",
+          "summary": "La pestaña Preferencias recorre el objeto de preferencias de forma genérica y pinta claves internas y objetos anidados sin formato. Debe listar filas explícitas y legibles, y fallar en compilación si aparece una preferencia sin presentación.",
+          "dependsOn": [],
+          "related": []
         }
       ]
     },
@@ -3178,10 +3186,11 @@
     {
       "id": "incidencias-testers",
       "title": "Prioridad absoluta: incidencias de los testers",
-      "why": "Los testers son la única señal real de Producción y su feedback alimenta el cuestionario de acceso a producción. GYM-244 (ticket para arreglar el Coach que no responde por falta de snapshot firmado) bloquea el chat entero para quien lo sufre, así que va primero. GYM-245 (ticket para permitir introducir el peso desde el plan de dieta) impide calcular las calorías a quien no pasa antes por Medidas.",
+      "why": "Los testers son la única señal real de Producción y su feedback alimenta el cuestionario de acceso a producción. GYM-244 (ticket para arreglar el Coach que no responde por falta de snapshot firmado) bloquea el chat entero para quien lo sufre, así que va primero. GYM-245 (ticket para permitir introducir el peso desde el plan de dieta) impide calcular las calorías a quien no pasa antes por Medidas. GYM-246 (ticket para arreglar el [object Object] de Preferencias) es visible para cualquier tester y barato de corregir.",
       "tickets": [
         "GYM-244",
-        "GYM-245"
+        "GYM-245",
+        "GYM-246"
       ]
     },
     {
