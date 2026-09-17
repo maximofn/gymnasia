@@ -73,7 +73,7 @@
         {
           "id": "GYM-245",
           "title": "Permitir introducir el peso desde el plan de dieta y propagarlo a Medidas, Home y el agente",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Un tester pulsa la casilla Peso del plan de dieta y no pasa nada porque es de solo lectura. Debe aceptar el peso, guardarlo como medición de hoy y que Home, Medidas, Calcular y el agente lean el mismo valor.",
           "dependsOn": [],
           "related": []
