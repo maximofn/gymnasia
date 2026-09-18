@@ -2049,7 +2049,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
   model: Readonly<ProviderSettingsModel>;
   actions: Readonly<ProviderSettingsActions>;
 }) {
-  const healthSafetyConsent = { providers: model.healthSafetyProviders };
+  const healthSafetyConsent = model.healthSafetyConsent;
   const store = {
     keys: model.keys,
     chatProvider: model.chatProvider,
@@ -2081,10 +2081,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
   const googleModelOptionsLoading = model.google.loading;
   const googleModelOptionsMessage = model.google.message;
   const filteredGoogleModelOptions = model.google.options;
-  const updateHealthSafetyConsent = (
-    provider: Provider,
-    next: { enabled: boolean; noticeSeen?: boolean },
-  ) => actions.updateHealthSafetyConsent(provider, next.enabled);
+  const updateHealthSafetyConsent = actions.updateHealthSafetyConsent;
   const selectChatProvider = actions.selectChatProvider;
   const setChatProviderDropdownOpen = actions.setChatDropdownOpen;
   const setFoodAIProviderDropdownOpen = actions.setFoodDropdownOpen;
@@ -2152,43 +2149,48 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                         </Text>
                       </View>
                       <Text style={{ color: mobileTheme.color.textSecondary, lineHeight: 18, fontSize: 12 }}>
-                        En consultas ambiguas puede enviar solo el texto de esa consulta al proveedor elegido para una segunda clasificación. No envía historial, fotos ni memoria local. El filtro determinista y el buffer seguro funcionan siempre, aunque esto esté desactivado.
+                        Gymnasia revisa siempre en tu móvil lo que escribes y lo que responde la IA para frenar consejos peligrosos sobre salud, dieta o lesiones. Esa revisión no se puede desactivar.
                       </Text>
-                      {(["anthropic", "openai", "google"] as Provider[]).map((provider) => {
-                        const enabled = healthSafetyConsent.providers[provider];
-                        return (
-                          <Pressable
-                            key={provider}
-                            accessibilityRole="switch"
-                            accessibilityState={{ checked: enabled }}
-                            accessibilityLabel={`Evaluación sanitaria con ${PROVIDER_UI_META[provider].label}`}
-                            onPress={() => updateHealthSafetyConsent(provider, {
-                              enabled: !enabled,
-                              noticeSeen: true,
-                            })}
-                            style={{ flexDirection: "row", alignItems: "center", gap: 10, minHeight: 38 }}
-                          >
-                            <View
-                              style={{
-                                width: 38,
-                                height: 22,
-                                borderRadius: 999,
-                                padding: 2,
-                                alignItems: enabled ? "flex-end" : "flex-start",
-                                backgroundColor: enabled ? mobileTheme.color.brandPrimary : "#3A414C",
-                              }}
-                            >
-                              <View style={{ width: 18, height: 18, borderRadius: 999, backgroundColor: enabled ? "#06090D" : "#A2AAB5" }} />
-                            </View>
-                            <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600", flex: 1 }}>
-                              {PROVIDER_UI_META[provider].label}
-                            </Text>
-                            <Text style={{ color: enabled ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontSize: 11 }}>
-                              {enabled ? "Activada" : "Desactivada"}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
+                      <Text style={{ color: mobileTheme.color.textSecondary, lineHeight: 18, fontSize: 12 }}>
+                        A veces una consulta queda en duda. Con este interruptor activado, la app envía solo el texto de esa consulta al proveedor de IA que estés usando en ese momento (el del Coach o el del Estimador) para que dé una segunda opinión antes de responder. No envía historial, fotos ni memoria local. Desactivado, esa duda se resuelve solo con la revisión local.
+                      </Text>
+                      <Pressable
+                        testID="health-safety-consent-switch"
+                        accessibilityRole="switch"
+                        accessibilityState={{ checked: healthSafetyConsent.enabled, disabled: !healthSafetyConsent.available }}
+                        accessibilityLabel="Pedir una segunda opinión a la IA en consultas dudosas"
+                        accessibilityHint={healthSafetyConsent.available ? undefined : "Guarda la API key de un proveedor para poder activarla"}
+                        disabled={!healthSafetyConsent.available}
+                        onPress={() => updateHealthSafetyConsent(!healthSafetyConsent.enabled)}
+                        style={{ flexDirection: "row", alignItems: "center", gap: 10, minHeight: 38, opacity: healthSafetyConsent.available ? 1 : 0.55 }}
+                      >
+                        <View
+                          style={{
+                            width: 38,
+                            height: 22,
+                            borderRadius: 999,
+                            padding: 2,
+                            alignItems: healthSafetyConsent.enabled ? "flex-end" : "flex-start",
+                            backgroundColor: healthSafetyConsent.enabled ? mobileTheme.color.brandPrimary : "#3A414C",
+                          }}
+                        >
+                          <View style={{ width: 18, height: 18, borderRadius: 999, backgroundColor: healthSafetyConsent.enabled ? "#06090D" : "#A2AAB5" }} />
+                        </View>
+                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600", flex: 1 }}>
+                          Segunda opinión de la IA en consultas dudosas
+                        </Text>
+                        <Text
+                          testID="health-safety-consent-status"
+                          style={{ color: healthSafetyConsent.enabled ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontSize: 11 }}
+                        >
+                          {healthSafetyConsent.status}
+                        </Text>
+                      </Pressable>
+                      {!healthSafetyConsent.available ? (
+                        <Text testID="health-safety-consent-hint" style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
+                          Para activarla, guarda antes la API key de un proveedor más abajo. Sin clave no hay a quién enviar la consulta.
+                        </Text>
+                      ) : null}
                     </View>
   
                     {/* Provider selector dropdowns */}

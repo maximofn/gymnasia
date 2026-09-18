@@ -47,7 +47,12 @@ describe("contrato de integración del guardrail sanitario", () => {
 
   it("persiste consentimiento versionado fuera del backup y muestra una alerta accesible", () => {
     expect(appSource).toContain("HEALTH_SAFETY_CONSENT_KEY");
-    expect(appSource).toContain("consentVersion: BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY.consentVersion");
+    // GYM-247 (ticket para impedir activar la evaluación sanitaria en un proveedor sin API key):
+    // el consentimiento es un único interruptor ligado a la versión de la política y se
+    // sanea contra las claves guardadas al hidratar.
+    expect(appSource).toContain("const HEALTH_SAFETY_CONSENT_VERSION = BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY.consentVersion");
+    expect(appSource).toContain("configuredProviders: configuredHealthSafetyProviders(mergedStore.keys)");
+    expect(appSource).not.toContain("healthSafetyConsent.providers");
     const backup = sourceBetween("function buildBackupData", "function backupDetailsFromOmissions");
     expect(backup).not.toContain("healthSafetyConsent");
     expect(noticeSource).toContain('accessibilityRole="alert"');

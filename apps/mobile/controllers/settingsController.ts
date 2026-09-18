@@ -7,6 +7,7 @@ import {
   type SetStateAction,
 } from "react";
 
+import type { HealthSafetyConsentSwitchModel } from "../agent/healthSafetyConsent";
 import type { PersonalDataField } from "../agent/personalData";
 import type {
   OpenAIReasoningEffort,
@@ -86,7 +87,7 @@ export type ProviderSettingsModel = {
   keys: ReadonlyArray<ProviderConfiguration>;
   chatProvider: Provider | null;
   foodProvider: Provider | null;
-  healthSafetyProviders: Readonly<Record<Provider, boolean>>;
+  healthSafetyConsent: Readonly<HealthSafetyConsentSwitchModel>;
   secureStoreAvailable: boolean;
   isWeb: boolean;
   chatDropdownOpen: boolean;
@@ -122,7 +123,7 @@ export type ProviderSettingsModel = {
 };
 
 export type ProviderSettingsActions = {
-  updateHealthSafetyConsent(provider: Provider, enabled: boolean): void;
+  updateHealthSafetyConsent(enabled: boolean): void;
   selectChatProvider(provider: Provider): void;
   selectFoodProvider(provider: Provider): void;
   setChatDropdownOpen(open: boolean): void;
@@ -163,7 +164,7 @@ export function useProviderSettingsController(
     keys: input.keys,
     chatProvider: input.chatProvider,
     foodProvider: input.foodProvider,
-    healthSafetyProviders: input.healthSafetyProviders,
+    healthSafetyConsent: input.healthSafetyConsent,
     secureStoreAvailable: input.secureStoreAvailable,
     isWeb: input.isWeb,
     chatDropdownOpen: input.chatDropdownOpen,
@@ -213,7 +214,7 @@ export function useProviderSettingsController(
     input.google.loading,
     input.google.message,
     input.google.options,
-    input.healthSafetyProviders,
+    input.healthSafetyConsent,
     input.isWeb,
     input.keyVisibility,
     input.keys,
@@ -229,7 +230,7 @@ export function useProviderSettingsController(
     input.secureStoreAvailable,
   ]);
   const actions = useMemo<ProviderSettingsActions>(() => ({
-    updateHealthSafetyConsent: (provider, enabled) => inputRef.current.updateHealthSafetyConsent(provider, enabled),
+    updateHealthSafetyConsent: (enabled) => inputRef.current.updateHealthSafetyConsent(enabled),
     selectChatProvider: (provider) => inputRef.current.selectChatProvider(provider),
     selectFoodProvider: (provider) => inputRef.current.selectFoodProvider(provider),
     setChatDropdownOpen: (open) => inputRef.current.setChatDropdownOpen(open),

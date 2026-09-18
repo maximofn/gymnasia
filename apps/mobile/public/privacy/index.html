@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="Gymnasia Privacy Policy">
-<meta name="gymnasia-policy-version" content="2026-09-v5">
-<meta name="gymnasia-policy-digest" content="sha256:1943aabfb857a4d55bdb28c69966f34c61d89593085edd65f5b304a599253524">
+<meta name="gymnasia-policy-version" content="2026-09-v6">
+<meta name="gymnasia-policy-digest" content="sha256:b62b2d0ecfd099fca0e59949c7bd08e822fd21c81e2191fc6841ba104cb62ece">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Gymnasia Privacy Policy</h1>
-  <p class="meta">Version 2026-09-v5 · in force since 2026-09-15 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Version 2026-09-v6 · in force since 2026-09-18 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacidad">Versión en español</a></p>
   <nav>
     <h2>Contents</h2>
@@ -96,7 +96,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Conversations with the assistant</strong>: the complete history of your chat threads, including the model's messages. New Google turns also retain response steps, thought summaries, technical signatures, tool calls, arguments and results needed to continue the dialogue. These data follow chat deletion and manual backups; they do not contain the API key.</li>
       <li><strong>Assistant memory</strong>: free-text notes that you or the assistant save in order to remember things between conversations. It may contain anything you have mentioned in the chat, including health data.</li>
       <li><strong>Legacy credentials from removed features</strong>: if an earlier version stored credentials in the secure keystore, a normal update may keep them encrypted so they can be reused if the feature returns. The current version neither reads nor transmits them. “Delete all my data” deletes them.</li>
-      <li><strong>Preferences</strong>: interface and notification settings, and your per-provider consent for the optional additional health-safety evaluation.</li>
+      <li><strong>Preferences</strong>: interface and notification settings, and your consent for the optional additional health-safety evaluation.</li>
       <li><strong>AI provider configuration</strong>: the selected model and, when Anthropic requires it for an identity-linked key, the workspace identifier (<code>wrkspc_…</code>).</li>
       <li><strong>Debug log</strong>: a technical record of up to 1000 entries covering delivered rest-timer alerts, which include the exercise name and set number; technical policy-selection events; and counters for context prepared for Google, such as exchange count, bytes and the number of old images omitted. Those Google diagnostics contain no messages, images, tool arguments or keys. The log is never sent over the network; you can view and clear it from Settings.</li>
       <li><strong>Local recovery copies</strong>: the app keeps one verified copy of its main state. If it finds data that it cannot read safely, it quarantines the original payload instead of overwriting it. Both copies remain on the device and are replaced or removed when the recovery is completed.</li>
@@ -136,7 +136,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li>in the food estimator, <strong>the images you provide</strong>, encoded within the request.</li>
       <li>for Anthropic, the workspace identifier, only when you configured one because the key type requires it.</li>
     </ul>
-    <p>If you enable <strong>additional health-safety evaluation</strong> for a provider in Settings, the current text may be sent to that same provider in a separate classification request before the normal response is generated. This option is off by default, requires separate consent for each provider, and can be revoked at any time. Messages classified locally as high or critical risk are intercepted on the device and are not sent to the provider.</p>
+    <p>If you enable <strong>additional health-safety evaluation</strong> in Settings, the text of a query that the local check considers ambiguous may be sent to the provider you are using at that moment (the Coach's or the Estimator's) in a separate classification request before the normal response is generated. It is a single switch for all providers: it can only be enabled once you have saved the key of at least one provider, it turns itself off if you delete the last key, it is off by default, and it can be revoked at any time. Messages classified locally as high or critical risk are intercepted on the device and are not sent to the provider.</p>
     <p>All generation requests to Google disable Interactions conversation storage using <code>store: false</code>. The app resends the recent context that fits within those limits from the device and does not use a conversation stored at Google to continue the dialogue. The complete history remains stored on the device and is not deleted when preparing a smaller request. This setting does not replace the provider's general terms.</p>
     <p>That content is subject to the privacy policy and terms of the provider you chose, under your own account with them:</p>
     <ul>
@@ -260,7 +260,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Gymnasia Privacy Policy · 2026-09-v5 · 2026-09-15</p>
+    <p>Gymnasia Privacy Policy · 2026-09-v6 · 2026-09-18</p>
   </footer>
 </main>
 </body>
