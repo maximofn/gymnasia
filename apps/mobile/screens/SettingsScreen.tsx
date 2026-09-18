@@ -1,6 +1,6 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { memo, useCallback, useRef, useState, type ReactNode } from "react";
+import { memo, useCallback, useMemo, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import {
@@ -46,19 +46,13 @@ import { IS_FAKE_PROVIDER_MODE } from "../runtimeEnvironment";
 import { CatalogStatusNotice } from "../catalogs/CatalogStatusNotice";
 import { foodCatalogImageUri } from "../catalogs/sources";
 import type { UserPreferences } from "../storage/userPreferences";
+import { buildUserPreferencesPanelModel } from "../storage/userPreferencesPresentation";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import {
   formatMeasurementHistoryDate,
   formatMeasurementNumber,
 } from "../measurements/presentationModel";
 import { mobileTheme } from "../theme";
-
-const CHART_PERIOD_LABELS: Record<UserPreferences["chartPeriod"], string> = {
-  "1m": "1 mes",
-  "3m": "3 meses",
-  "6m": "6 meses",
-  all: "Todo",
-};
 
 export const SettingsTabs = memo(function SettingsTabs({
   model,
@@ -951,40 +945,40 @@ export const PreferencesSettingsPanel = memo(function PreferencesSettingsPanel({
 }: {
   preferences: Readonly<UserPreferences>;
 }) {
+  const { rows, notes } = useMemo(() => buildUserPreferencesPanelModel(preferences), [preferences]);
   return (
     <View style={{ gap: 12 }}>
       <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
         Preferencias del usuario
       </Text>
-      {Object.entries(preferences).map(([key, value]) => {
-        const isChartPeriod = key === "chartPeriod";
-        const displayLabel = isChartPeriod ? "Vista del gráfico" : key;
-        const displayValue = isChartPeriod
-          ? CHART_PERIOD_LABELS[value as UserPreferences["chartPeriod"]] ?? String(value)
-          : String(value);
-        return (
-          <View
-            key={key}
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              backgroundColor: mobileTheme.color.cardBg,
-              borderRadius: 12,
-              padding: 14,
-              borderWidth: 1,
-              borderColor: mobileTheme.color.borderSubtle,
-            }}
-          >
-            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>
-              {displayLabel}
-            </Text>
-            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
-              {displayValue}
-            </Text>
-          </View>
-        );
-      })}
+      {rows.map((row) => (
+        <View
+          key={row.key}
+          testID={`settings-preference-${row.key}`}
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            backgroundColor: mobileTheme.color.cardBg,
+            borderRadius: 12,
+            padding: 14,
+            borderWidth: 1,
+            borderColor: mobileTheme.color.borderSubtle,
+          }}
+        >
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>
+            {row.label}
+          </Text>
+          <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "700" }}>
+            {row.value}
+          </Text>
+        </View>
+      ))}
+      {notes.map((note) => (
+        <Text key={note} style={{ color: mobileTheme.color.textSecondary, fontSize: 12, lineHeight: 18 }}>
+          {note}
+        </Text>
+      ))}
     </View>
   );
 });
