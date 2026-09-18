@@ -48,6 +48,7 @@ import type {
   MeasuresDashboardPeriodKey,
   UserPreferences,
 } from "../storage/userPreferences";
+import { CHART_METRIC_LABELS, CHART_PERIOD_LABELS } from "../storage/userPreferencesPresentation";
 import type { ScreenController } from "./types";
 
 export type MeasurementsPeriodOption = {
@@ -64,22 +65,22 @@ export type MeasurementsMetricOption = {
 };
 
 export const MEASUREMENTS_PERIOD_OPTIONS: readonly MeasurementsPeriodOption[] = [
-  { key: "1m", label: "1 mes", days: 30 },
-  { key: "3m", label: "3 meses", days: 90 },
-  { key: "6m", label: "6 meses", days: 180 },
-  { key: "all", label: "Todo", days: null },
+  { key: "1m", label: CHART_PERIOD_LABELS["1m"], days: 30 },
+  { key: "3m", label: CHART_PERIOD_LABELS["3m"], days: 90 },
+  { key: "6m", label: CHART_PERIOD_LABELS["6m"], days: 180 },
+  { key: "all", label: CHART_PERIOD_LABELS.all, days: null },
 ];
 
 export const MEASUREMENTS_METRIC_OPTIONS: readonly MeasurementsMetricOption[] = [
-  { key: "weight", label: "Peso", unit: "kg", field: "weight_kg" },
-  { key: "bodyFat", label: "% Grasa", unit: "%", field: "body_fat_pct" },
-  { key: "chest", label: "Pecho", unit: "cm", field: "chest_cm" },
-  { key: "waist", label: "Cintura", unit: "cm", field: "waist_cm" },
-  { key: "hips", label: "Cadera", unit: "cm", field: "hips_cm" },
-  { key: "biceps", label: "Brazo", unit: "cm", field: "biceps_cm" },
-  { key: "neck", label: "Cuello", unit: "cm", field: "neck_cm" },
-  { key: "quadriceps", label: "Cuádriceps", unit: "cm", field: "quadriceps_cm" },
-  { key: "calf", label: "Gemelo", unit: "cm", field: "calf_cm" },
+  { key: "weight", label: CHART_METRIC_LABELS.weight, unit: "kg", field: "weight_kg" },
+  { key: "bodyFat", label: CHART_METRIC_LABELS.bodyFat, unit: "%", field: "body_fat_pct" },
+  { key: "chest", label: CHART_METRIC_LABELS.chest, unit: "cm", field: "chest_cm" },
+  { key: "waist", label: CHART_METRIC_LABELS.waist, unit: "cm", field: "waist_cm" },
+  { key: "hips", label: CHART_METRIC_LABELS.hips, unit: "cm", field: "hips_cm" },
+  { key: "biceps", label: CHART_METRIC_LABELS.biceps, unit: "cm", field: "biceps_cm" },
+  { key: "neck", label: CHART_METRIC_LABELS.neck, unit: "cm", field: "neck_cm" },
+  { key: "quadriceps", label: CHART_METRIC_LABELS.quadriceps, unit: "cm", field: "quadriceps_cm" },
+  { key: "calf", label: CHART_METRIC_LABELS.calf, unit: "cm", field: "calf_cm" },
 ];
 
 type MeasurementsChartPoint = MeasurementChartPoint & {
