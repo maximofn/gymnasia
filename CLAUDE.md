@@ -463,6 +463,16 @@ Las comillas simples en `environment_ids[]` son obligatorias: sin ellas zsh inte
 expandir los corchetes y falla con `no matches found`. Aprobar es el mismo comando con
 `state=approved`.
 
+**Trampa: una sola aprobación no basta.** `build-apk.yml` declara `environment: Production`
+en tres jobs (`prepare-production`, `compile-android` y `verify-and-release`), y la puerta
+puede volver a saltar en cada uno. Verificado el 18 de septiembre de 2026: tras aprobar la
+primera vez el run pasó a `in_progress`, ejecutó `prepare-production` y volvió a `waiting`
+con `compile-android` sin arrancar; hizo falta una segunda aprobación. Después de aprobar,
+no des la build por lanzada: espera un minuto y repite la consulta a `pending_deployments`;
+si vuelve a listar `Production`, hay que aprobar otra vez. El `jq` del comando de aprobación
+puede quejarse con `expected an object but got: string` aunque la aprobación haya entrado;
+confirma con `gh run view <run_id>` en vez de fiarte de esa salida.
+
 **2. Si ya está corriendo y muere por tiempo**, entonces sí puede ser la espera de EAS.
 `eas build` espera a que termine, así que un job que agota `timeout-minutes` (hoy 120) sale
 como `cancelled` con `##[error]The operation was canceled` en el paso "Build APK on EAS";
