@@ -81,7 +81,7 @@
         {
           "id": "GYM-246",
           "title": "Ajustes → Preferencias muestra «notifications: [object Object]» y claves internas en crudo",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "La pestaña Preferencias recorre el objeto de preferencias de forma genérica y pinta claves internas y objetos anidados sin formato. Debe listar filas explícitas y legibles, y fallar en compilación si aparece una preferencia sin presentación.",
           "dependsOn": [],
           "related": []
@@ -89,7 +89,7 @@
         {
           "id": "GYM-247",
           "title": "La evaluación sanitaria opcional se puede activar para un proveedor sin API key",
-          "state": "todo",
+          "state": "done",
           "summary": "Los interruptores de evaluación sanitaria de Ajustes no miran si el proveedor tiene clave guardada, así que se pueden activar sin efecto real. Deben deshabilitarse sin clave, apagarse al borrarla y sanearse al arrancar.",
           "dependsOn": [],
           "related": []
