@@ -153,7 +153,7 @@
       "backend": "async-storage",
       "personal": false,
       "dataCategory": "app-preferences",
-      "purpose": "Consentimiento versionado, separado por proveedor BYOK, para la evaluación adicional opcional de seguridad sanitaria; también registra si ya se mostró el aviso. No contiene el texto evaluado ni se incluye en las copias de seguridad exportadas.",
+      "purpose": "Consentimiento versionado, único para todos los proveedores BYOK, para la evaluación adicional opcional de seguridad sanitaria con el proveedor activo; también registra si ya se mostró el aviso. Se apaga solo si no queda ninguna clave guardada. No contiene el texto evaluado ni se incluye en las copias de seguridad exportadas.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"

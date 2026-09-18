@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v5
-effective_date: 2026-09-15
+version: 2026-09-v6
+effective_date: 2026-09-18
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -77,8 +77,8 @@ All of the following is stored on your device only:
   in the secure keystore, a normal update may keep them encrypted so they can be reused
   if the feature returns. The current version neither reads nor transmits them. “Delete
   all my data” deletes them.
-- **Preferences**: interface and notification settings, and your per-provider consent
-  for the optional additional health-safety evaluation.
+- **Preferences**: interface and notification settings, and your consent for the
+  optional additional health-safety evaluation.
 - **AI provider configuration**: the selected model and, when Anthropic requires it for
   an identity-linked key, the workspace identifier (`wrkspc_…`).
 - **Debug log**: a technical record of up to 1000 entries covering delivered rest-timer
@@ -159,12 +159,14 @@ The request includes:
 - for Anthropic, the workspace identifier, only when you configured one because the key
   type requires it.
 
-If you enable **additional health-safety evaluation** for a provider in Settings, the
-current text may be sent to that same provider in a separate classification request
-before the normal response is generated. This option is off by default, requires
-separate consent for each provider, and can be revoked at any time. Messages classified
-locally as high or critical risk are intercepted on the device and are not sent to the
-provider.
+If you enable **additional health-safety evaluation** in Settings, the text of a query
+that the local check considers ambiguous may be sent to the provider you are using at
+that moment (the Coach's or the Estimator's) in a separate classification request before
+the normal response is generated. It is a single switch for all providers: it can only
+be enabled once you have saved the key of at least one provider, it turns itself off if
+you delete the last key, it is off by default, and it can be revoked at any time.
+Messages classified locally as high or critical risk are intercepted on the device and
+are not sent to the provider.
 
 All generation requests to Google disable Interactions conversation storage using
 `store: false`. The app resends the recent context that fits within those limits from

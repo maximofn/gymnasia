@@ -128,6 +128,17 @@ import {
   type HealthSafetyRuntimePolicy,
 } from "./agent/healthSafety";
 import {
+  applyHealthSafetyConsentUpdate,
+  configuredHealthSafetyProviders,
+  createHealthSafetyConsentState,
+  describeHealthSafetyConsentSwitch,
+  normalizeHealthSafetyConsentState,
+  sanitizeHealthSafetyConsent,
+  shouldEvaluateWithProvider,
+  type HealthSafetyConsentState,
+  type HealthSafetyConsentUpdate,
+} from "./agent/healthSafetyConsent";
+import {
   belongsToActiveStorageNamespace,
   IS_FAKE_PROVIDER_MODE,
   RUNTIME_ENVIRONMENT,
@@ -572,11 +583,6 @@ Notifications.setNotificationHandler({
   },
 });
 
-type HealthSafetyConsentState = {
-  consentVersion: string;
-  providers: Record<Provider, boolean>;
-  noticeSeen: Record<Provider, boolean>;
-};
 // `AnthropicModelOption` vive ahora en ./agent/anthropicModels, junto al
 // recorrido de la paginación, para poder probarse sin arrastrar App.tsx.
 type ChatProviderCallOptions = StreamingHandlers & {
@@ -779,35 +785,9 @@ const EXERCISES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
 const HEALTH_SAFETY_CONSENT_KEY = scopedStorageKey("gymnasia.mobile.health_safety.consent.v1");
 
-function createHealthSafetyConsentState(): HealthSafetyConsentState {
-  return {
-    consentVersion: BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY.consentVersion,
-    providers: { anthropic: false, openai: false, google: false },
-    noticeSeen: { anthropic: false, openai: false, google: false },
-  };
-}
-
-function normalizeHealthSafetyConsentState(value: unknown): HealthSafetyConsentState {
-  const fallback = createHealthSafetyConsentState();
-  if (!value || typeof value !== "object" || Array.isArray(value)) return fallback;
-  const candidate = value as Partial<HealthSafetyConsentState>;
-  if (candidate.consentVersion !== fallback.consentVersion) return fallback;
-  const providers = candidate.providers ?? fallback.providers;
-  const noticeSeen = candidate.noticeSeen ?? fallback.noticeSeen;
-  return {
-    consentVersion: fallback.consentVersion,
-    providers: {
-      anthropic: providers.anthropic === true,
-      openai: providers.openai === true,
-      google: providers.google === true,
-    },
-    noticeSeen: {
-      anthropic: noticeSeen.anthropic === true,
-      openai: noticeSeen.openai === true,
-      google: noticeSeen.google === true,
-    },
-  };
-}
+// El modelo del consentimiento vive en ./agent/healthSafetyConsent para poder
+// probarse sin arrastrar App.tsx. Aquí solo queda la versión de política vigente.
+const HEALTH_SAFETY_CONSENT_VERSION = BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY.consentVersion;
 
 // --- GYM-5 (ticket para exportar e importar copias manuales) ---
 // Almacena la fecha del último backup manual realizado por el usuario.
@@ -1803,7 +1783,7 @@ type MiniChatProps = {
   onClose: () => void;
   visible: boolean;
   title: string;
-  healthSafetyEvaluatorConsent: Record<Provider, boolean>;
+  healthSafetyEvaluatorConsent: HealthSafetyConsentState;
   onHealthSafetyConsentPrompt: (provider: Provider) => void;
   onReportMessage: (message: ChatMessage, messages: ChatMessage[]) => void;
   testID?: string;
@@ -1883,7 +1863,7 @@ function MiniChat({
     }
 
     if (healthDecision.level === "elevated") {
-      if (healthSafetyEvaluatorConsent[provider.provider]) {
+      if (shouldEvaluateWithProvider(healthSafetyEvaluatorConsent, provider)) {
         healthDecision = await evaluateHealthSafetyWithProvider(
           provider,
           text,
@@ -2299,7 +2279,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   );
   const providerOperationsRef = useRef<ProviderOperationMap>(createProviderOperationMap());
   const [healthSafetyConsent, setHealthSafetyConsent] = useState<HealthSafetyConsentState>(
-    createHealthSafetyConsentState,
+    () => createHealthSafetyConsentState(HEALTH_SAFETY_CONSENT_VERSION),
   );
   const [chatProviderDropdownOpen, setChatProviderDropdownOpen] = useState(false);
   const [foodAIProviderDropdownOpen, setFoodAIProviderDropdownOpen] = useState(false);
@@ -2497,7 +2477,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     keys: orderedProviderKeys,
     chatProvider: store.chatProvider ?? null,
     foodProvider: store.foodAIProvider ?? null,
-    healthSafetyProviders: healthSafetyConsent.providers,
+    healthSafetyConsent: describeHealthSafetyConsentSwitch(
+      healthSafetyConsent,
+      configuredHealthSafetyProviders(store.keys),
+    ),
     secureStoreAvailable,
     isWeb: Platform.OS === "web",
     chatDropdownOpen: chatProviderDropdownOpen,
@@ -2530,10 +2513,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       message: googleModelOptionsMessage,
       options: filteredGoogleModelOptions,
     },
-    updateHealthSafetyConsent: (provider, enabled) => updateHealthSafetyConsent(provider, {
-      enabled,
-      noticeSeen: true,
-    }),
+    updateHealthSafetyConsent: (enabled) => updateHealthSafetyConsent({ enabled, noticeSeen: true }),
     selectChatProvider: (provider) => void selectChatProvider(provider),
     selectFoodProvider: (provider) => {
       setStore((previous) => ({ ...previous, foodAIProvider: provider }));
@@ -4159,7 +4139,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const parsedAlarmHealth: AlarmHealth = rawAlarmHealth && typeof rawAlarmHealth === "object" && !Array.isArray(rawAlarmHealth)
       ? { ...DEFAULT_ALARM_HEALTH, ...rawAlarmHealth as Partial<AlarmHealth> }
       : { ...DEFAULT_ALARM_HEALTH };
-    const parsedHealthSafetyConsent = normalizeHealthSafetyConsentState(consentParsed.value);
+    const parsedHealthSafetyConsent = normalizeHealthSafetyConsentState(consentParsed.value, {
+      consentVersion: HEALTH_SAFETY_CONSENT_VERSION,
+      configuredProviders: configuredHealthSafetyProviders(mergedStore.keys),
+    });
 
     if (!isCurrent()) return;
     if (normalizedPrefs.repairs.length > 0) {
@@ -4211,6 +4194,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     alarmHealthRef.current = parsedAlarmHealth;
     setAlarmHealth(parsedAlarmHealth);
     setHealthSafetyConsent(parsedHealthSafetyConsent);
+    if (JSON.stringify(consentParsed.value) !== JSON.stringify(parsedHealthSafetyConsent)) {
+      // Migración del documento heredado por proveedor, o saneado de un
+      // consentimiento sin clave detrás: lo persistido debe coincidir con lo que se usa.
+      void AsyncStorage.setItem(HEALTH_SAFETY_CONSENT_KEY, JSON.stringify(parsedHealthSafetyConsent)).catch(() => {});
+    }
     setLocalStoreStartupError(null);
     setLocalStoreRecovery(null);
     setIsHydrated(true);
@@ -4783,7 +4771,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setPolicyRuntimeStatus({ ...policyLease.status });
       let healthDecision = classifyHealthSafetyText(userInput, "input", healthSelection.policy);
       if (healthDecision.level === "elevated") {
-        if (healthSafetyConsent.providers[activeProvider.provider]) {
+        if (shouldEvaluateWithProvider(healthSafetyConsent, activeProvider)) {
           healthDecision = await evaluateHealthSafetyWithProvider(
             activeProvider,
             userInput,
@@ -5669,7 +5657,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setPolicyRuntimeStatus({ ...policyLease.status });
     let healthDecision = classifyHealthSafetyText(messageText, "input", healthSelection.policy);
     if (healthDecision.level === "elevated") {
-      if (healthSafetyConsent.providers[resolvedProvider.provider]) {
+      if (shouldEvaluateWithProvider(healthSafetyConsent, resolvedProvider)) {
         healthDecision = await evaluateHealthSafetyWithProvider(
           resolvedProvider,
           messageText,
@@ -7507,30 +7495,34 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       .catch(() => {});
   }
 
-  function updateHealthSafetyConsent(
-    provider: Provider,
-    updates: { enabled?: boolean; noticeSeen?: boolean },
-  ) {
+  function updateHealthSafetyConsent(updates: HealthSafetyConsentUpdate) {
     setHealthSafetyConsent((previous) => {
-      const next: HealthSafetyConsentState = {
-        ...previous,
-        providers: {
-          ...previous.providers,
-          ...(updates.enabled === undefined ? {} : { [provider]: updates.enabled }),
-        },
-        noticeSeen: {
-          ...previous.noticeSeen,
-          ...(updates.noticeSeen === undefined ? {} : { [provider]: updates.noticeSeen }),
-        },
-      };
+      const next = applyHealthSafetyConsentUpdate(
+        previous,
+        updates,
+        configuredHealthSafetyProviders(storeRef.current.keys),
+      );
       void AsyncStorage.setItem(HEALTH_SAFETY_CONSENT_KEY, JSON.stringify(next));
       return next;
     });
   }
 
+  // Al borrar la última clave (o al importar una copia sin claves) el interruptor
+  // se apaga solo: no hay a quién enviar el texto y no debe seguir diciendo «Activada».
+  useEffect(() => {
+    if (!isHydrated) return;
+    const sanitized = sanitizeHealthSafetyConsent(
+      healthSafetyConsent,
+      configuredHealthSafetyProviders(store.keys),
+    );
+    if (!sanitized.changed) return;
+    setHealthSafetyConsent(sanitized.state);
+    void AsyncStorage.setItem(HEALTH_SAFETY_CONSENT_KEY, JSON.stringify(sanitized.state)).catch(() => {});
+  }, [healthSafetyConsent, isHydrated, store.keys]);
+
   function offerHealthSafetyEvaluatorConsent(provider: Provider) {
-    if (healthSafetyConsent.providers[provider] || healthSafetyConsent.noticeSeen[provider]) return;
-    updateHealthSafetyConsent(provider, { noticeSeen: true });
+    if (healthSafetyConsent.enabled || healthSafetyConsent.noticeSeen) return;
+    updateHealthSafetyConsent({ noticeSeen: true });
     Alert.alert(
       "Evaluación sanitaria opcional",
       `Esta consulta parece necesitar más contexto. Si lo activas, se enviará únicamente el texto de consultas ambiguas a ${PROVIDER_UI_META[provider].label} para una segunda clasificación. No se envían el historial, fotos ni memoria local.`,
@@ -7538,7 +7530,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         { text: "Ahora no", style: "cancel" },
         {
           text: "Activar para futuras consultas",
-          onPress: () => updateHealthSafetyConsent(provider, { enabled: true, noticeSeen: true }),
+          onPress: () => updateHealthSafetyConsent({ enabled: true, noticeSeen: true }),
         },
       ],
     );
@@ -8815,7 +8807,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   providerKeys={store.keys}
                   preferredProvider={store.foodAIProvider}
                   providerPriority={FOOD_ESTIMATOR_PROVIDER_PRIORITY}
-                  healthSafetyEvaluatorConsent={healthSafetyConsent.providers}
+                  healthSafetyEvaluatorConsent={healthSafetyConsent}
                   onHealthSafetyConsentPrompt={offerHealthSafetyEvaluatorConsent}
                   onReportMessage={(message, conversation) => {
                     handleOpenAiReport("personal-food-assistant", message, conversation);

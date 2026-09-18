@@ -55,6 +55,7 @@
     "test:update-removal:e2e": "node apps/mobile/scripts/update-removal.e2e.mjs",
     "test:data-deletion:e2e": "node apps/mobile/scripts/local-data-deletion.e2e.mjs",
     "test:privacy:e2e": "node apps/mobile/scripts/privacy-policy.e2e.mjs",
+    "test:health-safety:e2e": "node apps/mobile/scripts/health-safety-consent.e2e.mjs",
     "sync:catalogs": "node scripts/catalogs/generate.mjs --write",
     "check:catalogs": "node scripts/catalogs/generate.mjs --check",
     "test:catalogs": "node --test scripts/catalogs/*.test.mjs",

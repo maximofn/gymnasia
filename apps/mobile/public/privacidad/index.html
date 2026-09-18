@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Política de privacidad de Gymnasia">
-<meta name="gymnasia-policy-version" content="2026-09-v5">
-<meta name="gymnasia-policy-digest" content="sha256:a83d6d94f94bd87aaea530bf4297740175ea725af3b410d7a9ef5310774ea944">
+<meta name="gymnasia-policy-version" content="2026-09-v6">
+<meta name="gymnasia-policy-digest" content="sha256:1006a37520f8785ad64b0d33105148b347f79057bac8d258c8d3aa32cbe45335">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Política de privacidad de Gymnasia</h1>
-  <p class="meta">Versión 2026-09-v5 · en vigor desde 2026-09-15 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Versión 2026-09-v6 · en vigor desde 2026-09-18 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
   <nav>
     <h2>Contenido</h2>
@@ -96,7 +96,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Conversaciones con el asistente</strong>: el historial completo de tus hilos de chat, incluidos los mensajes del modelo. Los turnos nuevos de Google conservan además los pasos de respuesta, resúmenes de pensamiento, firmas técnicas, llamadas a herramientas, argumentos y resultados necesarios para continuar el diálogo. Estos datos siguen el borrado y las copias manuales del chat; no contienen la clave API.</li>
       <li><strong>Memoria del asistente</strong>: notas en texto libre que tú o el propio asistente guardáis para recordar cosas entre conversaciones. Puede contener cualquier dato que hayas contado en el chat, incluidos datos de salud.</li>
       <li><strong>Credenciales heredadas de funciones retiradas</strong>: si una versión anterior guardó credenciales en el llavero seguro, una actualización normal puede conservarlas cifradas para reutilizarlas si la función vuelve. La versión actual no las lee ni las transmite. «Borrar todos mis datos» las elimina.</li>
-      <li><strong>Preferencias</strong>: ajustes de la interfaz y de las notificaciones, y tu consentimiento por proveedor para la evaluación adicional opcional de seguridad sanitaria.</li>
+      <li><strong>Preferencias</strong>: ajustes de la interfaz y de las notificaciones, y tu consentimiento para la evaluación adicional opcional de seguridad sanitaria.</li>
       <li><strong>Configuración de proveedores de IA</strong>: el modelo elegido y, si Anthropic lo exige para una clave vinculada a identidad, el identificador del workspace (<code>wrkspc_…</code>).</li>
       <li><strong>Registro de depuración</strong>: un histórico técnico de hasta 1000 entradas con los avisos de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de serie; eventos técnicos de selección de políticas; y contadores del contexto preparado para Google, como número de intercambios, bytes y cantidad de imágenes antiguas omitidas. Esos diagnósticos de Google no contienen mensajes, imágenes, argumentos de herramientas ni claves. El registro nunca se envía por red; puedes verlo y borrarlo desde Ajustes.</li>
       <li><strong>Copias locales de recuperación</strong>: la aplicación conserva una única copia verificada del estado principal. Si encuentra datos que no puede leer con seguridad, mantiene el payload original en cuarentena para no sobrescribirlo. Ambas copias permanecen solo en el dispositivo y se sustituyen o eliminan al completar la recuperación.</li>
@@ -136,7 +136,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li>en el estimador de comida, <strong>las imágenes que le proporcionas</strong>, codificadas dentro de la petición.</li>
       <li>para Anthropic, el identificador del workspace, únicamente si lo has configurado porque el tipo de clave lo requiere.</li>
     </ul>
-    <p>Si activas en Ajustes la <strong>evaluación adicional de seguridad sanitaria</strong> para un proveedor, el texto actual puede enviarse a ese mismo proveedor en una petición de clasificación separada antes de generar la respuesta normal. Esta opción está desactivada por defecto, requiere consentimiento independiente para cada proveedor y puedes revocarla en cualquier momento. Los mensajes que la comprobación local clasifica como riesgo alto o crítico se interceptan en el dispositivo y no se envían al proveedor.</p>
+    <p>Si activas en Ajustes la <strong>evaluación adicional de seguridad sanitaria</strong>, el texto de una consulta que la comprobación local considera dudosa puede enviarse al proveedor que estés usando en ese momento (el del Coach o el del Estimador) en una petición de clasificación separada antes de generar la respuesta normal. Es un único interruptor para todos los proveedores: solo se puede activar si has guardado la clave de al menos uno, se desactiva solo si borras la última clave, está desactivado por defecto y puedes revocarlo en cualquier momento. Los mensajes que la comprobación local clasifica como riesgo alto o crítico se interceptan en el dispositivo y no se envían al proveedor.</p>
     <p>Todas las consultas de generación a Google desactivan el guardado de conversaciones de Interactions mediante <code>store: false</code>. La app vuelve a enviar desde el dispositivo el contexto reciente que cabe dentro de esos límites y no utiliza una conversación almacenada en Google para continuar el diálogo. El historial íntegro sigue guardado en el dispositivo y no se borra al preparar una petición más pequeña. Este ajuste no sustituye los términos generales del proveedor.</p>
     <p>Ese contenido queda sujeto a la política de privacidad y a los términos del proveedor que hayas elegido, bajo tu propia cuenta con él:</p>
     <ul>
@@ -260,7 +260,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Política de privacidad de Gymnasia · 2026-09-v5 · 2026-09-15</p>
+    <p>Política de privacidad de Gymnasia · 2026-09-v6 · 2026-09-18</p>
   </footer>
 </main>
 </body>

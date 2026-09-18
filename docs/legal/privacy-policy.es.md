@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v5
-effective_date: 2026-09-15
+version: 2026-09-v6
+effective_date: 2026-09-18
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -79,7 +79,7 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
   cifradas para reutilizarlas si la función vuelve. La versión actual no las lee ni las
   transmite. «Borrar todos mis datos» las elimina.
 - **Preferencias**: ajustes de la interfaz y de las notificaciones, y tu consentimiento
-  por proveedor para la evaluación adicional opcional de seguridad sanitaria.
+  para la evaluación adicional opcional de seguridad sanitaria.
 - **Configuración de proveedores de IA**: el modelo elegido y, si Anthropic lo exige
   para una clave vinculada a identidad, el identificador del workspace (`wrkspc_…`).
 - **Registro de depuración**: un histórico técnico de hasta 1000 entradas con los avisos
@@ -167,12 +167,14 @@ que hayas elegido. La petición incluye:
 - para Anthropic, el identificador del workspace, únicamente si lo has configurado
   porque el tipo de clave lo requiere.
 
-Si activas en Ajustes la **evaluación adicional de seguridad sanitaria** para un
-proveedor, el texto actual puede enviarse a ese mismo proveedor en una petición de
-clasificación separada antes de generar la respuesta normal. Esta opción está
-desactivada por defecto, requiere consentimiento independiente para cada proveedor y
-puedes revocarla en cualquier momento. Los mensajes que la comprobación local clasifica
-como riesgo alto o crítico se interceptan en el dispositivo y no se envían al proveedor.
+Si activas en Ajustes la **evaluación adicional de seguridad sanitaria**, el texto de
+una consulta que la comprobación local considera dudosa puede enviarse al proveedor que
+estés usando en ese momento (el del Coach o el del Estimador) en una petición de
+clasificación separada antes de generar la respuesta normal. Es un único interruptor
+para todos los proveedores: solo se puede activar si has guardado la clave de al menos
+uno, se desactiva solo si borras la última clave, está desactivado por defecto y puedes
+revocarlo en cualquier momento. Los mensajes que la comprobación local clasifica como
+riesgo alto o crítico se interceptan en el dispositivo y no se envían al proveedor.
 
 Todas las consultas de generación a Google desactivan el guardado de conversaciones
 de Interactions mediante `store: false`. La app vuelve a enviar desde el dispositivo el

@@ -233,6 +233,10 @@ The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - browser E2E with a fake OpenAI provider: `npm run test:agent:e2e`
 - published privacy policy E2E: `npm run test:privacy:e2e` (exports the web build and
   reads it with a clean browser context; `PRIVACY_E2E_SKIP_EXPORT=1` reuses `dist/`)
+- interruptor de evaluación sanitaria E2E: `npm run test:health-safety:e2e` (Google
+  interceptado; comprueba «Sin clave», la migración del consentimiento heredado y que
+  el clasificador solo recibe la consulta con el interruptor activo;
+  `HEALTH_SAFETY_E2E_SKIP_EXPORT=1` reutiliza `dist/`)
 - migración de series avanzadas E2E: `npm run test:train:series:e2e` (siembra un
   almacén con tempo, drop-set y un tipo de serie inexistente; comprueba que la app
   arranca sin pantalla de recuperación y que nada se pierde al recargar;
