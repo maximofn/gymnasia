@@ -675,6 +675,23 @@ esto hay que arreglarlo antes o el job pasará siempre.
   rondas por ID solo cuando Google entrega uno no vacío. El ledger local sigue evitando
   repetir efectos durante reintentos completos.
 
+### El `SafeAreaView` de `react-native` core no hace nada en Android
+- Gotcha: `SafeAreaView` importado de `"react-native"` solo aplica insets en iOS; en
+  Android es un `View` normal. Como el SDK 54 fuerza edge-to-edge (no se puede
+  desactivar), la app se dibuja bajo la barra de estado y la de gestos, y nada
+  reserva ese espacio. El síntoma llega como «la app se solapa arriba y abajo» y
+  parece depender del dispositivo: en Android 15+ es sistemático, y en versiones
+  anteriores ya se veía en capas absolutas (el catálogo, #208). Verificado el 19 de
+  septiembre de 2026 en GYM-249 (ticket para arreglar el solapamiento con las barras
+  del sistema).
+- Fix: los insets salen de `react-native-safe-area-context` (`SafeAreaProvider` en la
+  raíz de `App.tsx`, `SafeAreaView` de esa librería en el contenedor raíz y en cada
+  `<Modal>` nativo, que se dibuja fuera de la raíz). Las capas `position: absolute`
+  **dentro** del contenedor raíz heredan su padding y no necesitan nada; compensar a
+  mano con `StatusBar.currentHeight` produce margen doble.
+- Guardarraíl: `apps/mobile/shell/safeArea.contract.test.ts` falla si vuelve el import
+  de core, si un `<Modal>` no aplica sus insets o si reaparece `StatusBar.currentHeight`.
+
 ## Post-Modification Workflow
 After each modification, create a local commit on a topic branch:
 ```bash

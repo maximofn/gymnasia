@@ -11,13 +11,17 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Pressable,
-  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
+// El SafeAreaView de react-native core es un View normal en Android: solo aplica
+// insets en iOS. Con el edge-to-edge obligatorio del SDK 54, Android 15+ dibuja la
+// app bajo las barras del sistema, así que hacen falta los insets nativos de
+// react-native-safe-area-context. Ver GYM-249.
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { mobileTheme } from "./theme";
 import { DesktopSidebar, ExerciseCatalogDetailOverlay } from "./screens";
@@ -9003,10 +9007,12 @@ export default function App() {
   }, []);
 
   return (
-    <GymnasiaApp
-      key={runtimeGeneration}
-      deletionOutcome={deletionOutcome}
-      onRuntimeReset={handleRuntimeReset}
-    />
+    <SafeAreaProvider>
+      <GymnasiaApp
+        key={runtimeGeneration}
+        deletionOutcome={deletionOutcome}
+        onRuntimeReset={handleRuntimeReset}
+      />
+    </SafeAreaProvider>
   );
 }
