@@ -465,11 +465,13 @@ expandir los corchetes y falla con `no matches found`. Aprobar es el mismo coman
 
 **Trampa: una sola aprobación no basta.** `build-apk.yml` declara `environment: Production`
 en tres jobs (`prepare-production`, `compile-android` y `verify-and-release`), y la puerta
-puede volver a saltar en cada uno. Verificado el 18 de septiembre de 2026: tras aprobar la
-primera vez el run pasó a `in_progress`, ejecutó `prepare-production` y volvió a `waiting`
-con `compile-android` sin arrancar; hizo falta una segunda aprobación. Después de aprobar,
-no des la build por lanzada: espera un minuto y repite la consulta a `pending_deployments`;
-si vuelve a listar `Production`, hay que aprobar otra vez. El `jq` del comando de aprobación
+y la puerta salta en **cada uno de los tres**: una build completa necesita tres aprobaciones,
+no una. Verificado el 19 de septiembre de 2026 con la 1.45.3: aprobar, `prepare-production`,
+volver a `waiting`; aprobar, `compile-android` compila en EAS, volver a `waiting`; aprobar,
+`verify-and-release` publica la release. Después de cada aprobación, no des la build por
+lanzada: espera un minuto y repite la consulta a `pending_deployments`; mientras siga
+listando `Production`, queda otra puerta. La tercera es la más fácil de pasar por alto,
+porque `compile-android` ya aparece en `success` y parece que solo falta publicar. El `jq` del comando de aprobación
 puede quejarse con `expected an object but got: string` aunque la aprobación haya entrado;
 confirma con `gh run view <run_id>` en vez de fiarte de esa salida.
 
