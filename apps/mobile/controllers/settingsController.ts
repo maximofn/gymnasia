@@ -33,6 +33,7 @@ import type {
 import { parseNonNegativeNumberInput } from "../diet/model";
 import { formatBodyMetricInput, resolveBodyMetricsDraft } from "../measurements/bodyMetricsDraft";
 import { buildDietPlanningModel, type DietPlanningModel } from "../diet/planningModel";
+import { calculateDailyCalories } from "../diet/dailyCaloriesCalculation";
 import type { DietMacroMode, NutritionValidationIssue } from "../diet/nutritionContract";
 import {
   formatMeasurementIssues,
@@ -915,6 +916,9 @@ export type DietSettingsModel = {
   draftFatTargetGrams: number;
   dirty: boolean;
   saveResult: string | null;
+  // Aviso del botón Calcular. Vive en la pestaña Dieta: nunca en el banner
+  // global de la app, que sobrevivía al cambio de pestaña.
+  calculationIssue: string | null;
 };
 
 export type DietSettingsActions = {
@@ -963,8 +967,10 @@ export function useDietSettingsController(
     draftFatTargetGrams: input.draftFatTargetGrams,
     dirty: input.dirty,
     saveResult: input.saveResult,
+    calculationIssue: input.calculationIssue,
   }), [
     input.birthDatePickerVisible,
+    input.calculationIssue,
     input.carbsMaxGramsPerKgHint,
     input.configuredMacroCaloriesExcess,
     input.configuredMacroCaloriesRemaining,
@@ -1016,12 +1022,14 @@ export function useDietSettingsController(
 }
 
 export function useDietSettingsRuntime(input: {
+  // Si la pestaña Dieta de Ajustes está a la vista. Al ocultarse se descarta
+  // el aviso de Calcular para que no reaparezca al volver.
+  active: boolean;
   localStore: LocalStoreRuntime;
   latestHeightCm: number | null;
   latestWeightKg: number | null;
   isWeb: boolean;
   isIos: boolean;
-  setError(message: string | null): void;
   createId(prefix: string): string;
 }): {
   controller: ReturnType<typeof useDietSettingsController>;
@@ -1034,6 +1042,7 @@ export function useDietSettingsRuntime(input: {
   }));
   const [dirty, setDirty] = useState(false);
   const [saveResult, setSaveResult] = useState<string | null>(null);
+  const [calculationIssue, setCalculationIssue] = useState<string | null>(null);
   const [birthDatePickerVisible, setBirthDatePickerVisible] = useState(false);
   // Peso y altura no forman parte de dietSettings: viven en Medidas. El plan
   // los edita como borrador y los escribe como medición de hoy al guardar.
@@ -1066,6 +1075,10 @@ export function useDietSettingsRuntime(input: {
   const bodyMetricsRef = useRef(bodyMetrics);
   bodyMetricsRef.current = bodyMetrics;
 
+  useEffect(() => {
+    if (!input.active) setCalculationIssue(null);
+  }, [input.active]);
+
   const planning = useMemo(
     () => buildDietPlanningModel(savedSettings, draft, bodyMetrics.weightKg),
     [bodyMetrics.weightKg, draft, savedSettings],
@@ -1075,6 +1088,7 @@ export function useDietSettingsRuntime(input: {
     setDraft((previous) => updater(previous));
     setDirty(true);
     setSaveResult(null);
+    setCalculationIssue(null);
   }
 
   function changeGramsPerKg(macro: GkgMacroKey, value: string): void {
@@ -1122,16 +1136,19 @@ export function useDietSettingsRuntime(input: {
     draftFatTargetGrams: planning.draftFatTargetGrams,
     dirty,
     saveResult,
+    calculationIssue,
     changeSex: (sex) => update((previous) => ({ ...previous, sex })),
     changeWeight: (weightKg) => {
       setWeightInput(weightKg);
       setDirty(true);
       setSaveResult(null);
+      setCalculationIssue(null);
     },
     changeHeight: (heightCm) => {
       setHeightInput(heightCm);
       setDirty(true);
       setSaveResult(null);
+      setCalculationIssue(null);
     },
     changeBirthDate: (birthDate) => update((previous) => ({ ...previous, birth_date: birthDate })),
     showBirthDatePicker: () => setBirthDatePickerVisible(true),
@@ -1150,28 +1167,22 @@ export function useDietSettingsRuntime(input: {
       daily_calories: dailyCalories,
     })),
     calculateDailyCalories: () => {
-      const heightCm = bodyMetricsRef.current.heightCm ?? 0;
-      const weightKg = bodyMetricsRef.current.weightKg ?? 0;
-      const birthDate = draft.birth_date;
-      if (!weightKg || !heightCm || !birthDate) {
-        inputRef.current.setError("Introduce altura, peso y fecha de nacimiento para calcular.");
+      const result = calculateDailyCalories({
+        weightKg: bodyMetricsRef.current.weightKg,
+        heightCm: bodyMetricsRef.current.heightCm,
+        birthDate: draft.birth_date,
+        sex: draft.sex,
+        activityLevel: draft.activity_level,
+        goal: draft.goal,
+      });
+      if (!result.ok) {
+        setCalculationIssue(result.message);
         return;
       }
-      const ageYears = Math.floor((Date.now() - new Date(birthDate).getTime()) / 31557600000);
-      const sexOffset = (draft.sex ?? "male") === "female" ? -161 : 5;
-      const bmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears + sexOffset;
-      const activityMultipliers: Record<string, number> = {
-        moderate: 1.55,
-        intermediate: 1.725,
-        high: 1.9,
-      };
-      const multiplier = activityMultipliers[draft.activity_level ?? "moderate"] ?? 1.55;
-      const goalMultiplier = draft.goal === "cut" ? 0.8 : draft.goal === "bulk" ? 1.2 : 1;
       update((previous) => ({
         ...previous,
-        daily_calories: String(Math.round(bmr * multiplier * goalMultiplier)),
+        daily_calories: String(result.dailyCalories),
       }));
-      inputRef.current.setError(null);
     },
     changeMacroMode: (mode) => update((previous) => {
       if (previous.macro_mode === mode) return previous;

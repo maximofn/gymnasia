@@ -180,6 +180,28 @@ try {
   await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
   await openDietSettings(page);
 
+  log("Comprobando que el aviso de Calcular sin datos vive en la pestaña Dieta y no sobrevive al cambio de pestaña");
+  const missingDataMessage = "Introduce altura, peso y fecha de nacimiento para calcular.";
+  await page.getByText("Calcular", { exact: true }).click();
+  const calculationIssue = page.getByTestId("diet-plan-calculation-issue");
+  await calculationIssue.filter({ hasText: missingDataMessage }).waitFor({ state: "visible" });
+  // El aviso aparece una sola vez: junto al botón, no en un banner global.
+  assert.equal(await page.getByText(missingDataMessage, { exact: true }).count(), 1);
+  await page.getByTestId("settings-tab-preferences").click();
+  await calculationIssue.waitFor({ state: "detached" });
+  assert.equal(await page.getByText(missingDataMessage, { exact: true }).count(), 0);
+  await page.getByTestId("settings-tab-diet").click();
+  await page.getByTestId("diet-plan-daily-calories-input").waitFor({ state: "visible" });
+  assert.equal(await calculationIssue.count(), 0);
+  // Salir a Home y volver a Ajustes (con Dieta aún seleccionada) tampoco lo resucita.
+  await page.getByText("Calcular", { exact: true }).click();
+  await calculationIssue.waitFor({ state: "visible" });
+  await page.getByTestId("nav-tab-home").click();
+  assert.equal(await page.getByText(missingDataMessage, { exact: true }).count(), 0);
+  await page.getByTestId("nav-tab-settings").click();
+  await page.getByTestId("diet-plan-daily-calories-input").waitFor({ state: "visible" });
+  assert.equal(await calculationIssue.count(), 0);
+
   log("Comprobando que un peso inválido en el plan se marca y no se guarda");
   await page.getByTestId("diet-plan-weight-input").fill("abc");
   await page.getByTestId("diet-plan-error-weight").waitFor({ state: "visible" });
