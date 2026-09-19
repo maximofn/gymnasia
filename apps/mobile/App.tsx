@@ -2557,12 +2557,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const latestBodyHeightCm = measurementsRuntime.latestHeightCm;
   const weightMeasurementPair = measurementsRuntime.weightSummary;
   const dietSettingsRuntime = useDietSettingsRuntime({
+    active: tab === "settings" && settingsTab === "diet",
     localStore: localStoreRuntime,
     latestHeightCm: latestBodyHeightCm,
     latestWeightKg: latestBodyWeightKg,
     isWeb: Platform.OS === "web",
     isIos: Platform.OS === "ios",
-    setError,
     createId: uid,
   });
   const dietSettingsController = dietSettingsRuntime.controller;

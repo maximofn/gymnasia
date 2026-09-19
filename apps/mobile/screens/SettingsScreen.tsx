@@ -1687,6 +1687,9 @@ export const DietSettingsPanel = memo(function DietSettingsPanel({
           <Text style={{ color: "#000", fontSize: 12, fontWeight: "700" }}>Calcular</Text>
         </Pressable>
       </View>
+      {model.calculationIssue ? (
+        <Text testID="diet-plan-calculation-issue" accessibilityLiveRegion="polite" style={{ color: "#FF8D8D", fontSize: 11 }}>{model.calculationIssue}</Text>
+      ) : null}
       {model.issues.get("daily_calories") ? (
         <Text testID="diet-plan-error-daily-calories" style={{ color: "#FF8D8D", fontSize: 11 }}>{model.issues.get("daily_calories")?.message}</Text>
       ) : null}
