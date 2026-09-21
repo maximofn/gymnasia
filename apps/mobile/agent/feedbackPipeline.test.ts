@@ -88,6 +88,7 @@ async function runFeatureIssueTurn(executeTool: (name: string, args: Record<stri
       outputItems: [],
       content: "",
       thinking: null,
+      truncated: false,
     }),
   });
   return results;

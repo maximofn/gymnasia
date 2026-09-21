@@ -1,0 +1,31 @@
+event: response.created
+data: {"type":"response.created","response":{"id":"resp_openai_interleaved"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":0,"item":{"type":"function_call","id":"fc_openai_first","call_id":"call_openai_first","name":"read_field_value","arguments":"","status":"in_progress"}}
+
+event: response.output_item.added
+data: {"type":"response.output_item.added","output_index":1,"item":{"type":"function_call","id":"fc_openai_second","call_id":"call_openai_second","name":"read_field_value","arguments":"","status":"in_progress"}}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","item_id":"fc_openai_first","output_index":0,"delta":"{\"key\":"}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","item_id":"fc_openai_second","output_index":1,"delta":"{\"key\":"}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","item_id":"fc_openai_first","output_index":0,"delta":"\"Objetivo\"}"}
+
+event: response.function_call_arguments.delta
+data: {"type":"response.function_call_arguments.delta","item_id":"fc_openai_second","output_index":1,"delta":"\"Altura\"}"}
+
+event: response.function_call_arguments.done
+data: {"type":"response.function_call_arguments.done","item_id":"fc_openai_first","output_index":0,"arguments":"{\"key\":\"Objetivo\"}"}
+
+event: response.function_call_arguments.done
+data: {"type":"response.function_call_arguments.done","item_id":"fc_openai_second","output_index":1,"arguments":"{\"key\":\"Altura\"}"}
+
+event: response.completed
+data: {"type":"response.completed","response":{"id":"resp_openai_interleaved"}}
+
+data: [DONE]

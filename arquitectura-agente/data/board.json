@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-18",
+    "updated": "2026-09-21",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -746,7 +746,7 @@
         {
           "id": "GYM-37",
           "title": "3. Streaming: argumentos que llegan en deltas",
-          "state": "backlog",
+          "state": "done",
           "baseline": "done",
           "summary": "input_json_delta acumulado en el bloque tool_use (App.tsx:3302).",
           "dependsOn": [
