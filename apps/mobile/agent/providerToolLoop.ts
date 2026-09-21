@@ -99,6 +99,7 @@ export type OpenAIFunctionCall = {
 
 export type OpenAIToolTurn = {
   responseId: string | null;
+  truncated?: boolean;
   outputItems: Array<{ type: string } | OpenAIFunctionCall>;
 };
 
@@ -128,6 +129,9 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
   const occurrences = new Map<string, number>();
   const maxRounds = input.maxRounds ?? MAX_TOOL_ROUNDS;
   for (let round = 0; round < maxRounds; round += 1) {
+    if (turn.truncated) {
+      throw new Error("La respuesta de OpenAI se cortó antes de completarse. Vuelve a intentarlo.");
+    }
     const toolCalls = turn.outputItems.filter(
       (item): item is OpenAIFunctionCall => item.type === "function_call",
     );
@@ -180,6 +184,7 @@ export type AnthropicResponseBlock =
   | AnthropicToolUseBlock;
 
 export type AnthropicToolTurn = {
+  truncated?: boolean;
   contentBlocks: AnthropicResponseBlock[];
 };
 
@@ -196,6 +201,9 @@ export async function runAnthropicToolLoop<TTurn extends AnthropicToolTurn>(inpu
   const occurrences = new Map<string, number>();
   const maxRounds = input.maxRounds ?? MAX_TOOL_ROUNDS;
   for (let round = 0; round < maxRounds; round += 1) {
+    if (turn.truncated) {
+      throw new Error("La respuesta de Anthropic se cortó antes de completarse. Vuelve a intentarlo.");
+    }
     const toolCalls = turn.contentBlocks.filter(
       (block): block is AnthropicToolUseBlock => block.type === "tool_use",
     );

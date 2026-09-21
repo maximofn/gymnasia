@@ -41,6 +41,7 @@ export type OpenAIStreamTurnResult = {
   responseId: string | null;
   content: string;
   thinking: string | null;
+  truncated: boolean;
   outputItems: OpenAIResponseOutputItem[];
 };
 
@@ -363,6 +364,7 @@ export function createOpenAIStreamParser(handlers?: StreamingHandlers) {
   let streamedContent = "";
   let streamedThinking = "";
   let responseId: string | null = null;
+  let sawTerminalEvent = false;
   const itemsByIndex = new Map<number, OpenAIResponseOutputItem>();
   const indexesById = new Map<string, number>();
 
@@ -426,6 +428,7 @@ export function createOpenAIStreamParser(handlers?: StreamingHandlers) {
       if (typeof payload.item_id !== "string") return;
       updateArguments(payload.item_id, () => payload.arguments ?? "");
     } else if (type === "response.completed") {
+      sawTerminalEvent = true;
       responseId = payload.response?.id ?? responseId;
       const finalItems = parseOpenAIOutputItems(payload.response);
       if (finalItems.length > 0) replaceItems(finalItems);
@@ -449,6 +452,7 @@ export function createOpenAIStreamParser(handlers?: StreamingHandlers) {
         responseId,
         content: streamedContent.trim() || collectOpenAIText(outputItems),
         thinking: streamedThinking.trim() || collectOpenAIThinking(outputItems),
+        truncated: !sawTerminalEvent,
         outputItems,
       };
     },
