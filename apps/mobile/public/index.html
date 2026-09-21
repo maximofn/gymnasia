@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <!--
+      Plantilla propia del export web (sustituye a la de @expo/cli, que solo
+      trae <title> y un #root vacío). Motivo: Ahrefs y Google leen el HTML sin
+      ejecutar JavaScript y veían una página sin descripción, sin H1, sin texto,
+      sin enlaces y sin canónica (informe SEO del portfolio, 21/09/2026). El
+      bloque estático dentro de #root es lo que ven los rastreadores; React lo
+      reemplaza al montar la app (createRoot vacía el contenedor).
+    -->
+    <title>Gymnasia — entrenador de gimnasio con IA</title>
+    <meta name="description" content="App de fitness con un coach conversacional de IA que se ejecuta en tu dispositivo, sin backend: rutinas, dieta, medidas y un estimador de comidas por foto. Tus datos no salen del móvil." />
+    <link rel="canonical" href="https://gymnasia.maximofn.com/" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="MaximoFN" />
+    <meta name="theme-color" content="#0A0E14" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Gymnasia" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:url" content="https://gymnasia.maximofn.com/" />
+    <meta property="og:title" content="Gymnasia — entrenador de gimnasio con IA" />
+    <meta property="og:description" content="Coach de IA en tu dispositivo, sin backend: rutinas, dieta, medidas y estimador de comidas por foto. Tus datos no salen del móvil." />
+    <meta property="og:image" content="https://images.maximofn.com/gymnasia-og.webp" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/webp" />
+    <meta property="og:image:alt" content="Gymnasia: pantalla de inicio de la app con el entrenamiento del día" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Maximo_fn" />
+    <meta name="twitter:creator" content="@Maximo_fn" />
+    <meta name="twitter:title" content="Gymnasia — entrenador de gimnasio con IA" />
+    <meta name="twitter:description" content="Coach de IA en tu dispositivo, sin backend: rutinas, dieta, medidas y estimador de comidas por foto. Tus datos no salen del móvil." />
+    <meta name="twitter:image" content="https://images.maximofn.com/gymnasia-og.webp" />
+    <meta name="twitter:image:alt" content="Gymnasia: pantalla de inicio de la app con el entrenamiento del día" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Gymnasia",
+      "url": "https://gymnasia.maximofn.com/",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Android, Web",
+      "description": "App de fitness con un coach conversacional de IA que se ejecuta en tu dispositivo, sin backend: rutinas, dieta, medidas y un estimador de comidas por foto.",
+      "image": "https://images.maximofn.com/gymnasia-og.webp",
+      "author": { "@type": "Person", "name": "MaximoFN", "url": "https://www.maximofn.com/" },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+    }
+    </script>
+
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+    </style>
+    <style>
+      /* Fondo de la app para que el bloque estático y la carga no parpadeen en blanco */
+      body {
+        margin: 0;
+        background: #0A0E14;
+        color: #E8EDF4;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      .static-landing {
+        margin: auto;
+        max-width: 40rem;
+        padding: 2.5rem 1.25rem;
+        line-height: 1.6;
+      }
+      .static-landing h1 { font-size: 2rem; margin: 0 0 .5rem; }
+      .static-landing p { color: #9AA7B8; margin: 0 0 1rem; }
+      .static-landing a { color: #CBFF1A; }
+      .static-landing ul { padding-left: 1.25rem; }
+    </style>
+  </head>
+
+  <body>
+    <noscript>
+      Gymnasia necesita JavaScript para funcionar. Activa JavaScript o lee más en
+      <a href="https://www.maximofn.com/gymnasia/">maximofn.com/gymnasia</a>.
+    </noscript>
+    <!-- The root element for your Expo app. React reemplaza este contenido al montar. -->
+    <div id="root">
+      <main class="static-landing">
+        <h1>Gymnasia</h1>
+        <p>
+          Entrenador de gimnasio con IA. Rutinas de entrenamiento, dieta, medidas
+          corporales y un coach conversacional que se ejecuta íntegramente en tu
+          dispositivo, sin backend: tus datos nunca salen del móvil.
+        </p>
+        <p>
+          El coach usa tu propia clave de API (BYOK) y herramientas locales; el
+          estimador de comidas saca los macronutrientes de una foto del plato y
+          lee códigos de barras contra OpenFoodFacts.
+        </p>
+        <ul>
+          <li><a href="https://www.maximofn.com/gymnasia/">Cómo está hecha Gymnasia</a> (ficha del proyecto)</li>
+          <li><a href="https://www.maximofn.com/gymnasia-agent/">El agente de Gymnasia, explicado</a> (serie de artículos)</li>
+          <li><a href="/privacidad">Política de privacidad</a> · <a href="/privacy">Privacy policy</a></li>
+          <li><a href="https://www.maximofn.com/">MaximoFN</a>, autor</li>
+        </ul>
+        <p>Cargando la aplicación…</p>
+      </main>
+    </div>
+  </body>
+</html>
