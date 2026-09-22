@@ -1,0 +1,5 @@
+# Gymnasia — app web (export de Expo). Ver también https://www.maximofn.com/robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://gymnasia.maximofn.com/sitemap.xml
