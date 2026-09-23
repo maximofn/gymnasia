@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-21",
+    "updated": "2026-09-23",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -1121,7 +1121,8 @@
             "GYM-45",
             "GYM-48",
             "GYM-134",
-            "GYM-135"
+            "GYM-135",
+            "GYM-250"
           ]
         },
         {
@@ -2047,7 +2048,8 @@
             "GYM-57",
             "GYM-58",
             "GYM-59",
-            "GYM-135"
+            "GYM-135",
+            "GYM-250"
           ]
         },
         {
@@ -2667,7 +2669,22 @@
             "GYM-11",
             "GYM-13",
             "GYM-55",
-            "GYM-56"
+            "GYM-56",
+            "GYM-250"
+          ]
+        },
+        {
+          "id": "GYM-250",
+          "title": "Añadir un proveedor personalizado compatible con la API de OpenAI",
+          "state": "backlog",
+          "summary": "Permitir configurar una URL base, modelo y API key para un endpoint OpenAI-compatible, con Chat Completions, credenciales locales y capacidades verificadas sin introducir un backend.",
+          "dependsOn": [],
+          "related": [
+            "GYM-10",
+            "GYM-11",
+            "GYM-57",
+            "GYM-136",
+            "GYM-165"
           ]
         },
         {
@@ -3082,7 +3099,8 @@
           "dependsOn": [],
           "related": [
             "GYM-11",
-            "GYM-13"
+            "GYM-13",
+            "GYM-250"
           ]
         },
         {
@@ -3092,7 +3110,8 @@
           "summary": "Más proveedores junto a OpenAI, Anthropic y Google. Los que no soporten visión quedan fuera del Food Estimator.",
           "dependsOn": [],
           "related": [
-            "GYM-10"
+            "GYM-10",
+            "GYM-250"
           ]
         },
         {
