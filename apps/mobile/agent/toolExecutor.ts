@@ -710,7 +710,7 @@ const createFeatureIssue: ToolHandler = async (args, _context, dependencies) => 
   return describeOutcomeForModel(outcome);
 };
 
-export const AGENT_TOOL_HANDLERS: Record<string, ToolHandler> = {
+export const AGENT_TOOL_HANDLERS: Readonly<Record<string, ToolHandler>> = Object.freeze({
   save_personal_data: savePersonalData,
   list_personal_data_keys: listPersonalDataKeys,
   read_field_description: readFieldDescription,
@@ -724,7 +724,7 @@ export const AGENT_TOOL_HANDLERS: Record<string, ToolHandler> = {
   read_routines: readRoutines,
   create_routine: createRoutine,
   create_feature_issue: createFeatureIssue,
-};
+});
 
 export const AGENT_TOOL_HANDLER_NAMES = Object.keys(AGENT_TOOL_HANDLERS);
 
@@ -734,7 +734,9 @@ export function createDetailedAgentToolExecutor(dependencies: ToolExecutorDepend
     args: Record<string, unknown>,
     context: ToolExecutionContext = {},
   ): Promise<ToolOperationExecutionOutcome> {
-    const handler = AGENT_TOOL_HANDLERS[name];
+    const handler = Object.hasOwn(AGENT_TOOL_HANDLERS, name)
+      ? AGENT_TOOL_HANDLERS[name]
+      : undefined;
     if (!handler) {
       return { output: "Herramienta no reconocida.", status: "no_effect" };
     }

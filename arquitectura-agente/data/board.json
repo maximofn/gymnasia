@@ -759,7 +759,7 @@
           "title": "4. Despachador: de nombre de tool a ejecutable",
           "state": "in_progress",
           "baseline": "done",
-          "summary": "handleToolCall en App.tsx:1469: cadena de if (name === X) sobre las 15 tools, siempre Promise<string>.",
+          "summary": "Probar el despacho de las 13 tools, rechazar nombres desconocidos y documentar el flujo; queda la QA nativa.",
           "dependsOn": [
             "GYM-34"
           ],
