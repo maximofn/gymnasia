@@ -276,6 +276,26 @@ describe("ejecutor de tools", () => {
     expect(parsed.results[0].proteina_por_100g).toBe(31);
   });
 
+  it("ignora los máximos a cero que OpenAI envía para filtros no solicitados", async () => {
+    const execute = createAgentToolExecutor(createDependencies());
+    const result = await execute("search_foods", {
+      query: "arroz blanco",
+      category: "",
+      source: "",
+      min_calories: 0,
+      max_calories: 0,
+      min_protein: 0,
+      max_protein: 0,
+      min_carbs: 0,
+      max_carbs: 0,
+      min_fat: 0,
+      max_fat: 0,
+      sort_by: "",
+    }, { foodsRepo: foods });
+    const parsed = JSON.parse(result) as { results: Array<{ item_id: string }> };
+    expect(parsed.results.map((food) => food.item_id)).toEqual(["rice"]);
+  });
+
   it("expone disponibilidad, fecha, fuentes y referencias en ambas búsquedas", async () => {
     const execute = createAgentToolExecutor(createDependencies());
     for (const availability of ["fresh", "cached", "partial", "unavailable"] as const) {
