@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Política de privacidad de Gymnasia">
-<meta name="gymnasia-policy-version" content="2026-09-v6">
-<meta name="gymnasia-policy-digest" content="sha256:1006a37520f8785ad64b0d33105148b347f79057bac8d258c8d3aa32cbe45335">
+<meta name="gymnasia-policy-version" content="2026-09-v7">
+<meta name="gymnasia-policy-digest" content="sha256:6728546b0c0ad412eddad0f9c0195c8c5f5e8fd1d66f59ecf49abf01545992b9">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Política de privacidad de Gymnasia</h1>
-  <p class="meta">Versión 2026-09-v6 · en vigor desde 2026-09-18 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Versión 2026-09-v7 · en vigor desde 2026-09-24 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
   <nav>
     <h2>Contenido</h2>
@@ -68,7 +68,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="resumen">
     <h2><a href="#resumen">Resumen</a></h2>
     <p>Gymnasia funciona <strong>principalmente en tu dispositivo</strong>. No hay cuenta ni registro. Tus entrenamientos, tu dieta, tu peso, tus medidas y tus conversaciones con el asistente se guardan en el almacenamiento de la propia aplicación.</p>
-    <p>Hay una excepción importante y es enteramente tuya: si activas el asistente de inteligencia artificial, <strong>tú</strong> aportas la clave de un proveedor (OpenAI, Anthropic o Google) y la aplicación habla <strong>directamente</strong> con ese proveedor desde tu dispositivo. Lo que escribas en el chat viaja a la empresa que hayas elegido, bajo tu propia cuenta con ella. Nosotros no lo vemos ni lo almacenamos, salvo que decidas usar la acción <strong>Denunciar</strong> sobre una respuesta y apruebes expresamente la vista previa del contenido que se enviará.</p>
+    <p>Hay una excepción importante y es enteramente tuya: si activas el asistente de inteligencia artificial, <strong>tú</strong> aportas la clave de un proveedor (OpenAI, Anthropic o Google) y la aplicación habla <strong>directamente</strong> con ese proveedor desde tu dispositivo. Las consultas que necesitan el modelo viajan a la empresa que hayas elegido, bajo tu propia cuenta con ella. Las consultas explícitas de calorías por 100 g de un alimento del catálogo pueden responderse con los datos del dispositivo, sin enviar esa consulta al proveedor de IA. Nosotros no vemos ni almacenamos el chat, salvo que decidas usar la acción <strong>Denunciar</strong> sobre una respuesta y apruebes expresamente la vista previa del contenido que se enviará.</p>
     <p>Esta política describe con detalle qué se guarda, qué sale del dispositivo y qué control tienes sobre ello.</p>
   </section>
 
@@ -128,7 +128,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="proveedores">
     <h2><a href="#proveedores">Qué envía la aplicación a los proveedores de IA</a></h2>
-    <p>Cuando usas el asistente, tu dispositivo se conecta <strong>directamente</strong> con el proveedor que hayas elegido. La petición incluye:</p>
+    <p>Cuando una consulta del asistente necesita el modelo, tu dispositivo se conecta <strong>directamente</strong> con el proveedor que hayas elegido. Una búsqueda explícita de calorías por 100 g que se resuelve con el catálogo local no genera esa petición. Cuando sí se envía, la petición incluye:</p>
     <ul>
       <li>las instrucciones del sistema del asistente;</li>
       <li>en el chat principal, para Google, <strong>hasta los 10 intercambios más recientes</strong>, con los pasos de respuesta y herramientas que pertenezcan a ellos; un límite adicional de tamaño puede retirar intercambios completos empezando por el más antiguo. Para OpenAI y Anthropic se envían <strong>los últimos 20 mensajes</strong>. Los asistentes de alimentos envían el historial reciente de su sesión con el mismo límite cuando usan Google;</li>
@@ -260,7 +260,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Política de privacidad de Gymnasia · 2026-09-v6 · 2026-09-18</p>
+    <p>Política de privacidad de Gymnasia · 2026-09-v7 · 2026-09-24</p>
   </footer>
 </main>
 </body>

@@ -533,16 +533,29 @@ try {
   await expectProviderCatalogTools(partialPage, "partial", "fresh");
   await partialContext.close();
 
-  log("Verificando arranque limpio sin red y repositorios vacíos");
+  log("Verificando arranque limpio sin red con catálogo de alimentos integrado");
   const coldContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const coldPage = await preparePage(coldContext, { offline: true }, {}, true);
   await openApp(coldPage);
   await expectCaches(coldPage, false);
   await expectFoodConsumer(coldPage, false);
   const unavailableNotice = coldPage.getByTestId("diet-food-catalog-status-desayuno");
-  await unavailableNotice.getByText("Catálogo no disponible", { exact: true }).waitFor({ state: "visible" });
+  await unavailableNotice.getByText("Disponibilidad parcial", { exact: true }).waitFor({ state: "visible" });
   if (screenshotDir) await unavailableNotice.screenshot({ path: join(screenshotDir, "unavailable.png") });
-  await expectProviderCatalogTools(coldPage, "unavailable");
+  await coldPage.getByTestId("nav-tab-chat").click();
+  let unexpectedProviderCall = false;
+  await coldPage.route("**/v1/responses*", (route) => {
+    unexpectedProviderCall = true;
+    return route.fulfill({ status: 500 });
+  });
+  await coldPage.getByTestId("chat-input").fill("Busca arroz blanco en el catálogo y dime sus calorías por 100 g");
+  await coldPage.getByTestId("chat-send").click();
+  await coldPage.getByText("En el catálogo, Arroz blanco (cocido) tiene 130 kcal por 100 g.", { exact: true })
+    .waitFor({ state: "visible", timeout: 30_000 });
+  assert.equal(unexpectedProviderCall, false);
+  if (screenshotDir) await coldPage.screenshot({ path: join(screenshotDir, "coach-catalog-rice.png") });
+  await coldPage.unroute("**/v1/responses*");
+  await expectProviderCatalogTools(coldPage, "partial", "unavailable");
   await expectExerciseConsumer(coldPage, "Rutina Offline E2E", false);
   await coldPage.getByText("No se pudo cargar esta parte del catálogo.", { exact: true }).waitFor({ state: "visible" });
   await coldPage.getByTestId("training-exercise-custom-open").waitFor({ state: "visible" });
@@ -564,7 +577,7 @@ try {
   const corruptPage = await preparePage(corruptContext, { offline: true }, { [foodsCacheKey]: corruptEnvelope });
   await openApp(corruptPage);
   await expectFoodConsumer(corruptPage, false);
-  await corruptPage.getByText("Catálogo no disponible", { exact: true }).first().waitFor({ state: "visible" });
+  await corruptPage.getByText("Disponibilidad parcial", { exact: true }).first().waitFor({ state: "visible" });
   await corruptContext.close();
 
   log("Verificando selección explícita ante una coincidencia ambigua");

@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v6
-effective_date: 2026-09-18
+version: 2026-09-v7
+effective_date: 2026-09-24
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -21,8 +21,10 @@ inside the app itself.
 There is one important exception, and it is entirely yours: if you enable the artificial
 intelligence assistant, **you** supply an API key from a provider (OpenAI, Anthropic or
 Google), and the app talks **directly** to that provider from your device. Whatever you
-type into the chat travels to the company you chose, under your own account with them.
-We do not see or store it unless you choose **Report** on a response and expressly
+send when a question needs the model goes to the company you chose, under your own
+account with them. Explicit requests for a catalogue food's calories per 100 g may be
+answered using data on your device without sending that question to the AI provider.
+We do not see or store the chat unless you choose **Report** on a response and expressly
 approve the preview of the content that will be sent.
 
 This policy explains in detail what is stored, what leaves your device, and what control
@@ -144,8 +146,9 @@ you before downloading it.
 
 ## What the app sends to AI providers {#proveedores}
 
-When you use the assistant, your device connects **directly** to the provider you chose.
-The request includes:
+When an assistant question needs the model, your device connects **directly** to the
+provider you chose. An explicit calories per 100 g lookup answered from the local
+catalogue does not make that request. When sent, the request includes:
 
 - the assistant's system instructions;
 - in the main chat, for Google, **up to the 10 most recent exchanges**, including the
