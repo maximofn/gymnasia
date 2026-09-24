@@ -178,7 +178,7 @@ async function installRoutes(page, networkState) {
     body: "{}",
   }));
   await page.route("https://api.github.com/**", (route) => route.fulfill({ status: 503 }));
-  await page.route("https://raw.githubusercontent.com/**", (route) => {
+  await page.route("https://raw.githubusercontent.com/**", async (route) => {
     if (networkState.offline) {
       return route.fulfill({ status: 503, body: "offline fixture" });
     }
@@ -188,6 +188,7 @@ async function installRoutes(page, networkState) {
       return route.fulfill({ status: 503, body: "products unavailable fixture" });
     }
     if (pathname.endsWith("/alimentos/all.json")) {
+      if (networkState.foodGate) await networkState.foodGate;
       return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(foodFixture) });
     }
     if (pathname.includes("/ejercicios/catalog-v1/")) {
@@ -471,6 +472,39 @@ try {
   await expectProviderCatalogTools(page, "cached");
   await expectExerciseConsumer(page, "Rutina Catálogos E2E", true, renamedExercise);
   await context.close();
+
+  log("Verificando búsqueda del agente cuando el catálogo termina de cargar durante el turno");
+  let releaseFoodResponse;
+  const foodGate = new Promise((resolve) => { releaseFoodResponse = resolve; });
+  const lateContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const latePage = await preparePage(lateContext, { offline: false, foodGate }, {}, true);
+  const lateRequests = [];
+  await latePage.route("**/v1/responses*", async (route) => {
+    lateRequests.push(route.request().postDataJSON());
+    if (lateRequests.length === 1) {
+      releaseFoodResponse();
+      await expectFoodConsumer(latePage, true);
+      await latePage.getByTestId("nav-tab-chat").click();
+    }
+    await route.fulfill({
+      status: 200,
+      headers: { "content-type": "text/event-stream; charset=utf-8", "cache-control": "no-cache" },
+      body: lateRequests.length === 1
+        ? openAIToolCallSse("resp_late_food", "call_late_food", "search_foods", JSON.stringify({ query: fixtureFoodName }))
+        : openAIFinalSse(),
+    });
+  });
+  await openApp(latePage);
+  await latePage.getByTestId("nav-tab-chat").click();
+  await latePage.getByTestId("chat-input").fill(`Busca ${fixtureFoodName}`);
+  await latePage.getByTestId("chat-send").click();
+  await latePage.getByText("Catálogos consultados.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+  const lateOutput = lateRequests[1].input?.find((item) => item.type === "function_call_output")?.output;
+  assert.equal(typeof lateOutput, "string");
+  const lateSearch = JSON.parse(lateOutput);
+  assert.equal(lateSearch.availability, "fresh");
+  assert.equal(lateSearch.results[0]?.nombre, fixtureFoodName);
+  await lateContext.close();
 
   log("Verificando cachés heredadas antiguas y migración offline");
   const staleState = { offline: true };
