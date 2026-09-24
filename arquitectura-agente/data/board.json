@@ -603,7 +603,8 @@
             "GYM-177",
             "GYM-190",
             "GYM-203",
-            "GYM-251"
+            "GYM-251",
+            "GYM-252"
           ]
         },
         {
@@ -2415,13 +2416,25 @@
       "dependsOn": [],
       "tickets": [
         {
+          "id": "GYM-252",
+          "title": "Añadir un botón para copiar el contenido completo de cada mensaje del chat",
+          "state": "todo",
+          "summary": "Añadir a cada mensaje una acción accesible que copie su contenido completo con una pulsación y confirme el resultado, sin exigir selección previa ni alterar la conversación.",
+          "dependsOn": [],
+          "related": [
+            "GYM-240",
+            "GYM-251"
+          ]
+        },
+        {
           "id": "GYM-251",
           "title": "Permitir copiar y seleccionar texto dentro de cada mensaje del chat",
           "state": "todo",
-          "summary": "Hacer seleccionable y copiable cada mensaje del Coach y los asistentes, limitando «Seleccionar todo» a una sola burbuja y manteniendo el historial como texto de solo lectura.",
+          "summary": "Permitir seleccionar y copiar fragmentos del Coach y los asistentes, limitando «Seleccionar todo» a una sola burbuja y manteniendo el historial como texto de solo lectura.",
           "dependsOn": [],
           "related": [
-            "GYM-240"
+            "GYM-240",
+            "GYM-252"
           ]
         },
         {
@@ -3365,8 +3378,9 @@
     {
       "id": "accesibilidad",
       "title": "Resolver y validar barreras de accesibilidad",
-      "why": "GYM-251 (ticket para copiar y seleccionar texto dentro de cada mensaje del chat) corrige primero una barrera concreta comunicada por el usuario y deja pruebas por plataforma. Después, GYM-204 (ticket para investigar colaboración con ONCE y otras organizaciones) identifica una comunidad adecuada y prepara un piloto seguro para convertir feedback real en nuevas mejoras.",
+      "why": "GYM-252 (ticket para añadir un botón de copia en cada mensaje) resuelve primero el camino directo de una pulsación. GYM-251 (ticket para seleccionar texto dentro de cada mensaje) completa después la selección de fragmentos y limita «Seleccionar todo» a una sola burbuja. Finalmente, GYM-204 (ticket para investigar colaboración con ONCE y otras organizaciones) prepara un piloto seguro para convertir feedback real en nuevas mejoras.",
       "tickets": [
+        "GYM-252",
         "GYM-251",
         "GYM-204"
       ]
