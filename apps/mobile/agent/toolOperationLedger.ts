@@ -1,6 +1,6 @@
 import { sha256 } from "@noble/hashes/sha2.js";
 
-export type ToolProvider = "openai" | "anthropic" | "google";
+export type ToolProvider = "openai" | "anthropic" | "google" | "custom_openai";
 
 export type ToolCallEnvelope = {
   executionId: string;

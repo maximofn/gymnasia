@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="Gymnasia Privacy Policy">
-<meta name="gymnasia-policy-version" content="2026-09-v7">
-<meta name="gymnasia-policy-digest" content="sha256:98e583af25dd8c6e43ba9f68b6ce1d4cea675759f0ab806f8313f9cf515d72d1">
+<meta name="gymnasia-policy-version" content="2026-09-v8">
+<meta name="gymnasia-policy-digest" content="sha256:78a420c2fcb8bed47014d1a9bf0d328eadfb298662391006d1de1bb12c3ccda2">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Gymnasia Privacy Policy</h1>
-  <p class="meta">Version 2026-09-v7 · in force since 2026-09-24 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Version 2026-09-v8 · in force since 2026-09-24 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacidad">Versión en español</a></p>
   <nav>
     <h2>Contents</h2>
@@ -68,7 +68,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="resumen">
     <h2><a href="#resumen">Summary</a></h2>
     <p>Gymnasia runs <strong>primarily on your device</strong>. There is no account or sign-up. Your workouts, diet, weight, measurements and conversations with the assistant are stored inside the app itself.</p>
-    <p>There is one important exception, and it is entirely yours: if you enable the artificial intelligence assistant, <strong>you</strong> supply an API key from a provider (OpenAI, Anthropic or Google), and the app talks <strong>directly</strong> to that provider from your device. Whatever you send when a question needs the model goes to the company you chose, under your own account with them. Explicit requests for a catalogue food's calories per 100 g may be answered using data on your device without sending that question to the AI provider. We do not see or store the chat unless you choose <strong>Report</strong> on a response and expressly approve the preview of the content that will be sent.</p>
+    <p>There is one important exception, and it is entirely yours: if you enable the artificial intelligence assistant, <strong>you</strong> supply an API key from OpenAI, Anthropic, Google or an OpenAI-compatible server whose HTTPS URL you choose. The app talks <strong>directly</strong> to that destination from your device. Whatever you send when a question needs the model goes to the company you chose, under your own account with them. Explicit requests for a catalogue food's calories per 100 g may be answered using data on your device without sending that question to the AI provider. We do not see or store the chat unless you choose <strong>Report</strong> on a response and expressly approve the preview of the content that will be sent.</p>
     <p>This policy explains in detail what is stored, what leaves your device, and what control you have over it.</p>
   </section>
 
@@ -97,7 +97,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Assistant memory</strong>: free-text notes that you or the assistant save in order to remember things between conversations. It may contain anything you have mentioned in the chat, including health data.</li>
       <li><strong>Legacy credentials from removed features</strong>: if an earlier version stored credentials in the secure keystore, a normal update may keep them encrypted so they can be reused if the feature returns. The current version neither reads nor transmits them. “Delete all my data” deletes them.</li>
       <li><strong>Preferences</strong>: interface and notification settings, and your consent for the optional additional health-safety evaluation.</li>
-      <li><strong>AI provider configuration</strong>: the selected model and, when Anthropic requires it for an identity-linked key, the workspace identifier (<code>wrkspc_…</code>).</li>
+      <li><strong>AI provider configuration</strong>: the selected model, the HTTPS base URL if you set up an OpenAI-compatible server and, when Anthropic requires it for an identity-linked key, the workspace identifier (<code>wrkspc_…</code>). The app also stores which provider, model and URL combination explicitly rejected a photo, so it can show a notice until you change the configuration.</li>
       <li><strong>Debug log</strong>: a technical record of up to 1000 entries covering delivered rest-timer alerts, which include the exercise name and set number; technical policy-selection events; and counters for context prepared for Google, such as exchange count, bytes and the number of old images omitted. Those Google diagnostics contain no messages, images, tool arguments or keys. The log is never sent over the network; you can view and clear it from Settings.</li>
       <li><strong>Local recovery copies</strong>: the app keeps one verified copy of its main state. If it finds data that it cannot read safely, it quarantines the original payload instead of overwriting it. Both copies remain on the device and are replaced or removed when the recovery is completed.</li>
       <li><strong>Assistant operation control</strong>: before a write, the app leaves a local technical mark. For data on the device, it stores another mark with the data when the write finishes; for a suggestion, it queries the issue service with the technical identifier described below. This lets it check an interruption before deciding whether a retry is safe. The each local record is limited to 256 operations. Confirmed ones expire after seven days; an operation whose result cannot be verified is kept until it can be resolved or you delete activity. Local marks contain technical fingerprints, the action name and timestamps; only a confirmed operation's record also keeps the result returned to the model. They store no arguments, messages, instructions or API keys, never leave the device and are excluded from exported backups.</li>
@@ -113,10 +113,10 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="byok">
     <h2><a href="#byok">Your API key</a></h2>
-    <p>The assistant works on a <strong>bring-your-own-key</strong> basis: no key ships with the app, and you enter the one from your own account with OpenAI, Anthropic or Google.</p>
+    <p>The assistant works on a <strong>bring-your-own-key</strong> basis: no key ships with the app, and you enter one from your own account with OpenAI, Anthropic, Google or the compatible server you configure.</p>
     <ul>
       <li>The key is stored <strong>in your device's secure keystore</strong> and is never sent to any developer server, because no such server exists.</li>
-      <li>The key is sent <strong>only to the provider it belongs to</strong>, with each request, as their API requires.</li>
+      <li>The key is sent <strong>only to the configured destination</strong> with each request. If you choose a compatible server, you decide its HTTPS URL and are responsible for trusting it. The app rejects redirects from that server.</li>
       <li>If an identity-linked Anthropic key requires a workspace identifier, that identifier is stored locally and sent only to Anthropic to route requests to the selected workspace.</li>
       <li>The key is <strong>not included</strong> in the backup file you export.</li>
       <li>The workspace identifier is not included in that backup either.</li>
@@ -131,7 +131,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <p>When an assistant question needs the model, your device connects <strong>directly</strong> to the provider you chose. An explicit calories per 100 g lookup answered from the local catalogue does not make that request. When sent, the request includes:</p>
     <ul>
       <li>the assistant's system instructions;</li>
-      <li>in the main chat, for Google, <strong>up to the 10 most recent exchanges</strong>, including the response and tool steps that belong to them; an additional size limit may remove complete exchanges starting with the oldest. For OpenAI and Anthropic, <strong>the last 20 messages</strong> are sent. Food assistants send their recent session history with the same limit when they use Google;</li>
+      <li>in the main chat, for Google, <strong>up to the 10 most recent exchanges</strong>, including the response and tool steps that belong to them; an additional size limit may remove complete exchanges starting with the oldest. For OpenAI and Anthropic, <strong>the last 20 messages</strong> are sent. A compatible server receives the conversation context needed to respond. Food assistants send their recent session history with the same limit when they use Google;</li>
       <li>the results of the tools the assistant uses at your request, which may include your weight, your body fat percentage, your measurements, the day's meals or your routines;</li>
       <li>in the food estimator, <strong>the images you provide</strong>, encoded within the request.</li>
       <li>for Anthropic, the workspace identifier, only when you configured one because the key type requires it.</li>
@@ -144,6 +144,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><a href="https://www.anthropic.com/legal/privacy" rel="noopener noreferrer">Anthropic</a></li>
       <li><a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google</a></li>
     </ul>
+    <p>If you configure an OpenAI-compatible server, consult its own policy and terms: Gymnasia does not control that destination. The optional model test sends a short query and may incur charges under the service you choose. If the model rejects tools, the Coach cannot use it; the food estimator can answer without barcode lookup and will tell you so.</p>
     <p>If you configure no key, the app contacts no AI provider and every other feature keeps working.</p>
   </section>
 
@@ -170,7 +171,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <h2><a href="#copias">Backups and export</a></h2>
     <p>You can export all your data to a <code>.gymnasia</code> package from Settings, and import it back later. It is a manual action: there is no automatic backup. The app also keeps support for importing older JSON files, although an old photograph reference can only be recovered if that file is still accessible on the device.</p>
     <p>The local recovery copy is not a cloud backup or a second portable file: it is one prior generation inside the app's own storage. It is used only when the current state cannot be read. Gymnasia then blocks writes and lets you recover the latest copy, retry, discard the affected data, or export the damaged payload. This recovery export preserves the original without sanitising it; it is particularly sensitive and may contain AI keys in the web version. Before saving it, Gymnasia requires you to choose a password and encrypts the file in the same way as a normal backup. It is never sent to a Gymnasia server.</p>
-    <p>The exported package <strong>contains</strong>: your measurements and body fat percentages, the normalised JPEG copies of your progress photographs that fit within the app's limits, your complete diet log, your training history, your personal settings (sex, height, date of birth), the assistant's memory and <strong>the entire history of your conversations</strong>. It is the most sensitive file the app produces: store it carefully and think about who you send it to.</p>
+    <p>The exported package <strong>contains</strong>: your measurements and body fat percentages, the normalised JPEG copies of your progress photographs that fit within the app's limits, your complete diet log, your training history, your personal settings (sex, height, date of birth), the assistant's memory, the selected models and the custom server's base URL if configured, and <strong>the entire history of your conversations</strong>. It is the most sensitive file the app produces: store it carefully and think about who you send it to.</p>
     <p>Each photograph carries a SHA-256 checksum so it can be checked during restoration. The app accepts at most 500 photograph links, 5 MiB per normalised photograph and 200 MiB of images per backup. If a photograph is missing, damaged or does not fit, the backup keeps all numeric measurements and tells you which photographs were omitted.</p>
     <p>The package does <strong>not</strong> contain your API keys or legacy credentials from removed features. New backups are encrypted and authenticated with XChaCha20-Poly1305; the key is derived from a password you choose using scrypt. Gymnasia neither stores nor transmits that password and cannot recover the file if you forget it. On import, the complete file is decrypted and verified before the app shows the confirmation that can replace your current data.</p>
     <p>Gymnasia continues to accept old JSON v1 and ZIP v2 backups so that you do not lose access to your data. Those older formats were not encrypted: the app warns you before importing them, and you should use them only if you recognise the file and its origin. There is no option to create new unencrypted exports.</p>
@@ -260,7 +261,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Gymnasia Privacy Policy · 2026-09-v7 · 2026-09-24</p>
+    <p>Gymnasia Privacy Policy · 2026-09-v8 · 2026-09-24</p>
   </footer>
 </main>
 </body>

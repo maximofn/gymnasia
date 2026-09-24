@@ -180,6 +180,7 @@ type FoodEstimatorOverlayProps = {
   inputValue: string;
   sending: boolean;
   statusLabel: string;
+  photoError: string | null;
   expandedThinking: Record<string, boolean>;
   scrollRef: import("react").RefObject<ScrollView | null>;
   hasResponse: boolean;
@@ -193,6 +194,7 @@ type FoodEstimatorOverlayProps = {
   onToggleThinking(messageId: string): void;
   onReportMessage(surface: AiReportSurface, message: ChatMessage, conversation: ChatMessage[]): void;
   onAddFood(): void;
+  onChooseModel(): void;
 };
 
 export const FoodEstimatorOverlay = memo(function FoodEstimatorOverlay({
@@ -204,6 +206,7 @@ export const FoodEstimatorOverlay = memo(function FoodEstimatorOverlay({
   inputValue,
   sending,
   statusLabel,
+  photoError,
   expandedThinking,
   scrollRef,
   hasResponse,
@@ -217,6 +220,7 @@ export const FoodEstimatorOverlay = memo(function FoodEstimatorOverlay({
   onToggleThinking,
   onReportMessage,
   onAddFood,
+  onChooseModel,
 }: FoodEstimatorOverlayProps) {
   if (!open) return null;
   const imageLimitReached = images.length >= maxImages;
@@ -252,6 +256,15 @@ export const FoodEstimatorOverlay = memo(function FoodEstimatorOverlay({
               </View>
             ))}
           </ScrollView>
+        ) : null}
+
+        {photoError ? (
+          <View testID="food-estimator-photo-error" style={{ borderWidth: 1, borderColor: "rgba(255,205,77,0.45)", borderRadius: mobileTheme.radius.md, backgroundColor: "rgba(255,205,77,0.07)", padding: 12, gap: 8 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{photoError}</Text>
+            <Pressable testID="food-estimator-choose-model" onPress={onChooseModel} accessibilityRole="button" style={{ alignSelf: "flex-start", borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, paddingHorizontal: 12, paddingVertical: 9 }}>
+              <Text style={{ color: "#06090D", fontWeight: "700" }}>Elegir otro modelo</Text>
+            </Pressable>
+          </View>
         ) : null}
 
         <SharedChatPanel

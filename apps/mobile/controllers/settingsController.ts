@@ -94,6 +94,7 @@ export type ProviderSettingsModel = {
   keys: ReadonlyArray<ProviderConfiguration>;
   chatProvider: Provider | null;
   foodProvider: Provider | null;
+  photoUnsupportedIds: ReadonlyArray<string>;
   healthSafetyConsent: Readonly<HealthSafetyConsentSwitchModel>;
   secureStoreAvailable: boolean;
   isWeb: boolean;
@@ -127,6 +128,14 @@ export type ProviderSettingsModel = {
     message: ProviderModelMessage;
     options: ReadonlyArray<ProviderModelOption>;
   };
+  custom: {
+    loading: boolean;
+    testing: boolean;
+    message: ProviderModelMessage;
+    options: ReadonlyArray<ProviderModelOption>;
+    photoUnsupported: boolean;
+    focusModelRequest: number;
+  };
 };
 
 export type ProviderSettingsActions = {
@@ -154,6 +163,9 @@ export type ProviderSettingsActions = {
   selectAnthropicModel(id: string): void;
   selectOpenAIModel(id: string): void;
   selectGoogleModel(id: string): void;
+  loadCustomModels(): void;
+  testCustomModel(): void;
+  selectCustomModel(id: string): void;
 };
 
 export type ProviderSettingsControllerInput = ProviderSettingsModel & ProviderSettingsActions;
@@ -171,6 +183,7 @@ export function useProviderSettingsController(
     keys: input.keys,
     chatProvider: input.chatProvider,
     foodProvider: input.foodProvider,
+    photoUnsupportedIds: input.photoUnsupportedIds,
     healthSafetyConsent: input.healthSafetyConsent,
     secureStoreAvailable: input.secureStoreAvailable,
     isWeb: input.isWeb,
@@ -204,6 +217,7 @@ export function useProviderSettingsController(
       message: input.google.message,
       options: input.google.options,
     },
+    custom: input.custom,
   }), [
     input.anthropic.dropdownOpen,
     input.anthropic.filter,
@@ -216,11 +230,13 @@ export function useProviderSettingsController(
     input.drafts,
     input.foodDropdownOpen,
     input.foodProvider,
+    input.photoUnsupportedIds,
     input.google.dropdownOpen,
     input.google.filter,
     input.google.loading,
     input.google.message,
     input.google.options,
+    input.custom,
     input.healthSafetyConsent,
     input.isWeb,
     input.keyVisibility,
@@ -261,6 +277,9 @@ export function useProviderSettingsController(
     selectAnthropicModel: (id) => inputRef.current.selectAnthropicModel(id),
     selectOpenAIModel: (id) => inputRef.current.selectOpenAIModel(id),
     selectGoogleModel: (id) => inputRef.current.selectGoogleModel(id),
+    loadCustomModels: () => inputRef.current.loadCustomModels(),
+    testCustomModel: () => inputRef.current.testCustomModel(),
+    selectCustomModel: (id) => inputRef.current.selectCustomModel(id),
   }), []);
   const back = useMemo(() => ({
     layers: {

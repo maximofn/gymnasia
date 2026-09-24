@@ -1,6 +1,6 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { memo, useCallback, useMemo, useRef, useState, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import {
@@ -34,6 +34,7 @@ import {
   DEFAULT_MODELS,
   type Provider,
 } from "../agent/providerConfiguration";
+import { photoCapabilityId } from "../agent/providerPhotoCapability";
 import { providerCredential } from "../agent/providerCredentials";
 import {
   OPENAI_REASONING_EFFORT_LABELS,
@@ -2050,6 +2051,10 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
   model: Readonly<ProviderSettingsModel>;
   actions: Readonly<ProviderSettingsActions>;
 }) {
+  const customModelInputRef = useRef<TextInput>(null);
+  useEffect(() => {
+    if (model.custom.focusModelRequest > 0) customModelInputRef.current?.focus();
+  }, [model.custom.focusModelRequest]);
   const healthSafetyConsent = model.healthSafetyConsent;
   const store = {
     keys: model.keys,
@@ -2257,10 +2262,12 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                                 overflow: "hidden",
                               }}
                             >
-                              {(["anthropic", "openai", "google"] as Provider[]).map((provider) => {
+                              {(["anthropic", "openai", "google", "custom_openai"] as Provider[]).map((provider) => {
                                 const k = store.keys.find((item) => item.provider === provider);
                                 const hasKey = !!providerCredential(k?.api_key, IS_FAKE_PROVIDER_MODE);
                                 const isSelected = dropdown.value === provider;
+                                const photoUnsupported = dropdown.surfaceId === "food-provider-dropdown" && !!k
+                                  && model.photoUnsupportedIds.includes(photoCapabilityId(k));
                                 return (
                                   <Pressable
                                     key={provider}
@@ -2272,7 +2279,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                                       paddingHorizontal: 12,
                                       paddingVertical: 10,
                                       backgroundColor: isSelected ? "rgba(203,255,26,0.08)" : "transparent",
-                                      opacity: hasKey ? 1 : 0.4,
+                                      opacity: hasKey ? (photoUnsupported ? 0.65 : 1) : 0.4,
                                     }}
                                   >
                                     <View
@@ -2296,6 +2303,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                                       {!hasKey ? (
                                         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>Sin API key</Text>
                                       ) : null}
+                                      {photoUnsupported ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>(No válido para análisis de fotos: no procesa imágenes)</Text> : null}
                                     </View>
                                     {isSelected ? <Feather name="check" size={16} color={mobileTheme.color.brandPrimary} /> : null}
                                   </Pressable>
@@ -2319,6 +2327,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                       const draft = providerDraftByProvider[key.provider] ?? {
                         api_key: key.api_key,
                         model: key.model,
+                        base_url: key.base_url ?? "",
                         workspace_id: key.workspace_id ?? "",
                       };
                       const hasDraftApiKey = !!providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
@@ -2368,7 +2377,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                                 </Text>
                               </View>
                               <View style={{ flex: 1 }}>
-                                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 29 }}>
+                                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: key.provider === "custom_openai" ? 23 : 29 }}>
                                   {providerMeta.label}
                                 </Text>
                                 <Text
@@ -2505,6 +2514,26 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                               </Text>
                             </View>
                           ) : null}
+
+                          {key.provider === "custom_openai" ? (
+                            <View style={{ gap: 8 }}>
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>URL base HTTPS del servidor</Text>
+                              <TextInput
+                                testID="provider-base-url-custom_openai"
+                                value={draft.base_url ?? ""}
+                                onChangeText={(value) => updateProviderDraft("custom_openai", { base_url: value })}
+                                placeholder="URL HTTPS del servidor (incluye /v1 si procede)"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                keyboardType="url"
+                                style={{ minHeight: 46, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }}
+                              />
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
+                                Usa HTTPS con un certificado válido. Gymnasia enviará la clave y las consultas a esta dirección.
+                              </Text>
+                            </View>
+                          ) : null}
   
                           <View style={{ flexDirection: "row", gap: 8 }}>
                             <Pressable
@@ -2566,6 +2595,42 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                           >
                             {connectionStatus.detail}
                           </Text>
+
+                          {key.provider === "custom_openai" ? (
+                            <View style={{ gap: 8 }}>
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Modelo</Text>
+                              <TextInput
+                                ref={customModelInputRef}
+                                testID="provider-model-input-custom_openai"
+                                value={draft.model}
+                                onChangeText={(value) => updateProviderDraft("custom_openai", { model: value })}
+                                placeholder="ID del modelo"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                style={{ minHeight: 46, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }}
+                              />
+                              {model.custom.photoUnsupported ? (
+                                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                                  (No válido para análisis de fotos: este modelo no procesa imágenes.)
+                                </Text>
+                              ) : null}
+                              <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+                                <Pressable onPress={actions.loadCustomModels} disabled={model.custom.loading} testID="provider-load-models-custom_openai" style={{ borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.brandPrimary, padding: 9, opacity: model.custom.loading ? 0.5 : 1 }}>
+                                  <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>{model.custom.loading ? "Consultando..." : "Actualizar modelos"}</Text>
+                                </Pressable>
+                                <Pressable onPress={actions.testCustomModel} disabled={model.custom.testing} testID="provider-test-model-custom_openai" style={{ borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, padding: 9, opacity: model.custom.testing ? 0.5 : 1 }}>
+                                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>{model.custom.testing ? "Probando..." : "Probar modelo (puede consumir API)"}</Text>
+                                </Pressable>
+                              </View>
+                              {model.custom.message ? <Text style={{ color: providerDetailColorBySeverity(model.custom.message.severity), fontSize: 12 }}>{model.custom.message.text}</Text> : null}
+                              {model.custom.options.map((option) => (
+                                <Pressable key={option.id} testID={`provider-model-option-custom_openai-${option.id}`} onPress={() => actions.selectCustomModel(option.id)} style={{ padding: 8, borderRadius: mobileTheme.radius.md, backgroundColor: option.id === draft.model ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp }}>
+                                  <Text style={{ color: mobileTheme.color.textPrimary }}>{option.id}</Text>
+                                </Pressable>
+                              ))}
+                            </View>
+                          ) : null}
   
                           {key.provider === "anthropic" ? (
                               <View style={{ gap: 8 }}>
@@ -3253,7 +3318,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                                   </Text>
                                 ) : null}
                               </View>
-                            ) : (
+                            ) : key.provider === "custom_openai" ? null : (
                               <TextInput
                                 style={{
                                   minHeight: 42,

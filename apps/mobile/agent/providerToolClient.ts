@@ -30,6 +30,13 @@ import {
 import type { ToolCallEnvelope } from "./toolOperationLedger";
 import { CHAT_TOOLS } from "./toolDefinitions";
 import {
+  chatCompletionTools,
+  isUnsupportedCustomFeature,
+  requestCustomOpenAIChat,
+  type ChatCompletionMessage,
+} from "./customOpenAIChat";
+import { toolCallOccurrenceKey } from "./toolOperationLedger";
+import {
   anthropicApiHeaders,
   anthropicProxyCredentials,
   anthropicThinkingConfig,
@@ -146,6 +153,67 @@ export async function requestProviderToolChat(
     const thinking = streamedThinking.trim() || payload.thinking || null;
     if (!content) throw new Error("OpenAI no devolvio contenido.");
     return { content, thinking };
+  }
+
+  if (provider.provider === "custom_openai") {
+    const history: ChatCompletionMessage[] = [
+      { role: "system", content: systemPrompt },
+      ...nonSystemMessages,
+    ];
+    const tools = chatCompletionTools(CHAT_TOOLS.openai);
+    const occurrences = new Map<string, number>();
+    let fullContent = "";
+    for (let round = 0; round <= 10; round += 1) {
+      let turn;
+      let streamedThisTurn = "";
+      try {
+        turn = await requestCustomOpenAIChat(provider, history, {
+          platform: runtime.platform,
+          tools,
+          onContentDelta: (delta) => {
+            streamedThisTurn += delta;
+            fullContent += delta;
+            options.onContentDelta?.(delta, fullContent);
+          },
+        });
+      } catch (error) {
+        if (isUnsupportedCustomFeature(error, "tools")) {
+          throw new Error("Este modelo no admite las herramientas que necesita Gymnasia Coach. Elige otro modelo.");
+        }
+        throw error;
+      }
+      if (!streamedThisTurn && turn.content) {
+        fullContent += turn.content;
+        options.onContentDelta?.(turn.content, fullContent);
+      }
+      if (turn.toolCalls.length === 0) {
+        if (!fullContent.trim()) throw new Error("El modelo no devolvió contenido.");
+        return { content: fullContent.trim(), thinking: null };
+      }
+      if (round === 10) throw new Error("El modelo superó el límite de rondas de herramientas.");
+      history.push({ role: "assistant", content: turn.content || null, tool_calls: turn.toolCalls });
+      for (const call of turn.toolCalls) {
+        let args: unknown;
+        try { args = JSON.parse(call.function.arguments); }
+        catch { throw new Error("El modelo devolvió argumentos de herramienta incompletos."); }
+        if (!args || typeof args !== "object" || Array.isArray(args)) {
+          throw new Error("El modelo devolvió argumentos de herramienta inválidos.");
+        }
+        const parsedArgs = args as Record<string, unknown>;
+        const key = toolCallOccurrenceKey(call.function.name, parsedArgs);
+        const occurrence = occurrences.get(key) ?? 0;
+        occurrences.set(key, occurrence + 1);
+        const output = await options.executeTool(call.function.name, parsedArgs, {
+          executionId: options.executionId ?? "legacy-execution",
+          provider: "custom_openai",
+          providerCallId: call.id,
+          name: call.function.name,
+          args: parsedArgs,
+          occurrence,
+        });
+        history.push({ role: "tool", content: output, tool_call_id: call.id });
+      }
+    }
   }
 
   if (provider.provider === "anthropic") {

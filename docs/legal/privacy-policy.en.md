@@ -1,5 +1,5 @@
 ---
-version: 2026-09-v7
+version: 2026-09-v8
 effective_date: 2026-09-24
 locale: en
 lang: en
@@ -19,10 +19,11 @@ workouts, diet, weight, measurements and conversations with the assistant are st
 inside the app itself.
 
 There is one important exception, and it is entirely yours: if you enable the artificial
-intelligence assistant, **you** supply an API key from a provider (OpenAI, Anthropic or
-Google), and the app talks **directly** to that provider from your device. Whatever you
-send when a question needs the model goes to the company you chose, under your own
-account with them. Explicit requests for a catalogue food's calories per 100 g may be
+intelligence assistant, **you** supply an API key from OpenAI, Anthropic, Google or an
+OpenAI-compatible server whose HTTPS URL you choose. The app talks **directly** to that
+destination from your device. Whatever you send when a question needs the model goes
+to the company you chose, under your own account with them. Explicit requests for a
+catalogue food's calories per 100 g may be
 answered using data on your device without sending that question to the AI provider.
 We do not see or store the chat unless you choose **Report** on a response and expressly
 approve the preview of the content that will be sent.
@@ -81,8 +82,11 @@ All of the following is stored on your device only:
   all my data” deletes them.
 - **Preferences**: interface and notification settings, and your consent for the
   optional additional health-safety evaluation.
-- **AI provider configuration**: the selected model and, when Anthropic requires it for
-  an identity-linked key, the workspace identifier (`wrkspc_…`).
+- **AI provider configuration**: the selected model, the HTTPS base URL if you set up
+  an OpenAI-compatible server and, when Anthropic requires it for an identity-linked
+  key, the workspace identifier (`wrkspc_…`). The app also stores which provider, model
+  and URL combination explicitly rejected a photo, so it can show a notice until you
+  change the configuration.
 - **Debug log**: a technical record of up to 1000 entries covering delivered rest-timer
   alerts, which include the exercise name and set number; technical policy-selection
   events; and counters for context prepared for Google, such as exchange count, bytes
@@ -120,12 +124,14 @@ Google's privacy policy, not by this app.
 ## Your API key {#byok}
 
 The assistant works on a **bring-your-own-key** basis: no key ships with the app, and
-you enter the one from your own account with OpenAI, Anthropic or Google.
+you enter one from your own account with OpenAI, Anthropic, Google or the compatible
+server you configure.
 
 - The key is stored **in your device's secure keystore** and is never sent to any
   developer server, because no such server exists.
-- The key is sent **only to the provider it belongs to**, with each request, as their
-  API requires.
+- The key is sent **only to the configured destination** with each request. If you
+  choose a compatible server, you decide its HTTPS URL and are responsible for trusting
+  it. The app rejects redirects from that server.
 - If an identity-linked Anthropic key requires a workspace identifier, that identifier
   is stored locally and sent only to Anthropic to route requests to the selected
   workspace.
@@ -154,7 +160,8 @@ catalogue does not make that request. When sent, the request includes:
 - in the main chat, for Google, **up to the 10 most recent exchanges**, including the
   response and tool steps that belong to them; an additional size limit may remove
   complete exchanges starting with the oldest. For OpenAI and Anthropic, **the last 20
-  messages** are sent. Food assistants send their recent session history with the same
+  messages** are sent. A compatible server receives the conversation context needed to
+  respond. Food assistants send their recent session history with the same
   limit when they use Google;
 - the results of the tools the assistant uses at your request, which may include your
   weight, your body fat percentage, your measurements, the day's meals or your routines;
@@ -183,6 +190,12 @@ your own account with them:
 - [OpenAI](https://openai.com/policies/privacy-policy)
 - [Anthropic](https://www.anthropic.com/legal/privacy)
 - [Google](https://policies.google.com/privacy)
+
+If you configure an OpenAI-compatible server, consult its own policy and terms:
+Gymnasia does not control that destination. The optional model test sends a short query
+and may incur charges under the service you choose. If the model rejects tools, the
+Coach cannot use it; the food estimator can answer without barcode lookup and will
+tell you so.
 
 If you configure no key, the app contacts no AI provider and every other feature keeps
 working.
@@ -254,8 +267,9 @@ in the same way as a normal backup. It is never sent to a Gymnasia server.
 The exported package **contains**: your measurements and body fat percentages, the
 normalised JPEG copies of your progress photographs that fit within the app's limits,
 your complete diet log, your training history,
-your personal settings (sex, height, date of birth), the assistant's memory and **the
-entire history of your conversations**. It is the most sensitive file the app produces:
+your personal settings (sex, height, date of birth), the assistant's memory, the selected
+models and the custom server's base URL if configured, and **the entire history of your
+conversations**. It is the most sensitive file the app produces:
 store it carefully and think about who you send it to.
 
 Each photograph carries a SHA-256 checksum so it can be checked during restoration. The
