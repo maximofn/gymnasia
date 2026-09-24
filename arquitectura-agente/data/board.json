@@ -2677,7 +2677,7 @@
           "id": "GYM-250",
           "title": "Añadir un proveedor personalizado compatible con la API de OpenAI",
           "state": "backlog",
-          "summary": "Permitir configurar una URL base, modelo y API key para un endpoint OpenAI-compatible, con Chat Completions, credenciales locales y capacidades verificadas sin introducir un backend.",
+          "summary": "Configurar URL, modelo y clave para Chat Completions sin backend; el estimador ofrece este proveedor y guía al usuario a cambiar de modelo si rechaza una foto.",
           "dependsOn": [],
           "related": [
             "GYM-10",
