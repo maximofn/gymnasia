@@ -1020,7 +1020,7 @@
       "kind": "epic",
       "title": "Runtime de agentes",
       "state": "backlog",
-      "summary": "Los doce puntos del runtime: documentar lo construido, cerrar checkpointing y cancelación, tipar las capacidades de cada tool y compartir el bucle entre el agente general y el estimador sin ocultar su semántica nutricional.",
+      "summary": "Los doce puntos del runtime: documentar lo construido, cerrar checkpointing, edición con rebobinado y cancelación, tipar las capacidades de cada tool y compartir el bucle entre el agente general y el estimador sin ocultar su semántica nutricional.",
       "dependsOn": [
         "GYM-34"
       ],
@@ -1035,7 +1035,8 @@
             "GYM-34"
           ],
           "related": [
-            "GYM-69"
+            "GYM-69",
+            "GYM-253"
           ]
         },
         {
@@ -1078,6 +1079,23 @@
           "related": [
             "GYM-43",
             "GYM-45"
+          ]
+        },
+        {
+          "id": "GYM-253",
+          "title": "Editar mensajes creando un checkpoint y rebobinando la conversación",
+          "state": "backlog",
+          "summary": "Editar un mensaje del usuario crea una revisión y una rama recuperable, excluye del contexto activo todos los turnos posteriores y regenera sin revertir silenciosamente efectos de tools ya aplicados.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-69"
+          ],
+          "related": [
+            "GYM-66",
+            "GYM-134",
+            "GYM-168",
+            "GYM-251",
+            "GYM-252"
           ]
         },
         {
@@ -1151,7 +1169,8 @@
             "GYM-61",
             "GYM-67",
             "GYM-68",
-            "GYM-87"
+            "GYM-87",
+            "GYM-253"
           ]
         }
       ]
@@ -2093,7 +2112,8 @@
             "GYM-67",
             "GYM-69",
             "GYM-87",
-            "GYM-135"
+            "GYM-135",
+            "GYM-253"
           ]
         },
         {
@@ -2423,7 +2443,8 @@
           "dependsOn": [],
           "related": [
             "GYM-240",
-            "GYM-251"
+            "GYM-251",
+            "GYM-253"
           ]
         },
         {
@@ -2434,7 +2455,8 @@
           "dependsOn": [],
           "related": [
             "GYM-240",
-            "GYM-252"
+            "GYM-252",
+            "GYM-253"
           ]
         },
         {
@@ -2700,7 +2722,7 @@
         {
           "id": "GYM-250",
           "title": "Añadir un proveedor personalizado compatible con la API de OpenAI",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Configurar URL, modelo y clave para Chat Completions sin backend; el estimador ofrece este proveedor y guía al usuario a cambiar de modelo si rechaza una foto.",
           "dependsOn": [],
           "related": [
@@ -3420,12 +3442,13 @@
     {
       "id": "runtime",
       "title": "Runtime: documentar lo que ya funciona",
-      "why": "Tres de los cuatro ya están implementados y solo piden tests y artículo, así que son tan baratos como la fase anterior. GYM-69 sí es trabajo real y va el último porque conviene tener documentado antes dónde vive el estado (GYM-66). GYM-87 va después de GYM-68 porque necesita exponer el transporte que ese ticket documenta.",
+      "why": "GYM-66 (ticket para documentar el estado del agente), GYM-67 (ticket para documentar retries) y GYM-68 (ticket para documentar streaming) fijan primero el runtime existente. GYM-69 (ticket para implementar checkpointing) añade después la base persistente que necesita GYM-253 (ticket para editar mensajes y rebobinar la conversación). GYM-87 (ticket para parar una generación) y GYM-222 (ticket para añadir comandos con barra) completan el control visible sobre ese runtime.",
       "tickets": [
         "GYM-66",
         "GYM-67",
         "GYM-68",
         "GYM-69",
+        "GYM-253",
         "GYM-87",
         "GYM-222"
       ]
