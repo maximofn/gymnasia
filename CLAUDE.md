@@ -226,6 +226,19 @@ Run from repo root unless noted.
 - No repo-wide ESLint/Prettier config is committed yet; keep diffs consistent with surrounding code.
 
 ## Testing Guidelines
+Para la QA manual, usa la versión web de la misma app en
+<https://gymnasia.maximofn.com/> siempre que el flujo se pueda reproducir allí.
+La sesión habitual del navegador del mantenedor tendrá configurada su API key
+BYOK de OpenAI: aprovecha esa sesión para probar tú mismo Coach, las llamadas a
+tools, la interfaz y los flujos de datos locales. Comprueba el resultado visible
+y, cuando importe, las llamadas reales del proveedor y sus resultados. No leas,
+copies ni registres la clave; si falta en esa sesión, pide al mantenedor que la
+configure. No le encargues pruebas manuales en el móvil que puedas completar en
+web. Reserva el dispositivo para lo que dependa de Android o iOS, por ejemplo
+instalación limpia sin caché, permisos, notificaciones, segundo plano o
+almacenamiento seguro nativo. Indica qué parte verificaste en web y qué parte
+requiere una prueba nativa.
+
 The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - deterministic tests: `npm test`
 - backend de incidencias: `npm --workspace apps/feedback-worker run test`
