@@ -602,7 +602,8 @@
             "GYM-147",
             "GYM-177",
             "GYM-190",
-            "GYM-203"
+            "GYM-203",
+            "GYM-251"
           ]
         },
         {
@@ -2414,6 +2415,16 @@
       "dependsOn": [],
       "tickets": [
         {
+          "id": "GYM-251",
+          "title": "Permitir copiar y seleccionar texto dentro de cada mensaje del chat",
+          "state": "todo",
+          "summary": "Hacer seleccionable y copiable cada mensaje del Coach y los asistentes, limitando «Seleccionar todo» a una sola burbuja y manteniendo el historial como texto de solo lectura.",
+          "dependsOn": [],
+          "related": [
+            "GYM-240"
+          ]
+        },
+        {
           "id": "GYM-204",
           "title": "Investigar colaboración con ONCE y otras organizaciones para probar la accesibilidad",
           "state": "backlog",
@@ -2676,7 +2687,7 @@
         {
           "id": "GYM-250",
           "title": "Añadir un proveedor personalizado compatible con la API de OpenAI",
-          "state": "backlog",
+          "state": "in_progress",
           "summary": "Configurar URL, modelo y clave para Chat Completions sin backend; el estimador ofrece este proveedor y guía al usuario a cambiar de modelo si rechaza una foto.",
           "dependsOn": [],
           "related": [
@@ -3353,9 +3364,10 @@
     },
     {
       "id": "accesibilidad",
-      "title": "Validar la accesibilidad con usuarios reales",
-      "why": "Antes de desglosar e implementar cambios transversales, GYM-204 identifica una organización o comunidad adecuada, distingue pruebas con usuarios de auditoría o certificación y prepara un piloto seguro para que los criterios de la épica partan de feedback real.",
+      "title": "Resolver y validar barreras de accesibilidad",
+      "why": "GYM-251 (ticket para copiar y seleccionar texto dentro de cada mensaje del chat) corrige primero una barrera concreta comunicada por el usuario y deja pruebas por plataforma. Después, GYM-204 (ticket para investigar colaboración con ONCE y otras organizaciones) identifica una comunidad adecuada y prepara un piloto seguro para convertir feedback real en nuevas mejoras.",
       "tickets": [
+        "GYM-251",
         "GYM-204"
       ]
     },
