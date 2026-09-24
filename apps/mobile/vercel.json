@@ -1,5 +1,5 @@
 {
-  "buildCommand": "APP_ENV=production npm run build:web -- --clear",
+  "buildCommand": "node ../../scripts/policy-promotion/prepare-policy-snapshot.mjs --environment production && APP_ENV=production npm run build:web -- --clear",
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": null
