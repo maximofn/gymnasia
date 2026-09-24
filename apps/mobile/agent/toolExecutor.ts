@@ -502,13 +502,13 @@ const searchFoods: ToolHandler = async (args, context) => {
     ));
   }
   if (minCalories != null) results = results.filter((food) => food.calories_per_100g >= minCalories);
-  if (maxCalories != null) results = results.filter((food) => food.calories_per_100g <= maxCalories);
+  if (maxCalories != null && maxCalories > 0) results = results.filter((food) => food.calories_per_100g <= maxCalories);
   if (minProtein != null) results = results.filter((food) => food.protein_per_100g >= minProtein);
-  if (maxProtein != null) results = results.filter((food) => food.protein_per_100g <= maxProtein);
+  if (maxProtein != null && maxProtein > 0) results = results.filter((food) => food.protein_per_100g <= maxProtein);
   if (minCarbs != null) results = results.filter((food) => food.carbs_per_100g >= minCarbs);
-  if (maxCarbs != null) results = results.filter((food) => food.carbs_per_100g <= maxCarbs);
+  if (maxCarbs != null && maxCarbs > 0) results = results.filter((food) => food.carbs_per_100g <= maxCarbs);
   if (minFat != null) results = results.filter((food) => food.fat_per_100g >= minFat);
-  if (maxFat != null) results = results.filter((food) => food.fat_per_100g <= maxFat);
+  if (maxFat != null && maxFat > 0) results = results.filter((food) => food.fat_per_100g <= maxFat);
 
   if (sortBy) {
     const [field, direction] = sortBy.split("_");
