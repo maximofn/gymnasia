@@ -24,7 +24,6 @@ on:
       - "!apps/mobile/scripts/**"
       - "!apps/mobile/**/*.md"
       - "!apps/mobile/public/**"
-      - "!apps/mobile/vercel.json"
       - "!apps/mobile/**/*.test.ts"
       - "!apps/mobile/**/*.test.tsx"
 
