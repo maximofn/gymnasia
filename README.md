@@ -70,6 +70,11 @@ En web y Expo Go se muestra la versión del proyecto y `build-version: unavailab
 
 Cada ficha vive en su propio JSON. Los ficheros `all.json` e `index.json` son
 artefactos derivados que se conservan para clientes antiguos y no se editan a mano.
+El generador copia `alimentos/all.json` a
+`apps/mobile/catalogs/generated/foodBaseline.generated.json` para que una instalación
+nueva pueda consultar alimentos sin red. La app sustituye esa copia por el catálogo
+validado más reciente cuando consigue descargarlo. Coach responde localmente a una
+petición explícita de calorías por 100 g de un alimento identificado en el catálogo.
 El catálogo de ejercicios que consume la app actual se genera en
 `ejercicios/catalog-v1/`: un manifiesto, páginas de 30 fichas, fragmentos de búsqueda
 global e índices por ID. La app guarda cada artefacto por separado, activa una versión

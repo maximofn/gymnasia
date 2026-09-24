@@ -1,5 +1,5 @@
 ---
-version: 2026-09-v7
+version: 2026-09-v8
 effective_date: 2026-09-24
 locale: es
 lang: es
@@ -22,10 +22,12 @@ Hay una excepción importante y es enteramente tuya: si activas el asistente de
 inteligencia artificial, **tú** aportas la clave de OpenAI, Anthropic, Google o de un
 servidor compatible con la API de OpenAI cuya URL HTTPS eliges. La aplicación habla
 **directamente** con ese destino desde tu dispositivo.
-Lo que escribas en el chat viaja a la empresa que hayas elegido, bajo tu propia cuenta
-con ella. Nosotros no lo vemos ni lo almacenamos, salvo que decidas usar la acción
-**Denunciar** sobre una respuesta y apruebes expresamente la vista previa del contenido
-que se enviará.
+Las consultas que necesitan el modelo viajan a la empresa que hayas elegido, bajo tu
+propia cuenta con ella. Las consultas explícitas de calorías por 100 g de un alimento
+del catálogo pueden responderse con los datos del dispositivo, sin enviar esa consulta
+al proveedor de IA. Nosotros no vemos ni almacenamos el chat, salvo que decidas usar
+la acción **Denunciar** sobre una respuesta y apruebes expresamente la vista previa
+del contenido que se enviará.
 
 Esta política describe con detalle qué se guarda, qué sale del dispositivo y qué
 control tienes sobre ello.
@@ -156,8 +158,10 @@ La pantalla de recuperación lo advierte antes de descargarlo.
 
 ## Qué envía la aplicación a los proveedores de IA {#proveedores}
 
-Cuando usas el asistente, tu dispositivo se conecta **directamente** con el proveedor
-que hayas elegido. La petición incluye:
+Cuando una consulta del asistente necesita el modelo, tu dispositivo se conecta
+**directamente** con el proveedor que hayas elegido. Una búsqueda explícita de calorías
+por 100 g que se resuelve con el catálogo local no genera esa petición. Cuando sí se
+envía, la petición incluye:
 
 - las instrucciones del sistema del asistente;
 - en el chat principal, para Google, **hasta los 10 intercambios más recientes**, con

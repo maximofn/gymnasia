@@ -1,6 +1,6 @@
 {
   "$comment": "Fuente única de verdad del tratamiento de datos de Gymnasia. Se creó en GYM-190 (ticket para publicar la política de privacidad y preparar las declaraciones de salud). De aquí salen la política publicada y las respuestas de Data safety en docs/legal/play-declarations.md. Consumido por scripts/data-inventory/check.mjs y, mediante --json, por la validación del AAB de GYM-198 (ticket para generar y validar el Android App Bundle de producción). Si el chequeo falla, la política publicada ha dejado de describir el código: actualiza ambos, no solo este fichero.",
-  "policyVersion": "2026-09-v7",
+  "policyVersion": "2026-09-v8",
   "scanRoots": [
     "apps/mobile"
   ],
@@ -43,7 +43,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, personal-info, messages",
-      "purpose": "Estado principal: rutinas, historial de entrenamiento con sus totales, versión de cálculo y la prescripción ejecutada de cada sesión (nombres, tipos de serie, repeticiones, peso, descanso, tempo, mini-series y qué esfuerzos se completaron; sin imágenes ni enlaces de catálogo), dieta por día, referencias estables a los elementos públicos o personales seleccionados junto con sus instantáneas históricas, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con su fecha civil, peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con la IA, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic y la URL base HTTPS del proveedor personalizado, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt. Los turnos nuevos de Google incluyen pasos, resúmenes de pensamiento, firmas opacas, llamadas, argumentos, resultados y uso de tokens; se conservan en las copias manuales del chat y se borran con él. Incluye además hasta 256 recibos técnicos de escrituras del agente durante siete días (identificador SHA-256, nombre de herramienta y fecha), guardados atómicamente con el dato para reconciliar una interrupción; no se exportan en las copias .gymnasia. Nunca incluye credenciales BYOK.",
+      "purpose": "Estado principal: rutinas, historial de entrenamiento con sus totales, versión de cálculo y la prescripción ejecutada de cada sesión (nombres, tipos de serie, repeticiones, peso, descanso, tempo, mini-series y qué esfuerzos se completaron; sin imágenes ni enlaces de catálogo), dieta por día, referencias estables a los elementos públicos o personales seleccionados junto con sus instantáneas históricas, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con su fecha civil, peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con el asistente, incluidas respuestas locales del catálogo, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic y la URL base HTTPS del proveedor personalizado, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt. Los turnos nuevos de Google incluyen pasos, resúmenes de pensamiento, firmas opacas, llamadas, argumentos, resultados y uso de tokens; se conservan en las copias manuales del chat y se borran con él. Incluye además hasta 256 recibos técnicos de escrituras del agente durante siete días (identificador SHA-256, nombre de herramienta y fecha), guardados atómicamente con el dato para reconciliar una interrupción; no se exportan en las copias .gymnasia. Nunca incluye credenciales BYOK.",
       "clearedBy": "activity-and-full-deletion",
       "activityDeletion": "rewrite",
       "fullDeletion": "delete"
@@ -416,7 +416,7 @@
       "host": "api.openai.com",
       "trigger": "user-initiated",
       "requiresUserKey": true,
-      "sends": "La clave BYOK en la cabecera Authorization, el system prompt, los últimos 20 mensajes del hilo, los resultados de las tools que el usuario autoriza y, en el estimador de comida, hasta 6 imágenes en base64. Los mensajes y resultados pueden contener datos personales, de salud, fitness, dieta y medidas.",
+      "sends": "Cuando se necesita el modelo: la clave BYOK en la cabecera Authorization, el system prompt, los últimos 20 mensajes del hilo, los resultados de las tools que el usuario autoriza y, en el estimador de comida, hasta 6 imágenes en base64. Los mensajes y resultados pueden contener datos personales, de salud, fitness, dieta y medidas. Una consulta explícita de calorías por 100 g resuelta con el catálogo local no genera esta petición.",
       "thirdParty": "OpenAI"
     },
     {

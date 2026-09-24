@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="Gymnasia Privacy Policy">
-<meta name="gymnasia-policy-version" content="2026-09-v7">
-<meta name="gymnasia-policy-digest" content="sha256:9bf2a839957b32a302fe1ba6ef470d0b5c4e084e03eded2cabe4cc7cad5d718d">
+<meta name="gymnasia-policy-version" content="2026-09-v8">
+<meta name="gymnasia-policy-digest" content="sha256:78a420c2fcb8bed47014d1a9bf0d328eadfb298662391006d1de1bb12c3ccda2">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Gymnasia Privacy Policy</h1>
-  <p class="meta">Version 2026-09-v7 · in force since 2026-09-24 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Version 2026-09-v8 · in force since 2026-09-24 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacidad">Versión en español</a></p>
   <nav>
     <h2>Contents</h2>
@@ -68,7 +68,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="resumen">
     <h2><a href="#resumen">Summary</a></h2>
     <p>Gymnasia runs <strong>primarily on your device</strong>. There is no account or sign-up. Your workouts, diet, weight, measurements and conversations with the assistant are stored inside the app itself.</p>
-    <p>There is one important exception, and it is entirely yours: if you enable the artificial intelligence assistant, <strong>you</strong> supply an API key from OpenAI, Anthropic, Google or an OpenAI-compatible server whose HTTPS URL you choose. The app talks <strong>directly</strong> to that destination from your device. Whatever you type into the chat travels to the company you chose, under your own account with them. We do not see or store it unless you choose <strong>Report</strong> on a response and expressly approve the preview of the content that will be sent.</p>
+    <p>There is one important exception, and it is entirely yours: if you enable the artificial intelligence assistant, <strong>you</strong> supply an API key from OpenAI, Anthropic, Google or an OpenAI-compatible server whose HTTPS URL you choose. The app talks <strong>directly</strong> to that destination from your device. Whatever you send when a question needs the model goes to the company you chose, under your own account with them. Explicit requests for a catalogue food's calories per 100 g may be answered using data on your device without sending that question to the AI provider. We do not see or store the chat unless you choose <strong>Report</strong> on a response and expressly approve the preview of the content that will be sent.</p>
     <p>This policy explains in detail what is stored, what leaves your device, and what control you have over it.</p>
   </section>
 
@@ -128,7 +128,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="proveedores">
     <h2><a href="#proveedores">What the app sends to AI providers</a></h2>
-    <p>When you use the assistant, your device connects <strong>directly</strong> to the provider you chose. The request includes:</p>
+    <p>When an assistant question needs the model, your device connects <strong>directly</strong> to the provider you chose. An explicit calories per 100 g lookup answered from the local catalogue does not make that request. When sent, the request includes:</p>
     <ul>
       <li>the assistant's system instructions;</li>
       <li>in the main chat, for Google, <strong>up to the 10 most recent exchanges</strong>, including the response and tool steps that belong to them; an additional size limit may remove complete exchanges starting with the oldest. For OpenAI and Anthropic, <strong>the last 20 messages</strong> are sent. A compatible server receives the conversation context needed to respond. Food assistants send their recent session history with the same limit when they use Google;</li>
@@ -261,7 +261,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Gymnasia Privacy Policy · 2026-09-v7 · 2026-09-24</p>
+    <p>Gymnasia Privacy Policy · 2026-09-v8 · 2026-09-24</p>
   </footer>
 </main>
 </body>

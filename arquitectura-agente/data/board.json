@@ -602,7 +602,9 @@
             "GYM-147",
             "GYM-177",
             "GYM-190",
-            "GYM-203"
+            "GYM-203",
+            "GYM-251",
+            "GYM-252"
           ]
         },
         {
@@ -2414,6 +2416,28 @@
       "dependsOn": [],
       "tickets": [
         {
+          "id": "GYM-252",
+          "title": "Añadir un botón para copiar el contenido completo de cada mensaje del chat",
+          "state": "todo",
+          "summary": "Añadir a cada mensaje una acción accesible que copie su contenido completo con una pulsación y confirme el resultado, sin exigir selección previa ni alterar la conversación.",
+          "dependsOn": [],
+          "related": [
+            "GYM-240",
+            "GYM-251"
+          ]
+        },
+        {
+          "id": "GYM-251",
+          "title": "Permitir copiar y seleccionar texto dentro de cada mensaje del chat",
+          "state": "todo",
+          "summary": "Permitir seleccionar y copiar fragmentos del Coach y los asistentes, limitando «Seleccionar todo» a una sola burbuja y manteniendo el historial como texto de solo lectura.",
+          "dependsOn": [],
+          "related": [
+            "GYM-240",
+            "GYM-252"
+          ]
+        },
+        {
           "id": "GYM-204",
           "title": "Investigar colaboración con ONCE y otras organizaciones para probar la accesibilidad",
           "state": "backlog",
@@ -2676,7 +2700,7 @@
         {
           "id": "GYM-250",
           "title": "Añadir un proveedor personalizado compatible con la API de OpenAI",
-          "state": "backlog",
+          "state": "in_progress",
           "summary": "Configurar URL, modelo y clave para Chat Completions sin backend; el estimador ofrece este proveedor y guía al usuario a cambiar de modelo si rechaza una foto.",
           "dependsOn": [],
           "related": [
@@ -3353,9 +3377,11 @@
     },
     {
       "id": "accesibilidad",
-      "title": "Validar la accesibilidad con usuarios reales",
-      "why": "Antes de desglosar e implementar cambios transversales, GYM-204 identifica una organización o comunidad adecuada, distingue pruebas con usuarios de auditoría o certificación y prepara un piloto seguro para que los criterios de la épica partan de feedback real.",
+      "title": "Resolver y validar barreras de accesibilidad",
+      "why": "GYM-252 (ticket para añadir un botón de copia en cada mensaje) resuelve primero el camino directo de una pulsación. GYM-251 (ticket para seleccionar texto dentro de cada mensaje) completa después la selección de fragmentos y limita «Seleccionar todo» a una sola burbuja. Finalmente, GYM-204 (ticket para investigar colaboración con ONCE y otras organizaciones) prepara un piloto seguro para convertir feedback real en nuevas mejoras.",
       "tickets": [
+        "GYM-252",
+        "GYM-251",
         "GYM-204"
       ]
     },

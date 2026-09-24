@@ -83,6 +83,7 @@ import {
   type ProviderChatResult as AnthropicChatResult,
 } from "./agent/providerChatClient";
 import { requestProviderToolChat } from "./agent/providerToolClient";
+import { answerCatalogCaloriesLookup } from "./agent/catalogLookup";
 import {
   FOOD_AI_SYSTEM_PROMPT,
   FOOD_ESTIMATOR_SYSTEM_PROMPT,
@@ -4969,12 +4970,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         basePromptChars: systemPromptSelection.content.length,
         localPromptOverrides: 0,
       });
-      let assistantResult: AnthropicChatResult | null = null;
+      const localCatalogAnswer = answerCatalogCaloriesLookup(
+        userInput,
+        foodCatalogContextRef.current.foodsRepo,
+      );
+      let assistantResult: AnthropicChatResult | null = localCatalogAnswer
+        ? { content: localCatalogAnswer, thinking: null }
+        : null;
       const chatMessages = [
         { role: "system" as const, content: systemPromptSelection.content },
         ...history,
       ];
-      for (let attempt = 0; attempt < 3; attempt++) {
+      for (let attempt = 0; attempt < 3 && !assistantResult; attempt++) {
         try {
           if (attempt > 0) {
             resetAssistantDraft();
@@ -5035,6 +5042,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         is_streaming: false,
       }) : ({
         ...current,
+        report_context: localCatalogAnswer
+          ? { origin: "unknown" }
+          : current.report_context,
         content: streamState.visibleContent,
         thinking: assistantResult.thinking,
         googleTurn: assistantResult.googleTurn,
