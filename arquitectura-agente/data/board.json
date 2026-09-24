@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-23",
+    "updated": "2026-09-24",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -757,7 +757,7 @@
         {
           "id": "GYM-38",
           "title": "4. Despachador: de nombre de tool a ejecutable",
-          "state": "backlog",
+          "state": "in_progress",
           "baseline": "done",
           "summary": "handleToolCall en App.tsx:1469: cadena de if (name === X) sobre las 15 tools, siempre Promise<string>.",
           "dependsOn": [
@@ -2677,7 +2677,7 @@
           "id": "GYM-250",
           "title": "Añadir un proveedor personalizado compatible con la API de OpenAI",
           "state": "backlog",
-          "summary": "Permitir configurar una URL base, modelo y API key para un endpoint OpenAI-compatible, con Chat Completions, credenciales locales y capacidades verificadas sin introducir un backend.",
+          "summary": "Configurar URL, modelo y clave para Chat Completions sin backend; el estimador ofrece este proveedor y guía al usuario a cambiar de modelo si rechaza una foto.",
           "dependsOn": [],
           "related": [
             "GYM-10",
