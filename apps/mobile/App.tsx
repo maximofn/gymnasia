@@ -593,11 +593,13 @@ type ChatProviderCallOptions = StreamingHandlers & {
   setStore?: LocalStoreRuntime["update"];
   commitStore?: (updater: (previous: ToolStore) => ToolStore) => Promise<void>;
   store?: LocalStore;
-  foodsRepo?: FoodRepoEntry[];
+  getFoodCatalogContext?: () => {
+    foodsRepo: FoodRepoEntry[];
+    availability: CatalogSearchAvailability;
+  };
   exercisesRepo?: ExerciseRepoEntry[];
   searchExerciseCatalog?: ToolExecutionContext["searchExerciseCatalog"];
   resolveExerciseCatalogIds?: ToolExecutionContext["resolveExerciseCatalogIds"];
-  foodCatalogAvailability?: CatalogSearchAvailability;
   exerciseCatalogAvailability?: CatalogSearchAvailability;
   getExerciseCatalogAvailability?: ToolExecutionContext["getExerciseCatalogAvailability"];
   executionId?: string;
@@ -1622,7 +1624,6 @@ async function callProviderChatAPIWithTools(
   const toolStoreSetter = options?.setStore;
   const toolStoreCommitter = options?.commitStore;
   const toolStore = options?.store;
-  const toolFoodsRepo = options?.foodsRepo;
   const toolExercisesRepo = options?.exercisesRepo;
   const executeGuardedTool = async (
     name: string,
@@ -1651,21 +1652,24 @@ async function callProviderChatAPIWithTools(
     const outcome = await toolOperationCoordinator.execute(
       call,
       effect !== "read",
-      (operationId) => executeChatTool(
-        name,
-        args,
-        toolStoreSetter,
-        toolStoreCommitter,
-        toolStore,
-        toolFoodsRepo,
-        toolExercisesRepo,
-        options?.foodCatalogAvailability,
-        options?.exerciseCatalogAvailability,
-        operationId,
-        options?.searchExerciseCatalog,
-        options?.resolveExerciseCatalogIds,
-        options?.getExerciseCatalogAvailability,
-      ),
+      (operationId) => {
+        const foodCatalogContext = options?.getFoodCatalogContext?.();
+        return executeChatTool(
+          name,
+          args,
+          toolStoreSetter,
+          toolStoreCommitter,
+          toolStore,
+          foodCatalogContext?.foodsRepo,
+          toolExercisesRepo,
+          foodCatalogContext?.availability,
+          options?.exerciseCatalogAvailability,
+          operationId,
+          options?.searchExerciseCatalog,
+          options?.resolveExerciseCatalogIds,
+          options?.getExerciseCatalogAvailability,
+        );
+      },
       reconcileToolOperation,
     );
     if (outcome.status === "indeterminate") {
@@ -2249,6 +2253,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   });
   const foodsRepo = foodCatalogRuntime.foods;
   const foodCatalogAvailability = foodCatalogRuntime.availability;
+  const foodCatalogContextRef = useRef({
+    foodsRepo: [...foodsRepo, ...personalFoods],
+    availability: foodCatalogAvailability,
+  });
+  foodCatalogContextRef.current = {
+    foodsRepo: [...foodsRepo, ...personalFoods],
+    availability: foodCatalogAvailability,
+  };
   const exerciseCatalogRuntime = useExerciseCatalogRuntime({
     isHydrated,
     localStore: localStoreRuntime,
@@ -4910,9 +4922,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             setStore,
             commitStore: commitToolStoreMutation,
             store,
-            foodsRepo: [...foodsRepo, ...personalFoods],
+            getFoodCatalogContext: () => foodCatalogContextRef.current,
             exercisesRepo,
-            foodCatalogAvailability,
             exerciseCatalogAvailability,
             searchExerciseCatalog: exerciseCatalogRuntime.actions.search,
             resolveExerciseCatalogIds: exerciseCatalogRuntime.actions.resolveIds,
