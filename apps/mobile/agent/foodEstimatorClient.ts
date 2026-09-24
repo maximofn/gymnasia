@@ -36,6 +36,12 @@ import {
   anthropicThinkingConfig,
   createFakeProviderResult,
 } from "./providerTransport";
+import {
+  chatCompletionTools,
+  isUnsupportedCustomFeature,
+  requestCustomOpenAIChat,
+  type ChatCompletionMessage,
+} from "./customOpenAIChat";
 
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
@@ -292,6 +298,17 @@ export async function requestStructuredNutrition(
     return requireValidStructuredNutrition(JSON.parse(outputText));
   }
 
+  if (provider.provider === "custom_openai") {
+    const result = await requestCustomOpenAIChat(provider, [
+      { role: "system", content: "Devuelve únicamente un objeto JSON válido con los campos solicitados." },
+      { role: "user", content: extractPrompt },
+    ], { platform: runtime.platform, stream: false });
+    let data: unknown;
+    try { data = JSON.parse(result.content.trim().replace(/^```json\s*/i, "").replace(/```$/, "")); }
+    catch { throw new Error("El modelo no devolvió datos nutricionales en JSON válido."); }
+    return requireValidStructuredNutrition(data);
+  }
+
   if (provider.provider === "anthropic") {
     const proxyUrl = runtime.anthropicWebProxyUrl;
     const response = await fetch(proxyUrl ?? "https://api.anthropic.com/v1/messages", {
@@ -497,13 +514,88 @@ export async function requestFoodEstimate(
     return { content, thinking };
   }
 
-  if (provider.provider === "anthropic") {
-    if (runtime.platform === "web" && normalizedImages.length > 0) {
-      throw new Error(
-        "Anthropic en web no admite envío de imágenes en este flujo. Usa Google u OpenAI, o abre la app en dispositivo móvil.",
-      );
+  if (provider.provider === "custom_openai") {
+    const initialMessages: ChatCompletionMessage[] = [
+      { role: "system", content: systemPrompt },
+      ...nonSystemMessages.map((message, index): ChatCompletionMessage => {
+        if (message.role === "assistant") return { role: "assistant", content: message.content };
+        const text = message.content.trim() || "Analiza esta comida y estima sus valores nutricionales.";
+        if (index !== lastNonSystemUserMessageIndex || normalizedImages.length === 0) {
+          return { role: "user", content: text };
+        }
+        return {
+          role: "user",
+          content: [
+            { type: "text", text },
+            ...normalizedImages.map((image) => ({
+              type: "image_url",
+              image_url: { url: `data:${image.mime_type};base64,${image.base64}` },
+            })),
+          ],
+        };
+      }),
+    ];
+    const toolDefinitions = chatCompletionTools(foodEstimatorTools.openai);
+    const history = [...initialMessages];
+    let aggregate = "";
+    let warning: string | undefined;
+    let useTools = true;
+    options?.onStatus?.(normalizedImages.length ? "Analizando imagen..." : "Pensando...");
+    for (let round = 0; round <= 5; round += 1) {
+      let streamedTurn = "";
+      let turn;
+      try {
+        turn = await requestCustomOpenAIChat(provider, history, {
+          platform: runtime.platform,
+          ...(useTools ? { tools: toolDefinitions } : {}),
+          onContentDelta: (delta) => {
+            streamedTurn += delta;
+            aggregate += delta;
+            options?.onContentDelta?.(delta, aggregate);
+          },
+        });
+      } catch (error) {
+        if (round === 0 && useTools && isUnsupportedCustomFeature(error, "tools")) {
+          useTools = false;
+          warning = "Este modelo no admite herramientas; no se consultarán productos por código de barras.";
+          history[0] = {
+            role: "system",
+            content: `${systemPrompt}\n\nEl servidor no admite herramientas. No afirmes que has consultado un código de barras ni inventes datos exactos del producto.`,
+          };
+          options?.onStatus?.("Estimando sin lectura de códigos de barras...");
+          continue;
+        }
+        throw error;
+      }
+      if (!streamedTurn && turn.content) {
+        aggregate += turn.content;
+        options?.onContentDelta?.(turn.content, aggregate);
+      }
+      if (!turn.toolCalls.length) {
+        if (!aggregate.trim()) throw new Error("El modelo no devolvió contenido.");
+        return { content: aggregate.trim(), thinking: null, ...(warning ? { warning } : {}) };
+      }
+      if (!useTools || round === 5) throw new Error("El modelo no pudo completar la estimación con herramientas.");
+      history.push({ role: "assistant", content: turn.content || null, tool_calls: turn.toolCalls });
+      for (const call of turn.toolCalls) {
+        let args: unknown;
+        try { args = JSON.parse(call.function.arguments); }
+        catch { throw new Error("El modelo devolvió argumentos de herramienta incompletos."); }
+        if (!args || typeof args !== "object" || Array.isArray(args)) {
+          throw new Error("El modelo devolvió argumentos de herramienta inválidos.");
+        }
+        options?.onToolUsed?.(call.function.name);
+        options?.onStatus?.(call.function.name === SCAN_BARCODE_TOOL
+          ? "Leyendo código de barras..." : `Usando herramienta: ${call.function.name}...`);
+        const result = await handleFoodEstimatorToolCall(call.function.name, args as Record<string, unknown>);
+        history.push({ role: "tool", content: result, tool_call_id: call.id });
+      }
+      options?.onStatus?.("Procesando resultado...");
     }
+    throw new Error("La estimación superó el límite de herramientas.");
+  }
 
+  if (provider.provider === "anthropic") {
     const buildAnthropicMessages = (): unknown[] => nonSystemMessages.map((message, index) => {
       if (message.role === "assistant") {
         return { role: "assistant", content: message.content.trim() || "Entendido." };

@@ -30,6 +30,7 @@ import {
   explainAnthropicError,
 } from "./providerTransport";
 import type { GoogleContextReport } from "./googleContextBudget";
+import { requestCustomOpenAIChat } from "./customOpenAIChat";
 
 export type { GoogleContextReport } from "./googleContextBudget";
 
@@ -43,6 +44,7 @@ const ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE =
 export type ProviderChatResult = {
   content: string;
   thinking: string | null;
+  warning?: string;
   googleTurn?: GoogleConversationTurn;
 };
 
@@ -194,6 +196,14 @@ export async function requestProviderText(
 
     const result = parseOpenAIResponseResult(payload);
     if (!result?.content) throw new Error("OpenAI no devolvio contenido.");
+    return result.content;
+  }
+
+  if (provider.provider === "custom_openai") {
+    const result = await requestCustomOpenAIChat(provider, [
+      { role: "system", content: systemPrompt },
+      ...nonSystemMessages,
+    ], { platform: runtime.platform, stream: false });
     return result.content;
   }
 

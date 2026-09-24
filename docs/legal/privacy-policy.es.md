@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v6
-effective_date: 2026-09-18
+version: 2026-09-v7
+effective_date: 2026-09-24
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -19,8 +19,9 @@ entrenamientos, tu dieta, tu peso, tus medidas y tus conversaciones con el asist
 guardan en el almacenamiento de la propia aplicación.
 
 Hay una excepción importante y es enteramente tuya: si activas el asistente de
-inteligencia artificial, **tú** aportas la clave de un proveedor (OpenAI, Anthropic o
-Google) y la aplicación habla **directamente** con ese proveedor desde tu dispositivo.
+inteligencia artificial, **tú** aportas la clave de OpenAI, Anthropic, Google o de un
+servidor compatible con la API de OpenAI cuya URL HTTPS eliges. La aplicación habla
+**directamente** con ese destino desde tu dispositivo.
 Lo que escribas en el chat viaja a la empresa que hayas elegido, bajo tu propia cuenta
 con ella. Nosotros no lo vemos ni lo almacenamos, salvo que decidas usar la acción
 **Denunciar** sobre una respuesta y apruebes expresamente la vista previa del contenido
@@ -80,8 +81,11 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
   transmite. «Borrar todos mis datos» las elimina.
 - **Preferencias**: ajustes de la interfaz y de las notificaciones, y tu consentimiento
   para la evaluación adicional opcional de seguridad sanitaria.
-- **Configuración de proveedores de IA**: el modelo elegido y, si Anthropic lo exige
-  para una clave vinculada a identidad, el identificador del workspace (`wrkspc_…`).
+- **Configuración de proveedores de IA**: el modelo elegido, la URL base HTTPS si
+  configuras un servidor compatible con OpenAI y, si Anthropic lo exige para una clave
+  vinculada a identidad, el identificador del workspace (`wrkspc_…`). También se guarda
+  qué combinación de proveedor, modelo y URL rechazó explícitamente una foto para
+  mostrarte un aviso hasta que cambies la configuración.
 - **Registro de depuración**: un histórico técnico de hasta 1000 entradas con los avisos
   de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de
   serie; eventos técnicos de selección de políticas; y contadores del contexto preparado
@@ -124,12 +128,14 @@ aplicación.
 ## Tu clave de API {#byok}
 
 El asistente funciona con el modelo de **clave propia**: no se incluye ninguna clave en
-la aplicación, y tú introduces la de tu cuenta con OpenAI, Anthropic o Google.
+la aplicación, y tú introduces la de tu cuenta con OpenAI, Anthropic, Google o el
+servidor compatible que configures.
 
 - La clave se guarda **en el llavero seguro de tu dispositivo** y no se envía a ningún
   servidor del responsable, porque no existe tal servidor.
-- La clave se envía **únicamente al proveedor al que corresponde**, en cada petición,
-  como exige su API.
+- La clave se envía **únicamente al destino configurado** en cada petición. Si eliges
+  un servidor compatible, tú decides su URL HTTPS y eres responsable de confiar en él.
+  La aplicación rechaza las redirecciones de ese servidor.
 - Si una clave de Anthropic vinculada a identidad requiere un identificador de
   workspace, ese identificador se guarda localmente y se envía únicamente a Anthropic
   para dirigir las peticiones al workspace elegido.
@@ -157,7 +163,8 @@ que hayas elegido. La petición incluye:
 - en el chat principal, para Google, **hasta los 10 intercambios más recientes**, con
   los pasos de respuesta y herramientas que pertenezcan a ellos; un límite adicional de
   tamaño puede retirar intercambios completos empezando por el más antiguo. Para OpenAI
-  y Anthropic se envían **los últimos 20 mensajes**. Los asistentes de alimentos envían
+  y Anthropic se envían **los últimos 20 mensajes**. El servidor compatible recibe el
+  contexto de la conversación necesario para responder. Los asistentes de alimentos envían
   el historial reciente de su sesión con el mismo límite cuando usan Google;
 - los resultados de las herramientas que el asistente utiliza a petición tuya, que
   pueden incluir tu peso, tu porcentaje de grasa, tus perímetros, las comidas del día
@@ -189,6 +196,12 @@ que hayas elegido, bajo tu propia cuenta con él:
 - [OpenAI](https://openai.com/policies/privacy-policy)
 - [Anthropic](https://www.anthropic.com/legal/privacy)
 - [Google](https://policies.google.com/privacy)
+
+Si configuras un servidor compatible con OpenAI, consulta su propia política y términos:
+Gymnasia no controla ese destino. La prueba opcional de modelo envía una consulta breve y
+puede generar cargos según el servicio que elijas. Si el modelo rechaza herramientas,
+el Coach no puede usarlo; el estimador de comida puede responder sin consultar códigos
+de barras y te lo indicará.
 
 Si no configuras ninguna clave, la aplicación no contacta con ningún proveedor de IA y
 el resto de funciones sigue operativa.
@@ -263,7 +276,8 @@ El paquete exportado **contiene**: tus medidas y porcentajes de grasa, las copia
 normalizadas de tus fotografías de progreso que quepan dentro de los límites de la
 app, tu registro de dieta completo, tu historial de
 entrenamiento, tus ajustes personales (sexo, altura, fecha de nacimiento), la memoria
-del asistente y **el historial íntegro de tus conversaciones**. Es el fichero más
+del asistente, los modelos y la URL base del servidor personalizado si la configuraste,
+y **el historial íntegro de tus conversaciones**. Es el fichero más
 sensible que produce la aplicación: guárdalo con cuidado y piensa a quién se lo envías.
 
 Cada fotografía lleva un checksum SHA-256 para comprobarla al restaurar. La app admite

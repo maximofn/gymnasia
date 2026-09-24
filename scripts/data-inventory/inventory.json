@@ -1,6 +1,6 @@
 {
   "$comment": "Fuente única de verdad del tratamiento de datos de Gymnasia. Se creó en GYM-190 (ticket para publicar la política de privacidad y preparar las declaraciones de salud). De aquí salen la política publicada y las respuestas de Data safety en docs/legal/play-declarations.md. Consumido por scripts/data-inventory/check.mjs y, mediante --json, por la validación del AAB de GYM-198 (ticket para generar y validar el Android App Bundle de producción). Si el chequeo falla, la política publicada ha dejado de describir el código: actualiza ambos, no solo este fichero.",
-  "policyVersion": "2026-09-v5",
+  "policyVersion": "2026-09-v7",
   "scanRoots": [
     "apps/mobile"
   ],
@@ -43,7 +43,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, personal-info, messages",
-      "purpose": "Estado principal: rutinas, historial de entrenamiento con sus totales, versión de cálculo y la prescripción ejecutada de cada sesión (nombres, tipos de serie, repeticiones, peso, descanso, tempo, mini-series y qué esfuerzos se completaron; sin imágenes ni enlaces de catálogo), dieta por día, referencias estables a los elementos públicos o personales seleccionados junto con sus instantáneas históricas, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con su fecha civil, peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con la IA, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt. Los turnos nuevos de Google incluyen pasos, resúmenes de pensamiento, firmas opacas, llamadas, argumentos, resultados y uso de tokens; se conservan en las copias manuales del chat y se borran con él. Incluye además hasta 256 recibos técnicos de escrituras del agente durante siete días (identificador SHA-256, nombre de herramienta y fecha), guardados atómicamente con el dato para reconciliar una interrupción; no se exportan en las copias .gymnasia. Nunca incluye credenciales BYOK.",
+      "purpose": "Estado principal: rutinas, historial de entrenamiento con sus totales, versión de cálculo y la prescripción ejecutada de cada sesión (nombres, tipos de serie, repeticiones, peso, descanso, tempo, mini-series y qué esfuerzos se completaron; sin imágenes ni enlaces de catálogo), dieta por día, referencias estables a los elementos públicos o personales seleccionados junto con sus instantáneas históricas, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con su fecha civil, peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con la IA, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic y la URL base HTTPS del proveedor personalizado, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt. Los turnos nuevos de Google incluyen pasos, resúmenes de pensamiento, firmas opacas, llamadas, argumentos, resultados y uso de tokens; se conservan en las copias manuales del chat y se borran con él. Incluye además hasta 256 recibos técnicos de escrituras del agente durante siete días (identificador SHA-256, nombre de herramienta y fecha), guardados atómicamente con el dato para reconciliar una interrupción; no se exportan en las copias .gymnasia. Nunca incluye credenciales BYOK.",
       "clearedBy": "activity-and-full-deletion",
       "activityDeletion": "rewrite",
       "fullDeletion": "delete"
@@ -53,7 +53,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "credentials, app-preferences",
-      "purpose": "Diario versionado de configuración de proveedores con estados committed y pending para recuperar escrituras interrumpidas. En web contiene las claves BYOK y el resto de la configuración porque el navegador no dispone de SecureStore. En móvil es solo un espejo saneado sin claves; la copia canónica vive en SecureStore.",
+      "purpose": "Diario versionado de configuración de proveedores con estados committed y pending para recuperar escrituras interrumpidas. En web contiene las claves BYOK, el modelo y la URL base HTTPS personalizada porque el navegador no dispone de SecureStore. En móvil es solo un espejo saneado sin claves; la copia canónica vive en SecureStore.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"
@@ -154,6 +154,16 @@
       "personal": false,
       "dataCategory": "app-preferences",
       "purpose": "Consentimiento versionado, único para todos los proveedores BYOK, para la evaluación adicional opcional de seguridad sanitaria con el proveedor activo; también registra si ya se mostró el aviso. Se apaga solo si no queda ninguna clave guardada. No contiene el texto evaluado ni se incluye en las copias de seguridad exportadas.",
+      "clearedBy": "full-deletion",
+      "activityDeletion": "preserve",
+      "fullDeletion": "delete"
+    },
+    {
+      "key": "gymnasia.mobile.food.photo_unsupported.v1",
+      "backend": "async-storage",
+      "personal": true,
+      "dataCategory": "app-preferences",
+      "purpose": "Marca local de combinaciones de proveedor, modelo y URL base que rechazaron explícitamente fotos de comida. Permite atenuar el proveedor para fotos y mostrar un aviso hasta cambiar el modelo o la URL; no contiene imágenes, mensajes ni claves.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"
@@ -345,7 +355,7 @@
       "form": "literal",
       "personal": true,
       "dataCategory": "credentials, app-preferences",
-      "purpose": "Diario canónico versionado de la configuración completa de proveedores en móvil. Incluye claves BYOK, modelos, proveedor activo, razonamiento e identificador opcional del workspace de Anthropic; conserva el último commit y una escritura pendiente para recuperar fallos sin activar datos parciales.",
+      "purpose": "Diario canónico versionado de la configuración completa de proveedores en móvil. Incluye claves BYOK, modelos, URL base HTTPS personalizada, proveedor activo, razonamiento e identificador opcional del workspace de Anthropic; conserva el último commit y una escritura pendiente para recuperar fallos sin activar datos parciales.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"
@@ -467,6 +477,13 @@
     }
   ],
   "configurableEndpoints": [
+    {
+      "id": "custom-openai-provider",
+      "source": "user:provider.base_url",
+      "trigger": "user-initiated",
+      "sends": "A la URL base HTTPS que escribe el usuario, en /models y /chat/completions: clave BYOK en Authorization, modelo elegido, instrucciones, mensajes y resultados autorizados de herramientas, y hasta seis imágenes de comida en base64 cuando el usuario las adjunta. La prueba opcional envía una consulta breve y puede consumir API. Se rechazan redirecciones.",
+      "thirdParty": "El servidor que elija el usuario"
+    },
     {
       "id": "anthropic-cors-proxy",
       "source": "env:EXPO_PUBLIC_API_BASE_URL",

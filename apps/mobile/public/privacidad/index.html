@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Política de privacidad de Gymnasia">
-<meta name="gymnasia-policy-version" content="2026-09-v6">
-<meta name="gymnasia-policy-digest" content="sha256:1006a37520f8785ad64b0d33105148b347f79057bac8d258c8d3aa32cbe45335">
+<meta name="gymnasia-policy-version" content="2026-09-v7">
+<meta name="gymnasia-policy-digest" content="sha256:734d86201a0c76a2a00f4d1e8ec279702c72576dbc004e7cdfaabe5c64f444d9">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -37,7 +37,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Política de privacidad de Gymnasia</h1>
-  <p class="meta">Versión 2026-09-v6 · en vigor desde 2026-09-18 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Versión 2026-09-v7 · en vigor desde 2026-09-24 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
   <nav>
     <h2>Contenido</h2>
@@ -68,7 +68,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   <section id="resumen">
     <h2><a href="#resumen">Resumen</a></h2>
     <p>Gymnasia funciona <strong>principalmente en tu dispositivo</strong>. No hay cuenta ni registro. Tus entrenamientos, tu dieta, tu peso, tus medidas y tus conversaciones con el asistente se guardan en el almacenamiento de la propia aplicación.</p>
-    <p>Hay una excepción importante y es enteramente tuya: si activas el asistente de inteligencia artificial, <strong>tú</strong> aportas la clave de un proveedor (OpenAI, Anthropic o Google) y la aplicación habla <strong>directamente</strong> con ese proveedor desde tu dispositivo. Lo que escribas en el chat viaja a la empresa que hayas elegido, bajo tu propia cuenta con ella. Nosotros no lo vemos ni lo almacenamos, salvo que decidas usar la acción <strong>Denunciar</strong> sobre una respuesta y apruebes expresamente la vista previa del contenido que se enviará.</p>
+    <p>Hay una excepción importante y es enteramente tuya: si activas el asistente de inteligencia artificial, <strong>tú</strong> aportas la clave de OpenAI, Anthropic, Google o de un servidor compatible con la API de OpenAI cuya URL HTTPS eliges. La aplicación habla <strong>directamente</strong> con ese destino desde tu dispositivo. Lo que escribas en el chat viaja a la empresa que hayas elegido, bajo tu propia cuenta con ella. Nosotros no lo vemos ni lo almacenamos, salvo que decidas usar la acción <strong>Denunciar</strong> sobre una respuesta y apruebes expresamente la vista previa del contenido que se enviará.</p>
     <p>Esta política describe con detalle qué se guarda, qué sale del dispositivo y qué control tienes sobre ello.</p>
   </section>
 
@@ -97,7 +97,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><strong>Memoria del asistente</strong>: notas en texto libre que tú o el propio asistente guardáis para recordar cosas entre conversaciones. Puede contener cualquier dato que hayas contado en el chat, incluidos datos de salud.</li>
       <li><strong>Credenciales heredadas de funciones retiradas</strong>: si una versión anterior guardó credenciales en el llavero seguro, una actualización normal puede conservarlas cifradas para reutilizarlas si la función vuelve. La versión actual no las lee ni las transmite. «Borrar todos mis datos» las elimina.</li>
       <li><strong>Preferencias</strong>: ajustes de la interfaz y de las notificaciones, y tu consentimiento para la evaluación adicional opcional de seguridad sanitaria.</li>
-      <li><strong>Configuración de proveedores de IA</strong>: el modelo elegido y, si Anthropic lo exige para una clave vinculada a identidad, el identificador del workspace (<code>wrkspc_…</code>).</li>
+      <li><strong>Configuración de proveedores de IA</strong>: el modelo elegido, la URL base HTTPS si configuras un servidor compatible con OpenAI y, si Anthropic lo exige para una clave vinculada a identidad, el identificador del workspace (<code>wrkspc_…</code>). También se guarda qué combinación de proveedor, modelo y URL rechazó explícitamente una foto para mostrarte un aviso hasta que cambies la configuración.</li>
       <li><strong>Registro de depuración</strong>: un histórico técnico de hasta 1000 entradas con los avisos de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de serie; eventos técnicos de selección de políticas; y contadores del contexto preparado para Google, como número de intercambios, bytes y cantidad de imágenes antiguas omitidas. Esos diagnósticos de Google no contienen mensajes, imágenes, argumentos de herramientas ni claves. El registro nunca se envía por red; puedes verlo y borrarlo desde Ajustes.</li>
       <li><strong>Copias locales de recuperación</strong>: la aplicación conserva una única copia verificada del estado principal. Si encuentra datos que no puede leer con seguridad, mantiene el payload original en cuarentena para no sobrescribirlo. Ambas copias permanecen solo en el dispositivo y se sustituyen o eliminan al completar la recuperación.</li>
       <li><strong>Control de operaciones del asistente</strong>: antes de una escritura, la app deja una marca técnica local. En los datos del dispositivo guarda otra marca junto con el dato cuando la escritura termina; para una propuesta consulta al servicio de incidencias con el identificador técnico descrito más adelante. Así puede comprobar una interrupción antes de decidir si es seguro reintentar. Cada registro local está limitado a 256 operaciones. Las confirmadas caducan a los siete días; una operación cuyo resultado no puede comprobarse se conserva hasta que pueda resolverse o borres la actividad. Las marcas locales contienen huellas técnicas, el nombre de la acción y las fechas; solo el registro de una operación confirmada conserva además el resultado que recibió el modelo. No guardan los argumentos, mensajes, instrucciones ni claves de API, no salen del dispositivo y no se incluyen en las copias exportadas.</li>
@@ -113,10 +113,10 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 
   <section id="byok">
     <h2><a href="#byok">Tu clave de API</a></h2>
-    <p>El asistente funciona con el modelo de <strong>clave propia</strong>: no se incluye ninguna clave en la aplicación, y tú introduces la de tu cuenta con OpenAI, Anthropic o Google.</p>
+    <p>El asistente funciona con el modelo de <strong>clave propia</strong>: no se incluye ninguna clave en la aplicación, y tú introduces la de tu cuenta con OpenAI, Anthropic, Google o el servidor compatible que configures.</p>
     <ul>
       <li>La clave se guarda <strong>en el llavero seguro de tu dispositivo</strong> y no se envía a ningún servidor del responsable, porque no existe tal servidor.</li>
-      <li>La clave se envía <strong>únicamente al proveedor al que corresponde</strong>, en cada petición, como exige su API.</li>
+      <li>La clave se envía <strong>únicamente al destino configurado</strong> en cada petición. Si eliges un servidor compatible, tú decides su URL HTTPS y eres responsable de confiar en él. La aplicación rechaza las redirecciones de ese servidor.</li>
       <li>Si una clave de Anthropic vinculada a identidad requiere un identificador de workspace, ese identificador se guarda localmente y se envía únicamente a Anthropic para dirigir las peticiones al workspace elegido.</li>
       <li>La clave <strong>no se incluye</strong> en el fichero de copia de seguridad que exportas.</li>
       <li>El identificador de workspace tampoco se incluye en esa copia de seguridad.</li>
@@ -131,7 +131,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <p>Cuando usas el asistente, tu dispositivo se conecta <strong>directamente</strong> con el proveedor que hayas elegido. La petición incluye:</p>
     <ul>
       <li>las instrucciones del sistema del asistente;</li>
-      <li>en el chat principal, para Google, <strong>hasta los 10 intercambios más recientes</strong>, con los pasos de respuesta y herramientas que pertenezcan a ellos; un límite adicional de tamaño puede retirar intercambios completos empezando por el más antiguo. Para OpenAI y Anthropic se envían <strong>los últimos 20 mensajes</strong>. Los asistentes de alimentos envían el historial reciente de su sesión con el mismo límite cuando usan Google;</li>
+      <li>en el chat principal, para Google, <strong>hasta los 10 intercambios más recientes</strong>, con los pasos de respuesta y herramientas que pertenezcan a ellos; un límite adicional de tamaño puede retirar intercambios completos empezando por el más antiguo. Para OpenAI y Anthropic se envían <strong>los últimos 20 mensajes</strong>. El servidor compatible recibe el contexto de la conversación necesario para responder. Los asistentes de alimentos envían el historial reciente de su sesión con el mismo límite cuando usan Google;</li>
       <li>los resultados de las herramientas que el asistente utiliza a petición tuya, que pueden incluir tu peso, tu porcentaje de grasa, tus perímetros, las comidas del día o tus rutinas;</li>
       <li>en el estimador de comida, <strong>las imágenes que le proporcionas</strong>, codificadas dentro de la petición.</li>
       <li>para Anthropic, el identificador del workspace, únicamente si lo has configurado porque el tipo de clave lo requiere.</li>
@@ -144,6 +144,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
       <li><a href="https://www.anthropic.com/legal/privacy" rel="noopener noreferrer">Anthropic</a></li>
       <li><a href="https://policies.google.com/privacy" rel="noopener noreferrer">Google</a></li>
     </ul>
+    <p>Si configuras un servidor compatible con OpenAI, consulta su propia política y términos: Gymnasia no controla ese destino. La prueba opcional de modelo envía una consulta breve y puede generar cargos según el servicio que elijas. Si el modelo rechaza herramientas, el Coach no puede usarlo; el estimador de comida puede responder sin consultar códigos de barras y te lo indicará.</p>
     <p>Si no configuras ninguna clave, la aplicación no contacta con ningún proveedor de IA y el resto de funciones sigue operativa.</p>
   </section>
 
@@ -170,7 +171,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <h2><a href="#copias">Copias de seguridad y exportación</a></h2>
     <p>Puedes exportar todos tus datos a un paquete <code>.gymnasia</code> desde Ajustes, y volver a importarlo después. Es una acción manual: no hay copia automática. La app también mantiene la importación de los antiguos ficheros JSON, aunque una referencia antigua a una foto solo podrá recuperarse si ese fichero sigue accesible en el dispositivo.</p>
     <p>La copia local de recuperación no es una copia en la nube ni un segundo fichero portable: es una única generación anterior dentro del mismo almacenamiento de la aplicación. Solo se usa si el estado actual no puede leerse. En ese caso Gymnasia bloquea las escrituras y te permite recuperar la última copia, reintentar, descartar los datos afectados o exportar el payload dañado. Esta exportación de recuperación conserva el original sin sanear; es especialmente sensible y puede contener claves de IA en la versión web. Antes de guardarla, Gymnasia exige que elijas una contraseña y cifra el archivo igual que una copia normal. No se envía a ningún servidor de Gymnasia.</p>
-    <p>El paquete exportado <strong>contiene</strong>: tus medidas y porcentajes de grasa, las copias JPEG normalizadas de tus fotografías de progreso que quepan dentro de los límites de la app, tu registro de dieta completo, tu historial de entrenamiento, tus ajustes personales (sexo, altura, fecha de nacimiento), la memoria del asistente y <strong>el historial íntegro de tus conversaciones</strong>. Es el fichero más sensible que produce la aplicación: guárdalo con cuidado y piensa a quién se lo envías.</p>
+    <p>El paquete exportado <strong>contiene</strong>: tus medidas y porcentajes de grasa, las copias JPEG normalizadas de tus fotografías de progreso que quepan dentro de los límites de la app, tu registro de dieta completo, tu historial de entrenamiento, tus ajustes personales (sexo, altura, fecha de nacimiento), la memoria del asistente, los modelos y la URL base del servidor personalizado si la configuraste, y <strong>el historial íntegro de tus conversaciones</strong>. Es el fichero más sensible que produce la aplicación: guárdalo con cuidado y piensa a quién se lo envías.</p>
     <p>Cada fotografía lleva un checksum SHA-256 para comprobarla al restaurar. La app admite como máximo 500 relaciones de foto, 5 MiB por foto normalizada y 200 MiB de imágenes por copia. Si alguna foto falta, está dañada o no cabe, la copia conserva todas las medidas numéricas y te muestra cuáles se omitieron.</p>
     <p>El paquete <strong>no contiene</strong> tus claves de API ni las credenciales heredadas de funciones retiradas. Las copias nuevas se cifran y autentican con XChaCha20-Poly1305; la clave se deriva de una contraseña elegida por ti mediante scrypt. Gymnasia no guarda ni transmite esa contraseña y no puede recuperar el archivo si la olvidas. Al importar, el archivo se descifra y se verifica por completo antes de mostrar la confirmación que permite sustituir tus datos actuales.</p>
     <p>Gymnasia sigue aceptando copias antiguas JSON v1 y ZIP v2 para no dejarte sin acceso a tus datos. Esos formatos antiguos no estaban cifrados: la app te avisa antes de importarlos y debes usarlos solo si reconoces el archivo y su procedencia. No existe una opción para crear nuevas exportaciones sin cifrar.</p>
@@ -260,7 +261,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Política de privacidad de Gymnasia · 2026-09-v6 · 2026-09-18</p>
+    <p>Política de privacidad de Gymnasia · 2026-09-v7 · 2026-09-24</p>
   </footer>
 </main>
 </body>

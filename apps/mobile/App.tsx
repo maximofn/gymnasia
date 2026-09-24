@@ -396,11 +396,19 @@ import {
   fetchAnthropicModelsViaWebProxy,
   fetchGoogleModels,
   fetchOpenAIModels,
+  fetchPersonalizedModels,
   verifyProviderConnection,
   type GoogleModelOption,
   type OpenAIModelOption,
   type ProviderVerificationResult,
 } from "./agent/providerCatalog";
+import { normalizeCustomOpenAIBaseUrl } from "./agent/customOpenAIUrl";
+import { requestCustomOpenAIChat } from "./agent/customOpenAIChat";
+import {
+  isExplicitImageUnsupported,
+  photoCapabilityId,
+  PHOTO_UNSUPPORTED_MESSAGE,
+} from "./agent/providerPhotoCapability";
 import {
   formatNutritionValidationIssues,
   validateNutritionItem,
@@ -784,12 +792,13 @@ const LEGACY_SECURE_STORE_PREFIXES = [
   scopedSecureStoreKey("gymnasia.mobile.provider.api_key"),
   scopedSecureStoreKey("gymnasia.mobile.v2.provider.api_key"),
 ];
-const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
+const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic", "custom_openai"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
 
 const EXERCISES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
 const HEALTH_SAFETY_CONSENT_KEY = scopedStorageKey("gymnasia.mobile.health_safety.consent.v1");
+const PHOTO_UNSUPPORTED_KEY = scopedStorageKey("gymnasia.mobile.food.photo_unsupported.v1");
 
 // El modelo del consentimiento vive en ./agent/healthSafetyConsent para poder
 // probarse sin arrastrar App.tsx. Aquí solo queda la versión de política vigente.
@@ -1212,6 +1221,7 @@ function resolveProviderByPriority(keys: AIKey[], priority: Provider[]): AIKey |
     if (!configured) continue;
     const apiKey = providerCredential(configured.api_key, IS_FAKE_PROVIDER_MODE);
     if (!apiKey) continue;
+    if (provider === "custom_openai" && (!configured.model.trim() || !configured.base_url?.trim())) continue;
     return {
       ...configured,
       api_key: apiKey,
@@ -1227,6 +1237,7 @@ function resolveFoodEstimatorProvider(keys: AIKey[]): AIKey | null {
     if (!configured) continue;
     const apiKey = providerCredential(configured.api_key, IS_FAKE_PROVIDER_MODE);
     if (!apiKey) continue;
+    if (provider === "custom_openai" && (!configured.model.trim() || !configured.base_url?.trim())) continue;
     return {
       ...configured,
       api_key: apiKey,
@@ -1240,6 +1251,7 @@ function withEffectiveProviderCredential(provider: AIKey | undefined): AIKey | n
   if (!provider) return null;
   const apiKey = providerCredential(provider.api_key, IS_FAKE_PROVIDER_MODE);
   if (!apiKey) return null;
+  if (provider.provider === "custom_openai" && (!provider.model.trim() || !provider.base_url?.trim())) return null;
   return {
     ...provider,
     api_key: apiKey,
@@ -1332,7 +1344,7 @@ function secureStoreKey(provider: Provider): string {
 }
 
 function emptyProviderApiKeys(): Record<Provider, string> {
-  return { openai: "", anthropic: "", google: "" };
+  return { openai: "", anthropic: "", google: "", custom_openai: "" };
 }
 
 async function isSecureStoreAvailable(): Promise<boolean> {
@@ -2200,6 +2212,32 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [foodEstimatorImages, setFoodEstimatorImages] = useState<FoodEstimatorImage[]>([]);
   const [foodEstimatorMessages, setFoodEstimatorMessages] = useState<ChatMessage[]>([]);
   const [foodEstimatorInput, setFoodEstimatorInput] = useState("");
+  const [foodEstimatorPhotoError, setFoodEstimatorPhotoError] = useState<string | null>(null);
+  const resumeFoodEstimatorDraftRef = useRef(false);
+  const foodEstimatorSentImageIdsRef = useRef<Set<string>>(new Set());
+  const [photoUnsupportedIds, setPhotoUnsupportedIds] = useState<string[]>([]);
+  const photoUnsupportedIdsRef = useRef<string[]>([]);
+  const [customModelFocusRequest, setCustomModelFocusRequest] = useState(0);
+  useEffect(() => {
+    if (!isHydrated) return;
+    let live = true;
+    void AsyncStorage.getItem(PHOTO_UNSUPPORTED_KEY).then((raw) => {
+      if (!live || !raw) return;
+      const parsed: unknown = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        const ids = parsed.filter((item): item is string => typeof item === "string");
+        photoUnsupportedIdsRef.current = ids;
+        setPhotoUnsupportedIds(ids);
+      }
+    }).catch(() => {});
+    return () => { live = false; };
+  }, [isHydrated]);
+  function updatePhotoUnsupportedIds(updater: (current: string[]) => string[]) {
+    const next = updater(photoUnsupportedIdsRef.current);
+    photoUnsupportedIdsRef.current = next;
+    setPhotoUnsupportedIds(next);
+    void AsyncStorage.setItem(PHOTO_UNSUPPORTED_KEY, JSON.stringify(next)).catch(() => {});
+  }
   const [foodEstimatorSending, setFoodEstimatorSending] = useState(false);
   const [foodEstimatorStatus, setFoodEstimatorStatus] = useState("");
   const foodThinkingLabel = useThinkingLabel(foodEstimatorSending);
@@ -2323,6 +2361,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     severity: ProviderStatusSeverity;
   } | null>(null);
   const [googleModelFilter, setGoogleModelFilter] = useState("");
+  const [customModelOptions, setCustomModelOptions] = useState<OpenAIModelOption[]>([]);
+  const [customModelOptionsLoading, setCustomModelOptionsLoading] = useState(false);
+  const [customModelTesting, setCustomModelTesting] = useState(false);
+  const [customModelMessage, setCustomModelMessage] = useState<{
+    text: string;
+    severity: ProviderStatusSeverity;
+  } | null>(null);
   const [providerDeleteModal, setProviderDeleteModal] = useState<ProviderDeleteModalState | null>(null);
   const [trainingSearch, setTrainingSearch] = useState("");
   const [trainingFilter, setTrainingFilter] = useState<TrainingFilter>("all");
@@ -2446,7 +2491,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   );
   const orderedProviderKeys = useMemo(
     () =>
-      (["anthropic", "openai", "google"] as Provider[])
+      (["anthropic", "openai", "google", "custom_openai"] as Provider[])
         .map((provider) => store.keys.find((item) => item.provider === provider))
         .filter((item): item is AIKey => !!item),
     [store.keys],
@@ -2493,6 +2538,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     keys: orderedProviderKeys,
     chatProvider: store.chatProvider ?? null,
     foodProvider: store.foodAIProvider ?? null,
+    photoUnsupportedIds,
     healthSafetyConsent: describeHealthSafetyConsentSwitch(
       healthSafetyConsent,
       configuredHealthSafetyProviders(store.keys),
@@ -2529,6 +2575,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       message: googleModelOptionsMessage,
       options: filteredGoogleModelOptions,
     },
+    custom: {
+      loading: customModelOptionsLoading,
+      testing: customModelTesting,
+      message: customModelMessage,
+      options: customModelOptions,
+      photoUnsupported: photoUnsupportedIds.includes(photoCapabilityId({
+        provider: "custom_openai",
+        model: providerDraftByProvider.custom_openai?.model ?? "",
+        base_url: providerDraftByProvider.custom_openai?.base_url,
+      })),
+      focusModelRequest: customModelFocusRequest,
+    },
     updateHealthSafetyConsent: (enabled) => updateHealthSafetyConsent({ enabled, noticeSeen: true }),
     selectChatProvider: (provider) => void selectChatProvider(provider),
     selectFoodProvider: (provider) => {
@@ -2556,6 +2614,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     selectAnthropicModel,
     selectOpenAIModel,
     selectGoogleModel,
+    loadCustomModels: () => void loadCustomModelOptions(),
+    testCustomModel: () => void testCustomModel(),
+    selectCustomModel: (id) => updateProviderDraft("custom_openai", { model: id }),
   });
   const measurementsRuntime = useMeasurementsRuntime({
     localStore: localStoreRuntime,
@@ -5521,8 +5582,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ? withEffectiveProviderCredential(store.keys.find((k) => k.provider === store.foodAIProvider) ?? store.keys[0]) ?? resolveFoodEstimatorProvider(store.keys)
       : resolveFoodEstimatorProvider(store.keys);
     setFoodEstimatorProvider(provider);
+    if (resumeFoodEstimatorDraftRef.current) {
+      resumeFoodEstimatorDraftRef.current = false;
+      setFoodEstimatorPhotoError(null);
+      setFoodEstimatorModalOpen(true);
+      return;
+    }
     setFoodEstimatorImages([]);
+    foodEstimatorSentImageIdsRef.current.clear();
     setFoodEstimatorInput("");
+    setFoodEstimatorPhotoError(null);
     setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     setFoodEstimatorHasLLMResponse(false);
     foodEstimatorUsedBarcodeRef.current = false;
@@ -5534,7 +5603,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         role: "assistant",
         content: provider
           ? "Sube fotos o describe la comida para comenzar la estimación."
-          : "No hay API key disponible para estimar. Configura Google, OpenAI o Anthropic en Configuración > Proveedor IA.",
+          : "No hay API key disponible para estimar. Configura un proveedor en Configuración > Proveedor IA.",
         created_at: new Date().toISOString(),
       },
     ]);
@@ -5546,6 +5615,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setFoodEstimatorModalOpen(false);
     setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     setFoodEstimatorExpandedThinking({});
+  }
+
+  function chooseModelAfterPhotoError() {
+    const provider = foodEstimatorProvider?.provider;
+    resumeFoodEstimatorDraftRef.current = true;
+    setFoodEstimatorModalOpen(false);
+    setTab("settings");
+    setSettingsTab("provider");
+    if (provider === "custom_openai") setCustomModelFocusRequest((value) => value + 1);
+    if (provider === "openai") setOpenAIModelDropdownOpen(true);
+    if (provider === "anthropic") setAnthropicModelDropdownOpen(true);
+    if (provider === "google") setGoogleModelDropdownOpen(true);
   }
 
   function removeFoodEstimatorImage(imageId: string) {
@@ -5639,7 +5720,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   async function sendFoodEstimatorMessage(forcedMessage?: string) {
     if (foodEstimatorSending) return;
     const userInput = (forcedMessage ?? foodEstimatorInput).trim();
-    if (!userInput && foodEstimatorImages.length === 0) {
+    const freshImages = foodEstimatorImages.filter((image) => !foodEstimatorSentImageIdsRef.current.has(image.id));
+    if (!userInput && freshImages.length === 0) {
       setError("Escribe un mensaje o adjunta al menos una foto para estimar.");
       return;
     }
@@ -5653,12 +5735,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const resolvedProvider = resolveFoodEstimatorProviderFromState();
 
     if (!resolvedProvider) {
-      setError("Configura una API key en Proveedor IA (Google, OpenAI o Anthropic) para usar esta función.");
+      setError("Configura un proveedor en Proveedor IA para usar esta función.");
       return;
     }
 
-    if (resolvedProvider.provider === "google" && !foodEstimatorHasLLMResponse) {
-      userMessage.googleInput = [{ type: "text", text: messageText }, ...foodEstimatorImages
+    if (resolvedProvider.provider === "google" && freshImages.length > 0) {
+      userMessage.googleInput = [{ type: "text", text: messageText }, ...freshImages
         .filter((image) => image.base64.trim())
         .map((image) => ({ type: "image", mime_type: image.mime_type || "image/jpeg", data: image.base64 }))];
     }
@@ -5721,9 +5803,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setFoodEstimatorInput("");
     }
     setFoodEstimatorSending(true);
+    setFoodEstimatorPhotoError(null);
     setFoodEstimatorStatus("Enviando...");
     setError(null);
 
+    const sentPhotos = freshImages.length > 0;
     try {
       let draftContent = "";
       let draftThinking: string | null = null;
@@ -5783,7 +5867,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         },
         ...excludeLocalDisclosureMessages(nextMessages).map(toChatInput),
       ];
-      const skipImages = foodEstimatorHasLLMResponse;
       let assistantResult: AnthropicChatResult | null = null;
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
@@ -5793,7 +5876,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           assistantResult = await callFoodEstimatorAPI(
             resolvedProvider,
             estimatorHistory,
-            foodEstimatorImages,
+            freshImages,
             {
               onStatus: setFoodEstimatorStatus,
               onToolUsed: (toolName) => {
@@ -5807,7 +5890,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 draftThinking = aggregate;
               },
             },
-            skipImages,
+            false,
           );
           if (assistantResult && assistantResult.content.trim().length > 0) break;
           assistantResult = null;
@@ -5831,6 +5914,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         ? createLocalHealthSafetyResponse(streamState.blockedDecision, healthSelection.policy)
         : null;
       setFoodEstimatorHasLLMResponse(!safetyResponse);
+      for (const image of freshImages) foodEstimatorSentImageIdsRef.current.add(image.id);
       setFoodEstimatorMessages((prev) => prev.map((message) => (
         message.id === assistantMessageId
           ? safetyResponse ? {
@@ -5847,7 +5931,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               is_streaming: false,
             } : {
               ...message,
-              content: streamState.visibleContent,
+              content: streamState.visibleContent + (assistantResult.warning ? `\n\nAviso: ${assistantResult.warning}` : ""),
               thinking: assistantResult.thinking,
               googleTurn: assistantResult.googleTurn,
               is_streaming: false,
@@ -5861,6 +5945,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       if (draftFlushTimer) {
         clearTimeout(draftFlushTimer);
         draftFlushTimer = null;
+      }
+      if (sentPhotos && isExplicitImageUnsupported(err)) {
+        const id = photoCapabilityId(resolvedProvider);
+        updatePhotoUnsupportedIds((ids) => ids.includes(id) ? ids : [...ids, id]);
+        setFoodEstimatorPhotoError(PHOTO_UNSUPPORTED_MESSAGE);
+        setFoodEstimatorInput(userInput);
+        setFoodEstimatorMessages((prev) => prev.filter((entry) => entry.id !== userMessage.id && entry.id !== assistantMessageId));
+        return;
       }
       const message =
         err instanceof Error
@@ -7636,6 +7728,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const nextDraft: ProviderDraft = {
       api_key: updates.api_key ?? currentDraft.api_key,
       model: nextModel,
+      base_url: provider === "custom_openai"
+        ? updates.base_url ?? currentDraft.base_url ?? ""
+        : "",
       workspace_id:
         provider === "anthropic"
           ? updates.workspace_id ?? currentDraft.workspace_id ?? ""
@@ -7678,6 +7773,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setGoogleModelOptionsMessage(null);
       setGoogleModelFilter("");
     }
+    if (provider === "custom_openai" && (updates.api_key !== undefined || updates.base_url !== undefined)) {
+      setCustomModelOptions([]);
+      setCustomModelMessage(null);
+      setCustomModelOptionsLoading(false);
+    }
 
     if (options.markPending) {
       updateProviderOperations((current) => editProviderOperation(current, provider));
@@ -7685,6 +7785,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       if (provider === "anthropic") setAnthropicModelOptionsLoading(false);
       if (provider === "openai") setOpenAIModelOptionsLoading(false);
       if (provider === "google") setGoogleModelOptionsLoading(false);
+      if (provider === "custom_openai") setCustomModelOptionsLoading(false);
       setProviderConnectionStatus((prev) => ({
         ...prev,
         [provider]: nextDraft.api_key.trim()
@@ -7826,6 +7927,79 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
   }
 
+  async function loadCustomModelOptions() {
+    const draft = providerDraftByProvider.custom_openai;
+    if (!draft) return;
+    const apiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
+    if (!apiKey) {
+      setCustomModelMessage({ text: PROVIDER_STATUS_COPY.warningNoKey, severity: "warning" });
+      return;
+    }
+    try {
+      normalizeCustomOpenAIBaseUrl(draft.base_url ?? "");
+    } catch (error) {
+      setCustomModelMessage({ text: error instanceof Error ? error.message : "URL HTTPS no válida.", severity: "error" });
+      return;
+    }
+    const begun = beginProviderDiscovery(providerOperationsRef.current, "custom_openai");
+    updateProviderOperations(() => begun.state);
+    setCustomModelOptionsLoading(true);
+    setCustomModelMessage(null);
+    try {
+      const result = await fetchPersonalizedModels({
+        provider: normalizeProviderConfiguration("custom_openai", { ...draft, api_key: apiKey }),
+        platform: Platform.OS === "web" ? "web" : "native",
+        fakeMode: IS_FAKE_PROVIDER_MODE,
+      });
+      if (!isProviderDiscoveryCurrent(providerOperationsRef.current, begun.token)) return;
+      setCustomModelOptions(result.options);
+      if (result.unavailable) setCustomModelMessage({
+        text: "Este servidor no ofrece /models. Escribe el ID del modelo y guárdalo; puedes probarlo aparte (la prueba puede consumir API).",
+        severity: "warning",
+      });
+      else if (!result.options.length) setCustomModelMessage({
+        text: "El servidor no ha devuelto modelos. Puedes escribir el ID manualmente.",
+        severity: "warning",
+      });
+    } catch (error) {
+      if (!isProviderDiscoveryCurrent(providerOperationsRef.current, begun.token)) return;
+      setCustomModelMessage({
+        text: error instanceof Error ? error.message : "No se pudo consultar la lista de modelos.",
+        severity: "error",
+      });
+    } finally {
+      if (isProviderDiscoveryCurrent(providerOperationsRef.current, begun.token)) setCustomModelOptionsLoading(false);
+    }
+  }
+
+  async function testCustomModel() {
+    const draft = providerDraftByProvider.custom_openai;
+    if (!draft) return;
+    let candidate: AIKey;
+    try {
+      candidate = {
+        ...normalizeProviderConfiguration("custom_openai", draft),
+        base_url: normalizeCustomOpenAIBaseUrl(draft.base_url ?? ""),
+      };
+      if (!candidate.model || !candidate.api_key) throw new Error("Escribe un modelo y una API key antes de probarlo.");
+    } catch (error) {
+      setCustomModelMessage({ text: error instanceof Error ? error.message : "Configuración incompleta.", severity: "error" });
+      return;
+    }
+    setCustomModelTesting(true);
+    setCustomModelMessage(null);
+    try {
+      if (!IS_FAKE_PROVIDER_MODE) await requestCustomOpenAIChat(candidate, [
+        { role: "user", content: "Responde OK." },
+      ], { platform: Platform.OS === "web" ? "web" : "native", stream: false });
+      setCustomModelMessage({ text: "El modelo respondió correctamente.", severity: "success" });
+    } catch (error) {
+      setCustomModelMessage({ text: error instanceof Error ? error.message : "El modelo no respondió.", severity: "error" });
+    } finally {
+      setCustomModelTesting(false);
+    }
+  }
+
   async function toggleAnthropicModelDropdown() {
     const nextOpen = !anthropicModelDropdownOpen;
     setAnthropicModelDropdownOpen(nextOpen);
@@ -7924,6 +8098,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }
 
   function clearProviderModelDiscovery(provider: Provider, clearOptions: boolean) {
+    if (provider === "custom_openai") {
+      if (clearOptions) setCustomModelOptions([]);
+      setCustomModelMessage(null);
+      setCustomModelOptionsLoading(false);
+    }
     if (provider === "anthropic") {
       setAnthropicModelDropdownOpen(false);
       if (clearOptions) setAnthropicModelOptions([]);
@@ -8006,6 +8185,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       }
 
       const committedDraft = createProviderDraftMap(result.snapshot.keys)[provider];
+      const previousConfiguration = storeRef.current.keys.find((item) => item.provider === provider);
+      if (previousConfiguration && photoCapabilityId(previousConfiguration) !== photoCapabilityId(candidate)) {
+        updatePhotoUnsupportedIds((ids) => ids.filter((id) => id !== photoCapabilityId(previousConfiguration)));
+      }
       const committedProvider = result.snapshot.keys.find((item) => item.is_active)?.provider;
       setStore((prev) => ({
         ...prev,
@@ -8058,7 +8241,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const draft = providerDraftByProvider[provider];
     if (!draft) return;
 
-    const candidate = normalizeProviderConfiguration(provider, draft, true);
+    let candidate = normalizeProviderConfiguration(provider, draft, true);
+
+    if (provider === "custom_openai" && candidate.api_key) {
+      try {
+        candidate = { ...candidate, base_url: normalizeCustomOpenAIBaseUrl(candidate.base_url ?? "") };
+        if (!candidate.model) throw new Error("Escribe el ID del modelo antes de guardar.");
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : "URL HTTPS o modelo no válidos.";
+        setProviderConnectionStatus((prev) => ({
+          ...prev,
+          custom_openai: { state: "disconnected", detail, severity: "error" },
+        }));
+        setError(detail);
+        return;
+      }
+    }
 
     if (
       provider === "anthropic"
@@ -8885,6 +9083,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         inputValue={foodEstimatorInput}
         sending={foodEstimatorSending}
         statusLabel={foodEstimatorStatus || `${foodThinkingLabel}...`}
+        photoError={foodEstimatorPhotoError}
         expandedThinking={foodEstimatorExpandedThinking}
         scrollRef={foodEstimatorScrollRef}
         hasResponse={foodEstimatorHasLLMResponse}
@@ -8903,6 +9102,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         }}
         onReportMessage={handleOpenAiReport}
         onAddFood={() => { void addFoodFromEstimatorJSON(); }}
+        onChooseModel={chooseModelAfterPhotoError}
       />
 
       <PortablePasswordModal

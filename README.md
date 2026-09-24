@@ -206,6 +206,14 @@ npm run decrypt:recovery -- --input copia.gymnasia --output recuperacion.json
 La generación con Google usa Interactions sin almacenamiento remoto de conversaciones.
 Contrato, pruebas y validación de XHR en Android: [Google Interactions](docs/testing/google-interactions.md).
 
+El cuarto proveedor permite usar un servidor compatible con **OpenAI Chat Completions**:
+en Ajustes > Proveedor IA se guardan una URL base HTTPS (incluido `/v1` si procede),
+una clave propia y el ID del modelo. El OpenAI oficial sigue usando Responses API.
+La consulta a `/models` es opcional: si el servidor no la ofrece, el modelo se escribe
+manualmente. «Probar modelo» envía una petición separada que puede consumir API.
+La app rechaza las redirecciones del servidor personalizado; una URL local también
+requiere HTTPS y un certificado válido para el dispositivo.
+
 ## Compilación Android de producción
 
 Las builds Android de producción se compilan en una VM desechable en wallabot.

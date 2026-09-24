@@ -30,6 +30,12 @@ los resultados de herramientas que el usuario autoriza y, en el estimador, hasta
 fotografías. Ese contexto puede incluir datos personales, de salud, entrenamiento,
 nutrición y medidas.
 
+El cuarto destino puede ser una URL HTTPS que escribe el usuario para un servidor
+compatible con OpenAI. Recibe las mismas categorías de datos cuando se usa para chat,
+herramientas o fotos de comida. También recibe una consulta breve si el usuario pulsa
+«Probar modelo». Esto no añade una categoría de datos; el tercero concreto depende de
+la URL elegida por el usuario.
+
 Con Google se reenvían como máximo los diez intercambios más recientes, con límites
 adicionales de tamaño y conservando completos los pasos, firmas técnicas y resultados
 de herramientas de cada intercambio incluido. Las imágenes solo permanecen durante
@@ -128,7 +134,7 @@ mantenedor.
 
 - **¿La app incluye funciones de IA generativa?** Sí: un asistente conversacional y un
   estimador de valores nutricionales a partir de imágenes.
-- **Modelos empleados**: modelos de terceros (OpenAI, Anthropic, Google) invocados
+- **Modelos empleados**: modelos de terceros (OpenAI, Anthropic, Google o servidor compatible elegido por el usuario) invocados
   directamente desde el dispositivo. No hay modelos propios ni entrenamiento con datos
   de usuarios.
 - **¿Quién aporta las credenciales?** El usuario, con su propia cuenta. Sin clave
