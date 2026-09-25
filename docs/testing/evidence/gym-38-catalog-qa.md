@@ -59,6 +59,45 @@ Esta QA verifica el flujo real de lectura y la espera/cancelación de una
 propuesta de escritura en web. No ejecuta una escritura confirmada ni sustituye
 la comprobación de instalación limpia y funcionamiento sin red en Android.
 
+## QA web en el navegador integrado (25 de septiembre de 2026)
+
+Versión web publicada 1.47.2, entorno Production. El mantenedor configuró las
+claves BYOK en el navegador integrado; no se leyeron ni copiaron. Se comprobó
+el resultado visible con tres proveedores conectados:
+
+- OpenAI, `gpt-6-luna`: la consulta de macronutrientes de arroz blanco devolvió
+  2,7 g de proteína, 28 g de carbohidratos y 0,3 g de grasa por 100 g.
+- Anthropic, `claude-haiku-4-5-20251001`: la consulta de garbanzos cocidos
+  devolvió 8,9 g de proteína, 27 g de carbohidratos y 2,6 g de grasa por 100 g.
+  La respuesta mostró primero que la búsqueda exacta no encontraba resultados,
+  pero después ofreció los valores correctos.
+- Google, `gemini-3.5-flash`: la consulta de Slim Pasta Fettuccine devolvió
+  9 kcal, 0,2 g de proteína, 0 g de carbohidratos y 0 g de grasa por 100 g.
+  El modelo elegido inicialmente, `gemini-3.8-flash`, respondió
+  `service_unavailable` por alta demanda. Se probó también `gemini-2.5-flash`,
+  pero Google lo rechazó para esta clave por no estar disponible para nuevos
+  usuarios. Después de la prueba se restauró `gemini-3.8-flash` y se dejó
+  OpenAI como proveedor de Coach, tal como estaban al principio.
+
+Las respuestas coinciden con `alimentos/all.json`. En esta sesión no se
+inspeccionaron las llamadas internas de `search_foods` de cada proveedor; la
+traza visible solo registra metadatos de la solicitud. La comprobación directa
+de esa llamada para OpenAI figura en la sección anterior.
+
+Se probó también una escritura real con OpenAI. «Añade 150 g de arroz blanco
+cocido del catálogo a mi comida de hoy» produjo una entrada en Dieta de
+195 kcal, 4,1 g de proteína, 42 g de carbohidratos y 0,5 g de grasa. La entrada
+persistió tras recargar la página; permanece como dato de prueba en la web.
+Después se pidió proponer 100 g de manzana para la cena y esperar confirmación:
+Coach preguntó antes de guardar, la cena permaneció vacía y, tras responder
+«No, cancela la propuesta. No guardes nada», siguió vacía.
+
+Hallazgo ajeno al catálogo: cuando Google devolvió `service_unavailable`, Coach
+mostró el evento SSE crudo (`event: error` y `data: ...`) en la respuesta en vez
+de un mensaje claro. El error impidió probar `gemini-3.8-flash`, pero otro modelo
+de Google sí completó la consulta. Esta QA web sigue sin verificar el arranque
+sin caché ni red en Android.
+
 ## QA nativa pendiente
 
 En un APK de Producción que incluya la corrección, comprobar en Dieta que
