@@ -84,6 +84,12 @@ inspeccionaron las llamadas internas de `search_foods` de cada proveedor; la
 traza visible solo registra metadatos de la solicitud. La comprobación directa
 de esa llamada para OpenAI figura en la sección anterior.
 
+Como caso negativo, se consultó con OpenAI (`gpt-6-luna`) la pitahaya o fruta
+del dragón, ausente de los agregados de alimentos, productos y recetas. Coach
+respondió que no había ficha y no inventó calorías. Esta prueba verifica la
+respuesta visible cuando una búsqueda no encuentra el alimento; no ejercita la
+copia integrada sin red ni demuestra por sí sola la llamada interna a la tool.
+
 Se probó también una escritura real con OpenAI. «Añade 150 g de arroz blanco
 cocido del catálogo a mi comida de hoy» produjo una entrada en Dieta de
 195 kcal, 4,1 g de proteína, 42 g de carbohidratos y 0,5 g de grasa. La entrada
