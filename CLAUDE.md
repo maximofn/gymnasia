@@ -239,6 +239,15 @@ instalación limpia sin caché, permisos, notificaciones, segundo plano o
 almacenamiento seguro nativo. Indica qué parte verificaste en web y qué parte
 requiere una prueba nativa.
 
+El mantenedor no usa la versión web como registro personal: los datos locales
+de esa sesión son desechables para QA. Puedes crear, modificar y borrar
+registros recuperables de prueba en la web, confirmar propuestas de Coach y
+ejecutar las tools de escritura necesarias para verificar el resultado, sin
+pedirle permiso cada vez ni trasladarle esas pruebas al móvil. Comprueba el
+estado persistido después de la acción. Esta autorización se refiere a los
+datos locales de la web; la API key y los datos de la app instalada en el móvil
+siguen protegidos.
+
 The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - deterministic tests: `npm test`
 - backend de incidencias: `npm --workspace apps/feedback-worker run test`
