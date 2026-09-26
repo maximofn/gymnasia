@@ -74,3 +74,6 @@ credentials.json
 
 # Reverse-engineering artifacts (GYM-6) - do not commit
 apk-vivagym/
+
+# Local video production assets
+youtube_assets/
