@@ -772,7 +772,7 @@
           "title": "5. Cerrar el bucle: reinyectar resultados y acotar rondas",
           "state": "done",
           "baseline": "done",
-          "summary": "Bucle de 10 rondas en App.tsx:4688-4705. Al agotarlas termina en seco, sin mensaje ni traza.",
+          "summary": "Bucle de tools con tope de 10 rondas. Al agotarlas, las tool calls pendientes se responden sin ejecutarlas y una llamada de cierre sin tools contesta con lo ya obtenido.",
           "dependsOn": [
             "GYM-34"
           ],
@@ -1057,7 +1057,7 @@
           "id": "GYM-68",
           "title": "Streaming: documentar el transporte SSE y el agrupado de deltas",
           "state": "in_progress",
-          "summary": "SSE sobre XHR en los tres proveedores, con deltas separados de contenido y thinking y agrupado a 40 ms. No hay cancelación por parte del usuario.",
+          "summary": "SSE sobre fetch o XHR según plataforma, deltas separados de respuesta y razonamiento y agrupado a 40 ms, con tests y post publicado. No hay cancelación por parte del usuario.",
           "baseline": "done",
           "dependsOn": [
             "GYM-34"
