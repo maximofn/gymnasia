@@ -2,7 +2,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { buildGoogleInteractionRequest } from "./googleContextBudget";
 import type { ProviderConfiguration } from "./providerConfiguration";
-import { MAX_TOOL_ROUNDS, ROUND_LIMIT_TOOL_RESULT, ROUND_LIMIT_USER_MESSAGE } from "./providerToolLoop";
+import {
+  MAX_TOOL_ROUNDS,
+  ROUND_LIMIT_CLOSING_INSTRUCTION,
+  ROUND_LIMIT_TOOL_RESULT,
+  ROUND_LIMIT_USER_MESSAGE,
+} from "./providerToolLoop";
 
 // Proveedores falsos que piden una tool en cada turno salvo cuando se les prohíben.
 // Cada cuerpo enviado se guarda para comprobar el contrato de la llamada de cierre.
@@ -139,6 +144,10 @@ describe("cliente del chat al agotar las rondas de tools", () => {
       output: ROUND_LIMIT_TOOL_RESULT,
     }]);
     expect(sent.slice(0, -1).every((body) => body.tool_choice === undefined)).toBe(true);
+    // La instrucción de cierre va en las instrucciones de sistema, y solo en esa llamada.
+    expect(closing.instructions).toContain(ROUND_LIMIT_CLOSING_INSTRUCTION);
+    expect(sent.slice(0, -1).some((body) => String(body.instructions).includes(ROUND_LIMIT_CLOSING_INSTRUCTION)))
+      .toBe(false);
   });
 
   it("Anthropic cierra con tool_choice {type: none} sin quitar la lista de tools", async () => {
@@ -150,6 +159,9 @@ describe("cliente del chat al agotar las rondas de tools", () => {
     expect(closing.tool_choice).toEqual({ type: "none" });
     // El historial contiene tool_use: sin la lista de tools, Anthropic rechazaría la petición.
     expect(closing.tools).toBeDefined();
+    expect(closing.system).toContain(ROUND_LIMIT_CLOSING_INSTRUCTION);
+    expect(sent.slice(0, -1).some((body) => String(body.system).includes(ROUND_LIMIT_CLOSING_INSTRUCTION)))
+      .toBe(false);
     const messages = closing.messages as Array<{ role: string; content: unknown }>;
     expect(messages.at(-1)).toEqual({ role: "user", content: [{
       type: "tool_result", tool_use_id: `toolu_${MAX_TOOL_ROUNDS + 1}`, content: ROUND_LIMIT_TOOL_RESULT,
@@ -163,6 +175,9 @@ describe("cliente del chat al agotar las rondas de tools", () => {
     expect(executeTool).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
     expect(sent.at(-1)!.toolChoice).toBe("none");
     expect(sent.slice(0, -1).every((options) => options.toolChoice === undefined)).toBe(true);
+    expect(sent.at(-1)!.systemInstruction).toContain(ROUND_LIMIT_CLOSING_INSTRUCTION);
+    expect(sent.slice(0, -1).some((options) =>
+      String(options.systemInstruction).includes(ROUND_LIMIT_CLOSING_INSTRUCTION))).toBe(false);
     const steps = result.googleTurn!.steps;
     expect(steps.at(-2)).toMatchObject({ type: "function_result",
       result: [{ type: "text", text: ROUND_LIMIT_TOOL_RESULT }] });
@@ -177,6 +192,10 @@ describe("cliente del chat al agotar las rondas de tools", () => {
     expect(sent).toHaveLength(MAX_TOOL_ROUNDS + 2);
     const closing = sent.at(-1)! as { messages: Array<Record<string, unknown>>; tool_choice?: string };
     expect(closing.tool_choice).toBe("none");
+    expect(closing.messages[0]).toMatchObject({ role: "system" });
+    expect(String(closing.messages[0].content)).toContain(ROUND_LIMIT_CLOSING_INSTRUCTION);
+    expect(sent.slice(0, -1).some((body) => JSON.stringify(body).includes(ROUND_LIMIT_CLOSING_INSTRUCTION)))
+      .toBe(false);
     expect(closing.messages.at(-1)).toEqual({
       role: "tool", content: ROUND_LIMIT_TOOL_RESULT, tool_call_id: `call_${MAX_TOOL_ROUNDS + 1}`,
     });

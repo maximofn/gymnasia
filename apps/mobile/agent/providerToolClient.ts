@@ -23,6 +23,7 @@ import {
 } from "./providerStreamTransport";
 import type { StreamingHandlers } from "./providerStreamParsers";
 import {
+  closingSystemPrompt,
   MAX_TOOL_ROUNDS,
   ROUND_LIMIT_TOOL_RESULT,
   runAnthropicToolLoop,
@@ -114,7 +115,7 @@ export async function requestProviderToolChat(
     ) => {
       const body: Record<string, unknown> = {
         model,
-        instructions: systemPrompt,
+        instructions: toolChoice ? closingSystemPrompt(systemPrompt) : systemPrompt,
         input,
       };
       if (reasoning) body.reasoning = reasoning;
@@ -180,7 +181,10 @@ export async function requestProviderToolChat(
       let turn;
       let streamedThisTurn = "";
       try {
-        turn = await requestCustomOpenAIChat(provider, history, {
+        const messagesForRound = closing
+          ? [{ role: "system" as const, content: closingSystemPrompt(systemPrompt) }, ...history.slice(1)]
+          : history;
+        turn = await requestCustomOpenAIChat(provider, messagesForRound, {
           platform: runtime.platform,
           tools,
           ...(closing ? { toolChoice: "none" as const } : {}),
@@ -267,7 +271,7 @@ export async function requestProviderToolChat(
           provider.model || DEFAULT_MODELS.anthropic,
           ANTHROPIC_THINKING_BUDGET,
         ),
-        system: systemPrompt,
+        system: toolChoice ? closingSystemPrompt(systemPrompt) : systemPrompt,
         messages: currentMessages,
       };
       // Con tool_use en el historial, Anthropic exige la lista de tools aunque se prohíba usarlas.
@@ -337,7 +341,7 @@ export async function requestProviderToolChat(
     provider,
     {
       history,
-      systemInstruction: systemPrompt,
+      systemInstruction: toolChoice ? closingSystemPrompt(systemPrompt) : systemPrompt,
       tools: CHAT_TOOLS.google,
       thinking: true,
       ...(toolChoice ? { toolChoice } : {}),

@@ -8,12 +8,27 @@ import {
 export const MAX_TOOL_ROUNDS = 10;
 
 // Resultado que recibe el modelo por cada tool que pidió cuando ya no quedaban
-// rondas. No se ejecuta nada: el texto le dice la verdad para que no afirme haber
-// hecho algo que no hizo y le pide que conteste con lo que ya sabe.
+// rondas. No se ejecuta nada y el texto solo informa del hecho, para que el modelo
+// no afirme haber hecho algo que no hizo.
 export const ROUND_LIMIT_TOOL_RESULT =
-  "No ejecutada: se alcanzó el límite de rondas de tools de este turno. "
-  + "No pidas más tools. Responde ahora al usuario con la información que ya tienes "
-  + "y dile qué ha quedado sin hacer.";
+  "No ejecutada: se alcanzó el límite de pasos que el asistente puede dar en una sola respuesta.";
+
+// Qué debe hacer el modelo en la llamada de cierre. Va en las instrucciones de
+// sistema de esa llamada, no en el resultado de la tool: probado contra OpenAI,
+// un resultado de tool se trata como dato y la instrucción se ignoraba. El tope
+// cuenta por mensaje, así que si el usuario dice que sí hay rondas nuevas.
+export const ROUND_LIMIT_CLOSING_INSTRUCTION =
+  "Has llegado al límite de pasos de esta respuesta: las tools siguen disponibles, "
+  + "pero no ahora. Responde al usuario con la información que ya tienes, explícale "
+  + "que has llegado a ese límite y qué ha quedado sin hacer, y termina preguntándole "
+  + "si quiere que continúes.";
+
+/** Instrucciones de sistema de la llamada de cierre. */
+export function closingSystemPrompt(systemPrompt: string): string {
+  return systemPrompt
+    ? `${systemPrompt}\n\n${ROUND_LIMIT_CLOSING_INSTRUCTION}`
+    : ROUND_LIMIT_CLOSING_INSTRUCTION;
+}
 
 export const ROUND_LIMIT_USER_MESSAGE =
   "Esta consulta necesitaba más pasos de los que el asistente puede dar en una sola "
