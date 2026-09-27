@@ -5,7 +5,7 @@ import {
   type ToolCallEnvelope,
 } from "./toolOperationLedger";
 
-export const MAX_TOOL_ROUNDS = 1;
+export const MAX_TOOL_ROUNDS = 10;
 
 // Resultado que recibe el modelo por cada tool que pidió cuando ya no quedaban
 // rondas. No se ejecuta nada: el texto le dice la verdad para que no afirme haber
