@@ -71,6 +71,7 @@ export function requestGoogleProviderInteraction(
     systemInstruction?: string;
     tools?: Array<Record<string, unknown>>;
     thinking?: boolean;
+    toolChoice?: "none";
     responseSchema?: Record<string, unknown>;
   },
   runtime: Pick<
