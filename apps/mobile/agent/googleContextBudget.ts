@@ -7,6 +7,8 @@ export type GoogleInteractionRequestInput = {
   systemInstruction?: string;
   tools?: Array<Record<string, unknown>>;
   thinking?: boolean;
+  /** "none" prohíbe las tools en este turno; va en generation_config, no en la raíz. */
+  toolChoice?: "none";
   responseSchema?: Record<string, unknown>;
 };
 
@@ -171,7 +173,10 @@ export function buildGoogleInteractionRequest(
     store: false,
     ...(input.systemInstruction ? { system_instruction: input.systemInstruction } : {}),
     ...(input.tools?.length ? { tools: input.tools } : {}),
-    ...(input.thinking ? { generation_config: { thinking_level: "high", thinking_summaries: "auto" } } : {}),
+    ...(input.thinking || input.toolChoice ? { generation_config: {
+      ...(input.thinking ? { thinking_level: "high", thinking_summaries: "auto" } : {}),
+      ...(input.toolChoice ? { tool_choice: input.toolChoice } : {}),
+    } } : {}),
     ...(input.responseSchema ? { response_format: {
       type: "text", mime_type: "application/json", schema: input.responseSchema,
     } } : {}),

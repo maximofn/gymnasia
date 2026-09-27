@@ -199,6 +199,7 @@ export async function requestCustomOpenAIChat(
   options: {
     platform: string;
     tools?: ChatCompletionTool[];
+    toolChoice?: "none";
     stream?: boolean;
     onContentDelta?: (delta: string) => void;
     fetchImpl?: typeof fetch;
@@ -211,7 +212,12 @@ export async function requestCustomOpenAIChat(
   const fetchImpl = options.fetchImpl ?? (options.platform === "web"
     ? fetch
     : (await import("expo/fetch")).fetch as typeof fetch);
-  const body = { model, messages, ...(options.tools?.length ? { tools: options.tools } : {}) };
+  const body = {
+    model,
+    messages,
+    ...(options.tools?.length ? { tools: options.tools } : {}),
+    ...(options.tools?.length && options.toolChoice ? { tool_choice: options.toolChoice } : {}),
+  };
   const call = async (stream: boolean): Promise<ChatCompletionResult> => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 120_000);

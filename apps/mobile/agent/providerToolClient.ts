@@ -23,9 +23,12 @@ import {
 } from "./providerStreamTransport";
 import type { StreamingHandlers } from "./providerStreamParsers";
 import {
+  MAX_TOOL_ROUNDS,
+  ROUND_LIMIT_TOOL_RESULT,
   runAnthropicToolLoop,
   runGoogleToolLoop,
   runOpenAIToolLoop,
+  ToolRoundLimitError,
 } from "./providerToolLoop";
 import type { ToolCallEnvelope } from "./toolOperationLedger";
 import { CHAT_TOOLS } from "./toolDefinitions";
@@ -107,6 +110,7 @@ export async function requestProviderToolChat(
       input: Array<Record<string, unknown>>,
       previousResponseId: string | null,
       includeTools: boolean,
+      toolChoice?: "none",
     ) => {
       const body: Record<string, unknown> = {
         model,
@@ -116,6 +120,7 @@ export async function requestProviderToolChat(
       if (reasoning) body.reasoning = reasoning;
       if (previousResponseId) body.previous_response_id = previousResponseId;
       if (includeTools) body.tools = CHAT_TOOLS.openai;
+      if (includeTools && toolChoice) body.tool_choice = toolChoice;
       const headers = {
         "Content-Type": "application/json",
         Accept: "text/event-stream",
@@ -145,13 +150,19 @@ export async function requestProviderToolChat(
       requestNextTurn: (outputs, previousResponseId) => (
         makeRequest(outputs, previousResponseId, true)
       ),
+      requestClosingTurn: (outputs, previousResponseId) => (
+        makeRequest(outputs, previousResponseId, true, "none")
+      ),
       executeTool: options.executeTool,
       executionId: options.executionId,
     });
 
     const content = streamedContent.trim() || payload.content;
     const thinking = streamedThinking.trim() || payload.thinking || null;
-    if (!content) throw new Error("OpenAI no devolvio contenido.");
+    if (!content) {
+      if (payload.roundLimitReached) throw new ToolRoundLimitError();
+      throw new Error("OpenAI no devolvio contenido.");
+    }
     return { content, thinking };
   }
 
@@ -163,13 +174,16 @@ export async function requestProviderToolChat(
     const tools = chatCompletionTools(CHAT_TOOLS.openai);
     const occurrences = new Map<string, number>();
     let fullContent = "";
-    for (let round = 0; round <= 10; round += 1) {
+    for (let round = 0; round <= MAX_TOOL_ROUNDS + 1; round += 1) {
+      // Tras MAX_TOOL_ROUNDS rondas de tools queda una llamada de cierre con las tools prohibidas.
+      const closing = round > MAX_TOOL_ROUNDS;
       let turn;
       let streamedThisTurn = "";
       try {
         turn = await requestCustomOpenAIChat(provider, history, {
           platform: runtime.platform,
           tools,
+          ...(closing ? { toolChoice: "none" as const } : {}),
           onContentDelta: (delta) => {
             streamedThisTurn += delta;
             fullContent += delta;
@@ -177,6 +191,7 @@ export async function requestProviderToolChat(
           },
         });
       } catch (error) {
+        if (closing) throw new ToolRoundLimitError({ cause: error });
         if (isUnsupportedCustomFeature(error, "tools")) {
           throw new Error("Este modelo no admite las herramientas que necesita Gymnasia Coach. Elige otro modelo.");
         }
@@ -186,12 +201,22 @@ export async function requestProviderToolChat(
         fullContent += turn.content;
         options.onContentDelta?.(turn.content, fullContent);
       }
+      if (closing && turn.toolCalls.length > 0) throw new ToolRoundLimitError();
       if (turn.toolCalls.length === 0) {
-        if (!fullContent.trim()) throw new Error("El modelo no devolvió contenido.");
+        if (!fullContent.trim()) {
+          if (closing) throw new ToolRoundLimitError();
+          throw new Error("El modelo no devolvió contenido.");
+        }
         return { content: fullContent.trim(), thinking: null };
       }
-      if (round === 10) throw new Error("El modelo superó el límite de rondas de herramientas.");
       history.push({ role: "assistant", content: turn.content || null, tool_calls: turn.toolCalls });
+      if (round === MAX_TOOL_ROUNDS) {
+        // Sin rondas: las tools pendientes no se ejecutan y el modelo lo sabe.
+        for (const call of turn.toolCalls) {
+          history.push({ role: "tool", content: ROUND_LIMIT_TOOL_RESULT, tool_call_id: call.id });
+        }
+        continue;
+      }
       for (const call of turn.toolCalls) {
         let args: unknown;
         try { args = JSON.parse(call.function.arguments); }
@@ -230,7 +255,11 @@ export async function requestProviderToolChat(
       },
     };
 
-    const makeRequest = async (currentMessages: unknown[], includeTools: boolean) => {
+    const makeRequest = async (
+      currentMessages: unknown[],
+      includeTools: boolean,
+      toolChoice?: "none",
+    ) => {
       const body: Record<string, unknown> = {
         model: provider.model || DEFAULT_MODELS.anthropic,
         max_tokens: 2048 + ANTHROPIC_THINKING_BUDGET,
@@ -241,7 +270,9 @@ export async function requestProviderToolChat(
         system: systemPrompt,
         messages: currentMessages,
       };
+      // Con tool_use en el historial, Anthropic exige la lista de tools aunque se prohíba usarlas.
       if (includeTools) body.tools = CHAT_TOOLS.anthropic;
+      if (includeTools && toolChoice) body.tool_choice = { type: toolChoice };
       if (runtime.anthropicWebProxyUrl) {
         return streamAnthropicRequestViaXHR(
           runtime.anthropicWebProxyUrl,
@@ -275,13 +306,17 @@ export async function requestProviderToolChat(
       initialTurn: await makeRequest([...nonSystemMessages], true),
       initialMessages: nonSystemMessages,
       requestNextTurn: (currentMessages) => makeRequest(currentMessages, true),
+      requestClosingTurn: (currentMessages) => makeRequest(currentMessages, true, "none"),
       executeTool: options.executeTool,
       executionId: options.executionId,
     });
 
     const content = streamedContent.trim() || payload.content;
     const thinking = streamedThinking.trim() || payload.thinking || null;
-    if (!content) throw new Error("Anthropic no devolvio contenido.");
+    if (!content) {
+      if (payload.roundLimitReached) throw new ToolRoundLimitError();
+      throw new Error("Anthropic no devolvio contenido.");
+    }
     return { content, thinking };
   }
 
@@ -298,13 +333,14 @@ export async function requestProviderToolChat(
       options.onThinkingDelta?.(delta, streamedThinking);
     },
   };
-  const makeRequest = (history: GoogleStep[]) => requestGoogleProviderInteraction(
+  const makeRequest = (history: GoogleStep[], toolChoice?: "none") => requestGoogleProviderInteraction(
     provider,
     {
       history,
       systemInstruction: systemPrompt,
       tools: CHAT_TOOLS.google,
       thinking: true,
+      ...(toolChoice ? { toolChoice } : {}),
     },
     runtime,
     streamHandlers,
@@ -312,12 +348,16 @@ export async function requestProviderToolChat(
   const payload = await runGoogleToolLoop({
     initialTurn: await makeRequest(googleMessages),
     initialMessages: googleMessages,
-    requestNextTurn: makeRequest,
+    requestNextTurn: (history) => makeRequest(history),
+    requestClosingTurn: (history) => makeRequest(history, "none"),
     executeTool: options.executeTool,
     executionId: options.executionId,
   });
   const content = streamedContent.trim() || payload.content;
-  if (!content) throw new Error("Google AI no devolvió contenido.");
+  if (!content) {
+    if (payload.roundLimitReached) throw new ToolRoundLimitError();
+    throw new Error("Google AI no devolvió contenido.");
+  }
   const googleTurn: GoogleConversationTurn = {
     version: 1,
     model: normalizeProviderModel("google", provider.model),
