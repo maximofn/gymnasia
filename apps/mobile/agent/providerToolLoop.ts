@@ -7,14 +7,48 @@ import {
 
 export const MAX_TOOL_ROUNDS = 10;
 
+// Resultado que recibe el modelo por cada tool que pidió cuando ya no quedaban
+// rondas. No se ejecuta nada: el texto le dice la verdad para que no afirme haber
+// hecho algo que no hizo y le pide que conteste con lo que ya sabe.
+export const ROUND_LIMIT_TOOL_RESULT =
+  "No ejecutada: se alcanzó el límite de rondas de tools de este turno. "
+  + "No pidas más tools. Responde ahora al usuario con la información que ya tienes "
+  + "y dile qué ha quedado sin hacer.";
+
+export const ROUND_LIMIT_USER_MESSAGE =
+  "Esta consulta necesitaba más pasos de los que el asistente puede dar en una sola "
+  + "respuesta. Prueba a dividirla en preguntas más pequeñas.";
+
+/** El bucle agotó sus rondas y la llamada de cierre no produjo una respuesta. */
+export class ToolRoundLimitError extends Error {
+  constructor(options?: { cause?: unknown }) {
+    super(ROUND_LIMIT_USER_MESSAGE);
+    this.name = "ToolRoundLimitError";
+    if (options && "cause" in options) (this as { cause?: unknown }).cause = options.cause;
+  }
+}
+
+/** Marca que acompaña al turno final cuando se llegó a él por agotar las rondas. */
+export type RoundLimitMarker = { roundLimitReached?: boolean };
+
+async function requestClosing<T>(request: () => Promise<T>): Promise<T> {
+  try {
+    return await request();
+  } catch (error) {
+    throw new ToolRoundLimitError({ cause: error });
+  }
+}
+
 export async function runGoogleToolLoop(input: {
   initialTurn: GoogleInteractionTurn;
   initialMessages: GoogleStep[];
   requestNextTurn: (messages: GoogleStep[]) => Promise<GoogleInteractionTurn>;
+  /** Pide un turno con las tools prohibidas. Sin él, agotar las rondas es un error. */
+  requestClosingTurn?: (messages: GoogleStep[]) => Promise<GoogleInteractionTurn>;
   executeTool: ExecuteTool;
   executionId?: string;
   maxRounds?: number;
-}): Promise<GoogleInteractionTurn & {
+}): Promise<GoogleInteractionTurn & RoundLimitMarker & {
   history: GoogleStep[];
   interactions: Array<{ id: string; usage: Record<string, unknown> }>;
 }> {
@@ -49,7 +83,23 @@ export async function runGoogleToolLoop(input: {
     }
     if (turn.status === "completed") return { ...turn, history, interactions };
     if (round >= (input.maxRounds ?? MAX_TOOL_ROUNDS)) {
-      throw new Error("Google Interactions: la respuesta sigue pendiente de herramientas al alcanzar el límite de rondas.");
+      if (!input.requestClosingTurn) throw new ToolRoundLimitError();
+      const answered = new Set(messages.flatMap((step) =>
+        step.type === "function_result" ? [step.call_id] : []));
+      for (const call of turn.steps) {
+        if (call.type !== "function_call" || answered.has(call.id)) continue;
+        const output: GoogleStep = { type: "function_result", name: call.name, call_id: call.id,
+          result: [{ type: "text", text: ROUND_LIMIT_TOOL_RESULT }] };
+        history.push(output);
+        messages.push(output);
+      }
+      const requestClosingTurn = input.requestClosingTurn;
+      const closing = await requestClosing(() =>
+        requestClosingTurn(JSON.parse(JSON.stringify(messages)) as GoogleStep[]));
+      if (closing.status !== "completed") throw new ToolRoundLimitError();
+      interactions.push({ id: closing.interactionId, usage: closing.usage });
+      history.push(...closing.steps);
+      return { ...closing, history, interactions, roundLimitReached: true };
     }
     // Replaying an entire round reuses its results, without new occurrences/effects.
     if (previous === undefined) {
@@ -121,10 +171,15 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
     outputs: Array<Record<string, unknown>>,
     previousResponseId: string,
   ) => Promise<TTurn>;
+  /** Pide un turno con las tools prohibidas. Sin él, agotar las rondas es un error. */
+  requestClosingTurn?: (
+    outputs: Array<Record<string, unknown>>,
+    previousResponseId: string,
+  ) => Promise<TTurn>;
   executeTool: ExecuteTool;
   executionId?: string;
   maxRounds?: number;
-}): Promise<TTurn> {
+}): Promise<TTurn & RoundLimitMarker> {
   let turn = input.initialTurn;
   const occurrences = new Map<string, number>();
   const maxRounds = input.maxRounds ?? MAX_TOOL_ROUNDS;
@@ -162,7 +217,26 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
     }
     turn = await input.requestNextTurn(outputs, turn.responseId);
   }
-  return turn;
+  const pending = turn.outputItems.filter(
+    (item): item is OpenAIFunctionCall => item.type === "function_call",
+  );
+  if (pending.length === 0) return turn;
+  if (turn.truncated) {
+    throw new Error("La respuesta de OpenAI se cortó antes de completarse. Vuelve a intentarlo.");
+  }
+  if (!input.requestClosingTurn || !turn.responseId) throw new ToolRoundLimitError();
+  const requestClosingTurn = input.requestClosingTurn;
+  const previousResponseId = turn.responseId;
+  const outputs = pending.map((toolCall) => ({
+    type: "function_call_output",
+    call_id: toolCall.call_id,
+    output: ROUND_LIMIT_TOOL_RESULT,
+  }));
+  const closing = await requestClosing(() => requestClosingTurn(outputs, previousResponseId));
+  if (closing.truncated || closing.outputItems.some((item) => item.type === "function_call")) {
+    throw new ToolRoundLimitError();
+  }
+  return { ...closing, roundLimitReached: true };
 }
 
 export type AnthropicTextBlock = { type: "text"; text: string };
@@ -192,10 +266,12 @@ export async function runAnthropicToolLoop<TTurn extends AnthropicToolTurn>(inpu
   initialTurn: TTurn;
   initialMessages: Array<Record<string, unknown>>;
   requestNextTurn: (messages: Array<Record<string, unknown>>) => Promise<TTurn>;
+  /** Pide un turno con las tools prohibidas. Sin él, agotar las rondas es un error. */
+  requestClosingTurn?: (messages: Array<Record<string, unknown>>) => Promise<TTurn>;
   executeTool: ExecuteTool;
   executionId?: string;
   maxRounds?: number;
-}): Promise<TTurn> {
+}): Promise<TTurn & RoundLimitMarker> {
   let turn = input.initialTurn;
   let messages = [...input.initialMessages];
   const occurrences = new Map<string, number>();
@@ -232,5 +308,30 @@ export async function runAnthropicToolLoop<TTurn extends AnthropicToolTurn>(inpu
     ];
     turn = await input.requestNextTurn(messages);
   }
-  return turn;
+  const pending = turn.contentBlocks.filter(
+    (block): block is AnthropicToolUseBlock => block.type === "tool_use",
+  );
+  if (pending.length === 0) return turn;
+  if (turn.truncated) {
+    throw new Error("La respuesta de Anthropic se cortó antes de completarse. Vuelve a intentarlo.");
+  }
+  if (!input.requestClosingTurn) throw new ToolRoundLimitError();
+  const requestClosingTurn = input.requestClosingTurn;
+  const closingMessages = [
+    ...messages,
+    { role: "assistant", content: turn.contentBlocks },
+    {
+      role: "user",
+      content: pending.map((toolCall) => ({
+        type: "tool_result",
+        tool_use_id: toolCall.id,
+        content: ROUND_LIMIT_TOOL_RESULT,
+      })),
+    },
+  ];
+  const closing = await requestClosing(() => requestClosingTurn(closingMessages));
+  if (closing.truncated || closing.contentBlocks.some((block) => block.type === "tool_use")) {
+    throw new ToolRoundLimitError();
+  }
+  return { ...closing, roundLimitReached: true };
 }

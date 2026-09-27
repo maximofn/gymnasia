@@ -3,9 +3,6 @@ type: guía de inicio
 title: Inicio rápido y mapa de cambios
 description: Orientación para iniciar Gymnasia, localizar el contrato responsable de cada cambio y elegir una validación proporcional. Distingue el producto Expo local-first de las integraciones opcionales y del tablero estático.
 tags: [quickstart, architecture, mobile, agent, operations, local-first]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T12:53:55.207Z
 sources:
   - id: openwiki-source-bb129131b6b18c7d2257c58a
     resource: repo://.github/workflows/board-deploy.yml
