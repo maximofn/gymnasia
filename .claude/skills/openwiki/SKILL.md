@@ -18,7 +18,11 @@ Mantén una única interpretación de la instalación y evita convertir contenid
 
 ### Consultar o revisar la wiki
 
-Empieza por `openwiki/quickstart.md` y abre solo las páginas relacionadas. Una petición de revisión no autoriza regenerar documentación, lanzar workflows ni fusionar PR.
+Usa `openwiki_search` y `openwiki_read` para recuperar solo las secciones
+relacionadas cuando esas herramientas estén disponibles. Si no lo están,
+empieza por `openwiki/quickstart.md` y abre únicamente las páginas relacionadas.
+Una petición de revisión no autoriza regenerar documentación, lanzar workflows
+ni fusionar PR.
 
 ### Actualizar Code Brain
 

@@ -347,10 +347,11 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   arquitectura, los componentes, los flujos, las integraciones, las operaciones,
   las pruebas y los riesgos conocidos. Su punto de entrada es
   `openwiki/quickstart.md`.
-- Para comprender una parte del sistema o localizar el código responsable,
-  consulta primero `openwiki/quickstart.md` y la página temática correspondiente.
-  Usa la wiki como mapa de navegación y verifica después las conclusiones en el
-  código y las pruebas, que son la fuente de verdad.
+- Para preguntas concretas sobre arquitectura o comportamiento, usa la búsqueda
+  y lectura selectiva descritas en el bloque administrado de OpenWiki. Si esas
+  herramientas no están disponibles, usa `openwiki/quickstart.md` como mapa de
+  navegación. Verifica después las conclusiones en el código y las pruebas, que
+  son la fuente de verdad.
 - Para cualquier tarea de operación o mantenimiento de OpenWiki, carga
   `.claude/skills/openwiki/SKILL.md`. Sus reglas de seguridad, compatibilidad y
   automatización viven solo en esa skill; no las dupliques aquí.
@@ -742,6 +743,10 @@ version bump directly to `main`.
 
 This repository has a generated `openwiki/` evidence index. It is optional just-in-time context, not required startup reading.
 
+- Do not enumerate, preload, or search wikis at task start. Use retrieval when the user asks for it, when unfamiliar architecture or dependency behavior materially affects the task, or when source inspection leaves an important uncertainty. Stop once the question is grounded.
+- When those conditions apply and OpenWiki retrieval tools are available, use `openwiki_search` for just-in-time context and `openwiki_read` for the relevant complete sections. If search returns `workspace_required`, ask which listed workspace to use and retry with its ID.
+- Use `openwiki_list_workspaces` or `openwiki_list_wikis` when workspace membership itself needs to be discovered.
+- If the retrieval tools are unavailable, read `openwiki/quickstart.md` and follow its links to the relevant pages.
 - Treat source code and tests as authoritative. A brief's unknowns and review items are verification gaps, not automatic requirements.
 - Prefer the narrowest quiet validation that proves the changed behavior. Preserve complete failure output.
 
