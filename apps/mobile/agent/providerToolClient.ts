@@ -23,9 +23,11 @@ import {
 } from "./providerStreamTransport";
 import type { StreamingHandlers } from "./providerStreamParsers";
 import {
+  MAX_TOOL_ROUNDS,
   runAnthropicToolLoop,
   runGoogleToolLoop,
   runOpenAIToolLoop,
+  ToolRoundLimitError,
 } from "./providerToolLoop";
 import type { ToolCallEnvelope } from "./toolOperationLedger";
 import { CHAT_TOOLS } from "./toolDefinitions";
@@ -163,7 +165,7 @@ export async function requestProviderToolChat(
     const tools = chatCompletionTools(CHAT_TOOLS.openai);
     const occurrences = new Map<string, number>();
     let fullContent = "";
-    for (let round = 0; round <= 10; round += 1) {
+    for (let round = 0; round <= MAX_TOOL_ROUNDS; round += 1) {
       let turn;
       let streamedThisTurn = "";
       try {
@@ -190,7 +192,7 @@ export async function requestProviderToolChat(
         if (!fullContent.trim()) throw new Error("El modelo no devolvió contenido.");
         return { content: fullContent.trim(), thinking: null };
       }
-      if (round === 10) throw new Error("El modelo superó el límite de rondas de herramientas.");
+      if (round === MAX_TOOL_ROUNDS) throw new ToolRoundLimitError("El modelo", MAX_TOOL_ROUNDS);
       history.push({ role: "assistant", content: turn.content || null, tool_calls: turn.toolCalls });
       for (const call of turn.toolCalls) {
         let args: unknown;

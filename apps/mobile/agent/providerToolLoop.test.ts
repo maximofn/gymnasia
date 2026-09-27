@@ -8,6 +8,7 @@ import {
   runAnthropicToolLoop,
   runGoogleToolLoop,
   runOpenAIToolLoop,
+  ToolRoundLimitError,
 } from "./providerToolLoop";
 import { parseSSEJsonFixture } from "./sse";
 
@@ -326,26 +327,27 @@ describe("rondas del bucle con proveedor falso", () => {
       expect(MAX_TOOL_ROUNDS).toBe(10);
     });
 
-    // Comportamiento actual, no deseado: Anthropic y OpenAI salen del bucle sin avisar
-    // y devuelven un turno que aún pide tools. El llamador lo ve como «no devolvió contenido».
-    it("Anthropic ejecuta 10 rondas y devuelve, sin error, el turno que sigue pidiendo tools", async () => {
+    // Agotar las rondas es un error, no una respuesta: el último turno aún pide tools
+    // y devolverlo haría pasar por final el texto que se hubiera emitido por el camino.
+    it("Anthropic ejecuta 10 rondas y falla de forma explícita", async () => {
       let round = 0;
       const requestNextTurn = vi.fn(async () => anthropicToolTurn(`toolu_${++round}`));
       const executeTool = numberedExecuteTool();
 
-      const result = await runAnthropicToolLoop({
+      const loop = runAnthropicToolLoop({
         initialTurn: anthropicToolTurn("toolu_0"),
         initialMessages: [{ role: "user", content: "Bucle" }],
         requestNextTurn,
         executeTool,
       });
 
+      await expect(loop).rejects.toBeInstanceOf(ToolRoundLimitError);
+      await expect(loop).rejects.toThrow("Anthropic: la respuesta sigue pendiente de herramientas al alcanzar el límite de 10 rondas.");
       expect(executeTool).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
       expect(requestNextTurn).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
-      expect(result.contentBlocks).toEqual(anthropicToolTurn("toolu_10").contentBlocks);
     });
 
-    it("OpenAI ejecuta 10 rondas y devuelve, sin error, el turno que sigue pidiendo tools", async () => {
+    it("OpenAI ejecuta 10 rondas y falla de forma explícita", async () => {
       let round = 0;
       const requestNextTurn = vi.fn(async () => {
         round += 1;
@@ -353,15 +355,16 @@ describe("rondas del bucle con proveedor falso", () => {
       });
       const executeTool = numberedExecuteTool();
 
-      const result = await runOpenAIToolLoop({
+      const loop = runOpenAIToolLoop({
         initialTurn: openAIToolTurn("resp_0", "call_0"),
         requestNextTurn,
         executeTool,
       });
 
+      await expect(loop).rejects.toBeInstanceOf(ToolRoundLimitError);
+      await expect(loop).rejects.toThrow("OpenAI: la respuesta sigue pendiente de herramientas al alcanzar el límite de 10 rondas.");
       expect(executeTool).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
       expect(requestNextTurn).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
-      expect(result.outputItems[0]).toMatchObject({ type: "function_call", call_id: "call_10" });
     });
 
     it("Google ejecuta 10 rondas y falla de forma explícita", async () => {
@@ -377,7 +380,7 @@ describe("rondas del bucle con proveedor falso", () => {
         initialMessages: [{ type: "user_input", content: [{ type: "text", text: "Bucle" }] }],
         requestNextTurn,
         executeTool,
-      })).rejects.toThrow("al alcanzar el límite de rondas");
+      })).rejects.toThrow("Google Interactions: la respuesta sigue pendiente de herramientas al alcanzar el límite de 10 rondas.");
 
       expect(executeTool).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
       expect(requestNextTurn).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
@@ -386,17 +389,17 @@ describe("rondas del bucle con proveedor falso", () => {
     it("respeta un maxRounds menor en los tres proveedores", async () => {
       let anthropicRound = 0;
       const anthropicTool = numberedExecuteTool();
-      await runAnthropicToolLoop({
+      await expect(runAnthropicToolLoop({
         initialTurn: anthropicToolTurn("toolu_0"),
         initialMessages: [],
         requestNextTurn: async () => anthropicToolTurn(`toolu_${++anthropicRound}`),
         executeTool: anthropicTool,
         maxRounds: 2,
-      });
+      })).rejects.toThrow("al alcanzar el límite de 2 rondas");
 
       let openAIRound = 0;
       const openAITool = numberedExecuteTool();
-      await runOpenAIToolLoop({
+      await expect(runOpenAIToolLoop({
         initialTurn: openAIToolTurn("resp_0", "call_0"),
         requestNextTurn: async () => {
           openAIRound += 1;
@@ -404,7 +407,7 @@ describe("rondas del bucle con proveedor falso", () => {
         },
         executeTool: openAITool,
         maxRounds: 2,
-      });
+      })).rejects.toThrow("al alcanzar el límite de 2 rondas");
 
       let googleRound = 0;
       const googleTool = numberedExecuteTool();
@@ -417,13 +420,61 @@ describe("rondas del bucle con proveedor falso", () => {
         },
         executeTool: googleTool,
         maxRounds: 2,
-      })).rejects.toThrow("al alcanzar el límite de rondas");
+      })).rejects.toThrow("al alcanzar el límite de 2 rondas");
 
       expect([
         anthropicTool.mock.calls.length,
         openAITool.mock.calls.length,
         googleTool.mock.calls.length,
       ]).toEqual([2, 2, 2]);
+    });
+    it("una respuesta final justo en la ronda 10 se acepta en los tres proveedores", async () => {
+      // Frontera del tope: 10 rondas de tools y la undécima llamada ya contesta.
+      let anthropicRound = 0;
+      const anthropic = await runAnthropicToolLoop({
+        initialTurn: anthropicToolTurn("toolu_0"),
+        initialMessages: [],
+        requestNextTurn: async () => (++anthropicRound < MAX_TOOL_ROUNDS
+          ? anthropicToolTurn(`toolu_${anthropicRound}`)
+          : anthropicTextTurn("Hecho.")),
+        executeTool: numberedExecuteTool(),
+      });
+
+      let openAIRound = 0;
+      const openAI = await runOpenAIToolLoop({
+        initialTurn: openAIToolTurn("resp_0", "call_0"),
+        requestNextTurn: async () => (++openAIRound < MAX_TOOL_ROUNDS
+          ? openAIToolTurn(`resp_${openAIRound}`, `call_${openAIRound}`)
+          : openAITextTurn(`resp_${openAIRound}`, "Hecho.")),
+        executeTool: numberedExecuteTool(),
+      });
+
+      let googleRound = 0;
+      const google = await runGoogleToolLoop({
+        initialTurn: googleToolTurn("google_turn_0", "google_call_0"),
+        initialMessages: [],
+        requestNextTurn: async () => (++googleRound < MAX_TOOL_ROUNDS
+          ? googleToolTurn(`google_turn_${googleRound}`, `google_call_${googleRound}`)
+          : googleTextTurn(`google_turn_${googleRound}`, "Hecho.")),
+        executeTool: numberedExecuteTool(),
+      });
+
+      expect(anthropic.contentBlocks).toEqual([{ type: "text", text: "Hecho." }]);
+      expect(openAI.outputItems[0]).toMatchObject({ type: "message" });
+      expect(google.content).toBe("Hecho.");
+      expect([anthropicRound, openAIRound, googleRound]).toEqual([10, 10, 10]);
+    });
+
+    it("comprueba el truncado también en el turno que llega al tope", async () => {
+      // Antes el turno que agotaba las rondas salía del bucle sin revisar `truncated`.
+      let round = 0;
+      await expect(runAnthropicToolLoop({
+        initialTurn: anthropicToolTurn("toolu_0"),
+        initialMessages: [],
+        requestNextTurn: async () => ({ ...anthropicToolTurn(`toolu_${++round}`), truncated: round === 2 }),
+        executeTool: numberedExecuteTool(),
+        maxRounds: 2,
+      })).rejects.toThrow("se cortó antes de completarse");
     });
   });
 });
