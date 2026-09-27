@@ -77,14 +77,14 @@ test("preserves reviewed repository instructions when publishing docs", async ()
 
   assert.match(
     workflow,
-    /name: Materialize linked agent instructions for OpenWiki/u,
+    /name: Validate linked agent instructions for OpenWiki/u,
   );
   assert.match(
     workflow,
     /\[ ! -L AGENTS\.md \].*readlink AGENTS\.md.*CLAUDE\.md/su,
   );
-  assert.match(workflow, /unlink AGENTS\.md/u);
-  assert.match(workflow, /cp --preserve=mode CLAUDE\.md AGENTS\.md/u);
+  assert.doesNotMatch(workflow, /unlink AGENTS\.md/u);
+  assert.doesNotMatch(workflow, /cp --preserve=mode CLAUDE\.md AGENTS\.md/u);
   assert.match(
     workflow,
     /git restore --source=origin\/main -- AGENTS\.md CLAUDE\.md/u,
@@ -99,6 +99,12 @@ test("preserves reviewed repository instructions when publishing docs", async ()
     workflow,
     /git add -A -- openwiki \.openwikiignore AGENTS\.md CLAUDE\.md/u,
   );
+});
+
+test("uses bounded parallel OpenWiki page workers", async () => {
+  const workflow = await readFile(workflowUrl, "utf8");
+
+  assert.match(workflow, /OPENWIKI_PAGE_CONCURRENCY: "2"/u);
 });
 
 test("publishes durable page progress before propagating OpenWiki failures", async () => {
