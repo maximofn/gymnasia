@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-24",
+    "updated": "2026-09-27",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -759,7 +759,7 @@
         {
           "id": "GYM-38",
           "title": "4. Despachador: de nombre de tool a ejecutable",
-          "state": "in_progress",
+          "state": "done",
           "baseline": "done",
           "summary": "Probar el despacho de las 13 tools, rechazar nombres desconocidos y documentar el flujo; queda la QA nativa.",
           "dependsOn": [
@@ -770,7 +770,7 @@
         {
           "id": "GYM-39",
           "title": "5. Cerrar el bucle: reinyectar resultados y acotar rondas",
-          "state": "backlog",
+          "state": "done",
           "baseline": "done",
           "summary": "Bucle de 10 rondas en App.tsx:4688-4705. Al agotarlas termina en seco, sin mensaje ni traza.",
           "dependsOn": [
@@ -1056,7 +1056,7 @@
         {
           "id": "GYM-68",
           "title": "Streaming: documentar el transporte SSE y el agrupado de deltas",
-          "state": "backlog",
+          "state": "in_progress",
           "summary": "SSE sobre XHR en los tres proveedores, con deltas separados de contenido y thinking y agrupado a 40 ms. No hay cancelación por parte del usuario.",
           "baseline": "done",
           "dependsOn": [

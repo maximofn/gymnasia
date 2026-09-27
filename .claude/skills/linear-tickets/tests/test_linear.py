@@ -308,6 +308,16 @@ class ClosureValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(SystemExit, "regresión"):
             linear.validate_closure_test_plan(description)
 
+    def test_accepts_links_as_linear_stores_them(self):
+        # Linear guarda [#286](https://...) como [#286](<https://...>).
+        description = COMPLETE_PLAN.replace(
+            "- [x] E2E: recorre el flujo principal.",
+            "- [X] E2E: recorre el flujo principal. Fusionado en la "
+            "[#286](<https://github.com/maximofn/gymnasia/pull/286>).",
+        )
+
+        linear.validate_closure_test_plan(description)
+
     def test_evidence_must_include_check_and_result(self):
         self.assertEqual(
             linear.validate_closure_evidence([
