@@ -24,6 +24,10 @@ sources:
     resource: repo://apps/mobile/controllers/dietController.ts
   - id: openwiki-source-7a63325ebd6d3e0cfa0b1634
     resource: repo://apps/mobile/diet/catalogModel.ts
+  - id: openwiki-source-4c5cae27066d6fd43802bf46
+    resource: repo://apps/mobile/diet/dailyCaloriesCalculation.test.ts
+  - id: openwiki-source-22ae7a6aeeb87295a2a85546
+    resource: repo://apps/mobile/diet/dailyCaloriesCalculation.ts
   - id: openwiki-source-8bc8bac1938308df7241b2fd
     resource: repo://apps/mobile/diet/model.ts
   - id: openwiki-source-baabb5f135bf207cf1cd88cf
@@ -34,10 +38,10 @@ sources:
     resource: repo://apps/mobile/scripts/diet-validation.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
 verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
+  - by: openwiki/0.6.0
+    at: 2026-09-27T17:43:05.548Z
 ---
 
 # Dieta y estimación de alimentos
@@ -146,7 +150,7 @@ Al editar cantidad de un elemento existente, `mealPerGramRef` guarda temporalmen
 
 ## Objetivos nutricionales
 
-`DietSettings` conserva texto editable para objetivo, actividad, sexo, altura, fecha de nacimiento, calorías diarias y dos modos de macros:
+`DietSettings` conserva texto editable para objetivo, actividad, sexo, altura, fecha de nacimiento, calorías diarias y dos modos de macros. El cálculo de «Calcular» es local: `calculateDailyCalories` aplica Mifflin-St Jeor al peso, altura, edad derivada de la fecha de nacimiento y sexo, y después los multiplicadores de actividad y objetivo. Si faltan peso, altura o fecha, devuelve un mensaje para la pantalla en lugar de un número; sexo y actividad ausentes toman los valores moderado y masculino. El resultado solo rellena el campo editable: sigue sujeto a la validación y guardado del plan.
 
 - `manual_calories` asigna kcal por macro y deriva gramos con 4 kcal/g para proteínas y carbohidratos y 9 kcal/g para grasa.
 - `protein_by_weight` multiplica los gramos por kg configurados por el peso corporal actual cuando existe y es positivo.
@@ -188,7 +192,7 @@ Para añadir un nutriente, actualice conjuntamente el contrato nutricional, `Die
 
 `apps/mobile/diet/nutritionContract.test.ts` cubre categorías, conversión de formulario, validación de valores no negativos y finitos, salida estructurada, presupuestos de macros y una propiedad de 1.000 ejecuciones. `apps/mobile/catalogs/matching.test.ts` verifica normalización, estabilidad de ambiguos y alias. `apps/mobile/agent/toolExecutor.test.ts` cubre búsqueda con metadatos de disponibilidad, escritura por referencia, rechazo de ambigüedad, categorías inválidas y nutrientes inválidos.
 
-La prueba de navegador `apps/mobile/scripts/diet-validation.e2e.mjs` exporta la app web, siembra un almacenamiento de desarrollo y comprueba que un objetivo de cero no se persiste, que un exceso de macros se representa sin remanente negativo, que una caloría manual negativa no escribe y que una entrada válida a cero sí se guarda. Desde la raíz se ejecuta con:
+La prueba de navegador `apps/mobile/scripts/diet-validation.e2e.mjs` exporta la app web, siembra un almacenamiento de desarrollo y comprueba el ciclo del plan: el aviso de cálculo sin datos se descarta al navegar, un peso inválido no se guarda, peso y altura válidos completan la medición existente del día y sobreviven a una recarga. También verifica que un objetivo diario cero no se persiste, que un exceso de macros se representa sin remanente negativo, que una caloría manual negativa no escribe y que una entrada válida a cero sí se guarda. Desde la raíz se ejecuta con:
 
 ```bash
 npm run test:diet:e2e

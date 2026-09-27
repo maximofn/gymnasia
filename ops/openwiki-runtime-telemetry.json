@@ -3,8 +3,8 @@
   "project": "openwiki",
   "latestAttempt": {
     "status": "unavailable",
-    "at": null,
-    "failureCategory": "langsmith"
+    "at": "2026-09-27T18:08:09.020Z",
+    "failureCategory": "network"
   },
   "sample": null
 }
