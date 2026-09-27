@@ -28,7 +28,8 @@ que no puede generar cargos accidentales al agotar la cuota gratuita.
 
 - `openwiki-update.yml`, diariamente a las 08:00 UTC:
   - restaura exclusivamente el OAuth de OpenWiki desde un artefacto cifrado;
-  - actualiza el Code Brain de Gymnasia con la suscripción de ChatGPT;
+  - actualiza el Code Brain de Gymnasia con la suscripción de ChatGPT y hasta dos
+    trabajadores de página concurrentes;
   - consulta una ventana de 7 días del proyecto LangSmith `openwiki`, la reduce
     a conteos y percentiles permitidos y conserva el último agregado válido en
     un artefacto de 30 días;
@@ -127,24 +128,30 @@ activos. Todos los secretos y la variable de las tablas anteriores están
 configurados; `OPENWIKI_OAUTH_SEED` se eliminó después de verificar la
 restauración desde artefacto.
 
-Versión `0.5.0` verificada el 7 de septiembre de 2026:
+Versión `0.6.0` verificada el 27 de septiembre de 2026:
 
-- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34117514822)
-  terminó correctamente con Code Brain, LangSmith, Personal Brain, renovación
-  cifrada y publicación documental en 44 minutos y 58 segundos;
-- los artefactos cifrados `openwiki-oauth-state` y
-  `openwiki-personal-state` se renovaron desde esa misma ejecución y caducan el
-  7 de octubre de 2026;
-- la rama fija creó la [PR de documentación #188](https://github.com/maximofn/gymnasia/pull/188)
-  con 50 archivos permitidos, 20 Claims y todos los checks en verde; añadió
-  `openwiki/.page-manifest.json` con esquema 1 y 22 páginas, sin incluir
-  `CLAUDE.md`, `AGENTS.md` ni el estado transitorio `.run.json`;
-- como OpenWiki `0.5.0` todavía no admite que `AGENTS.md` sea un enlace a
-  `CLAUDE.md`, el runner materializa temporalmente ambos archivos, ejecuta la
-  actualización y restaura las instrucciones exactas de `main` antes de publicar;
+- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/36337856463)
+  terminó correctamente con dos trabajadores de página, Code Brain, Personal
+  Brain, renovación cifrada y publicación documental en 30 minutos y 8
+  segundos; frente a los 44 minutos y 58 segundos de la referencia 0.5.0, es
+  una reducción aproximada del 33 % en una ejecución con cambios distintos;
+- los artefactos `openwiki-oauth-state`, `openwiki-personal-state` y
+  `openwiki-runtime-telemetry` se renovaron y caducan el 27 de octubre de 2026;
+- la rama fija actualizó la [PR de documentación #237](https://github.com/maximofn/gymnasia/pull/237)
+  con 55 archivos permitidos y todos los checks en verde. Sus 2.202 adiciones y
+  1.696 eliminaciones pertenecen únicamente a `openwiki/` y al agregado público
+  `ops/openwiki-runtime-telemetry.json`; no incluye `CLAUDE.md`, `AGENTS.md`,
+  `.run.json` ni estado privado;
+- la prueba desechable y el runner real conservaron `AGENTS.md -> CLAUDE.md`, un
+  único bloque administrado y ninguna autorreferencia. El runner ya no
+  materializa una copia regular, aunque sigue restaurando las instrucciones
+  revisadas de `main` antes de publicar documentación;
+- el recolector saneado de LangSmith sufrió un fallo transitorio de red y dejó
+  `latestAttempt.status=unavailable` sin muestra. Code Brain y su configuración
+  de trazas ocultas continuaron; no fue un error de clave ni de OAuth;
 - la plantilla pública y el repositorio privado quedaron sincronizados en el
-  commit privado `354f662`; sus [tests remotos](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34117417781)
-  y el [informe manual de Telegram](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34121672371)
+  merge privado `d9e8ae8`; los [tests remotos](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/36337765763)
+  y el [informe manual de Telegram](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/36339828257)
   terminaron correctamente.
 
 ### Permiso de PR

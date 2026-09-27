@@ -1,16 +1,13 @@
 ---
 type: guía de gobernanza de políticas
-title: Gobernanza de prompts y política sanitaria
-description: Explica cómo se validan, firman y promocionan las instrucciones del agente y la política sanitaria, y qué aprobación humana es obligatoria antes de fusionarlas o activarlas.
+title: Gobernanza de prompts y política
+description: Explica cómo se generan, validan, firman y promocionan las instrucciones del agente y la política sanitaria, incluida la coherencia con copias integradas y las puertas técnicas que evitan la deriva.
 tags: [security, policy, prompt, health-safety, signed-policy, github-actions]
 openwiki:
   roles: [operations, workflow]
   change_kinds: [security-policy, ci, generated-artifacts]
   source_paths: [.github/prompt-policy.json, scripts/health-safety, scripts/policy-promotion, scripts/prompt-policy, .github/workflows/promote-policy.yml]
   validation_commands: [npm run check:health-safety, npm run test:health-safety, npm run policy:bundle:check, npm run test:prompt-policy]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-3badd8a08db3c41b38b437ed
     resource: repo://.github/prompt-policy.json
@@ -18,8 +15,10 @@ sources:
     resource: repo://.github/workflows/owner-authorization.yml
   - id: openwiki-source-0820b15716e58461fe98c290
     resource: repo://.github/workflows/promote-policy.yml
-  - id: openwiki-source-8037e2358a2c4f9b2c722a11
-    resource: repo://AGENTS.md
+  - id: openwiki-source-20c0a5fed6edf138cc34eb1e
+    resource: repo://apps/mobile/agent/chatSystemPrompt.test.ts
+  - id: openwiki-source-07cb7eed054f7e41355c6c1d
+    resource: repo://apps/mobile/agent/chatSystemPrompt.ts
   - id: openwiki-source-8b741701f8108bee557e6f1d
     resource: repo://policy/health-safety/manifest.json
   - id: openwiki-source-602fdf716e72233c1c36c709
@@ -46,30 +45,29 @@ sources:
     resource: repo://scripts/policy-promotion/signing.test.mjs
   - id: openwiki-source-cf7c9acb7f23cfca2b8f4fcd
     resource: repo://scripts/prompt-policy/policy.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-09-27T17:43:05.548Z
 ---
 
-# Gobernanza de prompts y política sanitaria
+# Gobernanza de prompts y política
 
 Las instrucciones que el modelo lee no se tratan como texto de aplicación ordinario. El prompt canónico `prompts/AGENTS.md`, la política declarativa de `policy/health-safety/`, las herramientas requeridas y la configuración de firma forman una superficie de seguridad. Esta página explica el mecanismo **vigente** para cambiarla, revisar su contenido, crear un bundle firmado y hacerlo disponible en los canales de política. Para el consumo del bundle en el cliente, véase [Entrega y activación de políticas firmadas](../architecture/policy-delivery.md); para el uso del lease en un turno de chat, [Runtime del agente](../agent/runtime.md).
-
-## Regla humana no eludible
-
-**Si un cambio toca `prompts/` o `policy/health-safety/`, hay que detenerse, avisar en lenguaje natural y obtener aprobación explícita del mantenedor antes de promoverlo o fusionarlo.** El aviso debe explicar, sin limitarse al diff:
-
-- qué podía o no podía hacer el agente antes;
-- qué podrá o dejará de poder hacer después;
-- qué consecuencia práctica puede tener para la persona usuaria.
-
-Una aprobación genérica sobre otro asunto no sirve. No se debe iniciar `promote-policy.yml`, fusionar la PR ni mover el cambio a otra rama para evitar esta puerta hasta recibir esa aprobación explícita. El requisito aplica tanto a una edición directa del prompt como a una regla sanitaria que se inyecta en él; los checks deterministas y una firma válida aportan evidencia técnica, pero no sustituyen la decisión humana.
 
 ## Fuentes canónicas y salidas derivadas
 
 La política sanitaria se compone de un manifiesto versionado, reglas, casos, esquemas JSON, una evaluación LLM únicamente informativa y `runtime.json`. El manifiesto fija categorías y reglas publicables obligatorias, la versión de la release y que el cierre requiera revisión profesional. Una regla `approved` exige esa revisión profesional; las reglas `provisional` también se publican para proteger al usuario, mientras que los borradores no se incorporan al prompt.
 
-`scripts/health-safety/sync.mjs` genera de forma determinista el bloque delimitado por `<!-- HEALTH-SAFETY:START -->` y `<!-- HEALTH-SAFETY:END -->` en `prompts/AGENTS.md`, además del snapshot de runtime de la app. Por tanto, no se edita ese bloque a mano. El prompt completo se convierte asimismo en el snapshot que consume la aplicación; si cualquiera de las salidas ya no corresponde a su fuente, las comprobaciones fallan en vez de aceptar deriva.
+`scripts/health-safety/sync.mjs` genera de forma determinista el bloque delimitado por `<!-- HEALTH-SAFETY:START -->` y `<!-- HEALTH-SAFETY:END -->` en `prompts/AGENTS.md`, además del snapshot de runtime de la app. Por tanto, no se edita ese bloque a mano. `npm run sync:health-safety` encadena después `sync:chat-prompt` para actualizar el snapshot móvil del prompt. Si el bloque o cualquiera de los snapshots ya no corresponde a su fuente, las comprobaciones fallan en vez de aceptar deriva.
 
 El bundle firmado toma como entradas el prompt normalizado, `policy/health-safety/runtime.json` y `policy/signing/bundle.config.json`. Esta última declara versión, criticidad, protocolo mínimo y las tools requeridas. La construcción rechaza una tool requerida que no figure en `AGENT_TOOL_DEFINITIONS`, de modo que no se puede promocionar una política que el cliente no anuncie.
+
+### Copia integrada y fallback del prompt
+
+Además del mecanismo de paquete firmado descrito en [Entrega y activación de políticas firmadas](../architecture/policy-delivery.md), `chatSystemPrompt.ts` define una selección aislada para el snapshot de prompt: intenta remoto, después caché actual, opcionalmente caché heredada y por último la copia integrada. El remoto y la caché se normalizan, deben ser texto no vacío ni HTML y se aceptan solo si su SHA-256 y sus metadatos de entorno, canal y candidato son válidos; la caché actual también exige las versiones de esquema y normalización. La copia integrada debe contener texto válido y un SHA con formato correcto, versión derivada de ese SHA y metadatos del ámbito esperado. Una respuesta remota válida se guarda en la caché, pero un fallo de lectura, escritura o diagnóstico no impide elegir una copia que sí haya validado. La copia integrada es el último recurso y falla cerrada si sus metadatos o contenido son inválidos.
+
+Esta selección no verifica por sí misma un paquete Ed25519 ni autoriza una promoción: conserva la disponibilidad de la **copia de prompt** dentro de su ámbito. La confianza y activación de una política firmada siguen correspondiendo a la cadena de bundle, raíces y activación; no mezcle los dos mecanismos al cambiar el runtime.
 
 ```mermaid
 flowchart TD
@@ -101,7 +99,7 @@ El generador de política deriva `CODEOWNERS` y el payload versionado del rulese
 
 `owner-authorization.yml` usa `pull_request_target` exclusivamente para reconciliar metadatos con el SHA base confiable. Tiene permisos de solo lectura sobre contenido, PR y deployments, y escritura solo de estados; no hace checkout ni ejecuta el head de una PR, no instala dependencias y no recibe secretos. Para una PR sensible, el autor configurado queda autorizado si coinciden su login e ID numérico; una PR externa queda `pending` hasta que la última revisión decisiva del propietario para el SHA actual sea `APPROVED`. Una aprobación de un commit anterior, una solicitud posterior de cambios o una revisión desestimada no autoriza el head. Las PR sin rutas sensibles pasan este check, pero el merge sigue siendo manual.
 
-El check `gymnasia/policy-promotion` queda `success` automáticamente si la PR no cambia rutas de promoción. Si las cambia, queda `pending` hasta que exista para el mismo SHA un deployment exitoso `gymnasia-policy` en `Production`. Esta señal técnica no elimina la regla humana anterior: la promoción debe partir de una explicación y aprobación explícitas.
+El check `gymnasia/policy-promotion` queda `success` automáticamente si la PR no cambia rutas de promoción. Si las cambia, queda `pending` hasta que exista para el mismo SHA un deployment exitoso `gymnasia-policy` en `Production`. Esta señal solo acredita que el SHA exacto tiene un deployment de Production exitoso; no sustituye las demás puertas técnicas de la promoción.
 
 ## Firma, publicación y promoción
 
@@ -123,7 +121,7 @@ No existe bypass documentado del ruleset. Si un check falla, se debe reparar o r
 
 ## Procedimiento de cambio vigente
 
-1. Determine si el cambio toca `prompts/` o `policy/health-safety/`. Si es así, comunique el impacto en lenguaje natural y espere aprobación explícita antes de fusionar o promover.
+1. Determine si el cambio toca `prompts/` o `policy/health-safety/`; esas son las rutas que requieren una promoción de Production para el SHA exacto.
 2. Modifique la fuente canónica. Para reglas sanitarias, mantenga los esquemas, referencias, casos y runtime consistentes; no edite el bloque gestionado ni snapshots a mano.
 3. Si cambia la política sanitaria, ejecute `npm run sync:health-safety`, que también sincroniza el prompt móvil. Si cambia la política de rutas o workflows, ejecute `npm run sync:prompt-policy` y revise las salidas generadas.
 4. Ejecute las puertas focalizadas:
@@ -138,15 +136,15 @@ npm run policy:bundle:check
 npm run check:policy-trust
 ```
 
-5. Abra una PR y espere los estados obligatorios. La promoción a Staging/Production es una operación manual separada del merge y necesita la aprobación humana ya descrita, además de sus environments y firmas.
+5. Abra una PR y espere los estados obligatorios. La promoción a Staging/Production es una operación manual separada del merge y requiere sus environments, verificaciones y firmas.
 6. Para producir una build firmada, deje que el flujo de release prepare el snapshot desde el deployment de Production; no sustituya ese paso por copiar un prompt local. Véase [Build, release y estrategia de validación](build-release-and-testing.md).
 
 ## Cobertura de pruebas y extensión segura
 
-Las pruebas de `scripts/health-safety` cubren validación de política, revisión profesional de reglas aprobadas, exfiltración, deriva del bloque gestionado, referencias, tools y fixtures, corpus determinista e invariantes de generación. Las pruebas de promoción y firma ejercitan bundles/activaciones canónicos, alteraciones, certificados no autorizados o fuera de vigencia, incompatibilidad de canal/protocolo/tools, rollback y los contratos del workflow, incluida la separación entre Staging y Production.
+Las pruebas de `scripts/health-safety` cubren validación de política, revisión profesional de reglas aprobadas, exfiltración, deriva del bloque gestionado, referencias, tools y fixtures, corpus determinista e invariantes de generación. Las pruebas de promoción y firma ejercitan bundles/activaciones canónicos, alteraciones, certificados no autorizados o fuera de vigencia, incompatibilidad de canal/protocolo/tools, rollback y los contratos del workflow, incluida la separación entre Staging y Production. `apps/mobile/agent/chatSystemPrompt.test.ts` cubre el orden remoto–caché–integrado, rechazo por hash o metadatos, migración heredada y el hecho de que errores de diagnóstico o de persistencia no bloqueen una selección válida.
 
-Al ampliar esta superficie, trate como cambio coordinado cualquier ajuste de esquema, regla, runtime, tool requerida, fuente del bundle o workflow. Añada casos y pruebas que demuestren el nuevo invariante, conserve la generación determinista y no convierta una evaluación LLM, un informe o una notificación en una autorización. La aprobación humana, la firma verificable y los checks de PR cubren capas distintas y deben mantenerse independientes.
+Al ampliar esta superficie, trate como cambio coordinado cualquier ajuste de esquema, regla, runtime, tool requerida, fuente del bundle o workflow. Añada casos y pruebas que demuestren el nuevo invariante, conserve la generación determinista y no convierta una evaluación LLM, un informe o una notificación en una autorización. La firma verificable y los checks de PR cubren capas distintas y deben mantenerse independientes.
 
 ## Contexto histórico
 
-Los despliegues y bundles antiguos son evidencia histórica o candidatos explícitos de rollback, no fuentes alternativas desde las que copiar instrucciones al cliente. Los comentarios de incidentes, simulacros y procedimientos anteriores no sustituyen el flujo vigente descrito aquí. Para un cambio presente de prompt o salud, siempre prevalecen la explicación en lenguaje natural, la aprobación explícita, las fuentes canónicas y las comprobaciones ejecutables actuales.
+Los despliegues y bundles antiguos son evidencia histórica o candidatos explícitos de rollback, no fuentes alternativas desde las que copiar instrucciones al cliente. Los comentarios de incidentes, simulacros y procedimientos anteriores no sustituyen el flujo vigente descrito aquí. Para un cambio presente de prompt o salud, siempre prevalecen las fuentes canónicas y las comprobaciones ejecutables actuales.
