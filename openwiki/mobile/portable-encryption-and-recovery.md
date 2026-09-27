@@ -1,11 +1,8 @@
 ---
 type: referencia técnica
-title: Cifrado portátil, importación heredada y recuperación local
-description: Contrato del sobre cifrado portable v3 de Gymnasia, el empaquetado de copias, la importación explícita de formatos heredados y el rescate local de una cuarentena. Describe límites, fallos seguros y validaciones para operar o cambiar estos flujos sin exponer datos sensibles.
+title: Cifrado portátil y recuperación
+description: Contrato del sobre cifrado portable v3 de Gymnasia, el empaquetado e importación de copias y la recuperación local desde cuarentena. Describe límites, fallos seguros y validaciones para operar o cambiar estos flujos sin exponer datos sensibles.
 tags: [mobile, backup, encryption, recovery, privacy, local-storage]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
 sources:
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
@@ -31,10 +28,13 @@ sources:
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-09-27T17:43:05.548Z
 ---
 
-# Cifrado portátil, importación heredada y recuperación local
+# Cifrado portátil y recuperación
 
 Gymnasia es local-first: una copia portable la guarda y transporta la persona usuaria, y una cuarentena protege el almacenamiento local que no se puede leer o sustituir con seguridad. Ambos artefactos pueden contener datos de salud, conversaciones y, en web, credenciales de IA; ninguno se envía a un servicio para cifrar, descifrar o recuperar.
 

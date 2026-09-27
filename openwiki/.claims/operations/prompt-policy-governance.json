@@ -1,17 +1,7 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:4f6c01b11dc9bf124b6fd3dc9d10ad96fb591fa0d211b1b3c2ae7e3ba1520a0c",
+  "pageVersion": "sha256:f02ca4e936a337e1e3887a696cfe775dbc680acdd9b5858ff21d7768b056a768",
   "claims": [
-    {
-      "id": "claim_313807c971774799a3eb38ca3a37adee",
-      "statement": "Los cambios en `prompts/` o `policy/health-safety/` requieren explicar en lenguaje natural el cambio de permisos o restricciones y su consecuencia para la persona usuaria, y esperar aprobación explícita antes de promover, fusionar o eludir la puerta en otra rama.",
-      "evidence": [
-        {
-          "resource": "repo://AGENTS.md#L12-L31",
-          "version": "repo-lines-v1:sha256:636c352173e01e0326b0378f5c4c78e96de39fb51be9711617d9e9352ec4e774:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmMGU1NzQzOGQ4ZDIyMjhjM2ExODU4NmU0YzY0MWYxNzQyNTVlZTA0MzNmOTA0ZTcwNmU4NjFmNGJiNGZiNTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiNDc0YjZjZGJlZTIwZGNjNTI3YWYzNzM1ZDU5MzliN2E2MmRlMzk4MjUwNjAzYjA1ZmU1MDlhY2U5ZTAxZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxNDU2ZWZjYWQzYjM5NmZmZjBkODE2MDM0MGM3MjkyNzQ1OTQzYzU0YzBiNTg4ZjFkYzA0ZTJmMDJkOTlhOWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1YWFiMDJjMWJlZGNhNjk3ZDQwZTA0ZmE4YWNmOTg5OGY3MjEzZmM4YmI0OTI5M2RhYzI1NzI0Y2UzMWU1OWIifQ"
-        }
-      ]
-    },
     {
       "id": "claim_3cae44c38d1241898ba34e7117baf5f6",
       "statement": "La política sanitaria carga manifiesto, reglas, casos, evaluación LLM, runtime y esquemas; la validación exige categorías y reglas publicables, referencias y herramientas coherentes, revisión profesional para reglas `approved`, equivalencia de runtime y que la evaluación LLM no sea autorizante.",
@@ -205,10 +195,38 @@
           "version": "repo-lines-v1:sha256:d655d8a2be06116727822cea8e692287a0b8988419e4e2fa1366c60f635fe6f9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTU4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyZWUyY2EzNDNiZjdkOTA2MzRjODcxNmJlNTMxODIyZGYwN2U3NTBhMjNlYWNlYWYzZjk3ZDkwYmM2NTZlYjM4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI5NWVmMDFiYzA4ZGJjM2I2M2U0ZTc1ZWEzZDI2YTViOTQxODkxODc3ZTI3YWQ4OTEzMjljODQxMWQ3ZDhkYzRkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MjA0MGUwOTVhOTRlMmFkYTc0ZTQyMWYzNzE4NzUxYTkxYTgxMGJmZDY2ZjQ4ZjRlOTM5YzdiNzQ4MGViNjcwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIn0"
         }
       ]
+    },
+    {
+      "id": "claim_70d6b4c9147c426fafe3f8c169eed49d",
+      "statement": "`selectChatSystemPrompt` selecciona en orden remoto, caché actual, caché heredada opcional y copia integrada; el remoto y la caché se normalizan y verifican contra SHA-256 y metadatos de ámbito, mientras la copia integrada se valida como último recurso y falla cerrada si sus metadatos o contenido son inválidos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/chatSystemPrompt.ts#L103-L133",
+          "version": "repo-lines-v1:sha256:5f3ea6e26c56164fab998eca1efd5a499e7b1c1fc89c592345cb99a5dc82e98b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxNTk5ODljNmNmNDAyMTAyOGE5MGM4ODhkMWRiNDk0Yjc3NTg3ZTIyOTA2MGViMDY0OWI5Y2NkYjNiMzJlZWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwOTAxMDJhZDJjYzVmYzBkMzc4MWRmYzFhM2I5MjUyOWNlYjhkMDBiODRlNzgwYmEwNmVkYjFiYWFmYmE4NGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViNzFjMGE2ZmZjYzIwZWE4MWIwMjczMjIwMmQ1ODQ0N2EzMTdjYjNlYzI5MTI4MzYyZDVhM2FlMzIzYTUwYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc5N2M0YTk3ODVlODA0N2ZmOTVlMjI4Y2EyOWEzYTRjMzQ4ZTJhYTU0NmZjNTYwZGQ0MjczYTU5NjBlYWUwZWIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/chatSystemPrompt.ts#L185-L284",
+          "version": "repo-lines-v1:sha256:a4d2e4329cc878cf256330f7ce8ce27c16bc7e5f9412ce5d8a70b4b77845010c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0MjBkZTc1ZGY0MTNiZTY3ZDMxYWM1MzNmNjgwY2ZiOGRlNDFiNDUyOGMyYTRlMTQxYmQwMGI0Yjk4YzE5YjdjIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxNjJmMjIwNDBiYmEwOTllYjdjMjZiYTZlZDJjMzkzMTM0MGRiYzc5NWQ0N2FhMDJkNDAwNjczYjdkM2Y0NDVlIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiMWVhNzEzNDAzYzdkNTIyOWFhNzFiMGY3ODIwY2NmZWFlYjdiN2RkMjBhNWZmMzZjZGZkOGVhMDQxN2NlMzE0In0"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/chatSystemPrompt.ts#L349-L500",
+          "version": "repo-lines-v1:sha256:5b78cb1bce2f123be29d0ffdd44fbc0e068ad48a56a86feb1bc19273bd369bed:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIzOTFjYTQ1N2FlNDk4YmM2NTE0M2VkY2Q2MWYwMmExZjAwYmYzMTE1Mjg5YzQ2OWVkNWM1NGFjNTljZTZhYjgyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0ZTllY2IwYWNkNTliZWU1ODExNzA4NDkyMDdhMDdiNTg5OTE0Yzk4YmRlYWJmNWM4ZGM1ZDk0MDNkMTE4ZjAyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjU4MGU5NjRmODNhNDczZjQzZDQ0Mzg0NjI5NDlkNjhiNTYwMGZkYTc4N2YxNjM3NDVkMDBkZTg5Y2JmMzZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_0dea9a53764244f9a2013c5681f8150f",
+      "statement": "Las pruebas del selector de prompt cubren la prioridad remoto–caché–integrado, el rechazo de hashes y metadatos inválidos, la migración de caché heredada y la degradación segura ante fallos de red o almacenamiento.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/chatSystemPrompt.test.ts#L115-L336",
+          "version": "repo-lines-v1:sha256:7b878b943d83aa516e3ff606090cb15075e20cde633104b07b1c89252f7d9229:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjMDEyZDJjODI0ZGQxNWRhMGJkMmQzODRhNzc0ZGE3ZTZhZDBkMjY2ZGY4ZjA1NTBkZmVlNzNmZWVmMzVhMmJiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNzc5ZDExOGQ2ZTNjYmY0NTA1Mzk3NDhkZWU3YTQzMDdhY2JlNjQ0NmNiYTI5N2YyNzYwZmE1ZDBiYmExYmMyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwYjFlMjQ5YjUyMTRlYzljNTlkNWUxZWQzYTYxZWM1ZTM4NTgzMDgyMjU5OGMxZGM4OGE1ZjRiNWZkMmE0NTM5In0"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.5.0",
-    "at": "2026-09-07T11:37:28.236Z"
+    "by": "openwiki/0.6.0",
+    "at": "2026-09-27T17:43:05.548Z"
   }
 }
