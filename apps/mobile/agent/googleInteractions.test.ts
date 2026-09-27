@@ -52,7 +52,7 @@ describe("Google Interactions lifecycle", () => {
     const turn = parse(created + start + args + start + stop + stop + terminal() + stop + done);
     const executeTool = vi.fn(async () => "saved");
     const request = vi.fn().mockResolvedValueOnce(turn).mockResolvedValueOnce(parse(finalRaw));
-    const result = await runGoogleToolLoop({ initialTurn: turn, initialMessages: [], executeTool, requestNextTurn: request });
+    const result = await runGoogleToolLoop({ initialTurn: turn, initialMessages: [], executeTool, requestNextTurn: request, maxRounds: 10 });
     expect(executeTool).toHaveBeenCalledTimes(1);
     expect(result.history.filter((step) => step.type === "function_call")).toHaveLength(1);
     expect(request.mock.calls[0][0]).toEqual(request.mock.calls[1][0]);
