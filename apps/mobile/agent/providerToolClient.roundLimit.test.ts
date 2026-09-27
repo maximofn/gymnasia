@@ -8,6 +8,9 @@ import { MAX_TOOL_ROUNDS, ROUND_LIMIT_TOOL_RESULT, ROUND_LIMIT_USER_MESSAGE } fr
 // Cada cuerpo enviado se guarda para comprobar el contrato de la llamada de cierre.
 const sent: Array<Record<string, unknown>> = [];
 let closingFails = false;
+let narrateRounds = false;
+let closingInsists = false;
+const INTERMEDIATE = "Voy a mirar tus datos. ";
 
 vi.mock("./providerStreamTransport", () => ({
   streamOpenAIRequestViaFetch: vi.fn(async (
@@ -24,6 +27,7 @@ vi.mock("./providerStreamTransport", () => ({
       return { responseId: `resp_${round}`, content: "Respuesta de cierre.", thinking: null,
         truncated: false, outputItems: [{ type: "message" }] };
     }
+    if (narrateRounds) handlers?.onContentDelta?.(INTERMEDIATE);
     return { responseId: `resp_${round}`, content: "", thinking: null, truncated: false,
       outputItems: [{ type: "function_call", id: `fc_${round}`, call_id: `call_${round}`,
         name: "read_field_value", arguments: "{}" }] };
@@ -37,11 +41,13 @@ vi.mock("./providerStreamTransport", () => ({
   ) => {
     sent.push(body);
     const round = sent.length;
-    if ((body.tool_choice as { type?: string } | undefined)?.type === "none") {
+    const closingCall = (body.tool_choice as { type?: string } | undefined)?.type === "none";
+    if (closingCall && !closingInsists) {
       handlers?.onContentDelta?.("Respuesta de cierre.");
       return { content: "Respuesta de cierre.", thinking: null, stopReason: "end_turn",
         contentBlocks: [{ type: "text", text: "Respuesta de cierre." }] };
     }
+    if (narrateRounds) handlers?.onContentDelta?.(INTERMEDIATE);
     return { content: "", thinking: null, stopReason: "tool_use",
       contentBlocks: [{ type: "tool_use", id: `toolu_${round}`, name: "read_field_value", input: {} }] };
   }),
@@ -80,7 +86,8 @@ vi.mock("./customOpenAIChat", async (importOriginal) => ({
       options.onContentDelta?.("Respuesta de cierre.");
       return { content: "Respuesta de cierre.", toolCalls: [] };
     }
-    return { content: "", toolCalls: [{ id: `call_${round}`, type: "function",
+    if (narrateRounds) options.onContentDelta?.(INTERMEDIATE);
+    return { content: narrateRounds ? INTERMEDIATE : "", toolCalls: [{ id: `call_${round}`, type: "function",
       function: { name: "read_field_value", arguments: "{}" } }] };
   }),
 }));
@@ -112,6 +119,8 @@ async function chat(kind: ProviderConfiguration["provider"]) {
 beforeEach(() => {
   sent.length = 0;
   closingFails = false;
+  narrateRounds = false;
+  closingInsists = false;
 });
 
 describe("cliente del chat al agotar las rondas de tools", () => {
@@ -187,6 +196,25 @@ describe("cliente del chat al agotar las rondas de tools", () => {
     expect(body.tool_choice).toBeUndefined();
     expect(body.generation_config).toEqual({
       thinking_level: "high", thinking_summaries: "auto", tool_choice: "none",
+    });
+  });
+
+  // Regresión rescatada de una PR alternativa: al agotar las rondas, la frase que el
+  // modelo escribe entre rondas («Voy a mirar tus datos…») se devolvía como respuesta final.
+  describe("el texto emitido entre rondas nunca se presenta como respuesta final", () => {
+    it.each(["openai", "anthropic", "custom_openai"] as const)(
+      "%s: la respuesta termina con el texto de cierre, no con la frase intermedia",
+      async (kind) => {
+        narrateRounds = true;
+        const { result } = await chat(kind);
+        expect(result.content.endsWith("Respuesta de cierre.")).toBe(true);
+      },
+    );
+
+    it("Anthropic: si el cierre vuelve a pedir tools, error del límite y no la frase a medias", async () => {
+      narrateRounds = true;
+      closingInsists = true;
+      await expect(chat("anthropic")).rejects.toThrow(ROUND_LIMIT_USER_MESSAGE);
     });
   });
 });

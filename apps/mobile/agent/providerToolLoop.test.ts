@@ -474,6 +474,72 @@ describe("rondas del bucle con proveedor falso", () => {
       })).rejects.toThrow(ROUND_LIMIT_USER_MESSAGE);
     });
 
+    it("una respuesta final justo en la ronda 10 se acepta sin llamada de cierre", async () => {
+      // Frontera del tope: 10 rondas de tools y la undécima llamada ya contesta.
+      const closing = vi.fn();
+      let anthropicRound = 0;
+      const anthropic = await runAnthropicToolLoop({
+        initialTurn: anthropicToolTurn("toolu_0"),
+        initialMessages: [],
+        requestNextTurn: async () => (++anthropicRound < MAX_TOOL_ROUNDS
+          ? anthropicToolTurn(`toolu_${anthropicRound}`)
+          : anthropicTextTurn("Hecho.")),
+        requestClosingTurn: closing,
+        executeTool: numberedExecuteTool(),
+      });
+
+      let openAIRound = 0;
+      const openAI = await runOpenAIToolLoop({
+        initialTurn: openAIToolTurn("resp_0", "call_0"),
+        requestNextTurn: async () => (++openAIRound < MAX_TOOL_ROUNDS
+          ? openAIToolTurn(`resp_${openAIRound}`, `call_${openAIRound}`)
+          : openAITextTurn(`resp_${openAIRound}`, "Hecho.")),
+        requestClosingTurn: closing,
+        executeTool: numberedExecuteTool(),
+      });
+
+      let googleRound = 0;
+      const google = await runGoogleToolLoop({
+        initialTurn: googleToolTurn("google_turn_0", "google_call_0"),
+        initialMessages: [],
+        requestNextTurn: async () => (++googleRound < MAX_TOOL_ROUNDS
+          ? googleToolTurn(`google_turn_${googleRound}`, `google_call_${googleRound}`)
+          : googleTextTurn(`google_turn_${googleRound}`, "Hecho.")),
+        requestClosingTurn: closing,
+        executeTool: numberedExecuteTool(),
+      });
+
+      expect(anthropic.contentBlocks).toEqual([{ type: "text", text: "Hecho." }]);
+      expect(openAI.outputItems[0]).toMatchObject({ type: "message" });
+      expect(google.content).toBe("Hecho.");
+      expect([anthropic.roundLimitReached, openAI.roundLimitReached, google.roundLimitReached])
+        .toEqual([undefined, undefined, undefined]);
+      expect(closing).not.toHaveBeenCalled();
+    });
+
+    it("revisa el truncado en el turno que llega al tope antes de intentar el cierre", async () => {
+      const closing = vi.fn();
+      let anthropicRound = 0;
+      await expect(runAnthropicToolLoop({
+        initialTurn: anthropicToolTurn("toolu_0"),
+        initialMessages: [],
+        requestNextTurn: async () => ({ ...anthropicToolTurn(`toolu_${++anthropicRound}`), truncated: true }),
+        requestClosingTurn: closing,
+        executeTool: numberedExecuteTool(),
+        maxRounds: 1,
+      })).rejects.toThrow("se cortó antes de completarse");
+
+      await expect(runOpenAIToolLoop({
+        initialTurn: openAIToolTurn("resp_0", "call_0"),
+        requestNextTurn: async () => ({ ...openAIToolTurn("resp_1", "call_1"), truncated: true }),
+        requestClosingTurn: closing,
+        executeTool: numberedExecuteTool(),
+        maxRounds: 1,
+      })).rejects.toThrow("se cortó antes de completarse");
+
+      expect(closing).not.toHaveBeenCalled();
+    });
+
     it("respeta un maxRounds menor en los tres proveedores", async () => {
       const closing = { anthropic: vi.fn(async () => anthropicTextTurn("Cierre.")),
         openai: vi.fn(async () => openAITextTurn("resp_cierre", "Cierre.")),
