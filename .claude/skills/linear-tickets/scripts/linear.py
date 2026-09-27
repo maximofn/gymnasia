@@ -60,7 +60,8 @@ TEST_PLAN_TEMPLATE = """## Plan de pruebas
 
 CHECKED_TEST_ITEM = re.compile(r"^\s*[-*]\s*\[[xX]\]")
 NOT_APPLICABLE = re.compile(r"(?i)\bno\s+aplica\s*:\s*(.+)$")
-PLACEHOLDER = re.compile(r"<[^>]+>")
+# Linear guarda los enlaces como [texto](<url>); ese <url> no es un marcador de plantilla.
+PLACEHOLDER = re.compile(r"<(?!https?://)[^>]+>")
 
 
 def repo_root() -> Path:
