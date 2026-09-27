@@ -76,6 +76,7 @@ import {
   type GoogleConversationTurn,
 } from "./agent/googleInteractions";
 import type { StreamingHandlers } from "./agent/providerStreamParsers";
+import { createStreamDraftFlusher, type StreamDraftFlusher } from "./agent/streamDraftFlusher";
 import {
   requestProviderText,
   type ChatInputMessage,
@@ -4833,7 +4834,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
 
     const assistantMessageId = uid("msg");
-    let draftFlushTimer: ReturnType<typeof setTimeout> | null = null;
+    let draftFlusher: StreamDraftFlusher | null = null;
     setSendingChat(true);
     setError(null);
 
@@ -4904,40 +4905,30 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         policy: healthSelection.policy,
       });
 
-      const flushAssistantDraft = (force = false) => {
-        const apply = () => {
-          const nextThinking = draftThinking && draftThinking.trim().length > 0 ? draftThinking : null;
-          updateThreadMessage(threadId, assistantMessageId, (current) => {
-            if (
-              current.content === draftContent &&
-              (current.thinking ?? null) === nextThinking &&
-              current.is_streaming
-            ) {
-              return current;
-            }
-            return {
-              ...current,
-              content: draftContent,
-              thinking: nextThinking,
-              is_streaming: true,
-            };
-          });
-        };
-
-        if (force) {
-          if (draftFlushTimer) {
-            clearTimeout(draftFlushTimer);
-            draftFlushTimer = null;
+      const applyAssistantDraft = () => {
+        const nextThinking = draftThinking && draftThinking.trim().length > 0 ? draftThinking : null;
+        updateThreadMessage(threadId, assistantMessageId, (current) => {
+          if (
+            current.content === draftContent &&
+            (current.thinking ?? null) === nextThinking &&
+            current.is_streaming
+          ) {
+            return current;
           }
-          apply();
-          return;
-        }
+          return {
+            ...current,
+            content: draftContent,
+            thinking: nextThinking,
+            is_streaming: true,
+          };
+        });
+      };
 
-        if (draftFlushTimer) return;
-        draftFlushTimer = setTimeout(() => {
-          draftFlushTimer = null;
-          apply();
-        }, 40);
+      const flusher = createStreamDraftFlusher(applyAssistantDraft);
+      draftFlusher = flusher;
+      const flushAssistantDraft = (force = false) => {
+        if (force) flusher.flushNow();
+        else flusher.schedule();
       };
 
       const resetAssistantDraft = () => {
@@ -5020,10 +5011,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         throw new Error("El modelo no devolvió contenido.");
       }
 
-      if (draftFlushTimer) {
-        clearTimeout(draftFlushTimer);
-        draftFlushTimer = null;
-      }
+      draftFlusher?.cancel();
       const streamState = streamGate.finish(assistantResult.content);
       const safetyResponse = streamState.blockedDecision
         ? createLocalHealthSafetyResponse(streamState.blockedDecision, healthSelection.policy)
@@ -5054,10 +5042,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         setExpandedThinking((prev) => ({ ...prev, [assistantMessageId]: false }));
       }
     } catch (err) {
-      if (draftFlushTimer) {
-        clearTimeout(draftFlushTimer);
-        draftFlushTimer = null;
-      }
+      draftFlusher?.cancel();
       const message = err instanceof Error ? err.message : "No se pudo enviar mensaje al proveedor.";
       setError(message);
       updateThreadMessage(threadId, assistantMessageId, (current) => ({
@@ -5790,7 +5775,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
 
     const assistantMessageId = uid("food_est_msg");
-    let draftFlushTimer: ReturnType<typeof setTimeout> | null = null;
+    let draftFlusher: StreamDraftFlusher | null = null;
     const assistantDraft: ChatMessage = {
       id: assistantMessageId,
       role: "assistant",
@@ -5825,41 +5810,31 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         inputDecision: healthDecision,
         policy: healthSelection.policy,
       });
-      const flushAssistantDraft = (force = false) => {
-        const apply = () => {
-          const nextThinking = draftThinking && draftThinking.trim().length > 0 ? draftThinking : null;
-          setFoodEstimatorMessages((prev) => prev.map((message) => {
-            if (message.id !== assistantMessageId) return message;
-            if (
-              message.content === draftContent
-              && (message.thinking ?? null) === nextThinking
-              && message.is_streaming
-            ) {
-              return message;
-            }
-            return {
-              ...message,
-              content: draftContent,
-              thinking: nextThinking,
-              is_streaming: true,
-            };
-          }));
-        };
-
-        if (force) {
-          if (draftFlushTimer) {
-            clearTimeout(draftFlushTimer);
-            draftFlushTimer = null;
+      const applyAssistantDraft = () => {
+        const nextThinking = draftThinking && draftThinking.trim().length > 0 ? draftThinking : null;
+        setFoodEstimatorMessages((prev) => prev.map((message) => {
+          if (message.id !== assistantMessageId) return message;
+          if (
+            message.content === draftContent
+            && (message.thinking ?? null) === nextThinking
+            && message.is_streaming
+          ) {
+            return message;
           }
-          apply();
-          return;
-        }
+          return {
+            ...message,
+            content: draftContent,
+            thinking: nextThinking,
+            is_streaming: true,
+          };
+        }));
+      };
 
-        if (draftFlushTimer) return;
-        draftFlushTimer = setTimeout(() => {
-          draftFlushTimer = null;
-          apply();
-        }, 40);
+      const flusher = createStreamDraftFlusher(applyAssistantDraft);
+      draftFlusher = flusher;
+      const flushAssistantDraft = (force = false) => {
+        if (force) flusher.flushNow();
+        else flusher.schedule();
       };
       const resetAssistantDraft = () => {
         draftContent = "";
@@ -5915,10 +5890,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       if (!assistantResult || assistantResult.content.trim().length === 0) {
         throw new Error("El modelo no devolvió contenido. Intenta reformular tu mensaje.");
       }
-      if (draftFlushTimer) {
-        clearTimeout(draftFlushTimer);
-        draftFlushTimer = null;
-      }
+      draftFlusher?.cancel();
       const streamState = streamGate.finish(assistantResult.content);
       const safetyResponse = streamState.blockedDecision
         ? createLocalHealthSafetyResponse(streamState.blockedDecision, healthSelection.policy)
@@ -5952,10 +5924,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         setFoodEstimatorExpandedThinking((prev) => ({ ...prev, [assistantMessageId]: false }));
       }
     } catch (err) {
-      if (draftFlushTimer) {
-        clearTimeout(draftFlushTimer);
-        draftFlushTimer = null;
-      }
+      draftFlusher?.cancel();
       if (sentPhotos && isExplicitImageUnsupported(err)) {
         const id = photoCapabilityId(resolvedProvider);
         updatePhotoUnsupportedIds((ids) => ids.includes(id) ? ids : [...ids, id]);
