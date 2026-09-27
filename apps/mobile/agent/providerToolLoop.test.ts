@@ -203,6 +203,7 @@ describe("rondas del bucle con proveedor falso", () => {
         initialMessages,
         requestNextTurn,
         executeTool,
+        maxRounds: 10,
       });
 
       expect(result).toBe(finalTurn);
@@ -231,6 +232,7 @@ describe("rondas del bucle con proveedor falso", () => {
         initialTurn: openAIToolTurn("resp_1", "call_1"),
         requestNextTurn,
         executeTool,
+        maxRounds: 10,
       });
 
       expect(result).toBe(finalTurn);
@@ -257,6 +259,7 @@ describe("rondas del bucle con proveedor falso", () => {
         initialMessages,
         requestNextTurn,
         executeTool,
+        maxRounds: 10,
       });
 
       expect(result.content).toBe("Quieres ganar masa y pesas 80 kg.");
@@ -328,8 +331,8 @@ describe("rondas del bucle con proveedor falso", () => {
   });
 
   describe("al agotar MAX_TOOL_ROUNDS, una llamada de cierre sin tools contesta al usuario", () => {
-    it("el tope por defecto es de 10 rondas", () => {
-      expect(MAX_TOOL_ROUNDS).toBe(10);
+    it("el tope por defecto es de 1 ronda (temporal, solo para el QA)", () => {
+      expect(MAX_TOOL_ROUNDS).toBe(1);
     });
 
     it("Anthropic no ejecuta las tools pendientes y cierra con una respuesta de texto", async () => {
@@ -349,13 +352,13 @@ describe("rondas del bucle con proveedor falso", () => {
 
       expect(result).toEqual({ ...closingTurn, roundLimitReached: true });
       expect(executeTool).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
-      expect(executeTool).not.toHaveBeenCalledWith("read_field_value", { key: "toolu_10" }, expect.anything());
+      expect(executeTool).not.toHaveBeenCalledWith("read_field_value", { key: `toolu_${MAX_TOOL_ROUNDS}` }, expect.anything());
       expect(requestNextTurn).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
       expect(requestClosingTurn).toHaveBeenCalledTimes(1);
       // La petición pendiente sigue en el historial y recibe su resultado sintético con el mismo id.
       expect(requestClosingTurn.mock.calls[0][0].slice(-2)).toEqual([
-        { role: "assistant", content: anthropicToolTurn("toolu_10").contentBlocks },
-        { role: "user", content: [{ type: "tool_result", tool_use_id: "toolu_10", content: ROUND_LIMIT_TOOL_RESULT }] },
+        { role: "assistant", content: anthropicToolTurn(`toolu_${MAX_TOOL_ROUNDS}`).contentBlocks },
+        { role: "user", content: [{ type: "tool_result", tool_use_id: `toolu_${MAX_TOOL_ROUNDS}`, content: ROUND_LIMIT_TOOL_RESULT }] },
       ]);
     });
 
@@ -382,8 +385,8 @@ describe("rondas del bucle con proveedor falso", () => {
       expect(result).toEqual({ ...closingTurn, roundLimitReached: true });
       expect(executeTool).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
       expect(requestClosingTurn).toHaveBeenCalledWith([
-        { type: "function_call_output", call_id: "call_10", output: ROUND_LIMIT_TOOL_RESULT },
-      ], "resp_10");
+        { type: "function_call_output", call_id: `call_${MAX_TOOL_ROUNDS}`, output: ROUND_LIMIT_TOOL_RESULT },
+      ], `resp_${MAX_TOOL_ROUNDS}`);
     });
 
     it("Google añade un resultado sintético por llamada pendiente y conserva el cierre en el historial", async () => {
@@ -408,8 +411,8 @@ describe("rondas del bucle con proveedor falso", () => {
       expect(result.roundLimitReached).toBe(true);
       expect(executeTool).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
       expect(requestClosingTurn.mock.calls[0][0].slice(-2)).toEqual([
-        { type: "function_call", id: "google_call_10", name: "read_field_value", arguments: { key: "google_call_10" } },
-        { type: "function_result", name: "read_field_value", call_id: "google_call_10",
+        { type: "function_call", id: `google_call_${MAX_TOOL_ROUNDS}`, name: "read_field_value", arguments: { key: `google_call_${MAX_TOOL_ROUNDS}` } },
+        { type: "function_result", name: "read_field_value", call_id: `google_call_${MAX_TOOL_ROUNDS}`,
           result: [{ type: "text", text: ROUND_LIMIT_TOOL_RESULT }] },
       ]);
       expect(result.history.at(-1)).toEqual(closingTurn.steps[0]);
