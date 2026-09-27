@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:b6542708d8432162d668b3e268093150773998fde3560d34aff8111def01fcc8",
+  "pageVersion": "sha256:88776797cdcad7f5b5b816aacedccbe53471bea614e256e7dc205aa2fa018072",
   "claims": [
     {
       "id": "claim_4f128aa30b194c0d8433f3fffe412436",
@@ -215,10 +215,110 @@
           "version": "repo-lines-v1:sha256:b942be14e8213fabacf0b19916e207fa7b2b9feaed969d6ab484a5a59ccaa7ba:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2Y3Y2FiNzY2M2MwOWZiYTM1MDM5MjA4MDFhYjZlZThlNTdkMGQyYTZjNWRlZjg5OTc3MjU1MWQyMjFmODc0YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDgwNGVmZTJlN2E2ZDM4OTU2ZTZlYTc0OTk1YzRmNTE2MGZkYTg1ZWNjZTQ4YjU5ZGU2YTU1OWVmMTg2MmI1MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTkxMWQwYjlmZDNhYzljNDE2NjliNzRkYzdjYmE4NTMwZmIzNzE5ZDBhMTYyY2E4YmI3NzU2NjgzZjMxNDYwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzRkZDE2ZTkzNTI3YjIxNTkyNTczMzk0NmZkYzU0YzgzZTUwYzE2YTUwZDU0YjIyYWNkMDM4NDI5OWE5NDlkZCJ9"
         }
       ]
+    },
+    {
+      "id": "claim_42167228d72b4486af0dc656513d6741",
+      "statement": "Los controladores de entrenamiento adaptan estado y acciones de App.tsx a modelos de pantalla y capas de retroceso; conservan el input actual en un ref para que las acciones memorizadas deleguen al estado vigente, sin poseer la persistencia del dominio.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/controllers/trainingController.ts#L318-L413",
+          "version": "repo-lines-v1:sha256:2b6b0c50ac98d55e1011cea01a638d37b7f176ba232394d9a8ba956d279493a0:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5MGQxODM5NjJjNDgwNTExYmVjMjQwNWZjZDcxZTUwMDYwMjRlOGU1MzZmYjhlZWU0MDNhYmY0NjJlMGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyMDg4M2I2OWY2M2IzMTZhMzkxZDI1Y2VmMTE3YTk0ZDliZjc5OWZhYWI1NzVlMWE2YmJlYjNlMTRlYmEyY2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzZmViMGZmNTY0ZWZmYTA0NWI0MjIwYTg4MzYyOTc4NmYzZWIwOWZkZWM1ZDM5MjJlNzdiNTY2MjkzNTY0ZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdhNzY3MDBlYWE5MDljZGQwYTBlNzE0YjRmMzhjZjk2NmRjMzA3OTk4MTEzNTFlM2EzZjA1ZGY2Yjc5NjMzOWEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/controllers/trainingController.ts#L84-L170",
+          "version": "repo-lines-v1:sha256:adbc0559d510aff795428baac8afa905d558133e1a4ab8fffe5416290a1ed869:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3OWExMGNkOWY4ZTBhYjYyZDMzNGE4OWYxMDc4Y2FkZGNhNzI1MTYwOGFhOTgzY2E2ODI5NTM5Zjk0MjllODYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyMDg4M2I2OWY2M2IzMTZhMzkxZDI1Y2VmMTE3YTk0ZDliZjc5OWZhYWI1NzVlMWE2YmJlYjNlMTRlYmEyY2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc2MTJlYTM4NTM2YjU3MWFlMmQzZDcxMWQ4NTUzOGZmMzQxZjQ5Njc4ZjliOWIzYzkzZTBiYTQyNjE0MTRmYjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiODhiNDljZDVhZWFkODBkZmZiYzczMWY0N2I3ZjY3MGJkODZhODg5YWZmYWM3MjY2OGZiNTlkOTZhMzgxY2QifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/controllers/trainingController.ts#L843-L895",
+          "version": "repo-lines-v1:sha256:8b8f175e8339ff7a54bff58dae456f2da14c82cf663274e063bcbde0e6ab0d61:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyYzRmYTI0Nzc1N2E4YzA3MGU1YWRjZDA3MzIzNjU1YjkyNTNmZWRiMmRkZTJhOGVjNTBkZjYzZmNmNDkyMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmYjEwYzE1ZWIwNjNkZDBkMGNmYmJmZThiYjU2OTYxNzMzYzEyMDVjMTM1Yzg3Y2FkMmYyNmU1ZjY1M2M4YTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f1c12eb89f4b4127b1470949448f9895",
+      "statement": "El historial actual guarda una instantánea versionada de la prescripción ejecutada, independiente de la plantilla posterior y sin imágenes, enlaces de catálogo ni datos musculares; puede recalcularla para informar coincidencia o discrepancia sin sustituir los totales almacenados.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/training/workoutHistory.test.ts#L140-L226",
+          "version": "repo-lines-v1:sha256:1d4b64e7b583eb31fe8a5d2bcab97b802d4134df0e8c5fc3257088ca015253ef:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjNWUyYjA0M2VhMmFhYjk2M2FiYzQwNDBlY2I3YTE5NzAxOGFiZjc3ODA4YjljOGRkMWI1NDRhNmY1YmM0ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI0YmNjNTY5ZDRhZWI4ZDQ1NjMyYzkzZGIzNjFlMDQ2MjNlMGE4NWRkODRiNTJkOTU4MjFhZWUzMTgxOGU1YjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZmZDVkYWU3ZmQ2YWYyNjhlZGI2MzJkNTlmZjYyNmRmMDIzMGJkNTY5YTZhOWExODYxMGE3NDYyMTY4ZmFhOTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutHistory.ts#L13-L67",
+          "version": "repo-lines-v1:sha256:9ebf277e48163d45cc05518bf42ad209b3523306014bbcb2b08f9eb6810ac79e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkMjAwZDc5ZTkzNWFlMGIwODE2N2JmYzZhMmNiZGUwZTcyM2U5YjM4MGFmN2U0NDY3ZjQ3ODcwZjI3ZDEyNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlMzBlZjNlOWJlMjYyN2FlYjM4ZjliZDVlMGQ5YmQyMWE0NjJmMjY3MTlkOWY0MWJlMjMyNDViMmE4N2JkZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxZDM1ZTdmNzUzOTYwOWE1ODcyZjVjOGQwMDkxOTVlMjg4ZDU3OGE4NGEwMDk5ZjU0OWI4MzAyYmYxMzVhYzcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutHistory.ts#L206-L297",
+          "version": "repo-lines-v1:sha256:be2a8da3bf686a3a7556792b2200a66bf65a3b8637ee315f05768516e32b9486:eyJzZWxlY3RlZExpbmVDb3VudCI6OTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3MDUzMWVmOWE2NmI1YTVlZDVkZDU1NjdkZmY0MTM0NDFiNTZlMjJjODUxMDdiYWIwZGMyNmUxNGMyOGVhNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiOGUxMTNiYzVkOGMxYzMyZDlhNTM1YTViNmQ2MWI3YzA4NmUyMWU3ZWVjYTc2MTFiNDhkOWVhZjZiZTZlMTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxMmNjZWFmMzM3MWQ3NWEzYjliMTExMTNlY2JkYjI4MzdiZWNjODJjOTAwOGMwNTU4N2M2ZGE0ZDFmZGU2ZjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_761f2e40c6134ce8ad5333ddef56770e",
+      "statement": "La normalización de una instantánea histórica incompatible la degrada durante hidratación conservando los totales originales y deshabilitando el recálculo, pero el modo strict lanza error para que una importación no reemplace transaccionalmente datos válidos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/train-history-snapshot.e2e.mjs#L437-L461",
+          "version": "repo-lines-v1:sha256:75c1bc01d536760b3d0a1981827fe586e86fad5344de2baa5d61f106d5fd3c59:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmMzZmMjc1NjJiYWM1NjE3ZjNhNmJjYWZiNWFkNDVlYjYyNDA4ZTgwZWQzNzgyYTM4ZDMwMzAwOGRiNzZmZTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1MDBlN2E4ZWY1OTZiMjllYmNkOWU1M2M4ZTdjMDhkYzFhM2E2NDJiNGIyZDI5YTliZDRlNzRlYTZiZjBkZTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5YmZhODdkMzUwNmY1YmJjM2Y0NTMzYjAxNDQzNzYyYzc5MTM2MTQyY2Y3OTFkZWFhZmQ2MjBlODZlNTE0MWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwY2QyOTE1MDVmZDU4YWNlMDFiYTYzYzhlMDIwZmM0M2IxZTUwY2I3Y2VhMTNjMDA3NTBiMjFkN2ZiNjc2MjkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutHistory.test.ts#L261-L295",
+          "version": "repo-lines-v1:sha256:778bea6a2d6876b47f6e1dd4c30b02452c788d0c3217e303e18116689fe7b4a2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4NDkwNzY4NWYyZWYzMTc4M2VkNWE2ODY2NDNiMDE1NDJjNDdhZTU3ZTYxMjg5ODdmOWY1ZmExMzhmMWRiNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyZWEyMjA1MjA3MThhZDYyOWE4YmI5YThlZDA4OWI5NDE2MjNmYzFjMTI5MmY2NTk4MDQwYmJiYzI2NzVhY2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5NTBhMDA5NzVmMzZmZDI0YWY3NTZkYzczM2VjNGUzZjQ0ODgyMmIxMjNlNzY1MjliOGMxYzU5YWYwZjMzNjAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutHistory.ts#L370-L430",
+          "version": "repo-lines-v1:sha256:e4b1440176ee12307ed76073dd8adfdd64abb4cd2172e44a1f5684eb1bd58a64:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2NDA1MzQ1NWY3NTYyY2RlMjlhY2ExNzIwMjFjMDdiMTI4OGU4MjhjMTBiZTMyZDVkNGJiN2U5MzgyNTI3ODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlZjNiODVmN2JiZWEzOWNjOTMxYWNiMmEyZWVkOGRhYzMyZGQyMDI3MmVhNTc4N2FjN2VkNDE3NGY2Nzg4OWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzOGY3N2Q4NDY2NmU4M2JlYjUwMGJlZjdlMDllNGZhYjljOTBmOGZlY2ZhM2FkZjc4OGUyYmUzODNjMTMyYmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1ce653d242eb415cbfd87126238c0e98",
+      "statement": "El reloj durable de sesión evita fabricar tiempo y alertas duplicadas: conserva anclas y la identidad ciclo-revisión, pausa automáticamente tras un hueco superior a 12 horas, maneja retrocesos de reloj y emite el aviso de final de descanso una sola vez por identidad.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/training/workoutSessionClock.test.ts#L76-L171",
+          "version": "repo-lines-v1:sha256:c6ee8c1c2737be2264749b47ee9beed6d6a99239bf2c70eb0a86588a68fc483e:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZmIyZTdiMTJkZGY3NjRhMmFkNzdkODVjNTg4M2JkMThlYzI3ZGU3ZTU0NTdhNWNkZjQ5ZDZmYTk4MzA0MzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkYWVkZDAzZmM4Y2IzZWVkZTk2MDNmNGNjOTVmNjFlNWQwZjQ2MTVjZWZjYTY3MDMyMzdhOTU5MGE0ZTljZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwYjk3ZWZkMjE4ZWYwZTBjYTM1YTY4NDg4ZGNjOTJiMzE0MmY5YTM4YWNjMDJjN2VlY2FhZGUwZDMzZDExYzgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutSessionClock.ts#L112-L232",
+          "version": "repo-lines-v1:sha256:c31b44e702ebfe9c001c5c243594be3ac684606da9bef61016aaf03afa20517f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIxOTAwYzIyY2VjYzExYTM0ZDgwODMzZGZjNjBkYTQzMTJjN2Y1NTY1Njc4ZTFjNzRjYzVjMTc0ZWVmZTFlN2U0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MjA0MGUwOTVhOTRlMmFkYTc0ZTQyMWYzNzE4NzUxYTkxYTgxMGJmZDY2ZjQ4ZjRlOTM5YzdiNzQ4MGViNjcwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxYmI0YjY0YTgzZWY2Y2Y1MzhmYzdmMmQxMzczZTIzYTRlNThlY2ZhYTNiNjU4ZjQ2ZWU4MDliMzU1ODY3ZjY0In0"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutSessionClock.ts#L80-L110",
+          "version": "repo-lines-v1:sha256:e88167b3ea3cf7f55f5dfdbb20f37adf6c45448af638847a06583488b3ae675d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZiM2Y5OWM0NDk0ZTU1MGI2NDQ4NGY2MmUxM2NiOTMzMjk0MjZlMGQwOTM0NDg1ZjA4Y2YzNzhhMTgyMThjZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5MDg4MGZlNDk5OWVmNWFjZTU0YzI0Y2YwZDkxZjNjNTZhOGViYjQxYWJjMTY5MGVhN2Q4NDk4M2JkZjk4MWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5ZGJhMDQxYzRlZTY2MTA4Yjc2OGQ1N2U5ZDk5OTM1Zjc1NzE4ZDM0NzY2NzhhMjU1YjVkZmM0NjgxNWEyZDcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6ee59942820041fc9cb85c356421b27a",
+      "statement": "La resolución final de una sesión aplica plantilla e historial en una única mutación, inserta el resumen solo si su ID no existe, espera las colas de persistencia y después elimina las claves de sesión; un cambio o desaparición de la canónica bloquea conservar el borrador hasta una decisión explícita.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L7055-L7145",
+          "version": "repo-lines-v1:sha256:e8af34f828d3d5b611ffe873bcc2dfa03e5c8c8ece2583d1e3581c0ffd4ff5f2:eyJzZWxlY3RlZExpbmVDb3VudCI6OTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxNzlkMmFiZjAzYTkzODViZWIyNmUyNDQ2OGJkNmE4MzllNzEyZjA3MDI3MDJlNGUyOGY0ZDM1ZTMyNGQ1ZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJlZWVmZGQ1MTEzZDk5MDU2ZjFlMTlkZTFiN2Q1YmVkZTZlMGEzMDFmOWU4ZjdiZTRlYWQzZjhmOGRhODY2YzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2MWJjYjYwNDhkYzkyOTAyOTM1ZGMwOGMxOWNhOTJkNmM1NGEwMDM5NWNjNTQxZWI0ODQzODk3Y2QyMjQyYmUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L7148-L7180",
+          "version": "repo-lines-v1:sha256:9b9728bf4f5b24cfdf3821f6b683fe1a816d188fea2e433c601b5422b1eab86f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1NzQxYzQ3YWVjYTkzNTkzZWZjZmRkOTQ3YmExY2I0Zjk3MzgxY2M2ZGMzYmZkZjg4ZTY1N2ZkYmM0MTk0Y2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViZTY1ZGY1NmE3NmE0NGM1YWQyMTdhYWQ1NTkzN2NmNjI2ZGU5MGExM2RkYjcwZTZiMjc5ZWY5NTFlMGU4MjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM5MjJmZDdiYzY0MWNkZDZhYTY4NjRkZDlkYWNhN2ZmOTYwZjZkNWM2Y2NjOWQyMDJjNzg3Yjc2MWE1ZDkwNmMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4cd31979fbcd444992014344ec2870da",
+      "statement": "Las alarmas de descanso se reconcilian mediante un payload que identifica sesión, ciclo y revisión: solo se programan para un descanso running con vencimiento futuro, se cancelan cuando dejan de ser válidas y el contador de operación cancela programaciones asíncronas obsoletas.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L3452-L3545",
+          "version": "repo-lines-v1:sha256:dddb998b479eb7066a04b426c181edfada28bf391d9d7a980f86e5016514194f:eyJzZWxlY3RlZExpbmVDb3VudCI6OTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNDZjYjYzY2IwZGQ0YjIxY2M4YTUxZmY3OTA0YjY2NjE0MjJlNGRiZjE0ZjI5ZjQ2ZTMzM2IzYmViYTYyYTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhNjJjODE1MzU1MmNlNjU5ZjVkZmZhMWFkYjM3NjBkMDIzMWJlNjc1YWI4ZjdmNTcyMWMzNjY3ZmRlNzlhYmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk2NjE3YzU5NWQxYzc0NjA2MDlmMGMyZGMxMDVlNDg1MmU0OWIwMWY4OWI2NTQzNDhhYWU1YWVmYjE0ODVmYzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwZGMxMTI2ZmExNWIzMzJiYjVhYzViYzYxYTdkNGMwZjE4ZWRmMzU5YjUxNDZhN2M1NGI0NzU1YTY1YzhkYjgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/restNotificationContract.ts#L77-L143",
+          "version": "repo-lines-v1:sha256:275dc62f4356a6d7691f367b51e63413cb260105310c19ff4dde9ac9c4b75665:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5ZjJkNDc4NGViMGY5MGM5ODI2NzE5MDliOTFjMjU3OTMxMTI5MTJmN2UyYjc4Y2Y2OWYzZTNmYmE5NGE5ZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlMzhkZTJmMDVlZGM3MTU1OTBiNWE1OWQ3NjQ4ZTgwYmFkMWE2OWUyMDg5ZWNlNzYwMGEwYmFmMDJjYjAwOGYifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.5.0",
-    "at": "2026-09-13T07:56:37.562Z"
+    "by": "openwiki/0.6.0",
+    "at": "2026-09-27T17:43:05.548Z"
   }
 }

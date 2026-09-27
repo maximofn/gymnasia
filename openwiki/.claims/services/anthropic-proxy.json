@@ -1,38 +1,34 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:72040cf0470c60fa5d0f0fbcb89f3b6179350322f2c3b286c1465031149496e5",
+  "pageVersion": "sha256:42ccc087907957c399cd87445e637b7f45711b4b390fbe9702f6a748c81d01b5",
   "claims": [
     {
       "id": "claim_beb8f10affb7442c81b2686ddfefa831",
-      "statement": "El proxy de Anthropic es una utilidad local opcional de diagnóstico, no un backend de producto: en web, si `EXPO_PUBLIC_API_BASE_URL` está vacío, la conversación llama directamente a Anthropic con la cabecera `anthropic-dangerous-direct-browser-access`; si se configura una base, conversación, verificación y descubrimiento de modelos seleccionan las rutas locales del proxy.",
+      "statement": "El proxy de Anthropic es una utilidad local opcional de diagnóstico, no un backend de producto: en web, si `EXPO_PUBLIC_API_BASE_URL` está vacío, las solicitudes Anthropic van directamente a la API con `anthropic-dangerous-direct-browser-access`; si se configura una base, conversación, verificación y descubrimiento de modelos seleccionan las rutas locales del proxy.",
       "evidence": [
         {
-          "resource": "repo://AGENTS.md#L42-L54",
-          "version": "repo-lines-v1:sha256:4d75c9be8e9a83b14797d566243863f4c342866cd933bff2e11793a1edaa7938:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0NmZkMzdjYTdjZTUzNmZiNGE0NDFmMTM2Yjk3Y2M2NDM5Nzg0MDk3M2E4ZWJkOTlkYmQ3YzE5YzFhMDNmMzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3Y2IyMDdkODg4N2I4NWIwYzIxMjg1ZGQ3MGZkNjM2MjE1MDliMzMyMDQ4ZTEyMGE1NDMwZjY5MmVkNjNiZmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE0YjFlMDBlYTNhN2RiMzliMDVlZjQ0ZDliZjZjMWY4N2E5NTAzYjkzYjgwNDMyZjJhNWQ1NGQ3YmY1MzFkYzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlYTUzMzVlZTM2MGVjNjk5ZDI2N2ZiODA1NjA3MjkzYzBkMzU3NjlmMDdjZjhkNWM0OTBiOTI3Yjc2Yzg3YjgifQ"
+          "resource": "repo://apps/anthropic_proxy/README.md#L1-L18",
+          "version": "repo-lines-v1:sha256:184a387c1b575a87dd941cdd9bf998248f4b0a78564b033b982424ea9eb51d50:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmMzQ2Njg2ZjIzYzc5ODY3ZDU2MmExYjUyMmYzZDUwNGJmNWNmMTRlOGZlNTg5NjQ2Y2I1YWZjMTA5ZDA1MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwMmIxNDBkNjY2MjI5M2RlZjk2MWE3OWJiMjg1N2UyMTBmYjAwMDEzNWYxODM1NDU1MDJhYWYyNmIzNmNmZGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcxMjdkZTMwZjE4NmQwNGRhMjk2ZWQ1Y2MzYTBkZmUyM2QwMzk5MzY4ODVjZGM3YWQxZWJmZWJiNWUyMmM2YTIifQ"
         },
         {
-          "resource": "repo://apps/mobile/App.tsx#L595-L613",
-          "version": "repo-lines-v1:sha256:e785693f7cab5468f8a7f6f8499294743c67bf37e6a0387b62225ff49183657b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2NzM0ZjEwNDVjZTIzMTQyNWVlYmQ0OTdkOGIzN2Q5NGFhNDQ2YmUyOTExODE1ODEwYmY1ZGE5OGFkYjE3ZGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzNTAxYzY1MmQ2ZjM5NDc0MDYyZmVjMjA0OTA4MzZlYTZlMjc5OWMxZTY1ZGQzZjA3NWUzMWViNTVmMTk0NTkifQ"
-        },
-        {
-          "resource": "repo://apps/mobile/App.tsx#L7461-L7480",
+          "resource": "repo://apps/mobile/App.tsx#L7816-L7835",
           "version": "repo-lines-v1:sha256:bfb1f62b8121a7d0afae876e058755f7f58372ec7b38f742052dfcffa17e8184:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmZTUzMDVkZjEyYzM3MTFmYThmNmIyNDllMjllYTk4YTZlYzc5ZjcyY2MzNTdkMDY5YjZjM2VmZGYzZGI3MGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhMzdlM2MwOTQxZDE1NzdjMDM5OGUzYjY3ODRlZjNiM2YwMTI4OGJjZGVjOWE0YmJhMWFiZmFhNzQwYWI2ZjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyOWFjOGViNmU4MTdkNTcyOGRiYmYyMjQ2ZGJhNWQ3YmM4NzI3ZGMyYzc3ZTRmYWM1ZmYxZjZlOTgxY2QxMzIifQ"
         },
         {
-          "resource": "repo://apps/mobile/App.tsx#L7861-L7868",
+          "resource": "repo://apps/mobile/App.tsx#L8313-L8320",
           "version": "repo-lines-v1:sha256:bd4f6e944274a5d4b1a9dc9afa83a0fa84e390db5e4d6c2349d37cba04c765f0:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGQ3NzVmNWZiMGQ1Yzg1MDRkMmIzOThiODZhMjkzYjIzYWE4ZDFiNDNhYzc3MzIzMzJmNWM3ZjE2NDIxZDVlMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjJkMTFjYWY0M2U5N2VmMzY5ZTZiZWVkMWEyNjhiZDA1ODM4ZjI5YjlkZDI1NGJmNjliYTY0ODg0MTQ3MjM0YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDFiOTA4M2QyYmY4YTJjOGViYTQ4ZjBjOGU5YTQ1Nzk1MmJkNjM3ODk5ODczOWU0NzNjZmEyMTllNjBlZmY5NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzZkNTExOThhMDk5NDE2NWVkNWI2YzI5MGJlZGU3MDk2Yzk3ZmRkNWMwMDk2YmRjMjYzMWI2ZDk4N2U0NTYzMSJ9"
         },
         {
-          "resource": "repo://apps/mobile/App.tsx#L851-L882",
+          "resource": "repo://apps/mobile/App.tsx#L884-L915",
           "version": "repo-lines-v1:sha256:89f3458e69c89a39209188f374df3881c43a0335584cb479f9fd94c6a5954185:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3ZDUyZTYxYzE3NWNmNDRhM2ZiYTM1NjZkOTMxYzQ2ZmZiZTFlMDg3Y2Q1N2YxOTQ0Y2MwM2YwMDNkN2NjNTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE0ZmI5YzEzZGJlOGUxMzg1ZGUyMGYyN2M4YTFkNjBmNWVkNzgyNDBiM2MwZDkxNjJmMGFjYWQwNmM0YmNkYmUifQ"
         },
         {
-          "resource": "repo://apps/mobile/agent/providerChatClient.ts#L193-L212",
-          "version": "repo-lines-v1:sha256:1dfa7d2c3a8860161a9ca2dbbfb9657925ec579351f2b23e981c7a5668e3d3fb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5NzViYTcwMGU4N2Q5MTA3YzhjNzc0OWM5NDdjMjliM2I4MzIzMTI5NzAxNGVkNjY0OTJhNThlNmNlMDk0MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3ZTkzYTBkNmMzNzE1NGM2OGExMjJiYjkyM2I1NGY2NmVlNWNiODM0NDliOWViNGIyZDQxMjg4MGJiY2NjMjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmMzVmY2E0Yzg5MWZkYWUyMjkwNTk1ZDE3YjY2NWRhMDRiMTRmNWUxMGYyNjM0ODRkNGQ1M2I0YWE5YTdiNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjZWNjZDllMzlhNWZiYjkxNjY0YzNjMTExZWE5MGM3MDNiYjA5NWVkYWQ5OTcxOTJlNjA3YTI5MjIzYmQ1ZjYifQ"
+          "resource": "repo://apps/mobile/agent/providerToolClient.ts#L244-L302",
+          "version": "repo-lines-v1:sha256:f16335a88a333ae073a1206f7f7de9ebb4c6f76fe408e5657c7bd91715e1c99c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5NzViYTcwMGU4N2Q5MTA3YzhjNzc0OWM5NDdjMjliM2I4MzIzMTI5NzAxNGVkNjY0OTJhNThlNmNlMDk0MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlZjY5MDA3YTdlNzVjY2RiMmMxOWVmYTlkOTVjNDNiZjc4N2YzM2EyYjljODI2NWM0YTVjZTY0MmZlNmRiZWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyNWVhMjU3OTEzMGVjYjQ0YzllYjc0N2JkYzgwM2Y2MjBhZDQyZmMxNmU0ZDdhNThhMzYxZWYyNGVkMjQ1YTYifQ"
         },
         {
-          "resource": "repo://apps/mobile/agent/providerTransport.ts#L71-L100",
-          "version": "repo-lines-v1:sha256:09db04298eed2a5eee519ff0dda4ca62dd9c3c59df0a1c507587c67cb5439904:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlNjI1OTM1MWViMTIwMjI1ZTJjZGUwYzlhZjg2ZTg1ODZmMjJlYzMyYzQ5NjVlNDE3MmMwZTA0ZTYxMWVhOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjZGRiYmIyNTAxN2NlNjVmMzQ5MTMxODlkNjc2YmFkZTlmN2I2MDUzYjU4NjQ0ZWE2ZjE4OTg0M2M0ZGU2ZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5NjdmYjljNzA3ZTIwMGYzNDVlZTE5NTM2OTA0NDFiZGYyMTkxZWY0YTVmZGQ5MDYzZTMyZTJkZTM4MDllNmYifQ"
+          "resource": "repo://apps/mobile/agent/providerTransport.ts#L47-L75",
+          "version": "repo-lines-v1:sha256:62b2db12ecc25964fd0021bb5c32466e4661c8ea6905713e14a662c5121079f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlNjI1OTM1MWViMTIwMjI1ZTJjZGUwYzlhZjg2ZTg1ODZmMjJlYzMyYzQ5NjVlNDE3MmMwZTA0ZTYxMWVhOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjZGRiYmIyNTAxN2NlNjVmMzQ5MTMxODlkNjc2YmFkZTlmN2I2MDUzYjU4NjQ0ZWE2ZjE4OTg0M2M0ZGU2ZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2M2ZhMDYwZGJiMjQwODRjMGNjMzRmNTQzNjU0MzU3MmVkNGJhMDU2YmUzOTNmNjhkYjM1NmFkYjA2NDAyNGUifQ"
         }
       ]
     },
@@ -186,11 +182,11 @@
     },
     {
       "id": "claim_c4cf29d41d8e439b92fce3404684f35f",
-      "statement": "La suite del proxy se ejecuta con `npm run test:proxy`, usa upstreams falsos sin red ni claves reales, incluye pruebas de propiedades y una prueba HTTP extremo a extremo con proxy y upstream local en procesos reales; CI la ejecuta en un job Python separado.",
+      "statement": "La suite del proxy se ejecuta con `npm run test:proxy`, usa upstreams falsos sin red ni claves reales, incluye pruebas de propiedades y una prueba HTTP extremo a extremo con un proceso del proxy y un upstream loopback local; CI la ejecuta en el job Python independiente `anthropic-proxy`.",
       "evidence": [
         {
-          "resource": "repo://.github/workflows/agent-tests.yml#L96-L117",
-          "version": "repo-lines-v1:sha256:56eaef8be9bdf26805a026ab2e3cae1f964acdb4a0fbc7a01c674ec5e17bf72e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4OWRhZTJmZWE3MmUwNzFhYzQ0MTdkODRmOTg0OTZlMGQ1NDM2YTBiODRkMjA2NTg3NDRiYWQyMTBkMGVkODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyNjM0Nzg5ZTU3ZmM3NDQzNzg0YWMzNmNmNjlhNjAzNGE1MTcwOWMwYjE2MTM2Y2RhZDJlOGQ1ODI2NmJhMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhZjc1MDFjYTRkYWM4ZTdhNzc1ZDExMjU4ZDk0ZjlhZmQxMzI4ZDAyY2I2MTJiYjllMTczYzA4Y2I2ZjVkNjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://.github/workflows/agent-tests.yml#L122-L141",
+          "version": "repo-lines-v1:sha256:944ccae226525b426f4f0a094d55ad3e405f3764a22f1e5b592d5fcf6a9a80d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmZTZiNWVlZDllMTRmMjc2YzE0ZjdiOTNlZjhhNDFkN2YyNzA5ZjE4YjcyNTU5NTQ5YTk0MGNlNmIxNmQ2Y2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyNjM0Nzg5ZTU3ZmM3NDQzNzg0YWMzNmNmNjlhNjAzNGE1MTcwOWMwYjE2MTM2Y2RhZDJlOGQ1ODI2NmJhMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3ODYyYWY1NjQ1OTdmMTAyY2QyMGExMzg3ZDQxOWYwMjE5ZWU5N2RkNjljNDhlMDc4OGFmOTFjMThmYzllYTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
           "resource": "repo://apps/anthropic_proxy/tests/conftest.py#L1-L45",
@@ -213,10 +209,46 @@
           "version": "repo-lines-v1:sha256:f3008226e6027f5b6b14b3c350583f35647b2e836d5f73ad9b716db506933202:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTM1ODYzOGE0MWE3Y2JkMGYxZDE4NzgzMDIwOTI4OTgzNGEyYmIxY2FmOGU4ODQyMzY0MDZhMWY2MTAyYTBiZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzk4ZDMzYzBmNGJiZDU3OWM0N2UwZWI2MjEyZTlkZTVhYmIwMTRlMTk1NTJjYzRiYWU4MWRiZDZhZDUyNjQwYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDU4NzM1ODcxMGY5OWY5ZTNjZWY3YjVhOGIwN2U1YTkxYTMxNmRhN2M4MzdjNzg1MTZlOWE2YzlkNDQ5ODY3YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDRmMzkwZDRjMjgwODY4ZWIwZTZiMzI1Y2I3NzAwN2JjOTUwOGIxMDhjN2RjZjg2NGRlYmIzMThhYzA1ZDFkNyJ9"
         }
       ]
+    },
+    {
+      "id": "claim_62762af2c6a142c3b4f77a3813c35dab",
+      "statement": "El proxy permite CORS para cualquier origen, método y cabecera a fin de atender el navegador local, pero el middleware loopback sigue siendo el límite de acceso; por ello CORS no autoriza publicar el proceso ni recibir clientes remotos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/anthropic_proxy/cors-proxy.py#L193-L253",
+          "version": "repo-lines-v1:sha256:f17a36a068e7f75e5ccb0a6281af6453c8049a462983035f662597f9cd6cfb19:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkYzJlYWQxYzU4ZmQ0NGRkNzFkMmJhYTExMTVlNTNjNWI5MTE1MjM4YTE1ZDA3ZTljMzMzNGUzODFkNDMxOTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZmJhMDUyN2MzOTUzYzRiNmUwZTViNTczOWJhODM2MTJmODA1M2JjZGM5NDY2NzMwMTkzY2QxZDU5MGI0MDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhMjdlNzBlY2NlNDk2YmRmY2RhZWFjYzJiMmQ1YTU0NjI5MmY3ZjM4NjVjNGZjN2QwNGQ2MDYxNGYyOGZiMzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyNzhiNmE5MmMwMTg0YjZmZjcxMGNkMjI0MzY5OTJkZGFkM2U0OGU2MTRiYTNkODlmNmY4ZGYyMmQyNjE3OTUifQ"
+        },
+        {
+          "resource": "repo://apps/anthropic_proxy/tests/test_request_validation.py#L185-L209",
+          "version": "repo-lines-v1:sha256:09446def0c0e2308f9c4e275897bfb429e1534fbcd8ab857ff02f43b3eb988f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkMmJmODQyMTlhMDgyN2VkNWYyYmE0NjMxNTRlYmJlMDU3NWEyOTBlODE5NGU5YjIzMjQ2ZjUzMTI2ZjkxNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1ZGVjZWU1NzRkNGVkMjIxZjM1YzcxMTIyYzFlM2ZlNTQ0N2Y5ZWI1MDYyY2YxNjdmNmI0MjA4YjQ0YmZkMTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2ZTJiNjdmYzA2ZTI4ZmMzNzU2MDI0MjdiMzFiNjA4NDAxNTM5NjA3YmJmOWYxOWY3Y2U4M2UzYThkNzhkZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhMDNhNWJiNjgwYmQ4NjM1ZjYzYzNlZWY3NWY2NTU4NjRhMWI4OTVhOWU0YmIyMjEzMjI3ZGJlNzYyNjJjYTEifQ"
+        },
+        {
+          "resource": "repo://apps/anthropic_proxy/tests/test_solo_local.py#L42-L64",
+          "version": "repo-lines-v1:sha256:f0dd9cb6c623f49ded453e751e9163c3a6f3c9a068d6e84ff27aa463ff8d04b6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyZGZmM2NlMmMzMDM1M2ZkZGI3N2MwZGViYjkyMjEyMjM5OGQ1NTk4ZTQ1Yjg0OGNmMWNmOTM0NGEzYjk4MTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlMDYyMGZlNmZjNDQyNTk3MzJiODIzMDg2MjNiYTgxZDVlODcyN2NmYzdkZDk4ZTEyMWI4NTNkMmVkMDJkMzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQzM2ZiN2IxODZlYmQ0NGE2OTM1YWI0MzMxOTdjYWU2NDRjM2NhODc2Zjk0M2MxMDY0NTJjZDZjNjk0M2JkYmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ab9ab33b536848fabf0150fd316394a6",
+      "statement": "El arranque documentado ejecuta `apps/mobile/cors-proxy.py`, enlace a la implementación canónica, y esta se mantiene en un único archivo porque ese punto de entrada cambia `sys.path[0]` a `apps/mobile`; importar módulos hermanos del directorio del proxy rompería ese arranque.",
+      "evidence": [
+        {
+          "resource": "repo://apps/anthropic_proxy/README.md#L36-L50",
+          "version": "repo-lines-v1:sha256:e3cc053cfd9a66fd4e05c6276611ad48f497122d0466d6b81f184f229c4cfebe:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0ZmJmMWY2NzVlNGNmZTczNzYwMTAzNjM4OGI0YzEzNTJkOTkyODc0NzUzNzY0Y2I3M2FiYzdiNDMzNzY1Y2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3YzA2YzU2MWQ1YzMyNzM0MzY4NTI2OGE0NmIzMzkxZjM5OThlZWU4OTBkMmJlNTFmMGQyMWNjNGE1M2FlNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjYTI2NGUxN2QyM2MxZTFjOGE3OTQ1NzU1YjQxZGUzMTRmODA2OTAxMjg4NDVjM2M5ZGM2OWE1ZjVhN2Y1NmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwMzFjZGYyZjdmZjUzZDgxYjAwZGE1MWY1OTA0NzVmNDI1ZTU5MWI3ZWEyMTNkMzUzN2YxMTFlYzg3NTRlNTkifQ"
+        },
+        {
+          "resource": "repo://apps/anthropic_proxy/cors-proxy.py#L1-L16",
+          "version": "repo-lines-v1:sha256:1b3a14326897392f6e5119294a33860d26e6fc968ee7e731254f4abbf82f7d7d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzMzFkZTY3MWQwYmFhNzg5NGU3M2VhZmYyNjhmNDI1ZmU1MjQ1MDBhOTI0ZTFlZmUyYjM5NDM5YmZiMGY2NTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjMjJkODJiOTMwNWQ3YjVlNjRmNjhmY2IwYTg2ZTZmMWY5NWQxMmQwZmE5OGU2OGM3OTUwODM4Mzk4ZmRkZWMifQ"
+        },
+        {
+          "resource": "repo://apps/anthropic_proxy/tests/conftest.py#L23-L45",
+          "version": "repo-lines-v1:sha256:388179bbcc984d67061917bdc9b90abe8c9c33f56a1f0ed7e8ae05d437747577:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwYzZjOGY1YjFmMzk5ZTYwZWMzNDgzZTk4ZmNlZmY3ZjFhZWFkMTRhNzcwY2I3NTJkMGZkNTI4OTc3YWYxNjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0Y2RlYzkxYjY0NTk3NWFmZjc2MzI4MjY0ZjllMDZiNzAyMzIyNWE4NmY0NmEyNmIxZDc2ZmFmOTEyMzU4NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlNzE0MDg5ZGY0NjlhMmI3NGNjODYwMjlhMzY2MjQ2YzUyMDA2Y2QxYTg5M2NlNGQwZGFhNTQxZWYyMGUyNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhM2U2ZWIxOTAxZWJhNDZkZTI1ZjZmOTUzMTM1ZmE5MzM1YTQzYmI0MjE0ZWEzYWMxMTIwNGZkOTdmNWY2NjEifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.5.0",
-    "at": "2026-09-13T07:56:37.562Z"
+    "by": "openwiki/0.6.0",
+    "at": "2026-09-27T17:43:05.548Z"
   }
 }

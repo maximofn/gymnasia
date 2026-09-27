@@ -47,9 +47,6 @@ sources:
   - id: openwiki-source-92686d2e99f44496bf2c35a1
     resource: repo://ops/openwiki-automation-template/scripts/render-openwiki-telemetry.mjs
 generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
 ---
 
 # Automatización privada de OpenWiki
@@ -110,6 +107,8 @@ La categoría `oauth` cambia el estado abstracto de autenticación y las demás 
 
 <!-- OPENWIKI_RUNTIME_TELEMETRY:START -->
 ## Telemetría agregada de los últimos 7 días
+
+> ⚠️ La consulta más reciente a LangSmith no estuvo disponible el 27 sept 2026, 20:08. Se conserva la última muestra válida sin bloquear la actualización documental.
 
 Todavía no existe una muestra válida. El runner publicará aquí únicamente agregados saneados cuando complete su primera consulta.
 

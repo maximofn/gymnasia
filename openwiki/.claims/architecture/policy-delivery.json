@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:71e98cfd2e601e9923d548ca43c0455229b160b20a2df5807516c83a4ee7dfe2",
+  "pageVersion": "sha256:1831fa281dc67c22caba6cbd634138477867af9658234e44f554c137bb9aec89",
   "claims": [
     {
       "id": "claim_531b0801ff69469ba48c4b25cec7318c",
@@ -176,11 +176,19 @@
     },
     {
       "id": "claim_cdefbb6509b74abfa14f75dff25e3ff8",
-      "statement": "El lease del agente une y congela profundamente el prompt, la política sanitaria fusionada, el contexto de activación y el estado de una misma selección; la interfaz lo adquiere antes de clasificar la entrada sanitaria de un envío.",
+      "statement": "El lease del agente une y congela profundamente el prompt, la política sanitaria fusionada, el contexto de activación y el estado de una misma selección; los envíos del chat principal, el asistente de alimentos y el mini chat lo adquieren antes de clasificar la entrada sanitaria de un turno.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/App.tsx#L5202-L5249",
-          "version": "repo-lines-v1:sha256:38b55b52dba0f2f8e7821c96910c3ce0701fd0557ca28254d9306ca37683b948:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4N2I5ZTQyZmYxYjE3MmRjMGRiYWJhNjI3YjAxMzU0NjliNDJhMTAzYWJkMGE2OWViODhlNGM5ODAwZDdlYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3OTJmODQ3YmIyMWNiMjkyZGQwOWY3ZmE2ZTdjYWM0YThjMTRkOTdkMzg5NjMzYjNkMTUyMGVhMTRiNWIxZGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMDIxNGZlZjM5YmM0ZTM5NmM3OTk3ZjJkOTgxMjA1YTY5NTFjYzI3ZGFhZWYyZWM0NTI0OTJkMTI3MWZmZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmZDEzYmE4ODU5MzQ3ZTU0YjI1Y2Q4YzhlMDc4MjNmYzg2NzA4OGNlZjJlMWNhZjE1OTFlMWRlNmQ3YWRjMGQifQ"
+          "resource": "repo://apps/mobile/App.tsx#L1861-L1872",
+          "version": "repo-lines-v1:sha256:8a95ba5e78e694ea2eb78c4ee23528ca8031718fe4e1c44ce2d5c7f4f2f965e8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4N2I5ZTQyZmYxYjE3MmRjMGRiYWJhNjI3YjAxMzU0NjliNDJhMTAzYWJkMGE2OWViODhlNGM5ODAwZDdlYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMDIxNGZlZjM5YmM0ZTM5NmM3OTk3ZjJkOTgxMjA1YTY5NTFjYzI3ZGFhZWYyZWM0NTI0OTJkMTI3MWZmZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjljNWZkNmIwNTQ4NGU4ZTQ1Mzk4OWE5YzljODI0ZTBiNjAzMTAyZTU3NWYxMmI0NTIyZGM2MGM2Y2U2NzM2YjIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4840-L4851",
+          "version": "repo-lines-v1:sha256:37e8d8eb11abd6733750592f4196349fb006795d3d5a1ebfaf80cdfa92ae2fda:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExZGY4N2E0NzMxNmM3MDhjNTUwMjA5OGU5YWY2YzQ0NTM0ZWI4MGJlYWRjZjYwNjMwMjhlZmNhODU5MzdhYmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwM2Q0YmZjMDViNTNiNjk0MDA1ZTY5NzU2ZGMyYmQwNWYwNWQwNWMwYWE5YWQ0Mjg2NmI2MjU0NDAzNDhkOTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkODlmZGFjNDNmMzJmM2VjNzc3MjNiMDFkNGExZDNlNGE4MTMyMDE5M2M3NmY1OGI1YjY0NmVhYzQzYjJhODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZlOWUwNDkwODBhNDI1MGZmODI5MWMyZTBhMGMxZGRiNWI5Y2JmYzI0NDAwM2IzNDliZTViYWVlMDQ1OGQ5NmQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L5758-L5765",
+          "version": "repo-lines-v1:sha256:6ff58b356bdd58b7a8bc48a4c36bffce98e97afa570ad218bb58864497403c9d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWE4ODQyMGEzZDNlNjk0NzBmNDJjMTEyMTM0NjdhMmJkNjM0OGIxNmQxOTllYThjYzFhMjBjYzRjMzQyMmU1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTVmYjhjNjBmZWVlOThjN2NmZmRhMjI1ZGNhNDVmODFlZDcxZGU4ZmI5Y2M0ZmJmMGEwMTQxMDc4MjA2NzZhZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmIwYzEzYTQyNGFiYzc4ZTM1OTZhMzhjMGFkYjNhYjcxYTNhYzliYjNmZWQ5NWYxYjQxNWNmNTdhYzAwNjFkNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDcxNDU3OTkwNTlkNzQwYzc4YWRhNDY2YzBjMTVkZDE2YjdkNWRjYTc4ZmM2NDBkN2YzM2NjY2MxNjhhNjc4ZCJ9"
         },
         {
           "resource": "repo://apps/mobile/agent/agentPolicyRuntime.test.ts#L98-L113",
@@ -346,7 +354,7 @@
     }
   ],
   "verification": {
-    "by": "openwiki/0.5.0",
-    "at": "2026-09-07T11:37:28.236Z"
+    "by": "openwiki/0.6.0",
+    "at": "2026-09-27T17:43:05.548Z"
   }
 }

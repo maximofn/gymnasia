@@ -4,7 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 
 import type { GoogleInteractionTurn, GoogleStep } from "./googleInteractions";
 import {
+  closingSystemPrompt,
   MAX_TOOL_ROUNDS,
+  ROUND_LIMIT_CLOSING_INSTRUCTION,
   ROUND_LIMIT_TOOL_RESULT,
   ROUND_LIMIT_USER_MESSAGE,
   runAnthropicToolLoop,
@@ -330,6 +332,14 @@ describe("rondas del bucle con proveedor falso", () => {
   describe("al agotar MAX_TOOL_ROUNDS, una llamada de cierre sin tools contesta al usuario", () => {
     it("el tope por defecto es de 10 rondas", () => {
       expect(MAX_TOOL_ROUNDS).toBe(10);
+    });
+
+    it("el resultado sintético solo informa; la instrucción de cierre pide preguntar si continuar", () => {
+      expect(ROUND_LIMIT_TOOL_RESULT).toMatch(/^No ejecutada/);
+      expect(ROUND_LIMIT_CLOSING_INSTRUCTION).toContain("qué ha quedado sin hacer");
+      expect(ROUND_LIMIT_CLOSING_INSTRUCTION).toContain("preguntándole si quiere que continúes");
+      expect(closingSystemPrompt("Sistema")).toBe(`Sistema\n\n${ROUND_LIMIT_CLOSING_INSTRUCTION}`);
+      expect(closingSystemPrompt("")).toBe(ROUND_LIMIT_CLOSING_INSTRUCTION);
     });
 
     it("Anthropic no ejecuta las tools pendientes y cierra con una respuesta de texto", async () => {
