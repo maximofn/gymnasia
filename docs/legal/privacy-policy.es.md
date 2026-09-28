@@ -4,6 +4,8 @@ effective_date: 2026-09-24
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
+description: Qué datos guarda Gymnasia, dónde se almacenan, qué se envía al proveedor de IA que elijas y cómo borrar tus datos o ejercer tus derechos.
+image_alt: Gymnasia, pantalla de inicio de la app con el entrenamiento del día
 url: https://gymnasia.maximofn.com/privacidad
 alternate_locale: en
 alternate_url: https://gymnasia.maximofn.com/privacy
