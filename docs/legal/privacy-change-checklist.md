@@ -49,13 +49,18 @@ Si un cambio toca cualquiera de estas cosas, recórrela entera:
    ella. Si la ficha ya está publicada, hay que reenviar el formulario.
 7. **Publica.** El HTML generado se sirve desde `apps/mobile/public/`, en el proyecto
    Vercel **`gymnasia-web`** (no `gymnasia`, que es el tablero). El push a `main` **no**
-   despliega: hay que lanzar la CLI a mano, enlazando antes porque `apps/mobile/.vercel/`
-   está git-ignored.
+   despliega: hay que lanzar la CLI a mano **desde la raíz del repositorio**.
+   El proyecto ya tiene `apps/mobile` como directorio raíz en Vercel; si ejecutas
+   la CLI dentro de `apps/mobile`, el build falla con `The specified Root Directory
+   "apps/mobile" does not exist`. Enlaza la raíz del checkout antes de desplegar:
    ```bash
-   npm exec --yes -- vercel@latest link --yes --project gymnasia-web --cwd .
-   npm exec --yes -- vercel@latest deploy --prod --yes --cwd .
+   npm exec --yes -- vercel@59.16.0 link --yes --project gymnasia-web --cwd .
+   npm exec --yes -- vercel@59.16.0 deploy --prod --yes --cwd .
    ```
-   La salida debe decir `Deploying gymnasia-web`. Si dice `Created`, detente.
+   Comprueba que `.vercel/project.json` contiene `"projectName":"gymnasia-web"`.
+   La salida del deploy debe decir `Deploying gymnasia-web`; si la CLI propone
+   crear un proyecto distinto, detente. `link` puede crear `.env.local` y añadir
+   reglas a `.gitignore`: retira esos cambios locales después del despliegue.
 
 ## Verificación de lo publicado
 

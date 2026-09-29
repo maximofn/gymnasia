@@ -1,9 +1,11 @@
 ---
-version: 2026-09-v3
-effective_date: 2026-09-13
+version: 2026-09-v10
+effective_date: 2026-09-29
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
+description: What data Gymnasia keeps, where it is stored, what is sent to the AI provider you choose, and how to delete your data or exercise your rights.
+image_alt: Gymnasia, the app home screen showing today's workout
 url: https://gymnasia.maximofn.com/privacy
 alternate_locale: es
 alternate_url: https://gymnasia.maximofn.com/privacidad
@@ -19,10 +21,13 @@ workouts, diet, weight, measurements and conversations with the assistant are st
 inside the app itself.
 
 There is one important exception, and it is entirely yours: if you enable the artificial
-intelligence assistant, **you** supply an API key from a provider (OpenAI, Anthropic or
-Google), and the app talks **directly** to that provider from your device. Whatever you
-type into the chat travels to the company you chose, under your own account with them.
-We do not see or store it unless you choose **Report** on a response and expressly
+intelligence assistant, **you** supply an API key from OpenAI, Anthropic, Google or an
+OpenAI-compatible server whose HTTPS URL you choose. The app talks **directly** to that
+destination from your device. Whatever you send when a question needs the model goes
+to the company you chose, under your own account with them. Explicit requests for a
+catalogue food's calories per 100 g may be
+answered using data on your device without sending that question to the AI provider.
+We do not see or store the chat unless you choose **Report** on a response and expressly
 approve the preview of the content that will be sent.
 
 This policy explains in detail what is stored, what leaves your device, and what control
@@ -77,23 +82,33 @@ All of the following is stored on your device only:
   in the secure keystore, a normal update may keep them encrypted so they can be reused
   if the feature returns. The current version neither reads nor transmits them. “Delete
   all my data” deletes them.
-- **Preferences**: interface and notification settings, and your per-provider consent
-  for the optional additional health-safety evaluation.
-- **AI provider configuration**: the selected model and, when Anthropic requires it for
-  an identity-linked key, the workspace identifier (`wrkspc_…`).
-- **Debug log**: a technical record of up to 1000 entries covering the rest-timer alerts
-  delivered, which include the exercise name and set number. It is never sent over the
-  network; you can view and clear it from Settings.
+- **Preferences**: interface and notification settings, and your consent for the
+  optional additional health-safety evaluation.
+- **AI provider configuration**: the selected model, the HTTPS base URL if you set up
+  an OpenAI-compatible server and, when Anthropic requires it for an identity-linked
+  key, the workspace identifier (`wrkspc_…`). The app also stores which provider, model
+  and URL combination explicitly rejected a photo, so it can show a notice until you
+  change the configuration.
+- **Debug log**: a technical record of up to 1000 entries covering delivered rest-timer
+  alerts, which include the exercise name and set number; technical policy-selection
+  events; and counters for context prepared for Google, such as exchange count, bytes
+  and the number of old images omitted. Those Google diagnostics contain no messages,
+  images, tool arguments or keys. The log is never sent over the network; you can view
+  and clear it from Settings.
 - **Local recovery copies**: the app keeps one verified copy of its main state. If it
   finds data that it cannot read safely, it quarantines the original payload instead of
   overwriting it. Both copies remain on the device and are replaced or removed when the
   recovery is completed.
-- **Assistant operation control**: a local technical record prevents a provider retry
-  from adding a meal, measurement or routine twice, or submitting a suggestion twice.
-  It keeps up to 256 operations for seven days: technical fingerprints, the action name,
-  the result returned to the model and timestamps. It stores no arguments, messages,
-  instructions or API keys, never leaves the device and is excluded from exported
-  backups.
+- **Assistant operation control**: before a write, the app leaves a local technical mark.
+  For data on the device, it stores another mark with the data when the write finishes;
+  for a suggestion, it queries the issue service with the technical identifier described
+  below. This lets it check an interruption before deciding whether a retry is safe. The
+  each local record is limited to 256 operations. Confirmed ones expire after seven days;
+  an operation whose result cannot be verified is kept until it can be resolved or you
+  delete activity. Local marks contain technical fingerprints, the action name and
+  timestamps; only a confirmed operation's record also keeps the result returned to the
+  model. They store no arguments, messages, instructions or API keys, never leave the
+  device and are excluded from exported backups.
 
 ## Where it is stored {#almacenamiento-local}
 
@@ -111,12 +126,14 @@ Google's privacy policy, not by this app.
 ## Your API key {#byok}
 
 The assistant works on a **bring-your-own-key** basis: no key ships with the app, and
-you enter the one from your own account with OpenAI, Anthropic or Google.
+you enter one from your own account with OpenAI, Anthropic, Google or the compatible
+server you configure.
 
 - The key is stored **in your device's secure keystore** and is never sent to any
   developer server, because no such server exists.
-- The key is sent **only to the provider it belongs to**, with each request, as their
-  API requires.
+- The key is sent **only to the configured destination** with each request. If you
+  choose a compatible server, you decide its HTTPS URL and are responsible for trusting
+  it. The app rejects redirects from that server.
 - If an identity-linked Anthropic key requires a workspace identifier, that identifier
   is stored locally and sent only to Anthropic to route requests to the selected
   workspace.
@@ -137,30 +154,44 @@ you before downloading it.
 
 ## What the app sends to AI providers {#proveedores}
 
-When you use the assistant, your device connects **directly** to the provider you chose.
-The request includes:
+When an assistant question needs the model, your device connects **directly** to the
+provider you chose. An explicit calories per 100 g lookup answered from the local
+catalogue does not make that request. When sent, the request includes:
 
 - the assistant's system instructions;
-- in the main chat, **the complete history for Google**, including response and tool
-  steps from new turns; for OpenAI and Anthropic, **the last 20 messages**. Food
-  assistants send the history of their session;
+- in the main chat, Gymnasia selects **up to the last 20 messages** using the same
+  local rule for every provider. It then adapts that context to each API's format.
+  For Google, the request keeps the exchanges from that selection, including
+  their response and tool steps; if it exceeds the API's size limits, it removes
+  complete exchanges starting with the oldest. Food assistants send their recent
+  session history, limited to ten exchanges on Google;
 - the results of the tools the assistant uses at your request, which may include your
   weight, your body fat percentage, your measurements, the day's meals or your routines;
 - in the food estimator, **the images you provide**, encoded within the request.
 - for Anthropic, the workspace identifier, only when you configured one because the key
   type requires it.
 
-If you enable **additional health-safety evaluation** for a provider in Settings, the
-current text may be sent to that same provider in a separate classification request
-before the normal response is generated. This option is off by default, requires
-separate consent for each provider, and can be revoked at any time. Messages classified
-locally as high or critical risk are intercepted on the device and are not sent to the
-provider.
+If you enable **additional health-safety evaluation** in Settings, the text of a query
+that the local check considers ambiguous may be sent to the provider you are using at
+that moment (the Coach's or the Estimator's) in a separate classification request before
+the normal response is generated. It is a single switch for all providers: it can only
+be enabled once you have saved the key of at least one provider, it turns itself off if
+you delete the last key, it is off by default, and it can be revoked at any time.
+Messages classified locally as high or critical risk are intercepted on the device and
+are not sent to the provider.
 
 All generation requests to Google disable Interactions conversation storage using
-`store: false`. The app resends context from the device with each request and does not
-use a conversation stored at Google to continue the dialogue. This setting does not
-replace the provider's general terms.
+`store: false`. The app resends the recent context that fits within those limits from
+the device and does not use a conversation stored at Google to continue the dialogue.
+The complete history remains stored on the device and is not deleted when preparing a
+smaller request. This setting does not replace the provider's general terms.
+
+The Coach's OpenAI Responses requests also use `store: false`: the app selects the
+history on the device and, during a tool workflow, resends the responses and results
+needed to continue. Encrypted reasoning items remain in memory only for that request;
+they are neither displayed nor saved in the app's conversation history. This setting
+prevents OpenAI from storing the responses as application state, but does not remove
+abuse monitoring logs that OpenAI may retain under your account's configuration.
 
 That content is subject to the privacy policy and terms of the provider you chose, under
 your own account with them:
@@ -168,6 +199,12 @@ your own account with them:
 - [OpenAI](https://openai.com/policies/privacy-policy)
 - [Anthropic](https://www.anthropic.com/legal/privacy)
 - [Google](https://policies.google.com/privacy)
+
+If you configure an OpenAI-compatible server, consult its own policy and terms:
+Gymnasia does not control that destination. The optional model test sends a short query
+and may incur charges under the service you choose. If the model rejects tools, the
+Coach cannot use it; the food estimator can answer without barcode lookup and will
+tell you so.
 
 If you configure no key, the app contacts no AI provider and every other feature keeps
 working.
@@ -179,9 +216,11 @@ differently:
 
 - **Food estimator**: the images you select (up to six) are sent to the AI provider to
   estimate nutritional values. They are not stored in the app and are not uploaded
-  anywhere else. When continuing an analysis with Google, images remain in memory
-  and are resent during that session; they are discarded when the session is reset.
-  Technical history from these temporary assistants is not added to persistent chat.
+  anywhere else. To complete the same turn with Google, they remain available during
+  any tool rounds. When you send a later message, the app keeps the earlier text and
+  answer as context but no longer resends those image bytes. Images are discarded when
+  the session is reset. Technical history from these temporary assistants is not added
+  to persistent chat.
 - **Progress photographs** attached to a measurement: the app creates a JPEG copy in
   its private storage, limits its longest edge to 2048 pixels and removes EXIF, XMP,
   IPTC and comment metadata, including any location carried by the original. It does
@@ -237,8 +276,9 @@ in the same way as a normal backup. It is never sent to a Gymnasia server.
 The exported package **contains**: your measurements and body fat percentages, the
 normalised JPEG copies of your progress photographs that fit within the app's limits,
 your complete diet log, your training history,
-your personal settings (sex, height, date of birth), the assistant's memory and **the
-entire history of your conversations**. It is the most sensitive file the app produces:
+your personal settings (sex, height, date of birth), the assistant's memory, the selected
+models and the custom server's base URL if configured, and **the entire history of your
+conversations**. It is the most sensitive file the app produces:
 store it carefully and think about who you send it to.
 
 Each photograph carries a SHA-256 checksum so it can be checked during restoration. The
@@ -308,10 +348,12 @@ should know about:
 
 ## How long your data is kept {#conservacion}
 
-Except for the technical operation-control record described above, which expires after
-seven days, local data is kept indefinitely for as long as you keep it. Gymnasia does
-not synchronise it or retain it on its own server: you keep and delete it, both on the
-device and anywhere you choose to send a manual backup.
+Confirmed technical operations described above expire after seven days. An unresolved
+operation is kept until the app can verify its result or until you delete activity, so
+that an automatic retry cannot duplicate its effect. Other local data is kept
+indefinitely for as long as you keep it. Gymnasia does not synchronise it or retain it
+on its own server: you keep and delete it, both on the device and anywhere you choose to
+send a manual backup.
 
 Data you have sent to an AI provider is governed by that provider's retention period,
 under your account with them.

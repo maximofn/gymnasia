@@ -9,6 +9,7 @@ import {
   fetchProviderConfiguration,
   googleApiHeaders,
 } from "./providerTransport";
+import { fetchCustomOpenAIModels } from "./customOpenAIModels";
 
 export type ProviderVerificationResult = {
   ok: boolean;
@@ -82,6 +83,16 @@ export async function verifyProviderConfiguration(
 
   try {
     let response: Response;
+    if (provider.provider === "custom_openai") {
+      const catalog = await fetchCustomOpenAIModels(provider, {
+        platform: options.platform,
+        fetchImpl: options.fetchImpl,
+        timeoutMs,
+      });
+      return catalog.unavailable
+        ? { ok: true, severity: "warning", message: "Este servidor no ofrece /models. Puedes guardar el modelo escrito y probarlo aparte; la prueba puede consumir API." }
+        : { ok: true, severity: "success", message: SUCCESS_MESSAGE };
+    }
     if (provider.provider === "openai") {
       response = await fetchProviderConfiguration(
         "https://api.openai.com/v1/models",

@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
@@ -118,7 +117,7 @@ export const TrainingCatalogOverlays = memo(function TrainingCatalogOverlays({
 
       {model.customFormOpen ? (
         <View testID={shellSurfaceTestId("custom-exercise-form")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "#0D1117", zIndex: 750, elevation: 75 }}>
-          <SafeAreaView style={{ flex: 1 }}>
+          <View style={{ flex: 1 }}>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
               <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, gap: 10 }}>
                 <Pressable onPress={actions.closeCustomForm} hitSlop={10}>
@@ -194,7 +193,7 @@ export const TrainingCatalogOverlays = memo(function TrainingCatalogOverlays({
                 </Pressable>
               </ScrollView>
             </KeyboardAvoidingView>
-          </SafeAreaView>
+          </View>
         </View>
       ) : null}
 
@@ -267,7 +266,7 @@ export const TrainingExerciseDetailOverlay = memo(function TrainingExerciseDetai
   if (!exercise) return null;
   return (
     <View testID={shellSurfaceTestId("training-exercise-detail")} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "#06090D", zIndex: 200 }}>
-      <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
           <View style={{ position: "relative" }}>
             {exercise.imageUri ? (
@@ -322,7 +321,7 @@ export const TrainingExerciseDetailOverlay = memo(function TrainingExerciseDetai
             ) : null}
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </View>
   );
 });

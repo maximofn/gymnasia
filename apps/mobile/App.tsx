@@ -11,13 +11,17 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Pressable,
-  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
+// El SafeAreaView de react-native core es un View normal en Android: solo aplica
+// insets en iOS. Con el edge-to-edge obligatorio del SDK 54, Android 15+ dibuja la
+// app bajo las barras del sistema, así que hacen falta los insets nativos de
+// react-native-safe-area-context. Ver GYM-249.
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { mobileTheme } from "./theme";
 import { DesktopSidebar, ExerciseCatalogDetailOverlay } from "./screens";
@@ -29,6 +33,9 @@ import {
 import { pushTrace, pushAppStartTrace, clearTraces, getTraces } from "./trace";
 import { agentToolEffect } from "./agent/toolDefinitions";
 import {
+  buildPersonalDataStore,
+  parsePersonalDataStore,
+  personalDataStoreReceiptsAreValid,
   sanitizePersonalDataFields,
   type PersonalDataField,
 } from "./agent/personalData";
@@ -39,9 +46,17 @@ import {
 } from "./agent/toolExecutor";
 import {
   ToolOperationCoordinator,
+  ToolOperationIndeterminateError,
   ToolOperationLedgerRepository,
+  TOOL_OPERATION_INDETERMINATE_MESSAGE,
   type ToolCallEnvelope,
+  type ToolOperationReconciliationContext,
+  type ToolOperationReconciliationOutcome,
 } from "./agent/toolOperationLedger";
+import {
+  canProveToolOperationReceiptAbsent,
+  hasToolOperationReceipt,
+} from "./agent/toolOperationReceipts";
 import { resolveFeedbackEndpoint } from "./environment";
 import { createFeedbackIssueClient } from "./agent/feedbackClient";
 import {
@@ -61,12 +76,16 @@ import {
   type GoogleConversationTurn,
 } from "./agent/googleInteractions";
 import type { StreamingHandlers } from "./agent/providerStreamParsers";
+import { createStreamDraftFlusher, type StreamDraftFlusher } from "./agent/streamDraftFlusher";
 import {
   requestProviderText,
   type ChatInputMessage,
+  type GoogleContextReport,
   type ProviderChatResult as AnthropicChatResult,
 } from "./agent/providerChatClient";
 import { requestProviderToolChat } from "./agent/providerToolClient";
+import { selectCoachContext } from "./agent/coachContext";
+import { answerCatalogCaloriesLookup } from "./agent/catalogLookup";
 import {
   FOOD_AI_SYSTEM_PROMPT,
   FOOD_ESTIMATOR_SYSTEM_PROMPT,
@@ -115,6 +134,17 @@ import {
   type HealthSafetyMessageMetadata,
   type HealthSafetyRuntimePolicy,
 } from "./agent/healthSafety";
+import {
+  applyHealthSafetyConsentUpdate,
+  configuredHealthSafetyProviders,
+  createHealthSafetyConsentState,
+  describeHealthSafetyConsentSwitch,
+  normalizeHealthSafetyConsentState,
+  sanitizeHealthSafetyConsent,
+  shouldEvaluateWithProvider,
+  type HealthSafetyConsentState,
+  type HealthSafetyConsentUpdate,
+} from "./agent/healthSafetyConsent";
 import {
   belongsToActiveStorageNamespace,
   IS_FAKE_PROVIDER_MODE,
@@ -369,11 +399,19 @@ import {
   fetchAnthropicModelsViaWebProxy,
   fetchGoogleModels,
   fetchOpenAIModels,
+  fetchPersonalizedModels,
   verifyProviderConnection,
   type GoogleModelOption,
   type OpenAIModelOption,
   type ProviderVerificationResult,
 } from "./agent/providerCatalog";
+import { normalizeCustomOpenAIBaseUrl } from "./agent/customOpenAIUrl";
+import { requestCustomOpenAIChat } from "./agent/customOpenAIChat";
+import {
+  isExplicitImageUnsupported,
+  photoCapabilityId,
+  PHOTO_UNSUPPORTED_MESSAGE,
+} from "./agent/providerPhotoCapability";
 import {
   formatNutritionValidationIssues,
   validateNutritionItem,
@@ -560,22 +598,19 @@ Notifications.setNotificationHandler({
   },
 });
 
-type HealthSafetyConsentState = {
-  consentVersion: string;
-  providers: Record<Provider, boolean>;
-  noticeSeen: Record<Provider, boolean>;
-};
 // `AnthropicModelOption` vive ahora en ./agent/anthropicModels, junto al
 // recorrido de la paginación, para poder probarse sin arrastrar App.tsx.
 type ChatProviderCallOptions = StreamingHandlers & {
   setStore?: LocalStoreRuntime["update"];
   commitStore?: (updater: (previous: ToolStore) => ToolStore) => Promise<void>;
   store?: LocalStore;
-  foodsRepo?: FoodRepoEntry[];
+  getFoodCatalogContext?: () => {
+    foodsRepo: FoodRepoEntry[];
+    availability: CatalogSearchAvailability;
+  };
   exercisesRepo?: ExerciseRepoEntry[];
   searchExerciseCatalog?: ToolExecutionContext["searchExerciseCatalog"];
   resolveExerciseCatalogIds?: ToolExecutionContext["resolveExerciseCatalogIds"];
-  foodCatalogAvailability?: CatalogSearchAvailability;
   exerciseCatalogAvailability?: CatalogSearchAvailability;
   getExerciseCatalogAvailability?: ToolExecutionContext["getExerciseCatalogAvailability"];
   executionId?: string;
@@ -590,6 +625,14 @@ function toChatInput(message: ChatInputMessage): ChatInputMessage {
     ...(message.googleTurn ? { googleTurn: message.googleTurn } : {}),
     ...(message.googleInput ? { googleInput: message.googleInput } : {}),
   };
+}
+
+function recordGoogleContextReport(report: GoogleContextReport): void {
+  void pushTrace(
+    "googleContext",
+    report.outcome === "prepared" ? "request-prepared" : "request-rejected",
+    report,
+  );
 }
 
 function callProviderChatAPI(
@@ -607,6 +650,7 @@ function callProviderChatAPI(
       environment: Constants.expoConfig?.extra?.environment,
       googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
       anthropicWebProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/messages"),
+      onGoogleContextReport: recordGoogleContextReport,
     },
     surface,
     onGoogleTurn,
@@ -751,42 +795,17 @@ const LEGACY_SECURE_STORE_PREFIXES = [
   scopedSecureStoreKey("gymnasia.mobile.provider.api_key"),
   scopedSecureStoreKey("gymnasia.mobile.v2.provider.api_key"),
 ];
-const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic"];
+const FOOD_ESTIMATOR_PROVIDER_PRIORITY: Provider[] = ["google", "openai", "anthropic", "custom_openai"];
 const FOOD_ESTIMATOR_MAX_IMAGES = 6;
 
 const EXERCISES_REPO_BASE_URL =
   "https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios";
 const HEALTH_SAFETY_CONSENT_KEY = scopedStorageKey("gymnasia.mobile.health_safety.consent.v1");
+const PHOTO_UNSUPPORTED_KEY = scopedStorageKey("gymnasia.mobile.food.photo_unsupported.v1");
 
-function createHealthSafetyConsentState(): HealthSafetyConsentState {
-  return {
-    consentVersion: BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY.consentVersion,
-    providers: { anthropic: false, openai: false, google: false },
-    noticeSeen: { anthropic: false, openai: false, google: false },
-  };
-}
-
-function normalizeHealthSafetyConsentState(value: unknown): HealthSafetyConsentState {
-  const fallback = createHealthSafetyConsentState();
-  if (!value || typeof value !== "object" || Array.isArray(value)) return fallback;
-  const candidate = value as Partial<HealthSafetyConsentState>;
-  if (candidate.consentVersion !== fallback.consentVersion) return fallback;
-  const providers = candidate.providers ?? fallback.providers;
-  const noticeSeen = candidate.noticeSeen ?? fallback.noticeSeen;
-  return {
-    consentVersion: fallback.consentVersion,
-    providers: {
-      anthropic: providers.anthropic === true,
-      openai: providers.openai === true,
-      google: providers.google === true,
-    },
-    noticeSeen: {
-      anthropic: noticeSeen.anthropic === true,
-      openai: noticeSeen.openai === true,
-      google: noticeSeen.google === true,
-    },
-  };
-}
+// El modelo del consentimiento vive en ./agent/healthSafetyConsent para poder
+// probarse sin arrastrar App.tsx. Aquí solo queda la versión de política vigente.
+const HEALTH_SAFETY_CONSENT_VERSION = BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY.consentVersion;
 
 // --- GYM-5 (ticket para exportar e importar copias manuales) ---
 // Almacena la fecha del último backup manual realizado por el usuario.
@@ -913,7 +932,8 @@ const EMPTY_CUSTOM_EXERCISE_DRAFT: CustomExerciseDraft = {
 type ExerciseRepoEntry = ExerciseCatalogEntry;
 type FoodRepoEntry = FoodCatalogEntry;
 
-// Las incidencias se crean a través del backend de recepción (GYM-54), que es
+// Las incidencias se crean a través del backend de recepción (GYM-54, ticket
+// para sustituir los escritores no-op de GitHub Issues), que es
 // quien custodia la credencial de GitHub. Un cliente estático nunca puede
 // llevar un token de escritura. Toda la lógica testeable vive en
 // agent/feedbackIssues.ts y agent/feedbackClient.ts.
@@ -933,6 +953,7 @@ const feedbackProposalStore = createFeedbackProposalStore({ createId: () => uid(
 
 async function submitFeedbackIssue(
   draft: FeedbackIssueDraft,
+  operationId?: string,
 ): Promise<FeedbackIssueOutcome> {
   if (!feedbackIssueClient) {
     return {
@@ -940,7 +961,7 @@ async function submitFeedbackIssue(
       reason: feedbackEndpoint.available ? "disabled" : feedbackEndpoint.reason,
     };
   }
-  return feedbackIssueClient.submitIssue(draft);
+  return feedbackIssueClient.submitIssue(draft, operationId);
 }
 
 function getExerciseImageUrl(entry: ExerciseRepoEntry, gender: "male" | "female"): string {
@@ -953,8 +974,7 @@ function getExerciseImageUrl(entry: ExerciseRepoEntry, gender: "male" | "female"
 async function loadPersonalData(): Promise<PersonalDataField[]> {
   try {
     const raw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
-    if (!raw) return [];
-    return sanitizePersonalDataFields(JSON.parse(raw));
+    return parsePersonalDataStore(raw).fields;
   } catch {
     return [];
   }
@@ -962,11 +982,149 @@ async function loadPersonalData(): Promise<PersonalDataField[]> {
 
 // Acepta unknown a propósito: el backup importado llega sin validar y no debe
 // fingir que ya tiene la forma correcta.
-async function savePersonalData(fields: unknown): Promise<void> {
-  await AsyncStorage.setItem(
-    PERSONAL_DATA_STORAGE_KEY,
-    JSON.stringify(sanitizePersonalDataFields(fields)),
-  );
+let personalDataWriteQueue: Promise<void> = Promise.resolve();
+
+async function updatePersonalDataStore(
+  update: (current: ReturnType<typeof parsePersonalDataStore>) => ReturnType<typeof parsePersonalDataStore>,
+): Promise<void> {
+  const run = personalDataWriteQueue.then(async () => {
+    const currentRaw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
+    if (currentRaw !== null && !personalDataStoreReceiptsAreValid(currentRaw)) {
+      throw new ToolOperationIndeterminateError();
+    }
+    const current = parsePersonalDataStore(currentRaw);
+    const raw = JSON.stringify(update(current));
+    await AsyncStorage.setItem(PERSONAL_DATA_STORAGE_KEY, raw);
+    const verified = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
+    if (verified !== raw) throw new ToolOperationIndeterminateError();
+  });
+  personalDataWriteQueue = run.catch(() => undefined);
+  return run;
+}
+
+async function savePersonalData(fields: unknown, operationId?: string): Promise<void> {
+  await updatePersonalDataStore((current) => buildPersonalDataStore(
+    fields,
+    current.toolOperationReceipts,
+    operationId,
+  ));
+}
+
+async function clearPersonalDataOperationReceipts(): Promise<void> {
+  const run = personalDataWriteQueue.then(async () => {
+    const currentRaw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
+    if (currentRaw === null) return;
+    const parsed = JSON.parse(currentRaw) as unknown;
+    if (
+      !Array.isArray(parsed)
+      && (
+        !parsed
+        || typeof parsed !== "object"
+        || (parsed as { schemaVersion?: unknown }).schemaVersion !== 2
+      )
+    ) {
+      throw new Error("No se pudo conservar la memoria personal durante el borrado.");
+    }
+    const current = parsePersonalDataStore(currentRaw);
+    const raw = JSON.stringify({ ...current, toolOperationReceipts: [] });
+    await AsyncStorage.setItem(PERSONAL_DATA_STORAGE_KEY, raw);
+    if (await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY) !== raw) {
+      throw new Error("No se pudo verificar el borrado de recibos de la memoria.");
+    }
+  });
+  personalDataWriteQueue = run.catch(() => undefined);
+  return run;
+}
+
+const RECONCILED_TOOL_OUTPUTS: Record<string, string> = {
+  save_personal_data: "Los datos personales ya se habían guardado.",
+  write_measurement: "Las medidas ya se habían guardado.",
+  add_meal_food: "El alimento ya se había añadido.",
+  create_routine: "La rutina ya se había creado.",
+};
+
+async function reconcileToolOperation(
+  operationId: string,
+  toolName: string,
+  context: ToolOperationReconciliationContext,
+): Promise<ToolOperationReconciliationOutcome> {
+  if (toolName === "create_feature_issue") {
+    if (!feedbackIssueClient) {
+      return context.source === "fresh"
+        ? { status: "not_committed" }
+        : { status: "indeterminate" };
+    }
+    const outcome = await feedbackIssueClient.getOperationStatus("feature", operationId);
+    if (outcome.status === "created") {
+      return {
+        status: "committed",
+        output: `Incidencia registrada con el número ${outcome.issueNumber}. Comunica al usuario ese número. No inventes ningún otro dato.`,
+      };
+    }
+    if (outcome.status === "absent") {
+      return context.source === "fresh"
+        ? { status: "not_committed" }
+        : { status: "indeterminate" };
+    }
+    return { status: "indeterminate" };
+  }
+
+  if (toolName === "save_personal_data") {
+    try {
+      const raw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
+      if (!raw) {
+        return context.source === "fresh"
+          || (context.preparedAt !== undefined
+            && canProveToolOperationReceiptAbsent([], context.preparedAt))
+          ? { status: "not_committed" }
+          : { status: "indeterminate" };
+      }
+      if (!personalDataStoreReceiptsAreValid(raw)) {
+        return { status: "indeterminate" };
+      }
+      const store = parsePersonalDataStore(raw);
+      if (hasToolOperationReceipt(store.toolOperationReceipts, operationId, toolName)) {
+        return { status: "committed", output: RECONCILED_TOOL_OUTPUTS[toolName] };
+      }
+      return context.source === "fresh"
+        || (context.preparedAt !== undefined
+          && canProveToolOperationReceiptAbsent(
+            store.toolOperationReceipts,
+            context.preparedAt,
+          ))
+        ? { status: "not_committed" }
+        : { status: "indeterminate" };
+    } catch {
+      return { status: "indeterminate" };
+    }
+  }
+
+  if (Object.hasOwn(RECONCILED_TOOL_OUTPUTS, toolName)) {
+    try {
+      const inspection = await localStoreRecoveryRepository.inspect();
+      if (inspection.status === "empty") {
+        return context.source === "fresh"
+          || (context.preparedAt !== undefined
+            && canProveToolOperationReceiptAbsent([], context.preparedAt))
+          ? { status: "not_committed" }
+          : { status: "indeterminate" };
+      }
+      if (inspection.status !== "valid") return { status: "indeterminate" };
+      const receipts = inspection.candidate.value.toolOperationReceipts;
+      if (hasToolOperationReceipt(receipts, operationId, toolName)) {
+        return { status: "committed", output: RECONCILED_TOOL_OUTPUTS[toolName] };
+      }
+      return context.source === "fresh"
+        || (context.preparedAt !== undefined
+          && canProveToolOperationReceiptAbsent(receipts, context.preparedAt))
+        ? { status: "not_committed" }
+        : { status: "indeterminate" };
+    } catch {
+      return { status: "indeterminate" };
+    }
+  }
+
+  return { status: "indeterminate" };
 }
 
 async function loadMeasurementsFromStorage(): Promise<Measurement[]> {
@@ -1066,6 +1224,7 @@ function resolveProviderByPriority(keys: AIKey[], priority: Provider[]): AIKey |
     if (!configured) continue;
     const apiKey = providerCredential(configured.api_key, IS_FAKE_PROVIDER_MODE);
     if (!apiKey) continue;
+    if (provider === "custom_openai" && (!configured.model.trim() || !configured.base_url?.trim())) continue;
     return {
       ...configured,
       api_key: apiKey,
@@ -1081,6 +1240,7 @@ function resolveFoodEstimatorProvider(keys: AIKey[]): AIKey | null {
     if (!configured) continue;
     const apiKey = providerCredential(configured.api_key, IS_FAKE_PROVIDER_MODE);
     if (!apiKey) continue;
+    if (provider === "custom_openai" && (!configured.model.trim() || !configured.base_url?.trim())) continue;
     return {
       ...configured,
       api_key: apiKey,
@@ -1094,6 +1254,7 @@ function withEffectiveProviderCredential(provider: AIKey | undefined): AIKey | n
   if (!provider) return null;
   const apiKey = providerCredential(provider.api_key, IS_FAKE_PROVIDER_MODE);
   if (!apiKey) return null;
+  if (provider.provider === "custom_openai" && (!provider.model.trim() || !provider.base_url?.trim())) return null;
   return {
     ...provider,
     api_key: apiKey,
@@ -1186,7 +1347,7 @@ function secureStoreKey(provider: Provider): string {
 }
 
 function emptyProviderApiKeys(): Record<Provider, string> {
-  return { openai: "", anthropic: "", google: "" };
+  return { openai: "", anthropic: "", google: "", custom_openai: "" };
 }
 
 async function isSecureStoreAvailable(): Promise<boolean> {
@@ -1270,9 +1431,14 @@ type BackupResult = {
 type BackupMeta = { lastBackupAt: string | null };
 
 function buildBackupData(data: BackupExportData): BackupExportData {
+  const sanitizedStore = sanitizeDevStoreValue(data.store);
+  const {
+    toolOperationReceipts: _toolOperationReceipts,
+    ...backupStore
+  } = sanitizedStore;
   return {
     // Nunca escribir API keys ni otros campos de credencial al paquete exportado.
-    store: sanitizeDevStoreValue(data.store),
+    store: backupStore as LocalStore,
     userPrefs: normalizeUserPreferences(data.userPrefs).preferences,
     personalFoods: data.personalFoods,
     personalData: data.personalData,
@@ -1473,7 +1639,6 @@ async function callProviderChatAPIWithTools(
   const toolStoreSetter = options?.setStore;
   const toolStoreCommitter = options?.commitStore;
   const toolStore = options?.store;
-  const toolFoodsRepo = options?.foodsRepo;
   const toolExercisesRepo = options?.exercisesRepo;
   const executeGuardedTool = async (
     name: string,
@@ -1499,25 +1664,33 @@ async function callProviderChatAPIWithTools(
         message: "La herramienta no está permitida para esta consulta.",
       });
     }
-    return toolOperationCoordinator.execute(
+    const outcome = await toolOperationCoordinator.execute(
       call,
       effect !== "read",
-      (operationId) => executeChatTool(
-        name,
-        args,
-        toolStoreSetter,
-        toolStoreCommitter,
-        toolStore,
-        toolFoodsRepo,
-        toolExercisesRepo,
-        options?.foodCatalogAvailability,
-        options?.exerciseCatalogAvailability,
-        operationId,
-        options?.searchExerciseCatalog,
-        options?.resolveExerciseCatalogIds,
-        options?.getExerciseCatalogAvailability,
-      ),
+      (operationId) => {
+        const foodCatalogContext = options?.getFoodCatalogContext?.();
+        return executeChatTool(
+          name,
+          args,
+          toolStoreSetter,
+          toolStoreCommitter,
+          toolStore,
+          foodCatalogContext?.foodsRepo,
+          toolExercisesRepo,
+          foodCatalogContext?.availability,
+          options?.exerciseCatalogAvailability,
+          operationId,
+          options?.searchExerciseCatalog,
+          options?.resolveExerciseCatalogIds,
+          options?.getExerciseCatalogAvailability,
+        );
+      },
+      reconcileToolOperation,
     );
+    if (outcome.status === "indeterminate") {
+      throw new ToolOperationIndeterminateError();
+    }
+    return outcome.output;
   };
   return requestProviderToolChat(
     provider,
@@ -1528,6 +1701,7 @@ async function callProviderChatAPIWithTools(
       environment: Constants.expoConfig?.extra?.environment,
       googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
       anthropicWebProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/messages"),
+      onGoogleContextReport: recordGoogleContextReport,
     },
     {
       executionId: options?.executionId,
@@ -1555,6 +1729,7 @@ async function callFoodEstimatorAPI(
       environment: Constants.expoConfig?.extra?.environment,
       googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
       anthropicWebProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/messages"),
+      onGoogleContextReport: recordGoogleContextReport,
     },
     options,
     skipImages,
@@ -1631,7 +1806,7 @@ type MiniChatProps = {
   onClose: () => void;
   visible: boolean;
   title: string;
-  healthSafetyEvaluatorConsent: Record<Provider, boolean>;
+  healthSafetyEvaluatorConsent: HealthSafetyConsentState;
   onHealthSafetyConsentPrompt: (provider: Provider) => void;
   onReportMessage: (message: ChatMessage, messages: ChatMessage[]) => void;
   testID?: string;
@@ -1711,7 +1886,7 @@ function MiniChat({
     }
 
     if (healthDecision.level === "elevated") {
-      if (healthSafetyEvaluatorConsent[provider.provider]) {
+      if (shouldEvaluateWithProvider(healthSafetyEvaluatorConsent, provider)) {
         healthDecision = await evaluateHealthSafetyWithProvider(
           provider,
           text,
@@ -1899,6 +2074,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [localStoreRecoveryError, setLocalStoreRecoveryError] = useState<string | null>(null);
   const [localStoreStartupError, setLocalStoreStartupError] = useState<string | null>(null);
   const localStoreHydrationAttemptRef = useRef(0);
+  const toolOperationReconciliationStartedRef = useRef(false);
   const [secureStoreAvailable, setSecureStoreAvailable] = useState(true);
   // GYM-5 (ticket para exportar e importar copias manuales), en Configuración → Datos.
   const [backupBusy, setBackupBusy] = useState<null | "export" | "import">(null);
@@ -2039,6 +2215,32 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const [foodEstimatorImages, setFoodEstimatorImages] = useState<FoodEstimatorImage[]>([]);
   const [foodEstimatorMessages, setFoodEstimatorMessages] = useState<ChatMessage[]>([]);
   const [foodEstimatorInput, setFoodEstimatorInput] = useState("");
+  const [foodEstimatorPhotoError, setFoodEstimatorPhotoError] = useState<string | null>(null);
+  const resumeFoodEstimatorDraftRef = useRef(false);
+  const foodEstimatorSentImageIdsRef = useRef<Set<string>>(new Set());
+  const [photoUnsupportedIds, setPhotoUnsupportedIds] = useState<string[]>([]);
+  const photoUnsupportedIdsRef = useRef<string[]>([]);
+  const [customModelFocusRequest, setCustomModelFocusRequest] = useState(0);
+  useEffect(() => {
+    if (!isHydrated) return;
+    let live = true;
+    void AsyncStorage.getItem(PHOTO_UNSUPPORTED_KEY).then((raw) => {
+      if (!live || !raw) return;
+      const parsed: unknown = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        const ids = parsed.filter((item): item is string => typeof item === "string");
+        photoUnsupportedIdsRef.current = ids;
+        setPhotoUnsupportedIds(ids);
+      }
+    }).catch(() => {});
+    return () => { live = false; };
+  }, [isHydrated]);
+  function updatePhotoUnsupportedIds(updater: (current: string[]) => string[]) {
+    const next = updater(photoUnsupportedIdsRef.current);
+    photoUnsupportedIdsRef.current = next;
+    setPhotoUnsupportedIds(next);
+    void AsyncStorage.setItem(PHOTO_UNSUPPORTED_KEY, JSON.stringify(next)).catch(() => {});
+  }
   const [foodEstimatorSending, setFoodEstimatorSending] = useState(false);
   const [foodEstimatorStatus, setFoodEstimatorStatus] = useState("");
   const foodThinkingLabel = useThinkingLabel(foodEstimatorSending);
@@ -2092,6 +2294,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   });
   const foodsRepo = foodCatalogRuntime.foods;
   const foodCatalogAvailability = foodCatalogRuntime.availability;
+  const foodCatalogContextRef = useRef({
+    foodsRepo: [...foodsRepo, ...personalFoods],
+    availability: foodCatalogAvailability,
+  });
+  foodCatalogContextRef.current = {
+    foodsRepo: [...foodsRepo, ...personalFoods],
+    availability: foodCatalogAvailability,
+  };
   const exerciseCatalogRuntime = useExerciseCatalogRuntime({
     isHydrated,
     localStore: localStoreRuntime,
@@ -2126,7 +2336,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   );
   const providerOperationsRef = useRef<ProviderOperationMap>(createProviderOperationMap());
   const [healthSafetyConsent, setHealthSafetyConsent] = useState<HealthSafetyConsentState>(
-    createHealthSafetyConsentState,
+    () => createHealthSafetyConsentState(HEALTH_SAFETY_CONSENT_VERSION),
   );
   const [chatProviderDropdownOpen, setChatProviderDropdownOpen] = useState(false);
   const [foodAIProviderDropdownOpen, setFoodAIProviderDropdownOpen] = useState(false);
@@ -2154,6 +2364,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     severity: ProviderStatusSeverity;
   } | null>(null);
   const [googleModelFilter, setGoogleModelFilter] = useState("");
+  const [customModelOptions, setCustomModelOptions] = useState<OpenAIModelOption[]>([]);
+  const [customModelOptionsLoading, setCustomModelOptionsLoading] = useState(false);
+  const [customModelTesting, setCustomModelTesting] = useState(false);
+  const [customModelMessage, setCustomModelMessage] = useState<{
+    text: string;
+    severity: ProviderStatusSeverity;
+  } | null>(null);
   const [providerDeleteModal, setProviderDeleteModal] = useState<ProviderDeleteModalState | null>(null);
   const [trainingSearch, setTrainingSearch] = useState("");
   const [trainingFilter, setTrainingFilter] = useState<TrainingFilter>("all");
@@ -2277,7 +2494,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   );
   const orderedProviderKeys = useMemo(
     () =>
-      (["anthropic", "openai", "google"] as Provider[])
+      (["anthropic", "openai", "google", "custom_openai"] as Provider[])
         .map((provider) => store.keys.find((item) => item.provider === provider))
         .filter((item): item is AIKey => !!item),
     [store.keys],
@@ -2324,7 +2541,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     keys: orderedProviderKeys,
     chatProvider: store.chatProvider ?? null,
     foodProvider: store.foodAIProvider ?? null,
-    healthSafetyProviders: healthSafetyConsent.providers,
+    photoUnsupportedIds,
+    healthSafetyConsent: describeHealthSafetyConsentSwitch(
+      healthSafetyConsent,
+      configuredHealthSafetyProviders(store.keys),
+    ),
     secureStoreAvailable,
     isWeb: Platform.OS === "web",
     chatDropdownOpen: chatProviderDropdownOpen,
@@ -2357,10 +2578,19 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       message: googleModelOptionsMessage,
       options: filteredGoogleModelOptions,
     },
-    updateHealthSafetyConsent: (provider, enabled) => updateHealthSafetyConsent(provider, {
-      enabled,
-      noticeSeen: true,
-    }),
+    custom: {
+      loading: customModelOptionsLoading,
+      testing: customModelTesting,
+      message: customModelMessage,
+      options: customModelOptions,
+      photoUnsupported: photoUnsupportedIds.includes(photoCapabilityId({
+        provider: "custom_openai",
+        model: providerDraftByProvider.custom_openai?.model ?? "",
+        base_url: providerDraftByProvider.custom_openai?.base_url,
+      })),
+      focusModelRequest: customModelFocusRequest,
+    },
+    updateHealthSafetyConsent: (enabled) => updateHealthSafetyConsent({ enabled, noticeSeen: true }),
     selectChatProvider: (provider) => void selectChatProvider(provider),
     selectFoodProvider: (provider) => {
       setStore((previous) => ({ ...previous, foodAIProvider: provider }));
@@ -2387,6 +2617,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     selectAnthropicModel,
     selectOpenAIModel,
     selectGoogleModel,
+    loadCustomModels: () => void loadCustomModelOptions(),
+    testCustomModel: () => void testCustomModel(),
+    selectCustomModel: (id) => updateProviderDraft("custom_openai", { model: id }),
   });
   const measurementsRuntime = useMeasurementsRuntime({
     localStore: localStoreRuntime,
@@ -2404,12 +2637,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   const latestBodyHeightCm = measurementsRuntime.latestHeightCm;
   const weightMeasurementPair = measurementsRuntime.weightSummary;
   const dietSettingsRuntime = useDietSettingsRuntime({
+    active: tab === "settings" && settingsTab === "diet",
     localStore: localStoreRuntime,
     latestHeightCm: latestBodyHeightCm,
     latestWeightKg: latestBodyWeightKg,
     isWeb: Platform.OS === "web",
     isIos: Platform.OS === "ios",
-    setError,
+    createId: uid,
   });
   const dietSettingsController = dietSettingsRuntime.controller;
   const savedDietPlanEvaluation = dietSettingsRuntime.planning.savedEvaluation;
@@ -3985,7 +4219,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const parsedAlarmHealth: AlarmHealth = rawAlarmHealth && typeof rawAlarmHealth === "object" && !Array.isArray(rawAlarmHealth)
       ? { ...DEFAULT_ALARM_HEALTH, ...rawAlarmHealth as Partial<AlarmHealth> }
       : { ...DEFAULT_ALARM_HEALTH };
-    const parsedHealthSafetyConsent = normalizeHealthSafetyConsentState(consentParsed.value);
+    const parsedHealthSafetyConsent = normalizeHealthSafetyConsentState(consentParsed.value, {
+      consentVersion: HEALTH_SAFETY_CONSENT_VERSION,
+      configuredProviders: configuredHealthSafetyProviders(mergedStore.keys),
+    });
 
     if (!isCurrent()) return;
     if (normalizedPrefs.repairs.length > 0) {
@@ -4037,6 +4274,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     alarmHealthRef.current = parsedAlarmHealth;
     setAlarmHealth(parsedAlarmHealth);
     setHealthSafetyConsent(parsedHealthSafetyConsent);
+    if (JSON.stringify(consentParsed.value) !== JSON.stringify(parsedHealthSafetyConsent)) {
+      // Migración del documento heredado por proveedor, o saneado de un
+      // consentimiento sin clave detrás: lo persistido debe coincidir con lo que se usa.
+      void AsyncStorage.setItem(HEALTH_SAFETY_CONSENT_KEY, JSON.stringify(parsedHealthSafetyConsent)).catch(() => {});
+    }
     setLocalStoreStartupError(null);
     setLocalStoreRecovery(null);
     setIsHydrated(true);
@@ -4064,6 +4306,27 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   useEffect(() => {
     if (!isHydrated || dataDeletionBusyRef.current) return;
     readBackupMeta().then((meta) => setLastBackupAt(meta.lastBackupAt));
+  }, [isHydrated]);
+
+  useEffect(() => {
+    if (!isHydrated) {
+      toolOperationReconciliationStartedRef.current = false;
+      return;
+    }
+    if (
+      dataDeletionBusyRef.current
+      || toolOperationReconciliationStartedRef.current
+    ) return;
+    toolOperationReconciliationStartedRef.current = true;
+    void toolOperationCoordinator.reconcileUnresolved(reconcileToolOperation)
+      .then((summary) => {
+        if (summary.indeterminate > 0) {
+          setError(TOOL_OPERATION_INDETERMINATE_MESSAGE);
+        }
+      })
+      .catch(() => {
+        setError("No se pudo comprobar el estado de las últimas acciones del agente.");
+      });
   }, [isHydrated]);
 
   useEffect(() => {
@@ -4572,7 +4835,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
 
     const assistantMessageId = uid("msg");
-    let draftFlushTimer: ReturnType<typeof setTimeout> | null = null;
+    let draftFlusher: StreamDraftFlusher | null = null;
     setSendingChat(true);
     setError(null);
 
@@ -4588,7 +4851,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setPolicyRuntimeStatus({ ...policyLease.status });
       let healthDecision = classifyHealthSafetyText(userInput, "input", healthSelection.policy);
       if (healthDecision.level === "elevated") {
-        if (healthSafetyConsent.providers[activeProvider.provider]) {
+        if (shouldEvaluateWithProvider(healthSafetyConsent, activeProvider)) {
           healthDecision = await evaluateHealthSafetyWithProvider(
             activeProvider,
             userInput,
@@ -4643,40 +4906,30 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         policy: healthSelection.policy,
       });
 
-      const flushAssistantDraft = (force = false) => {
-        const apply = () => {
-          const nextThinking = draftThinking && draftThinking.trim().length > 0 ? draftThinking : null;
-          updateThreadMessage(threadId, assistantMessageId, (current) => {
-            if (
-              current.content === draftContent &&
-              (current.thinking ?? null) === nextThinking &&
-              current.is_streaming
-            ) {
-              return current;
-            }
-            return {
-              ...current,
-              content: draftContent,
-              thinking: nextThinking,
-              is_streaming: true,
-            };
-          });
-        };
-
-        if (force) {
-          if (draftFlushTimer) {
-            clearTimeout(draftFlushTimer);
-            draftFlushTimer = null;
+      const applyAssistantDraft = () => {
+        const nextThinking = draftThinking && draftThinking.trim().length > 0 ? draftThinking : null;
+        updateThreadMessage(threadId, assistantMessageId, (current) => {
+          if (
+            current.content === draftContent &&
+            (current.thinking ?? null) === nextThinking &&
+            current.is_streaming
+          ) {
+            return current;
           }
-          apply();
-          return;
-        }
+          return {
+            ...current,
+            content: draftContent,
+            thinking: nextThinking,
+            is_streaming: true,
+          };
+        });
+      };
 
-        if (draftFlushTimer) return;
-        draftFlushTimer = setTimeout(() => {
-          draftFlushTimer = null;
-          apply();
-        }, 40);
+      const flusher = createStreamDraftFlusher(applyAssistantDraft);
+      draftFlusher = flusher;
+      const flushAssistantDraft = (force = false) => {
+        if (force) flusher.flushNow();
+        else flusher.schedule();
       };
 
       const resetAssistantDraft = () => {
@@ -4690,9 +4943,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       };
 
       const allHistory = excludeLocalDisclosureMessages([...threadMessages, userMessage]);
-      const history = (activeProvider.provider === "google" ? allHistory : allHistory.slice(-20)).map(toChatInput);
-      // GYM-139: el system prompt procede exclusivamente de la política
-      // seleccionada más la política local de transparencia que añade
+      const history = selectCoachContext(allHistory).map(toChatInput);
+      // GYM-139 (ticket para impedir que la memoria persistente altere el
+      // system prompt): el prompt procede exclusivamente de la política
+      // seleccionada más la transparencia local que añade
       // composeAiSystemPrompt. Ningún dato local puede sumar texto aquí, así que
       // esta ruta no lee la memoria personal en absoluto.
       void pushTrace("chatPrompt", "chat-request", {
@@ -4708,12 +4962,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         basePromptChars: systemPromptSelection.content.length,
         localPromptOverrides: 0,
       });
-      let assistantResult: AnthropicChatResult | null = null;
+      const localCatalogAnswer = answerCatalogCaloriesLookup(
+        userInput,
+        foodCatalogContextRef.current.foodsRepo,
+      );
+      let assistantResult: AnthropicChatResult | null = localCatalogAnswer
+        ? { content: localCatalogAnswer, thinking: null }
+        : null;
       const chatMessages = [
         { role: "system" as const, content: systemPromptSelection.content },
         ...history,
       ];
-      for (let attempt = 0; attempt < 3; attempt++) {
+      for (let attempt = 0; attempt < 3 && !assistantResult; attempt++) {
         try {
           if (attempt > 0) {
             resetAssistantDraft();
@@ -4722,9 +4982,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             setStore,
             commitStore: commitToolStoreMutation,
             store,
-            foodsRepo: [...foodsRepo, ...personalFoods],
+            getFoodCatalogContext: () => foodCatalogContextRef.current,
             exercisesRepo,
-            foodCatalogAvailability,
             exerciseCatalogAvailability,
             searchExerciseCatalog: exerciseCatalogRuntime.actions.search,
             resolveExerciseCatalogIds: exerciseCatalogRuntime.actions.resolveIds,
@@ -4753,10 +5012,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         throw new Error("El modelo no devolvió contenido.");
       }
 
-      if (draftFlushTimer) {
-        clearTimeout(draftFlushTimer);
-        draftFlushTimer = null;
-      }
+      draftFlusher?.cancel();
       const streamState = streamGate.finish(assistantResult.content);
       const safetyResponse = streamState.blockedDecision
         ? createLocalHealthSafetyResponse(streamState.blockedDecision, healthSelection.policy)
@@ -4775,6 +5031,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         is_streaming: false,
       }) : ({
         ...current,
+        report_context: localCatalogAnswer
+          ? { origin: "unknown" }
+          : current.report_context,
         content: streamState.visibleContent,
         thinking: assistantResult.thinking,
         googleTurn: assistantResult.googleTurn,
@@ -4784,16 +5043,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         setExpandedThinking((prev) => ({ ...prev, [assistantMessageId]: false }));
       }
     } catch (err) {
-      if (draftFlushTimer) {
-        clearTimeout(draftFlushTimer);
-        draftFlushTimer = null;
-      }
+      draftFlusher?.cancel();
       const message = err instanceof Error ? err.message : "No se pudo enviar mensaje al proveedor.";
       setError(message);
       updateThreadMessage(threadId, assistantMessageId, (current) => ({
         ...current,
         kind: "technical_error",
-        content: `Error de proveedor: ${message}`,
+        content: err instanceof ToolOperationIndeterminateError
+          || message === TOOL_OPERATION_INDETERMINATE_MESSAGE
+          ? TOOL_OPERATION_INDETERMINATE_MESSAGE
+          : `Error de proveedor: ${message}`,
         thinking: null,
         is_streaming: false,
       }));
@@ -5224,6 +5483,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       }
       const mergedStore: LocalStore = {
         ...importedStore,
+        // Los recibos no viajan en la copia, pero el journal local sí sobrevive
+        // a la importación. Conservarlos impide que una operación anterior y
+        // ambigua se repita automáticamente sobre los datos restaurados.
+        toolOperationReceipts: storeRef.current.toolOperationReceipts,
         keys: providerCommit.snapshot.keys,
         chatProvider:
           providerCommit.snapshot.keys.find((item) => item.is_active)?.provider
@@ -5315,8 +5578,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       ? withEffectiveProviderCredential(store.keys.find((k) => k.provider === store.foodAIProvider) ?? store.keys[0]) ?? resolveFoodEstimatorProvider(store.keys)
       : resolveFoodEstimatorProvider(store.keys);
     setFoodEstimatorProvider(provider);
+    if (resumeFoodEstimatorDraftRef.current) {
+      resumeFoodEstimatorDraftRef.current = false;
+      setFoodEstimatorPhotoError(null);
+      setFoodEstimatorModalOpen(true);
+      return;
+    }
     setFoodEstimatorImages([]);
+    foodEstimatorSentImageIdsRef.current.clear();
     setFoodEstimatorInput("");
+    setFoodEstimatorPhotoError(null);
     setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     setFoodEstimatorHasLLMResponse(false);
     foodEstimatorUsedBarcodeRef.current = false;
@@ -5328,7 +5599,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         role: "assistant",
         content: provider
           ? "Sube fotos o describe la comida para comenzar la estimación."
-          : "No hay API key disponible para estimar. Configura Google, OpenAI o Anthropic en Configuración > Proveedor IA.",
+          : "No hay API key disponible para estimar. Configura un proveedor en Configuración > Proveedor IA.",
         created_at: new Date().toISOString(),
       },
     ]);
@@ -5340,6 +5611,18 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setFoodEstimatorModalOpen(false);
     setFoodEstimatorSending(false); setFoodEstimatorStatus("");
     setFoodEstimatorExpandedThinking({});
+  }
+
+  function chooseModelAfterPhotoError() {
+    const provider = foodEstimatorProvider?.provider;
+    resumeFoodEstimatorDraftRef.current = true;
+    setFoodEstimatorModalOpen(false);
+    setTab("settings");
+    setSettingsTab("provider");
+    if (provider === "custom_openai") setCustomModelFocusRequest((value) => value + 1);
+    if (provider === "openai") setOpenAIModelDropdownOpen(true);
+    if (provider === "anthropic") setAnthropicModelDropdownOpen(true);
+    if (provider === "google") setGoogleModelDropdownOpen(true);
   }
 
   function removeFoodEstimatorImage(imageId: string) {
@@ -5433,7 +5716,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   async function sendFoodEstimatorMessage(forcedMessage?: string) {
     if (foodEstimatorSending) return;
     const userInput = (forcedMessage ?? foodEstimatorInput).trim();
-    if (!userInput && foodEstimatorImages.length === 0) {
+    const freshImages = foodEstimatorImages.filter((image) => !foodEstimatorSentImageIdsRef.current.has(image.id));
+    if (!userInput && freshImages.length === 0) {
       setError("Escribe un mensaje o adjunta al menos una foto para estimar.");
       return;
     }
@@ -5447,12 +5731,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const resolvedProvider = resolveFoodEstimatorProviderFromState();
 
     if (!resolvedProvider) {
-      setError("Configura una API key en Proveedor IA (Google, OpenAI o Anthropic) para usar esta función.");
+      setError("Configura un proveedor en Proveedor IA para usar esta función.");
       return;
     }
 
-    if (resolvedProvider.provider === "google" && !foodEstimatorHasLLMResponse) {
-      userMessage.googleInput = [{ type: "text", text: messageText }, ...foodEstimatorImages
+    if (resolvedProvider.provider === "google" && freshImages.length > 0) {
+      userMessage.googleInput = [{ type: "text", text: messageText }, ...freshImages
         .filter((image) => image.base64.trim())
         .map((image) => ({ type: "image", mime_type: image.mime_type || "image/jpeg", data: image.base64 }))];
     }
@@ -5466,7 +5750,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setPolicyRuntimeStatus({ ...policyLease.status });
     let healthDecision = classifyHealthSafetyText(messageText, "input", healthSelection.policy);
     if (healthDecision.level === "elevated") {
-      if (healthSafetyConsent.providers[resolvedProvider.provider]) {
+      if (shouldEvaluateWithProvider(healthSafetyConsent, resolvedProvider)) {
         healthDecision = await evaluateHealthSafetyWithProvider(
           resolvedProvider,
           messageText,
@@ -5492,7 +5776,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
 
     const assistantMessageId = uid("food_est_msg");
-    let draftFlushTimer: ReturnType<typeof setTimeout> | null = null;
+    let draftFlusher: StreamDraftFlusher | null = null;
     const assistantDraft: ChatMessage = {
       id: assistantMessageId,
       role: "assistant",
@@ -5515,9 +5799,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setFoodEstimatorInput("");
     }
     setFoodEstimatorSending(true);
+    setFoodEstimatorPhotoError(null);
     setFoodEstimatorStatus("Enviando...");
     setError(null);
 
+    const sentPhotos = freshImages.length > 0;
     try {
       let draftContent = "";
       let draftThinking: string | null = null;
@@ -5525,41 +5811,31 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         inputDecision: healthDecision,
         policy: healthSelection.policy,
       });
-      const flushAssistantDraft = (force = false) => {
-        const apply = () => {
-          const nextThinking = draftThinking && draftThinking.trim().length > 0 ? draftThinking : null;
-          setFoodEstimatorMessages((prev) => prev.map((message) => {
-            if (message.id !== assistantMessageId) return message;
-            if (
-              message.content === draftContent
-              && (message.thinking ?? null) === nextThinking
-              && message.is_streaming
-            ) {
-              return message;
-            }
-            return {
-              ...message,
-              content: draftContent,
-              thinking: nextThinking,
-              is_streaming: true,
-            };
-          }));
-        };
-
-        if (force) {
-          if (draftFlushTimer) {
-            clearTimeout(draftFlushTimer);
-            draftFlushTimer = null;
+      const applyAssistantDraft = () => {
+        const nextThinking = draftThinking && draftThinking.trim().length > 0 ? draftThinking : null;
+        setFoodEstimatorMessages((prev) => prev.map((message) => {
+          if (message.id !== assistantMessageId) return message;
+          if (
+            message.content === draftContent
+            && (message.thinking ?? null) === nextThinking
+            && message.is_streaming
+          ) {
+            return message;
           }
-          apply();
-          return;
-        }
+          return {
+            ...message,
+            content: draftContent,
+            thinking: nextThinking,
+            is_streaming: true,
+          };
+        }));
+      };
 
-        if (draftFlushTimer) return;
-        draftFlushTimer = setTimeout(() => {
-          draftFlushTimer = null;
-          apply();
-        }, 40);
+      const flusher = createStreamDraftFlusher(applyAssistantDraft);
+      draftFlusher = flusher;
+      const flushAssistantDraft = (force = false) => {
+        if (force) flusher.flushNow();
+        else flusher.schedule();
       };
       const resetAssistantDraft = () => {
         draftContent = "";
@@ -5577,7 +5853,6 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         },
         ...excludeLocalDisclosureMessages(nextMessages).map(toChatInput),
       ];
-      const skipImages = foodEstimatorHasLLMResponse;
       let assistantResult: AnthropicChatResult | null = null;
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
@@ -5587,7 +5862,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           assistantResult = await callFoodEstimatorAPI(
             resolvedProvider,
             estimatorHistory,
-            foodEstimatorImages,
+            freshImages,
             {
               onStatus: setFoodEstimatorStatus,
               onToolUsed: (toolName) => {
@@ -5601,7 +5876,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                 draftThinking = aggregate;
               },
             },
-            skipImages,
+            false,
           );
           if (assistantResult && assistantResult.content.trim().length > 0) break;
           assistantResult = null;
@@ -5616,15 +5891,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       if (!assistantResult || assistantResult.content.trim().length === 0) {
         throw new Error("El modelo no devolvió contenido. Intenta reformular tu mensaje.");
       }
-      if (draftFlushTimer) {
-        clearTimeout(draftFlushTimer);
-        draftFlushTimer = null;
-      }
+      draftFlusher?.cancel();
       const streamState = streamGate.finish(assistantResult.content);
       const safetyResponse = streamState.blockedDecision
         ? createLocalHealthSafetyResponse(streamState.blockedDecision, healthSelection.policy)
         : null;
       setFoodEstimatorHasLLMResponse(!safetyResponse);
+      for (const image of freshImages) foodEstimatorSentImageIdsRef.current.add(image.id);
       setFoodEstimatorMessages((prev) => prev.map((message) => (
         message.id === assistantMessageId
           ? safetyResponse ? {
@@ -5641,7 +5914,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
               is_streaming: false,
             } : {
               ...message,
-              content: streamState.visibleContent,
+              content: streamState.visibleContent + (assistantResult.warning ? `\n\nAviso: ${assistantResult.warning}` : ""),
               thinking: assistantResult.thinking,
               googleTurn: assistantResult.googleTurn,
               is_streaming: false,
@@ -5652,9 +5925,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         setFoodEstimatorExpandedThinking((prev) => ({ ...prev, [assistantMessageId]: false }));
       }
     } catch (err) {
-      if (draftFlushTimer) {
-        clearTimeout(draftFlushTimer);
-        draftFlushTimer = null;
+      draftFlusher?.cancel();
+      if (sentPhotos && isExplicitImageUnsupported(err)) {
+        const id = photoCapabilityId(resolvedProvider);
+        updatePhotoUnsupportedIds((ids) => ids.includes(id) ? ids : [...ids, id]);
+        setFoodEstimatorPhotoError(PHOTO_UNSUPPORTED_MESSAGE);
+        setFoodEstimatorInput(userInput);
+        setFoodEstimatorMessages((prev) => prev.filter((entry) => entry.id !== userMessage.id && entry.id !== assistantMessageId));
+        return;
       }
       const message =
         err instanceof Error
@@ -5691,6 +5969,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         environment: Constants.expoConfig?.extra?.environment,
         googleFixturePort: Constants.expoConfig?.extra?.googleFixturePort,
         anthropicWebProxyUrl: anthropicWebProxyUrl("/chat/providers/anthropic/messages"),
+        onGoogleContextReport: recordGoogleContextReport,
       },
     );
   }
@@ -7303,30 +7582,34 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       .catch(() => {});
   }
 
-  function updateHealthSafetyConsent(
-    provider: Provider,
-    updates: { enabled?: boolean; noticeSeen?: boolean },
-  ) {
+  function updateHealthSafetyConsent(updates: HealthSafetyConsentUpdate) {
     setHealthSafetyConsent((previous) => {
-      const next: HealthSafetyConsentState = {
-        ...previous,
-        providers: {
-          ...previous.providers,
-          ...(updates.enabled === undefined ? {} : { [provider]: updates.enabled }),
-        },
-        noticeSeen: {
-          ...previous.noticeSeen,
-          ...(updates.noticeSeen === undefined ? {} : { [provider]: updates.noticeSeen }),
-        },
-      };
+      const next = applyHealthSafetyConsentUpdate(
+        previous,
+        updates,
+        configuredHealthSafetyProviders(storeRef.current.keys),
+      );
       void AsyncStorage.setItem(HEALTH_SAFETY_CONSENT_KEY, JSON.stringify(next));
       return next;
     });
   }
 
+  // Al borrar la última clave (o al importar una copia sin claves) el interruptor
+  // se apaga solo: no hay a quién enviar el texto y no debe seguir diciendo «Activada».
+  useEffect(() => {
+    if (!isHydrated) return;
+    const sanitized = sanitizeHealthSafetyConsent(
+      healthSafetyConsent,
+      configuredHealthSafetyProviders(store.keys),
+    );
+    if (!sanitized.changed) return;
+    setHealthSafetyConsent(sanitized.state);
+    void AsyncStorage.setItem(HEALTH_SAFETY_CONSENT_KEY, JSON.stringify(sanitized.state)).catch(() => {});
+  }, [healthSafetyConsent, isHydrated, store.keys]);
+
   function offerHealthSafetyEvaluatorConsent(provider: Provider) {
-    if (healthSafetyConsent.providers[provider] || healthSafetyConsent.noticeSeen[provider]) return;
-    updateHealthSafetyConsent(provider, { noticeSeen: true });
+    if (healthSafetyConsent.enabled || healthSafetyConsent.noticeSeen) return;
+    updateHealthSafetyConsent({ noticeSeen: true });
     Alert.alert(
       "Evaluación sanitaria opcional",
       `Esta consulta parece necesitar más contexto. Si lo activas, se enviará únicamente el texto de consultas ambiguas a ${PROVIDER_UI_META[provider].label} para una segunda clasificación. No se envían el historial, fotos ni memoria local.`,
@@ -7334,7 +7617,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         { text: "Ahora no", style: "cancel" },
         {
           text: "Activar para futuras consultas",
-          onPress: () => updateHealthSafetyConsent(provider, { enabled: true, noticeSeen: true }),
+          onPress: () => updateHealthSafetyConsent({ enabled: true, noticeSeen: true }),
         },
       ],
     );
@@ -7425,6 +7708,9 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const nextDraft: ProviderDraft = {
       api_key: updates.api_key ?? currentDraft.api_key,
       model: nextModel,
+      base_url: provider === "custom_openai"
+        ? updates.base_url ?? currentDraft.base_url ?? ""
+        : "",
       workspace_id:
         provider === "anthropic"
           ? updates.workspace_id ?? currentDraft.workspace_id ?? ""
@@ -7467,6 +7753,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       setGoogleModelOptionsMessage(null);
       setGoogleModelFilter("");
     }
+    if (provider === "custom_openai" && (updates.api_key !== undefined || updates.base_url !== undefined)) {
+      setCustomModelOptions([]);
+      setCustomModelMessage(null);
+      setCustomModelOptionsLoading(false);
+    }
 
     if (options.markPending) {
       updateProviderOperations((current) => editProviderOperation(current, provider));
@@ -7474,6 +7765,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       if (provider === "anthropic") setAnthropicModelOptionsLoading(false);
       if (provider === "openai") setOpenAIModelOptionsLoading(false);
       if (provider === "google") setGoogleModelOptionsLoading(false);
+      if (provider === "custom_openai") setCustomModelOptionsLoading(false);
       setProviderConnectionStatus((prev) => ({
         ...prev,
         [provider]: nextDraft.api_key.trim()
@@ -7615,6 +7907,79 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     }
   }
 
+  async function loadCustomModelOptions() {
+    const draft = providerDraftByProvider.custom_openai;
+    if (!draft) return;
+    const apiKey = providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
+    if (!apiKey) {
+      setCustomModelMessage({ text: PROVIDER_STATUS_COPY.warningNoKey, severity: "warning" });
+      return;
+    }
+    try {
+      normalizeCustomOpenAIBaseUrl(draft.base_url ?? "");
+    } catch (error) {
+      setCustomModelMessage({ text: error instanceof Error ? error.message : "URL HTTPS no válida.", severity: "error" });
+      return;
+    }
+    const begun = beginProviderDiscovery(providerOperationsRef.current, "custom_openai");
+    updateProviderOperations(() => begun.state);
+    setCustomModelOptionsLoading(true);
+    setCustomModelMessage(null);
+    try {
+      const result = await fetchPersonalizedModels({
+        provider: normalizeProviderConfiguration("custom_openai", { ...draft, api_key: apiKey }),
+        platform: Platform.OS === "web" ? "web" : "native",
+        fakeMode: IS_FAKE_PROVIDER_MODE,
+      });
+      if (!isProviderDiscoveryCurrent(providerOperationsRef.current, begun.token)) return;
+      setCustomModelOptions(result.options);
+      if (result.unavailable) setCustomModelMessage({
+        text: "Este servidor no ofrece /models. Escribe el ID del modelo y guárdalo; puedes probarlo aparte (la prueba puede consumir API).",
+        severity: "warning",
+      });
+      else if (!result.options.length) setCustomModelMessage({
+        text: "El servidor no ha devuelto modelos. Puedes escribir el ID manualmente.",
+        severity: "warning",
+      });
+    } catch (error) {
+      if (!isProviderDiscoveryCurrent(providerOperationsRef.current, begun.token)) return;
+      setCustomModelMessage({
+        text: error instanceof Error ? error.message : "No se pudo consultar la lista de modelos.",
+        severity: "error",
+      });
+    } finally {
+      if (isProviderDiscoveryCurrent(providerOperationsRef.current, begun.token)) setCustomModelOptionsLoading(false);
+    }
+  }
+
+  async function testCustomModel() {
+    const draft = providerDraftByProvider.custom_openai;
+    if (!draft) return;
+    let candidate: AIKey;
+    try {
+      candidate = {
+        ...normalizeProviderConfiguration("custom_openai", draft),
+        base_url: normalizeCustomOpenAIBaseUrl(draft.base_url ?? ""),
+      };
+      if (!candidate.model || !candidate.api_key) throw new Error("Escribe un modelo y una API key antes de probarlo.");
+    } catch (error) {
+      setCustomModelMessage({ text: error instanceof Error ? error.message : "Configuración incompleta.", severity: "error" });
+      return;
+    }
+    setCustomModelTesting(true);
+    setCustomModelMessage(null);
+    try {
+      if (!IS_FAKE_PROVIDER_MODE) await requestCustomOpenAIChat(candidate, [
+        { role: "user", content: "Responde OK." },
+      ], { platform: Platform.OS === "web" ? "web" : "native", stream: false });
+      setCustomModelMessage({ text: "El modelo respondió correctamente.", severity: "success" });
+    } catch (error) {
+      setCustomModelMessage({ text: error instanceof Error ? error.message : "El modelo no respondió.", severity: "error" });
+    } finally {
+      setCustomModelTesting(false);
+    }
+  }
+
   async function toggleAnthropicModelDropdown() {
     const nextOpen = !anthropicModelDropdownOpen;
     setAnthropicModelDropdownOpen(nextOpen);
@@ -7713,6 +8078,11 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
   }
 
   function clearProviderModelDiscovery(provider: Provider, clearOptions: boolean) {
+    if (provider === "custom_openai") {
+      if (clearOptions) setCustomModelOptions([]);
+      setCustomModelMessage(null);
+      setCustomModelOptionsLoading(false);
+    }
     if (provider === "anthropic") {
       setAnthropicModelDropdownOpen(false);
       if (clearOptions) setAnthropicModelOptions([]);
@@ -7795,6 +8165,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       }
 
       const committedDraft = createProviderDraftMap(result.snapshot.keys)[provider];
+      const previousConfiguration = storeRef.current.keys.find((item) => item.provider === provider);
+      if (previousConfiguration && photoCapabilityId(previousConfiguration) !== photoCapabilityId(candidate)) {
+        updatePhotoUnsupportedIds((ids) => ids.filter((id) => id !== photoCapabilityId(previousConfiguration)));
+      }
       const committedProvider = result.snapshot.keys.find((item) => item.is_active)?.provider;
       setStore((prev) => ({
         ...prev,
@@ -7847,7 +8221,22 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     const draft = providerDraftByProvider[provider];
     if (!draft) return;
 
-    const candidate = normalizeProviderConfiguration(provider, draft, true);
+    let candidate = normalizeProviderConfiguration(provider, draft, true);
+
+    if (provider === "custom_openai" && candidate.api_key) {
+      try {
+        candidate = { ...candidate, base_url: normalizeCustomOpenAIBaseUrl(candidate.base_url ?? "") };
+        if (!candidate.model) throw new Error("Escribe el ID del modelo antes de guardar.");
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : "URL HTTPS o modelo no válidos.";
+        setProviderConnectionStatus((prev) => ({
+          ...prev,
+          custom_openai: { state: "disconnected", detail, severity: "error" },
+        }));
+        setError(detail);
+        return;
+      }
+    }
 
     if (
       provider === "anthropic"
@@ -8078,6 +8467,16 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           verify: async () => (await loadDevStoreFile()) === serializedDevStore,
         });
       }
+      tasks.push({
+        id: "personal-data-tool-receipts",
+        label: "Control de operaciones de la memoria del coach",
+        delete: clearPersonalDataOperationReceipts,
+        verify: async () => {
+          const raw = await AsyncStorage.getItem(PERSONAL_DATA_STORAGE_KEY);
+          return raw === null
+            || parsePersonalDataStore(raw).toolOperationReceipts.length === 0;
+        },
+      });
     } else {
       const secureStoreAvailableNow = await isSecureStoreAvailable();
       const preservedKeys = new Set(
@@ -8238,6 +8637,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     setDataDeletionReport(null);
     let report: LocalDataDeletionReport;
     try {
+      // Bloquea nuevas persistencias y espera las que ya habían superado su guard.
+      // Sin esta barrera, una escritura antigua podía terminar después del borrado
+      // y repoblar el espejo de desarrollo con conversaciones y recibos eliminados.
+      await localStoreRuntimeHandle.enqueuePersistence(async () => undefined);
       const tasks = await buildDataDeletionTasks(scope);
       report = await runLocalDataDeletion(scope, tasks);
     } catch (error) {
@@ -8597,7 +9000,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
                   providerKeys={store.keys}
                   preferredProvider={store.foodAIProvider}
                   providerPriority={FOOD_ESTIMATOR_PROVIDER_PRIORITY}
-                  healthSafetyEvaluatorConsent={healthSafetyConsent.providers}
+                  healthSafetyEvaluatorConsent={healthSafetyConsent}
                   onHealthSafetyConsentPrompt={offerHealthSafetyEvaluatorConsent}
                   onReportMessage={(message, conversation) => {
                     handleOpenAiReport("personal-food-assistant", message, conversation);
@@ -8660,6 +9063,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         inputValue={foodEstimatorInput}
         sending={foodEstimatorSending}
         statusLabel={foodEstimatorStatus || `${foodThinkingLabel}...`}
+        photoError={foodEstimatorPhotoError}
         expandedThinking={foodEstimatorExpandedThinking}
         scrollRef={foodEstimatorScrollRef}
         hasResponse={foodEstimatorHasLLMResponse}
@@ -8678,6 +9082,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         }}
         onReportMessage={handleOpenAiReport}
         onAddFood={() => { void addFoodFromEstimatorJSON(); }}
+        onChooseModel={chooseModelAfterPhotoError}
       />
 
       <PortablePasswordModal
@@ -8793,10 +9198,12 @@ export default function App() {
   }, []);
 
   return (
-    <GymnasiaApp
-      key={runtimeGeneration}
-      deletionOutcome={deletionOutcome}
-      onRuntimeReset={handleRuntimeReset}
-    />
+    <SafeAreaProvider>
+      <GymnasiaApp
+        key={runtimeGeneration}
+        deletionOutcome={deletionOutcome}
+        onRuntimeReset={handleRuntimeReset}
+      />
+    </SafeAreaProvider>
   );
 }

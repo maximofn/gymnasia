@@ -51,6 +51,10 @@ import {
   normalizeTemplateIcon,
 } from "../training/presentationModel";
 import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
+import {
+  normalizeToolOperationReceipts,
+  type ToolOperationReceipt,
+} from "../agent/toolOperationReceipts";
 
 export const MAX_WORKOUT_HISTORY_ITEMS = 180;
 
@@ -65,6 +69,7 @@ export type LocalStore = {
   keys: ProviderConfiguration[];
   chatProvider?: Provider;
   foodAIProvider?: Provider;
+  toolOperationReceipts: ToolOperationReceipt[];
 };
 
 export type LocalStoreModelRuntime = {
@@ -113,6 +118,7 @@ export function createInitialStore(
       [firstThreadId]: [createAiIdentityChatMessage("msg", "main-chat", runtime)],
     },
     keys: createDefaultProviderConfigurations(),
+    toolOperationReceipts: [],
   };
 }
 
@@ -127,6 +133,7 @@ export function createActivityResetStore(
     keys: store.keys.map((key) => ({ ...key })),
     chatProvider: store.chatProvider,
     foodAIProvider: store.foodAIProvider,
+    toolOperationReceipts: [],
   };
 }
 
@@ -272,5 +279,6 @@ export function normalizeStore(
     keys,
     chatProvider,
     foodAIProvider,
+    toolOperationReceipts: normalizeToolOperationReceipts(raw.toolOperationReceipts),
   };
 }

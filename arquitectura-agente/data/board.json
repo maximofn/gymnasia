@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-14",
+    "updated": "2026-09-29",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -51,6 +51,69 @@
     }
   ],
   "groups": [
+    {
+      "id": "GYM-243",
+      "kind": "epic",
+      "title": "Resolver las incidencias comunicadas por los testers (épica de máxima prioridad)",
+      "state": "todo",
+      "summary": "Recoge cada fallo que los testers externos comunican durante la prueba cerrada, lo reproduce y lo corrige antes que cualquier otro trabajo; va por delante incluso de las demás épicas urgentes.",
+      "dependsOn": [],
+      "related": [
+        "GYM-200"
+      ],
+      "tickets": [
+        {
+          "id": "GYM-244",
+          "title": "El Coach no responde: «La compilación no contiene un snapshot firmado»",
+          "state": "todo",
+          "summary": "Un tester ve un aviso rojo en la pestaña Coach y el agente no contesta: el APK instalado salió sin el snapshot firmado de políticas. Hay que identificar el artefacto, impedir que se publique otro así y hacer el mensaje accionable.",
+          "dependsOn": [],
+          "related": []
+        },
+        {
+          "id": "GYM-245",
+          "title": "Permitir introducir el peso desde el plan de dieta y propagarlo a Medidas, Home y el agente",
+          "state": "done",
+          "summary": "Un tester pulsa la casilla Peso del plan de dieta y no pasa nada porque es de solo lectura. Debe aceptar el peso, guardarlo como medición de hoy y que Home, Medidas, Calcular y el agente lean el mismo valor.",
+          "dependsOn": [],
+          "related": []
+        },
+        {
+          "id": "GYM-246",
+          "title": "Ajustes → Preferencias muestra «notifications: [object Object]» y claves internas en crudo",
+          "state": "done",
+          "summary": "La pestaña Preferencias recorre el objeto de preferencias de forma genérica y pinta claves internas y objetos anidados sin formato. Debe listar filas explícitas y legibles, y fallar en compilación si aparece una preferencia sin presentación.",
+          "dependsOn": [],
+          "related": []
+        },
+        {
+          "id": "GYM-247",
+          "title": "La evaluación sanitaria opcional se puede activar para un proveedor sin API key",
+          "state": "done",
+          "summary": "Los interruptores de evaluación sanitaria de Ajustes no miran si el proveedor tiene clave guardada, así que se pueden activar sin efecto real. Deben deshabilitarse sin clave, apagarse al borrarla y sanearse al arrancar.",
+          "dependsOn": [],
+          "related": []
+        },
+        {
+          "id": "GYM-248",
+          "title": "El error «Introduce altura, peso y fecha de nacimiento» de Dieta sigue visible al cambiar de pestaña en Ajustes",
+          "state": "done",
+          "summary": "El aviso de «faltan datos para calcular» de la pestaña Dieta de Ajustes usa el banner de error global de la app, así que se queda pegado encima de cualquier otra pestaña o pantalla. Debe limpiarse al cambiar de pestaña o pasar a ser un error local de Dieta.",
+          "dependsOn": [],
+          "related": [
+            "GYM-246"
+          ]
+        },
+        {
+          "id": "GYM-249",
+          "title": "La app se solapa con la barra de estado y la de navegación en Android 15+ (edge-to-edge sin insets)",
+          "state": "in_progress",
+          "summary": "En Android 15 o posterior el contenido se dibuja bajo la barra de estado y la de gestos: el título de Rutinas se pisa con la hora y el botón de nueva rutina queda pegado al borde inferior. Falta respetar las áreas seguras del sistema con el modo edge-to-edge obligatorio.",
+          "dependsOn": [],
+          "related": []
+        }
+      ]
+    },
     {
       "id": "GYM-228",
       "kind": "epic",
@@ -303,7 +366,7 @@
         {
           "id": "GYM-226",
           "title": "Automatizar la subida a Google Play de los cambios fusionados",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Hoy nada de lo que se fusiona llega a Play: el workflow compila un APK y publica una release de GitHub, sin AAB ni subida. Automatizarlo hasta el canal de pruebas internas.",
           "dependsOn": [],
           "related": [
@@ -539,7 +602,9 @@
             "GYM-147",
             "GYM-177",
             "GYM-190",
-            "GYM-203"
+            "GYM-203",
+            "GYM-251",
+            "GYM-252"
           ]
         },
         {
@@ -683,7 +748,7 @@
         {
           "id": "GYM-37",
           "title": "3. Streaming: argumentos que llegan en deltas",
-          "state": "backlog",
+          "state": "done",
           "baseline": "done",
           "summary": "input_json_delta acumulado en el bloque tool_use (App.tsx:3302).",
           "dependsOn": [
@@ -694,9 +759,9 @@
         {
           "id": "GYM-38",
           "title": "4. Despachador: de nombre de tool a ejecutable",
-          "state": "backlog",
+          "state": "done",
           "baseline": "done",
-          "summary": "handleToolCall en App.tsx:1469: cadena de if (name === X) sobre las 15 tools, siempre Promise<string>.",
+          "summary": "Probar el despacho de las 13 tools, rechazar nombres desconocidos y documentar el flujo; queda la QA nativa.",
           "dependsOn": [
             "GYM-34"
           ],
@@ -705,9 +770,9 @@
         {
           "id": "GYM-39",
           "title": "5. Cerrar el bucle: reinyectar resultados y acotar rondas",
-          "state": "backlog",
+          "state": "done",
           "baseline": "done",
-          "summary": "Bucle de 10 rondas en App.tsx:4688-4705. Al agotarlas termina en seco, sin mensaje ni traza.",
+          "summary": "Bucle de tools con tope de 10 rondas. Al agotarlas, las tool calls pendientes se responden sin ejecutarlas y una llamada de cierre sin tools contesta con lo ya obtenido.",
           "dependsOn": [
             "GYM-34"
           ],
@@ -951,11 +1016,29 @@
       ]
     },
     {
+      "id": "GYM-51",
+      "kind": "epic",
+      "title": "Context engineering",
+      "state": "backlog",
+      "summary": "Diseñar la selección, compactación y presupuesto del contexto del agente para enviar a cada proveedor solo la información necesaria.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-254",
+          "title": "Gestionar localmente el contexto de OpenAI Responses durante el bucle de tools",
+          "state": "done",
+          "summary": "Continuar las rondas de OpenAI con un historial construido en el móvil y `store: false`, conservando las llamadas a tools y el razonamiento cifrado necesarios para una respuesta correcta.",
+          "dependsOn": [],
+          "related": []
+        }
+      ]
+    },
+    {
       "id": "GYM-65",
       "kind": "epic",
       "title": "Runtime de agentes",
       "state": "backlog",
-      "summary": "Los doce puntos del runtime: documentar lo construido, cerrar checkpointing y cancelación, tipar las capacidades de cada tool y compartir el bucle entre el agente general y el estimador sin ocultar su semántica nutricional.",
+      "summary": "Los doce puntos del runtime: documentar lo construido, cerrar checkpointing, edición con rebobinado y cancelación, tipar las capacidades de cada tool y compartir el bucle entre el agente general y el estimador sin ocultar su semántica nutricional.",
       "dependsOn": [
         "GYM-34"
       ],
@@ -970,7 +1053,8 @@
             "GYM-34"
           ],
           "related": [
-            "GYM-69"
+            "GYM-69",
+            "GYM-253"
           ]
         },
         {
@@ -990,8 +1074,8 @@
         {
           "id": "GYM-68",
           "title": "Streaming: documentar el transporte SSE y el agrupado de deltas",
-          "state": "backlog",
-          "summary": "SSE sobre XHR en los tres proveedores, con deltas separados de contenido y thinking y agrupado a 40 ms. No hay cancelación por parte del usuario.",
+          "state": "done",
+          "summary": "SSE sobre fetch o XHR según plataforma, deltas separados de respuesta y razonamiento y agrupado a 40 ms, con tests y post publicado. No hay cancelación por parte del usuario.",
           "baseline": "done",
           "dependsOn": [
             "GYM-34"
@@ -1013,6 +1097,23 @@
           "related": [
             "GYM-43",
             "GYM-45"
+          ]
+        },
+        {
+          "id": "GYM-253",
+          "title": "Editar mensajes creando un checkpoint y rebobinando la conversación",
+          "state": "backlog",
+          "summary": "Editar un mensaje del usuario crea una revisión y una rama recuperable, excluye del contexto activo todos los turnos posteriores y regenera sin revertir silenciosamente efectos de tools ya aplicados.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-69"
+          ],
+          "related": [
+            "GYM-66",
+            "GYM-134",
+            "GYM-168",
+            "GYM-251",
+            "GYM-252"
           ]
         },
         {
@@ -1058,7 +1159,8 @@
             "GYM-45",
             "GYM-48",
             "GYM-134",
-            "GYM-135"
+            "GYM-135",
+            "GYM-250"
           ]
         },
         {
@@ -1085,7 +1187,8 @@
             "GYM-61",
             "GYM-67",
             "GYM-68",
-            "GYM-87"
+            "GYM-87",
+            "GYM-253"
           ]
         }
       ]
@@ -1984,7 +2087,8 @@
             "GYM-57",
             "GYM-58",
             "GYM-59",
-            "GYM-135"
+            "GYM-135",
+            "GYM-250"
           ]
         },
         {
@@ -2026,7 +2130,8 @@
             "GYM-67",
             "GYM-69",
             "GYM-87",
-            "GYM-135"
+            "GYM-135",
+            "GYM-253"
           ]
         },
         {
@@ -2290,7 +2395,7 @@
         {
           "id": "GYM-233",
           "title": "Acotar el contexto reenviado a Google Interactions",
-          "state": "todo",
+          "state": "done",
           "summary": "Limitar mensajes e imágenes reenviados a Google sin romper firmas, pasos ni continuaciones de herramientas.",
           "dependsOn": [],
           "related": [
@@ -2316,7 +2421,7 @@
         {
           "id": "GYM-235",
           "title": "Cerrar la ventana de duplicación posterior al commit de herramientas",
-          "state": "todo",
+          "state": "done",
           "summary": "Impedir que un fallo al registrar un efecto ya aplicado permita repetirlo después de reiniciar la app.",
           "dependsOn": [],
           "related": [
@@ -2328,7 +2433,7 @@
         {
           "id": "GYM-236",
           "title": "Renovar la telemetría agregada y saneada del runner de OpenWiki",
-          "state": "todo",
+          "state": "done",
           "summary": "Actualizar métricas estructurales de fiabilidad, latencia y rondas sin publicar contenido privado de las trazas.",
           "dependsOn": [],
           "related": [
@@ -2348,6 +2453,30 @@
       "summary": "Hacer que todos los flujos de Gymnasia puedan utilizarse de forma efectiva por personas con distintas capacidades y validar las mejoras con usuarios reales.",
       "dependsOn": [],
       "tickets": [
+        {
+          "id": "GYM-252",
+          "title": "Añadir un botón para copiar el contenido completo de cada mensaje del chat",
+          "state": "todo",
+          "summary": "Añadir a cada mensaje una acción accesible que copie su contenido completo con una pulsación y confirme el resultado, sin exigir selección previa ni alterar la conversación.",
+          "dependsOn": [],
+          "related": [
+            "GYM-240",
+            "GYM-251",
+            "GYM-253"
+          ]
+        },
+        {
+          "id": "GYM-251",
+          "title": "Permitir copiar y seleccionar texto dentro de cada mensaje del chat",
+          "state": "todo",
+          "summary": "Permitir seleccionar y copiar fragmentos del Coach y los asistentes, limitando «Seleccionar todo» a una sola burbuja y manteniendo el historial como texto de solo lectura.",
+          "dependsOn": [],
+          "related": [
+            "GYM-240",
+            "GYM-252",
+            "GYM-253"
+          ]
+        },
         {
           "id": "GYM-204",
           "title": "Investigar colaboración con ONCE y otras organizaciones para probar la accesibilidad",
@@ -2604,7 +2733,22 @@
             "GYM-11",
             "GYM-13",
             "GYM-55",
-            "GYM-56"
+            "GYM-56",
+            "GYM-250"
+          ]
+        },
+        {
+          "id": "GYM-250",
+          "title": "Añadir un proveedor personalizado compatible con la API de OpenAI",
+          "state": "done",
+          "summary": "Configurar URL, modelo y clave para Chat Completions sin backend; el estimador ofrece este proveedor y guía al usuario a cambiar de modelo si rechaza una foto.",
+          "dependsOn": [],
+          "related": [
+            "GYM-10",
+            "GYM-11",
+            "GYM-57",
+            "GYM-136",
+            "GYM-165"
           ]
         },
         {
@@ -2940,19 +3084,6 @@
           ]
         },
         {
-          "id": "GYM-51",
-          "title": "Context engineering",
-          "state": "backlog",
-          "summary": "Épica pendiente de desglosar. La app no recorta historial, no compacta y no usa prompt caching: el contexto crece sin techo y cada ronda paga tokens completos.",
-          "dependsOn": [],
-          "related": [
-            "GYM-41",
-            "GYM-46",
-            "GYM-30",
-            "GYM-50"
-          ]
-        },
-        {
           "id": "GYM-52",
           "title": "A2A (Agent2Agent): hablar con agentes de terceros",
           "state": "backlog",
@@ -3019,7 +3150,8 @@
           "dependsOn": [],
           "related": [
             "GYM-11",
-            "GYM-13"
+            "GYM-13",
+            "GYM-250"
           ]
         },
         {
@@ -3029,7 +3161,8 @@
           "summary": "Más proveedores junto a OpenAI, Anthropic y Google. Los que no soporten visión quedan fuera del Food Estimator.",
           "dependsOn": [],
           "related": [
-            "GYM-10"
+            "GYM-10",
+            "GYM-250"
           ]
         },
         {
@@ -3147,6 +3280,19 @@
   ],
   "recommendedOrder": [
     {
+      "id": "incidencias-testers",
+      "title": "Prioridad absoluta: incidencias de los testers",
+      "why": "Los testers son la única señal real de Producción y su feedback alimenta el cuestionario de acceso a producción. GYM-244 (ticket para arreglar el Coach que no responde por falta de snapshot firmado) bloquea el chat entero para quien lo sufre, así que va primero. GYM-245 (ticket para permitir introducir el peso desde el plan de dieta) impide calcular las calorías a quien no pasa antes por Medidas. GYM-246 (ticket para arreglar el [object Object] de Preferencias) es visible para cualquier tester y barato de corregir. GYM-247 (ticket para impedir activar la evaluación sanitaria sin clave) evita un ajuste que promete algo que no ocurre. GYM-248 (ticket para que el aviso de datos de Dieta no se quede pegado en otras pestañas) es el mismo tipo de defecto visible que GYM-246 y va después porque no bloquea nada. GYM-249 (ticket para respetar las áreas seguras en Android 15 o posterior) va el último en entrar pero es urgente: en esos dispositivos la app se ve pisada por las barras del sistema desde la primera pantalla.",
+      "tickets": [
+        "GYM-244",
+        "GYM-245",
+        "GYM-246",
+        "GYM-247",
+        "GYM-248",
+        "GYM-249"
+      ]
+    },
+    {
       "id": "rendimiento-interactivo",
       "title": "Prioridad absoluta: recuperar la respuesta inmediata de la app",
       "why": "GYM-229 (ticket para diagnosticar la latencia de varios segundos al pulsar botones) ha aislado el recálculo de medidas como causa principal. GYM-230 (ticket para corregir la regresión de rendimiento de la interfaz) elimina primero ese bloqueo y deja una barrera contra recaídas. Después, GYM-231 (ticket para paginar y buscar globalmente el catálogo de ejercicios) hace escalable el selector sin confundir ese problema localizado con la regresión transversal.",
@@ -3258,9 +3404,11 @@
     },
     {
       "id": "accesibilidad",
-      "title": "Validar la accesibilidad con usuarios reales",
-      "why": "Antes de desglosar e implementar cambios transversales, GYM-204 identifica una organización o comunidad adecuada, distingue pruebas con usuarios de auditoría o certificación y prepara un piloto seguro para que los criterios de la épica partan de feedback real.",
+      "title": "Resolver y validar barreras de accesibilidad",
+      "why": "GYM-252 (ticket para añadir un botón de copia en cada mensaje) resuelve primero el camino directo de una pulsación. GYM-251 (ticket para seleccionar texto dentro de cada mensaje) completa después la selección de fragmentos y limita «Seleccionar todo» a una sola burbuja. Finalmente, GYM-204 (ticket para investigar colaboración con ONCE y otras organizaciones) prepara un piloto seguro para convertir feedback real en nuevas mejoras.",
       "tickets": [
+        "GYM-252",
+        "GYM-251",
         "GYM-204"
       ]
     },
@@ -3299,12 +3447,13 @@
     {
       "id": "runtime",
       "title": "Runtime: documentar lo que ya funciona",
-      "why": "Tres de los cuatro ya están implementados y solo piden tests y artículo, así que son tan baratos como la fase anterior. GYM-69 sí es trabajo real y va el último porque conviene tener documentado antes dónde vive el estado (GYM-66). GYM-87 va después de GYM-68 porque necesita exponer el transporte que ese ticket documenta.",
+      "why": "GYM-66 (ticket para documentar el estado del agente), GYM-67 (ticket para documentar retries) y GYM-68 (ticket para documentar streaming) fijan primero el runtime existente. GYM-69 (ticket para implementar checkpointing) añade después la base persistente que necesita GYM-253 (ticket para editar mensajes y rebobinar la conversación). GYM-87 (ticket para parar una generación) y GYM-222 (ticket para añadir comandos con barra) completan el control visible sobre ese runtime.",
       "tickets": [
         "GYM-66",
         "GYM-67",
         "GYM-68",
         "GYM-69",
+        "GYM-253",
         "GYM-87",
         "GYM-222"
       ]
@@ -3357,6 +3506,14 @@
       "why": "Depende de los catorce anteriores: recoge en una suite única los casos que cada ticket ha ido dejando.",
       "tickets": [
         "GYM-48"
+      ]
+    },
+    {
+      "id": "contexto-openai-local",
+      "title": "Gestionar el contexto de OpenAI en el móvil",
+      "why": "El bucle de tools ya funciona; gestionar sus rondas localmente permite decidir qué contexto enviar antes de añadir selección y compactación, y evita depender de respuestas guardadas en OpenAI.",
+      "tickets": [
+        "GYM-254"
       ]
     },
     {

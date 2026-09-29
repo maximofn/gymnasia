@@ -75,7 +75,7 @@ async function runFeatureIssueTurn(executeTool: (name: string, args: Record<stri
     createOpenAIStreamParser(),
   );
   const results: string[] = [];
-  await runOpenAIToolLoop({
+  await runOpenAIToolLoop({ initialInput: [],
     initialTurn: turn,
     executeTool: async (name, args) => {
       const result = await executeTool(name, args);
@@ -88,6 +88,7 @@ async function runFeatureIssueTurn(executeTool: (name: string, args: Record<stri
       outputItems: [],
       content: "",
       thinking: null,
+      truncated: false,
     }),
   });
   return results;

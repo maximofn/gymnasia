@@ -11,6 +11,8 @@ import {
   TextInput,
   View,
 } from "react-native";
+// Un Modal nativo se dibuja fuera del contenedor raíz, así que no hereda sus insets (GYM-249).
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import {
   AI_REPORT_REASONS,
@@ -129,7 +131,7 @@ export function AiResponseReportModal({ context, onClose, onSubmit }: AiResponse
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
-        <View
+        <SafeAreaView
           accessibilityViewIsModal
           style={{
             flex: 1,
@@ -396,7 +398,7 @@ export function AiResponseReportModal({ context, onClose, onSubmit }: AiResponse
               ) : null}
             </View>
           </View>
-        </View>
+        </SafeAreaView>
       </KeyboardAvoidingView>
     </Modal>
   );

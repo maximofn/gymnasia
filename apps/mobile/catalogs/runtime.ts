@@ -30,6 +30,7 @@ export type CatalogDefinition<T> = {
   legacyCacheKey: string;
   provenance: CatalogProvenance;
   parse: (value: unknown) => T[] | null;
+  bundledData?: T[];
 };
 
 export type CatalogRuntimeDependencies = {
@@ -42,8 +43,8 @@ export function initialCatalogSnapshot<T>(definition: CatalogDefinition<T>): Cat
   return {
     sourceId: definition.sourceId,
     label: definition.label,
-    availability: "unavailable",
-    data: [],
+    availability: definition.bundledData?.length ? "cached" : "unavailable",
+    data: definition.bundledData ?? [],
     fetchedAt: null,
     refreshing: false,
     cachePersisted: false,

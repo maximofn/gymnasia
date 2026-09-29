@@ -2,9 +2,50 @@ import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 
 import {
+  buildPersonalDataStore,
   countDiscardedPersonalDataFields,
+  parsePersonalDataStore,
+  personalDataStoreReceiptsAreValid,
   sanitizePersonalDataFields,
 } from "./personalData";
+
+describe("almacén versionado de memoria personal", () => {
+  it("migra el array legado sin perder campos", () => {
+    const fields = [{ key: "Objetivo", description: "", value: "Fuerza" }];
+    expect(parsePersonalDataStore(JSON.stringify(fields))).toEqual({
+      schemaVersion: 2,
+      fields,
+      toolOperationReceipts: [],
+    });
+  });
+
+  it("conserva los recibos al guardar desde la UI y añade el de la tool", () => {
+    const receipt = {
+      operationId: "a".repeat(64),
+      toolName: "save_personal_data",
+      committedAt: Date.now(),
+    };
+    const fields = [{ key: "Objetivo", description: "", value: "Fuerza" }];
+    expect(buildPersonalDataStore(fields, [receipt]).toolOperationReceipts).toEqual([receipt]);
+
+    const operationId = "b".repeat(64);
+    expect(
+      buildPersonalDataStore(fields, [receipt], operationId).toolOperationReceipts,
+    ).toEqual(expect.arrayContaining([
+      receipt,
+      expect.objectContaining({ operationId, toolName: "save_personal_data" }),
+    ]));
+  });
+
+  it("falla cerrado al reconciliar un sobre con recibos malformados", () => {
+    expect(personalDataStoreReceiptsAreValid(JSON.stringify({
+      schemaVersion: 2,
+      fields: [],
+      toolOperationReceipts: [{ operationId: "corto" }],
+    }))).toBe(false);
+    expect(personalDataStoreReceiptsAreValid(JSON.stringify([]))).toBe(true);
+  });
+});
 
 describe("sanitizePersonalDataFields", () => {
   it("acepta un array de campos bien formados sin tocarlos", () => {
@@ -103,7 +144,7 @@ describe("countDiscardedPersonalDataFields", () => {
   });
 });
 
-describe("GYM-139: regresión de la inyección persistente mediante debug", () => {
+describe("GYM-139 (ticket para aislar la memoria persistente del prompt)", () => {
   // El mecanismo que anexaba el campo `debug` al system prompt ya no existe, así
   // que `debug` es un nombre corriente y este módulo lo trata como tal. Que su
   // contenido no llegue al prompt lo prueban personalData.contract.test.ts y el

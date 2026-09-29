@@ -28,20 +28,30 @@ que no puede generar cargos accidentales al agotar la cuota gratuita.
 
 - `openwiki-update.yml`, diariamente a las 08:00 UTC:
   - restaura exclusivamente el OAuth de OpenWiki desde un artefacto cifrado;
-  - actualiza el Code Brain de Gymnasia con la suscripción de ChatGPT;
+  - actualiza el Code Brain de Gymnasia con la suscripción de ChatGPT y hasta dos
+    trabajadores de página concurrentes;
+  - consulta una ventana de 7 días del proyecto LangSmith `openwiki`, la reduce
+    a conteos y percentiles permitidos y conserva el último agregado válido en
+    un artefacto de 30 días;
   - reutiliza siempre la rama `openwiki/update` y crea o actualiza una única PR;
   - si OpenWiki falla después de completar páginas, publica ese progreso
     durable sin `.run.json` y después marca la ejecución como fallida;
   - actualiza opcionalmente Personal Brain desde Linear, maximofn.com y Tavily;
   - cifra de nuevo el OAuth rotado y el estado privado antes de persistirlos;
+  - los lunes y en ejecuciones manuales renueva
+    `ops/openwiki-runtime-telemetry.json` y la sección gestionada de evidencia;
   - restaura `AGENTS.md` y `CLAUDE.md` desde `main` antes del commit, de modo que
-    el runner solo publica `openwiki/` y `.openwikiignore`.
+    el runner solo publica `openwiki/`, `.openwikiignore` y el JSON saneado de
+    telemetría.
 - `openwiki-report.yml`, a las 12:00 UTC: consulta el workflow anterior y envía
   a Telegram duración y disparador, estado de Code Brain, configuración de
   LangSmith, persistencia OAuth, Personal Brain y fuentes confirmadas, además
   del estado y estadísticas de la PR. Distingue la PR de la ejecución actual de
   la última PR conocida y, ante fallos, muestra la racha, el último éxito y una
-  acción de recuperación. No lee ni envía logs ni contenidos.
+  acción de recuperación. Añade una sección compacta con muestra, frescura,
+  fallos, duración, rondas, herramientas, tokens y coste de los últimos 7 días.
+  No lee LangSmith directamente ni envía logs o contenidos: descarga el último
+  artefacto saneado producido por el workflow de actualización.
 - `tests.yml`: valida cifrado, filtrado OAuth, export seguro de Linear y
   configuración de Personal Brain.
 
@@ -58,7 +68,7 @@ macOS; el horario remoto lo proporciona GitHub Actions.
 | `OPENWIKI_OAUTH_PASSPHRASE` | Cifra/descifra los seis campos OAuth permitidos. Mínimo 32 caracteres. |
 | `OPENWIKI_OAUTH_SEED` | Sobre cifrado solo para arranque o recuperación. No permanece configurado durante la operación normal. |
 | `LANGSMITH_API_KEY` | Escribe las trazas de la ejecución de Code Brain en el proyecto `openwiki`. |
-| `OPENWIKI_LANGSMITH_API_KEY` | Lee los proyectos configurados en `openwiki/.langsmith.json`. |
+| `OPENWIKI_LANGSMITH_API_KEY` | Lee los proyectos configurados en `openwiki/.langsmith.json` y los campos estructurales permitidos de la ventana de telemetría. |
 | `LINEAR_READONLY_API_KEY` | Clave independiente de Linear con permiso `Read` solamente. |
 | `TAVILY_API_KEY` | Búsquedas web enfocadas para Personal Brain. |
 | `OPENWIKI_PERSONAL_STATE_PASSPHRASE` | Cifra el wiki privado, manifiestos y estado de conectores. Debe ser distinta de la contraseña OAuth. |
@@ -84,7 +94,9 @@ workspace:
 - `LANGSMITH_API_KEY` solo escribe las trazas producidas por OpenWiki.
 - `OPENWIKI_LANGSMITH_API_KEY` permite que el conector de OpenWiki lea los tres
   proyectos declarados: `gymnasia-app-agent`, `gymnasia-food-agent` y
-  `openwiki`.
+  `openwiki`. El collector reutiliza esa clave para consultar como máximo 900
+  spans del proyecto `openwiki` durante 60 segundos; no requiere un secreto
+  nuevo.
 
 En Actions y en `~/.openwiki/.env` ambos nombres están configurados con valores
 distintos. La cuenta usa la región europea: tanto el conector declarado en
@@ -116,24 +128,30 @@ activos. Todos los secretos y la variable de las tablas anteriores están
 configurados; `OPENWIKI_OAUTH_SEED` se eliminó después de verificar la
 restauración desde artefacto.
 
-Versión `0.5.0` verificada el 7 de septiembre de 2026:
+Versión `0.6.0` verificada el 27 de septiembre de 2026:
 
-- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34117514822)
-  terminó correctamente con Code Brain, LangSmith, Personal Brain, renovación
-  cifrada y publicación documental en 44 minutos y 58 segundos;
-- los artefactos cifrados `openwiki-oauth-state` y
-  `openwiki-personal-state` se renovaron desde esa misma ejecución y caducan el
-  7 de octubre de 2026;
-- la rama fija creó la [PR de documentación #188](https://github.com/maximofn/gymnasia/pull/188)
-  con 50 archivos permitidos, 20 Claims y todos los checks en verde; añadió
-  `openwiki/.page-manifest.json` con esquema 1 y 22 páginas, sin incluir
-  `CLAUDE.md`, `AGENTS.md` ni el estado transitorio `.run.json`;
-- como OpenWiki `0.5.0` todavía no admite que `AGENTS.md` sea un enlace a
-  `CLAUDE.md`, el runner materializa temporalmente ambos archivos, ejecuta la
-  actualización y restaura las instrucciones exactas de `main` antes de publicar;
+- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/36337856463)
+  terminó correctamente con dos trabajadores de página, Code Brain, Personal
+  Brain, renovación cifrada y publicación documental en 30 minutos y 8
+  segundos; frente a los 44 minutos y 58 segundos de la referencia 0.5.0, es
+  una reducción aproximada del 33 % en una ejecución con cambios distintos;
+- los artefactos `openwiki-oauth-state`, `openwiki-personal-state` y
+  `openwiki-runtime-telemetry` se renovaron y caducan el 27 de octubre de 2026;
+- la rama fija actualizó la [PR de documentación #237](https://github.com/maximofn/gymnasia/pull/237)
+  con 55 archivos permitidos y todos los checks en verde. Sus 2.202 adiciones y
+  1.696 eliminaciones pertenecen únicamente a `openwiki/` y al agregado público
+  `ops/openwiki-runtime-telemetry.json`; no incluye `CLAUDE.md`, `AGENTS.md`,
+  `.run.json` ni estado privado;
+- la prueba desechable y el runner real conservaron `AGENTS.md -> CLAUDE.md`, un
+  único bloque administrado y ninguna autorreferencia. El runner ya no
+  materializa una copia regular, aunque sigue restaurando las instrucciones
+  revisadas de `main` antes de publicar documentación;
+- el recolector saneado de LangSmith sufrió un fallo transitorio de red y dejó
+  `latestAttempt.status=unavailable` sin muestra. Code Brain y su configuración
+  de trazas ocultas continuaron; no fue un error de clave ni de OAuth;
 - la plantilla pública y el repositorio privado quedaron sincronizados en el
-  commit privado `354f662`; sus [tests remotos](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34117417781)
-  y el [informe manual de Telegram](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34121672371)
+  merge privado `d9e8ae8`; los [tests remotos](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/36337765763)
+  y el [informe manual de Telegram](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/36339828257)
   terminaron correctamente.
 
 ### Permiso de PR
@@ -228,7 +246,18 @@ El informe no incluye prompts, código, contenido del wiki, trazas, errores
 completos, títulos de Linear ni credenciales. Solo usa metadatos allowlisted de
 GitHub: estados y tiempos de pasos, presencia de cada fuente, número/estado de
 la PR, archivos y recuentos de líneas. Las URLs se limitan al dominio
-`github.com` antes de incorporarlas al mensaje.
+`github.com` antes de incorporarlas al mensaje. La telemetría llega como un JSON
+de menos de 64 KiB con esquema fijo: raíces correctas/fallidas, categorías de
+fallo, percentiles de duración, llamadas de modelo, categorías de herramientas
+y estados de cobertura de tokens/coste. Los nombres de herramienta desconocidos
+solo aumentan `otras`; no se copian. Un cero de tokens o coste solo significa
+cero real cuando no hubo llamadas de modelo.
+
+Si la consulta a LangSmith falla, la actualización documental continúa. El
+artefacto vuelve a guardar la última muestra válida, marca el intento como no
+disponible y Telegram muestra esa antigüedad. La evidencia pública se actualiza
+semanalmente los lunes y también en cada ejecución manual; su JSON fuente es
+`ops/openwiki-runtime-telemetry.json` y la PR sigue requiriendo fusión manual.
 
 ## Validación
 
@@ -252,6 +281,7 @@ delimitadores antes de publicar.
 - [GitHub Actions: facturación y cuota incluida](https://docs.github.com/en/billing/concepts/product-billing/github-actions)
 - [LangSmith: service keys y PAT](https://docs.langchain.com/langsmith/create-account-api-key)
 - [LangSmith: ocultar y redactar datos sensibles](https://docs.langchain.com/langsmith/mask-inputs-outputs)
+- [LangSmith: exportar trazas con campos seleccionados](https://docs.langchain.com/langsmith/export-traces)
 - [Linear: API GraphQL y autenticación](https://linear.app/developers/graphql)
 - [Linear: MCP y acceso de solo lectura](https://linear.app/docs/mcp)
 - [Tavily: créditos de API](https://docs.tavily.com/documentation/api-credits)

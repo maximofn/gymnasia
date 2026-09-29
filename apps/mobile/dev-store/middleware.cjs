@@ -66,6 +66,10 @@ function validateDevStorePayload(value) {
   for (const field of ["templates", "workoutHistory", "measurements", "threads", "keys"]) {
     if (!Array.isArray(value[field])) return { ok: false, error: `invalid-${field}` };
   }
+  if (
+    value.toolOperationReceipts !== undefined
+    && !Array.isArray(value.toolOperationReceipts)
+  ) return { ok: false, error: "invalid-toolOperationReceipts" };
   for (const field of ["dietByDate", "dietSettings", "messagesByThread"]) {
     if (!isPlainObject(value[field])) return { ok: false, error: `invalid-${field}` };
   }

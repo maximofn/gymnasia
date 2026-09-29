@@ -25,6 +25,13 @@ describe("validateFeedbackRequest", () => {
     }
   });
 
+  it("acepta una clave de operación SHA-256 completa", () => {
+    const result = validateFeedbackRequest(baseRequest({
+      idempotency_key: `v1:feature:${"b".repeat(64)}`,
+    }));
+    expect(result.ok).toBe(true);
+  });
+
   it("rechaza cualquier clave fuera del esquema cerrado", () => {
     for (const extra of ["repo", "labels", "owner", "issue_number", "path", "method"]) {
       const result = validateFeedbackRequest(baseRequest({ [extra]: "cualquier-cosa" }));

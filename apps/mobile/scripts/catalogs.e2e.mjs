@@ -178,7 +178,7 @@ async function installRoutes(page, networkState) {
     body: "{}",
   }));
   await page.route("https://api.github.com/**", (route) => route.fulfill({ status: 503 }));
-  await page.route("https://raw.githubusercontent.com/**", (route) => {
+  await page.route("https://raw.githubusercontent.com/**", async (route) => {
     if (networkState.offline) {
       return route.fulfill({ status: 503, body: "offline fixture" });
     }
@@ -188,6 +188,7 @@ async function installRoutes(page, networkState) {
       return route.fulfill({ status: 503, body: "products unavailable fixture" });
     }
     if (pathname.endsWith("/alimentos/all.json")) {
+      if (networkState.foodGate) await networkState.foodGate;
       return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(foodFixture) });
     }
     if (pathname.includes("/ejercicios/catalog-v1/")) {
@@ -371,14 +372,19 @@ async function expectProviderCatalogTools(page, expectedFoodAvailability, expect
     [1, "gymnasia_foods", expectedFoodAvailability],
     [2, "gymnasia_exercises", expectedExerciseAvailability],
   ]) {
-    const output = requests[requestIndex].input?.find((item) => item.type === "function_call_output")?.output;
+    const expectedCallId = requestIndex === 1 ? "call_catalog_foods" : "call_catalog_exercises";
+    const output = requests[requestIndex].input?.find(
+      (item) => item.type === "function_call_output" && item.call_id === expectedCallId,
+    )?.output;
     assert.equal(typeof output, "string");
     const parsed = JSON.parse(output);
     assert.equal(parsed.availability, expectedAvailability);
     assert.equal(parsed.sources.some((source) => source.source_id === expectedSource), true);
     assert.equal(parsed.results.every((result) => result.source_id && result.item_id), true);
   }
-  const routineOutput = requests[3].input?.find((item) => item.type === "function_call_output")?.output;
+  const routineOutput = requests[3].input?.find(
+    (item) => item.type === "function_call_output" && item.call_id === "call_catalog_routine",
+  )?.output;
   assert.equal(typeof routineOutput, "string");
   const expectedRoutineStatus = expectedExerciseAvailability === "unavailable" ? "invalid_input" : "created";
   assert.equal(JSON.parse(routineOutput).status, expectedRoutineStatus);
@@ -472,6 +478,39 @@ try {
   await expectExerciseConsumer(page, "Rutina Catálogos E2E", true, renamedExercise);
   await context.close();
 
+  log("Verificando búsqueda del agente cuando el catálogo termina de cargar durante el turno");
+  let releaseFoodResponse;
+  const foodGate = new Promise((resolve) => { releaseFoodResponse = resolve; });
+  const lateContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const latePage = await preparePage(lateContext, { offline: false, foodGate }, {}, true);
+  const lateRequests = [];
+  await latePage.route("**/v1/responses*", async (route) => {
+    lateRequests.push(route.request().postDataJSON());
+    if (lateRequests.length === 1) {
+      releaseFoodResponse();
+      await expectFoodConsumer(latePage, true);
+      await latePage.getByTestId("nav-tab-chat").click();
+    }
+    await route.fulfill({
+      status: 200,
+      headers: { "content-type": "text/event-stream; charset=utf-8", "cache-control": "no-cache" },
+      body: lateRequests.length === 1
+        ? openAIToolCallSse("resp_late_food", "call_late_food", "search_foods", JSON.stringify({ query: fixtureFoodName }))
+        : openAIFinalSse(),
+    });
+  });
+  await openApp(latePage);
+  await latePage.getByTestId("nav-tab-chat").click();
+  await latePage.getByTestId("chat-input").fill(`Busca ${fixtureFoodName}`);
+  await latePage.getByTestId("chat-send").click();
+  await latePage.getByText("Catálogos consultados.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+  const lateOutput = lateRequests[1].input?.find((item) => item.type === "function_call_output")?.output;
+  assert.equal(typeof lateOutput, "string");
+  const lateSearch = JSON.parse(lateOutput);
+  assert.equal(lateSearch.availability, "fresh");
+  assert.equal(lateSearch.results[0]?.nombre, fixtureFoodName);
+  await lateContext.close();
+
   log("Verificando cachés heredadas antiguas y migración offline");
   const staleState = { offline: true };
   const staleContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -499,16 +538,29 @@ try {
   await expectProviderCatalogTools(partialPage, "partial", "fresh");
   await partialContext.close();
 
-  log("Verificando arranque limpio sin red y repositorios vacíos");
+  log("Verificando arranque limpio sin red con catálogo de alimentos integrado");
   const coldContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const coldPage = await preparePage(coldContext, { offline: true }, {}, true);
   await openApp(coldPage);
   await expectCaches(coldPage, false);
   await expectFoodConsumer(coldPage, false);
   const unavailableNotice = coldPage.getByTestId("diet-food-catalog-status-desayuno");
-  await unavailableNotice.getByText("Catálogo no disponible", { exact: true }).waitFor({ state: "visible" });
+  await unavailableNotice.getByText("Disponibilidad parcial", { exact: true }).waitFor({ state: "visible" });
   if (screenshotDir) await unavailableNotice.screenshot({ path: join(screenshotDir, "unavailable.png") });
-  await expectProviderCatalogTools(coldPage, "unavailable");
+  await coldPage.getByTestId("nav-tab-chat").click();
+  let unexpectedProviderCall = false;
+  await coldPage.route("**/v1/responses*", (route) => {
+    unexpectedProviderCall = true;
+    return route.fulfill({ status: 500 });
+  });
+  await coldPage.getByTestId("chat-input").fill("Busca arroz blanco en el catálogo y dime sus calorías por 100 g");
+  await coldPage.getByTestId("chat-send").click();
+  await coldPage.getByText("En el catálogo, Arroz blanco (cocido) tiene 130 kcal por 100 g.", { exact: true })
+    .waitFor({ state: "visible", timeout: 30_000 });
+  assert.equal(unexpectedProviderCall, false);
+  if (screenshotDir) await coldPage.screenshot({ path: join(screenshotDir, "coach-catalog-rice.png") });
+  await coldPage.unroute("**/v1/responses*");
+  await expectProviderCatalogTools(coldPage, "partial", "unavailable");
   await expectExerciseConsumer(coldPage, "Rutina Offline E2E", false);
   await coldPage.getByText("No se pudo cargar esta parte del catálogo.", { exact: true }).waitFor({ state: "visible" });
   await coldPage.getByTestId("training-exercise-custom-open").waitFor({ state: "visible" });
@@ -530,7 +582,7 @@ try {
   const corruptPage = await preparePage(corruptContext, { offline: true }, { [foodsCacheKey]: corruptEnvelope });
   await openApp(corruptPage);
   await expectFoodConsumer(corruptPage, false);
-  await corruptPage.getByText("Catálogo no disponible", { exact: true }).first().waitFor({ state: "visible" });
+  await corruptPage.getByText("Disponibilidad parcial", { exact: true }).first().waitFor({ state: "visible" });
   await corruptContext.close();
 
   log("Verificando selección explícita ante una coincidencia ambigua");

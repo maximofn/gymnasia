@@ -1,11 +1,13 @@
 ---
 type: "Referencia"
-title: "Estado local, recuperación, borrado y copias"
+title: "Estado local, borrado y recuperación"
 openwiki_generated: true
 verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
+  - by: openwiki/0.6.0
+    at: 2026-09-27T17:43:05.548Z
 sources:
+  - id: openwiki-source-98e300a08b181f278443549a
+    resource: repo://apps/mobile/agent/providerConfigurationPersistence.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
   - id: openwiki-source-c369f04b4bd4848feade9def
@@ -22,6 +24,8 @@ sources:
     resource: repo://apps/mobile/persistence/localStoreRecovery.test.ts
   - id: openwiki-source-f6b98cd46b889ff9fc8877c4
     resource: repo://apps/mobile/persistence/localStoreRecovery.ts
+  - id: openwiki-source-2c7bb274ff3842d79f3b5fb9
+    resource: repo://apps/mobile/persistence/localStoreRuntime.ts
   - id: openwiki-source-566414ee4d2c02f464360b14
     resource: repo://apps/mobile/scripts/storage-recovery.e2e.mjs
   - id: openwiki-source-3c944c63cf864826c8ed237d
@@ -34,142 +38,125 @@ sources:
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
 ---
 
 
-# Estado local, recuperación, borrado y copias
+# Estado local, borrado y recuperación
 
-Gymnasia es *local-first*: `GymnasiaApp` mantiene el estado activo en React y persiste el agregado y sus particiones locales. No implementa sincronización ni una copia remota gestionada. Una copia exportada es responsabilidad de quien la guarda y contiene datos de salud y conversaciones; debe tratarse como información sensible.
+Gymnasia Mobile es **local-first**: el estado de uso se mantiene en React y se persiste en el dispositivo. No se debe interpretar una exportación como una copia gestionada por la aplicación: contiene datos de salud, actividad y conversaciones, y quien la exporta debe custodiarla como información sensible.
 
-Hay tres límites que no conviene mezclar:
+La regla de seguridad central es **no sobrescribir un agregado que no se haya podido leer y validar**. El arranque inspecciona el almacenamiento antes de publicar el estado hidratado; una lectura ambigua o inválida lleva a recuperación, no a reemplazar los datos por el estado inicial.
 
-- **Datos de usuario portables:** actividad, dieta, mediciones, conversaciones, preferencias, alimentos personales y memoria; forman el contenido de una copia de usuario.
-- **Secretos BYOK y configuración de proveedores:** las API keys no viajan en el backup. En nativo, el repositorio de proveedores usa `SecureStore`; en web su alternativa es `AsyncStorage`. La política de autoridad, diario y commits pertenece a [Configuración de proveedores](../agent/provider-configuration.md).
-- **Artefactos de recuperación:** el snapshot y la cuarentena protegen el agregado local frente a lecturas o escrituras ambiguas. Una exportación de cuarentena es un artefacto técnico distinto de una copia de usuario y puede contener secretos web.
+## Fronteras de datos y propiedad
 
-## Mapa de persistencia y propiedad
+`LocalStore` es el agregado de actividad, dieta, mediciones, conversaciones, configuraciones no secretas de proveedores y recibos de operaciones de tools. Se guarda bajo la clave con ámbito de entorno `gymnasia.mobile.local.v3`; la serialización elimina las API keys antes de escribirlo. El estado inicial crea un hilo de chat y valores por defecto, pero no debe persistirse como consecuencia de un fallo de lectura.
 
-`LocalStore` se persiste bajo `gymnasia.mobile.local.v3` (con namespace de entorno). Incluye plantillas e historial de entrenamiento, dieta y ajustes, mediciones, hilos y mensajes, y metadatos no secretos de proveedores. Sus contenedores raíz antiguos ausentes se completan durante la migración; antes de una escritura gestionada, la validación rechaza campos raíz desconocidos, proveedores fuera de `openai`, `anthropic` y `google`, y formas incompatibles. Los diagnósticos usan rutas saneadas y no revelan valores ni nombres desconocidos.
+| Área | Almacenamiento y responsabilidad | Backup y borrado |
+|---|---|---|
+| Agregado principal | `gymnasia.mobile.local.v3`, su snapshot `gymnasia.mobile.local.last_good.v1` y cuarentena `gymnasia.mobile.local.quarantine.v1`. | El agregado saneado es portable; actividad lo reescribe vaciado y el borrado total lo elimina. |
+| Sesión de entrenamiento | Sesión activa, snapshot de plantilla y borrador son claves independientes y dependientes del agregado. | No son portables; recuperación por descarte y ambos borrados los eliminan. |
+| Proveedores y secretos BYOK | El repositorio de proveedores mantiene un journal; en nativo el journal canónico está en `SecureStore` y el espejo de `AsyncStorage` se sanea sin claves. En web se usa `AsyncStorage`. | Las API keys no viajan en el backup. El borrado de actividad las conserva; el total elimina journal y secretos inventariados. |
+| Preferencias, alimentos y memoria | `user_prefs`, alimentos personales y memoria personal son particiones independientes. La memoria contiene también recibos técnicos. | Son datos portables con sus normalizaciones correspondientes. El borrado de actividad conserva preferencias y alimentos, reescribe la memoria para quitar sus recibos; el total los elimina. |
+| Fotos de medición | En nativo, JPEG en el directorio privado `gymnasia_measurement_media_v1`; no es una clave de `AsyncStorage`. | Pueden incluirse como assets; los dos alcances de borrado limpian el directorio propio. |
 
-| Partición o recurso | Propiedad y ciclo de vida |
-|---|---|
-| `gymnasia.mobile.local.last_good.v1` | Snapshot del payload validado con SHA-256. Es la última alternativa verificable para recuperar el agregado. |
-| `gymnasia.mobile.local.quarantine.v1` | Payload problemático, hash e incidencias saneadas. Una cuarentena válida bloquea escrituras aunque la clave principal parezca válida en un arranque posterior. |
-| `gymnasia.mobile.training.session.v1`, `session_template_snapshot` y `session_template_draft` | Trabajo de sesión activa dependiente del agregado. No se exporta y se elimina al descartar recuperación, restaurar una copia o borrar actividad. |
-| `gymnasia.mobile.personal_data.v1`, `personal_foods.v1` y `user_prefs.v1` | Memoria del coach, alimentos propios y preferencias: son particiones independientes, pero se proyectan al backup de usuario. |
-| Diario `gymnasia.mobile.v4.provider_configuration` | Configuración y secretos de proveedores: `SecureStore` es la autoridad en nativo; el espejo de `AsyncStorage` no debe convertirse en fuente de secretos. |
-| `gymnasia_measurement_media_v1` | Directorio de documentos privado en nativo para JPEG de mediciones propiedad de la aplicación, no una clave de `AsyncStorage`. |
-| Operaciones del agente, cachés de catálogos, trazas, consentimiento, salud de alarmas y metadatos de backup | Estado operativo, de diagnóstico o caché. Está fuera del paquete portable y su borrado se decide expresamente en el manifiesto. |
+La validación estructural migra contenedores raíz antiguos ausentes a valores vacíos, pero rechaza campos raíz desconocidos, tipos incompatibles, recibos no verificables y proveedores fuera de `openai`, `anthropic`, `google` y `custom_openai`. Los diagnósticos usan rutas generalizadas, por ejemplo `$[unknown]`, para no filtrar valores ni nombres de campo sensibles.
 
-Las credenciales VivaGym heredadas no participan en el funcionamiento actual ni en un backup; el borrado total las inventaría para que no sobrevivan a un restablecimiento.
-
-## Inicio, validación y recuperación
+## Inicio y recuperación antes de escribir
 
 ```mermaid
 flowchart TD
-  Boot["Inicio de GymnasiaApp"] --> Inspect["Inspeccionar agregado, snapshot y cuarentena"]
+  Start["Arranque"] --> Inspect["Inspeccionar primario snapshot y cuarentena"]
   Inspect -->|"vacío"| Initial["Crear estado inicial"]
-  Inspect -->|"válido"| Normalize["Normalizar LocalStore"]
-  Inspect -->|"corrupto o recuperable"| Locked["Mostrar recuperación y bloquear hidratación"]
-  Normalize -->|"fallo"| Quarantine["Conservar payload en cuarentena"]
-  Quarantine --> Locked
-  Initial --> Providers["Hidratar proveedores"]
+  Inspect -->|"válido"| Normalize["Normalizar agregado"]
+  Inspect -->|"corrupto o recuperable"| Recovery["Pantalla de recuperación"]
+  Normalize -->|"falla"| Quarantine["Poner payload en cuarentena"]
+  Quarantine --> Recovery
+  Initial --> Providers["Hidratar repositorio de proveedores"]
   Normalize --> Providers
-  Providers --> Commit["Persistir agregado canónico y snapshot"]
-  Commit --> Ready["Publicar estado y habilitar efectos"]
-  Locked --> Resolve["Restaurar snapshot, reintentar o descartar"]
-  Resolve --> Inspect
+  Providers --> Commit["Commit canónico y snapshot"]
+  Commit --> Ready["isHydrated verdadero"]
+  Recovery -->|"restaurar reintentar o descartar"| Inspect
 ```
 
-*La hidratación no publica `isHydrated` hasta inspeccionar el almacenamiento; así los efectos de React no sobrescriben un payload no comprobado con el estado inicial.*
+*La hidratación solo habilita efectos dependientes del almacenamiento después de inspeccionar, normalizar y tratar el resultado de persistencia.*
 
-`LocalStoreRecoveryRepository` serializa sus operaciones. Al inspeccionar distingue estado vacío, válido, recuperable —hay snapshot válido— y corrupto. Un snapshot es utilizable solo si versión, JSON, forma y SHA-256 coinciden. La cuarentena conserva el payload original byte a byte cuando existe y su hash; si el almacenamiento no se puede leer, registra el fallo sin fingir que está vacío.
+`runLocalStoreHydration()` es el punto de entrada del arranque. Inspecciona el repositorio con un espejo de desarrollo opcional como fallback; si recibe `recoverable` o `corrupt`, deja `isHydrated` en `false` y muestra `LocalStoreRecoveryScreen`. Si la forma pasa la validación pero `normalizeStore()` falla semánticamente, conserva el payload original en cuarentena y vuelve a la misma ruta. Una excepción no recuperable lleva a la pantalla de fallo de inicio, tampoco a una hidratación parcial.
 
-Un commit valida el serializado, comprueba que sea seguro reemplazar el primario, escribe, relee y exige igualdad exacta y forma válida antes de actualizar el snapshot. Si la verificación falla, deja cuarentena y comunica un commit ambiguo. Si solo falla la escritura del snapshot, el primario puede haberse guardado, pero se informa que la copia de recuperación no se actualizó. `restoreSnapshot()` repone un snapshot comprobado y solo entonces elimina la cuarentena; `discardAffected()` elimina el agregado, sus auxiliares y las claves dependientes, y crea un estado inicial con la configuración actual de proveedores.
+`useLocalStoreRuntime()` conserva una referencia al último store y serializa las mutaciones persistentes en una cola. Un `commit()` calcula el siguiente estado, lo persiste primero y solo entonces lo publica; las actualizaciones visuales sin commit permanecen como cambios de React hasta que otra ruta las persista. Esta distinción evita anunciar una modificación durable si `persistLocalStore()` falla.
 
-La pantalla `LocalStoreRecoveryScreen` ofrece restaurar la última copia íntegra, reintentar tras una reparación externa, guardar el payload dañado o descartarlo con confirmación. El reintento ignora deliberadamente una cuarentena previa para aceptar un primario reparado; el resto del flujo la respeta como bloqueo. La normalización semántica que falla después de la validación estructural también manda el payload a cuarentena en vez de intentar una reparación no verificable.
+### Contrato del repositorio de recuperación
 
-### Exportación de cuarentena y utilidad CLI
+`LocalStoreRecoveryRepository` serializa inspecciones, commits y resolución. Sus resultados distinguen:
 
-«Guardar copia dañada» serializa un documento `local-store-recovery` de esquema 1 que incluye la cuarentena y una advertencia de sensibilidad. Se cifra con contraseña antes de descargarse o compartirse; no es importable como backup de usuario. El formato criptográfico y sus parámetros se documentan en [Cifrado portable y recuperación](./portable-encryption-and-recovery.md), para no duplicar aquí su contrato.
+- **`empty`**: no hay primario, snapshot ni cuarentena utilizable.
+- **`valid`**: el JSON migrado y validado puede normalizarse; la inspección no lo reescribe por sí misma.
+- **`recoverable`**: hay una cuarentena o un primario problemático y puede haber snapshot válido. Una cuarentena existente sigue bloqueando aunque el primario parezca válido en el siguiente arranque.
+- **`corrupt`**: no existe un candidato seguro para continuar; también cubre un fallo al leer el almacenamiento, que no se trata como vacío.
 
-Para inspeccionarlo fuera de la aplicación se usa la utilidad de recuperación:
+Un snapshot contiene versión, fecha, payload y SHA-256. Solo se acepta cuando versión, hash, JSON y forma son válidos. La cuarentena conserva el payload exacto cuando está disponible, su hash y causas saneadas; la creación de cuarentena que no se pueda persistir sigue bloqueando la instancia en memoria.
 
-```bash
-npm run decrypt:recovery -- --input <archivo.gymnasia> --output <destino.json>
-```
+Antes de un commit normal, el repositorio relee el primario y rechaza escribir sobre una cuarentena, un primario inválido o un primario desaparecido si hay snapshot. Tras escribir, relee y compara el texto exacto y su forma antes de actualizar el snapshot. Si esa comprobación falla, crea cuarentena y lanza un error de commit ambiguo. Si solo falla el snapshot, el primario puede haber quedado guardado, pero se informa que la protección de recuperación no se actualizó.
 
-La contraseña se solicita sin eco. `--password-stdin` existe únicamente para automatización. La CLI exige entrada y salida distintas, no sobrescribe un destino existente, valida que el texto descifrado sea una exportación `local-store-recovery`, crea el resultado con permisos `0600` y limpia el archivo parcial ante un fallo. El JSON resultante es sensible: conservarlo con esos permisos no sustituye su manejo seguro.
+Las salidas de la pantalla son deliberadamente explícitas:
 
-## Fotos de mediciones: posesión y privacidad
+- **Restaurar** repone un snapshot comprobado, lo verifica mediante commit y solo después elimina la cuarentena.
+- **Reintentar** ignora de forma controlada una cuarentena previa para aceptar un primario reparado externamente; si tiene éxito, `resolveCurrent()` actualiza snapshot y elimina la cuarentena.
+- **Descartar** elimina la familia administrada y claves de sesión dependientes, y crea un agregado inicial que conserva la configuración actual de proveedores. Las particiones independientes no se descartan por accidente.
+- **Guardar copia dañada** exporta el registro de cuarentena como documento `local-store-recovery` de esquema 1 cifrado con contraseña. No es un backup de usuario ni una entrada importable. `npm run decrypt:recovery -- --input <archivo.gymnasia> --output <destino.json>` exige rutas distintas, evita sobrescribir el destino y crea el resultado con permisos `0600`.
 
-Al incorporar una foto, `normalizeAndStoreMeasurementPhoto` verifica dimensiones, reduce el lado mayor a 2048 px si procede, recodifica JPEG con calidad 0.8 y elimina EXIF, XMP, IPTC y comentarios. Rechaza bytes vacíos o de más de 5 MiB tras optimizarlos. En nativo guarda los bytes saneados en el directorio propio con nombre SHA-256; en web puede conservar el URI de origen, pero no obtiene una URI persistente propia.
+## Copias portables y medios
 
-Al eliminar o sustituir una medición se puede borrar un archivo propio que ya no tenga referencias. Arranque e importación ejecutan además una barrida oportunista de huérfanos. Es limpieza no crítica: los fallos del sistema de archivos no bloquean la aplicación. Los dos alcances de borrado vacían el directorio nativo y verifican que esté vacío; el navegador no tiene ese directorio.
+La exportación actual crea `.gymnasia` con MIME `application/vnd.gymnasia.encrypted`. El sobre cifrado y autenticado es de esquema 3; su plaintext es un ZIP con `manifest.json` de esquema 3 y JPEG opcionales en `media/`. La importación conserva lectores explícitos para ZIP v2 y JSON v1 heredados; una exportación nueva no genera esos formatos.
 
-## Copia portable de usuario
+La selección de un archivo, su descifrado y la validación del manifiesto preparan un `PendingBackupImport`: **no escriben** todavía. La mutación empieza únicamente tras la confirmación. Para v3, se autentica y descifra el sobre antes de verificar el ZIP; al cancelar o terminar se limpian los buffers de medios cuando es posible y se elimina la copia temporal nativa.
 
-La salida actual es un archivo `.gymnasia` cifrado y autenticado de esquema **3**, con MIME `application/vnd.gymnasia.encrypted`. Antes de cifrar, el plaintext es un ZIP que contiene `manifest.json` v3 y, opcionalmente, `media/<sha256>.jpg`. El manifiesto identifica aplicación, versión, fecha y `data`: `LocalStore` saneado, preferencias, alimentos personales y memoria personal. El detalle de derivación de clave, AEAD por fragmentos, validación de cabecera y límites de contraseña vive en [Cifrado portable y recuperación](./portable-encryption-and-recovery.md).
+Antes de empaquetar, las `photo_uri` del manifiesto se sustituyen por `null`. Los bytes JPEG son assets identificados por SHA-256 y los enlaces los asocian a mediciones. La exportación deduplica bytes iguales, prioriza las fotos recientes y conserva la medición numérica cuando un medio falta o se omite. Los límites son 500 assets/enlaces, 5 MiB por foto, 200 MiB de medios, 8 MiB para el manifiesto y 220 MiB de plaintext total.
 
-La compatibilidad es explícita y solo de entrada: el selector reconoce el paquete ZIP v2 heredado y el JSON v1; ambos se validan con su versión esperada. La exportación nueva nunca produce v1, v2 ni un ZIP sin cifrar. El selector también acepta tipos MIME genéricos porque los sistemas de archivos pueden no preservar el MIME específico; determina el formato por prefijo cifrado, firma ZIP o JSON, no por la extensión.
+En importación se validan aplicación, versión, rutas internas, enlaces, MIME, tamaños y hashes. Un asset no verificable se descarta con advertencia, sin borrar la medición. En web una foto válida no obtiene URI persistente y queda en `null`; en nativo se guarda tras comprobar hash y retirar metadatos. Las fotos nuevas se recodifican como JPEG, se reducen a un borde máximo de 2048 px, se despojan de EXIF/XMP/IPTC/comentarios y se almacenan en el directorio propio con nombre SHA-256.
 
-```mermaid
-sequenceDiagram
-  participant User as Usuario
-  participant App as Aplicación
-  participant Media as Medios
-  participant Cipher as Cifrado portable
-  participant Storage as Estado local
-  User->>App: Exportar y elegir contraseña
-  App->>Media: Normalizar o leer fotos
-  App->>Cipher: Cifrar ZIP v3
-  Cipher-->>User: Descargar o compartir .gymnasia
-  User->>App: Seleccionar archivo y contraseña
-  App->>Cipher: Autenticar y descifrar v3
-  Cipher-->>App: ZIP v3
-  App->>Media: Verificar y guardar fotos nativas
-  App->>Storage: Confirmar proveedores y reemplazar datos
-```
+### Aplicar una restauración
 
-*El recorrido muestra la salida v3. Las entradas heredadas v2 y JSON v1 siguen rutas de lectura separadas antes de la misma confirmación de restauración.*
+La restauración valida y normaliza estrictamente el agregado antes de modificar el estado de React. Conserva por proveedor la API key local y, para Anthropic, el `workspace_id` local; confirma primero el commit vigente del repositorio de proveedores. Después reemplaza el agregado, normaliza preferencias, reemplaza alimentos y memoria, invalida la caché de la pantalla de memoria y termina cualquier sesión activa para no mezclarla con plantillas importadas. Conserva los recibos de tools del dispositivo actual porque el journal local sobrevive y una operación ambigua anterior no debe repetirse sobre los datos restaurados.
 
-### Medios y límites del ZIP interno
+Este flujo **no es atómico** entre React, `AsyncStorage`, `SecureStore` y el directorio de medios. Un fallo puede ocurrir después de que una partición haya cambiado. Por eso, cambios en esta ruta deben mantener la validación previa, el orden de commit del repositorio de proveedores y mensajes que no prometan rollback.
 
-Antes de empaquetar, todas las `photo_uri` del manifiesto pasan a `null`; los bytes viajan como assets JPEG y enlaces separados entre `measurementId` y el SHA-256. Los bytes idénticos se deduplican y se priorizan mediciones recientes. Se registran omisiones si el medio falta, es ilegible o inválido, excede el límite individual, la cantidad o el presupuesto total; nunca se descarta por ello la medición numérica.
+## Preferencias y secretos
 
-Los límites son 500 enlaces y assets, 5 MiB por foto, 200 MiB de bytes de medios, **8 MiB** para `manifest.json` y 220 MiB para el ZIP plaintext. El archivo cifrado admite solamente ese plaintext de hasta 220 MiB más la sobrecarga del sobre autenticado. Al crear el ZIP, el manifiesto se valida y cada asset declarado debe existir y tener el tamaño indicado; al leerlo, se validan identidad de aplicación, versión, IDs de medición, rutas internas permitidas, MIME JPEG, tamaños, hashes, enlaces no ambiguos y motivos de omisión conocidos.
+Las preferencias se leen como una partición secundaria durante la hidratación y se normalizan antes de publicarse. Un fallo al leer una partición secundaria se comunica como no fatal: no convierte por sí solo el agregado principal en vacío ni autoriza una sobrescritura. Al importar, las reparaciones de preferencias se informan como advertencia.
 
-Una foto declarada que no se encuentre, cuyo tamaño no coincida, cuyo SHA-256 falle o que no sea JPEG válido se omite del resultado de medios, no invalida la medición. Durante la importación, la aplicación deja su `photo_uri` a `null`, muestra una advertencia y conserva los valores numéricos. En web las fotos v2/v3 válidas tampoco se restauran a URI persistente: se informa esa limitación y quedan en `null`. Las URI de fotos de JSON v1 se intentan normalizar en el dispositivo receptor y pueden perderse si no se pueden leer.
-
-### Confirmación y reemplazo
-
-Seleccionar y desbloquear una copia no escribe estado: prepara un `PendingBackupImport`; la mutación empieza tras la confirmación. Para v3 se autentica y descifra antes de analizar ZIP y hashes. Los bytes de plaintext y los medios pendientes se ponen a cero al terminar o cancelar cuando es posible, y la copia temporal nativa elegida se elimina después de desbloquear o cancelar.
-
-Al aplicar la importación, se normaliza estrictamente el agregado antes de cambiar React. La aplicación conserva las API keys locales y el `workspace_id` local de Anthropic, confirma primero un commit vigente en el repositorio de proveedores, normaliza preferencias, reemplaza alimentos y memoria personal, invalida la caché de la pantalla de memoria y cierra cualquier sesión activa. Finalmente intenta barrer fotos huérfanas.
-
-La restauración **no es atómica** entre React, `AsyncStorage`, `SecureStore` y el directorio de medios: una interrupción puede dejar particiones ya cambiadas junto a otras pendientes. Cualquier modificación de estas fronteras debe preservar la validación previa y tratar errores parciales como un riesgo de recuperación, no como un rollback garantizado.
-
-### Exclusiones y privacidad
-
-Nunca se exportan API keys BYOK, el diario seguro de proveedores, sesión activa ni sus borradores, cachés de catálogo, trazas, consentimiento, diagnóstico de alarmas, metadatos de backup o credenciales VivaGym heredadas. Las fotos incluidas ya no contienen los metadatos JPEG retirados, pero siguen siendo datos personales. `lastBackupAt` se actualiza después del flujo de compartir/descargar: indica que la aplicación creó la copia, no que el usuario la haya conservado.
+El agregado persistido no es autoridad para secretos. Durante hidratación, la aplicación combina configuraciones heredadas con credenciales seguras y migra al `ProviderConfigurationRepository`. En nativo, este escribe un journal completo en `SecureStore` y un espejo sin API keys en `AsyncStorage`; un `pending` sobreviviente se revierte al último commit en vez de promocionarse automáticamente. Si el almacén seguro falla, la aplicación puede continuar con los datos principales, pero muestra que las claves no pudieron comprobarse.
 
 ## Borrado verificable
 
-El manifiesto de runtime asigna cada destino a uno de dos alcances:
+Hay dos alcances, declarados en `LOCAL_DATA_MANIFEST` y `LOCAL_SECURE_DATA_MANIFEST`:
 
-- **Borrar actividad y conversaciones** reescribe el agregado con actividad, dieta, medidas y chats vacíos y genera el snapshot de ese estado. Elimina cuarentena, sesión y borradores, libro de operaciones del agente y fotos propias. Conserva proveedores y sus claves, memoria, alimentos personales, preferencias, cachés, trazas, consentimiento y metadatos.
-- **Borrar todos mis datos** elimina agregado y auxiliares, configuración y claves de proveedores, memoria, preferencias, alimentos, cachés, trazas, consentimientos, metadatos, operaciones, fotos y secretos heredados. También recorre claves detectadas en el namespace activo. La única exclusión explícita es `gymnasia.mobile.signed_policy.cache.v1`, caché pública de seguridad anti-retroceso y no dato de usuario.
+- **Borrar actividad y conversaciones** crea un `LocalStore` de reinicio que conserva ajustes de dieta y configuración de proveedores, pero vacía actividad, dieta, mediciones, chats y recibos del agregado. Reescribe primario y snapshot con ese valor, elimina cuarentena, sesión y borradores, limpia los recibos técnicos de memoria, el ledger del agente y las fotos propias. Conserva memoria personal, alimentos, preferencias y las demás claves de configuración o caché.
+- **Borrar todos mis datos** elimina la familia administrada, proveedores y secretos, memoria, preferencias, alimentos, cachés, trazas, consentimiento, metadatos, claves heredadas y claves detectadas del namespace activo. La excepción intencional es `gymnasia.mobile.signed_policy.cache.v1`: una caché pública firmada que se conserva como protección anti-retroceso, no como dato de usuario.
 
-Cada destino ejecuta `delete` y luego `verify`, con timeout de 5 s por fase. Las tareas se ejecutan en paralelo: un error, timeout o valor aún presente produce un informe `incomplete`, no cancela los demás y permite reintentar. En nativo se cancelan y descartan también las notificaciones; tras el informe se reinicia el runtime para que referencias y borradores de React no reescriban datos borrados.
+```mermaid
+flowchart TD
+  Request["Confirmar alcance"] --> Drain["Esperar cola de persistencia"]
+  Drain --> Build["Construir tareas desde manifiesto"]
+  Build --> Delete["Borrar cada destino"]
+  Delete --> Verify["Verificar ausencia o reescritura"]
+  Verify -->|"todos correctos"| Complete["Informe complete y reinicio runtime"]
+  Verify -->|"fallo timeout o dato presente"| Incomplete["Informe incomplete y reinicio runtime"]
+```
 
-El alcance local no borra paquetes ya exportados, fotos fuera del directorio propiedad de Gymnasia, permisos o canales del sistema, registros del sistema operativo ni datos enviados antes a un proveedor externo.
+*Cada destino se considera completado solo tras su verificación; el informe permite reintentar los que fallaron.*
 
-## Pruebas y cambios seguros
+Antes de crear tareas, `performDataDeletion()` entra en la cola de persistencia para esperar operaciones anteriores. Así una escritura antigua no puede repoblar después el agregado o el espejo de desarrollo. Cada tarea tiene fase `delete` y `verify`, ambas con timeout de 5 segundos; se ejecutan en paralelo y un fallo no cancela las demás. El resultado es `complete` o `incomplete`, con destinos completados y fallos clasificados como borrado, verificación o timeout. Tras el informe se reinicia el runtime para que referencias de React no restauren datos ya eliminados. En nativo también se cancelan y descartan las notificaciones.
 
-- `persistence/localStoreRecovery.test.ts` cubre migración idempotente, incidencias sin filtración de secretos, cuarentena byte a byte, snapshot con hash, bloqueo persistente, commit ambiguo y descarte de solo las dependencias afectadas.
-- `backup/backupFormat.test.ts` cubre salida ZIP v3, entradas v2/v1 heredadas, SHA-256, deduplicación, prioridad y límites, rutas/enlaces maliciosos, metadatos JPEG y conservación de mediciones ante medios corruptos. `backup/portableEncryption.test.ts` añade vector estable, autenticación de fragmentos, alteración, truncamiento y límites de contraseña.
-- `scripts/storage-recovery.e2e.mjs` verifica en web que la recuperación no sobrescribe JSON roto, no contacta proveedores, cifra la exportación de cuarentena, permite reintento, restaura tras confirmación y conserva las particiones independientes al descartar. `scripts/decrypt-recovery.test.mjs` verifica descifrado CLI, permisos `0600` y ausencia de sobrescritura.
-- `storage/localDataDeletion.test.ts` verifica el orden borrar/verificar, fallos y timeouts reintentables, resultados bajo órdenes arbitrarios y consistencia entre manifiesto de borrado e inventario de privacidad.
+El borrado local no puede revocar copias ya exportadas, archivos fuera del directorio que pertenece a la aplicación, permisos o canales del sistema, registros del sistema operativo ni datos que se hubieran enviado antes a un proveedor externo.
 
-Al añadir una partición o campo persistido, decidir si pertenece al agregado, a datos independientes, caché, estado efímero o secreto; definir su migración y normalización; declarar ambos alcances de borrado; e incluirlo en la copia solo si debe ser portable. Los cambios incompatibles requieren una versión nueva y una ruta de importación explícita. Para multimedia, transportar bytes verificables en vez de URI locales.
+## Pruebas y guía para cambios seguros
+
+Las pruebas relevantes son:
+
+- `persistence/localStoreRecovery.test.ts`: migración idempotente, diagnósticos sin secretos, cuarentena byte a byte, snapshot con hash, bloqueo durable, commits ambiguos, restauración y descarte selectivo.
+- `storage/localDataDeletion.test.ts`: éxito solo tras borrar y verificar, continuidad ante fallos, timeout reintentable, propiedades con órdenes arbitrarios y correspondencia entre manifiesto e inventario de privacidad.
+- `backup/backupFormat.test.ts` y `backup/portableEncryption.test.ts`: ZIP v3, entrada v2/v1, hashes y límites de medios, JPEG, manipulación del sobre y autenticación.
+- `scripts/storage-recovery.e2e.mjs`: en web verifica que recuperación no sobrescriba JSON roto, no contacte proveedores, exporte cuarentena cifrada y permita reintentar o restaurar un snapshot.
+
+Al añadir una partición persistida, decidir primero si es parte del agregado, un dato independiente, caché, estado efímero o secreto. Después definir validación/migración, su comportamiento de recuperación, ambos alcances de borrado y si debe ser portable. No añadir un campo raíz al agregado sin actualizar el validador: por diseño, los campos raíz desconocidos bloquean la escritura para proteger datos de una versión no compatible.

@@ -1,5 +1,12 @@
 import { createGoogleStreamParser, type GoogleStreamTurnResult, type StreamingHandlers } from "./providerStreamParsers";
-import { buildGoogleInteractionRequest, googleApiHeaders, GOOGLE_INTERACTIONS_URL } from "./providerTransport";
+import {
+  type GoogleContextBudget,
+  GoogleContextBudgetError,
+  type GoogleContextReport,
+  type GoogleInteractionRequestInput,
+  prepareGoogleInteractionRequest,
+} from "./googleContextBudget";
+import { googleApiHeaders, GOOGLE_INTERACTIONS_URL } from "./providerTransport";
 
 function parseJsonSafely<T>(raw: string): T | null {
   try { return JSON.parse(raw) as T; } catch { return null; }
@@ -18,17 +25,29 @@ export function googleInteractionEndpoint(fixturePort: unknown, environment: unk
   return `http://127.0.0.1:${fixturePort}/v1beta/interactions`;
 }
 
-export function requestGoogleInteraction(
-  options: Parameters<typeof buildGoogleInteractionRequest>[0] & {
+export async function requestGoogleInteraction(
+  options: GoogleInteractionRequestInput & {
     apiKey: string; platform: string; environment?: string; fixturePort?: number;
+    contextBudget?: GoogleContextBudget;
   },
   handlers?: StreamingHandlers,
+  onContextReport?: (report: GoogleContextReport) => void,
 ): Promise<GoogleStreamTurnResult> {
+  let prepared: ReturnType<typeof prepareGoogleInteractionRequest>;
+  try {
+    prepared = prepareGoogleInteractionRequest(options, options.contextBudget);
+    try { onContextReport?.(prepared.report); } catch { /* El diagnóstico nunca bloquea la petición. */ }
+  } catch (error) {
+    if (error instanceof GoogleContextBudgetError) {
+      try { onContextReport?.(error.report); } catch { /* El diagnóstico nunca oculta el error útil. */ }
+    }
+    throw error;
+  }
   const url = googleInteractionEndpoint(options.fixturePort, options.environment, options.apiKey);
   const headers = googleApiHeaders(options.apiKey, {
     "Content-Type": "application/json", Accept: "text/event-stream",
   });
-  const body = buildGoogleInteractionRequest(options);
+  const body = prepared.body;
   if (options.platform === "web") {
     return streamGoogleRequestViaFetch(url, headers, body, handlers);
   }

@@ -7,6 +7,7 @@ import {
   type SetStateAction,
 } from "react";
 
+import type { HealthSafetyConsentSwitchModel } from "../agent/healthSafetyConsent";
 import type { PersonalDataField } from "../agent/personalData";
 import type {
   OpenAIReasoningEffort,
@@ -30,9 +31,16 @@ import type {
   GkgMacroKey,
 } from "../diet/model";
 import { parseNonNegativeNumberInput } from "../diet/model";
+import { formatBodyMetricInput, resolveBodyMetricsDraft } from "../measurements/bodyMetricsDraft";
 import { buildDietPlanningModel, type DietPlanningModel } from "../diet/planningModel";
+import { calculateDailyCalories } from "../diet/dailyCaloriesCalculation";
 import type { DietMacroMode, NutritionValidationIssue } from "../diet/nutritionContract";
-import type { Measurement } from "../measurements/measurementContract";
+import {
+  formatMeasurementIssues,
+  localDateKey,
+  upsertMeasurementByDate,
+  type Measurement,
+} from "../measurements/measurementContract";
 import { normalizePersonalFood } from "../catalogs/sources";
 import type { CatalogSearchAvailability, FoodCatalogEntry } from "../catalogs/types";
 import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
@@ -86,7 +94,8 @@ export type ProviderSettingsModel = {
   keys: ReadonlyArray<ProviderConfiguration>;
   chatProvider: Provider | null;
   foodProvider: Provider | null;
-  healthSafetyProviders: Readonly<Record<Provider, boolean>>;
+  photoUnsupportedIds: ReadonlyArray<string>;
+  healthSafetyConsent: Readonly<HealthSafetyConsentSwitchModel>;
   secureStoreAvailable: boolean;
   isWeb: boolean;
   chatDropdownOpen: boolean;
@@ -119,10 +128,18 @@ export type ProviderSettingsModel = {
     message: ProviderModelMessage;
     options: ReadonlyArray<ProviderModelOption>;
   };
+  custom: {
+    loading: boolean;
+    testing: boolean;
+    message: ProviderModelMessage;
+    options: ReadonlyArray<ProviderModelOption>;
+    photoUnsupported: boolean;
+    focusModelRequest: number;
+  };
 };
 
 export type ProviderSettingsActions = {
-  updateHealthSafetyConsent(provider: Provider, enabled: boolean): void;
+  updateHealthSafetyConsent(enabled: boolean): void;
   selectChatProvider(provider: Provider): void;
   selectFoodProvider(provider: Provider): void;
   setChatDropdownOpen(open: boolean): void;
@@ -146,6 +163,9 @@ export type ProviderSettingsActions = {
   selectAnthropicModel(id: string): void;
   selectOpenAIModel(id: string): void;
   selectGoogleModel(id: string): void;
+  loadCustomModels(): void;
+  testCustomModel(): void;
+  selectCustomModel(id: string): void;
 };
 
 export type ProviderSettingsControllerInput = ProviderSettingsModel & ProviderSettingsActions;
@@ -163,7 +183,8 @@ export function useProviderSettingsController(
     keys: input.keys,
     chatProvider: input.chatProvider,
     foodProvider: input.foodProvider,
-    healthSafetyProviders: input.healthSafetyProviders,
+    photoUnsupportedIds: input.photoUnsupportedIds,
+    healthSafetyConsent: input.healthSafetyConsent,
     secureStoreAvailable: input.secureStoreAvailable,
     isWeb: input.isWeb,
     chatDropdownOpen: input.chatDropdownOpen,
@@ -196,6 +217,7 @@ export function useProviderSettingsController(
       message: input.google.message,
       options: input.google.options,
     },
+    custom: input.custom,
   }), [
     input.anthropic.dropdownOpen,
     input.anthropic.filter,
@@ -208,12 +230,14 @@ export function useProviderSettingsController(
     input.drafts,
     input.foodDropdownOpen,
     input.foodProvider,
+    input.photoUnsupportedIds,
     input.google.dropdownOpen,
     input.google.filter,
     input.google.loading,
     input.google.message,
     input.google.options,
-    input.healthSafetyProviders,
+    input.custom,
+    input.healthSafetyConsent,
     input.isWeb,
     input.keyVisibility,
     input.keys,
@@ -229,7 +253,7 @@ export function useProviderSettingsController(
     input.secureStoreAvailable,
   ]);
   const actions = useMemo<ProviderSettingsActions>(() => ({
-    updateHealthSafetyConsent: (provider, enabled) => inputRef.current.updateHealthSafetyConsent(provider, enabled),
+    updateHealthSafetyConsent: (enabled) => inputRef.current.updateHealthSafetyConsent(enabled),
     selectChatProvider: (provider) => inputRef.current.selectChatProvider(provider),
     selectFoodProvider: (provider) => inputRef.current.selectFoodProvider(provider),
     setChatDropdownOpen: (open) => inputRef.current.setChatDropdownOpen(open),
@@ -253,6 +277,9 @@ export function useProviderSettingsController(
     selectAnthropicModel: (id) => inputRef.current.selectAnthropicModel(id),
     selectOpenAIModel: (id) => inputRef.current.selectOpenAIModel(id),
     selectGoogleModel: (id) => inputRef.current.selectGoogleModel(id),
+    loadCustomModels: () => inputRef.current.loadCustomModels(),
+    testCustomModel: () => inputRef.current.testCustomModel(),
+    selectCustomModel: (id) => inputRef.current.selectCustomModel(id),
   }), []);
   const back = useMemo(() => ({
     layers: {
@@ -890,8 +917,10 @@ export function useMemorySettingsRuntime(input: {
 export type DietSettingsModel = {
   draft: DietSettings;
   issues: ReadonlyMap<string, NutritionValidationIssue>;
-  latestHeightCm: number | null;
-  latestWeightKg: number | null;
+  weightInput: string;
+  heightInput: string;
+  weightIssue: string | null;
+  heightIssue: string | null;
   birthDatePickerVisible: boolean;
   isWeb: boolean;
   isIos: boolean;
@@ -906,10 +935,14 @@ export type DietSettingsModel = {
   draftFatTargetGrams: number;
   dirty: boolean;
   saveResult: string | null;
+  // Aviso del botón Calcular. Vive en la pestaña Dieta: nunca en el banner
+  // global de la app, que sobrevivía al cambio de pestaña.
+  calculationIssue: string | null;
 };
 
 export type DietSettingsActions = {
   changeSex(value: "male" | "female"): void;
+  changeWeight(value: string): void;
   changeHeight(value: string): void;
   changeBirthDate(value: string): void;
   showBirthDatePicker(): void;
@@ -935,8 +968,10 @@ export function useDietSettingsController(
   const model = useMemo<DietSettingsModel>(() => ({
     draft: input.draft,
     issues: input.issues,
-    latestHeightCm: input.latestHeightCm,
-    latestWeightKg: input.latestWeightKg,
+    weightInput: input.weightInput,
+    heightInput: input.heightInput,
+    weightIssue: input.weightIssue,
+    heightIssue: input.heightIssue,
     birthDatePickerVisible: input.birthDatePickerVisible,
     isWeb: input.isWeb,
     isIos: input.isIos,
@@ -951,8 +986,10 @@ export function useDietSettingsController(
     draftFatTargetGrams: input.draftFatTargetGrams,
     dirty: input.dirty,
     saveResult: input.saveResult,
+    calculationIssue: input.calculationIssue,
   }), [
     input.birthDatePickerVisible,
+    input.calculationIssue,
     input.carbsMaxGramsPerKgHint,
     input.configuredMacroCaloriesExcess,
     input.configuredMacroCaloriesRemaining,
@@ -963,16 +1000,19 @@ export function useDietSettingsController(
     input.draftFatTargetGrams,
     input.draftProteinTargetGrams,
     input.fatMaxGramsPerKgHint,
+    input.heightInput,
+    input.heightIssue,
     input.isWeb,
     input.isIos,
     input.issues,
-    input.latestHeightCm,
-    input.latestWeightKg,
     input.proteinMaxGramsPerKgHint,
     input.saveResult,
+    input.weightInput,
+    input.weightIssue,
   ]);
   const actions = useMemo<DietSettingsActions>(() => ({
     changeSex: (value) => inputRef.current.changeSex(value),
+    changeWeight: (value) => inputRef.current.changeWeight(value),
     changeHeight: (value) => inputRef.current.changeHeight(value),
     changeBirthDate: (value) => inputRef.current.changeBirthDate(value),
     showBirthDatePicker: () => inputRef.current.showBirthDatePicker(),
@@ -1001,12 +1041,15 @@ export function useDietSettingsController(
 }
 
 export function useDietSettingsRuntime(input: {
+  // Si la pestaña Dieta de Ajustes está a la vista. Al ocultarse se descarta
+  // el aviso de Calcular para que no reaparezca al volver.
+  active: boolean;
   localStore: LocalStoreRuntime;
   latestHeightCm: number | null;
   latestWeightKg: number | null;
   isWeb: boolean;
   isIos: boolean;
-  setError(message: string | null): void;
+  createId(prefix: string): string;
 }): {
   controller: ReturnType<typeof useDietSettingsController>;
   planning: DietPlanningModel;
@@ -1018,7 +1061,12 @@ export function useDietSettingsRuntime(input: {
   }));
   const [dirty, setDirty] = useState(false);
   const [saveResult, setSaveResult] = useState<string | null>(null);
+  const [calculationIssue, setCalculationIssue] = useState<string | null>(null);
   const [birthDatePickerVisible, setBirthDatePickerVisible] = useState(false);
+  // Peso y altura no forman parte de dietSettings: viven en Medidas. El plan
+  // los edita como borrador y los escribe como medición de hoy al guardar.
+  const [weightInput, setWeightInput] = useState(() => formatBodyMetricInput(input.latestWeightKg));
+  const [heightInput, setHeightInput] = useState(() => formatBodyMetricInput(input.latestHeightCm));
   const inputRef = useRef(input);
   inputRef.current = input;
 
@@ -1030,19 +1078,40 @@ export function useDietSettingsRuntime(input: {
     });
   }, [dirty, savedSettings]);
 
+  useEffect(() => {
+    if (dirty) return;
+    setWeightInput(formatBodyMetricInput(input.latestWeightKg));
+    setHeightInput(formatBodyMetricInput(input.latestHeightCm));
+  }, [dirty, input.latestHeightCm, input.latestWeightKg]);
+
+  const bodyMetrics = useMemo(
+    () => resolveBodyMetricsDraft(
+      { weightInput, heightInput },
+      { latestWeightKg: input.latestWeightKg, latestHeightCm: input.latestHeightCm },
+    ),
+    [heightInput, input.latestHeightCm, input.latestWeightKg, weightInput],
+  );
+  const bodyMetricsRef = useRef(bodyMetrics);
+  bodyMetricsRef.current = bodyMetrics;
+
+  useEffect(() => {
+    if (!input.active) setCalculationIssue(null);
+  }, [input.active]);
+
   const planning = useMemo(
-    () => buildDietPlanningModel(savedSettings, draft, input.latestWeightKg),
-    [draft, input.latestWeightKg, savedSettings],
+    () => buildDietPlanningModel(savedSettings, draft, bodyMetrics.weightKg),
+    [bodyMetrics.weightKg, draft, savedSettings],
   );
 
   function update(updater: (previous: DietSettings) => DietSettings): void {
     setDraft((previous) => updater(previous));
     setDirty(true);
     setSaveResult(null);
+    setCalculationIssue(null);
   }
 
   function changeGramsPerKg(macro: GkgMacroKey, value: string): void {
-    const weight = inputRef.current.latestWeightKg;
+    const weight = bodyMetricsRef.current.weightKg;
     const caloriesPerGram = macro === "fat" ? 9 : 4;
     const settingKey = macro === "protein"
       ? "protein_grams_per_kg"
@@ -1068,8 +1137,10 @@ export function useDietSettingsRuntime(input: {
   const controller = useDietSettingsController({
     draft,
     issues: planning.issueByField,
-    latestHeightCm: input.latestHeightCm,
-    latestWeightKg: input.latestWeightKg,
+    weightInput,
+    heightInput,
+    weightIssue: bodyMetrics.weightIssue,
+    heightIssue: bodyMetrics.heightIssue,
     birthDatePickerVisible,
     isWeb: input.isWeb,
     isIos: input.isIos,
@@ -1084,8 +1155,20 @@ export function useDietSettingsRuntime(input: {
     draftFatTargetGrams: planning.draftFatTargetGrams,
     dirty,
     saveResult,
+    calculationIssue,
     changeSex: (sex) => update((previous) => ({ ...previous, sex })),
-    changeHeight: (heightCm) => update((previous) => ({ ...previous, height_cm: heightCm })),
+    changeWeight: (weightKg) => {
+      setWeightInput(weightKg);
+      setDirty(true);
+      setSaveResult(null);
+      setCalculationIssue(null);
+    },
+    changeHeight: (heightCm) => {
+      setHeightInput(heightCm);
+      setDirty(true);
+      setSaveResult(null);
+      setCalculationIssue(null);
+    },
     changeBirthDate: (birthDate) => update((previous) => ({ ...previous, birth_date: birthDate })),
     showBirthDatePicker: () => setBirthDatePickerVisible(true),
     closeBirthDatePicker: () => setBirthDatePickerVisible(false),
@@ -1103,35 +1186,29 @@ export function useDietSettingsRuntime(input: {
       daily_calories: dailyCalories,
     })),
     calculateDailyCalories: () => {
-      const heightCm = parseFloat(draft.height_cm ?? "") || (inputRef.current.latestHeightCm ?? 0);
-      const weightKg = inputRef.current.latestWeightKg ?? 0;
-      const birthDate = draft.birth_date;
-      if (!weightKg || !heightCm || !birthDate) {
-        inputRef.current.setError("Introduce altura, peso y fecha de nacimiento para calcular.");
+      const result = calculateDailyCalories({
+        weightKg: bodyMetricsRef.current.weightKg,
+        heightCm: bodyMetricsRef.current.heightCm,
+        birthDate: draft.birth_date,
+        sex: draft.sex,
+        activityLevel: draft.activity_level,
+        goal: draft.goal,
+      });
+      if (!result.ok) {
+        setCalculationIssue(result.message);
         return;
       }
-      const ageYears = Math.floor((Date.now() - new Date(birthDate).getTime()) / 31557600000);
-      const sexOffset = (draft.sex ?? "male") === "female" ? -161 : 5;
-      const bmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears + sexOffset;
-      const activityMultipliers: Record<string, number> = {
-        moderate: 1.55,
-        intermediate: 1.725,
-        high: 1.9,
-      };
-      const multiplier = activityMultipliers[draft.activity_level ?? "moderate"] ?? 1.55;
-      const goalMultiplier = draft.goal === "cut" ? 0.8 : draft.goal === "bulk" ? 1.2 : 1;
       update((previous) => ({
         ...previous,
-        daily_calories: String(Math.round(bmr * multiplier * goalMultiplier)),
+        daily_calories: String(result.dailyCalories),
       }));
-      inputRef.current.setError(null);
     },
     changeMacroMode: (mode) => update((previous) => {
       if (previous.macro_mode === mode) return previous;
       if (mode !== "manual_calories" || previous.macro_mode !== "protein_by_weight") {
         return { ...previous, macro_mode: mode };
       }
-      const weight = inputRef.current.latestWeightKg;
+      const weight = bodyMetricsRef.current.weightKg;
       if (weight === null || !Number.isFinite(weight) || weight <= 0) {
         return { ...previous, macro_mode: mode };
       }
@@ -1150,7 +1227,7 @@ export function useDietSettingsRuntime(input: {
       };
     }),
     changeManualMacroCalories: (macro, value) => {
-      const weight = inputRef.current.latestWeightKg;
+      const weight = bodyMetricsRef.current.weightKg;
       const caloriesPerGram = macro === "fat" ? 9 : 4;
       const settingKey = macro === "protein"
         ? "protein_grams_per_kg"
@@ -1169,7 +1246,7 @@ export function useDietSettingsRuntime(input: {
     },
     changeMacroGramsPerKg: changeGramsPerKg,
     save: () => {
-      if (planning.draftEvaluation.issues.length > 0) {
+      if (planning.draftEvaluation.issues.length > 0 || bodyMetrics.hasIssues) {
         setSaveResult("Revisa los campos marcados antes de guardar el plan.");
         return;
       }
@@ -1177,10 +1254,30 @@ export function useDietSettingsRuntime(input: {
         ...draft,
         manual_macro_calories: { ...draft.manual_macro_calories },
       };
-      inputRef.current.localStore.update((previous) => ({
-        ...previous,
-        dietSettings: nextSettings,
-      }));
+      // El peso y la altura van a la medición de hoy para que Home, Medidas y
+      // el agente lean el mismo valor. Se valida contra el store actual antes
+      // de tocar nada; el mutador repite la operación sobre el store real.
+      const patch = bodyMetrics.patch;
+      const hasBodyMetricsPatch = Object.keys(patch).length > 0;
+      const measurementId = inputRef.current.createId("measurement");
+      const today = localDateKey(new Date());
+      const upsertToday = (measurements: readonly Measurement[]) =>
+        upsertMeasurementByDate(measurements, { date: today, patch, createId: () => measurementId });
+      if (hasBodyMetricsPatch) {
+        const preview = upsertToday(inputRef.current.localStore.store.measurements);
+        if (!preview.ok) {
+          setSaveResult(formatMeasurementIssues(preview.issues));
+          return;
+        }
+      }
+      inputRef.current.localStore.update((previous) => {
+        const result = hasBodyMetricsPatch ? upsertToday(previous.measurements) : null;
+        return {
+          ...previous,
+          dietSettings: nextSettings,
+          measurements: result?.ok ? result.measurements : previous.measurements,
+        };
+      });
       setDirty(false);
       setSaveResult(planning.draftEvaluation.budgetStatus === "exceeded"
         ? `Plan guardado con un exceso de ${planning.draftEvaluation.excessCalories.toFixed(0)} kcal.`

@@ -3,8 +3,9 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 // App.tsx no es importable en Node, así que el contrato se asserta sobre su
-// fuente. Es la prueba central de GYM-139: demuestra que la vía que anexaba un
-// dato local al system prompt no existe, no solo que hoy no se dispare.
+// fuente. Es la prueba central de GYM-139 (ticket para impedir que la memoria
+// persistente altere el system prompt): demuestra que la vía que anexaba un dato
+// local al system prompt no existe, no solo que hoy no se dispare.
 const appSource = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
 
 function componentFunctionBody(source: string, header: string): string {
@@ -15,7 +16,7 @@ function componentFunctionBody(source: string, header: string): string {
   return end === -1 ? rest : rest.slice(0, end);
 }
 
-describe("GYM-139: ningún dato local llega al system prompt", () => {
+describe("GYM-139 (ticket para aislar la memoria del system prompt)", () => {
   it("no queda rastro del mecanismo de inyección", () => {
     for (const removed of [
       "Instrucciones de depuracion",
@@ -44,8 +45,8 @@ describe("GYM-139: ningún dato local llega al system prompt", () => {
   });
 
   it("las fronteras del almacén pasan por la sanitización", () => {
-    expect(appSource).toContain("return sanitizePersonalDataFields(JSON.parse(raw));");
-    expect(appSource).toContain("JSON.stringify(sanitizePersonalDataFields(fields)),");
+    expect(appSource).toContain("return parsePersonalDataStore(raw).fields;");
+    expect(appSource).toContain("buildPersonalDataStore(");
     expect(appSource).toContain(
       "await savePersonalData(sanitizePersonalDataFields(data.personalData));",
     );
@@ -56,5 +57,18 @@ describe("GYM-139: ningún dato local llega al system prompt", () => {
     expect(appSource).not.toContain("type PersonalDataField = {");
     expect(appSource).not.toContain("function personalDataToJson");
     expect(appSource).toContain('from "./agent/personalData"');
+  });
+
+  it("las copias exportan datos de dominio pero excluyen recibos técnicos", () => {
+    const body = componentFunctionBody(
+      appSource,
+      "function buildBackupData(data: BackupExportData): BackupExportData {",
+    );
+    expect(body).toContain("toolOperationReceipts: _toolOperationReceipts");
+    expect(body).toContain("store: backupStore as LocalStore");
+    expect(body).toContain("personalData: data.personalData");
+    expect(appSource).toContain(
+      "toolOperationReceipts: storeRef.current.toolOperationReceipts",
+    );
   });
 });

@@ -221,7 +221,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Dieciséis cosas que cuestan tiempo si no se saben:
+Diecisiete cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -366,6 +366,15 @@ Dieciséis cosas que cuestan tiempo si no se saben:
     rtk proxy curl -sS https://gymnasia-sable.vercel.app/data/board.json \
       | rtk proxy shasum -a 256
     ```
+
+17. **Un enlace Markdown en el plan de pruebas bloqueaba `close`.** El síntoma
+    es `No se puede cerrar: faltan por resolver regresión` (o la categoría que
+    sea) con la casilla visiblemente marcada `[X]`. Linear guarda los enlaces
+    como `[texto](<https://...>)`, y el validador tomaba ese `<https://...>` por
+    un marcador de plantilla sin rellenar como `<motivo>`. Verificado el 27 de
+    septiembre de 2026 al cerrar GYM-39. `PLACEHOLDER` ignora ahora los `<url>`
+    que empiezan por `http(s)://`; si reaparece con otro formato, relee la línea
+    con `get` y busca cualquier `<...>` que Linear haya añadido.
 
 ## Notas
 

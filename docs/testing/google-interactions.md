@@ -13,8 +13,12 @@ repite la petición una vez con XHR almacenado completo, sin eventos de progreso
 
 Las pruebas `googleInteractions.test.ts` cubren pasos, firmas opacas, argumentos,
 estados `completed`/`requires_action`, replays, truncado, correlación de herramientas,
-historial completo, fragmentación UTF-8 y equivalencia Fetch/XHR. Una regresión utiliza
-el ledger real para comprobar un reintento completo con nuevos IDs del proveedor.
+historial candidato completo, fragmentación UTF-8 y equivalencia Fetch/XHR. Para
+GYM-233 (ticket para limitar el contexto enviado a Google), cubren además el máximo de
+diez intercambios, los dos presupuestos de bytes, la retirada de imágenes antiguas, la
+inmutabilidad del historial local, los errores anteriores a red y propiedades de orden
+y emparejamiento de herramientas. Una regresión utiliza el ledger real para comprobar
+un reintento completo con nuevos IDs del proveedor.
 `providerPipeline.test.ts` y `providerToolLoop.test.ts` recorren los fixtures REST/SSE.
 
 ```sh
@@ -31,8 +35,10 @@ npm run test:privacy:e2e
 ```
 
 El E2E del agente incluye Google con aperturas/cierres duplicados, lectura y escritura
-de datos, recarga y continuación con más de 20 mensajes. También recorre dos turnos
-firmados del estimador y del asistente personal, y guarda un alimento mediante la
+de datos, recarga de un historial local largo y continuación enviando solo los diez
+intercambios más recientes. Comprueba también que una imagen llega en el turno en que
+se adjunta y deja de reenviarse en el siguiente, sin perder el texto ni la firma. Además
+recorre dos turnos firmados del asistente personal y guarda un alimento mediante la
 extracción JSON de Interactions. Un navegador o un XHR
 simulado no demuestra el comportamiento de React Native: hay que completar el caso
 siguiente antes de cerrar el ticket.
@@ -66,8 +72,26 @@ siguiente antes de cerrar el ticket.
 - Antes de distribuir: completar Android y publicar los HTML de privacidad en
   `gymnasia-web`, siguiendo `docs/legal/privacy-change-checklist.md`.
 
-El historial completo crece con la conversación. Un límite de contexto o rechazo del
-proveedor se muestra como error; la app no recorta ni resume el historial en silencio.
+El historial local completo sigue creciendo con la conversación. Antes de cada petición
+Google recibe como máximo diez intercambios; los límites de 512 KiB sin imágenes y
+19.000.000 bytes para el cuerpo completo pueden retirar más intercambios enteros desde
+el más antiguo. El turno activo nunca se parte ni se resume: si por sí solo no cabe, la
+app muestra un error antes de abrir la red.
+
+## Evidencia de GYM-233 (ticket para limitar el contexto enviado a Google), 2026-09-14
+
+- TypeScript sin errores y 44 pruebas focalizadas de Google, chat, herramientas y
+  estimador correctas.
+- Suite Vitest completa: 94 archivos y 730 pruebas. En esta máquina fue necesario usar
+  un worker y ampliar el timeout del runner por su carga; las mismas propiedades que
+  agotaron tiempo en paralelo pasaron sin cambiar casos ni aserciones. Los 11 tests del
+  almacén de desarrollo y los 3 de límites de arquitectura pasaron aparte.
+- `npm run test:agent:e2e`: recorridos completos de OpenAI, Anthropic y Google,
+  incidencias, BYOK y modo Development correctos. Para Google valida siete rondas del
+  chat con herramientas, historial local largo reducido a diez intercambios en red y
+  una foto que no se reenvía en el mensaje siguiente.
+- Política `2026-09-v3`: generación, contrato, inventario y E2E ES/EN correctos. Las
+  pruebas de OpenWiki y su validador de instrucciones también pasan.
 
 ## Android con el transporte real y proveedor falso
 

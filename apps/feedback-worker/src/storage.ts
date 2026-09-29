@@ -30,6 +30,18 @@ export type ExpiredReportRecord = {
   created_at: number;
 };
 
+export async function findIdempotencyKey(
+  db: SqlDatabase,
+  key: string,
+): Promise<IssueRecord | null> {
+  return db
+    .prepare(
+      "SELECT idempotency_key, state, issue_number, issue_url FROM issues WHERE idempotency_key = ?",
+    )
+    .bind(key)
+    .first<IssueRecord>();
+}
+
 /**
  * Reserva una clave de idempotencia.
  *

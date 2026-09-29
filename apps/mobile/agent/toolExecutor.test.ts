@@ -1,3 +1,4 @@
+import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 
 import {
@@ -9,6 +10,7 @@ import {
   type ToolStore,
 } from "./toolExecutor";
 import type { CatalogSearchAvailability } from "../catalogs/types";
+import { AGENT_TOOL_DEFINITIONS, AGENT_TOOL_NAMES, validateToolInput } from "./toolDefinitions";
 
 function createDependencies(
   overrides: Partial<ToolExecutorDependencies> = {},
@@ -91,6 +93,177 @@ function createMeasurement(id: string, measuredOn: string, weightKg: number | nu
   };
 }
 
+async function runDispatchScenario(name: string, args: Record<string, unknown>) {
+  let store: ToolStore = {
+    ...createEmptyStore(),
+    dietByDate: {
+      "2026-09-01": {
+        day_date: "2026-09-01",
+        meals: [{
+          id: "meal_existing",
+          title: "Comida",
+          items: [{
+            id: "food_existing",
+            title: "Arroz blanco",
+            grams: 100,
+            calories_kcal: 130,
+            protein_g: 2.7,
+            carbs_g: 28,
+            fat_g: 0.3,
+          }],
+        }],
+      },
+    },
+  };
+  const savedFields: unknown[] = [];
+  const submittedDrafts: unknown[] = [];
+  const execute = createAgentToolExecutor(createDependencies({
+    loadPersonalData: async () => [{
+      key: "Objetivo",
+      description: "Meta principal",
+      value: "Ganar masa",
+    }],
+    savePersonalData: async (fields) => { savedFields.push(fields); },
+    loadMeasurements: async () => [createMeasurement("measurement_existing", "2026-09-01", 72)],
+    submitFeedbackIssue: async (draft) => {
+      submittedDrafts.push(draft);
+      return { status: "canceled" };
+    },
+  }));
+  const output = await execute(name, args, {
+    store,
+    foodsRepo: foods,
+    exercisesRepo: exercises,
+    commitStore: async (updater) => { store = updater(store); },
+  });
+  return { output, store, savedFields, submittedDrafts };
+}
+
+type DispatchResult = Awaited<ReturnType<typeof runDispatchScenario>>;
+
+const dispatchScenarios: Record<string, {
+  args: Record<string, unknown>;
+  verify: (result: DispatchResult) => void;
+}> = {
+  save_personal_data: {
+    args: { personal_data: JSON.stringify([{ key: "Objetivo", description: "Meta principal", value: "Ganar masa" }]) },
+    verify: ({ output, savedFields }) => {
+      expect(output).toBe("Datos personales guardados correctamente.");
+      expect(savedFields).toEqual([[{ key: "Objetivo", description: "Meta principal", value: "Ganar masa" }]]);
+    },
+  },
+  list_personal_data_keys: {
+    args: {},
+    verify: ({ output }) => { expect(JSON.parse(output)).toEqual(["Objetivo"]); },
+  },
+  read_field_description: {
+    args: { key: "Objetivo" },
+    verify: ({ output }) => { expect(output).toBe("Meta principal"); },
+  },
+  read_field_value: {
+    args: { key: "Objetivo" },
+    verify: ({ output }) => { expect(output).toBe("Ganar masa"); },
+  },
+  read_measurement: {
+    args: { date: "2026-09-01" },
+    verify: ({ output }) => { expect(JSON.parse(output)).toMatchObject({ measured_on: "2026-09-01", weight_kg: 72 }); },
+  },
+  write_measurement: {
+    args: { date: "2026-09-02", data: { weight_kg: 73 } },
+    verify: ({ output, store }) => {
+      expect(output).toContain("Medidas guardadas correctamente");
+      expect(store.measurements).toEqual([expect.objectContaining({ measured_on: "2026-09-02", weight_kg: 73 })]);
+    },
+  },
+  read_meal_foods: {
+    args: { date: "2026-09-01", meal: "Comida" },
+    verify: ({ output }) => { expect(JSON.parse(output)).toEqual([expect.objectContaining({ nombre: "Arroz blanco" })]); },
+  },
+  search_foods: {
+    args: { query: "Arroz" },
+    verify: ({ output }) => { expect(JSON.parse(output).results).toEqual([expect.objectContaining({ item_id: "rice" })]); },
+  },
+  add_meal_food: {
+    args: {
+      date: "2026-09-01",
+      meal: "Cena",
+      data: JSON.stringify({ kind: "catalog", source_id: "gymnasia_foods", item_id: "rice", grams: 150 }),
+    },
+    verify: ({ output, store }) => {
+      expect(output).toContain("añadido a Cena");
+      expect(store.dietByDate["2026-09-01"].meals.find((meal) => meal.title === "Cena")?.items).toEqual([
+        expect.objectContaining({ title: "Arroz blanco", grams: 150 }),
+      ]);
+    },
+  },
+  search_exercises: {
+    args: { query: "sentadilla" },
+    verify: ({ output }) => { expect(JSON.parse(output).results).toEqual([expect.objectContaining({ item_id: "sentadilla" })]); },
+  },
+  read_routines: {
+    args: {},
+    verify: ({ output }) => { expect(output).toBe("No hay rutinas de entrenamiento creadas."); },
+  },
+  create_routine: {
+    args: { data: {
+      name: "Pierna",
+      category: "strength",
+      icon: "activity",
+      exercises: [{ kind: "catalog", source_id: "gymnasia_exercises", item_id: "sentadilla", series: [{ type: "normal", reps: 8 }] }],
+    } },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({ status: "created", written: true, name: "Pierna" });
+      expect(store.templates).toEqual([expect.objectContaining({ name: "Pierna" })]);
+    },
+  },
+  create_feature_issue: {
+    args: { title: "Mejorar el historial", summary: "Permitir filtrar el historial de entrenamiento por fecha." },
+    verify: ({ output, submittedDrafts }) => {
+      expect(output.length).toBeGreaterThan(0);
+      expect(submittedDrafts).toEqual([expect.objectContaining({ title: "Mejorar el historial" })]);
+    },
+  },
+};
+
+describe("contrato del despachador", () => {
+  it("cubre todas las tools declaradas con llamadas válidas y rutas estables", async () => {
+    expect(Object.keys(dispatchScenarios).sort()).toEqual([...AGENT_TOOL_NAMES].sort());
+    for (const [name, scenario] of Object.entries(dispatchScenarios)) {
+      const definition = AGENT_TOOL_DEFINITIONS.find((tool) => tool.name === name);
+      expect(definition, name).toBeDefined();
+      expect(validateToolInput(definition!.inputSchema, scenario.args), name).toEqual({ valid: true, errors: [] });
+      const first = await runDispatchScenario(name, scenario.args);
+      const repeated = await runDispatchScenario(name, scenario.args);
+      expect(first.output, name).toBeTypeOf("string");
+      expect(repeated.output, name).toBe(first.output);
+      scenario.verify(first);
+    }
+  });
+
+  it("rechaza cualquier nombre no declarado, incluidos los heredados del objeto", async () => {
+    const savePersonalData = vi.fn(async () => {});
+    const submitFeedbackIssue = vi.fn(async () => ({ status: "canceled" as const }));
+    const execute = createDetailedAgentToolExecutor(createDependencies({
+      savePersonalData,
+      submitFeedbackIssue,
+    }));
+    const assertUnknown = async (name: string) => {
+      const result = await execute(name, {});
+      expect(result, name).toEqual({ output: "Herramienta no reconocida.", status: "no_effect" });
+    };
+
+    for (const name of ["unknown_tool", "constructor", "toString", "__proto__"]) {
+      await assertUnknown(name);
+    }
+    await fc.assert(fc.asyncProperty(
+      fc.string().filter((name) => !AGENT_TOOL_NAMES.includes(name)),
+      assertUnknown,
+    ), { numRuns: 100 });
+    expect(savePersonalData).not.toHaveBeenCalled();
+    expect(submitFeedbackIssue).not.toHaveBeenCalled();
+  });
+});
+
 describe("ejecutor de tools", () => {
   it("despacha una búsqueda pura con filtros y ordenación", async () => {
     const execute = createAgentToolExecutor(createDependencies());
@@ -101,6 +274,26 @@ describe("ejecutor de tools", () => {
     const parsed = JSON.parse(result) as { results: Array<{ item_id: string; proteina_por_100g: number }> };
     expect(parsed.results.map((food) => food.item_id)).toEqual(["chicken", "rice"]);
     expect(parsed.results[0].proteina_por_100g).toBe(31);
+  });
+
+  it("ignora los máximos a cero que OpenAI envía para filtros no solicitados", async () => {
+    const execute = createAgentToolExecutor(createDependencies());
+    const result = await execute("search_foods", {
+      query: "arroz blanco",
+      category: "",
+      source: "",
+      min_calories: 0,
+      max_calories: 0,
+      min_protein: 0,
+      max_protein: 0,
+      min_carbs: 0,
+      max_carbs: 0,
+      min_fat: 0,
+      max_fat: 0,
+      sort_by: "",
+    }, { foodsRepo: foods });
+    const parsed = JSON.parse(result) as { results: Array<{ item_id: string }> };
+    expect(parsed.results.map((food) => food.item_id)).toEqual(["rice"]);
   });
 
   it("expone disponibilidad, fecha, fuentes y referencias en ambas búsquedas", async () => {
@@ -195,7 +388,7 @@ describe("ejecutor de tools", () => {
     }, {
       exercisesRepo: [],
       resolveExerciseCatalogIds,
-      setStore: (updater) => { store = updater(store); },
+      commitStore: async (updater) => { store = updater(store); },
     }));
     expect(resolveExerciseCatalogIds).toHaveBeenCalledWith(["sentadilla"]);
     expect(routineOutput.status).toBe("created");
@@ -307,7 +500,7 @@ describe("ejecutor de tools", () => {
         throw new Error("storage unavailable");
       },
     });
-    expect(result.status).toBe("failed_before_commit");
+    expect(result.status).toBe("indeterminate");
     expect(result.output).not.toContain("correctamente");
   });
 
@@ -327,7 +520,7 @@ describe("ejecutor de tools", () => {
 
   it("guarda un alimento válido aunque todos sus valores nutricionales sean cero", async () => {
     let store = createEmptyStore();
-    const setStore = vi.fn((updater: (previous: ToolStore) => ToolStore) => {
+    const commitStore = vi.fn(async (updater: (previous: ToolStore) => ToolStore) => {
       store = updater(store);
     });
     const execute = createAgentToolExecutor(createDependencies());
@@ -342,10 +535,10 @@ describe("ejecutor de tools", () => {
         carbs_g: 0,
         fat_g: 0,
       }),
-    }, { setStore });
+    }, { commitStore });
 
     expect(result).toContain('Alimento "Agua"');
-    expect(setStore).toHaveBeenCalledOnce();
+    expect(commitStore).toHaveBeenCalledOnce();
     expect(store.dietByDate["2026-04-11"].meals[0]).toEqual(expect.objectContaining({
       title: "Desayuno",
       items: [expect.objectContaining({ title: "Agua", calories_kcal: 0 })],
@@ -366,7 +559,7 @@ describe("ejecutor de tools", () => {
       }),
     }, {
       foodsRepo: foods,
-      setStore: (updater) => { store = updater(store); },
+      commitStore: async (updater) => { store = updater(store); },
     });
 
     expect(store.dietByDate["2026-09-03"].meals[0].items[0]).toEqual(expect.objectContaining({
@@ -437,7 +630,10 @@ describe("ejecutor de tools", () => {
           series: [{ type: "normal", reps: 10, weight_kg: 60, rest_seconds: 90 }],
         }],
       },
-    }, { exercisesRepo: exercises, setStore: (updater) => { store = updater(store); } });
+    }, {
+      exercisesRepo: exercises,
+      commitStore: async (updater) => { store = updater(store); },
+    });
     expect(JSON.parse(created)).toMatchObject({
       status: "created",
       written: true,
@@ -589,6 +785,12 @@ describe("ejecutor de tools", () => {
     expect(store.dietByDate["2026-09-01"].meals[0].items[0].id).toBe(
       `food_op_${"a".repeat(24)}`,
     );
+    expect(store.toolOperationReceipts).toEqual([
+      expect.objectContaining({
+        operationId: "a".repeat(64),
+        toolName: "add_meal_food",
+      }),
+    ]);
   });
 
   it("no confirma una escritura si la persistencia falla", async () => {
@@ -611,7 +813,7 @@ describe("ejecutor de tools", () => {
       },
     });
 
-    expect(result.status).toBe("failed_before_commit");
+    expect(result.status).toBe("indeterminate");
     expect(result.output).toContain("no se ha completado");
   });
 
@@ -627,6 +829,9 @@ describe("ejecutor de tools", () => {
         deduplicated: false,
       }),
     }));
+    const ambiguous = createDetailedAgentToolExecutor(createDependencies({
+      submitFeedbackIssue: async () => ({ status: "error", reason: "operation_pending" }),
+    }));
     const args = { title: "Mejora", summary: "Añadir una mejora solicitada." };
 
     await expect(unavailable("create_feature_issue", args)).resolves.toMatchObject({
@@ -634,6 +839,9 @@ describe("ejecutor de tools", () => {
     });
     await expect(created("create_feature_issue", args)).resolves.toMatchObject({
       status: "committed",
+    });
+    await expect(ambiguous("create_feature_issue", args)).resolves.toMatchObject({
+      status: "indeterminate",
     });
   });
 });

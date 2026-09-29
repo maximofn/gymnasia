@@ -1,6 +1,12 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
+import {
+  readTelemetryFile,
+  unavailableTelemetry,
+  validateTelemetryEnvelope,
+} from "./openwiki-telemetry.mjs";
+
 const TARGET_REPOSITORY = "maximofn/gymnasia";
 const MODEL_LABEL = "ChatGPT · gpt-5.6-terra";
 const PAGE_TITLES = Object.freeze({
@@ -83,6 +89,106 @@ function formatReportDate(now) {
 function formatHistoryDate(value) {
   const date = safeDate(value);
   return date ? formatReportDate(date) : "fecha desconocida";
+}
+
+function formatTelemetryDate(value) {
+  const date = safeDate(value);
+  if (!date) {
+    return "fecha desconocida";
+  }
+  return new Intl.DateTimeFormat("es-ES", {
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    month: "short",
+    timeZone: "Europe/Madrid",
+  })
+    .format(date)
+    .replaceAll(".", "");
+}
+
+function formatMilliseconds(value) {
+  if (!Number.isFinite(value)) {
+    return "n/d";
+  }
+  if (value < 1_000) {
+    return `${Math.round(value)} ms`;
+  }
+  const seconds = Math.round(value / 1_000);
+  if (seconds < 60) {
+    return `${seconds} s`;
+  }
+  const minutes = Math.floor(seconds / 60);
+  const remainder = seconds % 60;
+  return remainder === 0 ? `${minutes} min` : `${minutes} min ${remainder} s`;
+}
+
+function telemetryFailureLabel(failures) {
+  const labels = {
+    oauth: "OAuth",
+    "managed-markers": "marcadores",
+    langsmith: "LangSmith",
+    "rate-limit": "límite de uso",
+    model: "modelo",
+    "context-limit": "contexto",
+    network: "red",
+    unknown: "desconocidos",
+  };
+  return Object.entries(failures)
+    .filter(([, count]) => count > 0)
+    .map(([category, count]) => `${labels[category]} ${count}`)
+    .join(" · ") || "ninguno";
+}
+
+function telemetryTokens(tokens) {
+  if (tokens.state === "zero") {
+    return "0 (sin llamadas de modelo)";
+  }
+  if (tokens.state !== "measured") {
+    return "no disponibles";
+  }
+  const coverage = tokens.coverage === "complete" ? "" : " · cobertura parcial";
+  return `${tokens.total.toLocaleString("es-ES")}${coverage}`;
+}
+
+function telemetryCost(cost) {
+  if (cost.state === "zero") {
+    return "0 USD";
+  }
+  if (cost.state !== "measured") {
+    return "no disponible";
+  }
+  const coverage = cost.coverage === "complete" ? "" : " · cobertura parcial";
+  return `${cost.totalUsd.toFixed(4)} USD${coverage}`;
+}
+
+function telemetrySummary(telemetry) {
+  if (!validateTelemetryEnvelope(telemetry)) {
+    return ["📊 TELEMETRÍA · 7 días", "⚠️ Telemetría no disponible"];
+  }
+
+  const lines = ["📊 TELEMETRÍA · 7 días"];
+  if (telemetry.latestAttempt.status === "unavailable") {
+    lines.push(
+      telemetry.sample
+        ? `⚠️ Consulta no disponible · última muestra válida: ${formatTelemetryDate(telemetry.sample.collectedAt)}`
+        : "⚠️ Telemetría no disponible · todavía no hay muestra válida",
+    );
+  }
+  if (!telemetry.sample) {
+    return lines;
+  }
+
+  const sample = telemetry.sample;
+  lines.push(
+    `Muestra: ${sample.roots.total} ejecuciones · ${sample.roots.succeeded} correctas · ${sample.roots.failed} fallidas · hasta ${formatTelemetryDate(sample.windowEndAt)}${sample.truncated ? " · muestra truncada" : ""}`,
+    `Fallos: ${telemetryFailureLabel(sample.failures)}`,
+    `Duración: ejecución p50 ${formatMilliseconds(sample.durationMs.roots.p50)} / p95 ${formatMilliseconds(sample.durationMs.roots.p95)} · modelo p50 ${formatMilliseconds(sample.durationMs.models.p50)} · herramientas p50 ${formatMilliseconds(sample.durationMs.tools.p50)}`,
+    `Rondas: ${sample.llm.calls} llamadas de modelo · p50 ${sample.llm.callsPerRoot.p50 ?? "n/d"} por ejecución`,
+    `Herramientas: búsqueda ${sample.tools.categories.search} · lectura ${sample.tools.categories.read} · escritura ${sample.tools.categories.write} · comandos ${sample.tools.categories.command} · otras ${sample.tools.categories.other}`,
+    `Tokens: ${telemetryTokens(sample.llm.tokens)} · coste: ${telemetryCost(sample.llm.cost)}`,
+  );
+  return lines;
 }
 
 function failureHistory(payload) {
@@ -367,7 +473,13 @@ function pullRequestHighlights(pull) {
   return highlights;
 }
 
-export function buildDailyReport({ runs, jobs, pullRequests, now = new Date() }) {
+export function buildDailyReport({
+  runs,
+  jobs,
+  pullRequests,
+  telemetry,
+  now = new Date(),
+}) {
   const run = firstRun(runs);
   const fallbackRunUrl = `https://github.com/${TARGET_REPOSITORY}-openwiki-automation/actions/workflows/openwiki-update.yml`;
   const runUrl = safeGitHubUrl(run?.html_url, fallbackRunUrl);
@@ -395,6 +507,8 @@ export function buildDailyReport({ runs, jobs, pullRequests, now = new Date() })
     documentationLabel(jobs),
     "🇪🇺 LangSmith · inputs, outputs y metadatos ocultos",
     "",
+    ...telemetrySummary(telemetry),
+    "",
     "🔐 ESTADO PRIVADO",
     oauthLabel(jobs, run),
     personalBrainLabel(jobs, run),
@@ -417,9 +531,12 @@ export function buildDailyReport({ runs, jobs, pullRequests, now = new Date() })
 }
 
 async function main() {
-  const [runsPath, jobsPath, pullRequestsPath, outputPath] = process.argv.slice(2);
-  if (!runsPath || !jobsPath || !pullRequestsPath || !outputPath) {
-    throw new Error("Expected runs, jobs, pull requests, and output paths.");
+  const [runsPath, jobsPath, pullRequestsPath, telemetryPath, outputPath] =
+    process.argv.slice(2);
+  if (!runsPath || !jobsPath || !pullRequestsPath || !telemetryPath || !outputPath) {
+    throw new Error(
+      "Expected runs, jobs, pull requests, telemetry, and output paths.",
+    );
   }
 
   const [runs, jobs, pullRequests] = await Promise.all(
@@ -427,7 +544,10 @@ async function main() {
       JSON.parse(await readFile(filePath, "utf8")),
     ),
   );
-  const report = buildDailyReport({ runs, jobs, pullRequests });
+  const telemetry =
+    (await readTelemetryFile(telemetryPath)) ||
+    unavailableTelemetry({ attemptedAt: new Date() });
+  const report = buildDailyReport({ runs, jobs, pullRequests, telemetry });
   await writeFile(outputPath, report, { encoding: "utf8", mode: 0o600 });
 }
 

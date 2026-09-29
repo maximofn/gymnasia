@@ -22,9 +22,6 @@ sources:
     resource: repo://scripts/catalogs/exercise-pagination.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
 generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
 ---
 

@@ -107,6 +107,10 @@ test("genera todos los agregados e índices de forma estable", async (t) => {
   await writeCatalogArtifacts(first.artifacts);
   const after = await Promise.all(first.artifacts.map((artifact) => readFile(artifact.path, "utf8")));
   assert.deepEqual(after, before);
+  assert.equal(
+    await readFile(join(root, "apps/mobile/catalogs/generated/foodBaseline.generated.json"), "utf8"),
+    await readFile(join(root, "alimentos/all.json"), "utf8"),
+  );
   assert.equal(first.artifacts.some((artifact) => artifact.path.endsWith("productos_comerciales/index.json")), false);
   assert.equal(first.artifacts.some((artifact) => artifact.path.endsWith("recetas/index.json")), false);
 });

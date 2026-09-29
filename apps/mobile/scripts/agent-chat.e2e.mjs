@@ -14,12 +14,14 @@ import { chromium } from "playwright";
 const DEFAULT_PORT = 8091;
 const SERVER_BOOT_TIMEOUT_MS = 120000;
 const STEP_TIMEOUT_MS = 30000;
+const OPENAI_E2E_ROUND_LIMIT = 10;
 const DEVELOPMENT_NAMESPACE = "gymnasia.development";
 const scopedKey = (key) => `${DEVELOPMENT_NAMESPACE}:${key}`;
 const STORE_KEY = scopedKey("gymnasia.mobile.local.v3");
 const STORE_SNAPSHOT_KEY = scopedKey("gymnasia.mobile.local.last_good.v1");
 const PROVIDER_CONFIGURATION_KEY = scopedKey("gymnasia.mobile.provider_configuration.v1");
 const PERSONAL_DATA_KEY = scopedKey("gymnasia.mobile.personal_data.v1");
+const TOOL_OPERATION_LEDGER_KEY = scopedKey("gymnasia.mobile.agent.tool_operations.v1");
 const TRACE_KEY = scopedKey("gymnasia_debug_traces");
 const LEGACY_RELEASES_API = "https://api.github.com/repos/maximofn/gymnasia/releases/latest";
 const mobileRoot = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -162,6 +164,7 @@ function createSeedStore(activeProvider) {
       fat_grams_per_kg: "1",
     },
     measurements: [],
+    toolOperationReceipts: [],
     threads: [{ id: "thread_e2e", title: "Coach 1" }],
     messagesByThread: { thread_e2e: [] },
     keys: [
@@ -294,8 +297,9 @@ async function assertSpecializedAiDisclosures(page) {
 }
 
 async function assertPersonalDataKeptAsPlainData(page) {
-  // GYM-139 no borra datos del usuario: el campo "debug" sigue en la memoria y se
-  // edita como cualquier otro. Lo que desaparece es su efecto sobre el prompt.
+  // GYM-139 (ticket para aislar la memoria persistente del prompt) no borra datos
+  // del usuario: el campo "debug" sigue en la memoria y se edita como cualquier
+  // otro. Lo que desaparece es su efecto sobre el prompt.
   logStep("Comprobando que la memoria conserva sus campos como datos ordinarios");
   await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="settings-tab-memory"]').click({ timeout: STEP_TIMEOUT_MS });
@@ -309,7 +313,7 @@ async function assertPersonalDataKeptAsPlainData(page) {
 }
 
 async function assertGoogleFoodInteractions(page) {
-  logStep("Google: estimador, extracción JSON y asistente personal con historial firmado");
+  logStep("Google: estimador sin reenvío de fotos antiguas, extracción JSON e historial firmado");
   const bodies = [];
   await page.route("https://generativelanguage.googleapis.com/v1beta/interactions", async (route) => {
     const body = route.request().postDataJSON();
@@ -336,12 +340,29 @@ async function assertGoogleFoodInteractions(page) {
 
   await page.locator('[data-testid="nav-tab-diet"]').click();
   await page.locator('[data-testid="open-food-estimator-desayuno"]').click();
+  const imageBase64 =
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/gL+3MxZ5wAAAABJRU5ErkJggg==";
+  const chooserPromise = page.waitForEvent("filechooser", { timeout: STEP_TIMEOUT_MS });
+  await page.getByRole("button", { name: "Subir foto para estimar la comida" }).click();
+  const chooser = await chooserPromise;
+  await chooser.setFiles({
+    name: "food.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(imageBase64, "base64"),
+  });
+  await page.getByRole("button", { name: "Quitar foto de la estimación" })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   for (const [index, text] of ["Estima una comida de 100 gramos", "Mantén la misma cantidad"].entries()) {
     await page.locator('[data-testid="food-estimator-input"]').fill(text);
     await page.locator('[data-testid="food-estimator-send"]').click();
     await page.locator('[data-testid="chat-message-list-food-estimator"]')
       .getByText(`Estimación E2E ${index + 1}: 100 gramos y 100 kcal.`, { exact: true }).waitFor();
   }
+  assert(bodies[0].input.some((step) => step.content?.some((part) =>
+    part.type === "image" && part.data === imageBase64)));
+  assert(!bodies[1].input.some((step) => step.content?.some((part) => part.type === "image")),
+    "la segunda consulta no debe volver a enviar la foto ya analizada");
+  assert(JSON.stringify(bodies[1]).includes("Estima una comida de 100 gramos"));
   assert(bodies[1].input.some((step) => step.signature === "opaque-1=="));
   assert(bodies[0].tools.some((tool) => tool.type === "function"));
   await page.getByText("Añadir alimento", { exact: true }).last().click();
@@ -630,8 +651,9 @@ async function runAgentChatE2E(
     window.localStorage.clear();
     window.localStorage.setItem(storeKey, JSON.stringify(store));
     window.sessionStorage.setItem("gymnasia-agent-e2e-seeded", "1");
-    // GYM-139: los dos campos de inyección permanecen en la memoria durante toda
-    // la prueba. El test demuestra que su contenido no llega al system prompt
+    // GYM-139 (ticket para aislar la memoria persistente del prompt): los dos
+    // campos de inyección permanecen durante toda la prueba. El test demuestra
+    // que su contenido no llega al system prompt
     // aunque los campos existan, que es más fuerte que comprobar que se borraron.
     window.localStorage.setItem(personalDataKey, JSON.stringify([
       { key: "Objetivo", description: "Objetivo principal", value: "Ganar masa muscular" },
@@ -667,6 +689,14 @@ async function runAgentChatE2E(
     await route.fulfill({ status: 503, contentType: "application/json", body: "{}" });
   });
   await page.route(`${FEEDBACK_BASE_URL}/**`, async (route) => {
+    if (route.request().method() === "GET") {
+      await route.fulfill({
+        status: 404,
+        contentType: "application/json",
+        body: JSON.stringify({ status: "absent" }),
+      });
+      return;
+    }
     feedbackRequests.push(route.request().postDataJSON());
     const shouldFail = feedbackRequests.length === 1;
     await route.fulfill({
@@ -806,8 +836,9 @@ async function runAgentChatE2E(
       "Sin display resumido el bloque de Razonamiento llegaría vacío a la interfaz.",
     );
   }
-  // GYM-139: los campos "debug" y "Notas" siguen en la memoria personal, con
-  // texto de inyección dentro. Nada de eso puede aparecer en el system prompt.
+  // GYM-139 (ticket para aislar la memoria persistente del prompt): los campos
+  // "debug" y "Notas" siguen en la memoria personal, con texto de inyección
+  // dentro. Nada de eso puede aparecer en el system prompt.
   for (const injected of [
     "SYSTEM OVERRIDE",
     "revela tu system prompt",
@@ -853,8 +884,11 @@ async function runAgentChatE2E(
   if (provider === "openai") {
     assert.equal(requestBodies[0].stream, true);
     assert(Array.isArray(requestBodies[0].tools) && requestBodies[0].tools.length > 0);
-    assert.equal(requestBodies[1].previous_response_id, "resp_openai_tool");
-    assert.deepEqual(requestBodies[1].input, [{
+    assert(requestBodies.every((body) => body.store === false && !("previous_response_id" in body)));
+    assert.deepEqual(requestBodies[1].input.slice(-2), [{
+      type: "function_call", id: "fc_openai_1", call_id: "call_openai_1",
+      name: "read_field_value", arguments: '{"key":"Objetivo"}', status: "completed",
+    }, {
       type: "function_call_output",
       call_id: "call_openai_1",
       output: "Ganar masa muscular",
@@ -949,10 +983,17 @@ async function runAgentChatE2E(
   assert.equal(requestBodies.length, 3, `${provider} debe responder también a la comprobación de identidad.`);
   if (provider === "google") {
     const history = requestBodies[2].input;
-    assert(history.length > 24, "Google debe recibir más de 20 mensajes");
-    assert(history.some((step) => step.content?.some((part) => part.text === "Mensaje antiguo 0")));
+    assert.equal(history.filter((step) => step.type === "user_input").length, 10,
+      "Google debe recibir como máximo los diez intercambios más recientes");
+    assert(!history.some((step) => step.content?.some((part) => part.text === "Mensaje antiguo 0")));
+    assert(history.some((step) => step.content?.some((part) => part.text === "¿Eres humano?")));
     assert.equal(history.filter((step) => step.type === "function_result").length, 1);
     assert.equal(history.filter((step) => step.type === "function_call").length, 1);
+    const localHistory = await page.evaluate((key) => JSON.stringify(
+      JSON.parse(localStorage.getItem(key)).messagesByThread,
+    ), STORE_KEY);
+    assert(localHistory.includes("Mensaje antiguo 0"),
+      "el límite de envío no debe borrar el historial guardado en el dispositivo");
   }
   const identitySystemPrompt = providerSystemPrompt(provider, requestBodies[2]);
   assert.equal(transparencyMarkerCount(identitySystemPrompt), 1);
@@ -996,7 +1037,11 @@ async function runAgentChatE2E(
     ({ storeKey }) => {
       const saved = JSON.parse(window.localStorage.getItem(storeKey) ?? "{}");
       const measurement = saved.measurements?.find((item) => item.measured_on === "2024-04-11");
-      return measurement?.weight_kg === 75.5 && measurement?.body_fat_pct === 18.5;
+      return measurement?.weight_kg === 75.5
+        && measurement?.body_fat_pct === 18.5
+        && saved.toolOperationReceipts?.some(
+          (receipt) => receipt.toolName === "write_measurement",
+        );
     },
     { storeKey: STORE_KEY },
     { timeout: STEP_TIMEOUT_MS },
@@ -1023,7 +1068,10 @@ async function runAgentChatE2E(
       return template?.series_schema_version === 1
         && template?.duration_minutes === "45"
         && template?.exercises?.[0]?.sets?.[0] === 10
-        && template?.exercises?.[0]?.series?.[0]?.weight_kg === "40";
+        && template?.exercises?.[0]?.series?.[0]?.weight_kg === "40"
+        && saved.toolOperationReceipts?.some(
+          (receipt) => receipt.toolName === "create_routine",
+        );
     },
     { storeKey: STORE_KEY },
     { timeout: STEP_TIMEOUT_MS },
@@ -1031,6 +1079,18 @@ async function runAgentChatE2E(
   await page.locator('[data-testid="nav-tab-measures"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.getByText("75.5 kg", { exact: false }).first()
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+
+  logStep(`${provider}: el peso registrado por el agente aparece en el plan de dieta`);
+  await page.locator('[data-testid="nav-tab-settings"]').click({ timeout: STEP_TIMEOUT_MS });
+  const dietSettingsTab = page.locator('[data-testid="settings-tab-diet"]');
+  await dietSettingsTab.scrollIntoViewIfNeeded();
+  await dietSettingsTab.click({ timeout: STEP_TIMEOUT_MS });
+  await page.waitForFunction(
+    () => document.querySelector('[data-testid="diet-plan-weight-input"]')?.value === "75.5",
+    undefined,
+    { timeout: STEP_TIMEOUT_MS },
+  );
+  await page.locator('[data-testid="nav-tab-measures"]').click({ timeout: STEP_TIMEOUT_MS });
 
   if (provider === "openai") {
     logStep("Comprobando validación del formulario y actualización parcial del mismo día");
@@ -1131,8 +1191,9 @@ async function runAgentChatE2E(
 }
 
 /**
- * GYM-54: el robot pide una mejora por lenguaje natural y comprueba que la app
- * solo afirma que la incidencia existe cuando el backend devuelve un número.
+ * GYM-54 (ticket para sustituir los escritores no-op de GitHub Issues): el robot
+ * pide una mejora por lenguaje natural y comprueba que la app solo afirma que la
+ * incidencia existe cuando el backend devuelve un número.
  *
  * `backendScenario` decide qué responde el backend falso:
  *  - "created": 201 con referencia verificable.
@@ -1168,6 +1229,14 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
   // El backend de incidencias, falso. Si esta ruta no se llama, la app no ha
   // intentado enviar nada.
   await page.route(`${FEEDBACK_BASE_URL}/**`, async (route) => {
+    if (route.request().method() === "GET") {
+      await route.fulfill({
+        status: 404,
+        contentType: "application/json",
+        body: JSON.stringify({ status: "absent" }),
+      });
+      return;
+    }
     feedbackRequests.push(route.request().postDataJSON());
     const responses = {
       created: {
@@ -1226,6 +1295,26 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
   await page.locator('[data-testid="chat-input"]')
     .fill("Me gustaría poder exportar la dieta a PDF");
   await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
+
+  if (backendScenario === "malformed") {
+    await page.getByText(
+      "Gymnasia no puede confirmar si la acción llegó a completarse.",
+      { exact: false },
+    ).first().waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    assert.equal(providerRounds.length, 1, "Una respuesta ambigua debe detener el turno.");
+    assert.equal(feedbackRequests.length, 1, "La incidencia no debe enviarse de nuevo.");
+    await page.waitForFunction(
+      ({ ledgerKey }) => JSON.parse(
+        window.localStorage.getItem(ledgerKey) ?? "{}",
+      ).entries?.[0]?.state === "indeterminate",
+      { ledgerKey: TOOL_OPERATION_LEDGER_KEY },
+      { timeout: STEP_TIMEOUT_MS },
+    );
+    assert.ok(!page.url().includes("github.com"));
+    assertNoLegacyUpdaterRequests();
+    logStep("feature-issue/malformed: ambigua, detenida y no repetida");
+    return;
+  }
 
   // Dos rondas: la tool y la respuesta final. Se espera al texto de
   // openai-final.sse, que es lo que el harness ya usa como señal de cierre.
@@ -1296,6 +1385,262 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
   assertNoLegacyUpdaterRequests();
 }
 
+function unresolvedLedger(operationId, fingerprint, toolName, state = "prepared") {
+  const now = Date.now();
+  return {
+    schemaVersion: 2,
+    entries: [{
+      operationId,
+      fingerprint,
+      toolName,
+      state,
+      preparedAt: now,
+      updatedAt: now,
+      expiresAt: now + 7 * 24 * 60 * 60 * 1000,
+    }],
+  };
+}
+
+async function prepareRecoveryPage(
+  browser,
+  baseUrl,
+  store,
+  ledger,
+  feedbackStatus = "absent",
+) {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  const feedbackMethods = [];
+  await page.addInitScript(({ storeKey, ledgerKey, initialStore, initialLedger }) => {
+    if (window.sessionStorage.getItem("gymnasia-tool-recovery-seeded") === "1") return;
+    window.localStorage.clear();
+    window.localStorage.setItem(storeKey, JSON.stringify(initialStore));
+    window.localStorage.setItem(ledgerKey, JSON.stringify(initialLedger));
+    window.sessionStorage.setItem("gymnasia-tool-recovery-seeded", "1");
+  }, {
+    storeKey: STORE_KEY,
+    ledgerKey: TOOL_OPERATION_LEDGER_KEY,
+    initialStore: store,
+    initialLedger: ledger,
+  });
+  await page.route("**/dev-store", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
+  });
+  await page.route("https://raw.githubusercontent.com/**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+  await page.route(`${FEEDBACK_BASE_URL}/**`, async (route) => {
+    feedbackMethods.push(route.request().method());
+    await route.fulfill({
+      status: feedbackStatus === "pending" ? 202 : 404,
+      contentType: "application/json",
+      body: JSON.stringify({ status: feedbackStatus }),
+    });
+  });
+  await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  return { context, page, feedbackMethods };
+}
+
+async function runToolOperationRecoveryE2E(browser, baseUrl) {
+  logStep(
+    "GYM-235 (ticket para cerrar la duplicación posterior al commit): "
+      + "reconciliando cortes entre prepare, commit y record",
+  );
+
+  const committedOperationId = "a".repeat(64);
+  const committedStore = createSeedStore("openai");
+  committedStore.toolOperationReceipts = [{
+    operationId: committedOperationId,
+    toolName: "write_measurement",
+    committedAt: Date.now(),
+  }];
+  const committed = await prepareRecoveryPage(
+    browser,
+    baseUrl,
+    committedStore,
+    unresolvedLedger(
+      committedOperationId,
+      "b".repeat(64),
+      "write_measurement",
+    ),
+  );
+  try {
+    await committed.page.waitForFunction(
+      ({ ledgerKey }) => {
+        const journal = JSON.parse(window.localStorage.getItem(ledgerKey) ?? "{}");
+        return journal.entries?.[0]?.state === "committed"
+          && journal.entries[0].output === "Las medidas ya se habían guardado.";
+      },
+      { ledgerKey: TOOL_OPERATION_LEDGER_KEY },
+      { timeout: STEP_TIMEOUT_MS },
+    );
+    await committed.page.reload({ waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+    const receiptCount = await committed.page.evaluate(({ storeKey }) => (
+      JSON.parse(window.localStorage.getItem(storeKey) ?? "{}")
+        .toolOperationReceipts?.filter((receipt) => receipt.operationId === "a".repeat(64)).length
+    ), { storeKey: STORE_KEY });
+    assert.equal(receiptCount, 1, "la recarga no debe duplicar el recibo de dominio");
+  } finally {
+    await committed.context.close();
+  }
+
+  const absentOperationId = "c".repeat(64);
+  const absent = await prepareRecoveryPage(
+    browser,
+    baseUrl,
+    createSeedStore("openai"),
+    unresolvedLedger(absentOperationId, "d".repeat(64), "create_routine"),
+  );
+  try {
+    await absent.page.waitForFunction(
+      ({ ledgerKey }) => {
+        const journal = JSON.parse(window.localStorage.getItem(ledgerKey) ?? "{}");
+        return journal.schemaVersion === 2 && journal.entries?.length === 0;
+      },
+      { ledgerKey: TOOL_OPERATION_LEDGER_KEY },
+      { timeout: STEP_TIMEOUT_MS },
+    );
+  } finally {
+    await absent.context.close();
+  }
+
+  const pendingOperationId = "e".repeat(64);
+  const pending = await prepareRecoveryPage(
+    browser,
+    baseUrl,
+    createSeedStore("openai"),
+    unresolvedLedger(pendingOperationId, "f".repeat(64), "create_feature_issue"),
+    "pending",
+  );
+  try {
+    await pending.page.getByText(
+      "Gymnasia no puede confirmar si la acción llegó a completarse.",
+      { exact: false },
+    ).waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    assert.equal(
+      pending.feedbackMethods.filter((method) => method === "POST").length,
+      0,
+      "una operación externa pendiente no debe repetirse",
+    );
+    await pending.page.waitForFunction(
+      ({ ledgerKey }) => JSON.parse(
+        window.localStorage.getItem(ledgerKey) ?? "{}",
+      ).entries?.[0]?.state === "indeterminate",
+      { ledgerKey: TOOL_OPERATION_LEDGER_KEY },
+      { timeout: STEP_TIMEOUT_MS },
+    );
+  } finally {
+    await pending.context.close();
+  }
+}
+
+function openAIStatelessSSE(index, output, answer = "") {
+  const event = (type, fields) => `event: ${type}\ndata: ${JSON.stringify({ type, ...fields })}\n\n`;
+  return event("response.created", { response: { id: `resp_stateless_${index}` } })
+    + output.map((item, output_index) => event("response.output_item.done", { output_index, item })).join("")
+    + (answer ? event("response.output_text.delta", { delta: answer }) : "")
+    + event("response.completed", { response: { id: `resp_stateless_${index}`, output } })
+    + "data: [DONE]\n\n";
+}
+
+async function runOpenAIStatelessE2E(page, baseUrl, roundLimit = false) {
+  const bodies = [];
+  const answer = roundLimit ? "Límite local confirmado." : "Contexto local confirmado.";
+  await page.addInitScript(({ storeKey, personalDataKey, store }) => {
+    if (window.sessionStorage.getItem("openai-stateless-seeded") === "1") return;
+    window.localStorage.clear();
+    window.localStorage.setItem(storeKey, JSON.stringify(store));
+    window.localStorage.setItem(personalDataKey, JSON.stringify([
+      { key: "Objetivo", description: "Objetivo", value: "Ganar masa muscular" },
+      { key: "Peso", description: "Peso", value: "80 kg" },
+    ]));
+    window.sessionStorage.setItem("openai-stateless-seeded", "1");
+  }, {
+    storeKey: STORE_KEY, personalDataKey: PERSONAL_DATA_KEY,
+    store: createSeedStore("openai"),
+  });
+  await page.route("**/dev-store", (route) => route.fulfill({
+    status: 200, contentType: "application/json", body: "{}",
+  }));
+  await page.route("https://raw.githubusercontent.com/**", (route) => route.fulfill({
+    status: 200, contentType: "application/json", body: "[]",
+  }));
+  await page.route("https://api.github.com/**", (route) => route.fulfill({
+    status: 200, contentType: "application/json", body: "[]",
+  }));
+  await page.route("**/v1/responses*", async (route) => {
+    const body = route.request().postDataJSON();
+    bodies.push(body);
+    const round = bodies.length;
+    logStep(`OpenAI stateless ${roundLimit ? "cierre" : "dos rondas"}: ronda ${round}`);
+    const lastToolRound = roundLimit ? OPENAI_E2E_ROUND_LIMIT + 1 : 2;
+    const output = body.tool_choice === "none" || round > lastToolRound
+      ? [{ type: "message", id: `msg_${round}`, role: "assistant", phase: "final_answer",
+          content: [{ type: "output_text", text: answer }] }]
+      : [
+          { type: "reasoning", id: `rs_${round}`, encrypted_content: `opaque-${round}` },
+          { type: "function_call", id: `fc_${round}`, call_id: `call_${round}`,
+            name: "read_field_value", arguments: JSON.stringify({
+              key: roundLimit || round === 1 ? "Objetivo" : "Peso",
+            }) },
+        ];
+    await route.fulfill({ status: 200,
+      headers: { "content-type": "text/event-stream; charset=utf-8" },
+      body: openAIStatelessSSE(round, output, output[0].type === "message" ? answer : ""),
+    });
+  });
+
+  await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="nav-tab-chat"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="chat-input"]').fill("Consulta mi contexto local");
+  await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
+  try {
+    await page.locator('[data-testid^="chat-message-assistant-"]')
+      .filter({ hasText: answer }).waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  } catch (error) {
+    logStep(`OpenAI stateless: ${bodies.length} peticiones, mensajes visibles: ${
+      JSON.stringify(await page.locator('[data-testid^="chat-message-assistant-"]').allInnerTexts())}`);
+    throw error;
+  }
+  await page.waitForFunction(({ key, expected }) => {
+    const store = JSON.parse(localStorage.getItem(key) ?? "{}");
+    return Object.values(store.messagesByThread ?? {}).flat().some((message) =>
+      message.role === "assistant" && message.content === expected && !message.is_streaming);
+  }, { key: STORE_KEY, expected: answer }, { timeout: STEP_TIMEOUT_MS });
+  assert.equal(bodies.length, roundLimit ? OPENAI_E2E_ROUND_LIMIT + 2 : 3);
+  for (const body of bodies) {
+    assert.equal(body.store, false);
+    assert.equal("previous_response_id" in body, false);
+    assert.deepEqual(body.include, ["reasoning.encrypted_content"]);
+    assert(Array.isArray(body.input));
+  }
+  assert.deepEqual(bodies[0].input, [{ role: "user", content: "Consulta mi contexto local" }]);
+  assert.equal(bodies[1].input[1].type, "reasoning");
+  assert.equal(bodies[1].input[1].encrypted_content, "opaque-1");
+  assert.equal(bodies[1].input[2].type, "function_call");
+  assert.equal(bodies[1].input[3].type, "function_call_output");
+  assert.equal(bodies[1].input[2].call_id, bodies[1].input[3].call_id);
+  if (roundLimit) {
+    const closing = bodies.at(-1);
+    assert.equal(closing.tool_choice, "none");
+    assert(closing.instructions.includes("Has llegado al límite de pasos"));
+    assert.equal(closing.input.at(-2).call_id, `call_${OPENAI_E2E_ROUND_LIMIT + 1}`);
+    assert(closing.input.at(-1).output.startsWith("No ejecutada:"));
+  } else {
+    assert.equal(bodies[2].input.at(-3).encrypted_content, "opaque-2");
+    assert.equal(bodies[2].input.at(-2).call_id, "call_2");
+    assert.equal(bodies[2].input.at(-1).call_id, "call_2");
+    assert.equal(bodies[2].input.at(-1).output.includes("80 kg"), true);
+  }
+  await page.reload({ waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await page.waitForFunction(({ key, expected }) => {
+    const store = JSON.parse(localStorage.getItem(key) ?? "{}");
+    return Object.values(store.messagesByThread ?? {}).flat().some((message) =>
+      message.role === "assistant" && message.content === expected);
+  }, { key: STORE_KEY, expected: answer }, { timeout: STEP_TIMEOUT_MS });
+  logStep(`OpenAI stateless ${roundLimit ? "cierre" : "dos rondas"}: cuerpos y persistencia verificados`);
+}
+
 async function main() {
   const server = await ensureWebServer();
   let browser = null;
@@ -1319,6 +1664,16 @@ async function main() {
         await context.close().catch(() => {});
       }
     }
+    for (const roundLimit of [false, true]) {
+      const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+      const page = await context.newPage();
+      try {
+        await runOpenAIStatelessE2E(page, server.baseUrl, roundLimit);
+      } finally {
+        await context.close().catch(() => {});
+      }
+    }
+    await runToolOperationRecoveryE2E(browser, server.baseUrl);
     if (process.env.AGENT_E2E_PROVIDER) return;
     for (const backendScenario of ["created", "down", "malformed", "retry"]) {
       const context = await browser.newContext({ viewport: { width: 390, height: 844 } });

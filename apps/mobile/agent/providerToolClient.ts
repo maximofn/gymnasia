@@ -1,4 +1,6 @@
 import { composeAiSystemPrompt } from "./aiTransparency";
+import { COACH_CONTEXT_MESSAGE_LIMIT } from "./coachContext";
+import { DEFAULT_GOOGLE_CONTEXT_BUDGET } from "./googleContextBudget";
 import {
   buildGoogleHistory,
   type GoogleConversationTurn,
@@ -23,12 +25,23 @@ import {
 } from "./providerStreamTransport";
 import type { StreamingHandlers } from "./providerStreamParsers";
 import {
+  closingSystemPrompt,
+  MAX_TOOL_ROUNDS,
+  ROUND_LIMIT_TOOL_RESULT,
   runAnthropicToolLoop,
   runGoogleToolLoop,
   runOpenAIToolLoop,
+  ToolRoundLimitError,
 } from "./providerToolLoop";
 import type { ToolCallEnvelope } from "./toolOperationLedger";
 import { CHAT_TOOLS } from "./toolDefinitions";
+import {
+  chatCompletionTools,
+  isUnsupportedCustomFeature,
+  requestCustomOpenAIChat,
+  type ChatCompletionMessage,
+} from "./customOpenAIChat";
+import { toolCallOccurrenceKey } from "./toolOperationLedger";
 import {
   anthropicApiHeaders,
   anthropicProxyCredentials,
@@ -98,17 +111,19 @@ export async function requestProviderToolChat(
 
     const makeRequest = async (
       input: Array<Record<string, unknown>>,
-      previousResponseId: string | null,
       includeTools: boolean,
+      toolChoice?: "none",
     ) => {
       const body: Record<string, unknown> = {
         model,
-        instructions: systemPrompt,
+        instructions: toolChoice ? closingSystemPrompt(systemPrompt) : systemPrompt,
         input,
+        store: false,
+        include: ["reasoning.encrypted_content"],
       };
       if (reasoning) body.reasoning = reasoning;
-      if (previousResponseId) body.previous_response_id = previousResponseId;
       if (includeTools) body.tools = CHAT_TOOLS.openai;
+      if (includeTools && toolChoice) body.tool_choice = toolChoice;
       const headers = {
         "Content-Type": "application/json",
         Accept: "text/event-stream",
@@ -133,19 +148,101 @@ export async function requestProviderToolChat(
           );
     };
 
+    const initialInput = nonSystemMessages;
     const payload = await runOpenAIToolLoop({
-      initialTurn: await makeRequest(nonSystemMessages, null, true),
-      requestNextTurn: (outputs, previousResponseId) => (
-        makeRequest(outputs, previousResponseId, true)
-      ),
+      initialInput,
+      initialTurn: await makeRequest(initialInput, true),
+      requestNextTurn: (context) => makeRequest(context, true),
+      requestClosingTurn: (context) => makeRequest(context, true, "none"),
       executeTool: options.executeTool,
       executionId: options.executionId,
     });
 
     const content = streamedContent.trim() || payload.content;
     const thinking = streamedThinking.trim() || payload.thinking || null;
-    if (!content) throw new Error("OpenAI no devolvio contenido.");
+    if (!content) {
+      if (payload.roundLimitReached) throw new ToolRoundLimitError();
+      throw new Error("OpenAI no devolvio contenido.");
+    }
     return { content, thinking };
+  }
+
+  if (provider.provider === "custom_openai") {
+    const history: ChatCompletionMessage[] = [
+      { role: "system", content: systemPrompt },
+      ...nonSystemMessages,
+    ];
+    const tools = chatCompletionTools(CHAT_TOOLS.openai);
+    const occurrences = new Map<string, number>();
+    let fullContent = "";
+    for (let round = 0; round <= MAX_TOOL_ROUNDS + 1; round += 1) {
+      // Tras MAX_TOOL_ROUNDS rondas de tools queda una llamada de cierre con las tools prohibidas.
+      const closing = round > MAX_TOOL_ROUNDS;
+      let turn;
+      let streamedThisTurn = "";
+      try {
+        const messagesForRound = closing
+          ? [{ role: "system" as const, content: closingSystemPrompt(systemPrompt) }, ...history.slice(1)]
+          : history;
+        turn = await requestCustomOpenAIChat(provider, messagesForRound, {
+          platform: runtime.platform,
+          tools,
+          ...(closing ? { toolChoice: "none" as const } : {}),
+          onContentDelta: (delta) => {
+            streamedThisTurn += delta;
+            fullContent += delta;
+            options.onContentDelta?.(delta, fullContent);
+          },
+        });
+      } catch (error) {
+        if (closing) throw new ToolRoundLimitError({ cause: error });
+        if (isUnsupportedCustomFeature(error, "tools")) {
+          throw new Error("Este modelo no admite las herramientas que necesita Gymnasia Coach. Elige otro modelo.");
+        }
+        throw error;
+      }
+      if (!streamedThisTurn && turn.content) {
+        fullContent += turn.content;
+        options.onContentDelta?.(turn.content, fullContent);
+      }
+      if (closing && turn.toolCalls.length > 0) throw new ToolRoundLimitError();
+      if (turn.toolCalls.length === 0) {
+        if (!fullContent.trim()) {
+          if (closing) throw new ToolRoundLimitError();
+          throw new Error("El modelo no devolvió contenido.");
+        }
+        return { content: fullContent.trim(), thinking: null };
+      }
+      history.push({ role: "assistant", content: turn.content || null, tool_calls: turn.toolCalls });
+      if (round === MAX_TOOL_ROUNDS) {
+        // Sin rondas: las tools pendientes no se ejecutan y el modelo lo sabe.
+        for (const call of turn.toolCalls) {
+          history.push({ role: "tool", content: ROUND_LIMIT_TOOL_RESULT, tool_call_id: call.id });
+        }
+        continue;
+      }
+      for (const call of turn.toolCalls) {
+        let args: unknown;
+        try { args = JSON.parse(call.function.arguments); }
+        catch { throw new Error("El modelo devolvió argumentos de herramienta incompletos."); }
+        if (!args || typeof args !== "object" || Array.isArray(args)) {
+          throw new Error("El modelo devolvió argumentos de herramienta inválidos.");
+        }
+        const parsedArgs = args as Record<string, unknown>;
+        const key = toolCallOccurrenceKey(call.function.name, parsedArgs);
+        const occurrence = occurrences.get(key) ?? 0;
+        occurrences.set(key, occurrence + 1);
+        const output = await options.executeTool(call.function.name, parsedArgs, {
+          executionId: options.executionId ?? "legacy-execution",
+          provider: "custom_openai",
+          providerCallId: call.id,
+          name: call.function.name,
+          args: parsedArgs,
+          occurrence,
+        });
+        history.push({ role: "tool", content: output, tool_call_id: call.id });
+      }
+    }
   }
 
   if (provider.provider === "anthropic") {
@@ -162,7 +259,11 @@ export async function requestProviderToolChat(
       },
     };
 
-    const makeRequest = async (currentMessages: unknown[], includeTools: boolean) => {
+    const makeRequest = async (
+      currentMessages: unknown[],
+      includeTools: boolean,
+      toolChoice?: "none",
+    ) => {
       const body: Record<string, unknown> = {
         model: provider.model || DEFAULT_MODELS.anthropic,
         max_tokens: 2048 + ANTHROPIC_THINKING_BUDGET,
@@ -170,10 +271,12 @@ export async function requestProviderToolChat(
           provider.model || DEFAULT_MODELS.anthropic,
           ANTHROPIC_THINKING_BUDGET,
         ),
-        system: systemPrompt,
+        system: toolChoice ? closingSystemPrompt(systemPrompt) : systemPrompt,
         messages: currentMessages,
       };
+      // Con tool_use en el historial, Anthropic exige la lista de tools aunque se prohíba usarlas.
       if (includeTools) body.tools = CHAT_TOOLS.anthropic;
+      if (includeTools && toolChoice) body.tool_choice = { type: toolChoice };
       if (runtime.anthropicWebProxyUrl) {
         return streamAnthropicRequestViaXHR(
           runtime.anthropicWebProxyUrl,
@@ -207,13 +310,17 @@ export async function requestProviderToolChat(
       initialTurn: await makeRequest([...nonSystemMessages], true),
       initialMessages: nonSystemMessages,
       requestNextTurn: (currentMessages) => makeRequest(currentMessages, true),
+      requestClosingTurn: (currentMessages) => makeRequest(currentMessages, true, "none"),
       executeTool: options.executeTool,
       executionId: options.executionId,
     });
 
     const content = streamedContent.trim() || payload.content;
     const thinking = streamedThinking.trim() || payload.thinking || null;
-    if (!content) throw new Error("Anthropic no devolvio contenido.");
+    if (!content) {
+      if (payload.roundLimitReached) throw new ToolRoundLimitError();
+      throw new Error("Anthropic no devolvio contenido.");
+    }
     return { content, thinking };
   }
 
@@ -230,13 +337,20 @@ export async function requestProviderToolChat(
       options.onThinkingDelta?.(delta, streamedThinking);
     },
   };
-  const makeRequest = (history: GoogleStep[]) => requestGoogleProviderInteraction(
+  const makeRequest = (history: GoogleStep[], toolChoice?: "none") => requestGoogleProviderInteraction(
     provider,
     {
       history,
-      systemInstruction: systemPrompt,
+      systemInstruction: toolChoice ? closingSystemPrompt(systemPrompt) : systemPrompt,
       tools: CHAT_TOOLS.google,
       thinking: true,
+      // Coach already selected at most 20 messages for every provider.
+      // This cap must not shorten Google's selection by exchange count.
+      contextBudget: {
+        ...DEFAULT_GOOGLE_CONTEXT_BUDGET,
+        maxExchanges: COACH_CONTEXT_MESSAGE_LIMIT,
+      },
+      ...(toolChoice ? { toolChoice } : {}),
     },
     runtime,
     streamHandlers,
@@ -244,12 +358,16 @@ export async function requestProviderToolChat(
   const payload = await runGoogleToolLoop({
     initialTurn: await makeRequest(googleMessages),
     initialMessages: googleMessages,
-    requestNextTurn: makeRequest,
+    requestNextTurn: (history) => makeRequest(history),
+    requestClosingTurn: (history) => makeRequest(history, "none"),
     executeTool: options.executeTool,
     executionId: options.executionId,
   });
   const content = streamedContent.trim() || payload.content;
-  if (!content) throw new Error("Google AI no devolvió contenido.");
+  if (!content) {
+    if (payload.roundLimitReached) throw new ToolRoundLimitError();
+    throw new Error("Google AI no devolvió contenido.");
+  }
   const googleTurn: GoogleConversationTurn = {
     version: 1,
     model: normalizeProviderModel("google", provider.model),

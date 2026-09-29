@@ -35,6 +35,7 @@ function validStore(overrides: Record<string, unknown> = {}): Record<string, unk
     threads: [],
     messagesByThread: {},
     keys: [],
+    toolOperationReceipts: [],
     ...overrides,
   };
 }
@@ -114,6 +115,25 @@ describe("LocalStore structural validation", () => {
       issues: [{ path: "$[unknown]", code: "unknown_root_field" }],
     });
     expect(JSON.stringify(parsed)).not.toContain(secretFieldName);
+  });
+
+  it("rechaza recibos de tools malformados para no reconciliar en falso", () => {
+    const parsed = parseLocalStoreRaw(JSON.stringify(validStore({
+      toolOperationReceipts: [{
+        operationId: "no-es-sha256",
+        toolName: "write_measurement",
+        committedAt: NOW.getTime(),
+      }],
+    })));
+
+    expect(parsed).toMatchObject({
+      ok: false,
+      cause: "invalid_shape",
+      issues: [{
+        path: "$.toolOperationReceipts[0]",
+        code: "normalization_failed",
+      }],
+    });
   });
 
   it("keeps migrations idempotent for arbitrary JSON trees", () => {

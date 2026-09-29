@@ -1,4 +1,5 @@
 import { scopedStorageKey } from "../runtimeEnvironment";
+import bundledFoods from "./generated/foodBaseline.generated.json";
 import { parseFoodCatalog } from "./schemaValidation";
 import type {
   FoodCatalogEntry,
@@ -29,6 +30,7 @@ function foodDefinition(
   path: string,
   cacheKey: string,
   legacyCacheKey: string,
+  bundledValue?: unknown,
 ): CatalogDefinition<FoodCatalogEntry> {
   const sourceId = LEGACY_FOOD_SOURCE_IDS[legacySource];
   const parse = (value: unknown): FoodCatalogEntry[] | null => {
@@ -57,6 +59,7 @@ function foodDefinition(
     legacyCacheKey: scopedStorageKey(legacyCacheKey),
     provenance: { repositoryUrl: REPOSITORY_URL, catalogPath: path },
     parse,
+    bundledData: bundledValue === undefined ? [] : parse(bundledValue) ?? [],
   };
 }
 
@@ -67,6 +70,7 @@ export const FOOD_CATALOG_DEFINITIONS = [
     "alimentos",
     "gymnasia.mobile.foods_repo.v2",
     "gymnasia.mobile.foods_repo.v1",
+    bundledFoods,
   ),
   foodDefinition(
     "producto_comercial",

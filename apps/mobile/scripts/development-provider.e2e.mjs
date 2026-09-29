@@ -130,6 +130,25 @@ try {
     0,
     "Ajustes no debe exponer la integración retirada",
   );
+  await page.locator('[data-testid="settings-tab-provider"]').click();
+  const customCard = page.locator('[data-testid="provider-card-custom_openai"]');
+  await customCard.scrollIntoViewIfNeeded();
+  await page.locator('[data-testid="provider-api-key-custom_openai"]').fill("fixture-key");
+  await page.locator('[data-testid="provider-base-url-custom_openai"]').fill("https://fixture.local/v1");
+  await page.locator('[data-testid="provider-model-input-custom_openai"]').fill("fixture-model");
+  await page.locator('[data-testid="provider-save-custom_openai"]').click();
+  await page.locator('[data-testid="provider-status-detail-custom_openai"]')
+    .filter({ hasText: "Fixture local activo" }).waitFor({ state: "visible", timeout: 30_000 });
+  await page.locator('[data-testid="provider-load-models-custom_openai"]').click();
+  await page.locator('[data-testid="provider-model-option-custom_openai-fixture-model"]')
+    .waitFor({ state: "visible", timeout: 30_000 });
+  await page.locator('[data-testid="provider-test-model-custom_openai"]').click();
+  await customCard.getByText("El modelo respondió correctamente.").waitFor({ state: "visible" });
+  const customScreenshotPath = process.env.CUSTOM_PROVIDER_SCREENSHOT_PATH;
+  if (customScreenshotPath) {
+    await customCard.screenshot({ path: customScreenshotPath });
+    log(`captura del proveedor personalizado guardada en ${customScreenshotPath}`);
+  }
   await page.locator('[data-testid="settings-tab-traces"]').scrollIntoViewIfNeeded();
   await page.locator('[data-testid="settings-tab-traces"]').click();
   await page.locator('[data-testid="policy-status-card"]')

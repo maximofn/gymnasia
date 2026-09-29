@@ -233,6 +233,11 @@ El script verifica las firmas y evidencias y genera en AAB y APK el paquete firm
 además de los módulos de prompt y política sanitaria. Si falta un artefacto o no coincide,
 la build falla.
 
+La exportación web de Production necesita el mismo paquete. El comando de build de
+`apps/mobile/vercel.json` prepara el snapshot firmado antes de ejecutar Expo; si
+no puede obtenerlo o verificarlo, Vercel debe fallar sin publicar una web donde
+Coach se abra pero no pueda responder.
+
 Una build manual de Producción debe reproducir ese mismo orden: primero ejecutar las
 comprobaciones normales sobre las fuentes, preparar el snapshot, compilar el AAB con
 `production` y compilar después el APK con `production-apk`. `check:chat-prompt` se ejecuta antes de

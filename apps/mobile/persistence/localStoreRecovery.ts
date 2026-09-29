@@ -1,4 +1,5 @@
 import { isGoogleConversationTurn } from "../agent/googleInteractions";
+import { isToolOperationReceipt } from "../agent/toolOperationReceipts";
 
 export const LOCAL_STORE_RECOVERY_RECORD_VERSION = 1 as const;
 
@@ -13,6 +14,7 @@ export const LOCAL_STORE_ROOT_FIELDS = [
   "keys",
   "chatProvider",
   "foodAIProvider",
+  "toolOperationReceipts",
 ] as const;
 
 export type LocalStoreValidationIssue = {
@@ -108,7 +110,7 @@ type ParsedLocalStoreRaw =
       issues: LocalStoreValidationIssue[];
     };
 
-const PROVIDERS = new Set(["openai", "anthropic", "google"]);
+const PROVIDERS = new Set(["openai", "anthropic", "google", "custom_openai"]);
 const ROOT_FIELD_SET = new Set<string>(LOCAL_STORE_ROOT_FIELDS);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -281,13 +283,33 @@ function validateProviderKey(
   path: string,
   issues: LocalStoreValidationIssue[],
 ): void {
-  ["provider", "api_key", "model", "workspace_id", "reasoning_effort"].forEach((key) =>
+  ["provider", "api_key", "model", "base_url", "workspace_id", "reasoning_effort"].forEach((key) =>
     validateOptionalScalar(value, key, path, "string", issues),
   );
   validateOptionalScalar(value, "is_active", path, "boolean", issues);
   if (value.provider !== undefined && !PROVIDERS.has(value.provider as string)) {
     pushIssue(issues, `${path}.provider`, "invalid_provider", "El proveedor no es compatible.");
   }
+}
+
+function validateToolOperationReceipt(
+  value: Record<string, unknown>,
+  path: string,
+  issues: LocalStoreValidationIssue[],
+): void {
+  if (!isToolOperationReceipt(value)) {
+    pushIssue(
+      issues,
+      path,
+      "normalization_failed",
+      "El recibo de operación no tiene una forma verificable.",
+    );
+    return;
+  }
+  ["operationId", "toolName"].forEach((key) =>
+    validateOptionalScalar(value, key, path, "string", issues),
+  );
+  validateOptionalScalar(value, "committedAt", path, "number", issues);
 }
 
 export function migrateLocalStoreTree(value: unknown): unknown {
@@ -302,6 +324,7 @@ export function migrateLocalStoreTree(value: unknown): unknown {
     threads: value.threads ?? [],
     messagesByThread: value.messagesByThread ?? {},
     keys: value.keys ?? [],
+    toolOperationReceipts: value.toolOperationReceipts ?? [],
   };
 }
 
@@ -337,6 +360,12 @@ export function validateLocalStoreTree(value: unknown): LocalStoreValidationIssu
   });
   validateMessagesByThread(value.messagesByThread, "$.messagesByThread", issues);
   validateRecordArray(value.keys, "$.keys", issues, validateProviderKey);
+  validateRecordArray(
+    value.toolOperationReceipts,
+    "$.toolOperationReceipts",
+    issues,
+    validateToolOperationReceipt,
+  );
 
   ["chatProvider", "foodAIProvider"].forEach((key) => {
     if (value[key] === undefined || value[key] === null) return;

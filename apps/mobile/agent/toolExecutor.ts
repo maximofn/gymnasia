@@ -9,7 +9,11 @@ import {
   resolveDietMealCategory,
   validateNutritionItem,
 } from "../diet/nutritionContract";
-import type { ToolOperationExecutionOutcome } from "./toolOperationLedger";
+import {
+  ToolOperationIndeterminateError,
+  type ToolOperationExecutionOutcome,
+} from "./toolOperationLedger";
+import { appendToolOperationReceipt, type ToolOperationReceipt } from "./toolOperationReceipts";
 import { findByCatalogRef, matchFoodCatalog } from "../catalogs/matching";
 import {
   catalogRef,
@@ -66,6 +70,7 @@ export type ToolStore = {
   templates: ToolWorkoutTemplate[];
   dietByDate: Record<string, ToolDietDay>;
   measurements: ToolMeasurement[];
+  toolOperationReceipts?: ToolOperationReceipt[];
 };
 
 export type ToolFoodRepoEntry = FoodCatalogEntry;
@@ -91,6 +96,7 @@ export type ToolExecutionContext = {
   getExerciseCatalogAvailability?: () => CatalogSearchAvailability;
   operationId?: string;
   markEffectCommitted?: () => void;
+  markEffectIndeterminate?: () => void;
 };
 
 import {
@@ -102,7 +108,7 @@ import {
 
 export type ToolExecutorDependencies = {
   loadPersonalData: () => Promise<PersonalDataField[]>;
-  savePersonalData: (fields: PersonalDataField[]) => Promise<void>;
+  savePersonalData: (fields: PersonalDataField[], operationId?: string) => Promise<void>;
   loadMeasurements: () => Promise<ToolMeasurement[]>;
   createId: (prefix: string) => string;
   getExerciseImageUrl: (exercise: ToolExerciseRepoEntry, sex: "male" | "female") => string;
@@ -111,7 +117,10 @@ export type ToolExecutorDependencies = {
    * dependencia que sustituye, no puede devolver `void`: si no hay número de
    * issue, no hay éxito que comunicar.
    */
-  submitFeedbackIssue: (draft: FeedbackIssueDraft) => Promise<FeedbackIssueOutcome>;
+  submitFeedbackIssue: (
+    draft: FeedbackIssueDraft,
+    operationId?: string,
+  ) => Promise<FeedbackIssueOutcome>;
 };
 
 export type ToolHandler = (
@@ -119,6 +128,18 @@ export type ToolHandler = (
   context: ToolExecutionContext,
   dependencies: ToolExecutorDependencies,
 ) => Promise<string>;
+
+async function commitToolStore(
+  context: ToolExecutionContext,
+  updater: (previous: ToolStore) => ToolStore,
+): Promise<void> {
+  if (!context.commitStore) return;
+  try {
+    await context.commitStore(updater);
+  } catch {
+    throw new ToolOperationIndeterminateError();
+  }
+}
 
 /** Deshace el envoltorio JSON del argumento; la validación la hace sanitizePersonalDataFields. */
 function parsePersonalDataInput(input: unknown): unknown {
@@ -190,7 +211,15 @@ const savePersonalData: ToolHandler = async (args, _context, dependencies) => {
   const parsed = parsePersonalDataInput(args.personal_data);
   const fields = sanitizePersonalDataFields(parsed);
   const discarded = countDiscardedPersonalDataFields(parsed);
-  await dependencies.savePersonalData(fields);
+  try {
+    if (_context.operationId) {
+      await dependencies.savePersonalData(fields, _context.operationId);
+    } else {
+      await dependencies.savePersonalData(fields);
+    }
+  } catch {
+    throw new ToolOperationIndeterminateError();
+  }
   _context.markEffectCommitted?.();
   // La tool reescribe el array entero: un descarte silencioso le haría creer al
   // modelo que guardó un campo que luego list_personal_data_keys no devuelve.
@@ -247,7 +276,7 @@ const writeMeasurement: ToolHandler = async (args, context, dependencies) => {
     : dependencies.createId("measurement");
   let mutationError: string | null = null;
   let successMessage = `Medidas guardadas correctamente para ${dateResult.value}.`;
-  await context.commitStore((previous) => {
+  await commitToolStore(context, (previous) => {
     const result = upsertMeasurementByDate(previous.measurements, {
       date: dateResult.value,
       patch: patchResult.value,
@@ -260,7 +289,15 @@ const writeMeasurement: ToolHandler = async (args, context, dependencies) => {
     if (result.action === "updated") {
       successMessage = `Medidas actualizadas correctamente para ${dateResult.value}.`;
     }
-    return { ...previous, measurements: result.measurements };
+    return {
+      ...previous,
+      measurements: result.measurements,
+      toolOperationReceipts: appendToolOperationReceipt(
+        previous.toolOperationReceipts,
+        context.operationId,
+        "write_measurement",
+      ),
+    };
   });
   if (mutationError) {
     return `No se guardaron las medidas. ${mutationError}`;
@@ -299,9 +336,6 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
   const mealResult = resolveDietMealCategory(args.meal);
   if (!mealResult.ok) return formatNutritionValidationIssues(mealResult.issues);
   const meal = mealResult.value;
-  if (!context.commitStore && !context.setStore) {
-    return "No se pudo acceder al almacenamiento.";
-  }
   const parsed = parseObjectArgument(
     args.data,
     "El JSON del alimento no es válido.",
@@ -389,7 +423,14 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
         currentMeal.items.some((item) => item.id === newItem.id),
       )
     ) {
-      return previous;
+      return {
+        ...previous,
+        toolOperationReceipts: appendToolOperationReceipt(
+          previous.toolOperationReceipts,
+          context.operationId,
+          "add_meal_food",
+        ),
+      };
     }
     const existingMeal = currentDay.meals.find((item) => item.title.toLowerCase() === meal.toLowerCase());
     const updatedMeals = existingMeal
@@ -412,13 +453,15 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
         ...previous.dietByDate,
         [date]: { ...currentDay, meals: updatedMeals },
       },
+      toolOperationReceipts: appendToolOperationReceipt(
+        previous.toolOperationReceipts,
+        context.operationId,
+        "add_meal_food",
+      ),
     };
   };
-  if (context.commitStore) {
-    await context.commitStore(updateStore);
-  } else {
-    context.setStore?.(updateStore);
-  }
+  if (!context.commitStore) return "No se pudo acceder al almacenamiento durable.";
+  await commitToolStore(context, updateStore);
   context.markEffectCommitted?.();
   return `Alimento "${foodName}" (${grams}g, ${caloriesKcal} kcal) añadido a ${meal} del ${date}.`;
 };
@@ -459,13 +502,13 @@ const searchFoods: ToolHandler = async (args, context) => {
     ));
   }
   if (minCalories != null) results = results.filter((food) => food.calories_per_100g >= minCalories);
-  if (maxCalories != null) results = results.filter((food) => food.calories_per_100g <= maxCalories);
+  if (maxCalories != null && maxCalories > 0) results = results.filter((food) => food.calories_per_100g <= maxCalories);
   if (minProtein != null) results = results.filter((food) => food.protein_per_100g >= minProtein);
-  if (maxProtein != null) results = results.filter((food) => food.protein_per_100g <= maxProtein);
+  if (maxProtein != null && maxProtein > 0) results = results.filter((food) => food.protein_per_100g <= maxProtein);
   if (minCarbs != null) results = results.filter((food) => food.carbs_per_100g >= minCarbs);
-  if (maxCarbs != null) results = results.filter((food) => food.carbs_per_100g <= maxCarbs);
+  if (maxCarbs != null && maxCarbs > 0) results = results.filter((food) => food.carbs_per_100g <= maxCarbs);
   if (minFat != null) results = results.filter((food) => food.fat_per_100g >= minFat);
-  if (maxFat != null) results = results.filter((food) => food.fat_per_100g <= maxFat);
+  if (maxFat != null && maxFat > 0) results = results.filter((food) => food.fat_per_100g <= maxFat);
 
   if (sortBy) {
     const [field, direction] = sortBy.split("_");
@@ -578,9 +621,6 @@ const readRoutines: ToolHandler = async (_args, context) => {
 };
 
 const createRoutine: ToolHandler = async (args, context, dependencies) => {
-  if (!context.commitStore && !context.setStore) {
-    return "No se pudo acceder al almacenamiento.";
-  }
   const referencedIds = new Set<string>();
   const visit = (value: unknown): void => {
     if (Array.isArray(value)) {
@@ -618,20 +658,34 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
     });
   }
   const newTemplate = preparation.value;
+  if (!context.commitStore) {
+    return JSON.stringify({
+      status: "storage_unavailable",
+      written: false,
+    });
+  }
   const updateStore = (previous: ToolStore): ToolStore => {
     if (previous.templates.some((template) => template.id === newTemplate.id)) {
-      return previous;
+      return {
+        ...previous,
+        toolOperationReceipts: appendToolOperationReceipt(
+          previous.toolOperationReceipts,
+          context.operationId,
+          "create_routine",
+        ),
+      };
     }
     return {
       ...previous,
       templates: [...previous.templates, newTemplate],
+      toolOperationReceipts: appendToolOperationReceipt(
+        previous.toolOperationReceipts,
+        context.operationId,
+        "create_routine",
+      ),
     };
   };
-  if (context.commitStore) {
-    await context.commitStore(updateStore);
-  } else {
-    context.setStore?.(updateStore);
-  }
+  await commitToolStore(context, updateStore);
   context.markEffectCommitted?.();
   return JSON.stringify({
     status: "created",
@@ -650,12 +704,13 @@ const createFeatureIssue: ToolHandler = async (args, _context, dependencies) => 
     summary: typeof args.summary === "string" ? args.summary : "",
   });
   if (!draft) return "Falta el título o el resumen de la mejora.";
-  const outcome = await dependencies.submitFeedbackIssue(draft);
+  const outcome = await dependencies.submitFeedbackIssue(draft, _context.operationId);
   if (outcome.status === "created") _context.markEffectCommitted?.();
+  if (outcome.status === "error") _context.markEffectIndeterminate?.();
   return describeOutcomeForModel(outcome);
 };
 
-export const AGENT_TOOL_HANDLERS: Record<string, ToolHandler> = {
+export const AGENT_TOOL_HANDLERS: Readonly<Record<string, ToolHandler>> = Object.freeze({
   save_personal_data: savePersonalData,
   list_personal_data_keys: listPersonalDataKeys,
   read_field_description: readFieldDescription,
@@ -669,7 +724,7 @@ export const AGENT_TOOL_HANDLERS: Record<string, ToolHandler> = {
   read_routines: readRoutines,
   create_routine: createRoutine,
   create_feature_issue: createFeatureIssue,
-};
+});
 
 export const AGENT_TOOL_HANDLER_NAMES = Object.keys(AGENT_TOOL_HANDLERS);
 
@@ -679,11 +734,14 @@ export function createDetailedAgentToolExecutor(dependencies: ToolExecutorDepend
     args: Record<string, unknown>,
     context: ToolExecutionContext = {},
   ): Promise<ToolOperationExecutionOutcome> {
-    const handler = AGENT_TOOL_HANDLERS[name];
+    const handler = Object.hasOwn(AGENT_TOOL_HANDLERS, name)
+      ? AGENT_TOOL_HANDLERS[name]
+      : undefined;
     if (!handler) {
       return { output: "Herramienta no reconocida.", status: "no_effect" };
     }
     let effectCommitted = false;
+    let effectIndeterminate = false;
     try {
       const output = await handler(
         args,
@@ -693,20 +751,33 @@ export function createDetailedAgentToolExecutor(dependencies: ToolExecutorDepend
             effectCommitted = true;
             context.markEffectCommitted?.();
           },
+          markEffectIndeterminate: () => {
+            effectIndeterminate = true;
+            context.markEffectIndeterminate?.();
+          },
         },
         dependencies,
       );
       return {
         output,
-        status: effectCommitted ? "committed" : "no_effect",
+        status: effectCommitted
+          ? "committed"
+          : effectIndeterminate
+            ? "indeterminate"
+            : "no_effect",
       };
-    } catch {
+    } catch (error) {
       // Sin este catch, una excepción de cualquier handler sube por
       // providerToolLoop y aborta el turno entero del chat. Con una tool que
       // hace red eso pasa de teórico a probable.
       return {
         output: "La herramienta ha fallado. Informa al usuario de que no se ha completado.",
-        status: effectCommitted ? "committed" : "failed_before_commit",
+        status: effectCommitted
+          ? "committed"
+          : effectIndeterminate
+            || error instanceof ToolOperationIndeterminateError
+            ? "indeterminate"
+            : "failed_before_commit",
       };
     }
   };

@@ -226,6 +226,28 @@ Run from repo root unless noted.
 - No repo-wide ESLint/Prettier config is committed yet; keep diffs consistent with surrounding code.
 
 ## Testing Guidelines
+Para la QA manual, usa la versión web de la misma app en
+<https://gymnasia.maximofn.com/> siempre que el flujo se pueda reproducir allí.
+La sesión habitual del navegador del mantenedor tendrá configurada su API key
+BYOK de OpenAI: aprovecha esa sesión para probar tú mismo Coach, las llamadas a
+tools, la interfaz y los flujos de datos locales. Comprueba el resultado visible
+y, cuando importe, las llamadas reales del proveedor y sus resultados. No leas,
+copies ni registres la clave; si falta en esa sesión, pide al mantenedor que la
+configure. No le encargues pruebas manuales en el móvil que puedas completar en
+web. Reserva el dispositivo para lo que dependa de Android o iOS, por ejemplo
+instalación limpia sin caché, permisos, notificaciones, segundo plano o
+almacenamiento seguro nativo. Indica qué parte verificaste en web y qué parte
+requiere una prueba nativa.
+
+El mantenedor no usa la versión web como registro personal: los datos locales
+de esa sesión son desechables para QA. Puedes crear, modificar y borrar
+registros recuperables de prueba en la web, confirmar propuestas de Coach y
+ejecutar las tools de escritura necesarias para verificar el resultado, sin
+pedirle permiso cada vez ni trasladarle esas pruebas al móvil. Comprueba el
+estado persistido después de la acción. Esta autorización se refiere a los
+datos locales de la web; la API key y los datos de la app instalada en el móvil
+siguen protegidos.
+
 The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - deterministic tests: `npm test`
 - backend de incidencias: `npm --workspace apps/feedback-worker run test`
@@ -233,6 +255,10 @@ The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - browser E2E with a fake OpenAI provider: `npm run test:agent:e2e`
 - published privacy policy E2E: `npm run test:privacy:e2e` (exports the web build and
   reads it with a clean browser context; `PRIVACY_E2E_SKIP_EXPORT=1` reuses `dist/`)
+- interruptor de evaluación sanitaria E2E: `npm run test:health-safety:e2e` (Google
+  interceptado; comprueba «Sin clave», la migración del consentimiento heredado y que
+  el clasificador solo recibe la consulta con el interruptor activo;
+  `HEALTH_SAFETY_E2E_SKIP_EXPORT=1` reutiliza `dist/`)
 - migración de series avanzadas E2E: `npm run test:train:series:e2e` (siembra un
   almacén con tempo, drop-set y un tipo de serie inexistente; comprueba que la app
   arranca sin pantalla de recuperación y que nada se pierde al recargar;
@@ -317,10 +343,11 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   arquitectura, los componentes, los flujos, las integraciones, las operaciones,
   las pruebas y los riesgos conocidos. Su punto de entrada es
   `openwiki/quickstart.md`.
-- Para comprender una parte del sistema o localizar el código responsable,
-  consulta primero `openwiki/quickstart.md` y la página temática correspondiente.
-  Usa la wiki como mapa de navegación y verifica después las conclusiones en el
-  código y las pruebas, que son la fuente de verdad.
+- Para preguntas concretas sobre arquitectura o comportamiento, usa la búsqueda
+  y lectura selectiva descritas en el bloque administrado de OpenWiki. Si esas
+  herramientas no están disponibles, usa `openwiki/quickstart.md` como mapa de
+  navegación. Verifica después las conclusiones en el código y las pruebas, que
+  son la fuente de verdad.
 - Para cualquier tarea de operación o mantenimiento de OpenWiki, carga
   `.claude/skills/openwiki/SKILL.md`. Sus reglas de seguridad, compatibilidad y
   automatización viven solo en esa skill; no las dupliques aquí.
@@ -654,6 +681,23 @@ esto hay que arreglarlo antes o el job pasará siempre.
   rondas por ID solo cuando Google entrega uno no vacío. El ledger local sigue evitando
   repetir efectos durante reintentos completos.
 
+### El `SafeAreaView` de `react-native` core no hace nada en Android
+- Gotcha: `SafeAreaView` importado de `"react-native"` solo aplica insets en iOS; en
+  Android es un `View` normal. Como el SDK 54 fuerza edge-to-edge (no se puede
+  desactivar), la app se dibuja bajo la barra de estado y la de gestos, y nada
+  reserva ese espacio. El síntoma llega como «la app se solapa arriba y abajo» y
+  parece depender del dispositivo: en Android 15+ es sistemático, y en versiones
+  anteriores ya se veía en capas absolutas (el catálogo, #208). Verificado el 19 de
+  septiembre de 2026 en GYM-249 (ticket para arreglar el solapamiento con las barras
+  del sistema).
+- Fix: los insets salen de `react-native-safe-area-context` (`SafeAreaProvider` en la
+  raíz de `App.tsx`, `SafeAreaView` de esa librería en el contenedor raíz y en cada
+  `<Modal>` nativo, que se dibuja fuera de la raíz). Las capas `position: absolute`
+  **dentro** del contenedor raíz heredan su padding y no necesitan nada; compensar a
+  mano con `StatusBar.currentHeight` produce margen doble.
+- Guardarraíl: `apps/mobile/shell/safeArea.contract.test.ts` falla si vuelve el import
+  de core, si un `<Modal>` no aplica sus insets o si reaparece `StatusBar.currentHeight`.
+
 ## Post-Modification Workflow
 After each modification, create a local commit on a topic branch:
 ```bash
@@ -683,6 +727,10 @@ directly to `main`.
 
 This repository has a generated `openwiki/` evidence index. It is optional just-in-time context, not required startup reading.
 
+- Do not enumerate, preload, or search wikis at task start. Use retrieval when the user asks for it, when unfamiliar architecture or dependency behavior materially affects the task, or when source inspection leaves an important uncertainty. Stop once the question is grounded.
+- When those conditions apply and OpenWiki retrieval tools are available, use `openwiki_search` for just-in-time context and `openwiki_read` for the relevant complete sections. If search returns `workspace_required`, ask which listed workspace to use and retry with its ID.
+- Use `openwiki_list_workspaces` or `openwiki_list_wikis` when workspace membership itself needs to be discovered.
+- If the retrieval tools are unavailable, read `openwiki/quickstart.md` and follow its links to the relevant pages.
 - Treat source code and tests as authoritative. A brief's unknowns and review items are verification gaps, not automatic requirements.
 - Prefer the narrowest quiet validation that proves the changed behavior. Preserve complete failure output.
 

@@ -29,6 +29,10 @@ import {
   createFakeProviderResult,
   explainAnthropicError,
 } from "./providerTransport";
+import type { GoogleContextBudget, GoogleContextReport } from "./googleContextBudget";
+import { requestCustomOpenAIChat } from "./customOpenAIChat";
+
+export type { GoogleContextReport } from "./googleContextBudget";
 
 const ANTHROPIC_API_VERSION = "2023-06-01";
 const ANTHROPIC_THINKING_BUDGET = 1024;
@@ -40,6 +44,7 @@ const ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE =
 export type ProviderChatResult = {
   content: string;
   thinking: string | null;
+  warning?: string;
   googleTurn?: GoogleConversationTurn;
 };
 
@@ -56,6 +61,7 @@ export type ProviderChatRuntime = {
   environment?: string;
   googleFixturePort?: number;
   anthropicWebProxyUrl?: string;
+  onGoogleContextReport?: (report: GoogleContextReport) => void;
 };
 
 export function requestGoogleProviderInteraction(
@@ -65,9 +71,14 @@ export function requestGoogleProviderInteraction(
     systemInstruction?: string;
     tools?: Array<Record<string, unknown>>;
     thinking?: boolean;
+    toolChoice?: "none";
     responseSchema?: Record<string, unknown>;
+    contextBudget?: GoogleContextBudget;
   },
-  runtime: Pick<ProviderChatRuntime, "platform" | "environment" | "googleFixturePort">,
+  runtime: Pick<
+    ProviderChatRuntime,
+    "platform" | "environment" | "googleFixturePort" | "onGoogleContextReport"
+  >,
   handlers?: StreamingHandlers,
 ): Promise<GoogleInteractionTurn> {
   return requestGoogleInteraction({
@@ -77,7 +88,7 @@ export function requestGoogleProviderInteraction(
     platform: runtime.platform,
     environment: runtime.environment,
     fixturePort: runtime.googleFixturePort,
-  }, handlers);
+  }, handlers, runtime.onGoogleContextReport);
 }
 
 async function callAnthropicViaWebProxy(
@@ -190,6 +201,14 @@ export async function requestProviderText(
     return result.content;
   }
 
+  if (provider.provider === "custom_openai") {
+    const result = await requestCustomOpenAIChat(provider, [
+      { role: "system", content: systemPrompt },
+      ...nonSystemMessages,
+    ], { platform: runtime.platform, stream: false });
+    return result.content;
+  }
+
   if (provider.provider === "anthropic") {
     if (runtime.anthropicWebProxyUrl) {
       const webResult = await callAnthropicViaWebProxy(
@@ -247,6 +266,7 @@ export async function requestProviderText(
     platform: runtime.platform,
     environment: runtime.environment,
     googleFixturePort: runtime.googleFixturePort,
+    onGoogleContextReport: runtime.onGoogleContextReport,
   });
   if (turn.status !== "completed" || !turn.content) {
     throw new Error("Google AI no devolvió contenido completo.");

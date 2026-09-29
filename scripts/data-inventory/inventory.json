@@ -1,6 +1,6 @@
 {
   "$comment": "Fuente única de verdad del tratamiento de datos de Gymnasia. Se creó en GYM-190 (ticket para publicar la política de privacidad y preparar las declaraciones de salud). De aquí salen la política publicada y las respuestas de Data safety en docs/legal/play-declarations.md. Consumido por scripts/data-inventory/check.mjs y, mediante --json, por la validación del AAB de GYM-198 (ticket para generar y validar el Android App Bundle de producción). Si el chequeo falla, la política publicada ha dejado de describir el código: actualiza ambos, no solo este fichero.",
-  "policyVersion": "2026-09-v2",
+  "policyVersion": "2026-09-v10",
   "scanRoots": [
     "apps/mobile"
   ],
@@ -43,7 +43,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, personal-info, messages",
-      "purpose": "Estado principal: rutinas, historial de entrenamiento con sus totales, versión de cálculo y la prescripción ejecutada de cada sesión (nombres, tipos de serie, repeticiones, peso, descanso, tempo, mini-series y qué esfuerzos se completaron; sin imágenes ni enlaces de catálogo), dieta por día, referencias estables a los elementos públicos o personales seleccionados junto con sus instantáneas históricas, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con su fecha civil, peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con la IA, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt. Los turnos nuevos de Google incluyen pasos, resúmenes de pensamiento, firmas opacas, llamadas, argumentos, resultados y uso de tokens; se conservan en las copias manuales del chat y se borran con él. Nunca incluyen credenciales BYOK.",
+      "purpose": "Estado principal: rutinas, historial de entrenamiento con sus totales, versión de cálculo y la prescripción ejecutada de cada sesión (nombres, tipos de serie, repeticiones, peso, descanso, tempo, mini-series y qué esfuerzos se completaron; sin imágenes ni enlaces de catálogo), dieta por día, referencias estables a los elementos públicos o personales seleccionados junto con sus instantáneas históricas, ajustes de dieta (sexo, altura, fecha de nacimiento, objetivo, actividad), medidas corporales con su fecha civil, peso, porcentaje de grasa y referencias a sus fotos de progreso guardadas por la app, hilos y mensajes completos del chat con el asistente, incluidas respuestas locales del catálogo, y una copia saneada de la configuración de proveedores (puede incluir el identificador opcional del workspace de Anthropic y la URL base HTTPS del proveedor personalizado, pero nunca claves BYOK). Cada respuesta del agente puede incluir atribución pública de la política usada (candidato, versión, hash, fuente, activación y secuencia), nunca el prompt. Los turnos nuevos de Google incluyen pasos, resúmenes de pensamiento, firmas opacas, llamadas, argumentos, resultados y uso de tokens; se conservan en las copias manuales del chat y se borran con él. Incluye además hasta 256 recibos técnicos de escrituras del agente durante siete días (identificador SHA-256, nombre de herramienta y fecha), guardados atómicamente con el dato para reconciliar una interrupción; no se exportan en las copias .gymnasia. Nunca incluye credenciales BYOK.",
       "clearedBy": "activity-and-full-deletion",
       "activityDeletion": "rewrite",
       "fullDeletion": "delete"
@@ -53,7 +53,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "credentials, app-preferences",
-      "purpose": "Diario versionado de configuración de proveedores con estados committed y pending para recuperar escrituras interrumpidas. En web contiene las claves BYOK y el resto de la configuración porque el navegador no dispone de SecureStore. En móvil es solo un espejo saneado sin claves; la copia canónica vive en SecureStore.",
+      "purpose": "Diario versionado de configuración de proveedores con estados committed y pending para recuperar escrituras interrumpidas. En web contiene las claves BYOK, el modelo y la URL base HTTPS personalizada porque el navegador no dispone de SecureStore. En móvil es solo un espejo saneado sin claves; la copia canónica vive en SecureStore.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"
@@ -73,7 +73,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, personal-info, messages",
-      "purpose": "Última copia local verificada del estado principal saneado, sin claves BYOK, con fecha y huella SHA-256, usada exclusivamente para ofrecer recuperación cuando el LocalStore actual no puede leerse.",
+      "purpose": "Última copia local verificada del estado principal saneado, incluidos sus recibos técnicos de operaciones pero sin claves BYOK, con fecha y huella SHA-256, usada exclusivamente para ofrecer recuperación cuando el LocalStore actual no puede leerse.",
       "clearedBy": "activity-and-full-deletion",
       "activityDeletion": "rewrite",
       "fullDeletion": "delete"
@@ -123,9 +123,9 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, personal-info",
-      "purpose": "Memoria del coach: pares clave/descripción/valor en texto libre, escritos por el usuario o por el modelo mediante la tool save_personal_data. Puede contener cualquier dato personal o de salud que el usuario haya contado en el chat.",
-      "clearedBy": "full-deletion",
-      "activityDeletion": "preserve",
+      "purpose": "Memoria del coach: documento versionado con pares clave/descripción/valor en texto libre, escritos por el usuario o por el modelo mediante la tool save_personal_data. Puede contener cualquier dato personal o de salud que el usuario haya contado en el chat. Incluye hasta 256 recibos técnicos de escrituras del agente durante siete días (identificador SHA-256, nombre de herramienta y fecha), que se guardan atómicamente con la memoria, se eliminan al borrar la actividad y no se exportan en las copias .gymnasia.",
+      "clearedBy": "activity-and-full-deletion",
+      "activityDeletion": "rewrite",
       "fullDeletion": "delete"
     },
     {
@@ -153,7 +153,17 @@
       "backend": "async-storage",
       "personal": false,
       "dataCategory": "app-preferences",
-      "purpose": "Consentimiento versionado, separado por proveedor BYOK, para la evaluación adicional opcional de seguridad sanitaria; también registra si ya se mostró el aviso. No contiene el texto evaluado ni se incluye en las copias de seguridad exportadas.",
+      "purpose": "Consentimiento versionado, único para todos los proveedores BYOK, para la evaluación adicional opcional de seguridad sanitaria con el proveedor activo; también registra si ya se mostró el aviso. Se apaga solo si no queda ninguna clave guardada. No contiene el texto evaluado ni se incluye en las copias de seguridad exportadas.",
+      "clearedBy": "full-deletion",
+      "activityDeletion": "preserve",
+      "fullDeletion": "delete"
+    },
+    {
+      "key": "gymnasia.mobile.food.photo_unsupported.v1",
+      "backend": "async-storage",
+      "personal": true,
+      "dataCategory": "app-preferences",
+      "purpose": "Marca local de combinaciones de proveedor, modelo y URL base que rechazaron explícitamente fotos de comida. Permite atenuar el proveedor para fotos y mostrar un aviso hasta cambiar el modelo o la URL; no contiene imágenes, mensajes ni claves.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"
@@ -183,7 +193,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "health-fitness, app-activity",
-      "purpose": "Registro técnico local para impedir que los reintentos del proveedor ejecuten dos veces una escritura del agente. Conserva como máximo 256 operaciones durante siete días: identificador y huella SHA-256 derivados de la ejecución, nombre de la herramienta, resultado exacto devuelto al modelo y marcas de tiempo. No guarda argumentos, mensajes, prompts ni claves de API, no sale del dispositivo y no se incluye en las copias .gymnasia.",
+      "purpose": "Diario técnico local de escritura anticipada para impedir que los reintentos del proveedor ejecuten dos veces una escritura del agente. Conserva estados prepared, committed e indeterminate, con identificador y huella SHA-256 derivados de la ejecución, nombre de la herramienta y marcas de tiempo; solo las operaciones confirmadas guardan el resultado exacto devuelto al modelo. Las confirmadas caducan a los siete días y el diario mantiene como máximo 256 entradas; una operación sin resolver no se expulsa ni caduca hasta que el dato de destino demuestre el resultado o el usuario borre la actividad. No guarda argumentos, mensajes, prompts ni claves de API, no sale del dispositivo y no se incluye en las copias .gymnasia.",
       "clearedBy": "activity-and-full-deletion",
       "activityDeletion": "delete",
       "fullDeletion": "delete"
@@ -193,7 +203,7 @@
       "backend": "async-storage",
       "personal": true,
       "dataCategory": "diagnostics",
-      "purpose": "Registro local de depuración, máximo 1000 entradas. Cada arranque registra la plataforma, la versión de la aplicación y la compilación del paquete instalado; la cabecera de la exportación identifica la versión y compilación actuales. En web y Expo Go se usa la versión del proyecto y la compilación se marca como no disponible. Incluye títulos y cuerpos de las notificaciones entregadas, que llevan el nombre del ejercicio y el número de serie, y eventos allowlist de selección de política sin prompts ni contenido del chat. Nunca se envía por red; el usuario puede copiarlo al portapapeles desde Ajustes.",
+      "purpose": "Registro local de depuración, máximo 1000 entradas. Cada arranque registra la plataforma, la versión de la aplicación y la compilación del paquete instalado; la cabecera de la exportación identifica la versión y compilación actuales. En web y Expo Go se usa la versión del proyecto y la compilación se marca como no disponible. Incluye títulos y cuerpos de las notificaciones entregadas, que llevan el nombre del ejercicio y el número de serie; eventos allowlist de selección de política; y diagnósticos numéricos del contexto preparado para Google (intercambios, bytes, imágenes antiguas omitidas y motivos), sin prompts, imágenes, argumentos de herramientas, firmas ni claves. Nunca se envía por red; el usuario puede copiarlo al portapapeles desde Ajustes.",
       "clearedBy": "traces-button-and-full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"
@@ -345,7 +355,7 @@
       "form": "literal",
       "personal": true,
       "dataCategory": "credentials, app-preferences",
-      "purpose": "Diario canónico versionado de la configuración completa de proveedores en móvil. Incluye claves BYOK, modelos, proveedor activo, razonamiento e identificador opcional del workspace de Anthropic; conserva el último commit y una escritura pendiente para recuperar fallos sin activar datos parciales.",
+      "purpose": "Diario canónico versionado de la configuración completa de proveedores en móvil. Incluye claves BYOK, modelos, URL base HTTPS personalizada, proveedor activo, razonamiento e identificador opcional del workspace de Anthropic; conserva el último commit y una escritura pendiente para recuperar fallos sin activar datos parciales.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"
@@ -406,7 +416,7 @@
       "host": "api.openai.com",
       "trigger": "user-initiated",
       "requiresUserKey": true,
-      "sends": "La clave BYOK en la cabecera Authorization, el system prompt, los últimos 20 mensajes del hilo, los resultados de las tools que el usuario autoriza y, en el estimador de comida, hasta 6 imágenes en base64. Los mensajes y resultados pueden contener datos personales, de salud, fitness, dieta y medidas.",
+      "sends": "Cuando se necesita el modelo: la clave BYOK en la cabecera Authorization, el system prompt, los últimos 20 mensajes del hilo, los resultados de las tools que el usuario autoriza y, en el estimador de comida, hasta 6 imágenes en base64. En cada ronda del Coach con OpenAI Responses, el dispositivo reenvía la selección local y la secuencia activa de mensajes del modelo, llamadas y resultados de tools, identificadores y elementos de razonamiento cifrado; usa store:false y no previous_response_id. Esos elementos solo permanecen en memoria durante la consulta, no se muestran ni se guardan en el historial local. Los mensajes y resultados pueden contener datos personales, de salud, fitness, dieta y medidas. Una consulta explícita de calorías por 100 g resuelta con el catálogo local no genera esta petición.",
       "thirdParty": "OpenAI"
     },
     {
@@ -420,7 +430,7 @@
       "host": "generativelanguage.googleapis.com",
       "trigger": "user-initiated",
       "requiresUserKey": true,
-      "sends": "Clave BYOK solo en x-goog-api-key. Toda generación usa Interactions con store:false y sin previous_interaction_id: se envía el historial completo local de la conversación, incluidos texto, pasos y firmas de pensamiento, llamadas y resultados de herramientas. Las imágenes del estimador se reenvían en la sesión temporal. El sistema y las herramientas se incluyen en cada ronda; la extracción nutricional usa salida JSON. El catálogo/verificación sigue usando GET models. No hay backend de Gymnasia.",
+      "sends": "Clave BYOK solo en x-goog-api-key. En Coach, la misma selección local agnóstica al proveedor toma hasta los últimos 20 mensajes antes de adaptarlos a Google. Toda generación usa Interactions con store:false y sin previous_interaction_id. En Coach, cada petición incluye los intercambios de esa selección; los asistentes de alimentos incluyen como máximo los 10 intercambios más recientes. Si el cuerpo sin imágenes supera 512 KiB o el cuerpo completo supera 19.000.000 bytes, se retiran intercambios completos desde el más antiguo. El turno activo nunca se recorta: si no cabe, la petición se rechaza antes de abrir la red. Los pasos, firmas de pensamiento, llamadas y resultados de herramientas de los intercambios enviados se conservan. Las imágenes del estimador se mantienen durante las rondas del turno activo, pero sus bytes se omiten cuando ya existe un mensaje de usuario posterior; se conservan el texto y la respuesta. El sistema y las herramientas se incluyen en cada ronda; la extracción nutricional usa salida JSON. El catálogo/verificación sigue usando GET models. No hay backend de Gymnasia.",
       "thirdParty": "Google"
     },
     {
@@ -462,11 +472,18 @@
       "host": "gymnasia-feedback.maximofn.com",
       "trigger": "user-initiated",
       "requiresUserKey": false,
-      "sends": "El tipo de incidencia (mejora, alimento, ejercicio o denuncia), un título, un resumen y una clave de idempotencia derivada de ese mismo texto. Las propuestas muestran antes el contenido y requieren confirmación. Una denuncia muestra una vista previa exacta e incluye motivo, detalles opcionales, la pregunta inmediatamente anterior, la respuesta elegida y contexto técnico (superficie, origen, proveedor, modelo, versión de la app y metadatos sanitarios si existen). No incluye el resto del hilo, razonamiento interno, errores técnicos, claves BYOK ni identificadores de cuenta. Cloudflare recibe la IP de conexión; el Worker aplica HMAC antes de persistirla para rate limiting, conserva solo el valor seudónimo hasta 48 horas y no almacena la IP en claro. El cuerpo de la denuncia en GitHub se programa para redactarse a los 30 días.",
+      "sends": "El tipo de incidencia (mejora, alimento, ejercicio o denuncia), un título, un resumen y una clave de idempotencia: normalmente se deriva de ese contenido y, cuando la propuesta la crea una herramienta del agente, se deriva de la identidad SHA-256 de esa operación. La app también puede consultar el estado de una propuesta enviando solo el tipo y esa clave. Las propuestas muestran antes el contenido y requieren confirmación. Una denuncia muestra una vista previa exacta e incluye motivo, detalles opcionales, la pregunta inmediatamente anterior, la respuesta elegida y contexto técnico (superficie, origen, proveedor, modelo, versión de la app y metadatos sanitarios si existen). No incluye el resto del hilo, razonamiento interno, errores técnicos, claves BYOK ni identificadores de cuenta. Cloudflare recibe la IP de conexión; el Worker aplica HMAC antes de persistirla para rate limiting, conserva solo el valor seudónimo hasta 48 horas y no almacena la IP en claro. El cuerpo de la denuncia en GitHub se programa para redactarse a los 30 días.",
       "thirdParty": "Cloudflare (infraestructura del backend) y GitHub (repositorio privado de recepción de incidencias)"
     }
   ],
   "configurableEndpoints": [
+    {
+      "id": "custom-openai-provider",
+      "source": "user:provider.base_url",
+      "trigger": "user-initiated",
+      "sends": "A la URL base HTTPS que escribe el usuario, en /models y /chat/completions: clave BYOK en Authorization, modelo elegido, instrucciones, mensajes y resultados autorizados de herramientas, y hasta seis imágenes de comida en base64 cuando el usuario las adjunta. La prueba opcional envía una consulta breve y puede consumir API. Se rechazan redirecciones.",
+      "thirdParty": "El servidor que elija el usuario"
+    },
     {
       "id": "anthropic-cors-proxy",
       "source": "env:EXPO_PUBLIC_API_BASE_URL",

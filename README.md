@@ -70,6 +70,11 @@ En web y Expo Go se muestra la versión del proyecto y `build-version: unavailab
 
 Cada ficha vive en su propio JSON. Los ficheros `all.json` e `index.json` son
 artefactos derivados que se conservan para clientes antiguos y no se editan a mano.
+El generador copia `alimentos/all.json` a
+`apps/mobile/catalogs/generated/foodBaseline.generated.json` para que una instalación
+nueva pueda consultar alimentos sin red. La app sustituye esa copia por el catálogo
+validado más reciente cuando consigue descargarlo. Coach responde localmente a una
+petición explícita de calorías por 100 g de un alimento identificado en el catálogo.
 El catálogo de ejercicios que consume la app actual se genera en
 `ejercicios/catalog-v1/`: un manifiesto, páginas de 30 fichas, fragmentos de búsqueda
 global e índices por ID. La app guarda cada artefacto por separado, activa una versión
@@ -205,6 +210,14 @@ npm run decrypt:recovery -- --input copia.gymnasia --output recuperacion.json
 
 La generación con Google usa Interactions sin almacenamiento remoto de conversaciones.
 Contrato, pruebas y validación de XHR en Android: [Google Interactions](docs/testing/google-interactions.md).
+
+El cuarto proveedor permite usar un servidor compatible con **OpenAI Chat Completions**:
+en Ajustes > Proveedor IA se guardan una URL base HTTPS (incluido `/v1` si procede),
+una clave propia y el ID del modelo. El OpenAI oficial sigue usando Responses API.
+La consulta a `/models` es opcional: si el servidor no la ofrece, el modelo se escribe
+manualmente. «Probar modelo» envía una petición separada que puede consumir API.
+La app rechaza las redirecciones del servidor personalizado; una URL local también
+requiere HTTPS y un certificado válido para el dispositivo.
 
 ## Compilación Android de producción
 

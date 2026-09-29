@@ -2,22 +2,33 @@ import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  TOOL_OPERATION_INDETERMINATE_MESSAGE,
   TOOL_OPERATION_LEDGER_MAX_ENTRIES,
   TOOL_OPERATION_LEDGER_TTL_MS,
   ToolOperationCoordinator,
+  ToolOperationLedgerCapacityError,
+  ToolOperationLedgerCorruptError,
   ToolOperationLedgerRepository,
   identifyToolOperation,
   type ToolCallEnvelope,
+  type ToolOperationReconciler,
 } from "./toolOperationLedger";
 
 class MemoryStorage {
   readonly values = new Map<string, string>();
+  failAllWrites = false;
+  failCommittedWrites = 0;
 
   async getItem(key: string): Promise<string | null> {
     return this.values.get(key) ?? null;
   }
 
   async setItem(key: string, value: string): Promise<void> {
+    if (this.failAllWrites) throw new Error("storage unavailable");
+    if (this.failCommittedWrites > 0 && value.includes('"state":"committed"')) {
+      this.failCommittedWrites -= 1;
+      throw new Error("commit record unavailable");
+    }
     this.values.set(key, value);
   }
 
@@ -28,9 +39,7 @@ class MemoryStorage {
 
 const key = "tool-ledger";
 
-function call(
-  overrides: Partial<ToolCallEnvelope> = {},
-): ToolCallEnvelope {
+function call(overrides: Partial<ToolCallEnvelope> = {}): ToolCallEnvelope {
   return {
     executionId: "message-1",
     provider: "openai",
@@ -41,6 +50,10 @@ function call(
     ...overrides,
   };
 }
+
+const notCommitted: ToolOperationReconciler = async () => ({
+  status: "not_committed",
+});
 
 describe("registro idempotente de operaciones de tools", () => {
   it("mantiene la identidad con argumentos reordenados y cambia por ocurrencia", () => {
@@ -74,24 +87,41 @@ describe("registro idempotente de operaciones de tools", () => {
     ));
   });
 
-  it("ejecuta una escritura una vez, incluso tras recrear el coordinador", async () => {
+  it("prepara de forma verificada antes de invocar el efecto", async () => {
     const storage = new MemoryStorage();
-    const firstExecutor = vi.fn(async () => ({
-      output: "guardado",
-      status: "committed" as const,
-    }));
-    const firstCoordinator = new ToolOperationCoordinator(
+    storage.failAllWrites = true;
+    const executor = vi.fn(async () => ({ output: "guardado", status: "committed" as const }));
+    const coordinator = new ToolOperationCoordinator(
       new ToolOperationLedgerRepository(storage, key),
     );
 
-    await expect(firstCoordinator.execute(call(), true, firstExecutor)).resolves.toBe(
-      "guardado",
+    await expect(coordinator.execute(call(), true, executor, notCommitted)).rejects.toThrow(
+      "storage unavailable",
     );
+    expect(executor).not.toHaveBeenCalled();
+  });
 
-    const replayExecutor = vi.fn(async () => ({
-      output: "duplicado",
-      status: "committed" as const,
-    }));
+  it("reconcilia el commit de dominio si falla el registro final y no duplica al reiniciar", async () => {
+    const storage = new MemoryStorage();
+    storage.failCommittedWrites = 1;
+    let receiptExists = false;
+    const reconcile: ToolOperationReconciler = async () => receiptExists
+      ? { status: "committed", output: "ya estaba guardado" }
+      : { status: "not_committed" };
+    const executor = vi.fn(async () => {
+      receiptExists = true;
+      return { output: "guardado", status: "committed" as const };
+    });
+
+    const firstCoordinator = new ToolOperationCoordinator(
+      new ToolOperationLedgerRepository(storage, key),
+    );
+    await expect(firstCoordinator.execute(call(), true, executor, reconcile)).resolves.toEqual({
+      output: "ya estaba guardado",
+      status: "committed",
+    });
+
+    const replayExecutor = vi.fn(async () => ({ output: "duplicado", status: "committed" as const }));
     const restartedCoordinator = new ToolOperationCoordinator(
       new ToolOperationLedgerRepository(storage, key),
     );
@@ -99,10 +129,77 @@ describe("registro idempotente de operaciones de tools", () => {
       call({ providerCallId: "new-provider-id" }),
       true,
       replayExecutor,
-    )).resolves.toBe("guardado");
+      reconcile,
+    )).resolves.toMatchObject({ status: "committed" });
 
-    expect(firstExecutor).toHaveBeenCalledTimes(1);
+    expect(executor).toHaveBeenCalledTimes(1);
     expect(replayExecutor).not.toHaveBeenCalled();
+  });
+
+  it("nunca reejecuta un prepared o indeterminate que no puede reconciliar", async () => {
+    const storage = new MemoryStorage();
+    const repository = new ToolOperationLedgerRepository(storage, key);
+    const identity = identifyToolOperation(call());
+    await repository.prepare(identity, call().name);
+    const executor = vi.fn(async () => ({ output: "duplicado", status: "committed" as const }));
+    const coordinator = new ToolOperationCoordinator(
+      new ToolOperationLedgerRepository(storage, key),
+    );
+
+    await expect(coordinator.execute(
+      call(),
+      true,
+      executor,
+      async () => ({ status: "indeterminate" }),
+    )).resolves.toEqual({
+      output: TOOL_OPERATION_INDETERMINATE_MESSAGE,
+      status: "indeterminate",
+    });
+    expect(executor).not.toHaveBeenCalled();
+  });
+
+  it("permite ejecutar un prepared cuando el dominio demuestra que no hubo efecto", async () => {
+    const storage = new MemoryStorage();
+    const identity = identifyToolOperation(call());
+    await new ToolOperationLedgerRepository(storage, key).prepare(identity, call().name);
+    const executor = vi.fn(async () => ({ output: "guardado", status: "committed" as const }));
+    const coordinator = new ToolOperationCoordinator(
+      new ToolOperationLedgerRepository(storage, key),
+    );
+
+    await expect(coordinator.execute(call(), true, executor, notCommitted)).resolves.toEqual({
+      output: "guardado",
+      status: "committed",
+    });
+    expect(executor).toHaveBeenCalledTimes(1);
+  });
+
+  it("entrega al reconciliador el origen y la fecha del prepared persistido", async () => {
+    const storage = new MemoryStorage();
+    const identity = identifyToolOperation(call());
+    await new ToolOperationLedgerRepository(storage, key, () => 123).prepare(
+      identity,
+      call().name,
+    );
+    const reconcile = vi.fn<ToolOperationReconciler>(async () => ({
+      status: "indeterminate",
+    }));
+    const coordinator = new ToolOperationCoordinator(
+      new ToolOperationLedgerRepository(storage, key),
+    );
+
+    await coordinator.execute(
+      call(),
+      true,
+      async () => ({ output: "duplicado", status: "committed" }),
+      reconcile,
+    );
+
+    expect(reconcile).toHaveBeenCalledWith(
+      identity.operationId,
+      call().name,
+      { source: "unresolved", preparedAt: 123 },
+    );
   });
 
   it("une reintentos simultáneos y deja pasar siempre las lecturas", async () => {
@@ -118,10 +215,13 @@ describe("registro idempotente de operaciones de tools", () => {
       await gate;
       return { output: "hecho", status: "committed" as const };
     });
-    const first = coordinator.execute(call(), true, writeExecutor);
-    const second = coordinator.execute(call(), true, writeExecutor);
+    const first = coordinator.execute(call(), true, writeExecutor, notCommitted);
+    const second = coordinator.execute(call(), true, writeExecutor, notCommitted);
     release?.();
-    await expect(Promise.all([first, second])).resolves.toEqual(["hecho", "hecho"]);
+    await expect(Promise.all([first, second])).resolves.toEqual([
+      { output: "hecho", status: "committed" },
+      { output: "hecho", status: "committed" },
+    ]);
     expect(writeExecutor).toHaveBeenCalledTimes(1);
 
     const readExecutor = vi.fn(async () => ({
@@ -133,7 +233,7 @@ describe("registro idempotente de operaciones de tools", () => {
     expect(readExecutor).toHaveBeenCalledTimes(2);
   });
 
-  it("no registra validaciones ni fallos anteriores al efecto", async () => {
+  it("no memoriza validaciones ni fallos anteriores al efecto", async () => {
     const storage = new MemoryStorage();
     const coordinator = new ToolOperationCoordinator(
       new ToolOperationLedgerRepository(storage, key),
@@ -143,21 +243,38 @@ describe("registro idempotente de operaciones de tools", () => {
       .mockResolvedValueOnce({ output: "falló", status: "failed_before_commit" })
       .mockResolvedValueOnce({ output: "guardado", status: "committed" });
 
-    await coordinator.execute(call(), true, executor);
-    await coordinator.execute(call(), true, executor);
-    await coordinator.execute(call(), true, executor);
-    await coordinator.execute(call(), true, executor);
+    await coordinator.execute(call(), true, executor, notCommitted);
+    await coordinator.execute(call(), true, executor, notCommitted);
+    await coordinator.execute(call(), true, executor, notCommitted);
+    await coordinator.execute(call(), true, executor, notCommitted);
 
     expect(executor).toHaveBeenCalledTimes(3);
   });
 
-  it("caduca a los siete días y conserva como máximo 256 operaciones", async () => {
+  it("migra v1, caduca confirmados y conserva como máximo 256 operaciones", async () => {
     const storage = new MemoryStorage();
     let now = 1_000;
+    const legacyIdentity = identifyToolOperation(call({ executionId: "legacy" }));
+    storage.values.set(key, JSON.stringify({
+      schemaVersion: 1,
+      entries: [{
+        ...legacyIdentity,
+        toolName: "add_meal_food",
+        output: "legado",
+        committedAt: now,
+        expiresAt: now + TOOL_OPERATION_LEDGER_TTL_MS,
+      }],
+    }));
     const repository = new ToolOperationLedgerRepository(storage, key, () => now);
+    await expect(repository.find(legacyIdentity)).resolves.toEqual({
+      kind: "replay",
+      output: "legado",
+    });
+
     for (let index = 0; index < TOOL_OPERATION_LEDGER_MAX_ENTRIES + 5; index += 1) {
       const identity = identifyToolOperation(call({ executionId: `message-${index}` }));
-      await repository.record(identity, "add_meal_food", `resultado-${index}`);
+      await repository.prepare(identity, "add_meal_food");
+      await repository.commit(identity, "add_meal_food", `resultado-${index}`);
       now += 1;
     }
     const state = JSON.parse(storage.values.get(key) ?? "{}") as { entries: unknown[] };
@@ -168,17 +285,50 @@ describe("registro idempotente de operaciones de tools", () => {
     await expect(repository.find(newestIdentity)).resolves.toEqual({ kind: "miss" });
   });
 
-  it("falla cerrado ante una colisión y se recupera de datos corruptos", async () => {
+  it("caduca también la caché volátil de operaciones confirmadas", async () => {
+    const storage = new MemoryStorage();
+    let now = 1_000;
+    const coordinator = new ToolOperationCoordinator(
+      new ToolOperationLedgerRepository(storage, key, () => now),
+      undefined,
+      () => now,
+    );
+    const executor = vi.fn(async () => ({ output: "guardado", status: "committed" as const }));
+
+    await coordinator.execute(call(), true, executor, notCommitted);
+    now += TOOL_OPERATION_LEDGER_TTL_MS + 1;
+    await coordinator.execute(call(), true, executor, notCommitted);
+
+    expect(executor).toHaveBeenCalledTimes(2);
+  });
+
+  it("no expulsa operaciones sin resolver para abrir hueco", async () => {
+    const storage = new MemoryStorage();
+    const repository = new ToolOperationLedgerRepository(storage, key);
+    for (let index = 0; index < TOOL_OPERATION_LEDGER_MAX_ENTRIES; index += 1) {
+      await repository.prepare(
+        identifyToolOperation(call({ executionId: `pending-${index}` })),
+        "add_meal_food",
+      );
+    }
+    await expect(repository.prepare(
+      identifyToolOperation(call({ executionId: "one-too-many" })),
+      "add_meal_food",
+    )).rejects.toBeInstanceOf(ToolOperationLedgerCapacityError);
+  });
+
+  it("falla cerrado ante colisiones, corrupción o lecturas fallidas", async () => {
     const storage = new MemoryStorage();
     const identity = identifyToolOperation(call());
     storage.values.set(key, JSON.stringify({
-      schemaVersion: 1,
+      schemaVersion: 2,
       entries: [{
         ...identity,
-        fingerprint: "different-fingerprint",
+        fingerprint: "b".repeat(64),
         toolName: "add_meal_food",
-        output: "previo",
-        committedAt: Date.now(),
+        state: "prepared",
+        preparedAt: Date.now(),
+        updatedAt: Date.now(),
         expiresAt: Date.now() + TOOL_OPERATION_LEDGER_TTL_MS,
       }],
     }));
@@ -186,53 +336,44 @@ describe("registro idempotente de operaciones de tools", () => {
       new ToolOperationLedgerRepository(storage, key),
     );
     const executor = vi.fn(async () => ({ output: "nuevo", status: "committed" as const }));
-    await expect(coordinator.execute(call(), true, executor)).resolves.toContain(
-      "identidad no era segura",
-    );
+    await expect(coordinator.execute(call(), true, executor, notCommitted)).resolves.toEqual({
+      output: expect.stringContaining("identidad no era segura"),
+      status: "no_effect",
+    });
     expect(executor).not.toHaveBeenCalled();
 
     storage.values.set("corrupt", "no-json");
-    const corruptRepository = new ToolOperationLedgerRepository(storage, "corrupt");
-    await expect(corruptRepository.find(identity)).resolves.toEqual({ kind: "miss" });
-  });
+    await expect(
+      new ToolOperationLedgerRepository(storage, "corrupt").find(identity),
+    ).rejects.toBeInstanceOf(ToolOperationLedgerCorruptError);
 
-  it("no ejecuta el efecto si el registro no puede leerse", async () => {
     const unavailableStorage = {
-      getItem: async () => {
-        throw new Error("storage unavailable");
-      },
+      getItem: async () => { throw new Error("storage unavailable"); },
       setItem: async () => {},
       removeItem: async () => {},
     };
-    const coordinator = new ToolOperationCoordinator(
+    const unavailableCoordinator = new ToolOperationCoordinator(
       new ToolOperationLedgerRepository(unavailableStorage, key),
     );
-    const executor = vi.fn(async () => ({ output: "nuevo", status: "committed" as const }));
-
-    await expect(coordinator.execute(call(), true, executor)).rejects.toThrow(
+    await expect(unavailableCoordinator.execute(call(), true, executor, notCommitted)).rejects.toThrow(
       "storage unavailable",
     );
-    expect(executor).not.toHaveBeenCalled();
   });
 
-  it("no repuebla el registro si se borra mientras una operación termina", async () => {
+  it("no repuebla el journal si se borra mientras una operación termina", async () => {
     const storage = new MemoryStorage();
     const coordinator = new ToolOperationCoordinator(
       new ToolOperationLedgerRepository(storage, key),
     );
     let markStarted: (() => void) | undefined;
     let release: (() => void) | undefined;
-    const started = new Promise<void>((resolve) => {
-      markStarted = resolve;
-    });
-    const gate = new Promise<void>((resolve) => {
-      release = resolve;
-    });
+    const started = new Promise<void>((resolve) => { markStarted = resolve; });
+    const gate = new Promise<void>((resolve) => { release = resolve; });
     const execution = coordinator.execute(call(), true, async () => {
       markStarted?.();
       await gate;
       return { output: "guardado", status: "committed" };
-    });
+    }, notCommitted);
 
     await started;
     await coordinator.clear();
@@ -240,5 +381,28 @@ describe("registro idempotente de operaciones de tools", () => {
     await execution;
 
     expect(storage.values.has(key)).toBe(false);
+  });
+
+  it("las trazas de fases no incluyen identidad, argumentos, contenido ni resultado", async () => {
+    const storage = new MemoryStorage();
+    const events: Array<{ message: string; data?: Record<string, unknown> }> = [];
+    const coordinator = new ToolOperationCoordinator(
+      new ToolOperationLedgerRepository(storage, key),
+      (message, data) => events.push({ message, data }),
+    );
+    await coordinator.execute(
+      call({ args: { secret: "no-trace" } }),
+      true,
+      async () => ({ output: "sensitive-output", status: "committed" }),
+      notCommitted,
+    );
+
+    const serialized = JSON.stringify(events);
+    expect(serialized).toContain("prepare");
+    expect(serialized).toContain("commit");
+    expect(serialized).toContain("record");
+    expect(serialized).not.toContain("no-trace");
+    expect(serialized).not.toContain("sensitive-output");
+    expect(serialized).not.toContain(identifyToolOperation(call()).operationId);
   });
 });

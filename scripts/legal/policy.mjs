@@ -31,6 +31,19 @@ export const generatedModulePath = join(
   repoRoot, "apps", "mobile", "agent", "generated", "legalCopy.generated.ts",
 );
 
+// Tarjeta social de las páginas publicadas: la misma imagen que la portada
+// (apps/mobile/public/index.html). Sin ella, los auditores SEO marcan las dos
+// páginas por no tener Open Graph ni tarjeta de X.
+const SOCIAL_IMAGE = {
+  url: "https://images.maximofn.com/gymnasia-og.webp",
+  width: 1200,
+  height: 630,
+  type: "image/webp",
+};
+const OG_LOCALES = { es: "es_ES", en: "en_US" };
+// Versión que se sirve a quien no encaja en ningún idioma declarado.
+const X_DEFAULT_LOCALE = "en";
+
 // Un apartado por criterio de aceptación de GYM-190. Si alguien borra una sección,
 // el chequeo falla en vez de publicarse una política incompleta.
 export const REQUIRED_SECTION_IDS = [
@@ -238,6 +251,7 @@ export function renderHtml(policy) {
   const { meta, sections } = policy;
   const digest = digestFor(policy);
   const alternateLabel = policy.locale === "es" ? "English version" : "Versión en español";
+  const xDefaultUrl = policy.locale === X_DEFAULT_LOCALE ? meta.url : meta.alternate_url;
 
   const toc = sections
     .map((section) => `      <li><a href="#${section.id}">${escapeHtml(section.heading)}</a></li>`)
@@ -272,12 +286,30 @@ export function renderHtml(policy) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(meta.title)}</title>
-<meta name="description" content="${escapeHtml(meta.title)}">
+<meta name="description" content="${escapeHtml(meta.description)}">
 <meta name="gymnasia-policy-version" content="${meta.version}">
 <meta name="gymnasia-policy-digest" content="${digest}">
 <link rel="canonical" href="${meta.url}">
 <link rel="alternate" hreflang="${meta.locale}" href="${meta.url}">
 <link rel="alternate" hreflang="${meta.alternate_locale}" href="${meta.alternate_url}">
+<link rel="alternate" hreflang="x-default" href="${xDefaultUrl}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gymnasia">
+<meta property="og:locale" content="${OG_LOCALES[policy.locale]}">
+<meta property="og:url" content="${meta.url}">
+<meta property="og:title" content="${escapeHtml(meta.title)}">
+<meta property="og:description" content="${escapeHtml(meta.description)}">
+<meta property="og:image" content="${SOCIAL_IMAGE.url}">
+<meta property="og:image:width" content="${SOCIAL_IMAGE.width}">
+<meta property="og:image:height" content="${SOCIAL_IMAGE.height}">
+<meta property="og:image:type" content="${SOCIAL_IMAGE.type}">
+<meta property="og:image:alt" content="${escapeHtml(meta.image_alt)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@Maximo_fn">
+<meta name="twitter:title" content="${escapeHtml(meta.title)}">
+<meta name="twitter:description" content="${escapeHtml(meta.description)}">
+<meta name="twitter:image" content="${SOCIAL_IMAGE.url}">
+<meta name="twitter:image:alt" content="${escapeHtml(meta.image_alt)}">
 <style>
 ${STYLES}
 </style>
@@ -369,7 +401,7 @@ export function validatePolicies(policies) {
         push("section-empty", `La sección '${section.id}' de la política ${policy.locale} no tiene contenido.`);
       }
     }
-    for (const key of ["version", "effective_date", "url", "contact", "lang", "title"]) {
+    for (const key of ["version", "effective_date", "url", "contact", "lang", "title", "description", "image_alt"]) {
       if (!policy.meta[key]) {
         push("metadata-missing", `La política ${policy.locale} no declara '${key}' en sus metadatos.`);
       }

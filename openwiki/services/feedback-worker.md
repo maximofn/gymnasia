@@ -1,16 +1,11 @@
 ---
 type: servicio de integración
 title: Worker de feedback e incidencias verificables
-description: Worker opcional de Cloudflare que recibe feedback confirmado, aplica controles de validación, privacidad y abuso, y crea incidencias en GitHub con una referencia comprobable por el cliente. La aplicación sigue funcionando cuando el canal no está configurado o falla.
+description: Worker opcional de Cloudflare que recibe feedback confirmado, aplica validación, privacidad, límites de abuso e idempotencia, y crea incidencias de GitHub verificables. La aplicación local-first sigue funcionando si el canal no está configurado o falla.
 tags: [feedback, cloudflare, github, privacy, security]
-openwiki:
-  roles: [integration, operations, domain]
-  change_kinds: [public-api, persistence, privacy]
-  source_paths: [apps/feedback-worker/src/index.ts, apps/feedback-worker/src/contract.ts, apps/feedback-worker/src/sanitize.ts, apps/mobile/agent/feedbackIssues.ts]
-  symbols: [handleCreateIssue, redactExpiredReports, sanitizeFeedbackDraft, buildIdempotencyKey]
-  test_paths: [apps/feedback-worker/test/handler.test.ts, apps/mobile/agent/feedbackContract.contract.test.ts]
-  invariants: [El cliente no elige repositorio ni etiquetas; una respuesta creada debe incluir número y URL verificables; la misma clave o contenido no crea una incidencia duplicada.]
-  validation_commands: [npm --workspace apps/feedback-worker run test, npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/feedbackContract.contract.test.ts]
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-09-27T17:43:05.548Z
 sources:
   - id: openwiki-source-ecc8cf626716f1ed125add59
     resource: repo://apps/feedback-worker/package.json
@@ -32,6 +27,8 @@ sources:
     resource: repo://apps/feedback-worker/test/fuzz.test.ts
   - id: openwiki-source-3cfa88bf1d888145532ec324
     resource: repo://apps/feedback-worker/test/handler.test.ts
+  - id: openwiki-source-ffc9cf731e37d04be26cd997
+    resource: repo://apps/feedback-worker/test/schema.test.ts
   - id: openwiki-source-08bfc20c1f23c70bb8990d47
     resource: repo://apps/feedback-worker/wrangler.jsonc
   - id: openwiki-source-742e2ba85404d0ff40adc087
@@ -44,23 +41,20 @@ sources:
     resource: repo://apps/mobile/agent/feedbackPipeline.test.ts
   - id: openwiki-source-a6ba9053969a3e00cd971742
     resource: repo://apps/mobile/app.config.ts
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
+generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
 ---
 
 # Worker de feedback e incidencias verificables
 
-`apps/feedback-worker` es la excepción remota, deliberadamente pequeña, de una aplicación local-first. Recibe propuestas confirmadas de funcionalidad, alimentos y ejercicios, además de denuncias de respuestas de IA, y las transforma en issues de GitHub. No es un backend de producto: no posee cuentas, entrenamientos, dieta, chat ni el estado local. Su función es aislar la credencial de escritura de GitHub, que no puede distribuirse dentro de la app.
+`apps/feedback-worker` es el receptor remoto, deliberadamente acotado, para propuestas confirmadas de funcionalidad, alimentos y ejercicios, y para denuncias de respuestas de IA. Es la frontera que mantiene la credencial de escritura de GitHub fuera de la app: no posee cuentas, conversaciones, entrenamientos ni estado local.
 
-El Worker es **opcional**. Si no hay endpoint configurado, el servicio está desactivado, se agota el tiempo de espera o falla la red, el cliente y las tools devuelven un resultado no exitoso; el chat y el resto de la app continúan. Solo el resultado `created`, respaldado por un número positivo y una URL de `https://github.com/`, permite comunicar que se registró una incidencia. Véanse [Entorno del agente](../agent/runtime.md) y [Estado local y copias de seguridad](../mobile/local-state-and-backup.md) para los límites entre esta integración y el estado de la app.
+El Worker es **opcional**. Si no hay endpoint, el servicio está apagado, vence el tiempo de espera o falla la red, el cliente devuelve un resultado no exitoso y el chat continúa. Solo comunica una incidencia registrada cuando recibe una referencia verificable: número entero positivo y URL que empieza por `https://github.com/`. Véanse [Entorno del agente](../agent/runtime.md) y [Arquitectura](../architecture/overview.md) para el límite entre esta integración y el producto local-first.
 
-## Contrato público y límites de autoridad
+## Contrato y límites de autoridad
 
-El receptor expone `POST /feedback/issues` y `GET /health`, que devuelve `{ "ok": true }`. Rutas distintas devuelven `404` y otro método sobre la ruta de escritura, `405`. `OPTIONS` devuelve `204`; las cabeceras CORS de permiso solo se añaden cuando `Origin` figura en `ALLOWED_ORIGINS`. Todas las respuestas incluyen `cache-control: no-store` y `vary: Origin`.
+El receptor expone `POST /feedback/issues`, `GET /feedback/issues/status?idempotency_key=…` y `GET /health`, que responde `{ "ok": true }`. `OPTIONS` responde `204`; las cabeceras CORS de permiso solo se incluyen si `Origin` figura en `ALLOWED_ORIGINS`. Todas las respuestas incluyen `cache-control: no-store` y `vary: Origin`. Las rutas distintas devuelven `404` y los métodos no admitidos, `405`.
 
-El cuerpo de `POST` es un esquema cerrado de exactamente cinco claves:
+El `POST` admite un esquema cerrado, versión 1, con exactamente cinco claves:
 
 ```jsonc
 {
@@ -68,87 +62,94 @@ El cuerpo de `POST` es un esquema cerrado de exactamente cinco claves:
   "kind": "feature" | "food" | "exercise" | "report",
   "title": "string, 1..120",
   "summary": "string, 1..4000 (1..16000 para report)",
-  "idempotency_key": "v1:<kind>:<16 hex>"
+  "idempotency_key": "v1:<kind>:<16 o 64 hex>"
 }
 ```
 
-Una clave extra, una versión, tipo o clave inválidos, una clave cuyo tipo no coincida con `kind`, o texto vacío tras el saneado se rechazan. El servicio rechaza como `too_long` un título o resumen de más de cuatro veces su límite; el exceso menor se normaliza y trunca. `apps/feedback-worker/src/contract.ts` es la fuente de verdad. La réplica móvil en `apps/mobile/agent/feedbackIssues.ts` y `feedbackContract.contract.test.ts` anclan ruta, versión, tipos, límites y las cinco claves: extender el contrato requiere modificar ambos extremos y esa prueba, no aceptar campos de forma silenciosa.
+El Worker rechaza claves extra, versión o tipo inválidos, una clave cuya clase no coincide con `kind`, y texto vacío tras normalizar. Rechaza como `too_long` una entrada de más de cuatro veces el límite; el exceso menor se sanea y trunca. `apps/feedback-worker/src/contract.ts` es la fuente de verdad y `apps/mobile/agent/feedbackIssues.ts` replica los valores. `feedbackContract.contract.test.ts` ancla versión, rutas, tipos, límites y las cinco claves; ampliar el contrato exige modificar ambos extremos y esa prueba, nunca aceptar campos desconocidos silenciosamente.
 
-El cliente solo propone `kind`, `title` y `summary`. El Worker fija el repositorio con `GITHUB_REPO` y traduce el tipo a prefijo y etiquetas con `ISSUE_PRESENTATION`; el adaptador construye internamente las rutas de GitHub. Por ello no es un proxy de GitHub: una petición no puede seleccionar repositorio, etiquetas, método, ruta ni editar una issue arbitraria.
+Las claves de 16 hexadecimales identifican borradores derivados de su contenido. Las tools usan una identidad de operación de 64 hexadecimales; solo esa forma larga se acepta en la consulta de estado. El cliente no elige repositorio, etiquetas, ruta ni método: el Worker toma `GITHUB_REPO`, asigna prefijo y etiquetas con `ISSUE_PRESENTATION`, y el adaptador construye el único `POST` permitido a GitHub.
 
-## Creación: validación, límite e idempotencia
+## Recorrido de creación y reconciliación
 
 ```mermaid
 flowchart TD
     App["Aplicación móvil"] --> Draft["Sanea borrador y deriva clave"]
-    Draft --> Post["POST con cinco claves"]
-    Post --> Gate{"Servicio habilitado y secreto opcional válido"}
-    Gate -- "No" --> Unavailable["Respuesta no exitosa"]
-    Gate -- "Sí" --> Limit["HMAC de IP y rate limit D1"]
-    Limit -- "Excedido" --> Limited["429 con reintento"]
-    Limit -- "Permitido" --> Validate["Valida esquema y sanea"]
-    Validate -- "Inválido" --> Rejected["400 o 413"]
-    Validate -- "Válido" --> Reserve["Reserva clave y hash en D1"]
-    Reserve -- "Issue creada" --> Existing["200 deduplicated"]
-    Reserve -- "Pendiente" --> Pending["429 con reintento"]
-    Reserve -- "Nueva" --> GitHub["POST de issue con destino fijo"]
-    GitHub -- "Fallo" --> Release["Libera reserva y devuelve 502"]
-    GitHub -- "Número y URL" --> Complete["Marca created en D1"]
+    Draft --> Operation{"¿Clave de operación?"}
+    Operation -->|"Sí"| Status["GET de estado"]
+    Operation -->|"No"| Post["POST con cinco claves"]
+    Status -->|"created"| Existing["Devuelve referencia existente"]
+    Status -->|"pending o indeterminado"| Stop["No repite automáticamente"]
+    Status -->|"absent"| Post
+    Post --> Gate{"¿Habilitado y autorizado?"}
+    Gate -->|"No"| Unavailable["Resultado no exitoso"]
+    Gate -->|"Sí"| Limit["HMAC de IP y límite D1"]
+    Limit -->|"Excedido"| Limited["429 con reintento"]
+    Limit -->|"Permitido"| Validate["Valida y sanea"]
+    Validate -->|"Inválido"| Rejected["400 o 413"]
+    Validate -->|"Válido"| Reserve["Reserva clave y hash en D1"]
+    Reserve -->|"created"| Duplicate["200 deduplicated"]
+    Reserve -->|"pending"| Pending["429 con reintento"]
+    Reserve -->|"Nueva"| GitHub["Crea issue en destino fijo"]
+    GitHub -->|"Fallo"| Release["Libera reserva y devuelve 502"]
+    GitHub -->|"Referencia válida"| Complete["Marca created en D1"]
     Complete --> Created["201 con referencia"]
 ```
 
-*La propuesta local solo sale tras la confirmación de usuario; el Worker toma las decisiones privilegiadas y no filtra los detalles del upstream al fallo.*
+*Flujo cliente–Worker–GitHub: la escritura privilegiada ocurre solo después de validación y una reserva durable.*
 
-La app sanea el borrador y calcula una clave determinista a partir de `kind`, título y resumen. El Worker vuelve a normalizar y redactar antes de generar el hash de contenido y hablar con GitHub. Una reserva `pending` en D1 se crea antes de la llamada remota: una repetición de una reserva completada retorna su número y URL, y una repetición mientras está en vuelo recibe `429` y debe reintentar. Si GitHub falla, se borra la reserva pendiente para permitirlo. Además, un hash de contenido creado en las últimas 24 horas se deduplica aunque llegue otra clave.
+La app normaliza y redacta el borrador antes de enviarlo; el Worker vuelve a hacerlo y calcula el hash de contenido saneado. D1 reserva la clave antes de llamar a GitHub. Una repetición de una reserva completada devuelve la misma referencia sin crear otra issue; una repetición mientras está pendiente recibe `429`. Ante un fallo upstream, el Worker elimina la reserva pendiente para que un reintento explícito sea posible. También devuelve una creación existente cuando encuentra el mismo hash de contenido creado durante las últimas 24 horas, aunque la clave sea diferente.
 
-La tabla `issues` retiene clave, tipo, hash, estado `pending` o `created`, referencia de la issue y fecha; no guarda el título ni el resumen del feedback. La referencia se completa después de una respuesta útil del upstream. El Worker considera útil un número entero positivo y una URL no vacía; el cliente aplica la comprobación adicional de que la URL comience por `https://github.com/` antes de devolver `created`.
+La persistencia de `issues` conserva la clave, el tipo, el hash, el estado `pending` o `created`, la referencia y fechas; no conserva título ni resumen. La respuesta de GitHub debe traer número positivo y URL no vacía: un `2xx` malformado se trata como fallo upstream, se libera la reserva y se responde `502` sin filtrar el estado ni el detalle de GitHub.
 
-## Resultados, cliente y errores no filtrantes
+Para una clave larga, la consulta de estado devuelve `404 absent`, `202 pending` o `200 created` con la referencia. Está protegida por el mismo secreto opcional y CORS, pero no consume límite de tasa ni crea una reserva. El cliente consulta ese estado tras errores de transporte o timeout y tras `error` o `rate_limited` de una operación: recupera una creación duradera, informa `operation_pending` para una reserva en vuelo y, en los demás casos, conserva el fallo. Una respuesta `2xx` sin referencia verificable es `malformed_response`, no `created`.
 
-| HTTP del Worker | Resultado |
+## Resultados y degradación controlada
+
+| HTTP del Worker | Resultado observable |
 | --- | --- |
 | `201` | `created` nuevo con `number`, `url` y `deduplicated: false`. |
-| `200` | `created` deduplicado con la referencia ya almacenada. |
-| `400` | `rejected` por esquema, claves extra o contenido vacío. |
-| `403` | Rechazo cuando `APP_SHARED_SECRET` está configurado y falta o no coincide `x-gymnasia-app`. |
+| `200` | `created` deduplicado con referencia previamente almacenada. |
+| `400` | `rejected` por esquema, campos extra o contenido vacío. |
+| `403` | Rechazo si `APP_SHARED_SECRET` está configurado y `x-gymnasia-app` falta o no coincide. |
 | `413` | `rejected` por entrada desmesurada. |
-| `429` | `rejected` por rate limit o una reserva de la misma clave en curso; incluye `retry-after`. |
-| `502` | `error` con `upstream_failed`; no revela estado ni detalle de GitHub. |
-| `503` | `unavailable` con el interruptor apagado o sin sal de rate limit. |
+| `429` | `rejected` por límite de tasa o reserva en curso; incluye `retry-after`. |
+| `502` | `error` con `upstream_failed`, sin detalles de GitHub. |
+| `503` | `unavailable` porque el interruptor está apagado o falta la sal de rate limit. |
 
-`createFeedbackIssueClient` limita su petición a 15 segundos y distingue `timeout` de `transport`. Convierte `503` en `unavailable`, los rechazos HTTP en `rejected` y otros fallos en `error`. Incluso ante un `2xx`, un cuerpo sin número positivo o URL válida para GitHub resulta en `malformed_response`, no en creación. Las funciones de presentación para modelo y usuario solo afirman registro en la rama `created`; las demás informan que no se creó nada u ofrecen reintentar. Esto evita que una caída del Worker rompa un turno de chat o produzca una confirmación falsa.
+`createFeedbackIssueClient` usa un timeout de 15 segundos y distingue `timeout` de `transport`. Sus mapeadores convierten respuestas HTTP, cuerpos no JSON y referencias inválidas en uniones discriminadas; la presentación para modelo y usuario solo afirma que se registró una issue en la rama `created`. Por ello el canal no puede abortar un turno de chat ni transformar una confirmación HTTP ambigua en una confirmación de producto.
 
-## Antiabuso y secreto compartido
+## Privacidad, secreto y abuso
 
-El endpoint es anónimo y no tiene una prueba criptográfica de que la petición provenga de una instalación legítima: un valor incluido en un artefacto distribuido puede extraerse. `APP_SHARED_SECRET` es opcional; si se configura, se compara con `x-gymnasia-app`, pero es una barrera de ofuscación, no autenticación de usuario ni prueba de origen.
+El endpoint es anónimo. `APP_SHARED_SECRET` es una comprobación opcional del encabezado `x-gymnasia-app`, pero un secreto distribuido en el APK puede extraerse: es ofuscación y no autenticación fuerte, de usuario ni prueba de origen.
 
-Para elevar el coste de abuso, el Worker toma `cf-connecting-ip`, calcula un HMAC SHA-256 con `RATE_LIMIT_SALT` y persiste únicamente el identificador hexadecimal derivado. Aplica cinco solicitudes por minuto y treinta por día en D1. Si falta la sal, falla cerrado con `503` en vez de guardar una IP en claro. Los contadores se eliminan desde los 47 horas en el cron horario —para que su vida efectiva no supere 48 horas— y también de forma oportunista tras una creación. Este límite mide coste de abuso, no identidad.
+Para elevar el coste de abuso, el Worker toma `cf-connecting-ip`, calcula un HMAC SHA-256 con `RATE_LIMIT_SALT` y solo persiste el identificador hexadecimal derivado. D1 aplica cinco solicitudes por minuto y treinta por día. Si no hay sal, falla cerrado con `503` en vez de persistir una IP en claro. El cron horario y la limpieza oportunista eliminan contadores desde las 47 horas, de modo que su vida efectiva no supere 48 horas. El límite mide coste de abuso, no identidad.
 
-No documente ni introduzca valores de `GITHUB_TOKEN`, `RATE_LIMIT_SALT` ni `APP_SHARED_SECRET` en el repositorio, el bundle o una guía. La configuración pública puede declarar el destino, los orígenes y el interruptor; los secretos se cargan en el entorno del Worker.
+Cliente y Worker normalizan Unicode NFC, eliminan controles, recortan espacios y bloques, truncan sin dividir pares suplentes y redactan patrones conocidos de tokens de GitHub, proveedores de IA, JWT y encabezados Bearer. Es defensa en profundidad para patrones reconocibles, no una garantía de detectar cualquier secreto.
 
-## Saneamiento, minimización y retención
+Las propuestas ordinarias solo contienen campos visibles del formulario. Una denuncia `report` se forma con la vista previa confirmada: motivo, detalles opcionales, pregunta anterior, respuesta denunciada y contexto técnico limitado. El formateador no acepta el hilo completo ni consulta credenciales; solo permite denunciar respuestas finales visibles, no mensajes de identidad, errores técnicos, streaming ni mensajes vacíos.
 
-Cliente y Worker normalizan Unicode NFC, eliminan controles, recortan y normalizan espacios, limitan los bloques a dos saltos consecutivos y truncan sin partir pares suplentes. También sustituyen patrones conocidos de tokens de GitHub, proveedores de IA, JWT y cabeceras Bearer por marcadores redactados. Es defensa en profundidad frente a patrones reconocibles, no garantía de detectar cualquier secreto.
-
-Las propuestas ordinarias se forman solo con campos visibles del formulario, sin conversación literal ni estructuras internas. Una denuncia `report` usa la vista previa confirmada: motivo, detalles opcionales, pregunta anterior, respuesta denunciada y contexto técnico limitado. El formateador no acepta el hilo completo ni accede al almacenamiento de credenciales; solo se pueden denunciar respuestas finales visibles, no mensajes de identidad, errores técnicos, streaming ni mensajes vacíos.
-
-La retención se aplica exclusivamente a `report`. El cron de `wrangler.jsonc` se ejecuta cada hora y, junto con la poda de contadores, selecciona denuncias creadas hace 30 días o más, ordenadas por antigüedad y en lotes de 40. Hace `PATCH` del cuerpo remoto a una nota neutral y solo entonces escribe `redacted_at` en D1. Si el `PATCH` falla, no marca el registro y el cron lo reintenta. Se conservan número, URL y título remoto para trazabilidad, no el texto de la pregunta y respuesta.
+La retención se aplica exclusivamente a `report`. En cada ejecución horaria, el cron selecciona por antigüedad hasta 40 denuncias creadas hace al menos 30 días, sustituye el cuerpo remoto por una nota neutral mediante `PATCH` y solo entonces escribe `redacted_at` en D1. Si el `PATCH` falla, deja el registro sin marcar para reintentarlo. Se conservan título, número y URL para trazabilidad, no el texto denunciado.
 
 ## Configuración, despliegue y pruebas
 
-`wrangler.jsonc` declara `src/index.ts`, el binding D1 `DB`, el cron, la ruta, observabilidad y las variables no secretas `GITHUB_REPO`, `ALLOWED_ORIGINS` y `FEEDBACK_ENABLED`. El valor `FEEDBACK_ENABLED:false` permite apagar la escritura sin publicar una aplicación nueva. Por defecto, la configuración Expo deja el endpoint de desarrollo vacío y staging y producción usan el mismo receptor. `FEEDBACK_API_BASE_URL` puede sustituir ese valor —también en desarrollo, por ejemplo para `wrangler dev`— y tiene prioridad; por tanto, cambiar la URL o el contrato distribuido requiere el proceso de release correspondiente y el override de desarrollo no debe dirigirse accidentalmente al receptor real.
+`wrangler.jsonc` declara la entrada `src/index.ts`, el binding D1 `DB`, un cron horario, observabilidad y las variables no secretas `GITHUB_REPO`, `ALLOWED_ORIGINS` y `FEEDBACK_ENABLED`. `FEEDBACK_ENABLED:false` apaga la escritura sin publicar la app. `GITHUB_TOKEN`, `RATE_LIMIT_SALT` y, si se usa, `APP_SHARED_SECRET` se cargan como secretos de Wrangler y no deben entrar en el repositorio ni en el bundle. La credencial de GitHub debe ser de una cuenta técnica con el mínimo privilegio para el único repositorio receptor.
 
-Para preparar el servicio se crea D1, se aplican migraciones y se cargan los secretos mediante Wrangler; una credencial de GitHub debe ser de cuenta técnica, con mínimo privilegio para el único repositorio receptor. Para cambiar persistencia o retención, la migración remota debe aplicarse antes del despliegue:
+Expo no configura endpoint para development; staging y production usan el mismo receptor. `FEEDBACK_API_BASE_URL` tiene prioridad como override, incluido el uso de `wrangler dev`. Por tanto, cambiar URL o contrato distribuido debe seguir el proceso de release, y el override local no debe apuntar accidentalmente al receptor real.
+
+Antes de desplegar un cambio de persistencia o retención, aplique la migración remota:
 
 ```bash
 npm --workspace apps/feedback-worker run migrate:remote
 npm --workspace apps/feedback-worker run deploy
 ```
 
-La suite no usa red ni credenciales: emplea un doble de D1 y `fetch` simulado. Cubre esquema cerrado, saneamiento y propiedades con fuzzing, CORS, métodos y rutas, secreto opcional, interruptor, HMAC pseudonimizado, límites, idempotencia, deduplicación de contenido, liberación tras fallo de GitHub, ausencia de éxito ante una referencia inválida y retención con reintento. Ejecute:
+Despliegue primero el Worker y compruebe `/health` antes de distribuir una app que consulte `/feedback/issues/status`. El Worker sigue aceptando claves cortas de clientes antiguos; una app nueva que no encuentra el endpoint de estado falla cerrado y no duplica una issue.
+
+La suite Vitest no usa red ni credenciales: emplea un doble de D1 y `fetch` simulado. Cubre handler, rutas y CORS, esquema cerrado, saneamiento, propiedades fuzz con `fast-check`, secreto opcional, HMAC y límites, idempotencia, deduplicación, reconciliación de estados, fallos upstream y redacción con reintento. Ejecute:
 
 ```bash
 npm --workspace apps/feedback-worker run test
 ```
 
-Al cambiar la frontera móvil, ejecute también la prueba de contrato indicada en el frontmatter y `feedbackClient`/`feedbackPipeline`: esta última reproduce proveedor, tool, ejecutor y cliente HTTP para asegurar que un error remoto o una respuesta malformada nunca confirme una issue.
+Al modificar la frontera móvil, ejecute también la prueba de contrato indicada en el frontmatter anterior del repositorio y las pruebas `feedbackClient` y `feedbackPipeline`; estas verifican que proveedor, tool, ejecutor y cliente HTTP nunca confirmen una incidencia después de un error remoto o una referencia malformada.

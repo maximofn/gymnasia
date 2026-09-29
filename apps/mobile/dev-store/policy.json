@@ -21,7 +21,8 @@
     "messagesByThread",
     "keys",
     "chatProvider",
-    "foodAIProvider"
+    "foodAIProvider",
+    "toolOperationReceipts"
   ],
   "requiredRootFields": [
     "templates",

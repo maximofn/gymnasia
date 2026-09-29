@@ -1,11 +1,8 @@
 ---
 type: arquitectura de entrega de políticas
-title: Entrega y activación de políticas firmadas
+title: Entrega y selección de políticas
 description: Describe cómo se construyen, firman, promocionan y verifican localmente los bundles de prompt y salud-seguridad. Cubre el snapshot integrado, la selección por canal, la caché anti-rollback y el fallback seguro del cliente móvil.
 tags: [agent-policy, signed-policy, mobile, security, deployment, health-safety]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -43,10 +40,13 @@ sources:
     resource: repo://scripts/policy-promotion/prepare-policy-snapshot.mjs
   - id: openwiki-source-d89cdda8746df6dbfedfcf69
     resource: repo://scripts/policy-promotion/sign-policy.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-09-27T17:43:05.548Z
 ---
 
-# Entrega y activación de políticas firmadas
+# Entrega y selección de políticas
 
 La política ejecutable no es un prompt remoto arbitrario: es un **bundle canónico firmado** que reúne el prompt, el runtime de salud-seguridad, las herramientas requeridas y metadatos de compatibilidad. Una activación firmada lo asocia con un canal (`Staging` o `Production`) y una secuencia. La aplicación solo puede usar un paquete cuya cadena verifique contra raíces públicas integradas en la build.
 
@@ -152,7 +152,7 @@ Los diagnósticos se reducen a frontera, origen, candidato, secuencia y código 
 
 ## Lease y atribución en el runtime
 
-`acquireAgentPolicyLease(boundary)` es la entrada al runtime del agente. En canales firmados convierte la selección en un `AgentPolicyLease` profundamente inmutable: prompt, salud-seguridad fusionada, `PolicyContext`, estado y deployment proceden del mismo candidato. La interfaz adquiere este lease antes de clasificar una entrada sanitaria o enviar el turno; así no mezcla un prompt, un guardrail y atribución de políticas distintas en una petición.
+`acquireAgentPolicyLease(boundary)` es la entrada al runtime del agente. En canales firmados convierte la selección en un `AgentPolicyLease` profundamente inmutable: prompt, salud-seguridad fusionada, `PolicyContext`, estado y deployment proceden del mismo candidato. Los envíos del chat principal, el asistente de alimentos y el mini chat adquieren el lease antes de clasificar la entrada sanitaria o enviar el turno; así no mezclan un prompt, un guardrail y atribución de políticas distintas en una petición.
 
 El contexto contiene candidato, digest del bundle, versión, secuencia, origen e id/acción de activación. El estado expone activa, pendiente, degradación, resultado de comprobación y latencia de propagación para la presentación y diagnóstico local, sin registrar contenido sensible. Véase [Runtime del agente](../agent/runtime.md) para el consumidor de este lease y [Estado local y copias de seguridad](../mobile/local-state-and-backup.md) para el aislamiento de estado.
 

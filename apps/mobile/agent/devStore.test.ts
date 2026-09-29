@@ -70,7 +70,7 @@ describe("saneado del espejo de desarrollo", () => {
 
 describe("contrato del espejo en App.tsx", () => {
   it("usa el mismo saneador para backups y para el espejo", () => {
-    expect(appSource).toContain("store: sanitizeDevStoreValue(data.store)");
+    expect(appSource).toContain("const sanitizedStore = sanitizeDevStoreValue(data.store)");
     expect(appSource).toContain("body: serializeDevStore(store)");
     expect(appSource).toContain("saveDevStoreFile(store)");
     expect(appSource).not.toContain("saveDevStoreFile(JSON.stringify(store))");
