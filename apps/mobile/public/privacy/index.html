@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="What data Gymnasia keeps, where it is stored, what is sent to the AI provider you choose, and how to delete your data or exercise your rights.">
-<meta name="gymnasia-policy-version" content="2026-09-v9">
-<meta name="gymnasia-policy-digest" content="sha256:06cfe30af7bd21445e16463de16fcfa84d945a891a9243b5044fe8a045cda8f5">
+<meta name="gymnasia-policy-version" content="2026-09-v10">
+<meta name="gymnasia-policy-digest" content="sha256:bfc6630fa1e23cbab1d5fdf901d4b801f3c48679212c22c3054631dc6948ee3a">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -55,7 +55,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Gymnasia Privacy Policy</h1>
-  <p class="meta">Version 2026-09-v9 · in force since 2026-09-29 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Version 2026-09-v10 · in force since 2026-09-29 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacidad">Versión en español</a></p>
   <nav>
     <h2>Contents</h2>
@@ -149,7 +149,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <p>When an assistant question needs the model, your device connects <strong>directly</strong> to the provider you chose. An explicit calories per 100 g lookup answered from the local catalogue does not make that request. When sent, the request includes:</p>
     <ul>
       <li>the assistant's system instructions;</li>
-      <li>in the main chat, for Google, <strong>up to the 10 most recent exchanges</strong>, including the response and tool steps that belong to them; an additional size limit may remove complete exchanges starting with the oldest. For OpenAI and Anthropic, <strong>the last 20 messages</strong> are sent. A compatible server receives the conversation context needed to respond. Food assistants send their recent session history with the same limit when they use Google;</li>
+      <li>in the main chat, Gymnasia selects <strong>up to the last 20 messages</strong> using the same local rule for every provider. It then adapts that context to each API's format. For Google, the request keeps at most the 10 most recent exchanges from that selection, including their response and tool steps; an additional size limit may remove complete exchanges starting with the oldest. Food assistants send their recent session history with the same Google limit;</li>
       <li>the results of the tools the assistant uses at your request, which may include your weight, your body fat percentage, your measurements, the day's meals or your routines;</li>
       <li>in the food estimator, <strong>the images you provide</strong>, encoded within the request.</li>
       <li>for Anthropic, the workspace identifier, only when you configured one because the key type requires it.</li>
@@ -280,7 +280,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Gymnasia Privacy Policy · 2026-09-v9 · 2026-09-29</p>
+    <p>Gymnasia Privacy Policy · 2026-09-v10 · 2026-09-29</p>
   </footer>
 </main>
 </body>

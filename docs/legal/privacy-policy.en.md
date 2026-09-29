@@ -1,5 +1,5 @@
 ---
-version: 2026-09-v9
+version: 2026-09-v10
 effective_date: 2026-09-29
 locale: en
 lang: en
@@ -159,12 +159,12 @@ provider you chose. An explicit calories per 100 g lookup answered from the loca
 catalogue does not make that request. When sent, the request includes:
 
 - the assistant's system instructions;
-- in the main chat, for Google, **up to the 10 most recent exchanges**, including the
-  response and tool steps that belong to them; an additional size limit may remove
-  complete exchanges starting with the oldest. For OpenAI and Anthropic, **the last 20
-  messages** are sent. A compatible server receives the conversation context needed to
-  respond. Food assistants send their recent session history with the same
-  limit when they use Google;
+- in the main chat, Gymnasia selects **up to the last 20 messages** using the same
+  local rule for every provider. It then adapts that context to each API's format.
+  For Google, the request keeps at most the 10 most recent exchanges from that
+  selection, including their response and tool steps; an additional size limit may
+  remove complete exchanges starting with the oldest. Food assistants send their
+  recent session history with the same Google limit;
 - the results of the tools the assistant uses at your request, which may include your
   weight, your body fat percentage, your measurements, the day's meals or your routines;
 - in the food estimator, **the images you provide**, encoded within the request.

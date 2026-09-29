@@ -84,6 +84,7 @@ import {
   type ProviderChatResult as AnthropicChatResult,
 } from "./agent/providerChatClient";
 import { requestProviderToolChat } from "./agent/providerToolClient";
+import { selectCoachContext } from "./agent/coachContext";
 import { answerCatalogCaloriesLookup } from "./agent/catalogLookup";
 import {
   FOOD_AI_SYSTEM_PROMPT,
@@ -4942,7 +4943,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       };
 
       const allHistory = excludeLocalDisclosureMessages([...threadMessages, userMessage]);
-      const history = (activeProvider.provider === "google" ? allHistory : allHistory.slice(-20)).map(toChatInput);
+      const history = selectCoachContext(allHistory).map(toChatInput);
       // GYM-139 (ticket para impedir que la memoria persistente altere el
       // system prompt): el prompt procede exclusivamente de la política
       // seleccionada más la transparencia local que añade

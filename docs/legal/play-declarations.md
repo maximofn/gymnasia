@@ -8,7 +8,7 @@ este documento conserva las respuestas verificadas contra el código y la polít
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-09-v9` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-09-v10` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |
@@ -36,8 +36,9 @@ herramientas o fotos de comida. También recibe una consulta breve si el usuario
 «Probar modelo». Esto no añade una categoría de datos; el tercero concreto depende de
 la URL elegida por el usuario.
 
-Con Google se reenvían como máximo los diez intercambios más recientes, con límites
-adicionales de tamaño y conservando completos los pasos, firmas técnicas y resultados
+El Coach selecciona hasta los últimos 20 mensajes con una regla local común a todos
+los proveedores. Con Google se reenvían como máximo diez intercambios de esa selección,
+con límites adicionales de tamaño y conservando completos los pasos, firmas técnicas y resultados
 de herramientas de cada intercambio incluido. Las imágenes solo permanecen durante
 las rondas del turno en el que se adjuntaron; al existir un mensaje posterior se
 conservan el texto y la respuesta, pero no se reenvían sus bytes. Interactions lleva
