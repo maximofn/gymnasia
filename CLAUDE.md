@@ -673,6 +673,16 @@ esto hay que arreglarlo antes o el job pasará siempre.
   verificación, `retry-failed` debe recuperar el artefacto conservado en Actions
   y repetir la verificación sin lanzar otra build ni reservar otro código.
 
+### GitHub Actions omite descendientes de un job saltado sin `always()`
+- Gotcha: al reutilizar AAB/APK, `compile-android` se salta a propósito. Aunque
+  `verify-artifacts` termine correctamente, un job posterior con solo
+  `if: needs.verify-artifacts.result == 'success'` puede quedar también omitido
+  por la condición de éxito implícita de GitHub sobre la cadena de dependencias.
+  El run puede acabar verde sin enviar nada a Play.
+- Fix: en `submit-play-and-release`, usar `always()` junto con la comprobación
+  explícita de que `verify-artifacts` tuvo éxito. No quitar la comprobación: un
+  fallo de validación debe seguir dejando el borrador sin publicar.
+
 ### Fetch con `AbortSignal` también activa la ruta incremental de React Native
 - Gotcha: en React Native 0.81, `whatwg-fetch` instala `xhr.onreadystatechange`
   cuando recibe un `AbortSignal`. El XHR nativo considera la mera presencia de ese

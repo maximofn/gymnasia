@@ -73,7 +73,7 @@ test("Play Internal es automático después de Production y usa su propio token"
   assert.equal((workflow.match(/environment: Play Internal/g) ?? []).length, 1);
   assert.match(playJob, /environment: Play Internal/);
   assert.match(playJob, /token: \$\{\{ secrets\.EXPO_TOKEN \}\}/);
-  assert.match(playJob, /needs\.verify-artifacts\.result == 'success'/);
+  assert.match(playJob, /if: always\(\) && needs\.verify-artifacts\.result == 'success'/);
   assert.match(workflow, /PLAY_VERSION_CODE_FLOOR: \$\{\{ vars\.PLAY_VERSION_CODE_FLOOR \}\}/);
 });
 
