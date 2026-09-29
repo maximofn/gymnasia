@@ -330,6 +330,27 @@ export function extractNotificationSoundsFromArchiveListing(archiveListing) {
     .sort();
 }
 
+export function extractVerifiedNotificationSoundsFromAab(
+  archiveListing,
+  readEntry,
+  expectedSounds = expectedNotificationSounds(),
+) {
+  const sounds = extractNotificationSoundsFromArchiveListing(archiveListing);
+  const soundSet = new Set(sounds);
+  const expectedSet = new Set(expectedSounds);
+  return sounds.filter((sound) => {
+    if (!sound.startsWith("assets_")) return true;
+    const original = sound.slice("assets_".length);
+    if (!expectedSet.has(original) || !soundSet.has(original)) return true;
+    const originalBytes = readEntry(`base/res/raw/${original}`);
+    const aliasBytes = readEntry(`base/res/raw/${sound}`);
+    if (!Buffer.isBuffer(originalBytes) || !Buffer.isBuffer(aliasBytes)) {
+      throw new Error("No se pudieron comparar los sonidos empaquetados en el AAB.");
+    }
+    return originalBytes.length === 0 || !originalBytes.equals(aliasBytes);
+  });
+}
+
 export function expectedNotificationSounds() {
   const nativeConfigPolicy = JSON.parse(readFileSync(
     join(repositoryRoot, "scripts", "android-native-config", "policy.json"),

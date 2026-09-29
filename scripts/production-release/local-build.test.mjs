@@ -81,6 +81,46 @@ test("un fallo de APK conserva el AAB y el reintento solo prepara la pata fallid
   assert.equal(value.legs.apk.state, "prepared");
 });
 
+test("un fallo al verificar dos builds terminadas reutiliza ambos binarios sin nuevos intentos", () => {
+  let value = started();
+  for (const leg of ["aab", "apk"]) {
+    value = transitionReleaseTransaction(value, "finish-local", {
+      leg, metadata: metadata(value, leg), now,
+    });
+    value = transitionReleaseTransaction(value, "fail-local", {
+      leg, reason: "El verificador rechazó los sonidos", now,
+    });
+  }
+  assert.equal(value.state, "failed");
+  assert.equal(value.legs.aab.attempts.at(-1).status, "ERRORED");
+  value = transitionReleaseTransaction(value, "retry", { reason: "Corregido el verificador", now });
+  assert.equal(value.state, "building");
+  for (const leg of ["aab", "apk"]) {
+    assert.equal(value.legs[leg].state, "built");
+    assert.equal(value.legs[leg].attempts.length, 1);
+    assert.equal(value.legs[leg].attempts[0].status, "FINISHED");
+    assert.equal(value.legs[leg].attempts[0].runId, "12");
+    assert.equal(value.legs[leg].attempts[0].artifact.sha256, leg === "aab" ? "b".repeat(64) : "c".repeat(64));
+  }
+});
+
+test("el reintento no adopta un binario terminado si su hash conservado es inválido", () => {
+  let value = started();
+  value = transitionReleaseTransaction(value, "finish-local", {
+    leg: "aab", metadata: metadata(value, "aab"), now,
+  });
+  value = transitionReleaseTransaction(value, "fail-local", {
+    leg: "aab", reason: "Falló la verificación", now,
+  });
+  value = transitionReleaseTransaction(value, "fail-local", {
+    leg: "apk", reason: "El APK no llegó a compilarse", now,
+  });
+  value.legs.aab.attempts[0].artifact.sha256 = "invalid";
+  value = transitionReleaseTransaction(value, "retry", { reason: "Nueva comprobación", now });
+  assert.equal(value.legs.aab.state, "prepared");
+  assert.equal(value.legs.apk.state, "prepared");
+});
+
 test("el ejecutor exige EXPO_TOKEN y ordena production antes de production-apk", () => {
   const script = readFileSync(new URL("./run-local-build.mjs", import.meta.url), "utf8");
   assert.match(script, /Falta EXPO_TOKEN/);
