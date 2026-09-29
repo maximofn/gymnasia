@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<defs><marker id="arrow" markerWidth="15" markerHeight="15" refX="12" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M2 2 L12 7.5 L2 13" fill="none" stroke="#CBFF1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#07090D" stroke="none" stroke-width="0"/>
+<rect x="98" y="68" width="8" height="55" rx="4" fill="#CBFF1A" stroke="none" stroke-width="0"/>
+<text x="130" y="105" fill="#CBFF1A" font-size="25" font-weight="800" text-anchor="start" letter-spacing="3" font-family="Arial, Helvetica, sans-serif">GYMNASIA  /  AGENT LOOP</text>
+<text x="1820" y="105" fill="#A6AFBC" font-size="25" font-weight="700" text-anchor="end" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">02 / 07</text>
+<text x="98" y="210" fill="#F4F7FB" font-size="66" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">El bucle lo controla la app</text>
+<text x="100" y="268" fill="#A6AFBC" font-size="29" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">El modelo pide; Gymnasia ejecuta, devuelve el resultado y decide cuándo parar.</text>
+<path d="M100 1005 H1820" fill="none" stroke="#303844" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="100" y="1042" fill="#A6AFBC" font-size="22" font-weight="700" text-anchor="start" letter-spacing="2" font-family="Arial, Helvetica, sans-serif">EL BUCLE DE UN AGENTE</text>
+<text x="1820" y="1042" fill="#A6AFBC" font-size="21" font-weight="500" text-anchor="end" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">maximofn.com/gymnasia-agent-tool-loop</text>
+<rect x="105" y="370" width="330" height="260" rx="26" fill="#141820" stroke="#303844" stroke-width="2"/>
+<text x="137" y="445" fill="#CBFF1A" font-size="31" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">1  MODELO</text>
+<text x="137" y="525" fill="#F4F7FB" font-size="27" font-weight="600" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Pide una tool</text>
+<rect x="565" y="370" width="330" height="260" rx="26" fill="#141820" stroke="#303844" stroke-width="2"/>
+<text x="597" y="445" fill="#CBFF1A" font-size="31" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">2  APP</text>
+<text x="597" y="525" fill="#F4F7FB" font-size="27" font-weight="600" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Ejecuta código local</text>
+<rect x="1025" y="370" width="330" height="260" rx="26" fill="#141820" stroke="#303844" stroke-width="2"/>
+<text x="1057" y="445" fill="#CBFF1A" font-size="31" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">3  HISTORIAL</text>
+<text x="1057" y="525" fill="#F4F7FB" font-size="27" font-weight="600" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Petición + resultado</text>
+<rect x="1485" y="370" width="330" height="260" rx="26" fill="#141820" stroke="#303844" stroke-width="2"/>
+<text x="1517" y="445" fill="#CBFF1A" font-size="31" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">4  MODELO</text>
+<text x="1517" y="525" fill="#F4F7FB" font-size="27" font-weight="600" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Vuelve a responder</text>
+<path d="M438 500 H543" fill="none" stroke="#CBFF1A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M898 500 H1003" fill="none" stroke="#CBFF1A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M1358 500 H1463" fill="none" stroke="#CBFF1A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<path d="M1650 648 V735 H260 V648" fill="none" stroke="#CBFF1A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="755" y="699" width="365" height="48" rx="24" fill="#263315" stroke="#CBFF1A" stroke-width="1.5"/><text x="937.5" y="731" fill="#CBFF1A" font-size="26" font-weight="700" text-anchor="middle" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">OTRA RONDA</text>
+<rect x="360" y="800" width="520" height="125" rx="26" fill="#152319" stroke="#38794E" stroke-width="2"/>
+<text x="405" y="853" fill="#CBFF1A" font-size="27" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">SIN MÁS TOOLS</text>
+<text x="405" y="894" fill="#F4F7FB" font-size="27" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Respuesta final</text>
+<rect x="1040" y="800" width="520" height="125" rx="26" fill="#282018" stroke="#9A6938" stroke-width="2"/>
+<text x="1085" y="853" fill="#FFC36A" font-size="27" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">LÍMITE DE RONDAS</text>
+<text x="1085" y="894" fill="#F4F7FB" font-size="27" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Cierre sin tools</text>
+</svg>

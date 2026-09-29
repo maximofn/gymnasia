@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1672" height="941" viewBox="0 0 1672 941">
+<defs><linearGradient id="shade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#07090D" stop-opacity="0"/><stop offset="0.6" stop-color="#07090D" stop-opacity="0.82"/><stop offset="1" stop-color="#07090D" stop-opacity="0.98"/></linearGradient></defs>
+<rect x="0" y="620" width="1672" height="321" fill="url(#shade)"/>
+<text x="87" y="74" fill="#CBFF1A" font-size="31" font-weight="800" text-anchor="start" letter-spacing="3" font-family="Arial, Helvetica, sans-serif">GYMNASIA  /  AGENTES</text>
+<text x="836" y="827" fill="#F4F7FB" font-size="115" font-weight="900" text-anchor="middle" letter-spacing="-2" font-family="Arial, Helvetica, sans-serif">¿CUÁNDO PARA?</text>
+<rect x="390" y="860" width="892" height="8" rx="4" fill="#CBFF1A"/>
+</svg>

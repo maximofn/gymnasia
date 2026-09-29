@@ -25,6 +25,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `scripts/policy-promotion/`: Firma Ed25519, contratos, promoción y preparación de snapshots por canal
 - `scripts/store-listing/`: Generación y validación de la ficha y los recursos para Google Play
 - `docs/`: Documentacion del proyecto (arquitectura, diseno, specs, roadmap)
+- `media/youtube/`: Miniaturas y gráficos editables para los vídeos técnicos sobre Gymnasia
 
 ## Arranque rapido
 

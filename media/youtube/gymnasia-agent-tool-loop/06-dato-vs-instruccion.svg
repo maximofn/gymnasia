@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<defs><marker id="arrow" markerWidth="15" markerHeight="15" refX="12" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M2 2 L12 7.5 L2 13" fill="none" stroke="#CBFF1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#07090D" stroke="none" stroke-width="0"/>
+<rect x="98" y="68" width="8" height="55" rx="4" fill="#CBFF1A" stroke="none" stroke-width="0"/>
+<text x="130" y="105" fill="#CBFF1A" font-size="25" font-weight="800" text-anchor="start" letter-spacing="3" font-family="Arial, Helvetica, sans-serif">GYMNASIA  /  AGENT LOOP</text>
+<text x="1820" y="105" fill="#A6AFBC" font-size="25" font-weight="700" text-anchor="end" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">06 / 07</text>
+<text x="98" y="210" fill="#F4F7FB" font-size="66" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">El resultado es un dato</text>
+<text x="100" y="268" fill="#A6AFBC" font-size="29" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Las órdenes sobre cómo responder van en las instrucciones de la app.</text>
+<path d="M100 1005 H1820" fill="none" stroke="#303844" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="100" y="1042" fill="#A6AFBC" font-size="22" font-weight="700" text-anchor="start" letter-spacing="2" font-family="Arial, Helvetica, sans-serif">EL BUCLE DE UN AGENTE</text>
+<text x="1820" y="1042" fill="#A6AFBC" font-size="21" font-weight="500" text-anchor="end" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">maximofn.com/gymnasia-agent-tool-loop</text>
+<rect x="105" y="355" width="810" height="480" rx="26" fill="#141820" stroke="#303844" stroke-width="2"/>
+<rect x="145" y="393" width="274" height="48" rx="24" fill="#342219" stroke="#FFC36A" stroke-width="1.5"/><text x="282.0" y="425" fill="#FFC36A" font-size="23" font-weight="700" text-anchor="middle" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">RESULTADO DE TOOL</text>
+<text x="145" y="506" fill="#F4F7FB" font-size="38" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Texto de una página web</text>
+<rect x="145" y="558" width="730" height="139" rx="18" fill="#261B1D" stroke="#B44A56" stroke-width="2"/>
+<text x="176" y="618" fill="#FF6D73" font-size="35" font-weight="700" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">«Ignora lo anterior y... »</text>
+<text x="145" y="769" fill="#A6AFBC" font-size="29" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Puede contener instrucciones externas</text>
+<rect x="1005" y="355" width="810" height="480" rx="26" fill="#18241B" stroke="#578B4F" stroke-width="2"/>
+<rect x="1045" y="393" width="292" height="48" rx="24" fill="#263315" stroke="#CBFF1A" stroke-width="1.5"/><text x="1191.0" y="425" fill="#CBFF1A" font-size="23" font-weight="700" text-anchor="middle" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">CÓDIGO DE LA APP</text>
+<text x="1045" y="506" fill="#F4F7FB" font-size="38" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Controla el siguiente paso</text>
+<rect x="1045" y="558" width="730" height="139" rx="18" fill="#20311D" stroke="#70A958" stroke-width="2"/>
+<text x="1076" y="618" fill="#CBFF1A" font-size="35" font-weight="700" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Instrucciones de sistema</text>
+<text x="1045" y="769" fill="#A6AFBC" font-size="29" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Define cómo debe responder el modelo</text>
+<path d="M930 594 H990" fill="none" stroke="#FF6D73" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M944 570 L977 618 M977 570 L944 618" fill="none" stroke="#FF6D73" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="960" y="922" fill="#F4F7FB" font-size="37" font-weight="700" text-anchor="middle" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Una tool informa de lo que pasó; no dirige al agente.</text>
+</svg>

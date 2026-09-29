@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<defs><marker id="arrow" markerWidth="15" markerHeight="15" refX="12" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M2 2 L12 7.5 L2 13" fill="none" stroke="#CBFF1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#07090D" stroke="none" stroke-width="0"/>
+<rect x="98" y="68" width="8" height="55" rx="4" fill="#CBFF1A" stroke="none" stroke-width="0"/>
+<text x="130" y="105" fill="#CBFF1A" font-size="25" font-weight="800" text-anchor="start" letter-spacing="3" font-family="Arial, Helvetica, sans-serif">GYMNASIA  /  AGENT LOOP</text>
+<text x="1820" y="105" fill="#A6AFBC" font-size="25" font-weight="700" text-anchor="end" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">03 / 07</text>
+<text x="98" y="210" fill="#F4F7FB" font-size="66" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Una política de contexto</text>
+<text x="100" y="268" fill="#A6AFBC" font-size="29" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Gymnasia elige el historial en el móvil antes de adaptarlo a cada API.</text>
+<path d="M100 1005 H1820" fill="none" stroke="#303844" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="100" y="1042" fill="#A6AFBC" font-size="22" font-weight="700" text-anchor="start" letter-spacing="2" font-family="Arial, Helvetica, sans-serif">EL BUCLE DE UN AGENTE</text>
+<text x="1820" y="1042" fill="#A6AFBC" font-size="21" font-weight="500" text-anchor="end" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">maximofn.com/gymnasia-agent-tool-loop</text>
+<rect x="105" y="352" width="630" height="520" rx="26" fill="#171F19" stroke="#587228" stroke-width="2"/>
+<rect x="145" y="390" width="262" height="48" rx="24" fill="#263315" stroke="#CBFF1A" stroke-width="1.5"/><text x="276.0" y="422" fill="#CBFF1A" font-size="23" font-weight="700" text-anchor="middle" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">EN EL TELÉFONO</text>
+<text x="145" y="505" fill="#F4F7FB" font-size="50" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Hasta 20 mensajes</text>
+<text x="145" y="570" fill="#A6AFBC" font-size="37" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">del chat local</text>
+<rect x="150" y="633" width="445" height="27" rx="13" fill="#1B212B" stroke="none" stroke-width="0"/>
+<rect x="150" y="677" width="445" height="27" rx="13" fill="#1B212B" stroke="none" stroke-width="0"/>
+<rect x="150" y="721" width="445" height="27" rx="13" fill="#1B212B" stroke="none" stroke-width="0"/>
+<path d="M745 610 H915" fill="none" stroke="#CBFF1A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="935" y="368" fill="#CBFF1A" font-size="26" font-weight="800" text-anchor="start" letter-spacing="1" font-family="Arial, Helvetica, sans-serif">MISMA SELECCIÓN</text>
+<rect x="920" y="402" width="895" height="132" rx="26" fill="#141820" stroke="#303844" stroke-width="2"/>
+<text x="960" y="457" fill="#F4F7FB" font-size="36" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">OpenAI</text>
+<text x="960" y="502" fill="#A6AFBC" font-size="26" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">store: false · sin previous_response_id</text>
+<rect x="920" y="565" width="895" height="132" rx="26" fill="#141820" stroke="#303844" stroke-width="2"/>
+<text x="960" y="620" fill="#F4F7FB" font-size="36" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Anthropic</text>
+<text x="960" y="665" fill="#A6AFBC" font-size="26" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">tool_use → tool_result</text>
+<rect x="920" y="728" width="895" height="132" rx="26" fill="#141820" stroke="#303844" stroke-width="2"/>
+<text x="960" y="783" fill="#F4F7FB" font-size="36" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Google</text>
+<text x="960" y="828" fill="#A6AFBC" font-size="26" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">ajuste de tamaño si hace falta</text>
+<rect x="104" y="905" width="1710" height="67" rx="20" fill="#202515" stroke="#4A6324" stroke-width="2"/>
+<text x="140" y="949" fill="#F4F7FB" font-size="28" font-weight="600" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Durante la consulta se reenvía completa la secuencia activa de peticiones y resultados.</text>
+</svg>

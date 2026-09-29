@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+<defs><marker id="arrow" markerWidth="15" markerHeight="15" refX="12" refY="7.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M2 2 L12 7.5 L2 13" fill="none" stroke="#CBFF1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="1920" height="1080" rx="0" fill="#07090D" stroke="none" stroke-width="0"/>
+<rect x="98" y="68" width="8" height="55" rx="4" fill="#CBFF1A" stroke="none" stroke-width="0"/>
+<text x="130" y="105" fill="#CBFF1A" font-size="25" font-weight="800" text-anchor="start" letter-spacing="3" font-family="Arial, Helvetica, sans-serif">GYMNASIA  /  AGENT LOOP</text>
+<text x="1820" y="105" fill="#A6AFBC" font-size="25" font-weight="700" text-anchor="end" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">01 / 07</text>
+<text x="98" y="210" fill="#F4F7FB" font-size="66" font-weight="800" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Una llamada no es un agente</text>
+<text x="100" y="268" fill="#A6AFBC" font-size="29" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">La tool call termina el turno. La aplicación tiene que continuar el ciclo.</text>
+<path d="M100 1005 H1820" fill="none" stroke="#303844" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="100" y="1042" fill="#A6AFBC" font-size="22" font-weight="700" text-anchor="start" letter-spacing="2" font-family="Arial, Helvetica, sans-serif">EL BUCLE DE UN AGENTE</text>
+<text x="1820" y="1042" fill="#A6AFBC" font-size="21" font-weight="500" text-anchor="end" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">maximofn.com/gymnasia-agent-tool-loop</text>
+<rect x="100" y="350" width="500" height="480" rx="26" fill="#141820" stroke="#303844" stroke-width="2"/>
+<rect x="135" y="385" width="166" height="48" rx="24" fill="#263315" stroke="#CBFF1A" stroke-width="1.5"/><text x="218.0" y="417" fill="#CBFF1A" font-size="23" font-weight="700" text-anchor="middle" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">PERSONA</text>
+<text x="140" y="505" fill="#F4F7FB" font-size="37" font-weight="700" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">¿Cuánto he progresado</text>
+<text x="140" y="558" fill="#F4F7FB" font-size="37" font-weight="700" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">en press banca</text>
+<text x="140" y="611" fill="#F4F7FB" font-size="37" font-weight="700" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">este mes?</text>
+<text x="140" y="752" fill="#A6AFBC" font-size="28" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Una pregunta</text>
+<path d="M605 595 H686" fill="none" stroke="#CBFF1A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="700" y="350" width="500" height="480" rx="26" fill="#141820" stroke="#303844" stroke-width="2"/>
+<rect x="735" y="385" width="157" height="48" rx="24" fill="#263315" stroke="#CBFF1A" stroke-width="1.5"/><text x="813.5" y="417" fill="#CBFF1A" font-size="23" font-weight="700" text-anchor="middle" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">MODELO</text>
+<text x="740" y="505" fill="#F4F7FB" font-size="37" font-weight="700" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Necesito consultar</text>
+<text x="740" y="558" fill="#F4F7FB" font-size="37" font-weight="700" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">los entrenamientos</text>
+<text x="740" y="752" fill="#A6AFBC" font-size="28" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Pide una herramienta</text>
+<path d="M1205 595 H1286" fill="none" stroke="#CBFF1A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="1300" y="350" width="520" height="480" rx="26" fill="#1D2118" stroke="#596C20" stroke-width="2"/>
+<rect x="1335" y="385" width="180" height="48" rx="24" fill="#354018" stroke="#CBFF1A" stroke-width="1.5"/><text x="1425.0" y="417" fill="#CBFF1A" font-size="23" font-weight="700" text-anchor="middle" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">TOOL CALL</text>
+<text x="1340" y="505" fill="#F4F7FB" font-size="34" font-weight="700" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">leer_entrenamientos</text>
+<text x="1340" y="570" fill="#FFC36A" font-size="33" font-weight="700" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">El turno termina aquí</text>
+<text x="1340" y="750" fill="#A6AFBC" font-size="28" font-weight="500" text-anchor="start" letter-spacing="0" font-family="Arial, Helvetica, sans-serif">Aún no ha visto el resultado</text>
+</svg>
