@@ -316,14 +316,31 @@ jobs:
             echo "### Install"
             echo 'Download `gymnasia.apk` for direct installation. The same version is sent as `gymnasia.aab` to Play Internal.'
           } > "$BODY_FILE"
-          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --target "$SOURCE_COMMIT" \
-            --title "Gymnasia ${VERSION}" --notes-file "$BODY_FILE" --draft
-          gh release upload "$TAG" /tmp/android-release-transaction.json \
-            /tmp/source/production-source-evidence.json /tmp/production-policy-snapshot.json \
-            /tmp/production-policy-bundle.tar.gz --repo "$GITHUB_REPOSITORY" --clobber
-          RELEASE_ID="$(gh api --paginate "/repos/${GITHUB_REPOSITORY}/releases" \
-            --jq "[.[] | select(.tag_name == \"${TAG}\")] | first | .id // empty")"
-          test -n "$RELEASE_ID"
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --target "$SOURCE_COMMIT" --title "Gymnasia ${VERSION}" \
+            --notes-file "$BODY_FILE" --draft
+          gh release upload "$TAG" \
+            /tmp/android-release-transaction.json \
+            /tmp/source/production-source-evidence.json \
+            /tmp/production-policy-snapshot.json \
+            /tmp/production-policy-bundle.tar.gz \
+            --repo "$GITHUB_REPOSITORY" --clobber
+          # `select-transaction` calcula el release_id antes de que este borrador
+          # exista, asi que en una version nueva llega vacio y la subida del APK
+          # acaba en un 404 con el binario ya compilado. Se resuelve aqui.
+          # No sirve `releases/tags/<tag>`: ese endpoint no encuentra borradores.
+          # La lista REST puede tardar unos segundos en incluir un borrador recién
+          # creado, aunque `gh release create` y la subida de assets hayan terminado.
+          RELEASE_ID=""
+          for attempt in 1 2 3 4 5 6; do
+            RELEASE_ID="$(gh api --paginate "/repos/${GITHUB_REPOSITORY}/releases" \
+              --jq "[.[] | select(.tag_name == \"${TAG}\")] | first | .id // empty")"
+            if [ -n "$RELEASE_ID" ]; then break; fi
+            if [ "$attempt" -lt 6 ]; then sleep "$((attempt * 2))"; fi
+          done
+          test -n "$RELEASE_ID" || {
+            echo "::error::No se pudo resolver el id del borrador ${TAG}."; exit 1;
+          }
           echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
 
       - name: Reserve local AAB/APK attempts durably before dispatch
