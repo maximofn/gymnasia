@@ -109,7 +109,6 @@ export async function requestProviderToolChat(
 
     const makeRequest = async (
       input: Array<Record<string, unknown>>,
-      previousResponseId: string | null,
       includeTools: boolean,
       toolChoice?: "none",
     ) => {
@@ -117,9 +116,10 @@ export async function requestProviderToolChat(
         model,
         instructions: toolChoice ? closingSystemPrompt(systemPrompt) : systemPrompt,
         input,
+        store: false,
+        include: ["reasoning.encrypted_content"],
       };
       if (reasoning) body.reasoning = reasoning;
-      if (previousResponseId) body.previous_response_id = previousResponseId;
       if (includeTools) body.tools = CHAT_TOOLS.openai;
       if (includeTools && toolChoice) body.tool_choice = toolChoice;
       const headers = {
@@ -146,14 +146,12 @@ export async function requestProviderToolChat(
           );
     };
 
+    const initialInput = nonSystemMessages;
     const payload = await runOpenAIToolLoop({
-      initialTurn: await makeRequest(nonSystemMessages, null, true),
-      requestNextTurn: (outputs, previousResponseId) => (
-        makeRequest(outputs, previousResponseId, true)
-      ),
-      requestClosingTurn: (outputs, previousResponseId) => (
-        makeRequest(outputs, previousResponseId, true, "none")
-      ),
+      initialInput,
+      initialTurn: await makeRequest(initialInput, true),
+      requestNextTurn: (context) => makeRequest(context, true),
+      requestClosingTurn: (context) => makeRequest(context, true, "none"),
       executeTool: options.executeTool,
       executionId: options.executionId,
     });

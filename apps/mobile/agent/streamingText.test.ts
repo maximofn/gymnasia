@@ -287,7 +287,7 @@ describe("transporte", () => {
     const turn = await streamOpenAIRequestViaXHR("https://api.openai.test", {}, {});
 
     expect(turn.truncated).toBe(true);
-    await expect(runOpenAIToolLoop({
+    await expect(runOpenAIToolLoop({ initialInput: [],
       initialTurn: turn,
       requestNextTurn: vi.fn(),
       executeTool: vi.fn(),

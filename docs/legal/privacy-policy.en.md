@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v8
-effective_date: 2026-09-24
+version: 2026-09-v9
+effective_date: 2026-09-29
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -185,6 +185,13 @@ All generation requests to Google disable Interactions conversation storage usin
 the device and does not use a conversation stored at Google to continue the dialogue.
 The complete history remains stored on the device and is not deleted when preparing a
 smaller request. This setting does not replace the provider's general terms.
+
+The Coach's OpenAI Responses requests also use `store: false`: the app selects the
+history on the device and, during a tool workflow, resends the responses and results
+needed to continue. Encrypted reasoning items remain in memory only for that request;
+they are neither displayed nor saved in the app's conversation history. This setting
+prevents OpenAI from storing the responses as application state, but does not remove
+abuse monitoring logs that OpenAI may retain under your account's configuration.
 
 That content is subject to the privacy policy and terms of the provider you chose, under
 your own account with them:

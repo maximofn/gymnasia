@@ -8,7 +8,7 @@ este documento conserva las respuestas verificadas contra el código y la polít
 
 | Campo | Valor |
 |---|---|
-| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-09-v5` |
+| Política que las respalda | `docs/legal/privacy-policy.es.md`, versión `2026-09-v9` |
 | URL pública | <https://gymnasia.maximofn.com/privacidad> |
 | Contacto | maximofn@maximofn.com |
 | Inventario que las sustenta | `scripts/data-inventory/inventory.json` |
@@ -45,6 +45,10 @@ conservan el texto y la respuesta, pero no se reenvían sus bytes. Interactions 
 ni añade un tercero o una categoría de datos a la tabla. Los asistentes de alimentos
 conservan ese contexto solo durante su sesión; el chat principal mantiene su historial
 íntegro en el dispositivo y en su backup local.
+El Coach también envía a OpenAI Responses el historial elegido en el dispositivo y la
+secuencia activa de tools con `store: false`. OpenAI puede conservar registros de
+vigilancia de abusos según la configuración de la cuenta; por eso tampoco cambia la
+declaración conservadora de tratamiento no efímero ni las categorías declaradas.
 
 El backend opcional de incidencias recibe, tras vista previa y confirmación, la pregunta
 anterior, la respuesta denunciada y detalles opcionales. También trata la IP de conexión

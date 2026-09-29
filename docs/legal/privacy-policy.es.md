@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v8
-effective_date: 2026-09-24
+version: 2026-09-v9
+effective_date: 2026-09-29
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -195,6 +195,14 @@ contexto reciente que cabe dentro de esos límites y no utiliza una conversació
 almacenada en Google para continuar el diálogo. El historial íntegro sigue guardado en
 el dispositivo y no se borra al preparar una petición más pequeña. Este ajuste no
 sustituye los términos generales del proveedor.
+
+Las peticiones del Coach a OpenAI Responses también usan `store: false`: la app
+selecciona el historial en el dispositivo y, durante una consulta con herramientas,
+reenvía las respuestas y los resultados necesarios para continuar. Los elementos
+técnicos de razonamiento cifrado se mantienen solo en memoria durante esa consulta;
+no se muestran ni se guardan en el historial de la app. Este ajuste evita guardar
+las respuestas como estado de la aplicación en OpenAI, pero no elimina los registros
+de vigilancia de abusos que OpenAI pueda conservar según la configuración de tu cuenta.
 
 Ese contenido queda sujeto a la política de privacidad y a los términos del proveedor
 que hayas elegido, bajo tu propia cuenta con él:

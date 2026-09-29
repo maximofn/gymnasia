@@ -14,6 +14,7 @@ import { chromium } from "playwright";
 const DEFAULT_PORT = 8091;
 const SERVER_BOOT_TIMEOUT_MS = 120000;
 const STEP_TIMEOUT_MS = 30000;
+const OPENAI_E2E_ROUND_LIMIT = 10;
 const DEVELOPMENT_NAMESPACE = "gymnasia.development";
 const scopedKey = (key) => `${DEVELOPMENT_NAMESPACE}:${key}`;
 const STORE_KEY = scopedKey("gymnasia.mobile.local.v3");
@@ -883,8 +884,11 @@ async function runAgentChatE2E(
   if (provider === "openai") {
     assert.equal(requestBodies[0].stream, true);
     assert(Array.isArray(requestBodies[0].tools) && requestBodies[0].tools.length > 0);
-    assert.equal(requestBodies[1].previous_response_id, "resp_openai_tool");
-    assert.deepEqual(requestBodies[1].input, [{
+    assert(requestBodies.every((body) => body.store === false && !("previous_response_id" in body)));
+    assert.deepEqual(requestBodies[1].input.slice(-2), [{
+      type: "function_call", id: "fc_openai_1", call_id: "call_openai_1",
+      name: "read_field_value", arguments: '{"key":"Objetivo"}', status: "completed",
+    }, {
       type: "function_call_output",
       call_id: "call_openai_1",
       output: "Ganar masa muscular",
@@ -1530,6 +1534,113 @@ async function runToolOperationRecoveryE2E(browser, baseUrl) {
   }
 }
 
+function openAIStatelessSSE(index, output, answer = "") {
+  const event = (type, fields) => `event: ${type}\ndata: ${JSON.stringify({ type, ...fields })}\n\n`;
+  return event("response.created", { response: { id: `resp_stateless_${index}` } })
+    + output.map((item, output_index) => event("response.output_item.done", { output_index, item })).join("")
+    + (answer ? event("response.output_text.delta", { delta: answer }) : "")
+    + event("response.completed", { response: { id: `resp_stateless_${index}`, output } })
+    + "data: [DONE]\n\n";
+}
+
+async function runOpenAIStatelessE2E(page, baseUrl, roundLimit = false) {
+  const bodies = [];
+  const answer = roundLimit ? "Límite local confirmado." : "Contexto local confirmado.";
+  await page.addInitScript(({ storeKey, personalDataKey, store }) => {
+    if (window.sessionStorage.getItem("openai-stateless-seeded") === "1") return;
+    window.localStorage.clear();
+    window.localStorage.setItem(storeKey, JSON.stringify(store));
+    window.localStorage.setItem(personalDataKey, JSON.stringify([
+      { key: "Objetivo", description: "Objetivo", value: "Ganar masa muscular" },
+      { key: "Peso", description: "Peso", value: "80 kg" },
+    ]));
+    window.sessionStorage.setItem("openai-stateless-seeded", "1");
+  }, {
+    storeKey: STORE_KEY, personalDataKey: PERSONAL_DATA_KEY,
+    store: createSeedStore("openai"),
+  });
+  await page.route("**/dev-store", (route) => route.fulfill({
+    status: 200, contentType: "application/json", body: "{}",
+  }));
+  await page.route("https://raw.githubusercontent.com/**", (route) => route.fulfill({
+    status: 200, contentType: "application/json", body: "[]",
+  }));
+  await page.route("https://api.github.com/**", (route) => route.fulfill({
+    status: 200, contentType: "application/json", body: "[]",
+  }));
+  await page.route("**/v1/responses*", async (route) => {
+    const body = route.request().postDataJSON();
+    bodies.push(body);
+    const round = bodies.length;
+    logStep(`OpenAI stateless ${roundLimit ? "cierre" : "dos rondas"}: ronda ${round}`);
+    const lastToolRound = roundLimit ? OPENAI_E2E_ROUND_LIMIT + 1 : 2;
+    const output = body.tool_choice === "none" || round > lastToolRound
+      ? [{ type: "message", id: `msg_${round}`, role: "assistant", phase: "final_answer",
+          content: [{ type: "output_text", text: answer }] }]
+      : [
+          { type: "reasoning", id: `rs_${round}`, encrypted_content: `opaque-${round}` },
+          { type: "function_call", id: `fc_${round}`, call_id: `call_${round}`,
+            name: "read_field_value", arguments: JSON.stringify({
+              key: roundLimit || round === 1 ? "Objetivo" : "Peso",
+            }) },
+        ];
+    await route.fulfill({ status: 200,
+      headers: { "content-type": "text/event-stream; charset=utf-8" },
+      body: openAIStatelessSSE(round, output, output[0].type === "message" ? answer : ""),
+    });
+  });
+
+  await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="nav-tab-chat"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="chat-input"]').fill("Consulta mi contexto local");
+  await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
+  try {
+    await page.locator('[data-testid^="chat-message-assistant-"]')
+      .filter({ hasText: answer }).waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  } catch (error) {
+    logStep(`OpenAI stateless: ${bodies.length} peticiones, mensajes visibles: ${
+      JSON.stringify(await page.locator('[data-testid^="chat-message-assistant-"]').allInnerTexts())}`);
+    throw error;
+  }
+  await page.waitForFunction(({ key, expected }) => {
+    const store = JSON.parse(localStorage.getItem(key) ?? "{}");
+    return Object.values(store.messagesByThread ?? {}).flat().some((message) =>
+      message.role === "assistant" && message.content === expected && !message.is_streaming);
+  }, { key: STORE_KEY, expected: answer }, { timeout: STEP_TIMEOUT_MS });
+  assert.equal(bodies.length, roundLimit ? OPENAI_E2E_ROUND_LIMIT + 2 : 3);
+  for (const body of bodies) {
+    assert.equal(body.store, false);
+    assert.equal("previous_response_id" in body, false);
+    assert.deepEqual(body.include, ["reasoning.encrypted_content"]);
+    assert(Array.isArray(body.input));
+  }
+  assert.deepEqual(bodies[0].input, [{ role: "user", content: "Consulta mi contexto local" }]);
+  assert.equal(bodies[1].input[1].type, "reasoning");
+  assert.equal(bodies[1].input[1].encrypted_content, "opaque-1");
+  assert.equal(bodies[1].input[2].type, "function_call");
+  assert.equal(bodies[1].input[3].type, "function_call_output");
+  assert.equal(bodies[1].input[2].call_id, bodies[1].input[3].call_id);
+  if (roundLimit) {
+    const closing = bodies.at(-1);
+    assert.equal(closing.tool_choice, "none");
+    assert(closing.instructions.includes("Has llegado al límite de pasos"));
+    assert.equal(closing.input.at(-2).call_id, `call_${OPENAI_E2E_ROUND_LIMIT + 1}`);
+    assert(closing.input.at(-1).output.startsWith("No ejecutada:"));
+  } else {
+    assert.equal(bodies[2].input.at(-3).encrypted_content, "opaque-2");
+    assert.equal(bodies[2].input.at(-2).call_id, "call_2");
+    assert.equal(bodies[2].input.at(-1).call_id, "call_2");
+    assert.equal(bodies[2].input.at(-1).output.includes("80 kg"), true);
+  }
+  await page.reload({ waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await page.waitForFunction(({ key, expected }) => {
+    const store = JSON.parse(localStorage.getItem(key) ?? "{}");
+    return Object.values(store.messagesByThread ?? {}).flat().some((message) =>
+      message.role === "assistant" && message.content === expected);
+  }, { key: STORE_KEY, expected: answer }, { timeout: STEP_TIMEOUT_MS });
+  logStep(`OpenAI stateless ${roundLimit ? "cierre" : "dos rondas"}: cuerpos y persistencia verificados`);
+}
+
 async function main() {
   const server = await ensureWebServer();
   let browser = null;
@@ -1549,6 +1660,15 @@ async function main() {
         await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => {});
         console.error(`[agent-e2e] Captura del fallo: ${screenshotPath}`);
         throw error;
+      } finally {
+        await context.close().catch(() => {});
+      }
+    }
+    for (const roundLimit of [false, true]) {
+      const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+      const page = await context.newPage();
+      try {
+        await runOpenAIStatelessE2E(page, server.baseUrl, roundLimit);
       } finally {
         await context.close().catch(() => {});
       }

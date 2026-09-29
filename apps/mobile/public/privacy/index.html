@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gymnasia Privacy Policy</title>
 <meta name="description" content="What data Gymnasia keeps, where it is stored, what is sent to the AI provider you choose, and how to delete your data or exercise your rights.">
-<meta name="gymnasia-policy-version" content="2026-09-v8">
-<meta name="gymnasia-policy-digest" content="sha256:78a420c2fcb8bed47014d1a9bf0d328eadfb298662391006d1de1bb12c3ccda2">
+<meta name="gymnasia-policy-version" content="2026-09-v9">
+<meta name="gymnasia-policy-digest" content="sha256:06cfe30af7bd21445e16463de16fcfa84d945a891a9243b5044fe8a045cda8f5">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
@@ -55,7 +55,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Gymnasia Privacy Policy</h1>
-  <p class="meta">Version 2026-09-v8 · in force since 2026-09-24 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Version 2026-09-v9 · in force since 2026-09-29 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacidad">Versión en español</a></p>
   <nav>
     <h2>Contents</h2>
@@ -156,6 +156,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     </ul>
     <p>If you enable <strong>additional health-safety evaluation</strong> in Settings, the text of a query that the local check considers ambiguous may be sent to the provider you are using at that moment (the Coach's or the Estimator's) in a separate classification request before the normal response is generated. It is a single switch for all providers: it can only be enabled once you have saved the key of at least one provider, it turns itself off if you delete the last key, it is off by default, and it can be revoked at any time. Messages classified locally as high or critical risk are intercepted on the device and are not sent to the provider.</p>
     <p>All generation requests to Google disable Interactions conversation storage using <code>store: false</code>. The app resends the recent context that fits within those limits from the device and does not use a conversation stored at Google to continue the dialogue. The complete history remains stored on the device and is not deleted when preparing a smaller request. This setting does not replace the provider's general terms.</p>
+    <p>The Coach's OpenAI Responses requests also use <code>store: false</code>: the app selects the history on the device and, during a tool workflow, resends the responses and results needed to continue. Encrypted reasoning items remain in memory only for that request; they are neither displayed nor saved in the app's conversation history. This setting prevents OpenAI from storing the responses as application state, but does not remove abuse monitoring logs that OpenAI may retain under your account's configuration.</p>
     <p>That content is subject to the privacy policy and terms of the provider you chose, under your own account with them:</p>
     <ul>
       <li><a href="https://openai.com/policies/privacy-policy" rel="noopener noreferrer">OpenAI</a></li>
@@ -279,7 +280,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Gymnasia Privacy Policy · 2026-09-v8 · 2026-09-24</p>
+    <p>Gymnasia Privacy Policy · 2026-09-v9 · 2026-09-29</p>
   </footer>
 </main>
 </body>

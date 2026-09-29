@@ -116,7 +116,7 @@ describe("GYM-139: el ejecutor real sobre memoria con campos de inyección", () 
       createOpenAIStreamParser({}),
     );
     const outputs: Array<Record<string, unknown>> = [];
-    const result = await runOpenAIToolLoop({
+    const result = await runOpenAIToolLoop({ initialInput: [],
       initialTurn,
       executeTool: (name, args) => executeTool(name, args),
       requestNextTurn: async (turnOutputs) => {
@@ -128,7 +128,7 @@ describe("GYM-139: el ejecutor real sobre memoria con campos de inyección", () 
       },
     });
 
-    expect(outputs).toEqual([{
+    expect(outputs).toEqual([initialTurn.outputItems[0], {
       type: "function_call_output",
       call_id: "call_openai_1",
       output: "Ganar masa muscular",
@@ -158,12 +158,12 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
       createOpenAIStreamParser({ onContentDelta: (delta) => deltas.push(delta) }),
     );
     const executeTool = vi.fn(async () => "Ganar masa muscular");
-    const requests: Array<{ outputs: Array<Record<string, unknown>>; responseId: string }> = [];
-    const result = await runOpenAIToolLoop({
+    const requests: Array<Array<Record<string, unknown>>> = [];
+    const result = await runOpenAIToolLoop({ initialInput: [],
       initialTurn,
       executeTool,
-      requestNextTurn: async (outputs, responseId) => {
-        requests.push({ outputs, responseId });
+      requestNextTurn: async (context) => {
+        requests.push(context);
         return replayInNetworkChunks(
           readRawFixture("openai-final.sse"),
           createOpenAIStreamParser({ onContentDelta: (delta) => deltas.push(delta) }),
@@ -182,14 +182,14 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
       { key: "Objetivo" },
       expect.any(Object),
     );
-    expect(requests).toEqual([{
-      responseId: "resp_openai_tool",
-      outputs: [{
+    expect(requests).toEqual([[
+      initialTurn.outputItems[0],
+      {
         type: "function_call_output",
         call_id: "call_openai_1",
         output: "Ganar masa muscular",
-      }],
-    }]);
+      },
+    ]]);
     expect(deltas.join("")).toBe("Tu objetivo es ganar masa muscular.");
     expect(result.content).toBe("Tu objetivo es ganar masa muscular.");
   });
@@ -282,7 +282,7 @@ describe("argumentos de tools en streaming", () => {
     const openAIExecute = vi.fn(async (_name: string, args: Record<string, unknown>) => (
       `valor:${String(args.key)}`
     ));
-    await runOpenAIToolLoop({
+    await runOpenAIToolLoop({ initialInput: [],
       initialTurn: openAI,
       executeTool: openAIExecute,
       requestNextTurn: async () => emptyOpenAITurn("resp_openai_done"),
@@ -347,7 +347,7 @@ describe("argumentos de tools en streaming", () => {
     const openAIExecute = vi.fn(async () => "no debe ejecutarse");
 
     expect(openAI.truncated).toBe(true);
-    await expect(runOpenAIToolLoop({
+    await expect(runOpenAIToolLoop({ initialInput: [],
       initialTurn: openAI,
       executeTool: openAIExecute,
       requestNextTurn: async () => emptyOpenAITurn(),
@@ -381,7 +381,7 @@ describe("argumentos de tools en streaming", () => {
 
     const initialTurn = parser.finish();
     expect(initialTurn.truncated).toBe(true);
-    await expect(runOpenAIToolLoop({
+    await expect(runOpenAIToolLoop({ initialInput: [],
       initialTurn,
       executeTool,
       requestNextTurn: async () => emptyOpenAITurn(),
@@ -393,7 +393,7 @@ describe("argumentos de tools en streaming", () => {
       createOpenAIStreamParser(),
     );
     expect(completeTurn.truncated).toBe(false);
-    await runOpenAIToolLoop({
+    await runOpenAIToolLoop({ initialInput: [],
       initialTurn: completeTurn,
       executeTool,
       requestNextTurn: async () => emptyOpenAITurn(),
@@ -479,7 +479,7 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       readRawFixture("openai-final.sse"),
       createOpenAIStreamParser(),
     ));
-    const openAIResult = await runOpenAIToolLoop({
+    const openAIResult = await runOpenAIToolLoop({ initialInput: [],
       initialTurn: replayInNetworkChunks(
         readRawFixture("openai-final.sse"),
         createOpenAIStreamParser(),
@@ -549,7 +549,7 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       createOpenAIStreamParser(),
     ));
 
-    await runOpenAIToolLoop({ initialTurn, executeTool, requestNextTurn });
+    await runOpenAIToolLoop({ initialInput: [], initialTurn, executeTool, requestNextTurn });
 
     expect(initialTurn.outputItems).toEqual([
       expect.objectContaining({
@@ -574,6 +574,7 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       })],
     ]);
     expect(requestNextTurn).toHaveBeenCalledWith([
+      ...initialTurn.outputItems,
       {
         type: "function_call_output",
         call_id: "call_openai_first",
@@ -584,7 +585,7 @@ describe("contrato de parsing de llamadas a herramientas", () => {
         call_id: "call_openai_second",
         output: "valor:Altura",
       },
-    ], "resp_openai_multiple");
+    ]);
   });
 
   it("extrae varias llamadas de Anthropic en orden y conserva tool_use_id", async () => {
@@ -714,7 +715,7 @@ describe("contrato de parsing de llamadas a herramientas", () => {
 
   it("degrada argumentos inválidos a objeto vacío de forma controlada", async () => {
     const executeTool = vi.fn(async () => "ok");
-    await runOpenAIToolLoop({
+    await runOpenAIToolLoop({ initialInput: [],
       initialTurn: {
         responseId: "resp_malformed_args",
         content: "",

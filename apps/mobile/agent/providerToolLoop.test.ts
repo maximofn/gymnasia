@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 
+import fc from "fast-check";
 import { describe, expect, it, vi } from "vitest";
 
 import type { GoogleInteractionTurn, GoogleStep } from "./googleInteractions";
@@ -28,7 +29,7 @@ describe("integración del bucle con proveedor falso", () => {
     const [initialTurn, finalTurn] = readFixture<any>("openai-tool-loop.sse");
     const executeTool = vi.fn(async () => "Ganar masa muscular");
     const requestNextTurn = vi.fn(async (_messages: Array<Record<string, unknown>>) => finalTurn);
-    const result = await runOpenAIToolLoop({ initialTurn, requestNextTurn, executeTool });
+    const result = await runOpenAIToolLoop({ initialInput: [], initialTurn, requestNextTurn, executeTool });
 
     expect(result.content).toBe("Tu objetivo es ganar masa muscular.");
     expect(executeTool).toHaveBeenCalledWith(
@@ -42,8 +43,9 @@ describe("integración del bucle con proveedor falso", () => {
       }),
     );
     expect(requestNextTurn).toHaveBeenCalledWith([
+      expect.objectContaining({ type: "function_call", call_id: "call_1" }),
       { type: "function_call_output", call_id: "call_1", output: "Ganar masa muscular" },
-    ], "resp_openai_1");
+    ]);
   });
 
   it("completa tool_use → tool_result → siguiente ronda en Anthropic", async () => {
@@ -106,8 +108,9 @@ describe("integración del bucle con proveedor falso", () => {
       call_id: "google_call_1", result: [{ type: "text", text: "Ganar masa muscular" }] });
   });
 
-  it("falla de forma explícita si OpenAI omite el id necesario para continuar", async () => {
-    await expect(runOpenAIToolLoop({
+  it("continúa sin response_id porque el historial se conserva localmente", async () => {
+    const requestNextTurn = vi.fn(async () => ({ responseId: null, outputItems: [] }));
+    await runOpenAIToolLoop({ initialInput: [],
       initialTurn: {
         responseId: null,
         outputItems: [{
@@ -118,9 +121,79 @@ describe("integración del bucle con proveedor falso", () => {
           arguments: "{}",
         }],
       },
-      requestNextTurn: async () => ({ responseId: null, outputItems: [] }),
+      requestNextTurn,
       executeTool: async () => "",
-    })).rejects.toThrow("OpenAI no devolvio response_id");
+    });
+    expect(requestNextTurn).toHaveBeenCalledWith([
+      expect.objectContaining({ type: "function_call", call_id: "call_missing_id" }),
+      { type: "function_call_output", call_id: "call_missing_id", output: "" },
+    ]);
+  });
+
+  it("rechaza IDs repetidos antes de ejecutar cualquier tool", async () => {
+    const executeTool = vi.fn(async () => "escrito");
+    await expect(runOpenAIToolLoop({
+      initialInput: [{ role: "user", content: "Escribe" }],
+      initialTurn: { outputItems: [
+        { type: "function_call", id: "fc_a", call_id: "duplicado", name: "write_field_value", arguments: "{}" },
+        { type: "function_call", id: "fc_b", call_id: "duplicado", name: "write_field_value", arguments: "{}" },
+      ] },
+      requestNextTurn: async () => ({ outputItems: [] }),
+      executeTool,
+    })).rejects.toThrow("identificador de herramienta repetido");
+    expect(executeTool).not.toHaveBeenCalled();
+  });
+
+  it("rechaza un turno final truncado incluso al llegar justo al límite", async () => {
+    await expect(runOpenAIToolLoop({
+      initialInput: [],
+      initialTurn: openAIToolTurn("resp_1", "call_1"),
+      requestNextTurn: async () => ({ truncated: true, outputItems: [{ type: "message" }] }),
+      executeTool: async () => "ok",
+      maxRounds: 1,
+    })).rejects.toThrow("se cortó antes de completarse");
+  });
+
+  it("conserva orden y emparejamiento con secuencias variables de tools", async () => {
+    await fc.assert(fc.asyncProperty(
+      fc.uniqueArray(fc.integer({ min: 0, max: 10000 }), { minLength: 1, maxLength: 6 }),
+      fc.boolean(),
+      fc.string({ maxLength: 200 }),
+      async (numbers, withReasoning, toolValue) => {
+        const selected = [{ role: "user", content: "Consulta" }];
+        const calls = numbers.map((number) => ({
+          type: "function_call" as const,
+          id: `fc_${number}`,
+          call_id: `call_${number}`,
+          name: "read_field_value",
+          arguments: JSON.stringify({ key: number }),
+        }));
+        const reasoning = withReasoning
+          ? [{ type: "reasoning", id: "rs", encrypted_content: "cifrado" }]
+          : [];
+        let nextInput: Array<Record<string, unknown>> = [];
+        await runOpenAIToolLoop({
+          initialInput: selected,
+          initialTurn: { outputItems: [...reasoning, ...calls] },
+          requestNextTurn: async (context) => {
+            nextInput = context;
+            return { outputItems: [] };
+          },
+          executeTool: async (_name, args) => `${toolValue}:${args.key}`,
+        });
+        expect(nextInput).toEqual([
+          ...selected,
+          ...reasoning,
+          ...calls,
+          ...calls.map((call, index) => ({
+            type: "function_call_output",
+            call_id: call.call_id,
+            output: `${toolValue}:${numbers[index]}`,
+          })),
+        ]);
+        expect(selected).toEqual([{ role: "user", content: "Consulta" }]);
+      },
+    ), { numRuns: 60 });
   });
 });
 
@@ -222,14 +295,14 @@ describe("rondas del bucle con proveedor falso", () => {
       expect(requestNextTurn.mock.calls[0][0]).toHaveLength(3);
     });
 
-    it("OpenAI encadena cada ronda con el response_id del turno anterior", async () => {
+    it("OpenAI reconstruye localmente todas las rondas en su orden", async () => {
       const finalTurn = openAITextTurn("resp_3", "Quieres ganar masa y pesas 80 kg.");
       const requestNextTurn = vi.fn()
         .mockResolvedValueOnce(openAIToolTurn("resp_2", "call_2"))
         .mockResolvedValueOnce(finalTurn);
       const executeTool = numberedExecuteTool();
 
-      const result = await runOpenAIToolLoop({
+      const result = await runOpenAIToolLoop({ initialInput: [],
         initialTurn: openAIToolTurn("resp_1", "call_1"),
         requestNextTurn,
         executeTool,
@@ -237,10 +310,14 @@ describe("rondas del bucle con proveedor falso", () => {
 
       expect(result).toBe(finalTurn);
       expect(executeTool).toHaveBeenCalledTimes(2);
-      // OpenAI guarda el historial en su lado: solo viajan los resultados nuevos.
+      // La segunda petición conserva la primera llamada y su resultado.
       expect(requestNextTurn.mock.calls).toEqual([
-        [[{ type: "function_call_output", call_id: "call_1", output: "resultado de call_1" }], "resp_1"],
-        [[{ type: "function_call_output", call_id: "call_2", output: "resultado de call_2" }], "resp_2"],
+        [[openAIToolTurn("resp_1", "call_1").outputItems[0],
+          { type: "function_call_output", call_id: "call_1", output: "resultado de call_1" }]],
+        [[openAIToolTurn("resp_1", "call_1").outputItems[0],
+          { type: "function_call_output", call_id: "call_1", output: "resultado de call_1" },
+          openAIToolTurn("resp_2", "call_2").outputItems[0],
+          { type: "function_call_output", call_id: "call_2", output: "resultado de call_2" }]],
       ]);
     });
 
@@ -305,7 +382,7 @@ describe("rondas del bucle con proveedor falso", () => {
       const requestNextTurn = vi.fn();
       const executeTool = vi.fn();
 
-      const result = await runOpenAIToolLoop({ initialTurn, requestNextTurn, executeTool });
+      const result = await runOpenAIToolLoop({ initialInput: [], initialTurn, requestNextTurn, executeTool });
 
       expect(result).toBe(initialTurn);
       expect(executeTool).not.toHaveBeenCalled();
@@ -369,20 +446,17 @@ describe("rondas del bucle con proveedor falso", () => {
       ]);
     });
 
-    it("OpenAI responde las llamadas pendientes sin ejecutarlas y cierra encadenando el response_id", async () => {
+    it("OpenAI responde las llamadas pendientes sin ejecutarlas y cierra con todo el historial", async () => {
       let round = 0;
       const requestNextTurn = vi.fn(async () => {
         round += 1;
         return openAIToolTurn(`resp_${round}`, `call_${round}`);
       });
       const closingTurn = openAITextTurn("resp_cierre", "No me dio tiempo a todo.");
-      const requestClosingTurn = vi.fn(async (
-        _outputs: Array<Record<string, unknown>>,
-        _previousResponseId: string,
-      ) => closingTurn);
+      const requestClosingTurn = vi.fn(async (_messages: Array<Record<string, unknown>>) => closingTurn);
       const executeTool = numberedExecuteTool();
 
-      const result = await runOpenAIToolLoop({
+      const result = await runOpenAIToolLoop({ initialInput: [],
         initialTurn: openAIToolTurn("resp_0", "call_0"),
         requestNextTurn,
         requestClosingTurn,
@@ -391,9 +465,10 @@ describe("rondas del bucle con proveedor falso", () => {
 
       expect(result).toEqual({ ...closingTurn, roundLimitReached: true });
       expect(executeTool).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
-      expect(requestClosingTurn).toHaveBeenCalledWith([
+      expect(requestClosingTurn.mock.calls[0][0].slice(-2)).toEqual([
+        openAIToolTurn("resp_10", "call_10").outputItems[0],
         { type: "function_call_output", call_id: "call_10", output: ROUND_LIMIT_TOOL_RESULT },
-      ], "resp_10");
+      ]);
     });
 
     it("Google añade un resultado sintético por llamada pendiente y conserva el cierre en el historial", async () => {
@@ -442,7 +517,7 @@ describe("rondas del bucle con proveedor falso", () => {
 
     it("si la llamada de cierre falla, lanza el error específico del límite con la causa original", async () => {
       const failure = new Error("red caída");
-      const attempt = runOpenAIToolLoop({
+      const attempt = runOpenAIToolLoop({ initialInput: [],
         initialTurn: openAIToolTurn("resp_0", "call_0"),
         requestNextTurn: async () => openAIToolTurn("resp_1", "call_1"),
         requestClosingTurn: async () => { throw failure; },
@@ -499,7 +574,7 @@ describe("rondas del bucle con proveedor falso", () => {
       });
 
       let openAIRound = 0;
-      const openAI = await runOpenAIToolLoop({
+      const openAI = await runOpenAIToolLoop({ initialInput: [],
         initialTurn: openAIToolTurn("resp_0", "call_0"),
         requestNextTurn: async () => (++openAIRound < MAX_TOOL_ROUNDS
           ? openAIToolTurn(`resp_${openAIRound}`, `call_${openAIRound}`)
@@ -539,7 +614,7 @@ describe("rondas del bucle con proveedor falso", () => {
         maxRounds: 1,
       })).rejects.toThrow("se cortó antes de completarse");
 
-      await expect(runOpenAIToolLoop({
+      await expect(runOpenAIToolLoop({ initialInput: [],
         initialTurn: openAIToolTurn("resp_0", "call_0"),
         requestNextTurn: async () => ({ ...openAIToolTurn("resp_1", "call_1"), truncated: true }),
         requestClosingTurn: closing,
@@ -568,7 +643,7 @@ describe("rondas del bucle con proveedor falso", () => {
 
       let openAIRound = 0;
       const openAITool = numberedExecuteTool();
-      await runOpenAIToolLoop({
+      await runOpenAIToolLoop({ initialInput: [],
         initialTurn: openAIToolTurn("resp_0", "call_0"),
         requestNextTurn: async () => {
           openAIRound += 1;
