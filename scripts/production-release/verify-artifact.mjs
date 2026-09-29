@@ -8,8 +8,8 @@ import { basename, dirname, resolve } from "node:path";
 import {
   evaluateArtifactCandidate,
   extractCertificateDigest,
-  extractNotificationSoundsFromArchiveListing,
   extractNotificationSoundsFromCompiledResources,
+  extractVerifiedNotificationSoundsFromAab,
   expectedNotificationSounds,
   loadReleasePolicy,
   parseManifestXml,
@@ -60,6 +60,17 @@ function extractJsonFromArchive(artifact, paths) {
     if (result.status === 0 && result.stdout.trim()) return JSON.parse(result.stdout);
   }
   throw new Error(`El artefacto no contiene ${paths.join(" ni ")}.`);
+}
+
+function readArchiveEntry(artifact, path) {
+  const result = spawnSync("unzip", ["-p", artifact, path], {
+    cwd: repositoryRoot,
+    maxBuffer: 5 * 1024 * 1024,
+  });
+  if (result.error || result.status !== 0) {
+    throw new Error(`No se pudo leer ${path} del AAB para comprobar el sonido duplicado.`);
+  }
+  return result.stdout;
 }
 
 function readBuildMetadata(path, options, artifact, manifest) {
@@ -125,7 +136,10 @@ function inspectArtifact(options, policy, artifact) {
       appConfig,
       manifestXml,
       certificateOutput,
-      notificationSounds: extractNotificationSoundsFromArchiveListing(archiveListing),
+      notificationSounds: extractVerifiedNotificationSoundsFromAab(
+        archiveListing,
+        (path) => readArchiveEntry(artifact, path),
+      ),
       tools: { bundletoolVersion: policy.bundletool.version, bundletoolSha256 },
     };
   }

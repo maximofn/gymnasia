@@ -661,6 +661,18 @@ esto hay que arreglarlo antes o el job pasará siempre.
   separado del checkout inmutable que produjo la app; así una corrección de la
   prueba puede reconciliar el mismo artefacto sin recompilarlo.
 
+### Expo puede duplicar sonidos del AAB con el prefijo `assets_`
+- Gotcha: un AAB local correcto puede contener a la vez `base/res/raw/beep.wav`
+  y `base/res/raw/assets_beep.wav` (igual para los demás sonidos configurados).
+  Contar cada ruta como un sonido nuevo da un falso fallo de verificación después
+  de consumir un `versionCode`. En el intento real los cinco pares eran idénticos
+  byte por byte.
+- Fix: omitir un alias `assets_` solo cuando corresponde a un sonido aprobado y
+  sus bytes son idénticos al original; los alias modificados y los sonidos nuevos
+  siguen invalidando el AAB. Si la compilación terminó pero falló la
+  verificación, `retry-failed` debe recuperar el artefacto conservado en Actions
+  y repetir la verificación sin lanzar otra build ni reservar otro código.
+
 ### Fetch con `AbortSignal` también activa la ruta incremental de React Native
 - Gotcha: en React Native 0.81, `whatwg-fetch` instala `xhr.onreadystatechange`
   cuando recibe un `AbortSignal`. El XHR nativo considera la mera presencia de ese

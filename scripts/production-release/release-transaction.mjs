@@ -414,7 +414,24 @@ export function transitionReleaseTransaction(transaction, event, payload = {}) {
       throw new Error("El estado de Play es incierto: adopta primero el submission; nunca se repite automáticamente.");
     }
     for (const legName of BUILD_LEGS) {
-      if (next.legs[legName].state === "failed") next.legs[legName].state = "prepared";
+      const leg = next.legs[legName];
+      if (leg.state !== "failed") continue;
+      const attempt = latestAttempt(leg);
+      const completedArtifact = attempt?.backend === "wallabot-local"
+        && ["FINISHED", "ERRORED"].includes(attempt.status)
+        && attempt.finishedAt
+        && attempt.artifact?.filename === LEG_CONTRACT[legName].filename
+        && SHA256_PATTERN.test(attempt.artifact.sha256 ?? "")
+        && Number.isSafeInteger(attempt.artifact.size)
+        && attempt.artifact.size > 0;
+      if (completedArtifact) {
+        // A failed verification must not consume another versionCode or rebuild
+        // immutable bytes that were already preserved by the previous run.
+        attempt.status = "FINISHED";
+        leg.state = "built";
+      } else {
+        leg.state = "prepared";
+      }
     }
     if (next.legs.play.state === "failed") {
       next.legs.play.state = latestAttempt(next.legs.play)?.submissionId ? "retry-pending" : "prepared";

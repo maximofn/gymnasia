@@ -11,6 +11,7 @@ import {
   extractCertificateDigest,
   extractNotificationSoundsFromArchiveListing,
   extractNotificationSoundsFromCompiledResources,
+  extractVerifiedNotificationSoundsFromAab,
   loadReleasePolicy,
   normalizeCertificateDigest,
   parseManifestXml,
@@ -365,6 +366,39 @@ test("extrae los sonidos nativos tanto de APK como de AAB", () => {
   assert.deepEqual(
     extractNotificationSoundsFromArchiveListing("res/raw/beep.wav\nbase/res/raw/bell.wav\nassets/ignored.wav"),
     ["beep.wav", "bell.wav"],
+  );
+});
+
+test("acepta las copias assets_ del AAB solo cuando son idénticas a los sonidos aprobados", () => {
+  const listing = notificationSounds.flatMap((sound) => [
+    `base/res/raw/${sound}`,
+    `base/res/raw/assets_${sound}`,
+  ]).join("\n");
+  const contents = new Map(notificationSounds.flatMap((sound) => {
+    const bytes = Buffer.from(`sound:${sound}`);
+    return [
+      [`base/res/raw/${sound}`, bytes],
+      [`base/res/raw/assets_${sound}`, Buffer.from(bytes)],
+    ];
+  }));
+  assert.deepEqual(
+    extractVerifiedNotificationSoundsFromAab(listing, (path) => contents.get(path)),
+    notificationSounds,
+  );
+  contents.set("base/res/raw/assets_beep.wav", Buffer.from("different"));
+  assert.deepEqual(
+    extractVerifiedNotificationSoundsFromAab(listing, (path) => contents.get(path)),
+    [...notificationSounds, "assets_beep.wav"].sort(),
+  );
+});
+
+test("un sonido assets_ sin original o un sonido nuevo sigue siendo inesperado", () => {
+  const listing = "base/res/raw/assets_beep.wav\nbase/res/raw/unexpected.wav";
+  assert.deepEqual(
+    extractVerifiedNotificationSoundsFromAab(listing, () => {
+      throw new Error("No debe leer archivos sin pareja aprobada.");
+    }),
+    ["assets_beep.wav", "unexpected.wav"],
   );
 });
 
