@@ -615,7 +615,9 @@ jobs:
 
   submit-play-and-release:
     needs: [select-transaction, prepare-production, verify-artifacts]
-    if: needs.verify-artifacts.result == 'success'
+    # Explicit always() is required: on a resume compile-android is skipped,
+    # and GitHub otherwise skips this job through the indirect needs chain.
+    if: always() && needs.verify-artifacts.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     # No second reviewer: Production was already approved before wallabot ran.
