@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-27",
+    "updated": "2026-09-29",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -1012,6 +1012,24 @@
             "GYM-135",
             "GYM-136"
           ]
+        }
+      ]
+    },
+    {
+      "id": "GYM-51",
+      "kind": "epic",
+      "title": "Context engineering",
+      "state": "backlog",
+      "summary": "Diseñar la selección, compactación y presupuesto del contexto del agente para enviar a cada proveedor solo la información necesaria.",
+      "dependsOn": [],
+      "tickets": [
+        {
+          "id": "GYM-254",
+          "title": "Gestionar localmente el contexto de OpenAI Responses durante el bucle de tools",
+          "state": "todo",
+          "summary": "Continuar las rondas de OpenAI con un historial construido en el móvil y `store: false`, conservando las llamadas a tools y el razonamiento cifrado necesarios para una respuesta correcta.",
+          "dependsOn": [],
+          "related": []
         }
       ]
     },
@@ -3066,19 +3084,6 @@
           ]
         },
         {
-          "id": "GYM-51",
-          "title": "Context engineering",
-          "state": "backlog",
-          "summary": "Épica pendiente de desglosar. La app no recorta historial, no compacta y no usa prompt caching: el contexto crece sin techo y cada ronda paga tokens completos.",
-          "dependsOn": [],
-          "related": [
-            "GYM-41",
-            "GYM-46",
-            "GYM-30",
-            "GYM-50"
-          ]
-        },
-        {
           "id": "GYM-52",
           "title": "A2A (Agent2Agent): hablar con agentes de terceros",
           "state": "backlog",
@@ -3501,6 +3506,14 @@
       "why": "Depende de los catorce anteriores: recoge en una suite única los casos que cada ticket ha ido dejando.",
       "tickets": [
         "GYM-48"
+      ]
+    },
+    {
+      "id": "contexto-openai-local",
+      "title": "Gestionar el contexto de OpenAI en el móvil",
+      "why": "El bucle de tools ya funciona; gestionar sus rondas localmente permite decidir qué contexto enviar antes de añadir selección y compactación, y evita depender de respuestas guardadas en OpenAI.",
+      "tickets": [
+        "GYM-254"
       ]
     },
     {
