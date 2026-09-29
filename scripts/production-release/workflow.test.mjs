@@ -7,7 +7,7 @@ const localBuild = readFileSync(new URL("./run-local-build.mjs", import.meta.url
 const submit = readFileSync(new URL("./eas-submit.mjs", import.meta.url), "utf8");
 
 test("mantiene filtros, cola y aprobación humana de Production", () => {
-  assert.match(workflow, /name: Build Android APK \+ AAB on wallabot & Publish Play Internal/);
+  assert.match(workflow, /name: Build Android APK \+ AAB on wallabot & Publish Play Closed Alpha/);
   assert.match(workflow, /group: android-production-release/);
   assert.match(workflow, /cancel-in-progress: false/);
   for (const path of ["apps/mobile/**", "!apps/mobile/scripts/**", "!apps/mobile/**/*.md", "!apps/mobile/public/**"]) {
@@ -47,13 +47,15 @@ test("fija herramientas y verifica bundletool antes del AAB", () => {
   assert.equal(policy.bundletool.sha256, "a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29");
 });
 
-test("eas.json reserva el código con AAB y lo reutiliza en APK y Play Interno", () => {
+test("eas.json reserva el código con AAB y lo reutiliza en APK y Prueba cerrada Alpha", () => {
   const eas = JSON.parse(readFileSync(new URL("../../apps/mobile/eas.json", import.meta.url)));
   assert.equal(eas.cli.version, "24.3.0");
   assert.equal(eas.cli.appVersionSource, "remote");
   assert.equal(eas.build.production.autoIncrement, true);
   assert.equal(eas.build["production-apk"].autoIncrement, false);
-  assert.deepEqual(eas.submit.production.android, { track: "internal", releaseStatus: "completed" });
+  assert.deepEqual(eas.submit.production.android, { track: "alpha", releaseStatus: "completed" });
+  const policy = JSON.parse(readFileSync(new URL("./policy.json", import.meta.url)));
+  assert.equal(policy.play.track, "alpha");
 });
 
 test("sube solo el AAB validado por path y persiste intención e ID", () => {
@@ -68,7 +70,7 @@ test("sube solo el AAB validado por path y persiste intención e ID", () => {
   assert.match(workflow, /--event fail-play --leg play --uncertain true/);
 });
 
-test("Play Internal es automático después de Production y usa su propio token", () => {
+test("Play Closed Alpha es automático después de Production y usa el token existente", () => {
   const playJob = workflow.slice(workflow.indexOf("  submit-play-and-release:"), workflow.indexOf("  enqueue-next:"));
   assert.equal((workflow.match(/environment: Play Internal/g) ?? []).length, 1);
   assert.match(playJob, /environment: Play Internal/);
@@ -99,5 +101,5 @@ test("la release sigue en draft hasta verificar AAB, APK y Play", () => {
   ]) assert.ok(workflow.includes(asset));
   assert.match(workflow, /versionCode:/);
   assert.match(workflow, /EAS submission:/);
-  assert.match(workflow, /Play: \\`internal \/ completed \/ FINISHED\\`/);
+  assert.match(workflow, /Play: \\`\$\(jq -r '\.legs\.play\.track' \/tmp\/android-release-transaction\.json\) \/ completed \/ FINISHED\\`/);
 });

@@ -1,4 +1,4 @@
-name: Build Android APK + AAB on wallabot & Publish Play Internal
+name: Build Android APK + AAB on wallabot & Publish Play Closed Alpha
 
 on:
   workflow_dispatch:
@@ -828,14 +828,14 @@ jobs:
             echo "- wallabot AAB: \`$(jq -r '.legs.aab.attempts[-1].attemptId' /tmp/android-release-transaction.json)\`"
             echo "- wallabot APK: \`$(jq -r '.legs.apk.attempts[-1].attemptId' /tmp/android-release-transaction.json)\`"
             echo "- EAS submission: \`$(jq -r '.legs.play.submission.id' /tmp/android-release-transaction.json)\`"
-            echo "- Play: \`internal / completed / FINISHED\`"
+            echo "- Play: \`$(jq -r '.legs.play.track' /tmp/android-release-transaction.json) / completed / FINISHED\`"
             echo
             echo "### Changes"
             LATEST_TAG="$(git tag --list 'v*' --sort=-version:refname | grep -v "^${TAG}$" | sed -n '1p')"
             if [ -n "$LATEST_TAG" ]; then git log "$LATEST_TAG".."$SOURCE_COMMIT" --max-count=30 --pretty=format:'- %s'; fi
             echo
             echo "### Install"
-            echo 'Download `gymnasia.apk` for direct installation. `gymnasia.aab` is the exact bundle submitted to Play Internal.'
+            echo 'Download `gymnasia.apk` for direct installation. `gymnasia.aab` is the exact bundle submitted to the recorded Google Play test track.'
           } > "$BODY_FILE"
           gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --notes-file "$BODY_FILE"
           cat "$BODY_FILE" >> "$GITHUB_STEP_SUMMARY"

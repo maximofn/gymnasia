@@ -65,7 +65,7 @@
   "play": {
     "provider": "eas",
     "profile": "production",
-    "track": "internal",
+    "track": "alpha",
     "releaseStatus": "completed"
   }
 }

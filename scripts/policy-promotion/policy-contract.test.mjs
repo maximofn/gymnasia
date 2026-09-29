@@ -105,7 +105,7 @@ test("el verificador confiable siempre procede de main", () => {
   assert.equal((workflow.match(/fetch --no-tags --depth=1 origin "\$GITHUB_SHA"/g) || []).length, 2);
 });
 
-test("EAS conserva los perfiles locales y publica el AAB de Production en Play Interno", () => {
+test("EAS conserva los perfiles locales y publica el AAB de Production en Prueba cerrada Alpha", () => {
   assert.equal(eas.build.preview.extends, "staging");
   assert.equal(eas.build.staging.env.APP_ENV, "staging");
   assert.equal(eas.build.staging.android.buildType, "apk");
@@ -115,7 +115,7 @@ test("EAS conserva los perfiles locales y publica el AAB de Production en Play I
   assert.equal(eas.build["production-apk"].autoIncrement, false);
   assert.equal(eas.build["production-apk"].android.buildType, "apk");
   assert.deepEqual(eas.submit.production.android, {
-    track: "internal",
+    track: "alpha",
     releaseStatus: "completed",
   });
   assert.match(localBuild, /aab: \{ profile: "production"/);
