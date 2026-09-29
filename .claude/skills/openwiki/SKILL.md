@@ -28,6 +28,8 @@ ni fusionar PR.
 
 - Comprueba primero el estado del repositorio y el último `gitHead` documentado.
 - Para una ejecución local solicitada, usa `openwiki code --update`; revisa después el diff, especialmente `CLAUDE.md`, `AGENTS.md` y los delimitadores administrados.
+- No tomes el código de salida `0` como prueba de cobertura completa: OpenWiki 0.6.0 puede terminar así mientras `openwiki/.last-update.json` conserva `status: interrupted` y algunas páginas se han omitido. Comprueba ese estado, la procedencia por página en `openwiki/.page-manifest.json` y que `openwiki/.run.json` haya desaparecido. Publica páginas completas como progreso parcial solo si el diff pasa revisión, y declara expresamente lo pendiente.
+- Un HTTP 400 tras renovar ChatGPT no demuestra que el OAuth haya caducado: comprueba primero el error saneado. Upstream documenta un [fallo intermitente al verificar contenido cifrado](https://github.com/langchain-ai/openwiki/issues/921) y [workers que omiten páginas sin entregar el resultado](https://github.com/langchain-ai/openwiki/issues/850); ambos pueden dejar la actualización interrumpida. No repitas el login ni reintentes sin límite ante estos síntomas.
 - La actualización recurrente pertenece al workflow privado, no a un cron del repositorio público.
 - La rama remota es siempre `openwiki/update`; el runner crea o actualiza una única PR y la fusión sigue siendo manual.
 

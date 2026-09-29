@@ -46,8 +46,9 @@ siguen generando directivas de retirada en el manifest fuente.
 `npm run verify:production-artifact` inspecciona el manifest fusionado del APK o
 AAB. Exige el conjunto completo y exacto de permisos revisado a partir de la
 release 1.42.0, ya sin `FOREGROUND_SERVICE`, y comprueba que los cinco sonidos
-estén realmente empaquetados. La evidencia `ProductionArtifactEvidenceV1` guarda
-ambas listas para que la revisión posterior no dependa del log del workflow.
+estén realmente empaquetados. Las evidencias `ProductionArtifactEvidenceV2` del
+AAB y del APK guardan ambas listas para que la revisión posterior no dependa del
+log del workflow. También fijan un `versionCode` idéntico para los dos binarios.
 
 En un APK, la comprobación lee la tabla de recursos compilada con `aapt2` y busca
 los nombres lógicos `raw/ascending`, `raw/beep`, etc. No se basa en los nombres

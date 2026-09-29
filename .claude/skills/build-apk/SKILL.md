@@ -161,53 +161,54 @@ npm run prepare:production-version -- \
 base y las releases publicadas. Si `apps/mobile/app.json` no contiene exactamente
 ese valor, el PR no puede fusionarse.
 
-La release APK descargable solo se lanza mediante
-`.github/workflows/build-apk.yml`. El workflow crea primero un draft duradero con
-`android-release-transaction.json`, la evidencia fuente y el bundle de política;
-después envía un build no bloqueante a EAS y persiste inmediatamente su build ID.
-Una cancelación o timeout de GitHub no autoriza otra compilación: la siguiente
-ejecución consulta y reutiliza ese mismo build.
+La release Android solo se lanza mediante `.github/workflows/build-apk.yml`.
+Después de la aprobación humana de `Production`, una VM desechable de wallabot
+compila primero el AAB `production` y después el APK `production-apk` con el
+mismo `versionCode`. Un runner administrado verifica ambos, envía el AAB a Play
+Interno mediante EAS Submit y publica los dos en GitHub. EAS aporta firma,
+contador y submission, pero no capacidad de compilación.
 
 Operaciones manuales:
 
 ```bash
-# Continuar una transacción activa sin consumir otra build
-gh workflow run build-apk.yml --ref main -f operation=reconcile
+# Continuar una transacción activa sin repetir una pata validada
+gh workflow run build-apk.yml --ref main \
+  -f operation=reconcile -f target_version= -f reason= -f submission_id=
 
-# Reintentar una build que EAS marcó terminalmente como fallida
+# Reintentar solo la pata fallida
 gh workflow run build-apk.yml --ref main \
   -f operation=retry-failed \
-  -f target_version=1.31.3 \
-  -f reason="incidencia confirmada y corregida en EAS"
+  -f target_version=1.45.0 \
+  -f reason="incidencia confirmada y corregida" -f submission_id=
+
+# Adoptar un submission tras una respuesta perdida; confirmar antes su ID en EAS
+gh workflow run build-apk.yml --ref main \
+  -f operation=adopt-submission \
+  -f target_version=1.45.0 \
+  -f submission_id=<ID_CONFIRMADO> -f reason=
 
 # Sustituir una versión fallida para desbloquear la siguiente
 gh workflow run build-apk.yml --ref main \
   -f operation=supersede-failed \
-  -f target_version=1.31.3 \
-  -f reason="la fuente necesita una nueva version"
+  -f target_version=1.45.0 \
+  -f reason="la fuente necesita una nueva version" -f submission_id=
 ```
 
 Los reintentos y sustituciones solo aceptan la transacción semánticamente más
 antigua y exigen motivo. No borres un draft para saltarte ese orden.
 
-Para un AAB de Google Play, sigue exactamente
-`docs/store/google-play/production-promotion-gates.md`:
-
-1. `npm run verify:production-source -- --profile production --artifact-type aab
-   --output /tmp/gymnasia-production-source.json`;
-2. `npm run prepare:policy-snapshot -- --environment production`;
-3. compilar desde `apps/mobile` con `--profile production`;
-4. ejecutar `npm run verify:production-artifact` con el AAB llamado
-   `gymnasia.aab`, la evidencia fuente, el snapshot generado y `bundletool`
-   1.18.3;
-5. restaurar siempre los módulos generados temporales;
-6. subir a Play únicamente si ambas evidencias declaran `result: passed`.
+El contrato completo de credenciales, `PLAY_VERSION_CODE_FLOOR`, validación con
+bundletool 1.18.3, transacción V2 y recuperación está en
+`docs/store/google-play/production-promotion-gates.md`. No ejecutes manualmente
+`eas submit --path` para una transacción incierta: los submissions de builds
+locales no exponen un build ID con el que deduplicar y podrías subir el AAB dos
+veces.
 
 El verificador rechaza ramas distintas de `main`, checkouts sucios o no
 alcanzables, controles remotos degradados, perfiles cruzados, firma distinta,
 permisos prohibidos, versión incoherente, tamaño o MIME inesperados y snapshot
-ausente. El APK se descarga primero a una ruta de cuarentena y solo adquiere el
-nombre `gymnasia.apk` después de validar estructura, manifest, firma y SHA-256.
+ausente. AAB y APK pasan primero por una ruta de cuarentena y solo adquieren sus
+nombres publicados después de validar estructura, manifest, firma y SHA-256.
 No llames a EAS directamente para Production saltándote este contrato.
 
 ## Problemas frecuentes

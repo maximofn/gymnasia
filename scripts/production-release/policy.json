@@ -1,9 +1,10 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "repository": "maximofn/gymnasia",
   "productionBranch": "main",
   "rulesetName": "Protect main and sensitive policy",
   "environment": "Production",
+  "playEnvironment": "Play Internal",
   "owner": "maximofn",
   "requiredStatusChecks": [
     "prompt-policy",
@@ -55,5 +56,16 @@
     "providerMode": "byok",
     "uploadCertificateSha256": "31:0B:38:39:E4:05:F1:FA:9F:92:09:25:76:7E:6E:E8:42:47:AA:A1:B8:A7:22:59:47:9E:91:9A:48:59:AB:31"
   },
-  "bundletoolVersion": "1.18.3"
+  "easCliVersion": "24.3.0",
+  "bundletool": {
+    "version": "1.18.3",
+    "url": "https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar",
+    "sha256": "a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29"
+  },
+  "play": {
+    "provider": "eas",
+    "profile": "production",
+    "track": "internal",
+    "releaseStatus": "completed"
+  }
 }

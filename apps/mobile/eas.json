@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 18.4.0",
+    "version": "24.3.0",
     "appVersionSource": "remote"
   },
   "build": {
@@ -31,12 +31,18 @@
     },
     "production-apk": {
       "extends": "production",
+      "autoIncrement": false,
       "android": {
         "buildType": "apk"
       }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": {
+        "track": "internal",
+        "releaseStatus": "completed"
+      }
+    }
   }
 }

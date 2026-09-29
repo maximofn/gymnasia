@@ -3,9 +3,6 @@ type: servicio de diagnóstico local
 title: Proxy local de Anthropic
 description: Utilidad FastAPI opcional para depurar desde el navegador el contrato de Anthropic mediante una pasarela en loopback. No es un backend móvil ni un componente de producción y protege las credenciales BYOK contra una exposición compartida.
 tags: [service, anthropic, proxy, cors, development, security]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
     resource: repo://.github/workflows/agent-tests.yml
