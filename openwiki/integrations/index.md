@@ -1,3 +1,3 @@
 # Archivos
 
-- [Integraciones retirables y actualizaciones](vivagym-and-updates.md) - Delimita la retirada verificable de VivaGym y del actualizador de APK, el ciclo de las credenciales heredadas y la cadena externa de publicación de Production.
+- [Integraciones retirables y actualizaciones](vivagym-and-updates.md) - Delimita la ausencia verificable de VivaGym y de un actualizador dentro del cliente, la eliminación de datos heredados y la distribución Android externa por GitHub Releases y Play Internal.

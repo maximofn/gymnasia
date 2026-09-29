@@ -3,9 +3,6 @@ type: guía operativa de Android
 title: Permisos y configuración Android
 description: Define los contratos que limitan permisos y configuración nativa generada por Expo antes de publicar Android. Explica los controles reproducibles del checkout, el prebuild aislado y la verificación del APK/AAB final.
 tags: [android, permissions, native-config, expo, release, privacy]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml

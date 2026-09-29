@@ -11,9 +11,6 @@ tags: [agent, streaming, sse, openai, anthropic, google]
 related:
   - ./runtime.md
   - ./provider-configuration.md
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py

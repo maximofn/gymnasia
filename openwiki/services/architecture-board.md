@@ -5,7 +5,7 @@ description: Superficie estática que proyecta un espejo versionado de tickets d
 tags: [architecture-board, static-site, linear, github-actions, vercel]
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-09-29T12:03:05.365Z
 sources:
   - id: openwiki-source-95db82d22801961ce58f4a00
     resource: repo://.claude/skills/linear-tickets/scripts/linear.py
@@ -41,7 +41,7 @@ sources:
     resource: repo://scripts/board-automation/verify-production.mjs
   - id: openwiki-source-2d527a0a2fddf1f1e4422fcf
     resource: repo://scripts/board-automation/workflow-contract.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-09-29T12:03:05.365Z" }
 ---
 
 # Tablero de arquitectura
@@ -122,16 +122,19 @@ Con `--format json`, la comparación entrega el informe incluso con deriva. Sin 
 ```mermaid
 flowchart TD
     Audit["Compare main with Linear"] --> Classify{"Report status"}
-    Classify -->|"clean"| Verify["Verify production matches main"]
-    Classify -->|"safe changes"| Apply["Apply safe fields atomically"]
-    Apply --> Gates["Run data automation and E2E gates"]
-    Gates --> Recheck["Re-read Linear report"]
-    Recheck --> Proposal["Create or refresh review PR"]
+    Classify -->|"clean"| VerifyClean{"Production matches main"}
+    Classify -->|"safe changes"| VerifySafe{"Production matches main"}
     Classify -->|"review required"| Alert["Open alert and stop"]
-    Verify --> Healthy["Close obsolete proposal and alert"]
+    VerifyClean -->|"yes"| Healthy["Close obsolete proposal and alert"]
+    VerifyClean -->|"no"| Alert
+    VerifySafe -->|"yes"| Apply["Apply safe fields atomically"]
+    VerifySafe -->|"no"| Alert
+    Apply --> Recheck["Re-read Linear report"]
+    Recheck --> Gates["Run automation data and E2E gates"]
+    Gates --> Proposal["Create or refresh review PR"]
 ```
 
-*Las altas y bajas no se convierten en un diff automático: requieren completar el inventario y su orden editorial.*
+*La producción debe coincidir con `main` antes de dar por sana la conciliación o preparar una propuesta; las altas y bajas nunca se convierten en un diff automático.*
 
 `board-reconcile.yml` se ejecuta a los 17 minutos de cada seis horas o manualmente, parte explícitamente de `refs/heads/main` y cancela ejecuciones solapadas. Para `review_required`, abre o actualiza la alerta, cierra PRs automáticas obsoletas y falla. Para `safe_changes`, instala dependencias y Chromium, aplica `--apply-safe`, exige una segunda lectura `clean`, ejecuta las puertas y crea o actualiza `automation/board-sync`. El push usa `--force-with-lease`; no hay `auto-merge` ni `gh pr merge`.
 

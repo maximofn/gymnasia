@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:1831fa281dc67c22caba6cbd634138477867af9658234e44f554c137bb9aec89",
+  "pageVersion": "sha256:649c8b546edba92d6e506a3ee44d82e00d677d621a4b8fdaa134a04d6472a577",
   "claims": [
     {
       "id": "claim_531b0801ff69469ba48c4b25cec7318c",
@@ -100,15 +100,19 @@
     },
     {
       "id": "claim_b9ab1428615e433d9424fdb83f061a3a",
-      "statement": "La preparación del snapshot de build para staging o production descarga y verifica el deployment exitoso, el digest, las raíces y las tools, exige evidencia autorizable del gate sanitario, y genera los módulos de prompt, runtime sanitario, snapshot firmado y metadatos usados por la build.",
+      "statement": "El preparador de snapshots para staging o production resuelve el deployment exitoso del canal, descarga y verifica bundle, firma, digest, raíces y tools, exige un informe sanitario no autorizante y evidencia de promoción coherente, y solo entonces genera los módulos y metadatos integrados por la build.",
       "evidence": [
         {
-          "resource": "repo://.github/workflows/build-apk.yml#L214-L227",
-          "version": "repo-lines-v1:sha256:8d288144677c51a3aff2ec29f09f8cd18328c5cd032390dcf3d59ee7bb31c746:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMTFjZDdjMWU5ZTE1MDMzMzJmZjgwNjc3NDI4Njg4NzY2MjM5NzNlZmNiODczZWY4M2QwYzI4NDdhZWM3MTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjZDlhNzJjMDg1ZDU3ZjkyNTA2NWZhMzE1NzVlYjU2OTI4ZWU0NDM1NmY2YTdhNTI4YzY3NDk0MjAwYTdiZDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMjNkNmQyNjQxMDdkZTc2YzYwOTBhM2ZkY2Y2NzUwZjMxNGYyMmM4YjZjYWMyZjBmZTI5MGQ3MDE3ZDViNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI1ZGY4NWQ4MDAxMDE2MjQyZTI1Mzg0ZWNiMWIxZTM4MmY0ODdjNTAyODY3ZGVmN2M4MmJkMWYwMzI0ZDMwODkifQ"
+          "resource": "repo://.github/workflows/build-apk.yml#L251-L262",
+          "version": "repo-lines-v1:sha256:6c2be941af1761f071e8b4acd7290d4469a24fd539bee0b0f7d2f6b720520950:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMTFjZDdjMWU5ZTE1MDMzMzJmZjgwNjc3NDI4Njg4NzY2MjM5NzNlZmNiODczZWY4M2QwYzI4NDdhZWM3MTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjZDlhNzJjMDg1ZDU3ZjkyNTA2NWZhMzE1NzVlYjU2OTI4ZWU0NDM1NmY2YTdhNTI4YzY3NDk0MjAwYTdiZDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2ZTE2NTRmNGQ4NjU3NjYzYzk4NWM5ZjEwYzM3YjMzYjIwODAxMTRhMDNjZjBiODg3ZjcyZjY1ODYwZmUwZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI1ZGY4NWQ4MDAxMDE2MjQyZTI1Mzg0ZWNiMWIxZTM4MmY0ODdjNTAyODY3ZGVmN2M4MmJkMWYwMzI0ZDMwODkifQ"
         },
         {
           "resource": "repo://scripts/policy-promotion/prepare-policy-snapshot.mjs#L146-L247",
           "version": "repo-lines-v1:sha256:e75c6cee64ef39a85627b150286904a6d021cede50bedc2d8f7b3a98c36921ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmMzY2OWY3OTZhMmZkOWIwMjQyMGJmYzM0MTZmYmM0YzU1NWExNjRjOGYwMjZiY2U0OWNmMTMwYjQzZTQ5Y2QzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyMTRmZmY3OWI3ZGI1ZmJhYWU1ZTNkZWQ3ZDhkODk5MThhNDUyOTE4NjI4YWJkYTAxMjk4NzNjMzg4NDZmNTkwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIyYzc5M2MwZDU5ZjJhODMyNWI4NWU5NmZlOGIzYzBjNmE3ZTM4YjRjMjQzNTExYmM2YThkYjJkNjgwYzA3YTQzIn0"
+        },
+        {
+          "resource": "repo://scripts/policy-promotion/prepare-policy-snapshot.mjs#L97-L129",
+          "version": "repo-lines-v1:sha256:568ae2664f6d7dac3c7b4ad8e61d30d5de3a4c49b271e68f5527e031fff3d911:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzYzEwZDBmMzcyOGQyZTViYzIxMjEzYzEyNWQ4YmEwM2M4Y2ExNjJmNDVmODYwOTk5N2NlOWViZWI2NTE2YjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlYTgxNWQ1NzczNDAwOGI1YWIzNjY2MTQyZGEwMTExOTI4MzJmYjBmNWQ3OTNmNzBjMjFjMDIzY2VjOTE5NDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwOTM0NGY1ZTA0OTg3NzcxZWQ3NTY3ZGU1Nzg5ODY3MTcwMzIzZjAxOTg2MGQ0NDZmNWY5OTJkMzM3MDY1YzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViYTk5Yzc2MWQ0MzAwOGJlYTM1MmJkZDExNjY2YTNmODc0NmZjNGMyNjIwYWFmZDQwZjE3NmNlOGVhZDQ3ZjMifQ"
         }
       ]
     },
@@ -260,11 +264,23 @@
     },
     {
       "id": "claim_fc2f63fcbf284b0db3dd8b73f1fc232f",
-      "statement": "La build de producción prepara inputs de política inmutables para transacciones nuevas y los restaura desde el release durante reintentos en lugar de volver a resolver una política.",
+      "statement": "Una transacción Android de producción nueva captura una vez los inputs de política verificados, guarda el JSON de metadatos y el tar de módulos en el borrador durable y en el artefacto de inputs; una transacción reanudada los restaura desde el mismo tag, y la compilación y verificación de AAB/APK reutilizan ese snapshot en lugar de resolver otra política.",
       "evidence": [
         {
-          "resource": "repo://.github/workflows/build-apk.yml#L214-L250",
-          "version": "repo-lines-v1:sha256:0bd9a60614686f0083f858281725dbf98f1f9acfbeaaf075d7edc1900c8ad6ca:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMTFjZDdjMWU5ZTE1MDMzMzJmZjgwNjc3NDI4Njg4NzY2MjM5NzNlZmNiODczZWY4M2QwYzI4NDdhZWM3MTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOTk1ODMzNGQ4ZmJiY2QwYTJlY2UwYTU2NmY3OTYxODMyZGI4ZGRjNTA2NmFlMmI1YmJmMTk4ZGE3ZWU0NzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMjNkNmQyNjQxMDdkZTc2YzYwOTBhM2ZkY2Y2NzUwZjMxNGYyMmM4YjZjYWMyZjBmZTI5MGQ3MDE3ZDViNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlODBiMGY3MTA5Y2NiM2E5YThhMjYwYWJhZjMxZGNhZDM3Zjg3YTM0MmQzYmVkNGZiMjJhMzMwNDQ4MThkYmIifQ"
+          "resource": "repo://.github/workflows/build-apk.yml#L251-L327",
+          "version": "repo-lines-v1:sha256:727e3059d531b8f7db87dd48ae656ab7614fb8e2207dabc48579e3a83177bd37:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMTFjZDdjMWU5ZTE1MDMzMzJmZjgwNjc3NDI4Njg4NzY2MjM5NzNlZmNiODczZWY4M2QwYzI4NDdhZWM3MTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1NGExMjY3NDIzNWVmNjM0MzM3MjRmOTU2M2M0YWViZTY0YTliOTg2MTliY2EyZjgwMmRiMzQ3ZDJiNDAwYjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2ZTE2NTRmNGQ4NjU3NjYzYzk4NWM5ZjEwYzM3YjMzYjIwODAxMTRhMDNjZjBiODg3ZjcyZjY1ODYwZmUwZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3ODRmOGFkMWMxYTY3NGFiNjE0NmE0NDIwMWM4NTBhNGMxZTBjZjBlMDZlY2Y1ZGNkMjUyN2E4MGZkOGJhZWUifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L346-L424",
+          "version": "repo-lines-v1:sha256:084101d1ee29d50685e4084c09fc668a581665093835e5354389d86fbbc618d5:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5MWZjYmQzZGYzZDQ3YTZiYjhkMDk3OTQ0MmY0M2EzYjEwMDI2ZmIwODAzZDVhOTA1YTdjNjI0ZTFmZDRkMzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1NjI2ZDk4MjY2Y2IxYjk1NTRlYWI3M2RhZjcxMjdiMWI3ODgyYzM2ODM0MmE3ZGU5ZTllODM0MjU2NjBmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiZmRjZjUyMjhjNjIzN2FiNmJkNGU1MGVmMGUwOTZjNGRiZDM5YmNjODQ5OTIxNTFlNWFhYjdjYmEzZWQyMWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhZDQ5OGM5ZDdlYjNkYzYxOWUzN2ZiZDdjZGVmZDBkMDUxYzgxM2ZmZWY0NmNlMDEwNTNjOTgwYjBiNTQ0MjEifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L472-L485",
+          "version": "repo-lines-v1:sha256:e28051605a68ce9ec12610218484755900b559cb0f801276802ce31770e50cb7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1NWYxN2YyOTMyYjE1M2M1MjBmN2IwNGI5ZTE5NDNmZDVkZjJkZWM2ODQ1YzA0ZGEzZmI0NmQzOWY5ZDI2MmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2YThhZTVhODI5OTljN2Q1MDY0MWZhZTFhZTY4NThmNjhlMzQ4NWJmZmRiZTJhYzZkN2JhN2MxODdiN2QyOGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmZGZjMTAwZmVkNTgxMjc2ZjBjMDQ5ZWEyMDkyMmIzZjBiZDNhZjRkODQwYWM2Mzc5NDFjZDFkYjE4NmI5OWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiNGE4YmQ0NWJhOTEyOTM4OTEzYjI4NjllNjdiMThiZGQyMjgwOGIwNzVmNzk3NWU1NWFjOWRiYTRhZDJlNjMifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L538-L558",
+          "version": "repo-lines-v1:sha256:c1b6154c09aa9ab3e9d0edd78a8a2d07e98c91cfd5e05b8a2e7b9d252e03acd5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkYjU4ODk3YzY1ZDU4MzYyNjdiZjViMWE1ZTUxMmE1Yzk1MzMzYzlhYmIxYmFiZTAzNmI0NDliYWNiNWU1ZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyNzRjYTY4NmViNjYxNzViY2U4MDc4M2ExZTk3NzQwODlkODY1MDliODhmNTI2ZWU3MTFlOWNjZDQ4Y2JiYzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlZWZhM2VkMmMxOTQxMjkyYWQxYTczZGU5M2ZiNDdmYmYyMThkMTk5MWJkMzgyNWRjNjcyNjNlODgxYWQ2Y2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3MWQwOTNmZGQ4MzI0ZGNhOTU2NTQ3MTgyYTJhNTEzZjFmODgyMjJhYmFkYzg2YjQ0MjliNTg5MmE3ZTZjODYifQ"
         }
       ]
     },
@@ -355,6 +371,6 @@
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-09-29T12:03:05.365Z"
   }
 }

@@ -3,9 +3,6 @@ type: arquitectura de producto
 title: Arquitectura local-first
 description: Gymnasia es un cliente Expo local-first para móvil y web cuyo estado de producto reside en el dispositivo. Esta página delimita los catálogos, la política de IA, los proveedores BYOK y el servicio opcional de feedback.
 tags: [local-first, mobile, web, byok, privacy]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py

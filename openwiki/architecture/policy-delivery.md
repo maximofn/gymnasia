@@ -1,8 +1,11 @@
 ---
 type: arquitectura de entrega de políticas
 title: Entrega y selección de políticas
-description: Describe cómo se construyen, firman, promocionan y verifican localmente los bundles de prompt y salud-seguridad. Cubre el snapshot integrado, la selección por canal, la caché anti-rollback y el fallback seguro del cliente móvil.
+description: Explica cómo se generan, firman, promocionan y conservan los snapshots de política, y cómo el cliente móvil verifica, selecciona y congela una política por turno. Cubre la resolución por canal, la caché anti-rollback y la degradación segura.
 tags: [agent-policy, signed-policy, mobile, security, deployment, health-safety]
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-09-29T12:03:05.365Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -40,10 +43,7 @@ sources:
     resource: repo://scripts/policy-promotion/prepare-policy-snapshot.mjs
   - id: openwiki-source-d89cdda8746df6dbfedfcf69
     resource: repo://scripts/policy-promotion/sign-policy.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+generated: { by: "openwiki/0.6.0", at: "2026-09-29T12:03:05.365Z" }
 ---
 
 # Entrega y selección de políticas
@@ -96,9 +96,31 @@ Un rollback no restaura una caché local ni reduce la secuencia. `policy:promote
 
 ## Snapshot integrado en la build
 
-`npm run prepare:policy-snapshot -- --environment staging|production` busca el deployment exitoso del canal y descarga sus dos assets con límites de tamaño y tipos de contenido permitidos. Comprueba el digest publicado y verifica el paquete frente a `trusted-roots.json` y el catálogo de tools. Además exige que el informe sanitario no sea autorizante, no tenga fallos y coincida con el prompt, y que la evidencia de promoción corresponda al candidato, commit y digest.
+`npm run prepare:policy-snapshot -- --environment staging|production` busca el deployment exitoso del canal y descarga `policy.bundle.json` y `policy.bundle.signature.json` con límites de tamaño y tipos de contenido permitidos. Comprueba el digest publicado y verifica el paquete frente a `trusted-roots.json` y el catálogo móvil de tools. Después descarga `health-safety-report.json` y `promotion-evidence.json`: exige un informe no autorizante, sin fallos y vinculado al digest del prompt, y evidencia v3 correspondiente al candidato, commit, digest del bundle y digest del informe.
 
-Solo tras esas comprobaciones genera los módulos de prompt, runtime sanitario y `signedPolicySnapshot.generated.ts`, junto con metadatos del snapshot. La build de APK de producción ejecuta este paso para una transacción nueva y conserva esos inputs inmutables como artefactos de release; en reintentos restaura los inputs previamente guardados en vez de resolver otra política.
+Solo tras esas comprobaciones genera `chatSystemPrompt.generated.ts`, `healthSafetyPolicy.generated.ts`, `signedPolicySnapshot.generated.ts` y `policySnapshot.generated.json`. El último registra entorno, canal, candidato, digests, versión del runtime, activación, secuencia y deployment; el paquete firmado integrado conserva los cuerpos y firmas necesarios para que el cliente vuelva a verificarlo.
+
+### Captura y reutilización en la transacción Android
+
+En una transacción nueva de producción, `build-apk.yml` ejecuta el preparador una sola vez, copia los metadatos a `production-policy-snapshot.json` y empaqueta los cuatro archivos generados en `production-policy-bundle.tar.gz`. Antes de compilar, ambos archivos se publican en el borrador durable de la release y también viajan dentro del artefacto de inputs inmutables.
+
+Una transacción reanudada —incluido un reintento autorizado— no consulta de nuevo el deployment de Production: descarga del mismo tag `production-policy-snapshot.json` y `production-policy-bundle.tar.gz`, restaura el snapshot y recupera también la evidencia de fuente original. El job de compilación valida los inputs con el controlador confiable y extrae exactamente ese tar antes de construir AAB y APK. La verificación posterior recibe el mismo `production-policy-snapshot.json` para vincular cada binario con la política capturada. Así, un cambio de deployment entre intentos no cambia silenciosamente la política de una versión Android ya reservada.
+
+```mermaid
+flowchart TD
+    Tx{"Modo de transacción"}
+    Tx -->|"Nueva"| Resolve["Resolver Production y verificar"]
+    Resolve --> Generate["Generar snapshot y módulos"]
+    Generate --> Draft["Guardar JSON y tar en release draft"]
+    Tx -->|"Reanudada"| Restore["Restaurar JSON y tar del mismo tag"]
+    Draft --> Inputs["Artefacto de inputs inmutables"]
+    Restore --> Inputs
+    Inputs --> Check["Validar inputs y extraer tar"]
+    Check --> Build["Compilar AAB y APK"]
+    Build --> Verify["Verificar binarios contra snapshot"]
+```
+
+*La bifurcación ocurre antes de compilar: una transacción nueva captura la política y una reanudada reutiliza la captura durable.*
 
 `Local` no resuelve un deployment remoto firmado: crea el lease desde los snapshots de desarrollo. `staging` usa `Staging` y `production` usa `Production`; el almacenamiento se delimita por entorno y canal.
 
