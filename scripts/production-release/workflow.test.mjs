@@ -75,6 +75,9 @@ test("Play Internal es automático después de Production y usa su propio token"
   assert.match(playJob, /env:\n      APP_ENV: production/);
   assert.match(playJob, /token: \$\{\{ secrets\.EXPO_TOKEN \}\}/);
   assert.match(playJob, /if: always\(\) && needs\.verify-artifacts\.result == 'success'/);
+  assert.ok(playJob.indexOf("Install dependencies and verify Expo config for EAS")
+    < playJob.indexOf("Setup pinned EAS CLI"));
+  assert.match(playJob, /npm ci\n\s+npm --workspace apps\/mobile exec expo config --json/);
   assert.match(workflow, /PLAY_VERSION_CODE_FLOOR: \$\{\{ vars\.PLAY_VERSION_CODE_FLOOR \}\}/);
 });
 

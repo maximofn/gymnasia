@@ -693,6 +693,10 @@ esto hay que arreglarlo antes o el job pasará siempre.
   `submit:list` manualmente. Si un intento ya quedó
   `uncertain`, comprobar en EAS que no existe un envío antes de cargar el AAB;
   nunca repetir automáticamente una petición de estado desconocido.
+- En un runner limpio, instalar también las dependencias del repositorio antes
+  de llamar a EAS: `expo-github-action` instala la CLI, no `apps/mobile/node_modules`.
+  Sin ese árbol, la CLI no puede ejecutar `expo config` ni siquiera para consultar
+  con `submit:view` un ID que ya existe.
 
 ### Fetch con `AbortSignal` también activa la ruta incremental de React Native
 - Gotcha: en React Native 0.81, `whatwg-fetch` instala `xhr.onreadystatechange`
