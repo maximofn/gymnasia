@@ -372,14 +372,19 @@ async function expectProviderCatalogTools(page, expectedFoodAvailability, expect
     [1, "gymnasia_foods", expectedFoodAvailability],
     [2, "gymnasia_exercises", expectedExerciseAvailability],
   ]) {
-    const output = requests[requestIndex].input?.find((item) => item.type === "function_call_output")?.output;
+    const expectedCallId = requestIndex === 1 ? "call_catalog_foods" : "call_catalog_exercises";
+    const output = requests[requestIndex].input?.find(
+      (item) => item.type === "function_call_output" && item.call_id === expectedCallId,
+    )?.output;
     assert.equal(typeof output, "string");
     const parsed = JSON.parse(output);
     assert.equal(parsed.availability, expectedAvailability);
     assert.equal(parsed.sources.some((source) => source.source_id === expectedSource), true);
     assert.equal(parsed.results.every((result) => result.source_id && result.item_id), true);
   }
-  const routineOutput = requests[3].input?.find((item) => item.type === "function_call_output")?.output;
+  const routineOutput = requests[3].input?.find(
+    (item) => item.type === "function_call_output" && item.call_id === "call_catalog_routine",
+  )?.output;
   assert.equal(typeof routineOutput, "string");
   const expectedRoutineStatus = expectedExerciseAvailability === "unavailable" ? "invalid_input" : "created";
   assert.equal(JSON.parse(routineOutput).status, expectedRoutineStatus);

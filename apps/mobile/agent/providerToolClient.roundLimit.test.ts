@@ -138,11 +138,18 @@ describe("cliente del chat al agotar las rondas de tools", () => {
     const closing = sent.at(-1)!;
     expect(closing.tool_choice).toBe("none");
     expect(closing.tools).toBeDefined();
-    expect(closing.input).toEqual([{
+    expect((closing.input as Array<Record<string, unknown>>).slice(-2)).toEqual([{
+      type: "function_call", id: `fc_${MAX_TOOL_ROUNDS + 1}`,
+      call_id: `call_${MAX_TOOL_ROUNDS + 1}`, name: "read_field_value", arguments: "{}",
+    }, {
       type: "function_call_output",
       call_id: `call_${MAX_TOOL_ROUNDS + 1}`,
       output: ROUND_LIMIT_TOOL_RESULT,
     }]);
+    expect((closing.input as unknown[])).toHaveLength(1 + 2 * (MAX_TOOL_ROUNDS + 1));
+    expect(sent.every((body) => body.store === false && !("previous_response_id" in body))).toBe(true);
+    expect(sent.every((body) => Array.isArray(body.input))).toBe(true);
+    expect(sent.every((body) => JSON.stringify(body.include) === '["reasoning.encrypted_content"]')).toBe(true);
     expect(sent.slice(0, -1).every((body) => body.tool_choice === undefined)).toBe(true);
     // La instrucción de cierre va en las instrucciones de sistema, y solo en esa llamada.
     expect(closing.instructions).toContain(ROUND_LIMIT_CLOSING_INSTRUCTION);

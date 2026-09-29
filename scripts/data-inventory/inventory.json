@@ -1,6 +1,6 @@
 {
   "$comment": "Fuente única de verdad del tratamiento de datos de Gymnasia. Se creó en GYM-190 (ticket para publicar la política de privacidad y preparar las declaraciones de salud). De aquí salen la política publicada y las respuestas de Data safety en docs/legal/play-declarations.md. Consumido por scripts/data-inventory/check.mjs y, mediante --json, por la validación del AAB de GYM-198 (ticket para generar y validar el Android App Bundle de producción). Si el chequeo falla, la política publicada ha dejado de describir el código: actualiza ambos, no solo este fichero.",
-  "policyVersion": "2026-09-v8",
+  "policyVersion": "2026-09-v9",
   "scanRoots": [
     "apps/mobile"
   ],
@@ -416,7 +416,7 @@
       "host": "api.openai.com",
       "trigger": "user-initiated",
       "requiresUserKey": true,
-      "sends": "Cuando se necesita el modelo: la clave BYOK en la cabecera Authorization, el system prompt, los últimos 20 mensajes del hilo, los resultados de las tools que el usuario autoriza y, en el estimador de comida, hasta 6 imágenes en base64. Los mensajes y resultados pueden contener datos personales, de salud, fitness, dieta y medidas. Una consulta explícita de calorías por 100 g resuelta con el catálogo local no genera esta petición.",
+      "sends": "Cuando se necesita el modelo: la clave BYOK en la cabecera Authorization, el system prompt, los últimos 20 mensajes del hilo, los resultados de las tools que el usuario autoriza y, en el estimador de comida, hasta 6 imágenes en base64. En cada ronda del Coach con OpenAI Responses, el dispositivo reenvía la selección local y la secuencia activa de mensajes del modelo, llamadas y resultados de tools, identificadores y elementos de razonamiento cifrado; usa store:false y no previous_response_id. Esos elementos solo permanecen en memoria durante la consulta, no se muestran ni se guardan en el historial local. Los mensajes y resultados pueden contener datos personales, de salud, fitness, dieta y medidas. Una consulta explícita de calorías por 100 g resuelta con el catálogo local no genera esta petición.",
       "thirdParty": "OpenAI"
     },
     {

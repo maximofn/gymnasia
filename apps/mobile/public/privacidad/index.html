@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Qué datos guarda Gymnasia, dónde se almacenan, qué se envía al proveedor de IA que elijas y cómo borrar tus datos o ejercer tus derechos.">
-<meta name="gymnasia-policy-version" content="2026-09-v8">
-<meta name="gymnasia-policy-digest" content="sha256:1ee535bbfc53424cfa7cf6e6d1ad5a8352dcee60e7698a0b3e05fb7a0ea389bf">
+<meta name="gymnasia-policy-version" content="2026-09-v9">
+<meta name="gymnasia-policy-digest" content="sha256:49e92f0c65009e1c26cb7ba95eca7bb46d5d63905ccdba069d070b3de64aa027">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -55,7 +55,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
 <body>
 <main>
   <h1>Política de privacidad de Gymnasia</h1>
-  <p class="meta">Versión 2026-09-v8 · en vigor desde 2026-09-24 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
+  <p class="meta">Versión 2026-09-v9 · en vigor desde 2026-09-29 · <a href="mailto:maximofn@maximofn.com">maximofn@maximofn.com</a></p>
   <p class="langs"><a href="https://gymnasia.maximofn.com/privacy">English version</a></p>
   <nav>
     <h2>Contenido</h2>
@@ -156,6 +156,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     </ul>
     <p>Si activas en Ajustes la <strong>evaluación adicional de seguridad sanitaria</strong>, el texto de una consulta que la comprobación local considera dudosa puede enviarse al proveedor que estés usando en ese momento (el del Coach o el del Estimador) en una petición de clasificación separada antes de generar la respuesta normal. Es un único interruptor para todos los proveedores: solo se puede activar si has guardado la clave de al menos uno, se desactiva solo si borras la última clave, está desactivado por defecto y puedes revocarlo en cualquier momento. Los mensajes que la comprobación local clasifica como riesgo alto o crítico se interceptan en el dispositivo y no se envían al proveedor.</p>
     <p>Todas las consultas de generación a Google desactivan el guardado de conversaciones de Interactions mediante <code>store: false</code>. La app vuelve a enviar desde el dispositivo el contexto reciente que cabe dentro de esos límites y no utiliza una conversación almacenada en Google para continuar el diálogo. El historial íntegro sigue guardado en el dispositivo y no se borra al preparar una petición más pequeña. Este ajuste no sustituye los términos generales del proveedor.</p>
+    <p>Las peticiones del Coach a OpenAI Responses también usan <code>store: false</code>: la app selecciona el historial en el dispositivo y, durante una consulta con herramientas, reenvía las respuestas y los resultados necesarios para continuar. Los elementos técnicos de razonamiento cifrado se mantienen solo en memoria durante esa consulta; no se muestran ni se guardan en el historial de la app. Este ajuste evita guardar las respuestas como estado de la aplicación en OpenAI, pero no elimina los registros de vigilancia de abusos que OpenAI pueda conservar según la configuración de tu cuenta.</p>
     <p>Ese contenido queda sujeto a la política de privacidad y a los términos del proveedor que hayas elegido, bajo tu propia cuenta con él:</p>
     <ul>
       <li><a href="https://openai.com/policies/privacy-policy" rel="noopener noreferrer">OpenAI</a></li>
@@ -279,7 +280,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
   </section>
 
   <footer>
-    <p>Política de privacidad de Gymnasia · 2026-09-v8 · 2026-09-24</p>
+    <p>Política de privacidad de Gymnasia · 2026-09-v9 · 2026-09-29</p>
   </footer>
 </main>
 </body>

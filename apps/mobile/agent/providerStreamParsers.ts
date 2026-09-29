@@ -14,13 +14,16 @@ export type StreamingHandlers = {
 export type OpenAIReasoningOutputItem = {
   type: "reasoning";
   id?: string;
-  summary?: Array<{ type: "summary_text"; text: string }>;
+  encrypted_content?: string;
+  summary?: Array<{ type?: string; text?: string }>;
 };
 
 export type OpenAIMessageOutputItem = {
   type: "message";
   id?: string;
-  content?: Array<{ type: "output_text"; text: string }>;
+  role?: string;
+  phase?: string;
+  content?: Array<{ type?: string; text?: string }>;
 };
 
 export type OpenAIFunctionCallOutputItem = {
@@ -290,27 +293,22 @@ function normalizeOpenAIOutputItem(rawItem: unknown): OpenAIResponseOutputItem |
     status?: string;
     summary?: Array<{ type?: string; text?: string }>;
     content?: Array<{ type?: string; text?: string }>;
+    encrypted_content?: string;
+    role?: string;
+    phase?: string;
   };
   if (item.type === "reasoning") {
     return {
+      ...item,
       type: "reasoning",
-      id: typeof item.id === "string" ? item.id : undefined,
-      summary: Array.isArray(item.summary)
-        ? item.summary.flatMap((part) => part?.type === "summary_text" && typeof part.text === "string"
-          ? [{ type: "summary_text" as const, text: part.text }]
-          : [])
-        : undefined,
+      summary: Array.isArray(item.summary) ? item.summary : undefined,
     };
   }
   if (item.type === "message") {
     return {
+      ...item,
       type: "message",
-      id: typeof item.id === "string" ? item.id : undefined,
-      content: Array.isArray(item.content)
-        ? item.content.flatMap((part) => part?.type === "output_text" && typeof part.text === "string"
-          ? [{ type: "output_text" as const, text: part.text }]
-          : [])
-        : undefined,
+      content: Array.isArray(item.content) ? item.content : undefined,
     };
   }
   if (
@@ -320,6 +318,7 @@ function normalizeOpenAIOutputItem(rawItem: unknown): OpenAIResponseOutputItem |
     && typeof item.name === "string"
   ) {
     return {
+      ...item,
       type: "function_call",
       id: item.id,
       call_id: item.call_id,
@@ -344,7 +343,8 @@ function collectOpenAIText(items: OpenAIResponseOutputItem[]): string {
   return items
     .filter((item): item is OpenAIMessageOutputItem => item.type === "message")
     .flatMap((item) => item.content ?? [])
-    .map((part) => part.text.trim())
+    .flatMap((part) => part.type === "output_text" && typeof part.text === "string"
+      ? [part.text.trim()] : [])
     .filter(Boolean)
     .join("\n");
 }
@@ -353,7 +353,8 @@ function collectOpenAIThinking(items: OpenAIResponseOutputItem[]): string | null
   const result = items
     .filter((item): item is OpenAIReasoningOutputItem => item.type === "reasoning")
     .flatMap((item) => item.summary ?? [])
-    .map((part) => part.text.trim())
+    .flatMap((part) => part.type === "summary_text" && typeof part.text === "string"
+      ? [part.text.trim()] : [])
     .filter(Boolean)
     .join("\n\n");
   return result || null;
@@ -375,9 +376,13 @@ export function createOpenAIStreamParser(handlers?: StreamingHandlers) {
     }
   };
   const replaceItems = (items: OpenAIResponseOutputItem[]) => {
+    const complete = items.map((item, index) => ({
+      ...itemsByIndex.get(index),
+      ...Object.fromEntries(Object.entries(item).filter(([, value]) => value !== undefined)),
+    } as OpenAIResponseOutputItem));
     itemsByIndex.clear();
     indexesById.clear();
-    items.forEach((item, index) => setItem(index, item));
+    complete.forEach((item, index) => setItem(index, item));
   };
   const updateArguments = (itemId: string, nextArguments: (current: string) => string) => {
     const index = indexesById.get(itemId);

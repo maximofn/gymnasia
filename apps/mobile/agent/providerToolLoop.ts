@@ -163,10 +163,14 @@ export type OpenAIFunctionCall = {
 };
 
 export type OpenAIToolTurn = {
-  responseId: string | null;
+  responseId?: string | null;
   truncated?: boolean;
   outputItems: Array<{ type: string } | OpenAIFunctionCall>;
 };
+
+function copyOpenAIInput(items: Array<Record<string, unknown>>): Array<Record<string, unknown>> {
+  return JSON.parse(JSON.stringify(items)) as Array<Record<string, unknown>>;
+}
 
 export function parseOpenAIFunctionArguments(rawArguments: string): Record<string, unknown> {
   const trimmed = rawArguments.trim();
@@ -182,21 +186,21 @@ export function parseOpenAIFunctionArguments(rawArguments: string): Record<strin
 
 export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
   initialTurn: TTurn;
-  requestNextTurn: (
-    outputs: Array<Record<string, unknown>>,
-    previousResponseId: string,
-  ) => Promise<TTurn>;
+  /** Historial elegido antes de la consulta; la secuencia activa nunca se recorta. */
+  initialInput: Array<Record<string, unknown>>;
+  requestNextTurn: (messages: Array<Record<string, unknown>>) => Promise<TTurn>;
   /** Pide un turno con las tools prohibidas. Sin él, agotar las rondas es un error. */
-  requestClosingTurn?: (
-    outputs: Array<Record<string, unknown>>,
-    previousResponseId: string,
-  ) => Promise<TTurn>;
+  requestClosingTurn?: (messages: Array<Record<string, unknown>>) => Promise<TTurn>;
   executeTool: ExecuteTool;
   executionId?: string;
   maxRounds?: number;
 }): Promise<TTurn & RoundLimitMarker> {
   let turn = input.initialTurn;
   const occurrences = new Map<string, number>();
+  const seenCallIds = new Set<string>();
+  const selectedHistory = copyOpenAIInput(input.initialInput);
+  const activeItems: Array<Record<string, unknown>> = [];
+  const currentInput = () => copyOpenAIInput([...selectedHistory, ...activeItems]);
   const maxRounds = input.maxRounds ?? MAX_TOOL_ROUNDS;
   for (let round = 0; round < maxRounds; round += 1) {
     if (turn.truncated) {
@@ -206,10 +210,13 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
       (item): item is OpenAIFunctionCall => item.type === "function_call",
     );
     if (toolCalls.length === 0) break;
-    if (!turn.responseId) {
-      throw new Error("OpenAI no devolvio response_id para continuar las herramientas.");
+    // Validate the complete round before executing any tool or committing its replay.
+    const ids = toolCalls.map((call) => call.call_id);
+    if (new Set(ids).size !== ids.length || ids.some((id) => seenCallIds.has(id))) {
+      throw new Error("OpenAI devolvió un identificador de herramienta repetido.");
     }
-    const outputs: Array<Record<string, unknown>> = [];
+    ids.forEach((id) => seenCallIds.add(id));
+    activeItems.push(...copyOpenAIInput(turn.outputItems as Array<Record<string, unknown>>));
     for (const toolCall of toolCalls) {
       const args = parseOpenAIFunctionArguments(toolCall.arguments);
       const result = await input.executeTool(
@@ -224,30 +231,34 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
           occurrence: nextOccurrence(occurrences, toolCall.name, args),
         },
       );
-      outputs.push({
+      activeItems.push({
         type: "function_call_output",
         call_id: toolCall.call_id,
         output: result,
       });
     }
-    turn = await input.requestNextTurn(outputs, turn.responseId);
+    turn = await input.requestNextTurn(currentInput());
+  }
+  if (turn.truncated) {
+    throw new Error("La respuesta de OpenAI se cortó antes de completarse. Vuelve a intentarlo.");
   }
   const pending = turn.outputItems.filter(
     (item): item is OpenAIFunctionCall => item.type === "function_call",
   );
   if (pending.length === 0) return turn;
-  if (turn.truncated) {
-    throw new Error("La respuesta de OpenAI se cortó antes de completarse. Vuelve a intentarlo.");
-  }
-  if (!input.requestClosingTurn || !turn.responseId) throw new ToolRoundLimitError();
+  if (!input.requestClosingTurn) throw new ToolRoundLimitError();
   const requestClosingTurn = input.requestClosingTurn;
-  const previousResponseId = turn.responseId;
-  const outputs = pending.map((toolCall) => ({
+  const ids = pending.map((call) => call.call_id);
+  if (new Set(ids).size !== ids.length || ids.some((id) => seenCallIds.has(id))) {
+    throw new ToolRoundLimitError();
+  }
+  activeItems.push(...copyOpenAIInput(turn.outputItems as Array<Record<string, unknown>>));
+  activeItems.push(...pending.map((toolCall) => ({
     type: "function_call_output",
     call_id: toolCall.call_id,
     output: ROUND_LIMIT_TOOL_RESULT,
-  }));
-  const closing = await requestClosing(() => requestClosingTurn(outputs, previousResponseId));
+  })));
+  const closing = await requestClosing(() => requestClosingTurn(currentInput()));
   if (closing.truncated || closing.outputItems.some((item) => item.type === "function_call")) {
     throw new ToolRoundLimitError();
   }
