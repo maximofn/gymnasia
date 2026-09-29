@@ -642,6 +642,17 @@ jobs:
           persist-credentials: false
           path: .release-controller
 
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies and verify Expo config for EAS
+        run: |
+          npm ci
+          npm --workspace apps/mobile exec expo config --json > /dev/null
+
       - name: Setup pinned EAS CLI
         uses: expo/expo-github-action@c7b66a9c327a43a8fa7c0158e7f30d6040d2481e # v8
         with:
