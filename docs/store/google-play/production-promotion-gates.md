@@ -1,4 +1,4 @@
-# Publicación Android: wallabot, GitHub y Play Interno
+# Publicación Android: wallabot, GitHub y Prueba cerrada Alpha
 
 ## Resultado del flujo
 
@@ -7,15 +7,21 @@ publicable de `main` en una sola transacción con dos binarios de la misma versi
 
 - wallabot compila primero `gymnasia.aab` con `production` y después
   `gymnasia.apk` con `production-apk`;
-- el AAB se envía automáticamente al track `internal` con estado `completed`;
+- el AAB se envía automáticamente al track `alpha` (Prueba cerrada) con estado
+  `completed`, para que los testers cerrados reciban cada build publicable;
 - ambos binarios se adjuntan a la misma GitHub Release;
 - la Release permanece como borrador hasta que AAB, APK y submission estén
   validados.
 
-La promoción de esa release desde Play Interno a pruebas cerradas o producción
-es manual. El workflow no envía notas de versión a Google Play: EAS Submit para
-Android no ofrece ese campo. El resumen automático de commits queda en GitHub y
-en el resumen de Actions.
+El grupo `gymnasia-cerrada-2026-08` de 14 testers es el destinatario de las
+actualizaciones. Cada tester debe estar en la lista y haberse unido a la prueba
+cerrada con la misma cuenta de Google que usa en Play; estar en la lista no basta.
+La disponibilidad efectiva puede esperar la revisión de Google. No se cambia a
+los testers al canal interno, pues eso los excluiría de la prueba cerrada.
+
+La promoción de esa release a producción sigue siendo manual. El workflow no
+envía notas de versión a Google Play: EAS Submit para Android no ofrece ese
+campo. El resumen automático de commits queda en GitHub y en Actions.
 
 ## Puerta humana y credenciales
 
@@ -26,10 +32,12 @@ La aprobación humana de `Production` se conserva. El orden es:
    no tiene credenciales ni capacidad de compilar;
 3. `compile-android` es el único job que referencia el environment `Production`:
    espera una sola aprobación y únicamente entonces wallabot recibe el trabajo;
-4. con los dos artefactos validados, `Play Internal` ejecuta la subida sin un
-   segundo aprobador.
+4. con los dos artefactos validados, el environment histórico `Play Internal`
+   ejecuta la subida a `alpha` sin un segundo aprobador.
 
 `Production` y `Play Internal` tienen cada uno su propio secreto `EXPO_TOKEN`.
+El nombre `Play Internal` del environment se conserva para no mover ni exponer
+su secreto; ya no indica el track de destino.
 El token de `Production` permite a wallabot leer el proyecto, el contador remoto
 y las credenciales Android. El de `Play Internal` se usa exclusivamente para
 EAS Submit. La cuenta de servicio de Google se guarda en las credenciales
@@ -64,7 +72,8 @@ La V2 conserva tres patas independientes:
 - `aab`: perfil `production`, intentos de wallabot, hash, tamaño, evidencia y
   `versionCode`;
 - `apk`: perfil `production-apk`, los mismos datos y el mismo `versionCode`;
-- `play`: proveedor EAS, perfil `production`, track `internal`, estado
+- `play`: proveedor EAS, perfil `production`, track `alpha` para transacciones
+  nuevas (`internal` sigue siendo legible para Releases históricas), estado
   `completed`, intención, submission ID, estado y error saneado.
 
 Los estados globales son `prepared`, `building`, `artifacts-validated`,
@@ -178,15 +187,16 @@ como sustituto de estas operaciones ni se salta silenciosamente una versión.
 
 ## Promoción y cierre
 
-Tras la primera ejecución real, verificar:
+Tras cada ejecución real, verificar:
 
-1. el AAB aparece en Play Interno con el código esperado;
-2. un tester lo instala desde Play y completa el smoke test;
+1. el AAB aparece en Prueba cerrada Alpha con el código esperado y está
+   disponible para el grupo de 14 una vez termine la revisión de Google;
+2. un tester cerrado lo actualiza desde Play y completa el smoke test;
 3. el APK está disponible en GitHub;
 4. hashes, versiones, intentos de wallabot, submission ID, track y resultado
    aparecen en la Release y el resumen del workflow.
 
 Solo después se cierra GYM-226 (ticket para automatizar la subida a Google
 Play), se coordina el resultado con GYM-199 (ticket para validar el AAB en
-pruebas internas y cerradas) y se sincroniza el tablero. Promover a cerrada o
-producción reutiliza el mismo AAB y requiere una decisión humana.
+pruebas internas y cerradas) y se sincroniza el tablero. Promover a producción
+requiere una decisión humana.

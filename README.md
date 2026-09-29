@@ -224,9 +224,11 @@ requiere HTTPS y un certificado válido para el dispositivo.
 Las builds Android de producción se compilan en una VM desechable en wallabot.
 Tras la aprobación humana de `Production`, wallabot genera primero el AAB y
 después el APK con el mismo `versionCode`. GitHub los verifica de forma
-independiente, envía el AAB a Play Interno mediante EAS Submit y solo entonces
-publica ambos en una Release. Las promociones posteriores continúan siendo
-manuales. El controlador crea un ejecutor efímero por trabajo aprobado y lo
+independiente, envía el AAB directamente a Prueba cerrada Alpha mediante EAS
+Submit para que los 14 testers reciban cada build publicable, y solo entonces
+publica ambos en una Release. La disponibilidad para los testers puede esperar
+la revisión de Google; la promoción a producción sigue siendo manual. El
+controlador crea un ejecutor efímero por trabajo aprobado y lo
 retira al terminar; el Mac puede estar apagado.
 
 El ciclo completo quedó validado el 14-09-2026 con

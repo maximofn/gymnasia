@@ -62,6 +62,7 @@ function playValidated() {
 test("V2 conserva dos builds wallabot y un único envío a Play", () => {
   const value = playValidated();
   assert.equal(value.state, "validated");
+  assert.equal(value.legs.play.track, "alpha");
   assert.equal(value.versionCode, "58");
   assert.equal(value.legs.aab.attempts.length, 1);
   assert.equal(value.legs.apk.attempts.length, 1);
@@ -138,7 +139,7 @@ function publishedFixture() {
     artifact: { publishedFilename: `gymnasia.${leg}`, type: leg, versionName: "1.45.0", versionCode: "58", sha256: hashes[leg], size: 100_000_000 },
   });
   const playEvidence = {
-    schemaVersion: 2, kind: "ProductionPlayEvidenceV2", result: "passed", track: "internal", releaseStatus: "completed",
+    schemaVersion: 2, kind: "ProductionPlayEvidenceV2", result: "passed", track: tx.legs.play.track, releaseStatus: "completed",
     artifact: { sha256: hashes.aab, versionCode: "58" }, submission: { id: "submission-1", status: "FINISHED" },
   };
   const assets = [
@@ -172,6 +173,14 @@ test("la release no se publica sin AAB, APK y Play verificados", () => {
   const broken = publishedFixture();
   broken.release.assets = broken.release.assets.filter((asset) => asset.name !== "production-play-evidence.json");
   assert.throws(() => assertPublishedRelease(broken), /carece/);
+});
+
+test("una Release V2 histórica de Play Interno sigue verificándose", () => {
+  const fixture = publishedFixture();
+  fixture.transaction.legs.play.track = "internal";
+  fixture.playEvidence.track = "internal";
+  assert.equal(assertReleaseTransaction(fixture.transaction), fixture.transaction);
+  assert.equal(assertPublishedRelease(fixture), true);
 });
 
 test("lee transacciones V1 históricas sin crear otras nuevas", () => {

@@ -22,12 +22,13 @@ La App está instalada solo en Gymnasia y su clave queda protegida para root;
 las copias de entrada se eliminaron después de comprobar su autenticación.
 
 `build-apk.yml` conserva la selección de candidato, aprobación, borrador,
-compilación local de AAB y APK, verificación, envío a Play Interno y publicación
-en GitHub. Solo `compile-android` usa
+compilación local de AAB y APK, verificación, envío a Prueba cerrada Alpha para
+los 14 testers y publicación en GitHub. Solo `compile-android` usa
 `[self-hosted, linux, x64, wallabot, android-build]`, en una VM KVM desechable.
 La aprobación humana de `Production` sucede antes de despacharlo. El runner
 tiene `contents: read`; nunca recibe un token para publicar releases ni la
-cuenta de servicio de Google. El job posterior `Play Internal` no tiene
+cuenta de servicio de Google. El job posterior `Play Internal` (nombre heredado
+del environment que guarda el token, no del track actual) no tiene
 aprobador: usa otro `EXPO_TOKEN` únicamente después de validar ambos binarios.
 
 ## Preparar el host (intervención administrativa)

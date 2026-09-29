@@ -73,7 +73,7 @@ export function createReleaseTransaction({ version, sourceCommit, now = new Date
       play: {
         provider: "eas",
         profile: "production",
-        track: "internal",
+        track: loadReleasePolicy().play.track,
         releaseStatus: "completed",
         state: "prepared",
         attempts: [],
@@ -130,7 +130,7 @@ export function assertReleaseTransaction(transaction) {
     }
   }
   const play = transaction.legs?.play;
-  if (play?.provider !== "eas" || play?.profile !== "production" || play?.track !== "internal"
+  if (play?.provider !== "eas" || play?.profile !== "production" || !["internal", "alpha"].includes(play?.track)
     || play?.releaseStatus !== "completed" || !Array.isArray(play?.attempts)) {
     throw new Error("La pata Play no cumple su contrato.");
   }
@@ -396,7 +396,7 @@ export function transitionReleaseTransaction(transaction, event, payload = {}) {
     const play = requireLeg(next, payload.leg, { play: true });
     const attempt = latestAttempt(play);
     if (!attempt?.submissionId || attempt.status !== "FINISHED") {
-      throw new Error("Solo un submission FINISHED puede validar Play Interno.");
+      throw new Error("Solo un submission FINISHED puede validar Play.");
     }
     if (!SHA256_PATTERN.test(payload.evidenceSha256 ?? "")) throw new Error("Falta el hash de la evidencia de Play.");
     play.state = "validated";
@@ -526,7 +526,7 @@ export function assertPublishedRelease({
     || playEvidence?.result !== "passed" || playEvidence?.submission?.id !== transaction.legs.play.submission.id
     || playEvidence?.artifact?.sha256 !== transaction.legs.aab.artifact.sha256
     || String(playEvidence?.artifact?.versionCode) !== String(transaction.versionCode)
-    || playEvidence?.track !== "internal" || playEvidence?.releaseStatus !== "completed"
+    || playEvidence?.track !== transaction.legs.play.track || playEvidence?.releaseStatus !== "completed"
     || sourceAsset.digest !== expectedDigest(aabEvidence.source.evidenceSha256)
     || aabEvidence.source.evidenceSha256 !== apkEvidence.source.evidenceSha256
     || playAsset.digest !== expectedDigest(transaction.legs.play.evidenceSha256)) {
