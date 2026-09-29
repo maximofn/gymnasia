@@ -1,5 +1,5 @@
 ---
-version: 2026-09-v9
+version: 2026-09-v10
 effective_date: 2026-09-29
 locale: es
 lang: es
@@ -166,12 +166,13 @@ por 100 g que se resuelve con el catálogo local no genera esa petición. Cuando
 envía, la petición incluye:
 
 - las instrucciones del sistema del asistente;
-- en el chat principal, para Google, **hasta los 10 intercambios más recientes**, con
-  los pasos de respuesta y herramientas que pertenezcan a ellos; un límite adicional de
-  tamaño puede retirar intercambios completos empezando por el más antiguo. Para OpenAI
-  y Anthropic se envían **los últimos 20 mensajes**. El servidor compatible recibe el
-  contexto de la conversación necesario para responder. Los asistentes de alimentos envían
-  el historial reciente de su sesión con el mismo límite cuando usan Google;
+- en el chat principal, Gymnasia selecciona **hasta los últimos 20 mensajes** con
+  una misma regla local para todos los proveedores. Después adapta ese contexto al
+  formato de cada API. En Google, la petición conserva los intercambios de esa
+  selección con sus pasos de respuesta y herramientas; si supera los límites de
+  tamaño de la API, retira intercambios completos empezando por el más antiguo.
+  Los asistentes de alimentos envían el historial reciente de su sesión, limitado
+  a diez intercambios en Google;
 - los resultados de las herramientas que el asistente utiliza a petición tuya, que
   pueden incluir tu peso, tu porcentaje de grasa, tus perímetros, las comidas del día
   o tus rutinas;

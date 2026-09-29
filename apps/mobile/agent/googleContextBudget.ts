@@ -221,8 +221,8 @@ export function prepareGoogleInteractionRequest(
   };
 
   let measured = measureSelection();
-  // Estos tamaños describen el candidato ya saneado y limitado a diez
-  // intercambios. Así el diagnóstico nunca obliga a serializar un historial
+  // Estos tamaños describen el candidato ya saneado y limitado por el
+  // presupuesto de intercambios. Así el diagnóstico nunca serializa un historial
   // local potencialmente ilimitado ni sus imágenes antiguas.
   const candidateRequestBytes = measured.requestBytes;
   const candidateNonImageBytes = measured.nonImageBytes;
