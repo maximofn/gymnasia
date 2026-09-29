@@ -683,6 +683,17 @@ esto hay que arreglarlo antes o el job pasará siempre.
   explícita de que `verify-artifacts` tuvo éxito. No quitar la comprobación: un
   fallo de validación debe seguir dejando el borrador sin publicar.
 
+### EAS Submit también evalúa `app.config.ts` y necesita `APP_ENV`
+- Gotcha: el perfil `production` de EAS Build declara su entorno, pero
+  `eas submit --profile production --path ...` no aplica automáticamente ese
+  `APP_ENV` al proceso local. La configuración de Gymnasia lo exige antes de
+  contactar con EAS; sin él, Submit acaba con código 1 y no crea submission.
+- Fix: fijar `APP_ENV=production` en todo el job `submit-play-and-release`,
+  tanto para la subida como para `submit:view`; usarlo también al consultar
+  `submit:list` manualmente. Si un intento ya quedó
+  `uncertain`, comprobar en EAS que no existe un envío antes de cargar el AAB;
+  nunca repetir automáticamente una petición de estado desconocido.
+
 ### Fetch con `AbortSignal` también activa la ruta incremental de React Native
 - Gotcha: en React Native 0.81, `whatwg-fetch` instala `xhr.onreadystatechange`
   cuando recibe un `AbortSignal`. El XHR nativo considera la mera presencia de ese
