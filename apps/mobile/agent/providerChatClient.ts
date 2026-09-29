@@ -29,7 +29,7 @@ import {
   createFakeProviderResult,
   explainAnthropicError,
 } from "./providerTransport";
-import type { GoogleContextReport } from "./googleContextBudget";
+import type { GoogleContextBudget, GoogleContextReport } from "./googleContextBudget";
 import { requestCustomOpenAIChat } from "./customOpenAIChat";
 
 export type { GoogleContextReport } from "./googleContextBudget";
@@ -73,6 +73,7 @@ export function requestGoogleProviderInteraction(
     thinking?: boolean;
     toolChoice?: "none";
     responseSchema?: Record<string, unknown>;
+    contextBudget?: GoogleContextBudget;
   },
   runtime: Pick<
     ProviderChatRuntime,

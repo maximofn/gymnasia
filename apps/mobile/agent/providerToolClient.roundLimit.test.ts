@@ -181,6 +181,8 @@ describe("cliente del chat al agotar las rondas de tools", () => {
     expect(result.content).toBe("Respuesta de cierre.");
     expect(executeTool).toHaveBeenCalledTimes(MAX_TOOL_ROUNDS);
     expect(sent.at(-1)!.toolChoice).toBe("none");
+    expect(sent.every((options) => (options.contextBudget as { maxExchanges: number }).maxExchanges === 20))
+      .toBe(true);
     expect(sent.slice(0, -1).every((options) => options.toolChoice === undefined)).toBe(true);
     expect(sent.at(-1)!.systemInstruction).toContain(ROUND_LIMIT_CLOSING_INSTRUCTION);
     expect(sent.slice(0, -1).some((options) =>

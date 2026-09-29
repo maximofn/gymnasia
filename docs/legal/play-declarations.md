@@ -37,15 +37,16 @@ herramientas o fotos de comida. También recibe una consulta breve si el usuario
 la URL elegida por el usuario.
 
 El Coach selecciona hasta los últimos 20 mensajes con una regla local común a todos
-los proveedores. Con Google se reenvían como máximo diez intercambios de esa selección,
-con límites adicionales de tamaño y conservando completos los pasos, firmas técnicas y resultados
+los proveedores. Con Google se reenvían los intercambios de esa selección,
+con límites de tamaño y conservando completos los pasos, firmas técnicas y resultados
 de herramientas de cada intercambio incluido. Las imágenes solo permanecen durante
 las rondas del turno en el que se adjuntaron; al existir un mensaje posterior se
 conservan el texto y la respuesta, pero no se reenvían sus bytes. Interactions lleva
 `store: false`; esto no cambia la declaración conservadora `Processed ephemerally: No`
 ni añade un tercero o una categoría de datos a la tabla. Los asistentes de alimentos
-conservan ese contexto solo durante su sesión; el chat principal mantiene su historial
-íntegro en el dispositivo y en su backup local.
+conservan ese contexto solo durante su sesión, con un máximo de diez intercambios
+en Google; el chat principal mantiene su historial íntegro en el dispositivo y
+en su backup local.
 El Coach también envía a OpenAI Responses el historial elegido en el dispositivo y la
 secuencia activa de tools con `store: false`. OpenAI puede conservar registros de
 vigilancia de abusos según la configuración de la cuenta; por eso tampoco cambia la

@@ -1,4 +1,6 @@
 import { composeAiSystemPrompt } from "./aiTransparency";
+import { COACH_CONTEXT_MESSAGE_LIMIT } from "./coachContext";
+import { DEFAULT_GOOGLE_CONTEXT_BUDGET } from "./googleContextBudget";
 import {
   buildGoogleHistory,
   type GoogleConversationTurn,
@@ -342,6 +344,12 @@ export async function requestProviderToolChat(
       systemInstruction: toolChoice ? closingSystemPrompt(systemPrompt) : systemPrompt,
       tools: CHAT_TOOLS.google,
       thinking: true,
+      // Coach already selected at most 20 messages for every provider.
+      // This cap must not shorten Google's selection by exchange count.
+      contextBudget: {
+        ...DEFAULT_GOOGLE_CONTEXT_BUDGET,
+        maxExchanges: COACH_CONTEXT_MESSAGE_LIMIT,
+      },
       ...(toolChoice ? { toolChoice } : {}),
     },
     runtime,

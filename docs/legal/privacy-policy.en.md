@@ -161,10 +161,10 @@ catalogue does not make that request. When sent, the request includes:
 - the assistant's system instructions;
 - in the main chat, Gymnasia selects **up to the last 20 messages** using the same
   local rule for every provider. It then adapts that context to each API's format.
-  For Google, the request keeps at most the 10 most recent exchanges from that
-  selection, including their response and tool steps; an additional size limit may
-  remove complete exchanges starting with the oldest. Food assistants send their
-  recent session history with the same Google limit;
+  For Google, the request keeps the exchanges from that selection, including
+  their response and tool steps; if it exceeds the API's size limits, it removes
+  complete exchanges starting with the oldest. Food assistants send their recent
+  session history, limited to ten exchanges on Google;
 - the results of the tools the assistant uses at your request, which may include your
   weight, your body fat percentage, your measurements, the day's meals or your routines;
 - in the food estimator, **the images you provide**, encoded within the request.

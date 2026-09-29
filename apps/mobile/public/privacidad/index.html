@@ -6,7 +6,7 @@
 <title>Política de privacidad de Gymnasia</title>
 <meta name="description" content="Qué datos guarda Gymnasia, dónde se almacenan, qué se envía al proveedor de IA que elijas y cómo borrar tus datos o ejercer tus derechos.">
 <meta name="gymnasia-policy-version" content="2026-09-v10">
-<meta name="gymnasia-policy-digest" content="sha256:68d252cb65069f50d65c1efee7e502bf779c0f71a72191a618af1c420d085dad">
+<meta name="gymnasia-policy-digest" content="sha256:dbaaad68857f5db6969aa57b8bad3e8b8e0fcb507582a34218d10ed7daf6a78f">
 <link rel="canonical" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="es" href="https://gymnasia.maximofn.com/privacidad">
 <link rel="alternate" hreflang="en" href="https://gymnasia.maximofn.com/privacy">
@@ -149,7 +149,7 @@ footer { margin-top:3rem; padding-top:1.5rem; border-top:1px solid var(--border)
     <p>Cuando una consulta del asistente necesita el modelo, tu dispositivo se conecta <strong>directamente</strong> con el proveedor que hayas elegido. Una búsqueda explícita de calorías por 100 g que se resuelve con el catálogo local no genera esa petición. Cuando sí se envía, la petición incluye:</p>
     <ul>
       <li>las instrucciones del sistema del asistente;</li>
-      <li>en el chat principal, Gymnasia selecciona <strong>hasta los últimos 20 mensajes</strong> con una misma regla local para todos los proveedores. Después adapta ese contexto al formato de cada API. En Google, la petición conserva como máximo los 10 intercambios más recientes de esa selección, con sus pasos de respuesta y herramientas; un límite adicional de tamaño puede retirar intercambios completos empezando por el más antiguo. Los asistentes de alimentos envían el historial reciente de su sesión con el mismo límite de Google;</li>
+      <li>en el chat principal, Gymnasia selecciona <strong>hasta los últimos 20 mensajes</strong> con una misma regla local para todos los proveedores. Después adapta ese contexto al formato de cada API. En Google, la petición conserva los intercambios de esa selección con sus pasos de respuesta y herramientas; si supera los límites de tamaño de la API, retira intercambios completos empezando por el más antiguo. Los asistentes de alimentos envían el historial reciente de su sesión, limitado a diez intercambios en Google;</li>
       <li>los resultados de las herramientas que el asistente utiliza a petición tuya, que pueden incluir tu peso, tu porcentaje de grasa, tus perímetros, las comidas del día o tus rutinas;</li>
       <li>en el estimador de comida, <strong>las imágenes que le proporcionas</strong>, codificadas dentro de la petición.</li>
       <li>para Anthropic, el identificador del workspace, únicamente si lo has configurado porque el tipo de clave lo requiere.</li>
