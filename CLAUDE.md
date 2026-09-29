@@ -356,6 +356,11 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   `.claude/skills/openwiki/SKILL.md`. Sus reglas de seguridad, compatibilidad y
   automatización viven solo en esa skill; no las dupliques aquí.
 
+## Assets para vídeos de YouTube
+- **Cuando el usuario pida crear assets para YouTube, lee y usa siempre
+  `.claude/skills/crear-assets-youtube/SKILL.md` antes de empezar.** Aplica
+  también las referencias de la skill que correspondan al formato elegido.
+
 ## Skill Maintenance Rule (Linear)
 - **Cada descubrimiento nuevo sobre Linear implica actualizar la skill `linear-tickets`.**
   No dejes el hallazgo solo en la conversación: la siguiente sesión no lo tendrá.
