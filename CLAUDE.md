@@ -361,6 +361,11 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   `.claude/skills/crear-assets-youtube/SKILL.md` antes de empezar.** Aplica
   también las referencias de la skill que correspondan al formato elegido.
 
+## Metadatos para vídeos de YouTube
+- **Cuando el usuario pida crear metadatos para YouTube, lee y usa siempre
+  `.claude/skills/crear-metadata-youtube/SKILL.md` antes de redactarlos.**
+  Incluye títulos, textos para miniaturas, descripciones y etiquetas.
+
 ## Skill Maintenance Rule (Linear)
 - **Cada descubrimiento nuevo sobre Linear implica actualizar la skill `linear-tickets`.**
   No dejes el hallazgo solo en la conversación: la siguiente sesión no lo tendrá.
