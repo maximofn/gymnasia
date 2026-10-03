@@ -36,6 +36,7 @@ import type { ExerciseSeries } from "../training/seriesContract";
 import { listWorkoutExecutionUnits } from "../training/workoutExecution";
 import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
 import { prepareRoutineCreation } from "./routineCreationContract";
+import { AGENT_TOOL_DEFINITIONS, formatToolInputError, validateToolInput } from "./toolDefinitions";
 
 export type { PersonalDataField };
 
@@ -236,7 +237,7 @@ const listPersonalDataKeys: ToolHandler = async (_args, _context, dependencies) 
 };
 
 const readFieldDescription: ToolHandler = async (args, _context, dependencies) => {
-  const key = (args.key as string) ?? "";
+  const key = args.key as string;
   const fields = await dependencies.loadPersonalData();
   const field = fields.find((item) => item.key === key);
   if (!field) return `Campo "${key}" no encontrado.`;
@@ -244,7 +245,7 @@ const readFieldDescription: ToolHandler = async (args, _context, dependencies) =
 };
 
 const readFieldValue: ToolHandler = async (args, _context, dependencies) => {
-  const key = (args.key as string) ?? "";
+  const key = args.key as string;
   const fields = await dependencies.loadPersonalData();
   const field = fields.find((item) => item.key === key);
   if (!field) return `Campo "${key}" no encontrado.`;
@@ -700,8 +701,8 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
 const createFeatureIssue: ToolHandler = async (args, _context, dependencies) => {
   const draft = sanitizeFeedbackDraft({
     kind: "feature",
-    title: typeof args.title === "string" ? args.title : "",
-    summary: typeof args.summary === "string" ? args.summary : "",
+    title: args.title as string,
+    summary: args.summary as string,
   });
   if (!draft) return "Falta el título o el resumen de la mejora.";
   const outcome = await dependencies.submitFeedbackIssue(draft, _context.operationId);
@@ -728,6 +729,10 @@ export const AGENT_TOOL_HANDLERS: Readonly<Record<string, ToolHandler>> = Object
 
 export const AGENT_TOOL_HANDLER_NAMES = Object.keys(AGENT_TOOL_HANDLERS);
 
+const TOOL_INPUT_SCHEMAS = new Map(
+  AGENT_TOOL_DEFINITIONS.map((tool) => [tool.name, tool.inputSchema]),
+);
+
 export function createDetailedAgentToolExecutor(dependencies: ToolExecutorDependencies) {
   return async function executeDetailedAgentTool(
     name: string,
@@ -737,12 +742,17 @@ export function createDetailedAgentToolExecutor(dependencies: ToolExecutorDepend
     const handler = Object.hasOwn(AGENT_TOOL_HANDLERS, name)
       ? AGENT_TOOL_HANDLERS[name]
       : undefined;
-    if (!handler) {
+    const schema = TOOL_INPUT_SCHEMAS.get(name);
+    if (!handler || !schema) {
       return { output: "Herramienta no reconocida.", status: "no_effect" };
     }
     let effectCommitted = false;
     let effectIndeterminate = false;
     try {
+      const validation = validateToolInput(schema, args);
+      if (!validation.valid) {
+        return { output: formatToolInputError(validation.errors), status: "no_effect" };
+      }
       const output = await handler(
         args,
         {

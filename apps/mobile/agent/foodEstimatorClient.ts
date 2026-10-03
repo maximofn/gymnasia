@@ -30,6 +30,7 @@ import {
   runGoogleToolLoop,
   type AnthropicToolUseBlock,
 } from "./providerToolLoop";
+import { formatToolInputError } from "./toolDefinitions";
 import {
   anthropicApiHeaders,
   anthropicProxyCredentials,
@@ -497,7 +498,9 @@ export async function requestFoodEstimate(
         );
         options?.onToolUsed?.(toolName);
         const args = parseOpenAIFunctionArguments(toolCall.arguments);
-        const result = await handleFoodEstimatorToolCall(toolName, args);
+        const result = args === null
+          ? formatToolInputError(["Los argumentos deben ser un objeto JSON válido."])
+          : await handleFoodEstimatorToolCall(toolName, args);
         toolOutputs.push({
           type: "function_call_output",
           call_id: toolCall.call_id,

@@ -27,6 +27,7 @@ import type { StreamingHandlers } from "./providerStreamParsers";
 import {
   closingSystemPrompt,
   MAX_TOOL_ROUNDS,
+  parseOpenAIFunctionArguments,
   ROUND_LIMIT_TOOL_RESULT,
   runAnthropicToolLoop,
   runGoogleToolLoop,
@@ -34,7 +35,7 @@ import {
   ToolRoundLimitError,
 } from "./providerToolLoop";
 import type { ToolCallEnvelope } from "./toolOperationLedger";
-import { CHAT_TOOLS } from "./toolDefinitions";
+import { CHAT_TOOLS, formatToolInputError } from "./toolDefinitions";
 import {
   chatCompletionTools,
   isUnsupportedCustomFeature,
@@ -222,13 +223,13 @@ export async function requestProviderToolChat(
         continue;
       }
       for (const call of turn.toolCalls) {
-        let args: unknown;
-        try { args = JSON.parse(call.function.arguments); }
-        catch { throw new Error("El modelo devolvió argumentos de herramienta incompletos."); }
-        if (!args || typeof args !== "object" || Array.isArray(args)) {
-          throw new Error("El modelo devolvió argumentos de herramienta inválidos.");
+        const parsedArgs = parseOpenAIFunctionArguments(call.function.arguments);
+        if (parsedArgs === null) {
+          history.push({ role: "tool", tool_call_id: call.id,
+            content: formatToolInputError(["Los argumentos deben ser un objeto JSON válido."]),
+          });
+          continue;
         }
-        const parsedArgs = args as Record<string, unknown>;
         const key = toolCallOccurrenceKey(call.function.name, parsedArgs);
         const occurrence = occurrences.get(key) ?? 0;
         occurrences.set(key, occurrence + 1);

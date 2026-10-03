@@ -11,7 +11,7 @@ import {
   type AnthropicStreamTurnResult,
   type OpenAIStreamTurnResult,
 } from "./providerStreamParsers";
-import { createAgentToolExecutor, type ToolExecutorDependencies } from "./toolExecutor";
+import { createAgentToolExecutor, type ToolExecutorDependencies, type ToolStore } from "./toolExecutor";
 import {
   runAnthropicToolLoop,
   runGoogleToolLoop,
@@ -151,6 +151,63 @@ describe("GYM-139: el ejecutor real sobre memoria con campos de inyección", () 
 });
 
 describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
+  it.each(["openai", "anthropic", "google"])(
+    "%s: devuelve el fallo de schema, acepta la corrección y persiste una sola vez",
+    async (provider) => {
+      let store: ToolStore = { measurements: [], templates: [], dietByDate: {} };
+      const commitStore = vi.fn(async (updater: (previous: ToolStore) => ToolStore) => {
+        store = updater(store);
+      });
+      const execute = createAgentToolExecutor({
+        loadPersonalData: async () => [], savePersonalData: async () => {},
+        loadMeasurements: async () => store.measurements,
+        createId: (prefix) => `${prefix}_test`, getExerciseImageUrl: () => "",
+        submitFeedbackIssue: async () => ({ status: "canceled" }),
+      });
+      const executeTool = async (name: string, args: Record<string, unknown>) =>
+        execute(name, args, { commitStore });
+      let rounds = 0;
+      const nextFixture = (messages: unknown) => {
+        rounds += 1;
+        if (rounds === 1) {
+          expect(JSON.stringify(messages)).toContain("invalid_tool_arguments");
+          expect(JSON.stringify(messages)).toContain("data.weight_kg");
+          expect(commitStore).not.toHaveBeenCalled();
+          expect(store.measurements).toEqual([]);
+        } else {
+          expect(JSON.stringify(messages)).toContain("Medidas guardadas correctamente");
+          expect(commitStore).toHaveBeenCalledOnce();
+        }
+        return readRawFixture(`${provider}-measurement-${rounds === 1 ? "tool-call" : "final"}.sse`);
+      };
+      const invalid = readRawFixture(`${provider}-invalid-measurement-tool-call.sse`);
+      if (provider === "openai") {
+        await runOpenAIToolLoop({
+          initialInput: [], initialTurn: replayInNetworkChunks(invalid, createOpenAIStreamParser()),
+          executeTool,
+          requestNextTurn: async (messages) => replayInNetworkChunks(nextFixture(messages), createOpenAIStreamParser()),
+        });
+      } else if (provider === "anthropic") {
+        await runAnthropicToolLoop({
+          initialMessages: [], initialTurn: replayInNetworkChunks(invalid, createAnthropicStreamParser()),
+          executeTool,
+          requestNextTurn: async (messages) => replayInNetworkChunks(nextFixture(messages), createAnthropicStreamParser()),
+        });
+      } else {
+        await runGoogleToolLoop({
+          initialMessages: [], initialTurn: replayInNetworkChunks(invalid, createGoogleStreamParser()),
+          executeTool,
+          requestNextTurn: async (messages) => replayInNetworkChunks(nextFixture(messages), createGoogleStreamParser()),
+        });
+      }
+      expect(rounds).toBe(2);
+      expect(commitStore).toHaveBeenCalledOnce();
+      expect(store.measurements).toEqual([expect.objectContaining({
+        measured_on: "2024-04-11", weight_kg: 75.5, body_fat_pct: 18.5,
+      })]);
+    },
+  );
+
   it("procesa el dialecto completo de OpenAI", async () => {
     const deltas: string[] = [];
     const initialTurn = replayInNetworkChunks(
@@ -713,32 +770,32 @@ describe("contrato de parsing de llamadas a herramientas", () => {
     )).toThrow("google controlled");
   });
 
-  it("degrada argumentos inválidos a objeto vacío de forma controlada", async () => {
-    const executeTool = vi.fn(async () => "ok");
-    await runOpenAIToolLoop({ initialInput: [],
-      initialTurn: {
-        responseId: "resp_malformed_args",
-        content: "",
-        thinking: null,
-        truncated: false,
-        outputItems: [{
-          type: "function_call",
-          id: "fc_malformed_args",
-          call_id: "call_malformed_args",
-          name: "read_field_value",
-          arguments: "{not-json",
-        }],
-      },
-      executeTool,
-      requestNextTurn: async () => emptyOpenAITurn(),
-    });
+  it.each(["{not-json", "", "null", "[]", "75", '"text"'])(
+    "devuelve al modelo los argumentos JSON inválidos (%s) sin ejecutar una tool sin campos requeridos",
+    async (argumentsText) => {
+      const executeTool = vi.fn(async () => "ok");
+      const requestNextTurn = vi.fn(async () => emptyOpenAITurn());
+      await runOpenAIToolLoop({ initialInput: [],
+        initialTurn: {
+          responseId: "resp_malformed_args",
+          content: "",
+          thinking: null,
+          truncated: false,
+          outputItems: [{
+            type: "function_call",
+            id: "fc_malformed_args",
+            call_id: "call_malformed_args",
+            name: "read_routines",
+            arguments: argumentsText,
+          }],
+        },
+        executeTool,
+        requestNextTurn,
+      });
 
-    expect(executeTool).toHaveBeenCalledWith(
-      "read_field_value",
-      {},
-      expect.any(Object),
-    );
-
+      expect(executeTool).not.toHaveBeenCalled();
+      expect(requestNextTurn).toHaveBeenCalledOnce();
+      expect(JSON.stringify(requestNextTurn.mock.calls)).toContain("invalid_tool_arguments");
   });
 });
 

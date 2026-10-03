@@ -726,12 +726,21 @@ async function runAgentChatE2E(
   await page.route(routePattern, async (route) => {
     const body = route.request().postDataJSON();
     requestBodies.push(body);
+    if (requestBodies.length === 5) {
+      assert(JSON.stringify(body).includes("invalid_tool_arguments"));
+      assert(JSON.stringify(body).includes("data.weight_kg"));
+      const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "{}"), STORE_KEY);
+      assert(!saved.measurements?.some((item) => item.measured_on === "2024-04-11"),
+        "Una medición que no cumple el schema no debe haberse guardado.");
+      assert(!saved.toolOperationReceipts?.some((receipt) => receipt.toolName === "write_measurement"));
+    }
     logStep(`${provider}: ronda ${requestBodies.length}`);
     const fixtureByRound = [
       null,
       `${provider}-tool-call.sse`,
       `${provider}-final.sse`,
       `${provider}-identity.sse`,
+      `${provider}-invalid-measurement-tool-call.sse`,
       `${provider}-measurement-tool-call.sse`,
       `${provider}-measurement-final.sse`,
       `${provider}-routine-tool-call.sse`,
@@ -1028,9 +1037,9 @@ async function runAgentChatE2E(
   await page.locator('[data-testid^="chat-message-assistant-"]')
     .filter({ hasText: "He guardado 75,5 kg y 18,5 % de grasa" })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
-  assert.equal(requestBodies.length, 5, `${provider} debe completar las dos rondas de la medición.`);
+  assert.equal(requestBodies.length, 6, `${provider} debe corregir la medición inválida y completar tres rondas.`);
   assert(
-    JSON.stringify(requestBodies[4]).includes("Medidas guardadas correctamente para 2024-04-11."),
+    JSON.stringify(requestBodies[5]).includes("Medidas guardadas correctamente para 2024-04-11."),
     `${provider} debe recibir el resultado durable de write_measurement.`,
   );
   await page.waitForFunction(
@@ -1055,8 +1064,8 @@ async function runAgentChatE2E(
   await page.locator('[data-testid^="chat-message-assistant-"]')
     .filter({ hasText: "He creado la Rutina E2E con una serie ejecutable." })
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
-  assert.equal(requestBodies.length, 7, `${provider} debe completar las dos rondas de la rutina.`);
-  const routineResultRound = JSON.stringify(requestBodies[6]);
+  assert.equal(requestBodies.length, 8, `${provider} debe completar las dos rondas de la rutina.`);
+  const routineResultRound = JSON.stringify(requestBodies[7]);
   assert(
     routineResultRound.includes("status") && routineResultRound.includes("created"),
     `${provider} debe recibir el resultado durable y tipado de create_routine.`,

@@ -430,6 +430,14 @@ export type ToolInputValidation = {
   errors: string[];
 };
 
+export function formatToolInputError(errors: string[]): string {
+  return JSON.stringify({
+    error: "invalid_tool_arguments",
+    message: "La herramienta no se ha ejecutado. Corrige los argumentos y vuelve a intentarlo.",
+    issues: errors,
+  });
+}
+
 export function validateToolInput(
   schema: ToolInputSchema,
   input: unknown,
@@ -441,20 +449,19 @@ export function validateToolInput(
 
   const values = input as Record<string, unknown>;
   for (const field of schema.required ?? []) {
-    if (!(field in values) || values[field] === null || values[field] === undefined) {
+    if (!Object.hasOwn(values, field)) {
       errors.push(`Falta el campo requerido "${field}".`);
     }
   }
 
   for (const [field, value] of Object.entries(values)) {
-    const property = schema.properties[field];
+    const property = Object.hasOwn(schema.properties, field) ? schema.properties[field] : undefined;
     if (!property) {
       if (schema.additionalProperties === false) {
         errors.push(`El campo "${field}" no está permitido.`);
       }
       continue;
     }
-    if (value === null || value === undefined) continue;
     validateSchemaProperty(field, value, property, errors);
   }
 
@@ -468,9 +475,9 @@ function validateSchemaProperty(
   errors: string[],
 ): void {
   const actualType = Array.isArray(value) ? "array" : typeof value;
-  const typeMatches = property.type === "integer"
+  const typeMatches = value !== null && value !== undefined && (property.type === "integer"
     ? typeof value === "number" && Number.isInteger(value)
-    : actualType === property.type;
+    : actualType === property.type);
   if (!typeMatches) {
     errors.push(`El campo "${field}" debe ser de tipo ${property.type}.`);
     return;
@@ -500,20 +507,19 @@ function validateSchemaProperty(
   if (property.type !== "object" || !property.properties) return;
   const objectValue = value as Record<string, unknown>;
   for (const requiredField of property.required ?? []) {
-    if (!(requiredField in objectValue) || objectValue[requiredField] === null || objectValue[requiredField] === undefined) {
+    if (!Object.hasOwn(objectValue, requiredField)) {
       errors.push(`Falta el campo requerido "${field}.${requiredField}".`);
     }
   }
   for (const [childField, childValue] of Object.entries(objectValue)) {
-    const childProperty = property.properties[childField];
+    const childProperty = Object.hasOwn(property.properties, childField)
+      ? property.properties[childField] : undefined;
     if (!childProperty) {
       if (property.additionalProperties === false) {
         errors.push(`El campo "${field}.${childField}" no está permitido.`);
       }
       continue;
     }
-    if (childValue !== null && childValue !== undefined) {
-      validateSchemaProperty(`${field}.${childField}`, childValue, childProperty, errors);
-    }
+    validateSchemaProperty(`${field}.${childField}`, childValue, childProperty, errors);
   }
 }

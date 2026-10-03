@@ -140,6 +140,61 @@ describe("validateToolInput", () => {
     (tool) => tool.name === "write_measurement",
   );
 
+  it("no modifica los argumentos válidos ni convierte texto en números", () => {
+    const input = { date: "2024-04-11", data: { weight_kg: 75.5 } };
+    const before = structuredClone(input);
+    expect(validateToolInput(writeMeasurement!.inputSchema, input).valid).toBe(true);
+    expect(input).toEqual(before);
+    const invalid = { date: input.date, data: { weight_kg: "75.5" } };
+    expect(validateToolInput(writeMeasurement!.inputSchema, invalid).errors)
+      .toContain('El campo "data.weight_kg" debe ser de tipo number.');
+    expect(invalid.data.weight_kg).toBe("75.5");
+  });
+
+  it("rechaza null, también en propiedades opcionales y elementos de arrays", () => {
+    expect(validateToolInput(writeMeasurement!.inputSchema, {
+      date: null, data: { weight_kg: null }, clear_fields: [null],
+    }).errors).toEqual([
+      'El campo "date" debe ser de tipo string.',
+      'El campo "data.weight_kg" debe ser de tipo number.',
+      'El campo "clear_fields[0]" debe ser de tipo string.',
+    ]);
+    const routine = AGENT_TOOL_DEFINITIONS.find((tool) => tool.name === "create_routine")!;
+    expect(() => validateToolInput(routine.inputSchema, {
+      data: { name: "Pierna", category: "strength", icon: "activity", exercises: [null] },
+    })).not.toThrow();
+    expect(validateToolInput(routine.inputSchema, { data: null }).valid).toBe(false);
+  });
+
+  it("respeta additionalProperties y no acepta campos heredados como requeridos", () => {
+    const schema = {
+      type: "object" as const,
+      properties: { key: { type: "string" as const } },
+      required: ["key"],
+    };
+    expect(validateToolInput(schema, { key: "Objetivo", extra: true }).valid).toBe(true);
+    expect(validateToolInput({ ...schema, additionalProperties: false }, {
+      key: "Objetivo", extra: true,
+    }).errors).toEqual(['El campo "extra" no está permitido.']);
+    expect(validateToolInput(schema, Object.create({ key: "Objetivo" })).valid).toBe(false);
+    expect(validateToolInput({ ...schema, additionalProperties: false }, JSON.parse(
+      '{"key":"Objetivo","__proto__":{},"constructor":"x"}',
+    )).errors).toEqual([
+      'El campo "__proto__" no está permitido.',
+      'El campo "constructor" no está permitido.',
+    ]);
+  });
+
+  it("coincide con JSON Schema para argumentos JSON arbitrarios", () => {
+    const ajv = new Ajv({ allErrors: true, strict: true });
+    const validators = AGENT_TOOL_DEFINITIONS.map((tool) => ({
+      schema: tool.inputSchema, reference: ajv.compile(tool.inputSchema),
+    }));
+    fc.assert(fc.property(fc.constantFrom(...validators), fc.jsonValue(), ({ schema, reference }, input) =>
+      validateToolInput(schema, input).valid === reference(input),
+    ), { numRuns: 1000, seed: 400040 });
+  });
+
   it("informa de campos requeridos y tipos incompatibles", () => {
     expect(writeMeasurement).toBeDefined();
     const missing = validateToolInput(writeMeasurement!.inputSchema, {});
