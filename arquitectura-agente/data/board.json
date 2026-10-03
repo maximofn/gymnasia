@@ -781,7 +781,7 @@
         {
           "id": "GYM-40",
           "title": "6. Validación de argumentos contra el schema",
-          "state": "in_progress",
+          "state": "done",
           "baseline": "missing",
           "summary": "Validación central contra el schema antes del handler; los errores vuelven al modelo para que corrija los argumentos sin producir efectos.",
           "dependsOn": [
