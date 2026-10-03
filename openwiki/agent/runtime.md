@@ -10,9 +10,6 @@ related:
   - ../mobile/local-state-and-backup.md
   - ../operations/runtime-behavior.md
   - ../services/feedback-worker.md
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-29T12:03:05.365Z
 sources:
   - id: openwiki-source-192849a5973afd8b6e55db2c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts

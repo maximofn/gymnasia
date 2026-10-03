@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:a46eb7e618d84cb1e037e5a0f73035ef4cc39f0a3244da364ec9d06bf695bd90",
+  "pageVersion": "sha256:1477680ddc19dc90f0864a83aa2704612028c64087735849f9417f2b0151ab77",
   "claims": [
     {
       "id": "claim_f591ee85856647d6bdb6f14c8b44822c",
@@ -76,15 +76,23 @@
     },
     {
       "id": "claim_b5acd1b5e7f842cc845149704d09f810",
-      "statement": "Cada lease del agente une prompt, política sanitaria, procedencia y contexto de activación; los flujos de conversación y estimación nutricional usan el lease para clasificación sanitaria y para adjuntar `policy_context` a las respuestas.",
+      "statement": "Cada lease inmutable del agente reúne prompt, política sanitaria, procedencia y contexto de activación; el chat principal, el asistente de alimentos personales y la estimación nutricional lo adquieren por conversación o turno, usan su política para clasificar la entrada y adjuntan `policy_context` incluso a respuestas locales bloqueadas por el guardrail.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/App.tsx#L1672-L1719",
-          "version": "repo-lines-v1:sha256:5bf9adc2a62aa54775f8ff878faf47f92f10422bca86c89a8a1599302dd20a34:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4N2I5ZTQyZmYxYjE3MmRjMGRiYWJhNjI3YjAxMzU0NjliNDJhMTAzYWJkMGE2OWViODhlNGM5ODAwZDdlYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3OTJmODQ3YmIyMWNiMjkyZGQwOWY3ZmE2ZTdjYWM0YThjMTRkOTdkMzg5NjMzYjNkMTUyMGVhMTRiNWIxZGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMDIxNGZlZjM5YmM0ZTM5NmM3OTk3ZjJkOTgxMjA1YTY5NTFjYzI3ZGFhZWYyZWM0NTI0OTJkMTI3MWZmZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmZDEzYmE4ODU5MzQ3ZTU0YjI1Y2Q4YzhlMDc4MjNmYzg2NzA4OGNlZjJlMWNhZjE1OTFlMWRlNmQ3YWRjMGQifQ"
+          "resource": "repo://apps/mobile/App.tsx#L1863-L1909",
+          "version": "repo-lines-v1:sha256:bcd038c41e3aee66b409250f07cd151df76346e97d437bcca48a52c4c5b3bc14:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4N2I5ZTQyZmYxYjE3MmRjMGRiYWJhNjI3YjAxMzU0NjliNDJhMTAzYWJkMGE2OWViODhlNGM5ODAwZDdlYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlMWU2ZWM5ZTI0MTU5ZjA5NzBjODdhYWQ0N2QzYTM1NTRiNGUwNmFhOWNhMDczZmMwY2ZiZmJiZDY5YzliNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMDIxNGZlZjM5YmM0ZTM5NmM3OTk3ZjJkOTgxMjA1YTY5NTFjYzI3ZGFhZWYyZWM0NTI0OTJkMTI3MWZmZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhNDFkNzNjNDUyMmJlYTM5ZmY4MTVlMjRiY2YxMzExODUzMWQ2NzFlYjNjZjUzMTIxODg1ZTExYTFjNDcyNGQifQ"
         },
         {
-          "resource": "repo://apps/mobile/App.tsx#L5427-L5475",
-          "version": "repo-lines-v1:sha256:b4b274f17b2c59371900c875a9423e30b43d9cedf76e01ecbf1fc1e445b958b9:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhODg0MjBhM2QzZTY5NDcwZjQyYzExMjEzNDY3YTJiZDYzNDhiMTZkMTk5ZWE4Y2MxYTIwY2M0YzM0MjJlNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1NDQ4NDQ4MWNjZDY0YzBmYzIzY2UyNWIwZTczZjk4MWFkMGU0MTlhY2U0YjUxNjU3ZjhkYWFmNjFmYTZmNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiMGMxM2E0MjRhYmM3OGUzNTk2YTM4YzBhZGIzYWI3MWEzYWM5YmIzZmVkOTVmMWI0MTVjZjU3YWMwMDYxZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU0MjljNGE3OTAzNDY3M2Y3ZGNjY2ZmMWQ0Mjc0NzUyMWNhMWY4OWMwNDRlYTBhMjk4ODI3MWMzMTYzOGViYmIifQ"
+          "resource": "repo://apps/mobile/App.tsx#L4842-L4872",
+          "version": "repo-lines-v1:sha256:84a9be55b479f6f92dd81f07766402d29acb7899b265aab7076088138194ef08:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExZGY4N2E0NzMxNmM3MDhjNTUwMjA5OGU5YWY2YzQ0NTM0ZWI4MGJlYWRjZjYwNjMwMjhlZmNhODU5MzdhYmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0ODNmZjYwM2NkNDU3NGU1YWQyNGM2YjVjZjY2NjY0YmRkNGJlNDIyYzEzZjg3MmMwNmRlZjI1MDY5NTI3YWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkODlmZGFjNDNmMzJmM2VjNzc3MjNiMDFkNGExZDNlNGE4MTMyMDE5M2M3NmY1OGI1YjY0NmVhYzQzYjJhODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg0YmZkNzBjMzBjZGFiOGQyYjA3ZGY0MmFhY2JhZGM5OGM1ZWIyYjViNzIwMTdlYmM4OTc4YmUwZjNmYzI1MWMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L5744-L5775",
+          "version": "repo-lines-v1:sha256:5b74aaff478b311f31d02ba1e0dd644878e0ab8f32a0cff13f7f5017286fc3c0:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVhODg0MjBhM2QzZTY5NDcwZjQyYzExMjEzNDY3YTJiZDYzNDhiMTZkMTk5ZWE4Y2MxYTIwY2M0YzM0MjJlNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3OTJmODQ3YmIyMWNiMjkyZGQwOWY3ZmE2ZTdjYWM0YThjMTRkOTdkMzg5NjMzYjNkMTUyMGVhMTRiNWIxZGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiMGMxM2E0MjRhYmM3OGUzNTk2YTM4YzBhZGIzYWI3MWEzYWM5YmIzZmVkOTVmMWI0MTVjZjU3YWMwMDYxZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3NzZmNzg5ZWU5YzYzNDg1M2ExMzRjNmEwYmUzYjMyOTY0M2FiYzg3M2Y4NjgxMWY4NjUwN2QwZDI3ZWExZTYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L108-L123",
+          "version": "repo-lines-v1:sha256:f5952de6678cd518da6712cb131a588237a7c1e7f5ad9facba72f8a6a143f2e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzMjc2YmI1NGEyMmI5ZGM5YjJhNzY2MTU5OTE0YzljZTY5MTA5ZDY0MDQxNWU2OTVmMWM3NjkyODJiOWY2MDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiOTFiN2QxYTRlOGUyMzg4MjNlYzI0YTIyOWViOWQ1OWQ1Zjg0NjdhYmM5MzhiNjc5OGQ0Y2M3NzQ0YzhhMDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1NGMzZmQ2ZTFiODczZjNlZDVjYTBiY2IxYTkzOGRjYTEyYzMwMDczODIwZGU0MDAyMGRmZGIzNzYzNWFjNjUifQ"
         },
         {
           "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L126-L171",
@@ -467,6 +475,6 @@
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-10-03T12:48:56.598Z"
   }
 }
