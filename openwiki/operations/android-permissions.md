@@ -3,6 +3,9 @@ type: guía operativa de Android
 title: Permisos y configuración Android
 description: Define los contratos que limitan permisos y configuración nativa generada por Expo antes de publicar Android. Explica los controles reproducibles del checkout, el prebuild aislado y la verificación del APK/AAB final.
 tags: [android, permissions, native-config, expo, release, privacy]
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-03T12:48:56.598Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -34,16 +37,16 @@ sources:
     resource: repo://scripts/production-release/verify-artifact.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-03T12:48:56.598Z" }
 ---
 
 # Permisos y configuración Android
 
-La política Android aplica **defensa en profundidad**: la configuración Expo declara el mínimo necesario, una lista de bloqueos evita que el manifest merger recupere capacidades no aprobadas y los controles verifican tanto el checkout como el binario final. Ninguna de esas señales sustituye a otra: los manifests de dependencias anticipan deriva, `expo prebuild` comprueba lo que genera Expo y la inspección del artefacto comprueba el manifest fusionado que se distribuye.
+La política Android aplica **defensa en profundidad**: la configuración Expo declara el mínimo necesario, una lista de bloqueos evita que el manifest merger recupere capacidades no aprobadas y los controles verifican tanto el checkout como el binario final. Ninguna señal sustituye a otra: los manifests de dependencias anticipan deriva, `expo prebuild` comprueba lo que genera Expo y la inspección del artefacto comprueba el manifest fusionado que se distribuye.
 
-La fuente declarativa es `apps/mobile/app.json`; las políticas revisables viven en `scripts/android-permissions/policy.json` y `scripts/android-native-config/policy.json`. No trate `apps/mobile/android/` como fuente de verdad: es un artefacto ignorado y puede estar obsoleto.
+La fuente declarativa es `apps/mobile/app.json`; las políticas revisables viven en `scripts/android-permissions/policy.json` y `scripts/android-native-config/policy.json`. No trate `apps/mobile/android/` como fuente de verdad: es un resultado ignorado de `expo prebuild` y puede estar obsoleto.
 
-## Superficie aprobada y principio de mínimo privilegio
+## Superficie aprobada y mínimo privilegio
 
 La configuración Expo declara solo cuatro permisos Android:
 
@@ -54,18 +57,18 @@ La configuración Expo declara solo cuatro permisos Android:
 | `RECEIVE_BOOT_COMPLETED` | Permite reprogramar avisos después de reiniciar el dispositivo. |
 | `SCHEDULE_EXACT_ALARM` | Habilita la alarma exacta del aviso de descanso; el usuario la gestiona en «Alarmas y recordatorios». |
 
-En cambio, `expo.android.blockedPermissions` bloquea `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`. El bloqueo no es documentación pasiva: impide que una dependencia los aporte al manifest final. `USE_EXACT_ALARM` no equivale a `SCHEDULE_EXACT_ALARM` y no se admite; tampoco se admite `FOREGROUND_SERVICE`.
+En cambio, `expo.android.blockedPermissions` bloquea `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`. El bloqueo no es documentación pasiva: ordena al merger retirar esas aportaciones. `USE_EXACT_ALARM` no equivale a `SCHEDULE_EXACT_ALARM` y no se admite; tampoco se admite `FOREGROUND_SERVICE`.
 
-`expo-av` se configura con `microphonePermission: false`: la app reproduce avisos, no graba audio. Al incorporar un plugin o SDK, parta de que puede introducir permisos implícitos y justifique cada excepción en la política, el inventario de privacidad y las comprobaciones, antes de declararla.
+`expo-av` se configura con `microphonePermission: false`: la app reproduce avisos, no graba audio. Al incorporar un plugin o SDK, parta de que puede introducir permisos implícitos y justifique cada excepción en la política, el inventario de privacidad y las comprobaciones antes de declararla.
 
-`app.config.ts` carga la base de `app.json` y exige `APP_ENV` (`development`, `staging` o `production`). Cambia nombre e identificador de paquete según la variante, pero conserva la base Android y, tras eliminar una posible entrada previa, añade el plugin `expo-notifications` con los sonidos definidos en `notifications/notificationSounds.json`. Por tanto, cambiar un sonido o plugin también es un cambio de configuración nativa, aunque no modifique `android.permissions`.
+`app.config.ts` carga la base de `app.json` y exige `APP_ENV` (`development`, `staging` o `production`). Cambia nombre, identificador de paquete, canal y espacio de almacenamiento según la variante, pero conserva la base Android y, tras eliminar una posible entrada previa, añade el plugin `expo-notifications` con los sonidos definidos en `notifications/notificationSounds.json`. Por tanto, cambiar un sonido o plugin también es un cambio de configuración nativa, aunque no modifique `android.permissions`.
 
 ## Tres observaciones, tres límites
 
 ```mermaid
 flowchart TD
     Config["app.json y app.config.ts"] --> PermissionCheck["Check de permisos"]
-    PermissionPolicy["policy.json de permisos"] --> PermissionCheck
+    PermissionPolicy["Política de permisos"] --> PermissionCheck
     Dependencies["Manifests de node_modules"] --> PermissionCheck
     Config --> Prebuild["Prebuild Production aislado"]
     NativePolicy["Política de configuración nativa"] --> Prebuild
@@ -73,7 +76,7 @@ flowchart TD
     PermissionCheck --> SourceGate["Contrato del checkout"]
     SourceManifest --> SourceGate
     SourceGate --> LocalBuild["Build local en VM desechable"]
-    LocalBuild --> Quarantine["APK o AAB en cuarentena"]
+    LocalBuild --> Quarantine["AAB y APK en cuarentena"]
     Quarantine --> ArtifactCheck["Verificación del artefacto"]
     PermissionPolicy --> ArtifactCheck
     NativePolicy --> ArtifactCheck
@@ -91,7 +94,7 @@ flowchart TD
 
 Después recorre los `node_modules` de la raíz y de `apps/mobile`, sin seguir enlaces simbólicos y omitiendo ejemplos, pruebas e intermedios configurados. Extrae `<uses-permission>` de cada `AndroidManifest.xml`; una entrada con `tools:node="remove"` se ignora porque es una instrucción para retirar el permiso durante el merger, no una contribución. Si ningún manifest está disponible, falla con `scanner-empty`: instale dependencias con `npm ci`; un verde sin manifests no es evidencia.
 
-Una contribución bloqueada de una dependencia desconocida produce `dependency-contribution`. `acknowledgedContributors` solo reconoce el origen para hacer el diagnóstico accionable —actualmente `react-native` por su manifest de depuración con `SYSTEM_ALERT_WINDOW`—; no permite que el permiso aparezca en un APK/AAB. Mantenga el bloqueo y compruebe el binario final.
+Una contribución bloqueada de una dependencia desconocida produce `dependency-contribution`. `acknowledgedContributors` solo reconoce el origen para hacer el diagnóstico accionable —actualmente `react-native` por su manifest de depuración con `SYSTEM_ALERT_WINDOW`—; no permite que el permiso aparezca en un APK/AAB. Mantenga el bloqueo y compruebe el binario final. Para consumo programático, `node scripts/android-permissions/check.mjs --json` devuelve la configuración, el número de manifests, las aportaciones y las infracciones, y usa código de salida no nulo si las hay.
 
 ### 2. Contrato del prebuild Production
 
@@ -106,9 +109,9 @@ Sobre el resultado generado verifica conjuntos exactos de permisos fuente y dire
 
 Este contrato distingue dos listas que no deben mezclarse: el manifest **fuente** puede contener directivas de retirada para permisos que una dependencia aportaría, mientras que el artefacto no debe contener esos permisos. Un `grep` de `USE_EXACT_ALARM` sobre el manifest fuente puede encontrar la directiva `remove` y dar un falso positivo.
 
-### 3. Evidencia de release y del manifest fusionado
+### 3. Evidencia de release y manifest fusionado
 
-El workflow `build-apk.yml` valida el SHA exacto con `verify:production-source`, que vuelve a ejecutar los gates canónicos —incluidos ambos checks y sus pruebas— y falla si alguno ensucia el checkout. Después, la compilación `production-apk` ocurre en un runner autoalojado dentro de una VM desechable; su APK y metadatos se transfieren como resultado no confiable a una cuarentena de verificación independiente.
+El workflow `build-apk.yml` valida el SHA exacto con `verify:production-source`, que vuelve a ejecutar los gates canónicos —incluidos ambos checks y sus pruebas— y falla si alguno ensucia el checkout. Después, `compile-android` compila el candidato validado en el runner de build dentro de una VM desechable, genera primero AAB y después APK, y transfiere ambos binarios y sus metadatos como resultados no confiables a una cuarentena de verificación independiente.
 
 `verify:production-artifact` extrae el manifest con herramientas Android (`apkanalyzer` para APK; `bundletool` para AAB), inspecciona firma, SDK, configuración integrada, sonidos, tamaño, hashes y MIME. Para permisos aplica dos condiciones sobre el manifest fusionado:
 
@@ -117,7 +120,9 @@ El workflow `build-apk.yml` valida el SHA exacto con `verify:production-source`,
 
 El segundo control detecta tanto permisos inesperados como retiradas no revisadas. La lista es mayor que los cuatro permisos declarados porque documenta el conjunto completo observado en el binario, incluidas aportaciones legítimas de librerías y permisos específicos de launcher o paquete. `expectedMergedExtras` sirve para documentar aportaciones relevantes y para el inventario de Data safety; no relaja la igualdad del artefacto.
 
-Antes de publicar, el workflow también liga la evidencia al commit, transacción y snapshot de política, verifica paquete `com.maximofn.gymnasia`, SDK mínimo/objetivo, certificado de subida y versión, y mantiene el borrador si compilar o verificar falla. No publique ni interprete un APK local como equivalente de esta cadena protegida.
+Cada verificación escribe evidencia `ProductionArtifactEvidenceV2`, con el commit y hash de la evidencia de fuente, hash/tamaño/identidad del binario, permisos y sonidos observados, snapshot de política y herramientas usadas. El workflow liga además cada AAB y APK validado a su intento y a la transacción durable, exige el mismo `versionCode` para ambos, y conserva el borrador si compilar o verificar falla.
+
+Solo después se restaura el AAB validado, se persiste la intención de envío y se envía a Play Internal. Antes de desborrar la release se comprueba el estado durable, los hashes de los dos binarios y de sus evidencias, la evidencia Play y el vínculo de ambas evidencias de artefacto con la misma evidencia de fuente. No publique ni interprete un APK local como equivalente de esta cadena protegida.
 
 ## Operación y cambios seguros
 

@@ -52,7 +52,10 @@ sources:
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-03T12:48:56.598Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-03T12:48:56.598Z
 ---
 
 # Arquitectura local-first
@@ -127,7 +130,7 @@ Al arrancar puede utilizarse una caché válida marcada como `cached` o `stale`.
 
 El agente obtiene un *lease* de política al iniciar una conversación o un turno. En `Local` usa el snapshot integrado. En los canales remotos, el runtime resuelve una activación, descarga el bundle y su firma, y comprueba hash, firma Ed25519, entorno, canal y contrato de herramientas contra raíces públicas integradas. Puede recurrir a caché o snapshot integrado según el resultado de verificación, pero no debe aceptar contenido remoto no autenticado.
 
-El *lease* congela prompt, política sanitaria combinada, procedencia y contexto de activación para ese uso. Los flujos de conversación, asistente de alimentos personales y estimación nutricional usan esa selección para clasificar la entrada y para adjuntar `policy_context` a respuestas, incluso cuando el guardrail bloquea la llamada al proveedor. Modificar la entrega de política exige preservar los contratos sanitarios y de herramientas.
+El *lease* inmutable congela el prompt, la política sanitaria combinada, su procedencia y el contexto de activación para ese uso. El chat principal, el asistente de alimentos personales y la estimación nutricional adquieren el *lease* al abrir una conversación o turno, clasifican la entrada con su política sanitaria y adjuntan `policy_context` a la respuesta. Esto también ocurre cuando el guardrail bloquea la llamada al proveedor, de modo que la respuesta local sigue siendo atribuible a la política aplicada. Modificar la entrega de política exige preservar los contratos sanitarios y de herramientas.
 
 En modo BYOK, OpenAI, Anthropic y Google se consumen desde el cliente con la clave aportada por la persona usuaria. También puede configurarse un cuarto proveedor con una URL base HTTPS y contrato OpenAI Chat Completions; si no ofrece `/models`, el modelo se introduce manualmente. La app rechaza redirecciones de ese servidor. En web, la llamada directa a Anthropic declara `anthropic-dangerous-direct-browser-access`; por tanto la clave y el contenido de la solicitud quedan dentro de la frontera del navegador y se transmiten al proveedor. BYOK no transforma una clave de navegador en un secreto de servidor ni crea identidad de Gymnasia.
 

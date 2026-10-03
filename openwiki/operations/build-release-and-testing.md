@@ -3,9 +3,6 @@ type: guía operativa
 title: Build, release y estrategia de validación
 description: Selecciona comprobaciones deterministas, E2E web, validación del tablero y gates de release para cambios de Gymnasia. Distingue la evidencia de navegador y checks estáticos de la que exige un binario o dispositivo nativo.
 tags: [operations, ci, testing, release, android, backup, recovery, board]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-29T12:03:05.365Z
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
     resource: repo://.github/workflows/agent-tests.yml
