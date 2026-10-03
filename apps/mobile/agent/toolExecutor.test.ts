@@ -226,6 +226,49 @@ const dispatchScenarios: Record<string, {
 };
 
 describe("contrato del despachador", () => {
+  it("rechaza argumentos inválidos antes de lecturas, escrituras o efectos externos", async () => {
+    const dependencies = createDependencies({
+      loadPersonalData: vi.fn(async () => []),
+      loadMeasurements: vi.fn(async () => []),
+      savePersonalData: vi.fn(async () => {}),
+      submitFeedbackIssue: vi.fn(async () => ({ status: "canceled" as const })),
+      createId: vi.fn((prefix) => `${prefix}_test`),
+    });
+    const commitStore = vi.fn(async () => {});
+    const resolveExerciseCatalogIds = vi.fn(async () => []);
+    const markEffectCommitted = vi.fn();
+    const execute = createDetailedAgentToolExecutor(dependencies);
+    const assertRejected = async (name: string, args: unknown) => {
+      const result = await execute(name, args as Record<string, unknown>, {
+        commitStore, resolveExerciseCatalogIds, markEffectCommitted,
+      });
+      expect(result.status).toBe("no_effect");
+      expect(JSON.parse(result.output)).toMatchObject({
+        error: "invalid_tool_arguments", issues: expect.any(Array),
+      });
+    };
+    for (const tool of AGENT_TOOL_DEFINITIONS) {
+      await assertRejected(tool.name, null);
+      for (const field of tool.inputSchema.required ?? []) {
+        const args = { ...dispatchScenarios[tool.name].args };
+        delete args[field];
+        await assertRejected(tool.name, args);
+      }
+    }
+    await fc.assert(fc.asyncProperty(
+      fc.constantFrom(...AGENT_TOOL_DEFINITIONS), fc.anything(), async (tool, args) => {
+        if (!validateToolInput(tool.inputSchema, args).valid) await assertRejected(tool.name, args);
+      },
+    ), { numRuns: 500, seed: 400040 });
+    for (const dependency of [dependencies.loadPersonalData, dependencies.loadMeasurements,
+      dependencies.savePersonalData, dependencies.submitFeedbackIssue, dependencies.createId]) {
+      expect(dependency).not.toHaveBeenCalled();
+    }
+    expect(commitStore).not.toHaveBeenCalled();
+    expect(resolveExerciseCatalogIds).not.toHaveBeenCalled();
+    expect(markEffectCommitted).not.toHaveBeenCalled();
+  });
+
   it("cubre todas las tools declaradas con llamadas válidas y rutas estables", async () => {
     expect(Object.keys(dispatchScenarios).sort()).toEqual([...AGENT_TOOL_NAMES].sort());
     for (const [name, scenario] of Object.entries(dispatchScenarios)) {
@@ -347,10 +390,13 @@ describe("ejecutor de tools", () => {
   it("mantiene respuestas controladas para tools y JSON desconocidos", async () => {
     const execute = createAgentToolExecutor(createDependencies());
     await expect(execute("unknown_tool", {})).resolves.toBe("Herramienta no reconocida.");
-    await expect(execute("write_measurement", {
+    const output = await execute("write_measurement", {
       date: "2026-04-11",
       data: "{json roto",
-    })).resolves.toBe("El JSON de medidas no es válido.");
+    });
+    expect(JSON.parse(output)).toMatchObject({
+      error: "invalid_tool_arguments", issues: ['El campo "data" debe ser de tipo object.'],
+    });
   });
 
   it("busca y resuelve ejercicios mediante el catálogo paginado", async () => {
@@ -435,7 +481,7 @@ describe("ejecutor de tools", () => {
     });
   });
 
-  it("acepta el JSON heredado durante la transición y permite borrar un campo explícito", async () => {
+  it("rechaza el JSON textual y permite corregirlo sin perder la medición existente", async () => {
     let store: ToolStore = {
       ...createEmptyStore(),
       measurements: [{ ...createMeasurement("existing", "2024-04-11", 75), waist_cm: 82 }],
@@ -446,10 +492,15 @@ describe("ejecutor de tools", () => {
         store = updater(store);
       },
     };
-    await expect(execute("write_measurement", {
+    const invalid = await execute("write_measurement", {
       date: "2024-04-11",
       data: '{"body_fat_pct":"18,5"}',
       clear_fields: ["weight_kg"],
+    }, context);
+    expect(JSON.parse(invalid).error).toBe("invalid_tool_arguments");
+    expect(store.measurements[0]).toMatchObject({ weight_kg: 75, body_fat_pct: null });
+    await expect(execute("write_measurement", {
+      date: "2024-04-11", data: { body_fat_pct: 18.5 }, clear_fields: ["weight_kg"],
     }, context)).resolves.toContain("actualizadas correctamente");
     expect(store.measurements[0]).toMatchObject({
       id: "existing",
@@ -477,7 +528,7 @@ describe("ejecutor de tools", () => {
     await expect(execute("write_measurement", {
       date: "2024-04-11",
       data: { body_fat_pct: 101 },
-    }, { commitStore })).resolves.toContain("no puede superar el 100");
+    }, { commitStore })).resolves.toContain("debe ser 100 o menor");
     expect(commitStore).not.toHaveBeenCalled();
 
     await expect(execute("write_measurement", {
@@ -666,12 +717,11 @@ describe("ejecutor de tools", () => {
 
     expect(result.status).toBe("no_effect");
     const output = JSON.parse(result.output);
-    expect(output).toMatchObject({ status: "invalid_input", written: false });
-    expect(output.issues.map((issue: { code: string }) => issue.code)).toEqual(expect.arrayContaining([
-      "not_positive",
-      "negative",
-      "required",
-    ]));
+    expect(output).toMatchObject({ error: "invalid_tool_arguments" });
+    expect(output.issues).toEqual([
+      'El campo "data.exercises[0].series[0].reps" debe ser 1 o mayor.',
+      'El campo "data.exercises[0].series[0].weight_kg" debe ser 0 o mayor.',
+    ]);
     expect(commitStore).not.toHaveBeenCalled();
     expect(markEffectCommitted).not.toHaveBeenCalled();
     expect(createId).not.toHaveBeenCalled();
@@ -716,11 +766,11 @@ describe("ejecutor de tools", () => {
       }),
     }, { setStore });
 
-    expect(result).toContain("no es una categoría reconocida");
+    expect(JSON.parse(result).issues[0]).toContain('El campo "meal" debe ser uno de estos valores');
     expect(setStore).not.toHaveBeenCalled();
   });
 
-  it("normaliza una categoría conocida al leer", async () => {
+  it("pide corregir una categoría que no coincide con el enum y permite volver a leer", async () => {
     const store = createEmptyStore();
     store.dietByDate["2026-04-11"] = {
       day_date: "2026-04-11",
@@ -744,7 +794,10 @@ describe("ejecutor de tools", () => {
       meal: "  desayuno ",
     }, { store });
 
-    expect(JSON.parse(result)).toEqual([expect.objectContaining({ nombre: "Agua" })]);
+    expect(JSON.parse(result).error).toBe("invalid_tool_arguments");
+    expect(JSON.parse(await execute("read_meal_foods", {
+      date: "2026-04-11", meal: "Desayuno",
+    }, { store }))).toEqual([expect.objectContaining({ nombre: "Agua" })]);
   });
 
   it("confirma el efecto solo después de persistir y usa ids estables", async () => {

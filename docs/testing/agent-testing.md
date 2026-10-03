@@ -44,6 +44,47 @@ pruebas recorren stream → parser de producción → tool → resultado → seg
 ronda. Los schemas también se someten a propiedades generativas con `fast-check`.
 Cada regresión determinista nueva debe añadirse como fixture o caso unitario.
 
+## Validación de argumentos de Coach
+
+El despachador `createDetailedAgentToolExecutor` comprueba una sola vez los
+argumentos contra el `inputSchema` canónico antes de entrar en el handler, también
+en lecturas. Un fallo devuelve `invalid_tool_arguments`, una explicación de que
+no se ejecutó la herramienta y una lista de campos y motivos. Su estado de efecto
+es `no_effect`: no carga datos, resuelve catálogos, crea IDs ni escribe. El bucle
+reinyecta ese resultado y permite corregir la llamada dentro del presupuesto de
+rondas existente; no aborta el turno ni reintenta automáticamente la escritura.
+
+El validador es propio, sin dependencias nuevas en React Native. Comprueba tipos,
+campos requeridos propios del objeto, enums, límites numéricos, enteros, arrays y
+objetos anidados. No transforma ni elimina argumentos. `null` no satisface un tipo
+no nullable, tampoco en campos opcionales. Los campos extra se admiten si el
+schema omite `additionalProperties` y se rechazan si declara `false`, tanto en la
+raíz como en objetos anidados. Los nombres heredados como `constructor` nunca se
+confunden con propiedades declaradas.
+
+La validación de schema no sustituye las reglas de dominio: fechas civiles,
+existencia de referencias, coherencia de series y contenido del JSON que ciertas
+tools declaran como string siguen comprobándose en sus contratos. Las mediciones
+de Coach deben enviar un objeto con números y las comidas deben coincidir con el
+enum; no se convierte el JSON textual de una medición ni se normaliza una comida
+antes de validar. Esto no cambia la importación de datos heredados.
+
+OpenAI Responses y el proveedor compatible con OpenAI devuelven un error
+recuperable cuando los argumentos no son un objeto JSON legible. Nunca los
+convierten en `{}` para ejecutar una herramienta sin campos requeridos. El
+estimador OpenAI comparte ese parser y también devuelve el error sin consultar
+una herramienta ante JSON ilegible.
+
+Las pruebas comparan el validador con Ajv (solo en tests), ejercitan argumentos
+arbitrarios y comprueban los efectos del ejecutor. Los fixtures
+`*-invalid-measurement-tool-call.sse` permiten verificar con los tres proveedores
+el ciclo error → corrección → una sola escritura, incluyendo el flujo web E2E.
+
+Revisión de privacidad: el inventario documenta estos errores técnicos enviados
+al proveedor. No cambian terceros, categorías de datos, permisos, almacenamiento,
+copias ni borrado; la política legal y las declaraciones de Play ya cubren los
+resultados de herramientas y no requieren una nueva versión por este cambio.
+
 La suite sanitaria vive en `policy/health-safety/` y
 `scripts/health-safety/`. Sus fixtures representan respuestas explícitas de un
 proveedor falso y verifican el cableado, los contratos y regresiones curadas;

@@ -108,4 +108,29 @@ describe("custom OpenAI-compatible provider", () => {
     })).rejects.toThrow("Elige otro modelo");
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
+
+  it("lets the custom Coach correct malformed JSON instead of aborting the turn", async () => {
+    const response = (message: unknown) => new Response(JSON.stringify({ choices: [{ message }] }), {
+      status: 200, headers: { "content-type": "application/json" },
+    });
+    const call = (id: string, args: string) => ({
+      content: null, tool_calls: [{ id, type: "function",
+        function: { name: "read_routines", arguments: args },
+      }],
+    });
+    const fetchImpl = vi.fn()
+      .mockResolvedValueOnce(response(call("invalid", "{broken")))
+      .mockResolvedValueOnce(response(call("corrected", "{}")))
+      .mockResolvedValueOnce(response({ content: "No tienes rutinas." }));
+    vi.stubGlobal("fetch", fetchImpl);
+    const executeTool = vi.fn(async () => "No hay rutinas de entrenamiento creadas.");
+    const result = await requestProviderToolChat(provider, [{ role: "user", content: "Lee mis rutinas" }],
+      { platform: "web", fakeMode: false }, { executeTool });
+    expect(result.content).toBe("No tienes rutinas.");
+    expect(executeTool).toHaveBeenCalledOnce();
+    expect(JSON.parse(fetchImpl.mock.calls[1][1].body).messages.at(-1)).toMatchObject({
+      role: "tool", tool_call_id: "invalid", content: expect.stringContaining("invalid_tool_arguments"),
+    });
+    expect(executeTool).toHaveBeenCalledWith("read_routines", {}, expect.any(Object));
+  });
 });

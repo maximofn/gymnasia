@@ -1,5 +1,6 @@
 import { type GoogleInteractionTurn, type GoogleStep } from "./googleInteractions";
 import { canonicalToolJson } from "./toolOperationLedger";
+import { formatToolInputError } from "./toolDefinitions";
 import {
   toolCallOccurrenceKey,
   type ToolCallEnvelope,
@@ -172,15 +173,15 @@ function copyOpenAIInput(items: Array<Record<string, unknown>>): Array<Record<st
   return JSON.parse(JSON.stringify(items)) as Array<Record<string, unknown>>;
 }
 
-export function parseOpenAIFunctionArguments(rawArguments: string): Record<string, unknown> {
+export function parseOpenAIFunctionArguments(rawArguments: string): Record<string, unknown> | null {
   const trimmed = rawArguments.trim();
-  if (!trimmed) return {};
+  if (!trimmed) return null;
   try {
     const parsed: unknown = JSON.parse(trimmed);
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
     return parsed as Record<string, unknown>;
   } catch {
-    return {};
+    return null;
   }
 }
 
@@ -219,18 +220,20 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
     activeItems.push(...copyOpenAIInput(turn.outputItems as Array<Record<string, unknown>>));
     for (const toolCall of toolCalls) {
       const args = parseOpenAIFunctionArguments(toolCall.arguments);
-      const result = await input.executeTool(
-        toolCall.name,
-        args,
-        {
-          executionId: input.executionId ?? "legacy-execution",
-          provider: "openai",
-          providerCallId: toolCall.call_id,
-          name: toolCall.name,
+      const result = args === null
+        ? formatToolInputError(["Los argumentos deben ser un objeto JSON válido."])
+        : await input.executeTool(
+          toolCall.name,
           args,
-          occurrence: nextOccurrence(occurrences, toolCall.name, args),
-        },
-      );
+          {
+            executionId: input.executionId ?? "legacy-execution",
+            provider: "openai",
+            providerCallId: toolCall.call_id,
+            name: toolCall.name,
+            args,
+            occurrence: nextOccurrence(occurrences, toolCall.name, args),
+          },
+        );
       activeItems.push({
         type: "function_call_output",
         call_id: toolCall.call_id,
