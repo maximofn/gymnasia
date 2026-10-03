@@ -367,7 +367,7 @@
           "id": "GYM-226",
           "title": "Automatizar la subida a Google Play de los cambios fusionados",
           "state": "done",
-          "summary": "Hoy nada de lo que se fusiona llega a Play: el workflow compila un APK y publica una release de GitHub, sin AAB ni subida. Automatizarlo hasta el canal de pruebas internas.",
+          "summary": "Cada cambio publicable compila AAB y APK en wallabot, envía el AAB a Prueba cerrada Alpha para los 14 testers y publica una Release verificable; la promoción pública sigue siendo manual.",
           "dependsOn": [],
           "related": [
             "GYM-158",
