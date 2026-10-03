@@ -790,17 +790,6 @@
           "related": []
         },
         {
-          "id": "GYM-41",
-          "title": "7. Formato y tamaño del resultado de una tool",
-          "state": "backlog",
-          "baseline": "partial",
-          "summary": "Todas devuelven string, pero unas prosa y otras un JSON.stringify completo. Sin truncado ni límite.",
-          "dependsOn": [
-            "GYM-34"
-          ],
-          "related": []
-        },
-        {
           "id": "GYM-42",
           "title": "8. Contrato de errores: is_error, try/catch y recuperación",
           "state": "backlog",
@@ -1029,6 +1018,16 @@
           "state": "done",
           "summary": "Continuar las rondas de OpenAI con un historial construido en el móvil y `store: false`, conservando las llamadas a tools y el razonamiento cifrado necesarios para una respuesta correcta.",
           "dependsOn": [],
+          "related": []
+        },
+        {
+          "id": "GYM-41",
+          "title": "7. Formato y tamaño del resultado de una tool",
+          "state": "backlog",
+          "summary": "Todas devuelven string, pero unas prosa y otras un JSON.stringify completo. Sin truncado ni límite.",
+          "dependsOn": [
+            "GYM-34"
+          ],
           "related": []
         }
       ]
@@ -3461,13 +3460,12 @@
     {
       "id": "arreglar",
       "title": "Arreglar lo que está roto de verdad",
-      "why": "No son ejercicio: son fallos reales del agente hoy. GYM-151 evita que la UI y el agente se borren recuerdos entre sí y GYM-152 impide que una memoria corrupta parezca vacía y termine sobrescrita; después se corrige que el modelo confunda errores con datos, acepte argumentos alucinados o crezca el contexto sin límite.",
+      "why": "No son ejercicio: son fallos reales del agente hoy. GYM-151 evita que la UI y el agente se borren recuerdos entre sí y GYM-152 impide que una memoria corrupta parezca vacía y termine sobrescrita; después se corrige que el modelo confunda errores con datos o acepte argumentos alucinados.",
       "tickets": [
         "GYM-151",
         "GYM-152",
         "GYM-42",
-        "GYM-40",
-        "GYM-41"
+        "GYM-40"
       ]
     },
     {
@@ -3501,19 +3499,20 @@
       ]
     },
     {
+      "id": "contexto-openai-local",
+      "title": "Gestionar el contexto del agente",
+      "why": "GYM-254 (ticket para gestionar localmente el contexto de OpenAI) deja el historial bajo control del móvil. GYM-41 (ticket para controlar el tamaño y el formato de los resultados de las tools) queda en esta épica para evaluar salidas grandes cuando exista una necesidad medida, considerando el aislamiento en subagentes antes de imponer recortes arbitrarios.",
+      "tickets": [
+        "GYM-254",
+        "GYM-41"
+      ]
+    },
+    {
       "id": "cerrar-tool-calling",
       "title": "Cerrar tool calling",
       "why": "Depende de los catorce anteriores: recoge en una suite única los casos que cada ticket ha ido dejando.",
       "tickets": [
         "GYM-48"
-      ]
-    },
-    {
-      "id": "contexto-openai-local",
-      "title": "Gestionar el contexto de OpenAI en el móvil",
-      "why": "El bucle de tools ya funciona; gestionar sus rondas localmente permite decidir qué contexto enviar antes de añadir selección y compactación, y evita depender de respuestas guardadas en OpenAI.",
-      "tickets": [
-        "GYM-254"
       ]
     },
     {
