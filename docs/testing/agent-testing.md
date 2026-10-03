@@ -69,6 +69,15 @@ de Coach deben enviar un objeto con números y las comidas deben coincidir con e
 enum; no se convierte el JSON textual de una medición ni se normaliza una comida
 antes de validar. Esto no cambia la importación de datos heredados.
 
+OpenAI Responses recibe `strict: false` explícito en cada función. Si se omite,
+el servicio puede normalizar el schema a modo estricto y convertir todos los
+campos opcionales en obligatorios. En QA con `gpt-6-luna`, pedir solo un peso
+provocó que rellenase las otras medidas con 0,01; el schema devuelto por OpenAI
+confirmó `strict: true` y todas las medidas en `required`. El contrato debe
+conservar sus campos opcionales y la validación local sigue siendo obligatoria.
+La prueba de contrato y el E2E comprueban la configuración enviada por la app.
+Referencia: https://developers.openai.com/api/docs/guides/function-calling.
+
 OpenAI Responses y el proveedor compatible con OpenAI devuelven un error
 recuperable cuando los argumentos no son un objeto JSON legible. Nunca los
 convierten en `{}` para ejecutar una herramienta sin campos requeridos. El

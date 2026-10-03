@@ -79,7 +79,18 @@ describe("contrato schema ↔ ejecutor ↔ proveedores", () => {
       name: tool.name,
       description: tool.description,
       parameters: tool.inputSchema,
+      strict: false,
     })));
+  });
+
+  it("permite enviar solo el peso sin que Responses haga obligatorias las otras medidas", () => {
+    const tool = CHAT_TOOLS.openai.find((definition) => definition.name === "write_measurement")!;
+    expect(tool.strict).toBe(false);
+    const validate = new Ajv().compile(tool.parameters);
+    expect(validate({ date: "2026-10-03", data: { weight_kg: 75.5 } })).toBe(true);
+    expect(validate({ date: "2026-10-03", data: { weight_kg: "75,5" } })).toBe(false);
+    expect(tool.parameters.required).not.toContain("clear_fields");
+    expect(tool.parameters.properties.data.required ?? []).toEqual([]);
   });
 
   it("proyecta el catálogo completo al formato de Anthropic", () => {

@@ -792,6 +792,12 @@ async function runAgentChatE2E(
   );
   assert(systemPrompt.includes("Eres Gymnasia Coach, un sistema de inteligencia artificial"));
   const providerTools = requestBodies[0].tools;
+  if (provider === "openai") {
+    assert(
+      providerTools.every((tool) => tool.strict === false),
+      "Responses debe conservar los campos opcionales del contrato, sin normalizarlos a required.",
+    );
+  }
   if (provider === "google") {
     for (const body of requestBodies) {
       assert.equal(body.store, false);

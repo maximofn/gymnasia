@@ -391,6 +391,12 @@ Only non-obvious gotchas that could recur are kept here.
 - Gotcha: Gemini REST API rejects `thinkingConfig` at the top level of the request body with `Unknown name "thinkingConfig": Cannot find field`.
 - Fix: nest it as `generationConfig.thinkingConfig: { includeThoughts: true }`.
 
+### OpenAI Responses puede convertir campos opcionales en obligatorios
+- Síntoma: pedir solo un peso produce valores mínimos inventados en otras medidas, o impide usar `clear_fields` sin volver a enviarlas. El schema enviado no las marcaba como requeridas, pero el schema devuelto por OpenAI sí.
+- Causa externa: omitir `strict` en Responses permite que el servicio normalice el schema a modo estricto, que requiere todos los campos. En Chat Completions el valor por defecto es distinto.
+- El catálogo de Coach usa `strict: false` explícito para conservar el contrato canónico y valida cada llamada localmente antes del handler. No arreglarlo aceptando valores ficticios ni haciendo nullable un campo que la app no trata como nullable.
+- Referencia: https://developers.openai.com/api/docs/guides/function-calling. Detectado en la QA de GYM-40 (ticket para validar los argumentos de las tools contra su schema), con `gpt-6-luna` el 3 de octubre de 2026.
+
 ### Tunnel mode not applied when starting mobile from root alias
 - Gotcha: `npm run dev:mobile -- --tunnel --clear` sometimes fails to forward the `--tunnel` flag through the workspace command chain, starting Metro in LAN mode instead.
 - Fix: use `npm --workspace apps/mobile run start -- --tunnel --clear` directly. Verify `Tunnel ready` + `exp.direct` URL before scanning QR.

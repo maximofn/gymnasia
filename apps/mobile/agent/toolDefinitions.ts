@@ -414,6 +414,9 @@ export const CHAT_TOOLS = {
     name: tool.name,
     description: tool.description,
     parameters: tool.inputSchema,
+    // Responses otherwise normalizes optional properties into required fields.
+    // Keep the canonical contract; the local dispatcher validates every call.
+    strict: false,
   })),
   anthropic: AGENT_TOOL_DEFINITIONS.map((tool) => ({
     name: tool.name,
