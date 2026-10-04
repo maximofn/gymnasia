@@ -99,7 +99,59 @@ el informe. El script usa un origen local desechable y una clave ficticia; no
 lee sesiones BYOK ni datos personales del navegador habitual. No se añade una
 puerta de CI basada en tiempos de pared.
 
-## Verificación nativa pendiente
+## QA con proveedor real tras la fusión
+
+El 4 de octubre de 2026 se publicó la web 1.51.0 desde
+`f38755747371e932cd9385234637b908e3156e45`. Brave con OpenAI Responses y
+`gpt-6-luna` confirmó tres `search_exercises` en un mismo turno: press, curl y
+sentadilla. Las tres respuestas del catálogo conservaron sus `call_id` y el
+orden original al volver al proveedor; Coach mostró coincidencias reales.
+
+Otro lote combinó dos `read_measurement` y una búsqueda de curl. La fecha
+ficticia ausente, 2020-01-02, devolvió `not_found`; la lectura de 2020-01-01
+conservó 76 kg ficticios y la búsqueda devolvió 15 coincidencias. El error no
+canceló las otras lecturas ni produjo datos inventados en la respuesta.
+
+La persistencia se comprobó guardando primero 75 kg y después 76 kg ficticios
+para 2020-01-01, tras confirmar la propuesta, y leyendo nuevamente después de
+recargar la app. El modelo eligió turnos separados para las dos escrituras:
+esta QA demuestra persistencia; la exclusión de escrituras dentro de un mismo
+lote se acredita con las pruebas deterministas de los cuatro dialectos.
+
+La evidencia saneada está en `benchmarks/tool-batch/real-provider-qa.json`.
+Solo recoge llamadas y resultados de estas pruebas ficticias, sin cabeceras de
+autenticación ni claves. El bundle publicado fue
+`index-7eb3e229140d0142e10a82626319231a.js`, SHA-256
+`27d370f9846b153135fda11f16c49493b7e2feffc128c830be6d975141a75444`.
+Estas comprobaciones no añaden una medición de rendimiento nativo ni convierten
+la latencia del proveedor real en una comparación controlada.
+
+## Binarios Android para la comparación
+
+El 4 de octubre de 2026 se completaron en wallabot el Staging anterior y la
+Producción nueva. El workflow de Producción terminó correctamente, publicó
+[la release 1.51.0](https://github.com/maximofn/gymnasia/releases/tag/v1.51.0)
+y confirmó el envío a Alpha con estado `FINISHED` y `releaseStatus: completed`.
+
+| APK | Fuente | Paquete | versionCode | SHA-256 |
+| --- | --- | --- | --- | --- |
+| Staging 1.50.4, serie | `97c9c9fd02e133dd9ace4a221ff26d58cb08539b` | `com.maximofn.gymnasia.staging` | 1 | `5c82a37c8670eb67a1208c94ab2a3e7c1e075556d5445a21b429207ee729bd25` |
+| Producción 1.51.0, paralelo | `f38755747371e932cd9385234637b908e3156e45` | `com.maximofn.gymnasia` | 86 | `1dce0f56b4e030e7f99f64850e15059fa52b209bb090093d05948363297e0c45` |
+
+Ambos APK pasaron su verificador independiente. Los hashes se contrastaron
+después de descargar los binarios; la evidencia de Producción confirma fuente,
+versión, firma, permisos y política promocionada. El AAB tiene el mismo
+versionCode 86 y el mismo bundle Hermes que el APK. Una comprobación adicional
+detecta el marcador del nuevo planificador en ambos binarios de Producción y su
+ausencia en Staging; no sustituye las pruebas funcionales. El detalle está en
+`benchmarks/tool-batch/android-release-comparison.json` y las evidencias completas
+de Producción acompañan a la release.
+
+Los paquetes distintos permiten conservar ambos APK instalados. Cada app tiene
+su propio almacenamiento; la comparación necesita datos y consultas equivalentes.
+Compilar y verificar los artefactos no añade una medición de rendimiento nativo.
+
+## Medición nativa pendiente
 
 Comparar los APK release Staging anterior y Producción nueva en el mismo
 dispositivo, con consultas y datos equivalentes y alternando las variantes.

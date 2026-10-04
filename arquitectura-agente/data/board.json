@@ -803,7 +803,7 @@
         {
           "id": "GYM-43",
           "title": "9. Ejecución paralela de tools independientes",
-          "state": "in_progress",
+          "state": "done",
           "baseline": "missing",
           "summary": "El bucle las ejecuta en serie (App.tsx:4695-4699) aunque Anthropic las devuelva como independientes.",
           "dependsOn": [
