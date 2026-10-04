@@ -1,4 +1,5 @@
 import { sha256 } from "@noble/hashes/sha2.js";
+import { toolFailure } from "./toolErrors";
 
 export type ToolProvider = "openai" | "anthropic" | "google" | "custom_openai";
 
@@ -13,6 +14,7 @@ export type ToolCallEnvelope = {
 
 export type ToolOperationExecutionOutcome = {
   output: string;
+  isError?: boolean;
   status: "committed" | "no_effect" | "failed_before_commit" | "indeterminate";
 };
 
@@ -29,6 +31,7 @@ type ToolOperationLedgerEntry = ToolOperationIdentity & {
   updatedAt: number;
   expiresAt: number;
   output?: string;
+  isError?: boolean;
 };
 
 type ToolOperationLedgerState = {
@@ -185,7 +188,7 @@ function isFiniteNumber(value: unknown): value is number {
 function isLedgerEntry(value: unknown): value is ToolOperationLedgerEntry {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const entry = value as Record<string, unknown>;
-  if (!isIdentity(entry)) return false;
+  if (!isIdentity(entry) || (entry.isError !== undefined && typeof entry.isError !== "boolean")) return false;
   if (!["prepared", "committed", "indeterminate"].includes(String(entry.state))) return false;
   if (
     !isFiniteNumber(entry.preparedAt)
@@ -320,7 +323,7 @@ export class ToolOperationLedgerRepository {
 
   async find(identity: ToolOperationIdentity): Promise<
     | { kind: "miss" }
-    | { kind: "replay"; output: string }
+    | { kind: "replay"; output: string; isError?: boolean }
     | { kind: "prepared"; toolName: string; preparedAt: number }
     | { kind: "indeterminate"; toolName: string; preparedAt: number }
     | { kind: "collision" }
@@ -333,7 +336,7 @@ export class ToolOperationLedgerRepository {
     );
     if (!entry) return { kind: "miss" };
     if (entry.fingerprint !== identity.fingerprint) return { kind: "collision" };
-    if (entry.state === "committed") return { kind: "replay", output: entry.output ?? "" };
+    if (entry.state === "committed") return { kind: "replay", output: entry.output ?? "", ...(entry.isError ? { isError: true } : {}) };
     return { kind: entry.state, toolName: entry.toolName, preparedAt: entry.preparedAt };
   }
 
@@ -367,6 +370,7 @@ export class ToolOperationLedgerRepository {
     identity: ToolOperationIdentity,
     toolName: string,
     output: string,
+    isError?: boolean,
   ): Promise<void> {
     await this.load();
     await this.enqueueWrite(async () => {
@@ -385,6 +389,7 @@ export class ToolOperationLedgerRepository {
         updatedAt: now,
         expiresAt: now + TOOL_OPERATION_LEDGER_TTL_MS,
         output,
+        ...(isError ? { isError: true } : {}),
       };
       const entries = this.bounded([
         ...retained.filter((entry) => entry.operationId !== identity.operationId),
@@ -461,7 +466,7 @@ export class ToolOperationCoordinator {
   private readonly inFlight = new Map<string, Promise<ToolOperationExecutionOutcome>>();
   private readonly volatileCommitted = new Map<
     string,
-    { fingerprint: string; output: string; expiresAt: number }
+    { fingerprint: string; output: string; expiresAt: number; isError?: boolean }
   >();
   private generation = 0;
 
@@ -494,7 +499,7 @@ export class ToolOperationCoordinator {
             toolName: call.name,
           });
           return {
-            output: "No se ejecutó la acción porque su identidad no era segura.",
+            ...toolFailure("operation_identity_conflict", "No se ejecutó la acción porque su identidad no era segura.", "stop_turn"),
             status: "no_effect",
           };
         }
@@ -504,7 +509,7 @@ export class ToolOperationCoordinator {
           source: "memory",
           toolName: call.name,
         });
-        return { output: volatile.output, status: "committed" };
+        return { output: volatile.output, ...(volatile.isError ? { isError: true } : {}), status: "committed" };
       }
     }
 
@@ -528,10 +533,11 @@ export class ToolOperationCoordinator {
     return execution;
   }
 
-  private remember(identity: ToolOperationIdentity, output: string): void {
+  private remember(identity: ToolOperationIdentity, output: string, isError?: boolean): void {
     this.volatileCommitted.set(identity.operationId, {
       fingerprint: identity.fingerprint,
       output,
+      ...(isError ? { isError: true } : {}),
       expiresAt: this.now() + TOOL_OPERATION_LEDGER_TTL_MS,
     });
     while (this.volatileCommitted.size > TOOL_OPERATION_LEDGER_MAX_ENTRIES) {
@@ -584,19 +590,19 @@ export class ToolOperationCoordinator {
     if (found.kind === "collision") {
       this.trace?.("tool_operation", { phase: "reconcile", status: "collision", toolName: call.name });
       return {
-        output: "No se ejecutó la acción porque su identidad no era segura.",
+        ...toolFailure("operation_identity_conflict", "No se ejecutó la acción porque su identidad no era segura.", "stop_turn"),
         status: "no_effect",
       };
     }
     if (found.kind === "replay") {
-      this.remember(identity, found.output);
+      this.remember(identity, found.output, found.isError);
       this.trace?.("tool_operation", {
         phase: "reconcile",
         status: "committed",
         source: "ledger",
         toolName: call.name,
       });
-      return { output: found.output, status: "committed" };
+      return { output: found.output, ...(found.isError ? { isError: true } : {}), status: "committed" };
     }
 
     const reconciliationContext: ToolOperationReconciliationContext =
@@ -643,8 +649,8 @@ export class ToolOperationCoordinator {
     }
 
     try {
-      await this.ledger.commit(identity, call.name, outcome.output);
-      this.remember(identity, outcome.output);
+      await this.ledger.commit(identity, call.name, outcome.output, outcome.isError);
+      this.remember(identity, outcome.output, outcome.isError);
       this.trace?.("tool_operation", { phase: "record", status: "committed", toolName: call.name });
       return outcome;
     } catch {

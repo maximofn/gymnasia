@@ -1,4 +1,5 @@
 import type { ToolEffect } from "./healthSafety";
+import { toolError } from "./toolErrors";
 import { DIET_MEAL_CATEGORIES } from "../diet/nutritionContract";
 import { SERIES_TYPES } from "../training/seriesContract";
 import {
@@ -434,11 +435,9 @@ export type ToolInputValidation = {
 };
 
 export function formatToolInputError(errors: string[]): string {
-  return JSON.stringify({
-    error: "invalid_tool_arguments",
-    message: "La herramienta no se ha ejecutado. Corrige los argumentos y vuelve a intentarlo.",
-    issues: errors,
-  });
+  return toolError("invalid_tool_arguments",
+    "La herramienta no se ha ejecutado. Corrige los argumentos y vuelve a intentarlo.",
+    "correct_arguments", { issues: errors });
 }
 
 export function validateToolInput(

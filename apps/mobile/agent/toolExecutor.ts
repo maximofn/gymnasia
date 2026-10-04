@@ -36,7 +36,8 @@ import type { ExerciseSeries } from "../training/seriesContract";
 import { listWorkoutExecutionUnits } from "../training/workoutExecution";
 import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
 import { prepareRoutineCreation } from "./routineCreationContract";
-import { AGENT_TOOL_DEFINITIONS, formatToolInputError, validateToolInput } from "./toolDefinitions";
+import { AGENT_TOOL_DEFINITIONS, agentToolEffect, formatToolInputError, validateToolInput } from "./toolDefinitions";
+import { toolFailure, type ToolResult } from "./toolErrors";
 
 export type { PersonalDataField };
 
@@ -128,7 +129,7 @@ export type ToolHandler = (
   args: Record<string, unknown>,
   context: ToolExecutionContext,
   dependencies: ToolExecutorDependencies,
-) => Promise<string>;
+) => Promise<string | ToolResult>;
 
 async function commitToolStore(
   context: ToolExecutionContext,
@@ -142,13 +143,13 @@ async function commitToolStore(
   }
 }
 
-/** Deshace el envoltorio JSON del argumento; la validación la hace sanitizePersonalDataFields. */
+/** Invalid JSON is not an empty memory replacement. */
 function parsePersonalDataInput(input: unknown): unknown {
   if (typeof input === "string") {
     try {
       return JSON.parse(input);
     } catch {
-      return [];
+      return null;
     }
   }
   return input;
@@ -210,6 +211,9 @@ function parseObjectArgument(
 
 const savePersonalData: ToolHandler = async (args, _context, dependencies) => {
   const parsed = parsePersonalDataInput(args.personal_data);
+  if (!Array.isArray(parsed)) {
+    return toolFailure("invalid_personal_data", "No se guardaron los datos personales. Envía un array JSON válido; la memoria existente no se ha modificado.", "correct_arguments");
+  }
   const fields = sanitizePersonalDataFields(parsed);
   const discarded = countDiscardedPersonalDataFields(parsed);
   try {
@@ -240,7 +244,7 @@ const readFieldDescription: ToolHandler = async (args, _context, dependencies) =
   const key = args.key as string;
   const fields = await dependencies.loadPersonalData();
   const field = fields.find((item) => item.key === key);
-  if (!field) return `Campo "${key}" no encontrado.`;
+  if (!field) return toolFailure("not_found", `Campo "${key}" no encontrado. Consulta las claves disponibles antes de elegir otro campo.`, "choose_alternative");
   return field.description || "(sin descripcion)";
 };
 
@@ -248,29 +252,29 @@ const readFieldValue: ToolHandler = async (args, _context, dependencies) => {
   const key = args.key as string;
   const fields = await dependencies.loadPersonalData();
   const field = fields.find((item) => item.key === key);
-  if (!field) return `Campo "${key}" no encontrado.`;
+  if (!field) return toolFailure("not_found", `Campo "${key}" no encontrado. Consulta las claves disponibles antes de elegir otro campo.`, "choose_alternative");
   return field.value || "(sin valor)";
 };
 
 const readMeasurement: ToolHandler = async (args, _context, dependencies) => {
   const dateResult = validateMeasurementDate(args.date);
-  if (!dateResult.ok) return formatMeasurementIssues(dateResult.issues);
+  if (!dateResult.ok) return toolFailure("invalid_measurement", formatMeasurementIssues(dateResult.issues), "correct_arguments");
   const measurements = await dependencies.loadMeasurements();
   if (measurementDuplicateDates(measurements).includes(dateResult.value)) {
-    return `Hay varias mediciones para ${dateResult.value}. Revísalas desde el historial para decidir cuál conservar.`;
+    return toolFailure("ambiguous_measurement", `Hay varias mediciones para ${dateResult.value}. Revísalas desde el historial para decidir cuál conservar.`, "stop_turn");
   }
   const match = measurements.find((measurement) => measurement.measured_on === dateResult.value);
-  if (!match) return `No hay registro de medidas para la fecha "${dateResult.value}".`;
+  if (!match) return toolFailure("not_found", `No hay registro de medidas para la fecha "${dateResult.value}". No implica que no haya registros en otras fechas. Consulta otra fecha solo si tienes información para elegirla.`, "choose_alternative");
   const { id: _id, photo_uri: _photoUri, measured_at: _measuredAt, ...data } = match;
   return JSON.stringify(data);
 };
 
 const writeMeasurement: ToolHandler = async (args, context, dependencies) => {
   const dateResult = validateMeasurementDate(args.date);
-  if (!dateResult.ok) return formatMeasurementIssues(dateResult.issues);
+  if (!dateResult.ok) return toolFailure("invalid_measurement", formatMeasurementIssues(dateResult.issues), "correct_arguments");
   const patchResult = parseMeasurementToolPatch(args.data, args.clear_fields);
-  if (!patchResult.ok) return formatMeasurementIssues(patchResult.issues);
-  if (!context.commitStore) return "No se pudo acceder al almacenamiento durable.";
+  if (!patchResult.ok) return toolFailure("invalid_measurement", formatMeasurementIssues(patchResult.issues), "correct_arguments");
+  if (!context.commitStore) return toolFailure("storage_unavailable", "No se pudo acceder al almacenamiento durable. No se guardó la medición.", "stop_turn");
 
   const measurementId = context.operationId
     ? `measurement_op_${context.operationId.slice(0, 24)}`
@@ -301,7 +305,7 @@ const writeMeasurement: ToolHandler = async (args, context, dependencies) => {
     };
   });
   if (mutationError) {
-    return `No se guardaron las medidas. ${mutationError}`;
+    return toolFailure("measurement_conflict", `No se guardaron las medidas. ${mutationError}`, "stop_turn");
   }
   context.markEffectCommitted?.();
   return successMessage;
@@ -309,15 +313,15 @@ const writeMeasurement: ToolHandler = async (args, context, dependencies) => {
 
 const readMealFoods: ToolHandler = async (args, context) => {
   const date = (args.date as string) ?? "";
-  if (!date) return "No se proporcionó una fecha.";
+  if (!date) return toolFailure("invalid_date", "No se proporcionó una fecha.", "correct_arguments");
   const mealResult = resolveDietMealCategory(args.meal);
-  if (!mealResult.ok) return formatNutritionValidationIssues(mealResult.issues);
+  if (!mealResult.ok) return toolFailure("invalid_meal", formatNutritionValidationIssues(mealResult.issues), "correct_arguments");
   const meal = mealResult.value;
-  if (!context.store) return "No se pudo acceder a los datos de dieta.";
+  if (!context.store) return toolFailure("storage_unavailable", "No se pudo acceder a los datos de dieta.", "stop_turn");
   const day = context.store.dietByDate[date];
-  if (!day) return `No hay datos de dieta para la fecha "${date}".`;
+  if (!day) return toolFailure("not_found", `No hay datos de dieta para la fecha "${date}". Puedes consultar otra fecha conocida o preguntar al usuario.`, "choose_alternative");
   const matchingMeal = day.meals.find((item) => item.title.toLowerCase() === meal.toLowerCase());
-  if (!matchingMeal) return `No se encontró la comida "${meal}" para la fecha "${date}".`;
+  if (!matchingMeal) return toolFailure("not_found", `No se encontró la comida "${meal}" para la fecha "${date}". Puedes consultar otra comida conocida o preguntar al usuario.`, "choose_alternative");
   if (matchingMeal.items.length === 0) return `La comida "${meal}" del ${date} no tiene alimentos registrados.`;
   return JSON.stringify(matchingMeal.items.map((item) => ({
     nombre: item.title,
@@ -333,16 +337,16 @@ const readMealFoods: ToolHandler = async (args, context) => {
 
 const addMealFood: ToolHandler = async (args, context, dependencies) => {
   const date = (args.date as string) ?? "";
-  if (!date) return "No se proporcionó una fecha.";
+  if (!date) return toolFailure("invalid_date", "No se proporcionó una fecha.", "correct_arguments");
   const mealResult = resolveDietMealCategory(args.meal);
-  if (!mealResult.ok) return formatNutritionValidationIssues(mealResult.issues);
+  if (!mealResult.ok) return toolFailure("invalid_meal", formatNutritionValidationIssues(mealResult.issues), "correct_arguments");
   const meal = mealResult.value;
   const parsed = parseObjectArgument(
     args.data,
     "El JSON del alimento no es válido.",
     "No se proporcionaron datos del alimento.",
   );
-  if (parsed.error || !parsed.value) return parsed.error ?? "No se proporcionaron datos del alimento.";
+  if (parsed.error || !parsed.value) return toolFailure("invalid_food", parsed.error ?? "No se proporcionaron datos del alimento.", "correct_arguments");
   const data = parsed.value;
   const repository = context.foodsRepo ?? [];
   const kind = typeof data.kind === "string" ? data.kind : "legacy";
@@ -357,7 +361,7 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
       ? findByCatalogRef(repository, catalogRef(sourceId as FoodCatalogEntry["sourceId"], itemId))
       : null;
     if (!candidate) {
-      return JSON.stringify({ status: "not_found", source_id: sourceId, item_id: itemId, written: false });
+      return toolFailure("not_found", "No se añadió el alimento: la referencia no existe en el catálogo disponible. Busca una referencia válida o pregunta al usuario.", "choose_alternative", { status: "not_found", source_id: sourceId, item_id: itemId, written: false });
     }
     const ratio = grams / 100;
     nutritionInput = {
@@ -375,7 +379,7 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
     const foodName = typeof data.name === "string" ? data.name : "";
     const match = matchFoodCatalog(repository, foodName);
     if (match.kind === "ambiguous") {
-      return JSON.stringify({
+      return toolFailure("ambiguous_food", "No se añadió el alimento: hay varias coincidencias. Pide al usuario que elija antes de guardar.", "choose_alternative", {
         status: "ambiguous",
         written: false,
         candidates: match.candidates.map((candidate) => ({
@@ -394,7 +398,7 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
 
   const validation = validateNutritionItem(nutritionInput);
   if (!validation.ok) {
-    return `No se añadió el alimento. ${formatNutritionValidationIssues(validation.issues)}`;
+    return toolFailure("invalid_food", `No se añadió el alimento. ${formatNutritionValidationIssues(validation.issues)}`, "correct_arguments");
   }
   const {
     name: foodName,
@@ -461,7 +465,7 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
       ),
     };
   };
-  if (!context.commitStore) return "No se pudo acceder al almacenamiento durable.";
+  if (!context.commitStore) return toolFailure("storage_unavailable", "No se pudo acceder al almacenamiento durable. No se añadió el alimento.", "stop_turn");
   await commitToolStore(context, updateStore);
   context.markEffectCommitted?.();
   return `Alimento "${foodName}" (${grams}g, ${caloriesKcal} kcal) añadido a ${meal} del ${date}.`;
@@ -595,7 +599,7 @@ const searchExercises: ToolHandler = async (args, context) => {
 };
 
 const readRoutines: ToolHandler = async (_args, context) => {
-  if (!context.store) return "No se pudo acceder a los datos de rutinas.";
+  if (!context.store) return toolFailure("storage_unavailable", "No se pudo acceder a los datos de rutinas.", "stop_turn");
   if (context.store.templates.length === 0) return "No hay rutinas de entrenamiento creadas.";
   return JSON.stringify(context.store.templates.map((template) => ({
     id: template.id,
@@ -652,7 +656,7 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
     context.operationId,
   );
   if (!preparation.ok) {
-    return JSON.stringify({
+    return toolFailure("invalid_routine", "No se creó la rutina. Corrige los problemas indicados antes de volver a intentarlo.", "correct_arguments", {
       status: "invalid_input",
       written: false,
       issues: preparation.issues,
@@ -660,7 +664,7 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
   }
   const newTemplate = preparation.value;
   if (!context.commitStore) {
-    return JSON.stringify({
+    return toolFailure("storage_unavailable", "No se pudo acceder al almacenamiento durable. No se creó la rutina.", "stop_turn", {
       status: "storage_unavailable",
       written: false,
     });
@@ -704,10 +708,13 @@ const createFeatureIssue: ToolHandler = async (args, _context, dependencies) => 
     title: args.title as string,
     summary: args.summary as string,
   });
-  if (!draft) return "Falta el título o el resumen de la mejora.";
+  if (!draft) return toolFailure("invalid_feedback", "Falta el título o el resumen de la mejora.", "correct_arguments");
   const outcome = await dependencies.submitFeedbackIssue(draft, _context.operationId);
   if (outcome.status === "created") _context.markEffectCommitted?.();
   if (outcome.status === "error") _context.markEffectIndeterminate?.();
+  if (outcome.status === "unavailable" || outcome.status === "rejected") {
+    return toolFailure("feedback_unavailable", "No se pudo enviar la propuesta. No se ha registrado ninguna incidencia; puedes intentarlo más adelante.", "stop_turn");
+  }
   return describeOutcomeForModel(outcome);
 };
 
@@ -744,16 +751,16 @@ export function createDetailedAgentToolExecutor(dependencies: ToolExecutorDepend
       : undefined;
     const schema = TOOL_INPUT_SCHEMAS.get(name);
     if (!handler || !schema) {
-      return { output: "Herramienta no reconocida.", status: "no_effect" };
+      return { ...toolFailure("unknown_tool", "Herramienta no reconocida. Elige una herramienta del catálogo disponible.", "correct_arguments"), status: "no_effect" };
     }
     let effectCommitted = false;
     let effectIndeterminate = false;
     try {
       const validation = validateToolInput(schema, args);
       if (!validation.valid) {
-        return { output: formatToolInputError(validation.errors), status: "no_effect" };
+        return { output: formatToolInputError(validation.errors), isError: true, status: "no_effect" };
       }
-      const output = await handler(
+      const result = await handler(
         args,
         {
           ...context,
@@ -769,7 +776,7 @@ export function createDetailedAgentToolExecutor(dependencies: ToolExecutorDepend
         dependencies,
       );
       return {
-        output,
+        ...(typeof result === "string" ? { output: result } : result),
         status: effectCommitted
           ? "committed"
           : effectIndeterminate
@@ -781,7 +788,12 @@ export function createDetailedAgentToolExecutor(dependencies: ToolExecutorDepend
       // providerToolLoop y aborta el turno entero del chat. Con una tool que
       // hace red eso pasa de teórico a probable.
       return {
-        output: "La herramienta ha fallado. Informa al usuario de que no se ha completado.",
+        ...toolFailure("tool_execution_failed",
+          effectCommitted ? "La acción se guardó, pero no se pudo obtener su resultado. Revisa tus datos antes de solicitarla de nuevo."
+            : effectIndeterminate || error instanceof ToolOperationIndeterminateError
+              ? "No se puede confirmar si la acción se completó. Revisa tus datos antes de solicitarla de nuevo."
+              : "La herramienta ha fallado. No se pudo completar la consulta.",
+          agentToolEffect(name) === "read" ? "choose_alternative" : "stop_turn"),
         status: effectCommitted
           ? "committed"
           : effectIndeterminate

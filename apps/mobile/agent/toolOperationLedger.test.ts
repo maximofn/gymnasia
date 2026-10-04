@@ -1,4 +1,5 @@
 import fc from "fast-check";
+import { toolFailure } from "./toolErrors";
 import { describe, expect, it, vi } from "vitest";
 
 import {
@@ -56,6 +57,17 @@ const notCommitted: ToolOperationReconciler = async () => ({
 });
 
 describe("registro idempotente de operaciones de tools", () => {
+  it("conserva la marca de fallo confirmado tanto en memoria como tras reiniciar", async () => {
+    const storage = new MemoryStorage();
+    const coordinator = new ToolOperationCoordinator(new ToolOperationLedgerRepository(storage, key));
+    const outcome = { ...toolFailure("result_unavailable", "La acción se guardó. Revisa tus datos antes de repetirla.", "stop_turn"), status: "committed" as const };
+    const execute = vi.fn(async () => outcome);
+    expect(await coordinator.execute(call(), true, execute, notCommitted)).toEqual(outcome);
+    expect(await coordinator.execute(call(), true, execute, notCommitted)).toEqual(outcome);
+    const restored = new ToolOperationCoordinator(new ToolOperationLedgerRepository(storage, key));
+    expect(await restored.execute(call(), true, execute, notCommitted)).toEqual(outcome);
+    expect(execute).toHaveBeenCalledOnce();
+  });
   it("mantiene la identidad con argumentos reordenados y cambia por ocurrencia", () => {
     const first = identifyToolOperation(call({
       args: { meal: "Comida", nested: { z: 2, a: 1 }, date: "2026-09-01" },
@@ -338,6 +350,7 @@ describe("registro idempotente de operaciones de tools", () => {
     const executor = vi.fn(async () => ({ output: "nuevo", status: "committed" as const }));
     await expect(coordinator.execute(call(), true, executor, notCommitted)).resolves.toEqual({
       output: expect.stringContaining("identidad no era segura"),
+      isError: true,
       status: "no_effect",
     });
     expect(executor).not.toHaveBeenCalled();

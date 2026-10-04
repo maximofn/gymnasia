@@ -32,6 +32,7 @@ import {
 } from "./platform";
 import { pushTrace, pushAppStartTrace, clearTraces, getTraces } from "./trace";
 import { agentToolEffect } from "./agent/toolDefinitions";
+import { toolFailure, ToolTurnError } from "./agent/toolErrors";
 import {
   buildPersonalDataStore,
   parsePersonalDataStore,
@@ -1659,10 +1660,8 @@ async function callProviderChatAPIWithTools(
         argumentLevel: argumentDecision.level,
         policyVersion: healthPolicy.policyVersion,
       });
-      return JSON.stringify({
-        error: "tool_blocked_by_health_safety",
-        message: "La herramienta no está permitida para esta consulta.",
-      });
+      return toolFailure("tool_blocked_by_health_safety",
+        "La herramienta no está permitida para esta consulta.", "stop_turn");
     }
     const outcome = await toolOperationCoordinator.execute(
       call,
@@ -1690,7 +1689,7 @@ async function callProviderChatAPIWithTools(
     if (outcome.status === "indeterminate") {
       throw new ToolOperationIndeterminateError();
     }
-    return outcome.output;
+    return { output: outcome.output, ...(outcome.isError ? { isError: true } : {}) };
   };
   return requestProviderToolChat(
     provider,
@@ -5004,7 +5003,8 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         } catch (retryErr) {
           const errMsg = retryErr instanceof Error ? retryErr.message : "";
           const isRetryable = /failed to fetch|network|timeout|econnrefused|econnreset|overloaded|529|503|429/i.test(errMsg);
-          if (!isRetryable || attempt === 2) throw retryErr;
+          if (retryErr instanceof ToolTurnError || retryErr instanceof ToolOperationIndeterminateError
+            || !isRetryable || attempt === 2) throw retryErr;
           await new Promise((r) => setTimeout(r, (attempt + 1) * 2000));
         }
       }
@@ -5052,7 +5052,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         content: err instanceof ToolOperationIndeterminateError
           || message === TOOL_OPERATION_INDETERMINATE_MESSAGE
           ? TOOL_OPERATION_INDETERMINATE_MESSAGE
-          : `Error de proveedor: ${message}`,
+          : err instanceof ToolTurnError ? message : `Error de proveedor: ${message}`,
         thinking: null,
         is_streaming: false,
       }));

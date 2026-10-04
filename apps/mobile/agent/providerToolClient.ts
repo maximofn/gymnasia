@@ -33,8 +33,9 @@ import {
   runGoogleToolLoop,
   runOpenAIToolLoop,
   ToolRoundLimitError,
+  executeToolSafely,
+  type ExecuteTool,
 } from "./providerToolLoop";
-import type { ToolCallEnvelope } from "./toolOperationLedger";
 import { CHAT_TOOLS, formatToolInputError } from "./toolDefinitions";
 import {
   chatCompletionTools,
@@ -59,11 +60,7 @@ const ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE =
 
 export type ProviderToolChatOptions = StreamingHandlers & {
   executionId?: string;
-  executeTool: (
-    name: string,
-    args: Record<string, unknown>,
-    call: ToolCallEnvelope,
-  ) => Promise<string>;
+  executeTool: ExecuteTool;
 };
 
 export async function requestProviderToolChat(
@@ -233,7 +230,7 @@ export async function requestProviderToolChat(
         const key = toolCallOccurrenceKey(call.function.name, parsedArgs);
         const occurrence = occurrences.get(key) ?? 0;
         occurrences.set(key, occurrence + 1);
-        const output = await options.executeTool(call.function.name, parsedArgs, {
+        const output = await executeToolSafely(options.executeTool, call.function.name, parsedArgs, {
           executionId: options.executionId ?? "legacy-execution",
           provider: "custom_openai",
           providerCallId: call.id,
@@ -241,7 +238,7 @@ export async function requestProviderToolChat(
           args: parsedArgs,
           occurrence,
         });
-        history.push({ role: "tool", content: output, tool_call_id: call.id });
+        history.push({ role: "tool", content: output.output, tool_call_id: call.id });
       }
     }
   }

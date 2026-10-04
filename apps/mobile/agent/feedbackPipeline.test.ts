@@ -151,8 +151,8 @@ describe("GYM-54: create_feature_issue de extremo a extremo con proveedor falso"
   });
 
   it.each([
-    ["backend caído", 503, "", "no afirmes"],
-    ["rechazo por rate limit", 429, "", "no afirmes"],
+    ["backend caído", 503, "", "no se ha registrado"],
+    ["rechazo por rate limit", 429, "", "no se ha registrado"],
     ["error del servidor", 500, "", "no afirmes"],
     ["respuesta 2xx sin referencia", 200, '{"ok":true}', "no afirmes"],
     ["URL que no es de GitHub", 201, '{"number":7,"url":"https://evil.example/7"}', "no afirmes"],

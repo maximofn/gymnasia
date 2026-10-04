@@ -729,6 +729,12 @@ async function runAgentChatE2E(
     if (requestBodies.length === 5) {
       assert(JSON.stringify(body).includes("invalid_tool_arguments"));
       assert(JSON.stringify(body).includes("data.weight_kg"));
+      assert(JSON.stringify(body).includes("tool_error"));
+      if (provider === "anthropic") {
+        assert(body.messages.at(-1).content.some((item) => item.type === "tool_result" && item.is_error === true));
+      } else if (provider === "google") {
+        assert(body.input.some((item) => item.type === "function_result" && item.is_error === true));
+      }
       const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? "{}"), STORE_KEY);
       assert(!saved.measurements?.some((item) => item.measured_on === "2024-04-11"),
         "Una medición que no cumple el schema no debe haberse guardado.");
@@ -1200,6 +1206,42 @@ async function runAgentChatE2E(
     );
   }
   if (provider === "google") await assertGoogleFoodInteractions(page);
+  logStep(`${provider}: una escritura incierta detiene el turno sin repetirse`);
+  let failedWriteRequests = 0;
+  await page.route(routePattern, async (route) => {
+    failedWriteRequests += 1;
+    assert.equal(failedWriteRequests, 1, "Un fallo de herramienta no debe reintentar el turno del proveedor.");
+    await route.fulfill({ status: 200, contentType: "text/event-stream",
+      body: fixture(`${provider}-measurement-tool-call.sse`).replaceAll("2024-04-11", "2024-04-12"),
+    });
+  });
+  await page.evaluate(({ key }) => {
+    const original = Storage.prototype.setItem;
+    window.restoreToolErrorStorage = () => { Storage.prototype.setItem = original; };
+    Storage.prototype.setItem = function (storageKey, value) {
+      if (storageKey === key && JSON.parse(value).measurements?.some((item) => item.measured_on === "2024-04-12")) {
+        throw new Error("fixture network timeout during durable write");
+      }
+      return original.call(this, storageKey, value);
+    };
+  }, { key: STORE_KEY });
+  await page.locator('[data-testid="nav-tab-chat"]').click();
+  await page.locator('[data-testid="chat-input"]').fill("Guarda mi peso de 75,5 kg para el 12 de abril de 2024.");
+  await page.locator('[data-testid="chat-send"]').click();
+  const uncertainMessage = page.locator('[data-testid^="chat-message-assistant-"]')
+    .filter({ hasText: "Gymnasia no puede confirmar si la acción llegó a completarse." });
+  await uncertainMessage.waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  assert(!(await uncertainMessage.innerText()).includes("Error de proveedor:"));
+  assert(!(await uncertainMessage.innerText()).includes("fixture network"));
+  await page.waitForFunction(({ key }) => Object.values(JSON.parse(localStorage.getItem(key)).messagesByThread).flat()
+    .some((message) => message.kind === "technical_error"
+      && message.content.includes("Gymnasia no puede confirmar si la acción llegó a completarse.")
+      && !message.is_streaming), { key: STORE_KEY });
+  assert.equal(failedWriteRequests, 1);
+  const persisted = await page.evaluate(({ key }) => JSON.parse(localStorage.getItem(key)), { key: STORE_KEY });
+  assert(!persisted.measurements.some((item) => item.measured_on === "2024-04-12"));
+  await page.evaluate(() => window.restoreToolErrorStorage());
+  await page.screenshot({ path: join(screenshotRoot, `coach-tool-error-${provider}.png`), fullPage: true });
   assert.equal(deploymentRequests, 0, "development no debe consultar deployments de política");
   assertNoLegacyUpdaterRequests();
   logStep(`${provider}/local completado: UI → SSE → tools de lectura/escritura → persistencia → UI`);
@@ -1328,6 +1370,20 @@ async function runFeatureIssueE2E(page, baseUrl, backendScenario = "created") {
     assert.ok(!page.url().includes("github.com"));
     assertNoLegacyUpdaterRequests();
     logStep("feature-issue/malformed: ambigua, detenida y no repetida");
+    return;
+  }
+
+  if (backendScenario === "down") {
+    await page.locator('[data-testid^="chat-message-assistant-"]')
+      .filter({ hasText: "No se pudo enviar la propuesta. No se ha registrado ninguna incidencia" })
+      .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+    assert.equal(providerRounds.length, 1, "Un canal no disponible termina con un mensaje local claro.");
+    assert.equal(feedbackRequests.length, 1, "La propuesta no debe reenviarse automáticamente.");
+    await page.waitForFunction(({ key }) => Object.values(JSON.parse(localStorage.getItem(key)).messagesByThread).flat()
+      .some((message) => message.kind === "technical_error"
+        && message.content.startsWith("No se pudo enviar la propuesta.")), { key: STORE_KEY });
+    assertNoLegacyUpdaterRequests();
+    logStep("feature-issue/down: error local claro, sin falso éxito ni reintento");
     return;
   }
 
