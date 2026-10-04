@@ -415,6 +415,14 @@ Only non-obvious gotchas that could recur are kept here.
 - Gotcha: after upgrading Expo SDK, Metro can return HTTP 500 because `babel-preset-expo` is not installed.
 - Fix: `npm --workspace apps/mobile exec expo install babel-preset-expo`
 
+### Expo export puede conservar el proveedor anterior al cambiar de variante
+- Síntoma: una exportación solicitada con `DEV_PROVIDER_MODE=byok` sigue respondiendo
+  con la fixture local y no llama al proveedor. Cambiar las variables entre exports
+  puede dejar en la caché de Metro el código compilado de la variante anterior.
+- Fix: al alternar `APP_ENV` o `DEV_PROVIDER_MODE`, exportar con `--clear` y comprobar
+  el comportamiento. Para identificar el bundle usado, leer el `src` de `index.html`:
+  el directorio de salida puede conservar otros bundles de exports anteriores.
+
 ### npm audit warnings from Expo/RN transitive dependencies
 - State: `npm install` reports ~34 vulnerabilities from transitive deps (`fast-xml-parser`, `minimatch`, `tar`, `send`) in the Expo/RN toolchain.
 - `npm audit fix --force` fails with `EOVERRIDE` due to pinned `react-native` override.

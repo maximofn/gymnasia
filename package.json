@@ -73,6 +73,7 @@
     "test:recovery-cli": "node --import tsx --test scripts/decrypt-recovery.test.mjs",
     "test:shell:e2e": "node apps/mobile/scripts/shell-navigation.e2e.mjs",
     "test:measurements:performance:e2e": "node apps/mobile/scripts/measurement-performance.e2e.mjs",
+    "test:tools:performance:e2e": "node apps/mobile/scripts/tool-batch.performance.e2e.mjs",
     "test:user-preferences:e2e": "node apps/mobile/scripts/user-preferences.e2e.mjs",
     "test:train:e2e:headed": "TRAIN_E2E_HEADLESS=0 npm run test:train:e2e",
     "test:openwiki": "node --test ops/openwiki-automation-template/tests/*.test.mjs",

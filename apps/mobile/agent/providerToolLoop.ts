@@ -1,7 +1,8 @@
-import { type GoogleInteractionTurn, type GoogleStep } from "./googleInteractions";
+import { type GoogleFunctionCall, type GoogleInteractionTurn, type GoogleStep } from "./googleInteractions";
 import { canonicalToolJson } from "./toolOperationLedger";
 import { agentToolEffect, formatToolInputError } from "./toolDefinitions";
 import { checkToolResult, toolFailure, ToolTurnError, type ToolResult } from "./toolErrors";
+import { executeToolBatch } from "./toolBatch";
 import { ToolOperationIndeterminateError } from "./toolOperationLedger";
 import {
   toolCallOccurrenceKey,
@@ -121,19 +122,21 @@ export async function runGoogleToolLoop(input: {
     }
     // Replaying an entire round reuses its results, without new occurrences/effects.
     if (previous === undefined) {
-      for (const call of turn.steps) {
-        if (call.type !== "function_call") continue;
-        const result = await executeToolSafely(input.executeTool, call.name, call.arguments, {
+      const calls = turn.steps.filter((step): step is GoogleFunctionCall => step.type === "function_call")
+        .map((call) => ({ ...call, envelope: {
           executionId: input.executionId ?? "legacy-execution",
-          provider: "google", providerCallId: call.id, name: call.name, args: call.arguments,
+          provider: "google" as const, providerCallId: call.id, name: call.name, args: call.arguments,
           occurrence: nextOccurrence(occurrences, call.name, call.arguments),
-        });
-        const output: GoogleStep = { type: "function_result", name: call.name, call_id: call.id,
-          result: [{ type: "text", text: result.output }],
-          ...(result.isError ? { is_error: true } : {}) };
-        history.push(output);
-        messages.push(output);
-      }
+        } }));
+      const results = await executeToolBatch(calls, (call) =>
+        executeToolSafely(input.executeTool, call.name, call.arguments, call.envelope));
+      const outputs: GoogleStep[] = calls.map((call, index) => ({
+        type: "function_result", name: call.name, call_id: call.id,
+        result: [{ type: "text", text: results[index].output }],
+        ...(results[index].isError ? { is_error: true } : {}),
+      }));
+      history.push(...outputs);
+      messages.push(...outputs);
     }
     // A caller must not mutate the committed snapshot used by future rounds.
     turn = await input.requestNextTurn(JSON.parse(JSON.stringify(messages)) as GoogleStep[]);
@@ -244,28 +247,22 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
     }
     ids.forEach((id) => seenCallIds.add(id));
     activeItems.push(...copyOpenAIInput(turn.outputItems as Array<Record<string, unknown>>));
-    for (const toolCall of toolCalls) {
-      const args = parseOpenAIFunctionArguments(toolCall.arguments);
-      const result = args === null
+    // Assign occurrences before execution: completion order never changes identity.
+    const calls = toolCalls.map((call) => {
+      const args = parseOpenAIFunctionArguments(call.arguments);
+      return { ...call, args, envelope: args === null ? null : {
+        executionId: input.executionId ?? "legacy-execution",
+        provider: "openai" as const, providerCallId: call.call_id, name: call.name, args,
+        occurrence: nextOccurrence(occurrences, call.name, args),
+      } };
+    });
+    const results = await executeToolBatch(calls, async (call) =>
+      call.envelope === null
         ? { output: formatToolInputError(["Los argumentos deben ser un objeto JSON válido."]), isError: true }
-        : await executeToolSafely(input.executeTool,
-          toolCall.name,
-          args,
-          {
-            executionId: input.executionId ?? "legacy-execution",
-            provider: "openai",
-            providerCallId: toolCall.call_id,
-            name: toolCall.name,
-            args,
-            occurrence: nextOccurrence(occurrences, toolCall.name, args),
-          },
-        );
-      activeItems.push({
-        type: "function_call_output",
-        call_id: toolCall.call_id,
-        output: result.output,
-      });
-    }
+        : executeToolSafely(input.executeTool, call.name, call.envelope.args, call.envelope));
+    activeItems.push(...calls.map((call, index) => ({
+      type: "function_call_output", call_id: call.call_id, output: results[index].output,
+    })));
     turn = await input.requestNextTurn(currentInput());
   }
   if (turn.truncated) {
@@ -339,24 +336,20 @@ export async function runAnthropicToolLoop<TTurn extends AnthropicToolTurn>(inpu
       (block): block is AnthropicToolUseBlock => block.type === "tool_use",
     );
     if (toolCalls.length === 0) break;
-    const toolResults: Array<Record<string, unknown>> = [];
-    for (const toolCall of toolCalls) {
-      const args = toolCall.input ?? {};
-      const result = await executeToolSafely(input.executeTool, toolCall.name, args, {
+    const calls = toolCalls.map((call) => {
+      const args = call.input ?? {};
+      return { ...call, envelope: {
         executionId: input.executionId ?? "legacy-execution",
-        provider: "anthropic",
-        providerCallId: toolCall.id,
-        name: toolCall.name,
-        args,
-        occurrence: nextOccurrence(occurrences, toolCall.name, args),
-      });
-      toolResults.push({
-        type: "tool_result",
-        tool_use_id: toolCall.id,
-        content: result.output,
-        ...(result.isError ? { is_error: true } : {}),
-      });
-    }
+        provider: "anthropic" as const, providerCallId: call.id, name: call.name, args,
+        occurrence: nextOccurrence(occurrences, call.name, args),
+      } };
+    });
+    const results = await executeToolBatch(calls, (call) =>
+      executeToolSafely(input.executeTool, call.name, call.envelope.args, call.envelope));
+    const toolResults = calls.map((call, index) => ({
+      type: "tool_result", tool_use_id: call.id, content: results[index].output,
+      ...(results[index].isError ? { is_error: true } : {}),
+    }));
     messages = [
       ...messages,
       { role: "assistant", content: turn.contentBlocks },
