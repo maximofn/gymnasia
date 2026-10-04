@@ -466,12 +466,21 @@ submission. Diagnostica en este orden.
 
 **1. ¿Hay una ejecución anterior esperando aprobación?** Es la causa más frecuente y la
 menos visible. `build-apk.yml` declara `concurrency: android-production-release` con
-`cancel-in-progress: false`, así que las builds se ejecutan de una en una y en orden. Si
+`cancel-in-progress: false`, así que solo una build puede estar activa. Si
 una queda en estado `waiting` —esperando la aprobación del entorno `Production`— **bloquea
 todas las siguientes de forma indefinida**, y las que se apilan detrás aparecen como
 `cancelled` sin haber ejecutado un solo job. Verificado el 5 de septiembre de 2026: una
 ejecución del día 3 llevaba dos días sin aprobar y había cancelado por tiempo las dos
 builds posteriores.
+
+**La cola de GitHub no garantiza un orden FIFO.** Con la configuración actual solo cabe
+una ejecución pendiente: una nueva sustituye a la pendiente anterior, aunque
+`cancel-in-progress: false` proteja la ejecución activa. El orden de las versiones lo
+decide el selector de transacciones durables del repositorio. Si un push aparece
+`cancelled` sin jobs al terminar la build anterior, comprueba si `enqueue-next` ha creado
+una ejecución `workflow_dispatch` para el mismo SHA y la misma versión antes de reintentar.
+Ese relevo se observó el 4 de octubre de 2026 al pasar de 1.50.4 a 1.51.0; no interrumpió
+ninguna compilación de 1.51.0. Referencia: [concurrencia de GitHub Actions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency).
 
 El síntoma que la delata es que el run está en `pending` y **no tiene ningún job**, ni
 siquiera empezado:
