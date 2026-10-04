@@ -109,6 +109,63 @@ al proveedor ni ejecución de tools.
 Es más lento y se ejecuta de forma explícita; no forma parte del CI determinista
 que bloquea commits.
 
+## Errores y recuperación de herramientas
+
+GYM-42 (ticket para que Coach reconozca y gestione los errores de sus herramientas)
+define un resultado local con `output` e `isError`. La marca nace en el ejecutor,
+no del contenido: un campo de memoria puede contener JSON o la palabra «error»
+sin cambiar el estado de la ejecución. El adaptador textual
+`createAgentToolExecutor` conserva su API para consumidores que solo necesitan
+texto; Coach usa `createDetailedAgentToolExecutor` y conserva la marca hasta el
+proveedor. El diario de operaciones también conserva la marca de un error
+posterior a una escritura confirmada, tanto en memoria como tras reiniciar.
+
+El payload de fallo tiene `kind: tool_error`, versión 1, `is_error: true`,
+`error`, `message`, `recovery` y `recoverable`. Los fallos de schema y dominio
+permiten `correct_arguments`; una referencia inexistente o una lectura fallida
+permiten `choose_alternative`. Una búsqueda vacía, una comida vacía o la
+cancelación voluntaria son resultados normales, no excepciones. Los mensajes
+de las excepciones, stacks y secretos técnicos nunca se incluyen en el payload.
+
+La app no reintenta las herramientas automáticamente: devuelve el error al
+modelo y deja que elija una llamada corregida dentro del presupuesto de diez
+rondas. Anthropic recibe `tool_result.is_error: true`; Google Interactions recibe
+`function_result.is_error: true`; OpenAI Responses y Chat Completions compatibles
+reciben el payload JSON como texto. Los éxitos mantienen sus formatos actuales.
+
+`stop_turn` termina localmente con `ToolTurnError`, antes de ejecutar las
+herramientas restantes o pedir otra ronda. La interfaz muestra su mensaje
+directamente, sin atribuirlo al proveedor. Un almacén inaccesible o un conflicto
+que exige revisar los datos son irrecuperables en ese turno. Una escritura que
+lanza fuera del handler o cuyo efecto no puede confirmarse conserva
+`ToolOperationIndeterminateError`: la app no vuelve a intentar el turno aunque
+el mensaje se parezca a un error de red. Los reintentos de transporte del
+proveedor siguen usando el diario idempotente existente.
+
+`providerToolErrors.test.ts` comprueba el contrato y las rutas de recuperación
+en los tres proveedores, excepciones sin filtración de su texto, detención antes
+de una segunda herramienta, JSON inválido de `write_measurement` corregido con
+una sola escritura y contenido de usuario parecido al contrato. Las propiedades
+generativas comprueban texto y JSON arbitrarios. El proveedor compatible con
+OpenAI tiene integración equivalente en `customOpenAIChat.test.ts` y el diario
+tiene una regresión de recuperación de la marca tras reiniciar.
+
+El E2E web comprueba las marcas enviadas realmente por la app en la recuperación
+de argumentos inválidos, el estado sin escritura antes de corregir y la medición
+persistida después. Estos cambios no añaden controles ni estilos a la interfaz.
+
+Revisión según `docs/legal/privacy-change-checklist.md`: se actualiza el
+inventario para describir el contrato enviado a IA y la marca del diario. No
+cambian destinos, categorías, permisos, copias ni borrado; los resultados de
+herramientas ya están cubiertos por la política y las declaraciones de Play.
+Los errores inesperados tienen menos detalle enviado que antes, por lo que no
+se cambia ni republica el texto legal.
+
+Referencias del contrato de proveedor:
+[Anthropic](https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls),
+[Google Interactions](https://ai.google.dev/api/interactions-api#FunctionResultStep),
+[OpenAI](https://developers.openai.com/api/docs/guides/function-calling#formatting-results).
+
 ## LangSmith
 
 Se adopta el alcance A del ticket GYM-34: LangSmith se usará solo desde procesos

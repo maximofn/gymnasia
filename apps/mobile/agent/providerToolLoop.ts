@@ -1,6 +1,8 @@
 import { type GoogleInteractionTurn, type GoogleStep } from "./googleInteractions";
 import { canonicalToolJson } from "./toolOperationLedger";
-import { formatToolInputError } from "./toolDefinitions";
+import { agentToolEffect, formatToolInputError } from "./toolDefinitions";
+import { checkToolResult, toolFailure, ToolTurnError, type ToolResult } from "./toolErrors";
+import { ToolOperationIndeterminateError } from "./toolOperationLedger";
 import {
   toolCallOccurrenceKey,
   type ToolCallEnvelope,
@@ -121,13 +123,14 @@ export async function runGoogleToolLoop(input: {
     if (previous === undefined) {
       for (const call of turn.steps) {
         if (call.type !== "function_call") continue;
-        const result = await input.executeTool(call.name, call.arguments, {
+        const result = await executeToolSafely(input.executeTool, call.name, call.arguments, {
           executionId: input.executionId ?? "legacy-execution",
           provider: "google", providerCallId: call.id, name: call.name, args: call.arguments,
           occurrence: nextOccurrence(occurrences, call.name, call.arguments),
         });
         const output: GoogleStep = { type: "function_result", name: call.name, call_id: call.id,
-          result: [{ type: "text", text: result }] };
+          result: [{ type: "text", text: result.output }],
+          ...(result.isError ? { is_error: true } : {}) };
         history.push(output);
         messages.push(output);
       }
@@ -141,7 +144,30 @@ export type ExecuteTool = (
   name: string,
   args: Record<string, unknown>,
   call: ToolCallEnvelope,
-) => Promise<string>;
+) => Promise<string | ToolResult>;
+
+/** Catch failures outside handlers too (authorization, storage coordinator).
+ * An unexpected write failure has unknown effects: never invite a blind retry.
+ * Raw exception text may contain secrets and must not reach the model or user.
+ */
+export async function executeToolSafely(
+  execute: ExecuteTool,
+  name: string,
+  args: Record<string, unknown>,
+  call: ToolCallEnvelope,
+): Promise<ToolResult> {
+  let output: string | ToolResult;
+  try {
+    output = await execute(name, args, call);
+  } catch (error) {
+    if (error instanceof ToolTurnError || error instanceof ToolOperationIndeterminateError) throw error;
+    if (agentToolEffect(name) !== "read") throw new ToolOperationIndeterminateError();
+    output = toolFailure("tool_execution_failed",
+      "La lectura ha fallado. No interpretes este error como un dato. Puedes consultar otra fuente o explicar al usuario que no se pudo obtener la información.",
+      "choose_alternative");
+  }
+  return checkToolResult(output);
+}
 
 function nextOccurrence(
   occurrences: Map<string, number>,
@@ -221,8 +247,8 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
     for (const toolCall of toolCalls) {
       const args = parseOpenAIFunctionArguments(toolCall.arguments);
       const result = args === null
-        ? formatToolInputError(["Los argumentos deben ser un objeto JSON válido."])
-        : await input.executeTool(
+        ? { output: formatToolInputError(["Los argumentos deben ser un objeto JSON válido."]), isError: true }
+        : await executeToolSafely(input.executeTool,
           toolCall.name,
           args,
           {
@@ -237,7 +263,7 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
       activeItems.push({
         type: "function_call_output",
         call_id: toolCall.call_id,
-        output: result,
+        output: result.output,
       });
     }
     turn = await input.requestNextTurn(currentInput());
@@ -316,7 +342,7 @@ export async function runAnthropicToolLoop<TTurn extends AnthropicToolTurn>(inpu
     const toolResults: Array<Record<string, unknown>> = [];
     for (const toolCall of toolCalls) {
       const args = toolCall.input ?? {};
-      const result = await input.executeTool(toolCall.name, args, {
+      const result = await executeToolSafely(input.executeTool, toolCall.name, args, {
         executionId: input.executionId ?? "legacy-execution",
         provider: "anthropic",
         providerCallId: toolCall.id,
@@ -327,7 +353,8 @@ export async function runAnthropicToolLoop<TTurn extends AnthropicToolTurn>(inpu
       toolResults.push({
         type: "tool_result",
         tool_use_id: toolCall.id,
-        content: result,
+        content: result.output,
+        ...(result.isError ? { is_error: true } : {}),
       });
     }
     messages = [

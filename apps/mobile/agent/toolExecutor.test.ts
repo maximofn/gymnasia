@@ -226,6 +226,16 @@ const dispatchScenarios: Record<string, {
 };
 
 describe("contrato del despachador", () => {
+  it("no convierte JSON ilegible de memoria en un borrado confirmado", async () => {
+    const savePersonalData = vi.fn(async () => {});
+    const execute = createDetailedAgentToolExecutor(createDependencies({ savePersonalData }));
+    for (const personal_data of ["{broken", "null", "{}", '"texto"']) {
+      const outcome = await execute("save_personal_data", { personal_data });
+      expect(outcome).toMatchObject({ isError: true, status: "no_effect" });
+      expect(JSON.parse(outcome.output)).toMatchObject({ error: "invalid_personal_data", recoverable: true });
+    }
+    expect(savePersonalData).not.toHaveBeenCalled();
+  });
   it("rechaza argumentos inválidos antes de lecturas, escrituras o efectos externos", async () => {
     const dependencies = createDependencies({
       loadPersonalData: vi.fn(async () => []),
@@ -292,7 +302,8 @@ describe("contrato del despachador", () => {
     }));
     const assertUnknown = async (name: string) => {
       const result = await execute(name, {});
-      expect(result, name).toEqual({ output: "Herramienta no reconocida.", status: "no_effect" });
+      expect(result, name).toMatchObject({ isError: true, status: "no_effect" });
+      expect(JSON.parse(result.output).error).toBe("unknown_tool");
     };
 
     for (const name of ["unknown_tool", "constructor", "toString", "__proto__"]) {
@@ -389,7 +400,7 @@ describe("ejecutor de tools", () => {
 
   it("mantiene respuestas controladas para tools y JSON desconocidos", async () => {
     const execute = createAgentToolExecutor(createDependencies());
-    await expect(execute("unknown_tool", {})).resolves.toBe("Herramienta no reconocida.");
+    expect(JSON.parse(await execute("unknown_tool", {}))).toMatchObject({ is_error: true, error: "unknown_tool" });
     const output = await execute("write_measurement", {
       date: "2026-04-11",
       data: "{json roto",
@@ -867,7 +878,9 @@ describe("ejecutor de tools", () => {
     });
 
     expect(result.status).toBe("indeterminate");
-    expect(result.output).toContain("no se ha completado");
+    expect(result.isError).toBe(true);
+    expect(JSON.parse(result.output)).toMatchObject({ recoverable: false, recovery: "stop_turn" });
+    expect(result.output).toContain("No se puede confirmar");
   });
 
   it("solo confirma la incidencia cuando el backend devuelve una issue verificada", async () => {

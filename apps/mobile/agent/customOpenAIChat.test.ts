@@ -6,6 +6,7 @@ import { isExplicitImageUnsupported, photoCapabilityId } from "./providerPhotoCa
 import type { ProviderConfiguration } from "./providerConfiguration";
 import { requestFoodEstimate } from "./foodEstimatorClient";
 import { requestProviderToolChat } from "./providerToolClient";
+import { toolFailure, ToolTurnError } from "./toolErrors";
 
 const provider: ProviderConfiguration = {
   provider: "custom_openai",
@@ -17,6 +18,34 @@ const provider: ProviderConfiguration = {
 
 describe("custom OpenAI-compatible provider", () => {
   afterEach(() => vi.unstubAllGlobals());
+  it("returns a marked read failure to the custom model and continues", async () => {
+    const response = (message: unknown) => new Response(JSON.stringify({ choices: [{ message }] }), {
+      status: 200, headers: { "content-type": "application/json" },
+    });
+    const fetchImpl = vi.fn()
+      .mockResolvedValueOnce(response({ content: null, tool_calls: [{ id: "call_1", type: "function",
+        function: { name: "read_routines", arguments: "{}" } }] }))
+      .mockResolvedValueOnce(response({ content: "No pude leer tus rutinas." }));
+    vi.stubGlobal("fetch", fetchImpl);
+    const result = await requestProviderToolChat(provider, [{ role: "user", content: "Lee mis rutinas" }],
+      { platform: "web", fakeMode: false }, { executeTool: async () => { throw new Error("private fixture"); } });
+    expect(result.content).toBe("No pude leer tus rutinas.");
+    const output = JSON.parse(fetchImpl.mock.calls[1][1].body).messages.at(-1);
+    expect(JSON.parse(output.content)).toMatchObject({ is_error: true, error: "tool_execution_failed" });
+    expect(output.content).not.toContain("private fixture");
+  });
+
+  it("stops the custom turn before another request on a fatal tool failure", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ choices: [{ message: {
+      content: null, tool_calls: [{ id: "call_1", type: "function",
+        function: { name: "write_measurement", arguments: '{}' } }],
+    } }] }), { status: 200, headers: { "content-type": "application/json" } })));
+    await expect(requestProviderToolChat(provider, [{ role: "user", content: "Guarda mi peso" }],
+      { platform: "web", fakeMode: false }, { executeTool: async () =>
+        toolFailure("storage_unavailable", "No se guardó la medición.", "stop_turn") }))
+      .rejects.toBeInstanceOf(ToolTurnError);
+    expect(fetch).toHaveBeenCalledOnce();
+  });
   it("requires HTTPS and preserves an API path prefix", () => {
     expect(normalizeCustomOpenAIBaseUrl(provider.base_url!)).toBe("https://model.example/v1");
     expect(() => normalizeCustomOpenAIBaseUrl("http://192.168.1.2:8000/v1")).toThrow("https://");
