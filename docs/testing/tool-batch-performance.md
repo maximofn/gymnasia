@@ -126,7 +126,32 @@ autenticación ni claves. El bundle publicado fue
 Estas comprobaciones no añaden una medición de rendimiento nativo ni convierten
 la latencia del proveedor real en una comparación controlada.
 
-## Verificación nativa pendiente
+## Binarios Android para la comparación
+
+El 4 de octubre de 2026 se completaron en wallabot el Staging anterior y la
+Producción nueva. El workflow de Producción terminó correctamente, publicó
+[la release 1.51.0](https://github.com/maximofn/gymnasia/releases/tag/v1.51.0)
+y confirmó el envío a Alpha con estado `FINISHED` y `releaseStatus: completed`.
+
+| APK | Fuente | Paquete | versionCode | SHA-256 |
+| --- | --- | --- | --- | --- |
+| Staging 1.50.4, serie | `97c9c9fd02e133dd9ace4a221ff26d58cb08539b` | `com.maximofn.gymnasia.staging` | 1 | `5c82a37c8670eb67a1208c94ab2a3e7c1e075556d5445a21b429207ee729bd25` |
+| Producción 1.51.0, paralelo | `f38755747371e932cd9385234637b908e3156e45` | `com.maximofn.gymnasia` | 86 | `1dce0f56b4e030e7f99f64850e15059fa52b209bb090093d05948363297e0c45` |
+
+Ambos APK pasaron su verificador independiente. Los hashes se contrastaron
+después de descargar los binarios; la evidencia de Producción confirma fuente,
+versión, firma, permisos y política promocionada. El AAB tiene el mismo
+versionCode 86 y el mismo bundle Hermes que el APK. Una comprobación adicional
+detecta el marcador del nuevo planificador en ambos binarios de Producción y su
+ausencia en Staging; no sustituye las pruebas funcionales. El detalle está en
+`benchmarks/tool-batch/android-release-comparison.json` y las evidencias completas
+de Producción acompañan a la release.
+
+Los paquetes distintos permiten conservar ambos APK instalados. Cada app tiene
+su propio almacenamiento; la comparación necesita datos y consultas equivalentes.
+Compilar y verificar los artefactos no añade una medición de rendimiento nativo.
+
+## Medición nativa pendiente
 
 Comparar los APK release Staging anterior y Producción nueva en el mismo
 dispositivo, con consultas y datos equivalentes y alternando las variantes.
