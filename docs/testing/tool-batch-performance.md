@@ -99,6 +99,33 @@ el informe. El script usa un origen local desechable y una clave ficticia; no
 lee sesiones BYOK ni datos personales del navegador habitual. No se añade una
 puerta de CI basada en tiempos de pared.
 
+## QA con proveedor real tras la fusión
+
+El 4 de octubre de 2026 se publicó la web 1.51.0 desde
+`f38755747371e932cd9385234637b908e3156e45`. Brave con OpenAI Responses y
+`gpt-6-luna` confirmó tres `search_exercises` en un mismo turno: press, curl y
+sentadilla. Las tres respuestas del catálogo conservaron sus `call_id` y el
+orden original al volver al proveedor; Coach mostró coincidencias reales.
+
+Otro lote combinó dos `read_measurement` y una búsqueda de curl. La fecha
+ficticia ausente, 2020-01-02, devolvió `not_found`; la lectura de 2020-01-01
+conservó 76 kg ficticios y la búsqueda devolvió 15 coincidencias. El error no
+canceló las otras lecturas ni produjo datos inventados en la respuesta.
+
+La persistencia se comprobó guardando primero 75 kg y después 76 kg ficticios
+para 2020-01-01, tras confirmar la propuesta, y leyendo nuevamente después de
+recargar la app. El modelo eligió turnos separados para las dos escrituras:
+esta QA demuestra persistencia; la exclusión de escrituras dentro de un mismo
+lote se acredita con las pruebas deterministas de los cuatro dialectos.
+
+La evidencia saneada está en `benchmarks/tool-batch/real-provider-qa.json`.
+Solo recoge llamadas y resultados de estas pruebas ficticias, sin cabeceras de
+autenticación ni claves. El bundle publicado fue
+`index-7eb3e229140d0142e10a82626319231a.js`, SHA-256
+`27d370f9846b153135fda11f16c49493b7e2feffc128c830be6d975141a75444`.
+Estas comprobaciones no añaden una medición de rendimiento nativo ni convierten
+la latencia del proveedor real en una comparación controlada.
+
 ## Verificación nativa pendiente
 
 Comparar los APK release Staging anterior y Producción nueva en el mismo
