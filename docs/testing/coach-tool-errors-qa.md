@@ -42,15 +42,65 @@ Verificado el 4 de octubre de 2026 en web, con Chromium y proveedores falsos.
 - `npm run check:data-inventory`, `npm run test:data-inventory` y
   `npm run check:legal`: correctos.
 
-## Pendiente para cerrar el ticket
+## QA exploratoria con un modelo real
 
-La prueba usa proveedores falsos: demuestra el contrato enviado y la experiencia
-visible, pero no cómo decide recuperarse un modelo real. Después de publicar la
-versión revisada, falta QA exploratoria con BYOK en la sesión habitual de
-`https://gymnasia.maximofn.com/`, sin leer ni copiar la clave. No hay cambios de
-permisos ni de runtime nativo; esta entrega no incluye pruebas en un dispositivo.
+El 4 de octubre de 2026 se probó la web publicada, versión **1.51.0**, con
+OpenAI **gpt-6-luna**, en la sesión habitual del navegador. Se emplearon fechas
+y pesos ficticios de QA. No se leyó, copió ni registró la clave BYOK.
 
-El artículo del blog en español, inglés y portugués, su conversación real y su
-publicación pertenecen al alcance restante del ticket. El ticket no se cierra
-con esta PR. Los cambios en `apps/mobile` requieren autorización explícita antes
-de fusionar, porque la fusión inicia la compilación y distribución Android.
+1. **Ausencia y alternativa autorizada.** Se pidió leer el peso del 2020-01-02
+   y, si faltaba, consultar el 2020-01-01, sin escribir. Las peticiones reales
+   mostraron `read_measurement` para el día 2, un `function_call_output.output`
+   con `kind: "tool_error"`, `is_error: true`, `error: "not_found"`,
+   `recovery: "choose_alternative"` y `recoverable: true`; después la lectura
+   del día 1 devolvió 76 kg. Coach respondió: «Falta el registro del
+   **2020-01-02**. El **2020-01-01** sí tiene un peso guardado: **76 kg**».
+   Fueron tres peticiones al modelo. Se inspeccionaron únicamente el modelo,
+   los argumentos y los resultados de estas tools, sin cabeceras ni claves.
+2. **Escritura incierta.** Se inyectó temporalmente un fallo de persistencia
+   limitado al almacén de la app y a un registro ficticio del 2020-01-03.
+   La excepción incluía `network timeout`. El modelo era real; el fallo local
+   era simulado. Hubo una sola petición al modelo y ninguna ronda adicional.
+   Coach mostró el mensaje seguro: «Gymnasia no puede confirmar si la acción
+   llegó a completarse. Para evitar duplicarla, no la ha repetido. Revisa tus
+   datos antes de solicitarla de nuevo». No confirmó éxito ni expuso la
+   excepción. El historial conservó ese mensaje como `technical_error`.
+3. **Recuperación y persistencia.** Se retiró completamente la inyección.
+   Se guardó un peso ficticio de 77,4 kg para el 2020-01-04. Tras recargar,
+   el almacén contenía ese registro y no contenía el del día 3. Una nueva
+   consulta real de ambas fechas confirmó 77,4 kg para el día 4 y ausencia
+   para el día 3. La captura siguiente documenta el resultado visible.
+
+![Lectura real tras recargar, con datos ficticios](screenshots/coach-tool-errors-real-model.jpg)
+
+### Comparación exploratoria con el formato antiguo
+
+Una reproducción aislada con la API real de OpenAI, `gpt-6-luna`, `store: false`
+y resultados ficticios comparó textos antiguos sin marca con errores nuevos.
+No ejecutó escrituras ni reprodujo una versión antigua completa de la app.
+La transcripción saneada está en
+[`real-model-baseline.json`](benchmarks/tool-errors/real-model-baseline.json).
+
+- Campo inexistente: el modelo reconoció la ausencia en ambos formatos. **No
+  se reprodujo una confusión del error con un dato válido.**
+- Fecha ausente: con el texto antiguo respondió «No tienes medidas registradas
+  para el 2020-01-02». Con el mensaje nuevo respondió «No hay un registro de
+  medidas para el 2020-01-02. Esto no permite saber si tienes registros en otras
+  fechas». También cambió la precisión del mensaje: la comparación no aísla el
+  efecto de `is_error` ni constituye una evaluación estadística.
+
+Esta QA real añade evidencia de recuperación a los tests deterministas, pero
+solo cubre un modelo en web. No se presenta como prueba nativa ni como QA real
+de Anthropic o Google. La versión Android 1.50.4 se publicó por el workflow
+[de release](https://github.com/maximofn/gymnasia/actions/runs/37203970830);
+la web probada ya mostraba la versión posterior 1.51.0.
+
+## Artículo y criterio pendiente
+
+El artículo explica el contrato, sus tres adapters y las conversaciones reales,
+con las mismas limitaciones en español, inglés y portugués. Su publicación se
+registra aquí una vez verificada.
+
+El criterio original «conversación real donde el modelo confunde un error con
+un resultado» sigue sin evidencia. No se marca como cumplido ni se inventa una
+conversación. El ticket permanece abierto hasta resolver ese criterio.
