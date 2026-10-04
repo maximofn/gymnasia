@@ -9,6 +9,8 @@ runtime de Expo:
   externos inyectados.
 - `providerToolLoop.ts`: ciclos `tool call → ejecución → resultado → siguiente
   ronda` de los tres proveedores.
+- `toolBatch.ts`: ejecución compartida por los tres proveedores y por OpenAI
+  compatible; limita las lecturas concurrentes y serializa las escrituras.
 - `providerStreamParsers.ts`: parsers de los streams crudos de OpenAI,
   Anthropic y Google usados por la app y por las pruebas de integración.
 - `chatSystemPrompt.ts`: validación y selección determinista de prompt remoto,

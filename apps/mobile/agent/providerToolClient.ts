@@ -43,6 +43,7 @@ import {
   requestCustomOpenAIChat,
   type ChatCompletionMessage,
 } from "./customOpenAIChat";
+import { executeToolBatch } from "./toolBatch";
 import { toolCallOccurrenceKey } from "./toolOperationLedger";
 import {
   anthropicApiHeaders,
@@ -219,27 +220,28 @@ export async function requestProviderToolChat(
         }
         continue;
       }
-      for (const call of turn.toolCalls) {
-        const parsedArgs = parseOpenAIFunctionArguments(call.function.arguments);
-        if (parsedArgs === null) {
-          history.push({ role: "tool", tool_call_id: call.id,
-            content: formatToolInputError(["Los argumentos deben ser un objeto JSON válido."]),
-          });
-          continue;
+      const calls = turn.toolCalls.map((call) => {
+        const name = call.function.name;
+        const args = parseOpenAIFunctionArguments(call.function.arguments);
+        let envelope = null;
+        if (args !== null) {
+          const key = toolCallOccurrenceKey(name, args);
+          const occurrence = occurrences.get(key) ?? 0;
+          occurrences.set(key, occurrence + 1);
+          envelope = {
+            executionId: options.executionId ?? "legacy-execution",
+            provider: "custom_openai" as const, providerCallId: call.id, name, args, occurrence,
+          };
         }
-        const key = toolCallOccurrenceKey(call.function.name, parsedArgs);
-        const occurrence = occurrences.get(key) ?? 0;
-        occurrences.set(key, occurrence + 1);
-        const output = await executeToolSafely(options.executeTool, call.function.name, parsedArgs, {
-          executionId: options.executionId ?? "legacy-execution",
-          provider: "custom_openai",
-          providerCallId: call.id,
-          name: call.function.name,
-          args: parsedArgs,
-          occurrence,
-        });
-        history.push({ role: "tool", content: output.output, tool_call_id: call.id });
-      }
+        return { name, id: call.id, envelope };
+      });
+      const results = await executeToolBatch(calls, async (call) =>
+        call.envelope === null
+          ? { output: formatToolInputError(["Los argumentos deben ser un objeto JSON válido."]), isError: true }
+          : executeToolSafely(options.executeTool, call.name, call.envelope.args, call.envelope));
+      history.push(...calls.map((call, index) => ({
+        role: "tool" as const, content: results[index].output, tool_call_id: call.id,
+      })));
     }
   }
 
