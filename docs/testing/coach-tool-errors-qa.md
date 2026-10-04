@@ -35,6 +35,8 @@ Verificado el 4 de octubre de 2026 en web, con Chromium y proveedores falsos.
 - `npm test`: 933 pruebas Vitest, 11 pruebas de dev store y 3 de fronteras móviles,
   todas correctas.
 - `npm --workspace apps/mobile exec tsc --noEmit`: correcto.
+- `npm run check:mobile-boundaries`: correcto; contrato de errores registrado como entrada pública.
+- `npm run check:production-version -- --base origin/main`: versión 1.50.4 correcta.
 - `npm run test:agent:e2e`: correcto, incluidos los tres proveedores, incidencias
   y development sin red.
 - `npm run check:data-inventory`, `npm run test:data-inventory` y
