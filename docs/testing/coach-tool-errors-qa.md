@@ -98,8 +98,22 @@ la web probada ya mostraba la versión posterior 1.51.0.
 ## Artículo y criterio pendiente
 
 El artículo explica el contrato, sus tres adapters y las conversaciones reales,
-con las mismas limitaciones en español, inglés y portugués. Su publicación se
-registra aquí una vez verificada.
+con las mismas limitaciones en
+[español](https://www.maximofn.com/gymnasia-agent-tool-errors/),
+[inglés](https://www.maximofn.com/en/gymnasia-agent-tool-errors/) y
+[portugués brasileño](https://www.maximofn.com/pt-br/gymnasia-agent-tool-errors/).
+Se publicó mediante [PR #106 del portfolio](https://github.com/maximofn/portafolio/pull/106),
+fusionada el 4 de octubre de 2026. El navegador verificó HTTP 200 en las tres
+URLs, contenido completo de ocho secciones y enlaces al índice localizado.
+Las tres páginas se comprobaron en escritorio y con viewport de 390 × 844,
+sin desbordamiento horizontal. La portada carga con sus dimensiones reales.
+Los índices de la serie y las tarjetas de últimos artículos incluyen el post.
+La compilación de 373 rutas, las 78 comprobaciones de redirects y las revisiones
+del último commit pasaron antes de fusionar.
+
+La comprobación HTTP automática desde terminal devolvió 403 después del
+despliegue. La verificación de producción se hizo en el navegador, que recibió
+HTTP 200 y permitió inspeccionar las tres páginas públicas completas.
 
 El criterio original «conversación real donde el modelo confunde un error con
 un resultado» sigue sin evidencia. No se marca como cumplido ni se inventa una
