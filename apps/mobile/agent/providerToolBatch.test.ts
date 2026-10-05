@@ -3,6 +3,7 @@ import { runAnthropicToolLoop, runGoogleToolLoop, runOpenAIToolLoop, type Execut
 import { requestProviderToolChat } from "./providerToolClient";
 import { createDetailedAgentToolExecutor, type ToolStore } from "./toolExecutor";
 import { parseToolError, toolFailure, ToolTurnError } from "./toolErrors";
+import type { ToolBatchDiagnostics, ToolBatchTraceEvent } from "./toolBatchDiagnostics";
 
 type Call = { name: string; args: Record<string, unknown> };
 type WireResult = { id: string; output: string; isError?: boolean };
@@ -15,9 +16,9 @@ function deferred<T>() {
 }
 
 async function run(provider: typeof providers[number], calls: Call[], executeTool: ExecuteTool,
-  received: WireResult[][]) {
+  received: WireResult[][], toolBatchDiagnostics?: ToolBatchDiagnostics) {
   if (provider === "openai") {
-    return runOpenAIToolLoop({ initialInput: [], executeTool, executionId: "batch-test",
+    return runOpenAIToolLoop({ initialInput: [], executeTool, toolBatchDiagnostics, executionId: "batch-test",
       initialTurn: { outputItems: calls.map((call, index) => ({
         type: "function_call" as const, id: `fc_${index}`, call_id: `call_${index}`,
         name: call.name, arguments: JSON.stringify(call.args),
@@ -30,7 +31,7 @@ async function run(provider: typeof providers[number], calls: Call[], executeToo
     });
   }
   if (provider === "anthropic") {
-    return runAnthropicToolLoop({ initialMessages: [], executeTool, executionId: "batch-test",
+    return runAnthropicToolLoop({ initialMessages: [], executeTool, toolBatchDiagnostics, executionId: "batch-test",
       initialTurn: { contentBlocks: calls.map((call, index) => ({
         type: "tool_use" as const, id: `call_${index}`, name: call.name, input: call.args,
       })) },
@@ -42,7 +43,7 @@ async function run(provider: typeof providers[number], calls: Call[], executeToo
     });
   }
   if (provider === "google") {
-    return runGoogleToolLoop({ initialMessages: [], executeTool, executionId: "batch-test",
+    return runGoogleToolLoop({ initialMessages: [], executeTool, toolBatchDiagnostics, executionId: "batch-test",
       initialTurn: { interactionId: "batch", status: "requires_action", content: "", thinking: null, usage: {},
         steps: calls.map((call, index) => ({ type: "function_call" as const,
           id: `call_${index}`, name: call.name, arguments: call.args })) },
@@ -68,7 +69,7 @@ async function run(provider: typeof providers[number], calls: Call[], executeToo
   }));
   return requestProviderToolChat({ provider: "custom_openai", is_active: true, api_key: "fixture",
     model: "fixture", base_url: "https://fixture.example/v1" }, [{ role: "user", content: "Consulta mis datos" }],
-    { platform: "web", fakeMode: false }, { executeTool, executionId: "batch-test" });
+    { platform: "web", fakeMode: false }, { executeTool, toolBatchDiagnostics, executionId: "batch-test" });
 }
 
 describe.each(providers)("lotes en el contrato de %s", (provider) => {
@@ -97,6 +98,22 @@ describe.each(providers)("lotes en el contrato de %s", (provider) => {
     expect(received[0].map(({ id, output }) => ({ id, output }))).toEqual([
       { id: "call_0", output: "first" }, { id: "call_1", output: "second" }, { id: "call_2", output: "third" },
     ]);
+  });
+
+  it("emite tiempos de las tools y del lote sin enviar los diagnósticos al proveedor", async () => {
+    const events: ToolBatchTraceEvent[] = [];
+    const received: WireResult[][] = [];
+    await run(provider, [
+      { name: "search_exercises", args: { query: "press" } },
+      { name: "search_exercises", args: { query: "curl" } },
+      { name: "search_exercises", args: { query: "sentadilla" } },
+    ], async () => "catalog result", received, { now: () => 100, onEvent: (event) => events.push(event) });
+    expect(events.filter((event) => event.phase === "tool_started").map((event) => event.index)).toEqual([0, 1, 2]);
+    expect(events.at(-1)).toMatchObject({ phase: "batch_finished", durationMs: 0,
+      totalToolDurationMs: 0, startedCount: 3, returnedCount: 3, peakActiveTools: 3 });
+    expect(received[0]).toHaveLength(3);
+    expect(JSON.stringify(received)).not.toContain("batch_finished");
+    expect(JSON.stringify(events)).not.toContain("catalog result");
   });
 
   it("un fallo recuperable no cancela las otras lecturas del mismo turno", async () => {

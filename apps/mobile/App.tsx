@@ -1707,6 +1707,9 @@ async function callProviderChatAPIWithTools(
       onContentDelta: options?.onContentDelta,
       onThinkingDelta: options?.onThinkingDelta,
       executeTool: executeGuardedTool,
+      toolBatchDiagnostics: {
+        onEvent: (event) => { void pushTrace("toolPerformance", event.phase, event); },
+      },
     },
   );
 }

@@ -160,8 +160,79 @@ menos 30 repeticiones útiles por variante, mediana, p95, errores y resultados.
 Una traza Perfetto/Android Studio permite comprobar tiempo ocupado del hilo JS,
 CPU, memoria, frames perdidos y actividad de red; batería necesita sesiones
 largas repetidas, igual brillo y conexión, sin extrapolar una consulta corta.
-El script web no instrumenta el móvil. No se añaden trazas de producción ni
-exportaciones de datos para esta medición.
+El script web no instrumenta el móvil. Las builds anteriores, Staging 1.50.4 y
+Producción 1.51.0, no incluyen tiempos de tools en sus trazas; necesitan una
+nueva compilación con la instrumentación descrita a continuación.
+
+### Tiempos en las trazas locales
+
+Coach registra eventos con la etiqueta `toolPerformance`, también en Android.
+La medición empieza cuando el programa recibe el lote de tools ya preparado
+para ejecutarlo y termina cuando todas las llamadas iniciadas han acabado.
+No incluye la petición inicial al LLM ni la generación de su respuesta final.
+Usa un reloj monotónico (`performance.now`; `Date.now` solo como fallback).
+
+- `batch_started`: identificador local `batchId`, cantidad `toolCount` y límite
+  `maxConcurrentReads`. El identificador se genera en la app; no procede del LLM.
+- `tool_started`: posición `index` en el lote, nombre canónico `toolName`, efecto
+  y `offsetMs` desde el inicio del lote. Una tool desconocida se registra como
+  `unknown`, sin copiar el nombre recibido.
+- `tool_finished`: misma posición, `offsetMs` de finalización y `durationMs`
+  desde el inicio de esa llamada, incluyendo sus esperas de almacenamiento o red.
+- `batch_finished`: `durationMs` del lote, `totalToolDurationMs` como suma de
+  las duraciones individuales, llamadas iniciadas/devueltas/lanzadas como
+  excepción y `peakActiveTools`, el máximo de tools activas a la vez.
+
+Para comparar serie y paralelo usa **`batch_finished.durationMs`**: sumar los
+tiempos de tools solapadas no da el tiempo que ha esperado el usuario. Los
+offsets y `peakActiveTools` permiten comprobar el solapamiento. `outcome:
+returned` significa que la llamada devolvió un resultado, que puede ser un
+error recuperable; `threw` indica una excepción que detuvo el lote. El cierre
+fatal se registra después de esperar las llamadas que ya estaban activas.
+Si hay varias rondas, cada una tiene su propio lote; no se mezclan con la
+latencia del modelo entre rondas.
+
+Los eventos pasan al registro local existente, de hasta 1000 entradas, y se
+copian desde Ajustes → Trazas → Copiar trazas. No incluyen argumentos,
+resultados, IDs del proveedor, textos de errores, conversaciones ni claves.
+Los tiempos se toman antes de escribir cada evento y la persistencia del
+registro no se espera para continuar la ejecución. Ambas variantes deben
+llevar exactamente esta misma instrumentación para que su coste sea comparable.
+
+### Petición idéntica para ambas apps
+
+Usa el mismo teléfono, conexión, proveedor y modelo. En un chat nuevo de cada
+app, pega:
+
+```text
+Quiero comprobar tres búsquedas independientes del catálogo de ejercicios.
+En tu próxima respuesta solicita exactamente tres llamadas a search_exercises,
+todas en la misma ronda: una con query "press", otra con query "curl" y otra
+con query "sentadilla". Usa únicamente el argumento query. Después resume las
+coincidencias de cada búsqueda. No guardes ni modifiques ningún dato y no hagas
+otras consultas.
+```
+
+El texto pide un solo lote, pero un proveedor real puede elegir dividirlo o
+añadir otras tools. Comprueba en las trazas que existe un lote de tres
+`search_exercises`; si son tres lotes de una llamada, esa ejecución no compara
+el solapamiento y hay que repetirla. Staging para esta comparación usa límite
+1; Producción usa límite 4. No se obtiene el tiempo preguntándoselo al modelo:
+la medición la hace el programa y aparece en las trazas.
+
+Haz primero una ejecución en cada app y sepárala de las siguientes: una app
+puede tener fragmentos del catálogo ya guardados y la otra no. Repite con chats
+nuevos, alternando las apps, para comparar también con caché caliente. Borrar
+solo las trazas facilita la lectura y no vacía la caché. No borres los datos
+personales para hacer esta prueba. Copia las trazas de cada app después de
+terminar e identifica cuál es Staging y cuál Producción; la cabecera incluye
+el entorno, la versión y la compilación instalada.
+
+Revisión de privacidad según `docs/legal/privacy-change-checklist.md`: se amplía
+la descripción de `gymnasia_debug_traces` en el inventario con estos metadatos
+técnicos locales. No cambia ninguna categoría personal, destino, permiso,
+copia, acción de borrado ni contenido enviado al proveedor. No se modifica el
+texto legal ni la declaración de Play.
 
 ## Cobertura y privacidad
 

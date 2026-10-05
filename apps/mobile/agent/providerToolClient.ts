@@ -44,6 +44,7 @@ import {
   type ChatCompletionMessage,
 } from "./customOpenAIChat";
 import { executeToolBatch } from "./toolBatch";
+import type { ToolBatchDiagnostics } from "./toolBatchDiagnostics";
 import { toolCallOccurrenceKey } from "./toolOperationLedger";
 import {
   anthropicApiHeaders,
@@ -62,6 +63,7 @@ const ANTHROPIC_WEB_PROXY_UNREACHABLE_MESSAGE =
 export type ProviderToolChatOptions = StreamingHandlers & {
   executionId?: string;
   executeTool: ExecuteTool;
+  toolBatchDiagnostics?: ToolBatchDiagnostics;
 };
 
 export async function requestProviderToolChat(
@@ -154,6 +156,7 @@ export async function requestProviderToolChat(
       requestNextTurn: (context) => makeRequest(context, true),
       requestClosingTurn: (context) => makeRequest(context, true, "none"),
       executeTool: options.executeTool,
+      toolBatchDiagnostics: options.toolBatchDiagnostics,
       executionId: options.executionId,
     });
 
@@ -238,7 +241,7 @@ export async function requestProviderToolChat(
       const results = await executeToolBatch(calls, async (call) =>
         call.envelope === null
           ? { output: formatToolInputError(["Los argumentos deben ser un objeto JSON válido."]), isError: true }
-          : executeToolSafely(options.executeTool, call.name, call.envelope.args, call.envelope));
+          : executeToolSafely(options.executeTool, call.name, call.envelope.args, call.envelope), undefined, options.toolBatchDiagnostics);
       history.push(...calls.map((call, index) => ({
         role: "tool" as const, content: results[index].output, tool_call_id: call.id,
       })));
@@ -312,6 +315,7 @@ export async function requestProviderToolChat(
       requestNextTurn: (currentMessages) => makeRequest(currentMessages, true),
       requestClosingTurn: (currentMessages) => makeRequest(currentMessages, true, "none"),
       executeTool: options.executeTool,
+      toolBatchDiagnostics: options.toolBatchDiagnostics,
       executionId: options.executionId,
     });
 
@@ -361,6 +365,7 @@ export async function requestProviderToolChat(
     requestNextTurn: (history) => makeRequest(history),
     requestClosingTurn: (history) => makeRequest(history, "none"),
     executeTool: options.executeTool,
+    toolBatchDiagnostics: options.toolBatchDiagnostics,
     executionId: options.executionId,
   });
   const content = streamedContent.trim() || payload.content;

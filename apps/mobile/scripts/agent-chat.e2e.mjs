@@ -789,6 +789,25 @@ async function runAgentChatE2E(
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
 
   assert.equal(requestBodies.length, 2, `${provider} debe realizar exactamente dos rondas.`);
+  await page.waitForFunction((traceKey) => JSON.parse(localStorage.getItem(traceKey) ?? "[]")
+    .some((entry) => entry.tag === "toolPerformance" && entry.message === "batch_finished"),
+  TRACE_KEY, { timeout: STEP_TIMEOUT_MS });
+  const toolTimings = await page.evaluate((traceKey) => JSON.parse(localStorage.getItem(traceKey) ?? "[]")
+    .filter((entry) => entry.tag === "toolPerformance").map((entry) => entry.data), TRACE_KEY);
+  assert.deepEqual(toolTimings.map((event) => event.phase),
+    ["batch_started", "tool_started", "tool_finished", "batch_finished"]);
+  assert.equal(new Set(toolTimings.map((event) => event.batchId)).size, 1);
+  assert.equal(toolTimings[1].toolName, "read_field_value");
+  assert.equal(toolTimings[2].index, 0);
+  assert.equal(toolTimings[3].startedCount, 1);
+  assert.equal(toolTimings[3].peakActiveTools, 1);
+  assert(toolTimings[2].durationMs >= 0 && toolTimings[3].durationMs >= toolTimings[2].durationMs);
+  for (const event of toolTimings) {
+    for (const forbidden of ["args", "arguments", "output", "result", "providerCallId", "executionId"]) {
+      assert(!(forbidden in event), `los tiempos locales no deben copiar ${forbidden}`);
+    }
+  }
+  assert(!JSON.stringify(requestBodies).includes("batch_finished"), "los tiempos no se envían al proveedor");
   const systemPrompt = providerSystemPrompt(provider, requestBodies[0]);
   assert.equal(typeof systemPrompt, "string");
   assert.equal(transparencyMarkerCount(systemPrompt), 1);
