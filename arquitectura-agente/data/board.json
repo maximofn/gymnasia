@@ -495,7 +495,8 @@
           "related": [
             "GYM-50",
             "GYM-82",
-            "GYM-105"
+            "GYM-105",
+            "GYM-255"
           ]
         },
         {
@@ -512,7 +513,8 @@
             "GYM-73",
             "GYM-76",
             "GYM-77",
-            "GYM-87"
+            "GYM-87",
+            "GYM-255"
           ]
         },
         {
@@ -661,7 +663,8 @@
             "GYM-143",
             "GYM-145",
             "GYM-147",
-            "GYM-150"
+            "GYM-150",
+            "GYM-255"
           ]
         },
         {
@@ -888,7 +891,7 @@
       "kind": "epic",
       "title": "Planificación (planning) en arquitecturas de agentes",
       "state": "backlog",
-      "summary": "Épica de estudio: los cinco patrones de planning, implementados desde cero sobre una misma tarea de referencia para poder compararlos.",
+      "summary": "Épica de estudio: una entrevista previa construye un perfil confirmado y los cinco patrones de planning se implementan desde cero sobre la misma tarea para compararlos con una entrada común.",
       "dependsOn": [
         "GYM-34"
       ],
@@ -901,7 +904,26 @@
           "dependsOn": [
             "GYM-34"
           ],
-          "related": []
+          "related": [
+            "GYM-255"
+          ]
+        },
+        {
+          "id": "GYM-255",
+          "title": "Entrevista inicial para construir el perfil del usuario antes de planificar",
+          "state": "backlog",
+          "summary": "Antes de generar un plan personalizado, el Coach reutiliza lo que ya conoce, pregunta solo los datos relevantes que faltan, confirma un perfil local versionado y entrega el mismo snapshot a cada arquitectura de planificación.",
+          "baseline": "missing",
+          "dependsOn": [
+            "GYM-26"
+          ],
+          "related": [
+            "GYM-50",
+            "GYM-139",
+            "GYM-143",
+            "GYM-151",
+            "GYM-242"
+          ]
         },
         {
           "id": "GYM-27",
@@ -982,7 +1004,8 @@
             "GYM-45",
             "GYM-63",
             "GYM-135",
-            "GYM-136"
+            "GYM-136",
+            "GYM-255"
           ]
         },
         {
@@ -2503,7 +2526,6 @@
           "summary": "Comparar rutas oficiales de Android, iOS y fabricantes y elegir un MVP viable sin prometer paridad ni introducir un backend obligatorio.",
           "dependsOn": [],
           "related": [
-            "GYM-5",
             "GYM-171",
             "GYM-177",
             "GYM-179",
@@ -2618,17 +2640,6 @@
       "title": "Tickets sueltos (sin épica)",
       "summary": "Trabajo de producto y de plataforma que en Linear vive fuera de las épicas reflejadas en el tablero.",
       "tickets": [
-        {
-          "id": "GYM-5",
-          "title": "Sincronización de datos con almacenamiento en la nube",
-          "state": "in_progress",
-          "summary": "Respaldar entrenamientos, plantillas, historial y ajustes en la nube manteniendo el enfoque local-first.",
-          "dependsOn": [],
-          "related": [
-            "GYM-24",
-            "GYM-32"
-          ]
-        },
         {
           "id": "GYM-8",
           "title": "Crear componentes",
@@ -2785,8 +2796,7 @@
           "summary": "Preservar y validar DietItem.image_uri durante la normalización para que las miniaturas sobrevivan a la hidratación y al round-trip de una copia de seguridad.",
           "dependsOn": [],
           "related": [
-            "GYM-24",
-            "GYM-5"
+            "GYM-24"
           ]
         },
         {
@@ -2796,7 +2806,6 @@
           "summary": "Guardar origen, evidencia y fórmula de cada DietItem para auditarlo, recalcular con su instantánea original y actualizar la fuente mediante revisiones confirmadas.",
           "dependsOn": [],
           "related": [
-            "GYM-5",
             "GYM-24",
             "GYM-57",
             "GYM-60",
@@ -2813,7 +2822,6 @@
             "GYM-61"
           ],
           "related": [
-            "GYM-5",
             "GYM-24",
             "GYM-62",
             "GYM-63",
@@ -2831,7 +2839,6 @@
             "GYM-135"
           ],
           "related": [
-            "GYM-5",
             "GYM-24",
             "GYM-60",
             "GYM-61"
@@ -2846,7 +2853,6 @@
             "GYM-135"
           ],
           "related": [
-            "GYM-5",
             "GYM-24",
             "GYM-60",
             "GYM-61",
@@ -2888,7 +2894,6 @@
           "summary": "Seleccionar explícitamente por fecha el peso, la altura y las parejas actual/anterior para que los objetivos y tendencias sean correctos aunque el historial llegue desordenado.",
           "dependsOn": [],
           "related": [
-            "GYM-5",
             "GYM-24",
             "GYM-34",
             "GYM-70"
@@ -2990,7 +2995,6 @@
           "summary": "Separar la identidad persistente de las etiquetas visibles de desayuno, almuerzo, comida, merienda y cena mediante IDs estables, un registro único y migraciones/alias sin pérdida para datos y tools antiguos.",
           "dependsOn": [],
           "related": [
-            "GYM-5",
             "GYM-24",
             "GYM-35",
             "GYM-40",
@@ -3106,11 +3110,9 @@
           "id": "GYM-24",
           "title": "Backup manual: exportar/importar todos los datos a un archivo JSON",
           "state": "done",
-          "summary": "Primera entrega de GYM-5: copia de seguridad local, sin depender de ninguna cuenta de nube.",
+          "summary": "Copia de seguridad manual y local de los datos, sin depender de una cuenta ni de almacenamiento en la nube.",
           "dependsOn": [],
-          "related": [
-            "GYM-5"
-          ]
+          "related": []
         },
         {
           "id": "GYM-7",
@@ -3137,7 +3139,6 @@
           "summary": "La app ya corre en navegador vía react-native-web: el trabajo es empaquetar, resolver el almacenamiento y desplegar.",
           "dependsOn": [],
           "related": [
-            "GYM-5",
             "GYM-31"
           ]
         },
@@ -3518,9 +3519,10 @@
     {
       "id": "planificacion",
       "title": "Planificación",
-      "why": "GYM-34 ya está cerrado, así que puede ir en paralelo a todo lo anterior: no depende de tool calling. GYM-26 fija la línea base de tokens y latencia contra la que se comparan los demás, así que va primero. GYM-28 y GYM-29 solo necesitan GYM-27 y pueden hacerse en cualquier orden entre sí.",
+      "why": "GYM-34 (ticket para crear la infraestructura de tests del agente) ya está cerrado. GYM-26 (ticket para implementar ReAct) fija primero la línea base; GYM-255 (ticket para entrevistar al usuario antes de planificar) añade después una entrada común y confirmada. GYM-27 (ticket para implementar Plan-and-Execute) habilita GYM-29 (ticket para implementar replanning) y GYM-28 (ticket para implementar ReWOO), que pueden avanzar en cualquier orden, mientras GYM-30 (ticket para implementar planificación jerárquica) sigue independiente.",
       "tickets": [
         "GYM-26",
+        "GYM-255",
         "GYM-27",
         "GYM-29",
         "GYM-28",
