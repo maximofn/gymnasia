@@ -21,11 +21,13 @@ Escritura:
   uv run linear.py link GYM-12 --blocked-by GYM-10 --blocked-by GYM-11
   uv run linear.py close GYM-12 --evidence "npm test: 24/24"
   uv run linear.py comment GYM-12 --body "Comentario"
+  uv run linear.py attach-image GYM-12 --file captura.jpg --alt "Descripción"
 
 Prioridades: none | urgent | high | medium | low
 """
 import argparse
 import json
+import mimetypes
 import os
 import re
 import sys
@@ -828,6 +830,88 @@ def cmd_comment(args):
     print(f"Comentario añadido a {args.id}")
 
 
+def upload_private_image(path: Path) -> str:
+    """Sube una imagen al almacenamiento privado de Linear y devuelve su URL."""
+    if not path.is_file():
+        sys.exit(f"No existe la imagen: {path}")
+
+    content_type = mimetypes.guess_type(path.name)[0]
+    if not content_type or not content_type.startswith("image/"):
+        sys.exit(
+            f"El fichero no tiene un tipo de imagen reconocido: {path.name}"
+        )
+
+    payload = path.read_bytes()
+    if not payload:
+        sys.exit(f"La imagen está vacía: {path}")
+
+    gql = """
+    mutation UploadImage($contentType: String!, $filename: String!, $size: Int!) {
+      fileUpload(contentType: $contentType, filename: $filename, size: $size) {
+        success
+        uploadFile {
+          uploadUrl
+          assetUrl
+          headers { key value }
+        }
+      }
+    }
+    """
+    result = query(
+        gql,
+        {
+            "contentType": content_type,
+            "filename": path.name,
+            "size": len(payload),
+        },
+    )["fileUpload"]
+    upload = result.get("uploadFile")
+    if not result["success"] or not upload:
+        sys.exit("Linear no concedió una URL para subir la imagen.")
+
+    headers = {item["key"]: item["value"] for item in upload["headers"]}
+    # Linear firma la subida para el MIME solicitado, pero no lo repite entre
+    # las cabeceras devueltas. urllib usaría application/x-www-form-urlencoded
+    # al recibir bytes y Google Storage rechazaría la firma con un 403.
+    headers.setdefault("Content-Type", content_type)
+    headers.setdefault("Cache-Control", "public, max-age=31536000")
+    request = urllib.request.Request(
+        upload["uploadUrl"],
+        data=payload,
+        headers=headers,
+        method="PUT",
+    )
+    try:
+        with urllib.request.urlopen(request) as response:
+            response.read()
+    except urllib.error.HTTPError as error:
+        sys.exit(f"La subida de la imagen falló con HTTP {error.code}.")
+
+    return upload["assetUrl"]
+
+
+def cmd_attach_image(args):
+    """Sube una imagen privada y la inserta en un comentario del ticket."""
+    issue_uuid = resolve_issue_uuid(args.id)
+    asset_url = upload_private_image(Path(args.file).expanduser().resolve())
+    body = f"## Evidencia visual\n\n![{args.alt}]({asset_url})"
+    gql = """
+    mutation Comment($input: CommentCreateInput!) {
+      commentCreate(input: $input) { success comment { id } }
+    }
+    """
+    result = query(
+        gql,
+        {"input": {"issueId": issue_uuid, "body": body}},
+    )["commentCreate"]
+    if not result["success"]:
+        sys.exit(
+            "La imagen se subió, pero no se pudo añadir al ticket; "
+            f"asset privado: {asset_url}"
+        )
+    print(f"Imagen adjuntada a {args.id}")
+
+
 def cmd_link(args):
     """Crea relaciones `blocks` desde cada bloqueante hacia el ticket objetivo."""
     gql = """
@@ -1044,6 +1128,19 @@ def main():
     pm.add_argument("id", help="identifier, p.ej. GYM-12")
     pm.add_argument("--body", required=True)
     pm.set_defaults(func=cmd_comment)
+
+    pimage = sub.add_parser(
+        "attach-image",
+        help="subir una imagen privada y mostrarla en un comentario del issue",
+    )
+    pimage.add_argument("id", help="identifier, p.ej. GYM-12")
+    pimage.add_argument("--file", required=True, help="ruta local de la imagen")
+    pimage.add_argument(
+        "--alt",
+        required=True,
+        help="texto alternativo accesible que describe la evidencia",
+    )
+    pimage.set_defaults(func=cmd_attach_image)
 
     plink = sub.add_parser(
         "link",

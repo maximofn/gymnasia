@@ -155,7 +155,21 @@ python3 .claude/skills/linear-tickets/scripts/linear.py unlink GYM-12 \
 python3 .claude/skills/linear-tickets/scripts/linear.py relate GYM-12 --with GYM-13
 # Comentar
 python3 .claude/skills/linear-tickets/scripts/linear.py comment GYM-12 --body "Comentario"
+# Subir la imagen al almacenamiento privado de Linear y mostrarla en un comentario
+python3 .claude/skills/linear-tickets/scripts/linear.py attach-image GYM-12 \
+  --file /ruta/captura.jpg \
+  --alt "El temporizador aparece en la tarjeta del ejercicio anterior"
 ```
+
+`attach-image` exige un tipo MIME de imagen reconocible, solicita a Linear una
+URL de subida firmada, envía los bytes directamente a su almacenamiento privado
+y solo después añade el comentario. El texto alternativo es obligatorio para que
+la propia evidencia no introduzca una barrera de accesibilidad.
+
+La URL firmada puede devolver solo cabeceras de Google Storage (por ejemplo,
+`x-goog-content-length-range`) y omitir `Content-Type` y `Cache-Control`. El
+cliente debe añadir ambas: si deja que `urllib` infiera el tipo de un cuerpo de
+bytes, envía `application/x-www-form-urlencoded` y la subida falla con HTTP 403.
 
 ### Cierre protegido
 
