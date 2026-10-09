@@ -627,5 +627,114 @@ class IssueRelationTests(unittest.TestCase):
         self.assertEqual(mocked_query.call_count, 1)
 
 
+class ImageAttachmentTests(unittest.TestCase):
+    def test_uploads_with_signed_headers_and_returns_private_asset_url(self):
+        response = mock.MagicMock()
+        response.__enter__.return_value.read.return_value = b""
+        response.__exit__.return_value = False
+
+        with tempfile.TemporaryDirectory() as directory:
+            image_path = Path(directory) / "evidencia.jpg"
+            image_path.write_bytes(b"jpeg-bytes")
+
+            with (
+                mock.patch.object(
+                    linear,
+                    "query",
+                    return_value={
+                        "fileUpload": {
+                            "success": True,
+                            "uploadFile": {
+                                "uploadUrl": "https://uploads.linear.app/signed",
+                                "assetUrl": "https://uploads.linear.app/private/asset.jpg",
+                                "headers": [
+                                    {
+                                        "key": "x-goog-content-length-range",
+                                        "value": "0,68718",
+                                    },
+                                    {
+                                        "key": "Content-Disposition",
+                                        "value": 'attachment; filename="evidencia.jpg"',
+                                    },
+                                ],
+                            },
+                        }
+                    },
+                ) as mocked_query,
+                mock.patch.object(
+                    linear.urllib.request,
+                    "urlopen",
+                    return_value=response,
+                ) as mocked_urlopen,
+            ):
+                asset_url = linear.upload_private_image(image_path)
+
+        self.assertEqual(
+            asset_url,
+            "https://uploads.linear.app/private/asset.jpg",
+        )
+        variables = mocked_query.call_args.args[1]
+        self.assertEqual(
+            variables,
+            {
+                "contentType": "image/jpeg",
+                "filename": "evidencia.jpg",
+                "size": len(b"jpeg-bytes"),
+            },
+        )
+        request = mocked_urlopen.call_args.args[0]
+        self.assertEqual(request.get_method(), "PUT")
+        self.assertEqual(request.data, b"jpeg-bytes")
+        self.assertEqual(
+            request.get_header("X-goog-content-length-range"),
+            "0,68718",
+        )
+        self.assertEqual(request.get_header("Content-type"), "image/jpeg")
+        self.assertEqual(
+            request.get_header("Cache-control"),
+            "public, max-age=31536000",
+        )
+
+    def test_attaches_uploaded_image_as_accessible_comment(self):
+        args = argparse.Namespace(
+            id="GYM-250",
+            file="/tmp/evidencia.jpg",
+            alt="El descanso aparece en el ejercicio anterior",
+        )
+
+        with (
+            mock.patch.object(linear, "resolve_issue_uuid", return_value="uuid-250"),
+            mock.patch.object(
+                linear,
+                "upload_private_image",
+                return_value="https://uploads.linear.app/private/asset.jpg",
+            ),
+            mock.patch.object(
+                linear,
+                "query",
+                return_value={
+                    "commentCreate": {
+                        "success": True,
+                        "comment": {"id": "comment"},
+                    }
+                },
+            ) as mocked_query,
+        ):
+            linear.cmd_attach_image(args)
+
+        self.assertEqual(
+            mocked_query.call_args.args[1],
+            {
+                "input": {
+                    "issueId": "uuid-250",
+                    "body": (
+                        "## Evidencia visual\n\n"
+                        "![El descanso aparece en el ejercicio anterior]"
+                        "(https://uploads.linear.app/private/asset.jpg)"
+                    ),
+                }
+            },
+        )
+
 if __name__ == "__main__":
     unittest.main()
