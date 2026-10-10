@@ -1,0 +1,4 @@
+interface:
+  display_name: "Crear miniaturas de YouTube"
+  short_description: "Miniaturas atractivas, veraces y listas para subir"
+  default_prompt: "Usa $crear-miniaturas-youtube para crear una miniatura atractiva y fiel al contenido de mi vídeo."

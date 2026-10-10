@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:3c503ead1a9819737ea6673f1f76e901c563883ea04b477c4004a705e4d94de9",
+  "claims": [
+    {
+      "id": "claim_30f56ccbe7ae41c3b0f6cf70fc7a3168",
+      "statement": "`npm test` encadena la suite determinista Vitest de la app móvil, el control/pruebas del dev-store y las pruebas de límites móviles; Vitest se ejecuta en entorno Node e incluye los dominios agent, backup, catalogs, diet, measurements, persistence, platform, shell, storage y training.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/package.json#L12-L18",
+          "version": "repo-lines-v1:sha256:009720f9c507917d9a199f3824ae2931a8505a5f2189174ca48f0a5194b739ee:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzRjNTJmNjU0NjBhOGI5NmJmMTExNmI4MDNiNzBlNTM2ZDEzOTAwODI1M2FhMzUwMWZhYzM1ZGRiOGU5YThkZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2ExMjg5MzA2Y2ViMWZhYmNjYWM4YTg1ODQ3ZmZmMDY3NzZmZTg3YzI0Nzk1ZTNmM2I4ZDI0NDgzMDE2ODk3MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDM5NTRlYTA3N2VjYjI3ZTlhZTFjNjFhYjYwMjY1OGEzMGY4MjhmM2QyYjJhYjA1YTlhN2U4ODVmYjA1YWEzOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGZmMWQ1MTUyMDcxMDUzNGE5MzZkODY4ODY2ZWNiZWIzOTc5NmJmMTA1NGRkODI0YmFlMzI4ZTFhZThlZjczZCJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/vitest.config.mts#L3-L21",
+          "version": "repo-lines-v1:sha256:196731ab23dde5c6fb0ec23cc76b700a711c017e2eba3a38534de158ec48a025:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyY2VjYjE0NGE0NmY1ZGNmMTJhNjE2OWZjZWVkNzY5NWU4Mjk0YjA5MGRlNzZmMzY2MWNkZDAyNDkzMDAxNDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwNmQ1NjlkMTVkZjJlMGU3NTI1MmRmNWIxZjRmZGRlOTI1MDM0NjE2OTVhYjMwYzY0ZTEwYTVhYTExMGRkNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://package.json#L47-L52",
+          "version": "repo-lines-v1:sha256:b3d15c2b8fd9846a3c63accfbbbedbaa47234641437825d8e8da5eeb6129b7cc:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzljMjdmM2M1YmM5MmRjNTRiMDFiNDRhOTVhMWNhZWRkMzhjNDJlNWYzYmIwYzM0OWRkMDBlODQzNzJiMzZlZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjc5NzJiNDFlOGZlZjlmMGU5YTU5YmIyZDI1ZDQ4YTU5Y2NmZWRjNWJlYWFkMTE3Y2ZjZGM1ODQyMGU1ZWZhNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDY5NGVjY2E3OTIyNWU0ZjVkZmYzNWJmY2VjOGQ5OGI1OWFkYmYxNTM5ZGQzOTE3NDY2MTY0ZDM5Yjk3MWY0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmRlNTQ5NTcwODg5ZDYwZjkwYjE2YjA3MGM2M2YwY2NiNzliMjkzODQzMTRkYzY3Nzk2ZWFmOWZiOTJjMDgxZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0d2aa13dc7854a7484062e65ca979f0c",
+      "statement": "Los contratos deterministas del agente exigen que el catálogo canónico de tools coincida con los handlers del ejecutor y se proyecte completo a los formatos de OpenAI, Anthropic y Google; además se aplican propiedades generativas a schemas y normalizadores para invariantes como no lanzar, idempotencia y unicidad.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/toolDefinitions.test.ts#L17-L97",
+          "version": "repo-lines-v1:sha256:1cf00fd1af37c57552f8aba73a93a9a6e963e4c81dbf4399381f8bd03ef51b4b:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMyMWEyYTY1Zjk0YTdlNTMxNmJjNTZiODgyOTQzMDA3ZTFlYjhlZWFiNGFjNjYxOTcxODNiYjFkYWYxZWYyNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhNzBiOWZlOWU1YzVkYjljMmE1NDViMzg1YWYzZDNkNDQ3YTA0Nzg2OGVjNzM3YTk1NDBiNWI0NjMyYmEwNGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkZjQyYTg4YjY2MjU1Y2RmODQwNmRhNzM3MmVjMzBhMDE4MjU1NzFkNWI0MmViZmFlMWY2ZTgyMTlkNjRmOGUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolDefinitions.test.ts#L221-L230",
+          "version": "repo-lines-v1:sha256:919ee4d2af49cde0b8cbc48c84fe8b37f8675fed821656dff93157cc0a2410ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1NWQ0MDQ1NTBjZTk2YWU2YWIxZWMyZDlkY2RmMGM3MDJmYmM3N2MyN2U2ZDYwM2IzYWQzYjBiNDVjZGYyMjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0ZTQyMDhjZDZmZmI4YzRhMzU0N2IyZjU0YWRhMTk5NzhjM2YzNjVlNzhmOTUwMmVmNTE0NWNkZDJhYTg1NDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiZjhhZTgzYjRjZjc5YzA0N2Y1ZGEyMDU4YTYyYjRjMjdkNWZiN2QyYTkyZDRmNThiOWI2YmZmYmI0MWE0ZGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ4MTdmYmI3M2M5MmIzNmQ1ZTQ4OTZmZjUxYzFiNThlZWMzMzBiYmU5NjFiYTA1ZmM2MjA1Zjg2N2VhMWJjZjYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/seriesContract.property.test.ts#L46-L94",
+          "version": "repo-lines-v1:sha256:b9acb16d2c0381c041cd6b91f0d7c963366da0cd35d194a34d605e1e355723e0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2ZmE0YzBjYjUyODRjODIwNjIzM2QzN2RhODFlZTg3MDExNTQ4MmJiZDJhYzA1ZjFhYTNkNzM2MjNjMjg5NDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwODNhZDc0YjdjZGM5YjMwOTc4YmE3NjAzYWVjMTlkZjFmZDAwMmU1NGVhNTg1ZTQxZDFjMTg5ZjE0OGJiOWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkYzVhNDE3Yzk4N2IwMzI5NWMyOTEzMGJkNmIwNDRmMmJkNzdkMDgzODJlMjYzYzMzZTdjNTMwMTBhY2IzOTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d6fa95ec250440318a479a47b99ab793",
+      "statement": "Los fixtures SSE del agente se reproducen sin red a través de los parsers y bucles de tools de producción, pero son fixtures sintéticos y no capturas de APIs de pago.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/providerPipeline.test.ts#L131-L249",
+          "version": "repo-lines-v1:sha256:e66f3bc355e67082749dc7177ac770798edfcc7d10e881d9b51c31299c754fcc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI4OGIwMzYwNmE5MWQ5NDljZTAyNmY0OTEyMDJjM2Y5NTRjYmVlNTZmYjZiMzQzMThiZGZmOGZmZjZjY2IzMWI5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNzc5ZDExOGQ2ZTNjYmY0NTA1Mzk3NDhkZWU3YTQzMDdhY2JlNjQ0NmNiYTI5N2YyNzYwZmE1ZDBiYmExYmMyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxYjFjMmI5MjRkMzg5OWQ5ODk0NTUxNGMzOTljOTExNzBlZDZhMzI3ZTk1NDM4MmQyOTRiMGM3NGYyYWJmYWNmIn0"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerPipeline.test.ts#L19-L36",
+          "version": "repo-lines-v1:sha256:16f72294dc743417f5dc70e0cb931a12516aa1820dca516b62a998b6fe377d16:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1NmMyNTZjODUyMmY4NGE3ZGJkY2M0ZWE2OTJiMWRkODliMjgxNGNkMTgwNDQ4N2VmMjdlZDRkOTUzZDRkY2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4MmVhZDU1NTIwMjc0ZjUyMmUxZDIwNjhlMDRkZmJlNjMyMWVjMWVmMWM2NTRiMzlhMjFlYWM2ZmRiYjYyZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0OGI3MmM4OTYyYWZhYmQ3N2Q0MDM0MTNhM2RlNDE3YWRiN2I0Zjg3MmExOTE0MmJjMTEwODIyMDNmNWI0OWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkN2E1Y2FlZjNkZTg2N2MzYjRiN2Q4NWE1NDRlOTYwMzdlYjcyY2FhZDViMDQyM2MwZmJmMjVjYTFkZmE1YmQifQ"
+        },
+        {
+          "resource": "repo://docs/testing/agent-testing.md#L40-L45",
+          "version": "repo-lines-v1:sha256:8b155cb7bee23834fbad4349504169485290a4207cfe9a7f6e9f7b23ac7dde4a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTc3M2NkNGEzYzk1YTg4OGVmYWY3MzlkMWFjNmUzNDA4ZjU5NmIyNGFmN2Q3NmU3YWZlZTQwY2FiZDE4ZWJlNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNGM1Y2FlOGI0MmVmMmI2MDVkMzBiNjkxNDMzZDVjNDcyMDI4OTA2MmVkMDdhMWQ3OWZkZTAzOTc4MzhjMzQwZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjQ1Mjg2MzRmODEwNGI4ZDliNGEzMmQxN2E2MzFlYzU2MTcxMGZmYmQ0YmFkOWY2MzQyNzUyODI5M2VkMGY0MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzA1NTU0NTBhYmUxYmMwNzZiZjBlMTgzMDY2NWRkNGM4OGNlOGM4Nzc0YTI1MzVhNGZjMmRiMjdjNWE3MmVlNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d337b15595e248e78b2c795899cf03f6",
+      "statement": "El gate sanitario determinista valida la política, referencias a tools, bloque administrado, ausencia de patrones de exfiltración, paridad de snapshots de prompt y runtime y schemas de informes; los informes LLM deben seguir siendo informativos con `authorizing: false`.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/health-safety/check.mjs#L22-L79",
+          "version": "repo-lines-v1:sha256:fbd1c72c0ad1203000b732478415a72e56d8b47e510133dfe00b24155064e830:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjZGE0MzIzZDljZmI1MmI1MjAyYmVlMjkyMTlmYjk1ZDdjNWM5YjBjYWZlNzJhZjA1ZmNkZDRhZDEzYWRhNTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3ZTBkYmJkZTI1ODY5Yzg4YjcyOGE3MTc2OGIyNjY2M2I4ZDJmOTgyMjNkMTU2NmVkYzZkMjMwNWY2NjkwMzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQwZGE1YWUxMDIxYTFlNDI2ZDAzMTM4MmYyZDc1YTRiZjU1MjIxYmU4NjI5YjNlZjBiYWM0ZmVlODQxNzc3NGIifQ"
+        },
+        {
+          "resource": "repo://scripts/health-safety/check.mjs#L80-L90",
+          "version": "repo-lines-v1:sha256:ca064cf502eb0900950800cdac50cb014267ec67a0547b00ada6112668085348:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkZWZiOWIzMjgxNWRlOWQ0YjIwNjcyOTdjMzlkYTJhYmZlY2IwNTI1NGRlZmI2Y2EyZTI4M2Y0ODI3NGU4OGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMjc4NGFiMDE1MDRlOGQ4ZjViMzg3MmVkYWIwYzAzOGFkZGM2YmZjMzI2Mzg0MGQ3ZDlkZjI4MGQwYTExNWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4NzVmZmIwZTIxNWQ3MzliYjY4NjMwYmQ5YTM0ZGU2ZDJhNmVjOWZiMTdlY2NiMTZiNjQ4NjNmYzc5YzVlOGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiOTY4NTI0ZGEyYWQzOWIyNzhmNmE4Yzk3ZjZkOTMwZDc0Y2JkYTI2NWI4ZTY0YWU2ZmVlMDdiMjRjOWE5YmUifQ"
+        },
+        {
+          "resource": "repo://scripts/health-safety/policy.test.mjs#L115-L163",
+          "version": "repo-lines-v1:sha256:84064819df3a3e946d74ab70c1583a44aaa61a689f9d5e5745d55972d301937b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0NDFmMGY3ZjhjNTZiYTQ0OGQzYmEyNjhmZDZjMGE2NTc0OWZmNzhkNmRkNzQzMjZkOWRkZTllZDA0MDRiNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkOTgzNTQ5OWU1YmE5MWY4NzI2N2M5NTJiNzhlYWVkZDZjNDY2Zjk1YjY4ODFiMDdiNDZjY2FlYzBjZGYxNDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNjNWI5OTYwNTYxNGMwZWM5ZjQyNDUxMThhYzNmNzliY2RkNzRlOTNlM2Y3MDczMjMyMjlkYjVjMGE4Y2M3M2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://scripts/health-safety/policy.test.mjs#L39-L92",
+          "version": "repo-lines-v1:sha256:b2bd6f406c6e30e4efd250486026e56ffb74d09694342b3491bbd63e52e4b203:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhMDVlNWFmN2QzOTk5ZjVjNzMzZTY1ZjMzMDE2MjdjMzA2MzIzNDBiNGMzZTg0YjQ2MTQ4ZTJiYzY4YTZlYWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4NTNhNjQ1NWMxMTQ0MTkzNzcwZWE2ZWQ1YjViMzM4YzlhZDc4NTFlYmJlZWVlMDg4NzE2YzM1OWY5ZTYyMTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiYmE1YTI2ODRiMWYwNGU0ZmMzYTNlMzUxYWNiOGZhNGE0OTQzMmRhOTQzNDVhNDRlZjYxOTg0MmQxODEyNmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e1eb6c8f9ef741c7a132c9e79f490f0f",
+      "statement": "El inventario de datos detecta deriva entre la declaración publicable y los literales de producción para claves de almacenamiento, destinos HTTPS y permisos; excluye tests y comentarios, y falla tanto por elementos no declarados como por entradas declaradas ya obsoletas.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/data-inventory/check.mjs#L39-L54",
+          "version": "repo-lines-v1:sha256:09c4f223a63e26d0f8b06ab5857ffd91cfa110bdd2199f8c307dc15554aa8fb3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkZDkxNjRkMjg4MTAzZWJjYTc5NmVjM2VlMzQwNmVkNzlkYjM4NmIzMTUwNzZhZjhmMDg3Njg2ZjY1NTliMDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5OTY3ZWMxZWQzODM2ZjhlYjE3YWZmMTcyYjViZmVmN2RlNjA0ODVhNDM5YzZjYTExYzU5MWUxNzU1NzM5YWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjYzkyMGJlZjJhNzc2OTM4YzA2ODM4OTdlMTVhMGE0NzMwMjkzYjkxMjE4MzBkMjZiMTAxMGMyMzVkZGIxMWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://scripts/data-inventory/inventory.mjs#L134-L243",
+          "version": "repo-lines-v1:sha256:a8746c62f925b1f0fb07081050740fcfd83b837349c1f91fe188a74e5c42594b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlYWYyMmNmMDczMjU5MmMyNDcxNDFjYmU2MWVmYTExMDEyNjEyZjVhMzEyMmI5YWY5YmJhZjUyZjU3MjRkMTk0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJkNmQ3ZDA3MGI2MDAwMzM4MzFmNjE2YzAyNTU1NjdmODE1MWZiNTUzYjVlMWJhOWZmZjc3Mjg2MzNkYmY2MWVmIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmZjdkN2RkNjk4OWYwMjhhZWUzMTYxYmNkMDFlOWYxNjg1ZjQ3NjAwNWJmZDJiYTYxYzdmNTNkYmNlY2QyZTJkIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiNDNjZjg0NzM3NGFkOTc2N2YzY2E2Nzg2NzdkNzc3ZjlkODkzZDJmZDFiNjUwMThhN2M4M2ZkZDFkZjMxMzkxIn0"
+        },
+        {
+          "resource": "repo://scripts/data-inventory/inventory.mjs#L22-L32",
+          "version": "repo-lines-v1:sha256:5033fd4282a53b2a38fe0ea1e593175552f454279b71bb201447b581953d63a3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5NGIxNzYwMmMzYmI1ZmRjMWM3ZTFhMzEzY2U3NzQ1MWRlMWEwYTFhNmYwYTdmMzI1NmY1ODZhMjk2ZjBkMjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4ZGI3ZTIxOWVhMmQ2NjM1NTBlMDI3ZDdhMDU4NzY2NTE5YWI3ZWJlMjM5ODU3MTZhMzQ4N2RiZGYwNzVkNGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjViMDAzZmUxNTk3MjU4YjJhYjQzOGQ3ODk1Njc3YjA4MGRiZDZjYjY3ZTJiYTc5YjEyMWQ5MDk2MTNhMmU5ZjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY0Nzc2MTc4NmJmMWVkZjVmMmZlZjE1YWE5NjgzYmQ3YjRmYzBiMTc5NTE1NTQ1YmZhNzA3NjFjNjBlYzI2MWQifQ"
+        },
+        {
+          "resource": "repo://scripts/data-inventory/inventory.mjs#L63-L98",
+          "version": "repo-lines-v1:sha256:422f2c3a183e6e6d533b07d6d1a1d027b1827ba404710d6debb9deab550f667f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1MTgwNDMxMjM4N2E0NDMzZjM1OWIxODhiNTY1OWI0YWIwZjU0MjdlYjkzZmNhZGE1NmUyMzg0MmRjNzMwYWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkOTgzNTQ5OWU1YmE5MWY4NzI2N2M5NTJiNzhlYWVkZDZjNDY2Zjk1YjY4ODFiMDdiNDZjY2FlYzBjZGYxNDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkOTVkNjE3OTc3ZDYxMTJlOTM4NTJhNzkzOGQ5MWQ3MWJkN2EzZGI0ZjIyOTQ5Y2JkYjhhOTFkZjZlZjQ5YjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4Y2MwNjZhZTIxMjM1MGM2MWIyZWQwYzZlNDY1YjhjYjVmNTc2MTFkZGU3MjI0Mjc4MGU5ZDdmMjU2MzZmZDkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9e785637ae8647c68264aff53a3d9d8d",
+      "statement": "El control de límites móviles analiza imports con el AST de TypeScript y aplica una política de capas, dependencias permitidas, entradas públicas e imports externos prohibidos; también detecta módulos no clasificados, excepciones heredadas obsoletas y ciclos locales.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/mobile-boundaries/check.mjs#L185-L288",
+          "version": "repo-lines-v1:sha256:c3028dc67e863e35f21ac3dd5f3d56c89950acda51ba959c4702599e7c9e688c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiZGU0ZmIxNGFlN2UyMmMwNzE4N2ViOWZhMmM4YTE4OTljNDM4N2YyYjY1ZTgxYWVlOTBmZTE3NDBkMjJjMGFhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJiNDk4YzhlOTgwYWIzZGQyNDg2MzI5YjM3Y2FkODM2NjNlMTk4MGI0NWI1NDJlYmY4OTM4YzIxMTkwYzY2MWJjIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5ZGViOGNlNmY0MzU5ZWY4ZTdiM2M3YmMxMTBlMzAzMzU0NjM1YjA5MTYxNjg1YTcwMGQzNWM3ZGFkYzUyMjY2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3NDAyMmEyNjY1YTA2OWU0YWYzMjZlYTUyZGFmZjU5NzU2NTAxOGExZWUyMDJiOTUzYzE2ODY2YjUwZWEyMTI5In0"
+        },
+        {
+          "resource": "repo://scripts/mobile-boundaries/check.mjs#L54-L117",
+          "version": "repo-lines-v1:sha256:11e081241e7796c6353eb80055a2b2fb536abc8be8a326b1e0b72de5f57a0915:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAyODBjMjBhMTcyMzRmMzYxNzU1MjgwYjYwMmRlZjc1OTRkYjNkYWYwMzY2YTQzNTQ1ZTE3OWJjMjIxMWE3MzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyOWE5MDNkYTBhNmI4MzEzNmUwYWI4M2IzNGM1OTVmNDI4Y2E0YTAwOTUzYjZkZDE4ZWI5NDljMmRkMTkxYjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4OWM3MjljYzI0ZmVkMjJiYWY4N2JmNGE4NmRhOGM2OTRiYWNiOGY1NWFlM2M1MzdmMTM2MTY4NDMzMDJkOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzMWY1MWE2NThiZjU4YTA0YzA3NWUxMDZlMDM4OGQwNjI0YWIzZjNkOWM5NjBmZjU4ZThjYmJhZTQ2MDI0OTIifQ"
+        },
+        {
+          "resource": "repo://scripts/mobile-boundaries/policy.json#L13-L65",
+          "version": "repo-lines-v1:sha256:b641d8d07e86825d8ef6bfdfc88063284b954ceee661bf685960b0ffec686caa:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiZWViZjk1MDI0NjI3YjM5YzY2NGNjZTliZTI5YzQ2MWUwOGRlOWM3MDZlMjY1ZTQ3ZDg1MzI2NjQ1OGNmODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlNjFlN2U0OWYxNTE1OTQ3YjA0MDA5ZWExN2ZiNGI0ZTUwMjFiOWE1YTA4MWVhMTE5YTdiOWIzM2QzMGYwNjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFjN2E1MjdlMzNhOTEyMjRkYTZlMDgxMGViMDM0ODI5MzZlYzI2MzZiNjZmMmYyOTI2YzgxNWU0NTg0ZGNiNmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_384fd20c291b4bcb9870d3277c1520f4",
+      "statement": "Los E2E móviles exportan y sirven la app web para recorrerla con Playwright y dobles locales; `test:catalogs:e2e` y `test:dev-store:e2e` se ejecutan en sus workflows de CI, mientras que los gates de fuente de Production incluyen explícitamente `test:agent:e2e` y `test:train:e2e`.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/agent-tests.yml#L84-L94",
+          "version": "repo-lines-v1:sha256:9a453b21d794763748cebe4fd0bb2f961a7598572a7bee4dc26f5aab24f6a9a7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyMDkyN2YyYTU2OWE0Yjg3YjE3NmYwNzEwZjZkOTA0OTk4M2ZkZWRjOTU1YmFjN2VkZTg0OTIxMGE1ZTQyNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4ZGVmYzcxZWY2N2Q3ZWU1ODQ0YzE2MGUzOTRlNDc5M2FjYjVlZWI4YmMxMDlmYTJmMjllYmZkOWVmMGQzMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkOWFiZWRiNmUwNDU4OTNiZWFkMGZkZDM2ZmU3NDdkNjVmYTE2ZTU1N2U3NTNkODdmNzhhMDU0ZDIwNmMzMjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2M2FiNWMyZjdmOGQ1YTczNWI0YjI5YjA4NjZhZjYzNTQzNzZjZDBkYjA4M2YzYjZiYzZhMThiMWI1MDJmYzgifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/catalog-tests.yml#L68-L81",
+          "version": "repo-lines-v1:sha256:3fa0f3bba8f37b722ed65473c250124a3a34418d266c9d7b69df9fe6b86d7821:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkMGMzNDQ2ZTRjOGEwNzNhNDFjZmRjODMzMTFhOGQwNWRmYThjNzgzYTU4ZDU4YzQ3MWYyN2E5YTEzNDc0ODYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllNTBjMjE1NmEwODRiYzRhZGM0MTRlNDQ1NjQ1YmU5NDM5MTYxNDE5YzkyY2JjZTA2MTMzZDJhZDI1Mzg3NzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhMTQyMDE2YjAzNmM5Zjk2OTkyNDRhNGM0MjlmMDFhZTE5ZmEyY2MxYTg3ZTM3YjBhYmQxNzQwYmQyOGY1YTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/agent-chat.e2e.mjs#L80-L149",
+          "version": "repo-lines-v1:sha256:2bef591566ceb2b83dcc692dfb2f8f5461400bc35e8cd3bdc5ece8b16fc997e4:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5ZjM1MDUxNWM0YTM4NGY5OGM2OGE4MWZmMWU3NzYwZDkzMDk5YmY5NzZmMzZkODhkNmVkYzE1M2Y4OTg1MmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzOGIzNWEzODhkOTE2NDZmNjM2NmY5MjI3ODgyMzQ3ZmRmYWNlOTQ1NGQ2MTI4ODlmZGFkMTQ1ODYxNTcyMDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE4OTE5Yjg0OTQ0MGU5MGNjYWFmY2YxMTliYTUzYTBiZDg1NzI3ZmFkNTgxNjAyY2I2NjM0YjQ2MzdmYjlhMzUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/catalogs.e2e.mjs#L117-L180",
+          "version": "repo-lines-v1:sha256:b3a2d813144b761c855aab2602cb506507379c7186d462e33af009bdaf5e426f:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhNzQwOWNmODJlYTYxNWUxYmQ5MGEzOTM0ZjU1ZmRjYTFhZTZhM2VkMGYyMTRhNWI4MmIxYzJlM2JmNzJlNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmNzI5YmI3N2VmMjNmY2NjYTM4OTFlMDg2MDYyOWYwZWVhZTQ5ZWEzZmZmMTExNjI2YTZmM2MyYjA5ZmQzODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4ZWQzYjZlNmZiMmM5ZDYyMzVkMTYwYTJkMThmMmIwY2RmMDRkZGRlMWJiYWY3ZmMxNzdmNzM4ZTE1MmY3NDIifQ"
+        },
+        {
+          "resource": "repo://scripts/production-release/production-release.mjs#L22-L47",
+          "version": "repo-lines-v1:sha256:c852761381ce44231fce166d3d0cb4c9ca564de8e574c06562e404b8b2a1c405:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYTdlZDQ5NTg5OTEzNWMxYjc0Zjc5YjU3YjY0YWQwM2I1MDIwZTU2YzU5YWQzYjg1YTI3NTQ0NTIwMmMxZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZTI2Y2Q5MjM2NmY2MGQ4ZWQ5MmQwMjM5ZjA3ZmVmNzRjYWMxNGFhNjlhZGRmOWMyY2MwZDExZWIwMGE0NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1OWMwOTA2MDI0YmRiZjMxOWI3Y2MzYjU5NWVjZjVkYTI1NGI2YzQ0YjY2ZWY1ZmYzNGMzZTZlZWZkMTMyOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MmIxNWM2ZjkxMjg0MTBiMTFmNDNkZDg1MGM5NTE0ZmIxNzNhYTBhNzhjMWI1NTUzODljZjEzZWJmMjA2MDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2fa7f11ac4cc4dd395ba01067afeac9b",
+      "statement": "Un E2E web no valida el transporte React Native; para Google Interactions existe un recorrido manual en Android con servidor local de fixtures y `adb reverse`, habilitado solo en Development y con clave ficticia.",
+      "evidence": [
+        {
+          "resource": "repo://docs/testing/google-interactions.md#L128-L129",
+          "version": "repo-lines-v1:sha256:78f868311c28f69676158849fbdf80b21af17a11f9692910d2666e294dda977d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGJlNTA4MTM1ODAzOGEzOGU4NWU1ZWMzZjdjNjZjNjE4NjgyZGNjNDEyNDJlM2M0OWJmZmYzNGU5NzQ4YjgxNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmE3MDczNDA2NzBhY2UwMDM1OWIwYjJlMGNmMWY1OTZmZmJhNTdmYmYwNmU0YTBiZDFkMGY5MzkyNTg0NDk2ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTc1NzU4ZjU4N2Q1YzgzYzJjNzRjYTU1Y2VlNjE5ZWU1ZjQ3YzkxNzA5NjMwYTFkODgxMzgyY2RjZWIxNzQ3YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://docs/testing/google-interactions.md#L37-L44",
+          "version": "repo-lines-v1:sha256:28b43bd9b7838c31fd4484b00d07427eb4d9b6cadb5108af5b9000e163fa2d77:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjAwZmRlNjczZjNmZWQ3MTkwMGZmZWEyOTY5YzgxN2E1MGI1N2ZhMmQ2YTRmMmIzYWVjYTVlMTk1MDI3MGY1NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjY1NTEwY2I4ZTQ1ZWYzNzY1OWViYzU4ZDg4MzEyZDJmMjg5MDE4NGE3NWVhZGUwZjcyNjRkYTkxMGVhMjdiNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTQzYzg0OTg0Yzk5Njk4YmQ1ZTJiNGFhMDUxYWE1OWIyMzc4YzJhMmE3ODY1ZDE4NTFjZjFmOTk4ZTNjOTU0NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTM2NjY3NDVjZDNiODk4OTBlZWEyODYyMGViZTE4YjM3ODViNDRkOGU3Njc5MGM2ZjIzZjE3MjM2MGI0ZjA4NyJ9"
+        },
+        {
+          "resource": "repo://docs/testing/google-interactions.md#L96-L126",
+          "version": "repo-lines-v1:sha256:736ec6cea4a1c08681433c3482fe0cc58c3cf02a67a4f51001f60ccfb9916702:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiNTlmYzdjZThlZDc0ZDUxY2E5YmM2NDQ5YTg2ZmIyZjU4YTU0YzlmZjZmOTQzYTQ3YWY3MTYxYzYyNDE5ODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5M2NmN2E5OGQyYWM0YjA4MzdjY2YzYTM5ZWYwYTBlY2Y2ZTIzZmFmNDM0OGNhNzZkZjZmYmYxZjg2MWNiY2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3Njc3MGI4OGE0ZDU0MThjMDI2MzFlZTkwZmRkMjJlZmZkNTJjOTNmMzFlZGY4OWRlN2ZmMGUwZmYzZmE0MTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2ODQ1ZjgxYjNhNzNkZGJjMDU4Y2FhOWM4NjgzYjhjNTcwNTQ5N2QxNmRhNTNhYmYzNTk5YzRhZWVmMzc3YmMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_61312a44d7c849d68030c500e2fa26c2",
+      "statement": "La suite del feedback Worker ejecuta Vitest en Node con `fetch` sustituido y un doble D1 en memoria; cubre contrato cerrado, saneado/redacción, idempotencia, fallos del upstream, rate limiting pseudonimizado, disponibilidad, CORS y retención programada, mientras las propiedades comprueban robustez ante entradas arbitrarias.",
+      "evidence": [
+        {
+          "resource": "repo://apps/feedback-worker/test/fakeDatabase.ts#L16-L24",
+          "version": "repo-lines-v1:sha256:15170436f9abef37d753c9b2b4dc6bd1a51661017afc12c71564baff1b423671:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjM5N2Y1NjIyMGI3MjY3MWNmZmMxM2I4ODI2ZGJlNjk5NmE0NzIyM2QzNGQwNzhjODQ1MDdiYjJjYzBmZDI3NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTBjZDJkNGRlYTExOWVhNjMxNTM2YzQ1Mjk4Y2JmZjM2ZGI2NDI3NmI2ZDM5YTBiYWY0M2JkOTEwM2U4NGI2MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmI0NDc1YWU2OTZiN2RjMDYxZTk3MDVkMjczYzA3YmY1OTc4YWQ4MDI1ZDhmYjMyNzUyOTM5MzM3NjM4ZTg0MiJ9"
+        },
+        {
+          "resource": "repo://apps/feedback-worker/test/fuzz.test.ts#L23-L152",
+          "version": "repo-lines-v1:sha256:b5e817abaed9142da1809f09a5f075db8d3a0f00b7d37ad60c4f9b28d68cb8cc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI4Njg1ZGU0YjA5MjlkNzk4YjkxMTNmZDQ0ZWRjMThiZTBjN2E5ZDZlODBlNjlkY2M5NTAwNzEyMzlmNmRjYTYzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJjNTJlNDMwZThmNWQzOGU2OTI2Y2YwMmY0NzY0YWJhNzhmZWI5MjE0NTUyZjcxZjllMmU5ZjAxODE4MmZjMTNiIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://apps/feedback-worker/test/handler.test.ts#L347-L448",
+          "version": "repo-lines-v1:sha256:62548efb8a540f1a728674aed1d6a945ab9adb01d97219741818d5efd6ac8fd3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIxYWQ4ZDk3MGUzODBhZTZlZGE0ZThmNzBkY2Q3YjVmZmZmNTU5MDlkZWJlM2I3OGQxMzc3ODFhMDVmMTYzMzA0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNzc5ZDExOGQ2ZTNjYmY0NTA1Mzk3NDhkZWU3YTQzMDdhY2JlNjQ0NmNiYTI5N2YyNzYwZmE1ZDBiYmExYmMyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+        },
+        {
+          "resource": "repo://apps/feedback-worker/test/handler.test.ts#L95-L294",
+          "version": "repo-lines-v1:sha256:59cee0c50b88b38a2caeba56181d7a3a9285ca64a883820fb0709194515949aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2ZGM3MmE2ZTg0MDA1NzAyMDFiZmEwMDA2YjIyMWRiNmZhYmY3Yzc5YTFhMWI0MGRiOGY4ODdhYmYwOWE1NWU4IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNzc5ZDExOGQ2ZTNjYmY0NTA1Mzk3NDhkZWU3YTQzMDdhY2JlNjQ0NmNiYTI5N2YyNzYwZmE1ZDBiYmExYmMyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2ZmQ0MTFjOGRlM2VlYTQ5MzgxYzJmMWEyOTQ2YWU4OWQ4NDkwM2E4NjA1MzA0YWQzOTEyNzQzODQyMTVlOWE3In0"
+        },
+        {
+          "resource": "repo://apps/feedback-worker/vitest.config.mts#L1-L10",
+          "version": "repo-lines-v1:sha256:9dea9710799e3952cf9c3fc5de0454e7edb58f101cd8637f338f893cdc07774f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxNzRlOWU5MDAzOGViM2EwZGQzNGQzMTMzZjg4OGZhMmVlNTEzZDIyN2NmOTkzZTM2ZTNjNTc1ZDVlOThkYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_26241ed56d3f4d85a40068b14f558c91",
+      "statement": "Las evals LangSmith están separadas de la suite determinista, producen evidencia no autorizadora con `authorizing: false` y se limitan a procesos locales o CI; la aplicación móvil de Producción no se instrumenta ni incorpora una API key de LangSmith.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/run-llm-evals.mjs#L1-L7",
+          "version": "repo-lines-v1:sha256:09bca8c22d121cd55bf8b3da23448d98b33e815c7fce5f9c5187d30b1d0ee2c0:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTgyNjZiMmRlOTQzNDQ3NDhjNGY5ZDNkMmIxNzNmNDE5MjYyMjg2MmE4M2FjNTc5ZTRjYjM3ZGNhODI3YjNiOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTQ3YzI4NTU5Yzc0YTYyNDkzYzEyYjYyZGVlZWZmYzRiYWJhYjVlNGQ1OTA5OTg2ZWQzZTgzOGJiOWU1M2VmMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTQ1YTdlODhhMjUxNDlkMmMyMDc4NmY3MmQyZWM3NjQxMmQyY2IyYWY1N2ZkODkzMTU3NjBjMmFlNThlODlkOCJ9"
+        },
+        {
+          "resource": "repo://docs/testing/agent-testing.md#L62-L83",
+          "version": "repo-lines-v1:sha256:1127d9f109a95ec5e699b846a243f9db48b584efed31457fbfc25cce932a799e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4MmIyN2E0MzJhNGE5NzRlYjU4YmExYzNmMjQzMTg4NGMyYzY3ZDQ0MWRlMmRjMzRiMThiZmMyMzg5ZGU0NDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxOThkMmNiZmUzODYyOTZhOTYzYmZmNjc2Njg2MDUyNDhmOTdjMjg3YmY0NTRjZWU3NjBlYTZkZTk2ODE1NzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3ODg4NmU5NGUyM2JiZGUwMDk0NzYzODFhMTI4NzIyMzQwM2RmMjM1YmE3NzFiZTk4NjY3ZjNkMzA0MDBkMjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxZTUwYjMyZDc0ZDVmOWRkNzliYTI3ZTAyZjAzMWFhNmVkYWIzYmY3NzA3YTU4MzU5YzFhYjhkMjgzYzgyYmMifQ"
+        },
+        {
+          "resource": "repo://scripts/health-safety/check.mjs#L64-L75",
+          "version": "repo-lines-v1:sha256:114d555b68b624c2089df98217c3a4e2425b673fdab38d22533efc39cac31609:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZDUzNDIzNWRjNzU0ODEzYjQyMDllM2QxYTA3YTgwZDdmNmZiZTIwMTY3YTFjMjM4YzdkOTFlMDBiM2Q5MjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxNTE1ZGJiZGM3MjIxYTFlZDg4MGNkZDQwNWRiNWE2YTYzYWJkMDk0MDQxYzNlMDFlMTkwZDY0Y2ExMjI3MDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJhNzc4YTI3MDJjZmM4NDBkNTJjYjQwNjA1ZDgwNGFmM2M3ZmY1MmU4MzBhYmM2MmM0MjE3MzI3NzJjYTYyNGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8b26b73705704471bf4c6244f75ed58f",
+      "statement": "Los workflows bloqueantes distribuyen la validación por área: agent-tests ejecuta suites deterministas, Worker, type-check y controles operativos; catalog-tests valida generación, regresiones y consumidores; prompt-policy comprueba versión, políticas, permisos/configuración Android, salud, inventario, legal, suite determinista y TypeScript.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/agent-tests.yml#L105-L141",
+          "version": "repo-lines-v1:sha256:d9683ff90ea9862400e9e2c27fd0e6dfd072dd4d16e59b586a7bd94e4f07c10b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0NTIxNzQ2MzM4MWMxYWI3NzFhOGIxZGNlYmI0MmIzMzNhZDFkN2I2ODBhNGU3OTlmYzZmOGI2MzI4NGY2ZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyNjM0Nzg5ZTU3ZmM3NDQzNzg0YWMzNmNmNjlhNjAzNGE1MTcwOWMwYjE2MTM2Y2RhZDJlOGQ1ODI2NmJhMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhZjc1MDFjYTRkYWM4ZTdhNzc1ZDExMjU4ZDk0ZjlhZmQxMzI4ZDAyY2I2MTJiYjllMTczYzA4Y2I2ZjVkNjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/agent-tests.yml#L51-L103",
+          "version": "repo-lines-v1:sha256:fe782283dc41ef3bdf13358946007fc765263c2c2c9c2892d9d1d210f8fe91ae:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5ZDgwMTU0ZWQ0MmZjNWM3NzliMTMzMTU3OGI1OGI4OWM4MDFlYWNlNzRmMjRjZDQ4ZWI0YTIzNTc5NDBhOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwMjQ2NTI5N2Y1ZmJiMDQ2MWU1OTE2YjY1MThjYzA3NDE3ZTM3NjhlMTYxZWMxNTkyYzVjOTdlYzJjYTBlYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMWQ3MGQ3MmJhZDIzMWQ0M2M1NzVhY2VmNjk0NjU4MGU0MzljODc5Nzk0ZWQyZWExZjRhNDAzNDAyNDUxNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyMDRiMmJmYWNlNWY4YzMwYjkxNDlmOGU4YWY2ZjRlYTIxYWIzNTI4MGQyMWRkNGM3YzhlMjg0ZjViYTk2NDcifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/catalog-tests.yml#L47-L81",
+          "version": "repo-lines-v1:sha256:1553ef11c4fde8d3da66662728ab1ad1677b462ccd483ac2c46eaf895a5eac25:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5ZDgwMTU0ZWQ0MmZjNWM3NzliMTMzMTU3OGI1OGI4OWM4MDFlYWNlNzRmMjRjZDQ4ZWI0YTIzNTc5NDBhOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllNTBjMjE1NmEwODRiYzRhZGM0MTRlNDQ1NjQ1YmU5NDM5MTYxNDE5YzkyY2JjZTA2MTMzZDJhZDI1Mzg3NzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMWQ3MGQ3MmJhZDIzMWQ0M2M1NzVhY2VmNjk0NjU4MGU0MzljODc5Nzk0ZWQyZWExZjRhNDAzNDAyNDUxNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/prompt-policy.yml#L35-L124",
+          "version": "repo-lines-v1:sha256:4c89a9c6aae44d7020ab45588f8168762ef323aa55ea63417e20193fd26e8cf4:eyJzZWxlY3RlZExpbmVDb3VudCI6OTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNhY2YwYjVjNWExNmJlZWYzNDg0OGVjYmMzNmNkZTNiODM1YTg1MmY1YWQ5NzAwNzQ2NTBhMTQwZmQ3Mzg2MTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwMjQ2NTI5N2Y1ZmJiMDQ2MWU1OTE2YjY1MThjYzA3NDE3ZTM3NjhlMTYxZWMxNTkyYzVjOTdlYzJjYTBlYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk5MzRlYmE0ZWI2MThjMjczMTZlYTNkYWYwZDc0NjIzZTllMGRmNmViMzRlYjk0M2FjODc0ZmRhNzQ2MWViMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2YzAxZDlmMTAyYzg2Mzg2NTZmNTBiNDRjOWZmZjc4YjU1MWE3MzVjZjZlNmE1OTlmOTRmM2Y5NmYxY2UzYmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e96d319add5549628ba7ca45591557c8",
+      "statement": "La validación de fuente de Production comprueba identidad y controles remotos del SHA exacto, ejecuta secuencialmente la lista de `PRODUCTION_GATES` y falla si los gates dejan el checkout modificado.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/production-release/production-release.mjs#L22-L47",
+          "version": "repo-lines-v1:sha256:c852761381ce44231fce166d3d0cb4c9ca564de8e574c06562e404b8b2a1c405:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYTdlZDQ5NTg5OTEzNWMxYjc0Zjc5YjU3YjY0YWQwM2I1MDIwZTU2YzU5YWQzYjg1YTI3NTQ0NTIwMmMxZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1ZTI2Y2Q5MjM2NmY2MGQ4ZWQ5MmQwMjM5ZjA3ZmVmNzRjYWMxNGFhNjlhZGRmOWMyY2MwZDExZWIwMGE0NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI1OWMwOTA2MDI0YmRiZjMxOWI3Y2MzYjU5NWVjZjVkYTI1NGI2YzQ0YjY2ZWY1ZmYzNGMzZTZlZWZkMTMyOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk0MmIxNWM2ZjkxMjg0MTBiMTFmNDNkZDg1MGM5NTE0ZmIxNzNhYTBhNzhjMWI1NTUzODljZjEzZWJmMjA2MDIifQ"
+        },
+        {
+          "resource": "repo://scripts/production-release/verify-source.mjs#L117-L135",
+          "version": "repo-lines-v1:sha256:7854661062e761fa07cafeffc05f45ac3e4aec4a6a9eaf7373a1965ecc2a653d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhOTg4NjVjY2M0YWM2ZDZkNzBlMGVlYzM5Zjg1YmIzNDk2MWUzNGFkNjFmYzJhODg2NmUxYTNiZDA5ZmFkNzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3NmIxNjgyZjNiMWY4MmJiMzNlZTMyM2NlOTE0NTBmNjgzMGM1ZDE1NDQ2MDhkZjA2NTI3ZDhmYWIyYmIxNTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjZTgyNWE0YTY1OGNhNDU1MDRiYWI0Mjg0NGE1NmZmYmMxZTVhMmZmYzNlMzBkYmFkMDYzYWJkNmE2M2Y2NzgifQ"
+        },
+        {
+          "resource": "repo://scripts/production-release/verify-source.mjs#L137-L169",
+          "version": "repo-lines-v1:sha256:02cb6084c84929b6ef50c289cece7de2625d18e3c105b770568234ee7f498537:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlODIwMGViZDE3MDliNmE2NzViZWNiM2JlOWYzOWU1M2JiYWMwMmNjOTI3MjM0NjJjMDU0NjhlYjBkYTZhMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwZThlNDA0NWM0ZTc5ZjQyMjdlYjY1NGE4MzY3ZTAwNDViYTJkMDUwYjdkZjQwNWM0ODQwMWMzMmVkMTNjYWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzZTNlNGFlM2U5ZjE2ZDFmNjBhYmU3ZDc0MzUwMzA3YWQ3NjRhYjJjYjRmNTNhYjQ0ZjdmZmZmYTQ2ODc2ZDYifQ"
+        },
+        {
+          "resource": "repo://scripts/production-release/verify-source.mjs#L216-L247",
+          "version": "repo-lines-v1:sha256:50254ab155413cdd8633b2cc8535c5573238277da553169b5b80f074112caf91:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiNTc3NzJiYjJlMDNmMmI5YmIyNjViMTY0NGQ2ZGU0MWE1NmE2ZGNjMGY4MTg2N2Q1ODE3YTJlMzJhOTgxZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZmM1ZDAxODY2OGY1YWUzMTUzNjUzNzgxZGJkNTcyMGRjNGMxNzk4ZTAyOGFhZDAxMGEyYmFhNDFjZDI4NjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlYjZlMTAxMDVhY2MzNTVmODRiODRlMDFhYjk2MzBmODgyMWE2YjY2ZTkxYjU2MWY4YWE0OTAzYzFlNGE3NTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0YzEzZTIzMDZjZTNjZGE4OWZiMGNhZDE2ZGNmYWVjNzRjOWI4ZjFlZTQ4ZjhiOTc4OWRkZGExZTRiMzc0NDcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_15484ac572b340d1a298aa4e61587c45",
+      "statement": "El flujo de release compila únicamente la fuente validada, pone el APK en cuarentena para una verificación independiente y, antes de publicar, enlaza manifest, firma/certificado, versión, SDK, permisos, sonidos, tamaño, hash, MIME, snapshot de política y evidencias con la transacción durable.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L366-L423",
+          "version": "repo-lines-v1:sha256:8f80ce1c5842c56672149ef3c6d680bfe5c62d7093ade0a4357fec3de28e80ee:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkOWJkNjQ1MWNiZDk0MDJiZTUwYzEzOGEzYWEwZDQxMDZkNTYzMzI3NTE2ZGY1OGU1ZmUwMWQ2YjQ0ZjA2NWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmYWM4ZjFiYzdiMTA5NTNiNDIyOTE2ZmI2OTk2MDE4YTMwZmFhMmM2YTE3ODk4MTc5ODhiZjJiYjBmY2Y3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYTBmZWRhNzQ2MTdlMjExNTk3MDY1OTJhMjUyYmYzMWYzNjJiMjcwMThmOGVkMjVlMzBkZWYxYzcxNWVkOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2YWJjMjI4MGJiMzRkMDczNzIwYmJjODdmODAyYjNiNjVkYTM1NTk3MDJjNzU2Y2MwMmZiNWNlZWYzMjNjMWIifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L436-L529",
+          "version": "repo-lines-v1:sha256:e7cbb7f8383da14e11dceea4ba62c3ce007a4ddfc0d167f926838fbf217a24e6:eyJzZWxlY3RlZExpbmVDb3VudCI6OTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBhNDg0NjQwYzNjZDBlMzk1MjFlOGQ2YzRiYzEzYjc4YWQwMGFiNTMxMjY2ZGZhNTdmNWRhZDI1NDM0Mzc0ZjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViMDJkYjJlMGEwZjY2ODdjNjYyZTZkNTRlMTYyMGI4YzJlZDNlYjcxODdkNzgyNjljYTNkNzFmZWQyYzk2MjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4ZWFkNzc2MzI5NjkxZDc0ZDkxYWFiYzIyMDhlM2ViMjIxYThiM2UyZDA4MWIxNjU0NWE3NmIwNTBmYzk0OWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBjYjAxYTllNzM1NjBiNTcwMmMxZmZjZGI5YzVkNzExZDVkMmNlOGZmZWZjNzFhODgxMGY1MWM3MWMzZGE1ZWYifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L531-L611",
+          "version": "repo-lines-v1:sha256:f6f57903448b61fa8e01a7eed46a4bc8ee8a002db6aed9b83f2b56eb43624ba9:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxMWM2NGE5NDdmY2U5M2VkMWE1NTRmMjM1M2U4MjEzNTIwNDhkODkwMDdiYjg0OWRkYTZiZGUzZjVkYmEyOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ODA5YjI5MDM5ZTM3YTg5Y2Y3YjIzMzk3NGQwMjcyMmY5YjkwMTE2N2I5YTU5MzA1NTI2NWM5MTg3Mzk2NTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVjM2RhOTczNWM2OTMxMzNjODA0YjJkOWE1MWU4YmQzYjFkZDRhMTYwNDMzYmIwNjZkYjk3MDVmMzdlODY5MmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiMWIxYmIxN2I1MDRkN2ZmNGNiYzBiMTgwNDI2ZTc1MTM1MDg2ZjJhMzlhZTFjZDEzOGJjMzI4YTM1M2U5YzAifQ"
+        },
+        {
+          "resource": "repo://scripts/production-release/verify-artifact.mjs#L176-L223",
+          "version": "repo-lines-v1:sha256:174ed37f60763fa1ad4ee90266ea76660d03412044a47b23731b5a85887af2d5:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUxMDIyYzNjMmQ2OTI2YmRiYWQ2Y2UwMGRmOTUzODA4NTUzZmFjNjdhZDg1MzM2MzBmNjc1Mjk0N2QyNTVjYTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxN2I5Mjc1MTIyZDJmYzViNTU2YTVmZjM4YzdkN2NhNTVhNGY4ZTliZGI1MDU4Y2M2NWNjYmVhYTNkNmI1ZDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkMjU5N2E2MGYyY2EwMzJmNDQ5ZDdkN2U2MDhlMmU2NWJhM2Q2MTQxYzk2M2YzNWVhYmQ3NjkwMjIxMGFhZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkxZGRmMWE3ODZiZDQwZGJhZGRkODI0OTk0NTgxZmQxYjBkNGViYmU1NmFjY2M0NTExMGI2ZjYzOGUwMTNkYWYifQ"
+        },
+        {
+          "resource": "repo://scripts/production-release/verify-artifact.mjs#L93-L175",
+          "version": "repo-lines-v1:sha256:c4d8f0610e39cbef2a860f21dce7da16707607aa919d9447bca618e88242e881:eyJzZWxlY3RlZExpbmVDb3VudCI6ODMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjMjdlMGZmMDhlYjI2Y2U0YjJkMDI4Yzk3ZmNlZGM5ODM4ZmI4YzkzYzY3NWUzMjMyN2E0N2JhNzViYjY1ODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwNGE0MGViMzFkOGM3N2ZlMTM0ZmRkMmViNWM4YmJiYjFhYmFkOTJhYjMxOGYzZDUzNzgwYTg4ZTRjMDRkMGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3NDE0MDdhN2MxNGJjYWEyZGE5MGIxYmVjZWRiYzgxOGRmYzU5MTk2MDI4YWMyMjkwZjcyMDQyNzVlODY1ODIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5c8a0e06e07a46c9813a49359c177482",
+      "statement": "Los catálogos se validan antes de generar: el check recorre todos los dominios y compara artefactos, mientras las pruebas cubren generación estable, archivos paginados obsoletos, schemas/IDs, imágenes y escritura transaccional con rollback.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/catalogs/catalogs.test.mjs#L152-L220",
+          "version": "repo-lines-v1:sha256:066a3ee9c5110db79b6e8ad9b3d7c0cc536e01a8074f263b2c8b20d20ba86bf7:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwZjBhMjNhMmNmOWU3OWZkZDczNmQyNWIzYTc2NDdjMjIxNDViZGYxMWEyZTQ1YTY0OTY0ZmE3YWI5ZDQzNGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2OGIzNjZlMGRhZGNmYTM2OTkxZmEzN2MwYjY4MWIzYmYwYzVjOTRlZDQwNTQwMzEyYWFiZTUxMjM2ZWRkZTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdlNWI5YTFkYTI4NTY2MjllYTk1YTc5ZmUyODBjZGQ2NjMzZWU0OTJiMmQ5NWRmYWZiOGE5NjkzMGZjYzlkZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2N2M5OGU4YmM5ZTNlYTY4MTA1ZmNlN2U4MDU5NjQwNjgxZWRjNThhMTc5OGU5NGY5YWZmOGE4N2IyOWIwZDAifQ"
+        },
+        {
+          "resource": "repo://scripts/catalogs/catalogs.test.mjs#L95-L149",
+          "version": "repo-lines-v1:sha256:e25192a3ca93deda35cecd85b81c2a8d9f97f8f6c95cf00952f9557b3b809c7c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0YmJjNTRkYWY2OTlkODZmNDZjMTdlMjUyMzRlMjlkNzlkOGZlN2ViOTMxYzkxOTI2YTUxMjNjZTkwMGY0ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlNTU1MTY4N2ZjNzMwOTE5YjU0Yjg0OWM0OGNiOTZmN2IwMjg1ZWMyYWE1NjI4YTk2OGFjZWY3MzQxMzdhNmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmN2M2M2Y5MmVlNWUyMTYyZTdkMGVjMDdlZDc2ZDE1OTQyZDM4MmE4YjY1YzQ4NjBkOWQyYTE5ODM4NGJlMzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmYWE1ZmE3ZTg1NjBhN2I0YjVlZjRkNThlMWJmY2MzMWQ5NWJkMzU5NjQ2OTc0NDgwNzNkZDM0ZWI5ZjcwOTIifQ"
+        },
+        {
+          "resource": "repo://scripts/catalogs/generate.mjs#L11-L70",
+          "version": "repo-lines-v1:sha256:ffaf5b4b0d2a5c69c17bf9a40f507ac40603ed8da5d0d12fd21f3b88f4e907e6:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2ODYwOTQ1NjlhZmViN2U1YzRlM2U2MzMwNzVmNzYwNTE1NWIwYzdkZDdiZWI4MTNjYTg1MmZkMzRlMmQ4NzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4ZjI5YzBhODgyOTRlOTFjY2Y5NmFmZDY5OTQ5NDgwNDM0YjFhYjJhMzgzODA3YzIwNzE3MWRmNWM0MDFlM2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_684afb37d4e643dcbf9aaf0f027e7151",
+      "statement": "La regresión de rendimiento de medidas combina un E2E con 1.826 fechas y contadores de trabajo para detectar recálculos con validación en APK; sus tiempos sintéticos no se consideran una medida del teléfono.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/measurement-performance.e2e.mjs#L34-L58",
+          "version": "repo-lines-v1:sha256:1763130c4a99d8cf7ee28094cdda87fcb5cf2b8012bbc9e65517e0940ad34b38:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjMjg5MzVlZWZlMTNjZWIyZTMzNDg5NDYzMTE4ZDFiYzA0MzJkODdmMzZkZGMwZmFmNGI0NTZiZmMwY2U2YTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyYWZkYjZjMjc4MDE3ODc0MzczZmNmMDM4OWU0YzIzNGE3MTg5NjIyMzI5NTAzY2E5OWU4YzkwZDQ3ZWU4ZTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/measurement-performance.e2e.mjs#L86-L155",
+          "version": "repo-lines-v1:sha256:63523a1ed5c4f092397eddb7a90935fa0855e5456146e8134ea9172983d5ece3:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3NTdhYjliMzhhZTlmZGZlOTMzMjc3ZDRkMjQzNjgyNGEwYzM5Y2U4ZTFjMTc2Nzc2MWQ0YmFjYmJlNDAzYmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjNWRmNGRlN2Y0YjdlYmQxNDVhZmRmNjJlY2UxNDQyYjQ4YmYxZDQ0NzgwZDY3NWE3NzY0MDQ1ZDlmODhkOTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxZGQ2ZmU2NjA0ZWNmYzM2OWU2NzZlNTAyZmUyOTczYThiZjAwZGJlMjRhZDg4NDViM2U3MjU2NjkyZDE1ZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1MmIyNGU0ZjVlZmM0YmUyMmI0MWEzNjAyNmUxNDEyMTFhODRjMGNiNGRjNjJiNDAxZTc4MzE1NWQ1ZjdjNzAifQ"
+        },
+        {
+          "resource": "repo://docs/testing/measurement-performance.md#L22-L51",
+          "version": "repo-lines-v1:sha256:c381790e9f6c7e0f793b6a591816d21ce52a163a6a39a2fbc3c1ba63fc71bbc7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0ZmQ3MjFmNDkyYmUwYTA5NDMxZGJlZThlZTUxYmFlOTg5YWQxZjE5NjVlZTgwZWU0MzFiZDI4ZjFkM2ZkMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwZjkzNmQwN2UwMzk0ZGUwMDQ3YzU5ZTk3ZmZmZGY4MjA0MWJhMGJjZDA4N2JkZWM4OWZiMzM0Zjc1YTEyNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI0YzIyYTA3MjZmODQ2NjU1MTUxNzY0ZWViZWRiYWFlODc1NDE3ZDZkZjY1NzYyYmRkZTU2YmU3MjhiZjg1ZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4YTg4MWQ2NWQ4NTRmYjQ2Zjg3NmFmNzk0OTE2YTAzYjBlOGM2ZWQ2NWY1ZWViY2VkM2RjNDFkZTc3YTgxM2QifQ"
+        },
+        {
+          "resource": "repo://docs/testing/measurement-performance.md#L53-L66",
+          "version": "repo-lines-v1:sha256:b88fa7831bbe25d5144f2d8eb5f5988e1c63b659680446ec4229767473f53d8d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlMmRkNWVlZDAyMGU5MjI3YmZkYjYxODc3MTU0ZTY4NzdmYTk2MjMzYzFiZWQ2NzBmM2NhOTc1NDQ4Nzc2ZWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzNzM0OWMxZDJmOTdlNGNjYzQzNzcxZmVkOGRkYWNmODhjMWFiNmEwN2I4ODljM2I0NzNjMDUyZjc5MTU1MzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwNWYyMWMwOGY1OGJiZjI3OThkYzQ2MTJiMWY3Mzg1ZDUzNmQ1MzRiZWIxODg3YjdkMzJiZTkwYTQ3ZWVmYTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJjYzJjZmQ0NjI2OTBlNzdiNTU5ZDQyNGY2ZmM2MTNhZjAwYjIyNGRkOTcyODRhNWUyMGM4YTBmYWRlM2JmM2MifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-09-29T10:57:35.679Z"
+  }
+}

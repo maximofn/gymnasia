@@ -1,0 +1,290 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:7030992d6496e1120fe62b79490ab06841936b86bec003ad5767baea9249a896",
+  "claims": [
+    {
+      "id": "claim_5dc07b9bfcc143e8becf94d5fc7708e7",
+      "statement": "LocalStore centraliza plantillas, historial de entrenamiento, dieta y mediciones, y su hidratación delega la normalización a los contratos de cada dominio.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreModel.ts#L140-L150",
+          "version": "repo-lines-v1:sha256:082ff287b7e45520d4ce6fb19c5497211ee5ddd239fa8cb1bbb9cc3f40750402:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViOTVhYzU2NzIwYjc1ZDRhMGJiMTc1YTY2Nzg0ZjA5N2VlMjlkOTZjNzgwNmEzZGJhOTdjMDQ1MGY5MTE0ZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJlMjU2ODM3MDc1MWU0YjRiMzI0YzU4OWJkNjc4ZTQ2YzFhOGM2ODljZGQyMDE4MzFlOGQ4MTRhNTU2N2VkZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzNDZhMWFkZWYzMDFkOTgxNTViOTk3MGFlNTU4YjI3ODMwNTJmYjI1M2YwNzBmMWNlMjMxMDUyMmM4NmEzYmMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreModel.ts#L233-L273",
+          "version": "repo-lines-v1:sha256:84ec480e52f8f5db921d9ede0a9180e8aaa62f9c88469ced85c89a4e16c54ceb:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmMmVkOTkyNGM2OTYzODNlY2ZkNGJhMWFiN2U0YTNiNmQyYTU3YjU2Zjc1ZjQ1YmVkZTdlZGE0NjgxMjU3NDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1NzNjMzViZTU4MjA4YWVkMjExMjdlYTgwNDI3ZmExNWM5N2U1N2E4NmU5OWFiZjVkZDI2MDhjMDgwOGE0NTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzMGM1OGE5MTcwNWFhODYzZTdmZDIzOTJkZGE0ZGNhYzM0YjQwODQ0ZjQ2NzgxZGNjOWI2M2VlYTM3ZmRjMmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxMDljNzQxODhmOTY4Y2FiNTA3ZTUxODMyYjBkMzFhNzg4MTBlMjg2YTVjY2Y4MWMxN2NjMDYzNzM5MWU3NTkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreModel.ts#L59-L73",
+          "version": "repo-lines-v1:sha256:3bb73b7cb3870ec66a280759a9c5f33ba24e770e434c672988a0e824125c6bee:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0MGVjMDc4YmRkOTg5NzU1YTE2OThjNzdjMzAxYTgzMTViOTM5ODJiOTE3ZmIyMDA0ZWZlNmQyNTk4MzkwYjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlMThiNjJhNGJhY2Q3ZmM3ZDI1NTViYTk2MzAyZWU4YjVjMTIzYzA1ODljNzcyYmI5YzJmNTUwYzBkNzE2NjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZlNGEwOWFkODA1MjBlNGY0MjdjNDUzZjRkMzdhNzhlY2ZmOGUzZjk4NDg0ZmZhNmZmNWY1ZTgyZDZiYjY1OGYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_039506db0ec2497dbb4a59555699979c",
+      "statement": "El esquema de series de entrenamiento se versiona por rutina; la normalización migra el formato heredado, conserva versiones futuras y mantiene espejos heredados derivados para compatibilidad.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreModel.ts#L160-L205",
+          "version": "repo-lines-v1:sha256:32c760f26ea16cf89ad977398623b74f4a828d806c81a64e00b7557f1c4a4da4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZmZiODRjOTM5NDI2OTBkMDk3NzVmODMzNzBmMmFiZGJlNzY1NTlkZTA2MDc5Mzc2NjJlMTlkMjcxOWU5NzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlNjczYWJkNDU3YTk3ZWVhMTdhNjAwNjJlYjBmYWVhNmJkZjA5NDg2OGNjNmI4ZjhjMGViZGEyZjYxZWQ0MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiOWQxNTUxZGMwYWYyYzdhYjZmOGI0MDE3Y2VmOGQ4YjAxZjIyMjI1NDAzZDhlOWNhNDJhNjRkOGE3ZmQ3NWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhMTBlYWZhOTQ3ZGRkNzAyNzA3N2QyYmJkY2IyNTFhNDdmZTBmNzZhM2QyMTUyMDM3NWM5ZmQ0NGE4MzMzOWUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/seriesContract.ts#L4-L11",
+          "version": "repo-lines-v1:sha256:c63c37a066a9e0860580413cea8e258e9b154dcfb2378e548363f997600ecbe0:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTE4N2JjYmUzOTM2ZTdmNWYzZmY4YWU1OWYyZjI3YWMxYTExOTdiMWVjODI0N2UzNzk5MDU0NDM5MmI3YjJjNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjNjODBiMGFlN2Q4ZWFiNTkxZmU1ZWI1N2ZjODYzNzMyNTgxY2RlYzVlNDJhNmJiMTM0YzRhODMxYzM2NzU2ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2EwNGYxNzY5MmQzNjZlZmM0ZjljOTE3OTJlNzNhYjZmYzEzNDQxYTg5OTljYjdmY2NhZjdiN2NlODgwMjgzNyJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/training/seriesContract.ts#L405-L483",
+          "version": "repo-lines-v1:sha256:b13db8c803c50ee9fafad06cdbb633a1a2346efadab668fb74ede8add160f972:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxMGM4NjIwNGJmNDE2YWNmNzVlMzhmZGNkNzA0Njc4YWJkYzhmOWVjODQyNjM5MWVhNzRmZjYwZmFjNjE1ZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/seriesContract.ts#L77-L99",
+          "version": "repo-lines-v1:sha256:c41787337f9788e052b85c42e7f11c2d0c6cf686cac2bfd54dd4d826e6624f5c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4MGY5ZGU0NGMwYTQzNDU3N2QxZWI1ZDE5NjlmNWMwNTU2OGMzYmIwODM1ZTZkZTQ0YjQ3ZjA2Yjk4ODBiMGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQwOWViNjZkMjliNTcwODgwNGViYTI0YWQwNmIyNGM5NDkyYTBkNjA3ZmUyMDJiNGM3ZDM1NDRjMzUxOTMzNzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_85df43c5d78b4a4aa041339831223e46",
+      "statement": "La normalización de series en modo repair repara sin bloquear, mientras strict convierte únicamente errores estructurales en irrecuperables; los IDs ausentes o duplicados se regeneran dentro de su ámbito.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/training/seriesContract.property.test.ts#L46-L94",
+          "version": "repo-lines-v1:sha256:b9acb16d2c0381c041cd6b91f0d7c963366da0cd35d194a34d605e1e355723e0:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2ZmE0YzBjYjUyODRjODIwNjIzM2QzN2RhODFlZTg3MDExNTQ4MmJiZDJhYzA1ZjFhYTNkNzM2MjNjMjg5NDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwODNhZDc0YjdjZGM5YjMwOTc4YmE3NjAzYWVjMTlkZjFmZDAwMmU1NGVhNTg1ZTQxZDFjMTg5ZjE0OGJiOWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkYzVhNDE3Yzk4N2IwMzI5NWMyOTEzMGJkNmIwNDRmMmJkNzdkMDgzODJlMjYzYzMzZTdjNTMwMTBhY2IzOTkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/seriesContract.ts#L101-L176",
+          "version": "repo-lines-v1:sha256:1744ba4cf4f328cc6dc9b86a953c54701725cfc0cc69818d74b9d0e1e74b9953:eyJzZWxlY3RlZExpbmVDb3VudCI6NzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjN2MwM2E5YzZkYmQwNDA2YTE0Nzc4YzYwZGEzMjYxNzRkNDhkNDdlN2I5M2VmYTM2N2Q4NGMwYjQzMjJkYzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkMjViMjQ5N2I0ZTI3ZmRiYmZmYmNhYjRkNzRhMDA4ODg2OWMyMTQ3YWJmYzk1OTQ3N2Y5MzhjZjJmMGY4ZDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwNjNjYzFlNjFjMjQ0MDJmMjdiYjgwYzg1NDRhZTkyNDRmMTk4OTA2NzdiNGM4OGI5YmU0MDNhY2MxYjUwNWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRlOTVlZmJhMGM3YjQ1NTdlZDVkZjZlODE3M2ZjMmE1YTk2NTc3YzBmYjE0Mzk0YTcwYzQwNWVkMmEwNTI2Y2EifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/seriesContract.ts#L261-L285",
+          "version": "repo-lines-v1:sha256:cd534d1e929a625012e20c6811fe24665ae7f8b1000a9396e00a9e144911a3ba:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmM2RjZDZlYjhkZjE4MDliODU1ZWNiNDgwMDEwOWQ1YWU2M2U4ZjlmODEzMmZlYWY3ZTJlMDI5MzMwNzAxNjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2Yjg1ZGI4ZTI4YjI4ODZlMzExMmRjZDJhZjgzNzA5NjYzNjEwOWFkNjdkNzQyZDhlZDY5ZDg1MDVmM2JhYmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFjY2MyYTVjMjk5NDVjZTNlZGM5Yjg4ZGFlYmNkNDM0MjY2YjNiYTIyOTc2YTcyZjhhNzJlY2IwMDNjNDYyNTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_016d20d7fef24e779861bf72a78b55f5",
+      "statement": "Las escrituras de plantillas se rechazan si incumplen sus invariantes funcionales y, tras validar, sellan el esquema y recalculan los campos heredados derivados de las series.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/training/workoutTemplateContract.ts#L119-L193",
+          "version": "repo-lines-v1:sha256:4de19ee686e7352bccde3669086a0583e50d31d8f8b319c7c550acf227d41da0:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmZDA0ZjBhYjI3MzIyM2UzODMzMWJjNTNmYWIxYjQyMDc5ZWMxOTNmNGYzMTQ4NjM1YzQ0ZDcwMzMzNzEwNzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUxNTgwYzU2YzNmNjA3Y2IxZWE2ZTBiYTI0MjFjZTgzMDFlZjA1OTYyY2JjZjZmOGYyZWIxZWUwOGNiNWY0YmIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutTemplateContract.ts#L201-L268",
+          "version": "repo-lines-v1:sha256:dd030986ff53c0c2bf194e7e4998c309bca3482ab6fa55e9024c51832c6d7907:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlNzU3Yjg0M2Y1NTVkMzM1YmY1MWIxZTVjMGQ3YmMwZWZiOWViYmZmMjAzNTkzN2ZkNjJiMTgxMmY5MjliOGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiMzgyZDk5ZmUwNzY4NDhmMWFiZTNkZjk2NmQ3OTYxNzE5YmUzYWUwYmI3MDgzYzYyNzRiMGY4NmQzYzA3OTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjYzc2NWM5Yjc2YzEwMzgyODE3MmNlNjJiNjExNTcyYTI2N2I3Mjg4NzU5NGM2ZjMzMDZjOGQ3OTE4NTkwNjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3MTEyMDUxYTQxYzBlYmJhOWNmNTdjZGNmZjhjMTI4ODFhYzBhMjkyNDZhODRjNDVhOTVjOTI4NDcxY2EwMzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bf629c74f4c242858dd8fb214ff9ec15",
+      "statement": "La edición de plantillas usa snapshots profundos y revisiones funcionales para control optimista; detecta conflictos, desapariciones e IDs de creación ya ocupados antes de aplicar una mutación sobre el estado durable actual.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L6738-L6785",
+          "version": "repo-lines-v1:sha256:4dce75bc8bb8a393f3cdb28c0f58492cb25a3c89096bdb1a51af089fb0a2d3c1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5MDFjZmY5MTU0Zjk4NzExMGZhYmQ2YjI2NmE3NWNmYmNkZjRlNzEyZWVkYThjZDk5Mjk0NGUwMTgxMDk2M2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAyYjQwNWJhMWE0ZGQyMmNiZDc3OTBjMDczNzJlNDI3YThhMzk0OTJiZmU3NDIyMGQ4MWFiYTIxOWQ3MTZmNGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwM2I3ZTE0MWY3ZTIyYjc3OWE1MWQ1MzFlYzlmZjQ4ZjkzZTJiZmI3YTlkN2M5MjA1NjkzOGNiZmI4YjIzNmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmYmQ5MmRmMGZhNDFkNjYwNDIwMDFhM2M1NmE4YjYyNjZjYWEwMzZhZGJlNDU0Zjc4OWUxZDFjYWNhY2M5ZWYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutTemplateOperations.ts#L309-L318",
+          "version": "repo-lines-v1:sha256:0a73f0aefe8d3f040dbf4650026599d530798bfe5548bbc6ca8652d7b6f75163:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVmMDkxNTY3OTVjNDc1MzM0M2IxMGE0M2Y0OWZjMzAwM2Y2OTMzMTIyNzk3OTIyYjdlN2QzYWQ2ZTQxYzQxM2EifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutTemplateTransactions.ts#L44-L103",
+          "version": "repo-lines-v1:sha256:2ceda431354bec94b5b7075866b85f2fd902bddc53898e13774f359f32aac1c2:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzMzk3YjViMWU0YTNhNGFiNGFjZTU2ZGJlZjhhODMyMDc4NTE2YWM3YmQ2ZDFiMDI5YmVhZDFjNDhhY2MyM2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhN2I1NmNkZWVlNTE0MzY0N2ZlMWM2OGM1ODBmNjkzN2RiZWI2NGU5OTY4NmFiODVlMzcxZDkzNzRjNmUzYjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjczZTY3MDY1YjQ0MzZlZTdmNjIzNGQyODU3NmY2NzdlYjQwYTQ2NzI1NWUzMmRmMDUzNDA4NzYxYzg0MTdhNjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3MWMyZmI1MDJjYmI4OTc3Mjg2NDAxYjk4NDUzODUxZDY2MjA0OTFiY2I1OThjNWJlYzUzYjY1MjVlZmY1NDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6daf25c948184c3190fc12e3bbbd807a",
+      "statement": "Cada sesión crea un borrador versionado e independiente de la plantilla; puede seguir ejecutándose si la plantilla canónica cambia o desaparece, y al conservar cambios vuelve a comparar la revisión base con la canónica.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L6953-L6977",
+          "version": "repo-lines-v1:sha256:ddd64cb6e39ab3ee0ee17657ffe45b5008c83f45436d7d3c6dc009f8b1838359:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExZGY4N2E0NzMxNmM3MDhjNTUwMjA5OGU5YWY2YzQ0NTM0ZWI4MGJlYWRjZjYwNjMwMjhlZmNhODU5MzdhYmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzZGMxNGQyNTEzM2EwZGM2YzI2ZmVhMTcwMmU1NDg4YjAyYTZhOGM4NWZhMjQ5Zjc4MjNlY2VjNGI3NmU2YWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1MGFhYmQ2YmM0YzRkYTkzYjI5NmIzNDA0MDQyNTIxNTk1ZDMwOTg2NmU2MjBlMzc1MGUxNWJlNDYzMjFjMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZlYzc2MGFmMzIyYjUwM2JlYjRiMTFjYTUxODc3MDY4MzNjZTA4OWFmYmJiODdkMDg5OGI5MGJiNzFhMjAxOGEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L7101-L7139",
+          "version": "repo-lines-v1:sha256:b87861275451e847c000e9a58172e8d331c50f437e55f56771ef3ede4ff51d62:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMGQ2ZmVkMzEwZjBiNzBiZjlmYzY5YTRhZmIzMTM0YjM1M2Q3OTk0YTdhOTcwYzVkZTQ2Y2VhYjcwMzJiZWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhODFmNzc2NDRiMmJjNDAwMzgyNjhjZDI0MjkyYTE3OTdiOTU1OWIyNDExNzAzNmYwYzA1Y2I2ZThkOGI0YWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5NmU2MDMwODQyMmZhNTU3ZGZkZDc4MzU0MDA0OTRiOTg5YmZkNjdkNzJiZDQ0OWYzNmQwMDc5ODQ2NDJkODMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutTemplateTransactions.ts#L106-L176",
+          "version": "repo-lines-v1:sha256:35bb0b8231f88df5dd7f2aa8a09a73e64f388088ed30619824cf27537c637e87:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NmZkNTFjZTQ2MzYyNzM0OTMwNzYyMTQ4NTRhMTcxYWI5MDRmMTQxNWQ3MmNhZDNkNjNkZjY2NDUwZWU2NmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViYzkzMmM3YzIzZjg1ZWZhYmUwMTAyNTRmZmQ0NWZiODNiOTc2Y2Y0YmRjZWU1ZWFiOWQyNTc1NTU1YjNmMWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9f3e62119fcd4a35a57096ba286832c6",
+      "statement": "La ejecución identifica esfuerzos primarios y mini-series con claves estables, deduplica claves y calcula repeticiones y volumen solamente a partir de esfuerzos completados.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/training/workoutExecution.ts#L193-L228",
+          "version": "repo-lines-v1:sha256:390a53459b1d0edc79535d612393c260d85eecb6613b28e65eaa5dbdd2315cd2:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzNjczMzAxMjlkMjQ5NDNkNTQwM2IwYzY5Mjc5OGVkNGQzZTFjN2QzNTM3ZGNiZjlmODFjYTliMzJkZDkyNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2NDYxMmYwOWVlYWU2MDY1NWJhMGVhYmNhOGNjNzNkNmE5YjE0OGI2MjA2MDJjZWRjNGNmZTgzMzgyNzI2NWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVkNmNjNDAxNjUyNGNmNTBjYTQ5YTE3M2RmMzQyZGU1NzJhMjY0M2M4M2NlMTA4ZTI0Mzg2NDEyNDZiZGUxNmEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutExecution.ts#L52-L127",
+          "version": "repo-lines-v1:sha256:0e1a24dee25e90f92576f7da99939e873ecb35b1e8bdd20af616126daec31ea9:eyJzZWxlY3RlZExpbmVDb3VudCI6NzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5YWNhZDU2ZTE5MjlkZTFhMzJjMzBiZDdiZGNmMDYzYWNhMjJlYzAwMDdhOTlhOTE3OWM5MzllZmFkM2ZhY2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzOGQzMGEwYjYxMGU4MjNjNThhNTNiNTAyMGUwODY2Njc4NTM4N2ZjNzRmNDRlNTI2MjhjN2VhMTUxMGFkOWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVkOWIwNDA1ZmIzMTY5YzJmNTQ2MzE4OTlmZjEyODA2YjAxODI1NmQ1NDE4YzEyNmQ4MDJmZDdjZTRjNDUwODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMzMjUwMjJkZjRjODk0MGY5MWU4ODc0MTliN2Y0MjRlYjA5MWU5ZTk5ZjI0YmZjMDdkOGE3M2U2ZmMzMDEwMTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6a475cd463914ca699856c8d7ad4c7ef",
+      "statement": "Al finalizar una sesión se conserva una instantánea versionada y mínima de la prescripción ejecutada, independiente de futuras ediciones; la recalculación compara totales sin sobrescribir el resumen almacenado.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/training/workoutHistory.test.ts#L140-L225",
+          "version": "repo-lines-v1:sha256:dce358a7bfa545a207aa48756a47d04d4d917396a4dd9bce242cdb9f13a5201e:eyJzZWxlY3RlZExpbmVDb3VudCI6ODYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjNWUyYjA0M2VhMmFhYjk2M2FiYzQwNDBlY2I3YTE5NzAxOGFiZjc3ODA4YjljOGRkMWI1NDRhNmY1YmM0ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkZTQzOTliNGYwODAwMDRjZDI5MmE4MWQ0MzBkZWJjODRjNDVjZTQ1YzFlMmI4MDMzNDgxYThjMDJlN2Q4YTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI0YmNjNTY5ZDRhZWI4ZDQ1NjMyYzkzZGIzNjFlMDQ2MjNlMGE4NWRkODRiNTJkOTU4MjFhZWUzMTgxOGU1YjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYwODMzNmJlOWM4ZTkyOGNiZDIyZWJiZGVkYmQ2ZjkxMDFjYzU0NjI2NzIwNDAwYWY2MzMzNWJhMzk3MDI5OTYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutHistory.ts#L13-L67",
+          "version": "repo-lines-v1:sha256:9ebf277e48163d45cc05518bf42ad209b3523306014bbcb2b08f9eb6810ac79e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkMjAwZDc5ZTkzNWFlMGIwODE2N2JmYzZhMmNiZGUwZTcyM2U5YjM4MGFmN2U0NDY3ZjQ3ODcwZjI3ZDEyNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlMzBlZjNlOWJlMjYyN2FlYjM4ZjliZDVlMGQ5YmQyMWE0NjJmMjY3MTlkOWY0MWJlMjMyNDViMmE4N2JkZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxZDM1ZTdmNzUzOTYwOWE1ODcyZjVjOGQwMDkxOTVlMjg4ZDU3OGE4NGEwMDk5ZjU0OWI4MzAyYmYxMzVhYzcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutHistory.ts#L206-L297",
+          "version": "repo-lines-v1:sha256:be2a8da3bf686a3a7556792b2200a66bf65a3b8637ee315f05768516e32b9486:eyJzZWxlY3RlZExpbmVDb3VudCI6OTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3MDUzMWVmOWE2NmI1YTVlZDVkZDU1NjdkZmY0MTM0NDFiNTZlMjJjODUxMDdiYWIwZGMyNmUxNGMyOGVhNTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiOGUxMTNiYzVkOGMxYzMyZDlhNTM1YTViNmQ2MWI3YzA4NmUyMWU3ZWVjYTc2MTFiNDhkOWVhZjZiZTZlMTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxMmNjZWFmMzM3MWQ3NWEzYjliMTExMTNlY2JkYjI4MzdiZWNjODJjOTAwOGMwNTU4N2M2ZGE0ZDFmZGU2ZjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_cdd277b3f1b14685b0655f32f654de0c",
+      "statement": "Los snapshots históricos incompatibles pierden la capacidad de recálculo pero conservan sus totales en modo repair, mientras que strict los rechaza; las rachas y semanas usan únicamente sesiones completas agrupadas por fecha local.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/training/workoutHistory.test.ts#L261-L309",
+          "version": "repo-lines-v1:sha256:68b664ffa57a4a76e74ab8d5d9589cb991d1d8657a48805732de63b61e7270fc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4NDkwNzY4NWYyZWYzMTc4M2VkNWE2ODY2NDNiMDE1NDJjNDdhZTU3ZTYxMjg5ODdmOWY1ZmExMzhmMWRiNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwYmNhZGM0YWYyOTkzNWY4Zjk2ZjQ5MTQ5MjA5ZGViMTE2YzMxZmYwZjVkMzI3MDI1ZmQ0ZTQ4NGFjZmVlYWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyZWEyMjA1MjA3MThhZDYyOWE4YmI5YThlZDA4OWI5NDE2MjNmYzFjMTI5MmY2NTk4MDQwYmJiYzI2NzVhY2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzYTExODQyNzMyZTMwNmVlNGZmODIwY2M0NTdjMzA4MjExODRiNTkwMTcwZTliNGMxMDY4OWNmMDhlMDU3OWIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutHistory.ts#L370-L430",
+          "version": "repo-lines-v1:sha256:e4b1440176ee12307ed76073dd8adfdd64abb4cd2172e44a1f5684eb1bd58a64:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2NDA1MzQ1NWY3NTYyY2RlMjlhY2ExNzIwMjFjMDdiMTI4OGU4MjhjMTBiZTMyZDVkNGJiN2U5MzgyNTI3ODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlZjNiODVmN2JiZWEzOWNjOTMxYWNiMmEyZWVkOGRhYzMyZGQyMDI3MmVhNTc4N2FjN2VkNDE3NGY2Nzg4OWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzOGY3N2Q4NDY2NmU4M2JlYjUwMGJlZjdlMDllNGZhYjljOTBmOGZlY2ZhM2FkZjc4OGUyYmUzODNjMTMyYmIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutHistory.ts#L443-L489",
+          "version": "repo-lines-v1:sha256:fc13c60a9bc428cbe94363e8ed4b9d30fea1646558220f46731a932ff9f5f3c4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5MmZkMDg4NjI4MTVlMTcyMzJhYzBhOGMwYzU4MGIwMmUwYWIzNmMzNDI2NWUzOWZhYzQzYmJjOTk5YjEzZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_57c4baa545b74f55b973481e15731ea5",
+      "statement": "El contrato nutricional exige nombre y cinco valores numéricos finitos no negativos, diferencia la conversión permisiva del formulario de la entrada estructurada y valida categorías y tipos de alimento mediante enums cerrados.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/diet/nutritionContract.ts#L1-L35",
+          "version": "repo-lines-v1:sha256:55064c01c19d25c0cca1d92bd722391e471cd1eda5a609671d1c99547a2d6a4b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4NDYxNDg4MWY2MzJmMTVlY2JmY2NhOTliYTQ4OGM5ZDZkZTk3N2M1MzU3MWY2NjZmZThiNTJlZDQ4M2VlODkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhNGMwN2I5NzVjYjljZmYwODM2OTU1NDQyZmI3ZjQyMjNhN2YyOTgyNTkwZjJhNDVhNDNkYWE1NzlhMTE4YzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhN2MzY2QyY2ZhMTYxNDNlODQ5ODMwNGU0YjZkNjMxYjlhMmFiNmI5MWJkMDY5NWNiOGJjMTYxNzA2N2NkODMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/diet/nutritionContract.ts#L102-L202",
+          "version": "repo-lines-v1:sha256:27a98a7019dcc2d0b25ea1325641de28048b9bf968842f14aaccdcbe84b9a333:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhY2FiYzYzNGNiMTdlYzUyMmU4MDk3Y2YxZGY0OWE3YzE1MDAyMDA1NmY3ZDRiMmFlOTQ2MGI4YmZmZTNhOWU2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiMGRiYzE0YTBmNzgxZWI3MjgxNzBmY2ZkNTQ4NDMxN2E5OWI0NTlhMGYzZDYxODQ2ZTkxMmM1MzllMmU1YTIwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkZGM3ODI5N2FmZDkxZjRhMjU3MDg5MzFlMDhlYTMxMzBhZTc2OWRkYmZkODNhYmQxZDUwYzQzYTZmYWI2M2I0In0"
+        },
+        {
+          "resource": "repo://apps/mobile/diet/nutritionContract.ts#L226-L295",
+          "version": "repo-lines-v1:sha256:56ab5b86ff682c75604c3f8175a53916f75c5da02e1036001486db6c3bc1583f:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1YjZiZjgzNzNiOWFmNTEzYWNiZDg4ODdiN2UzOWEyOGMxOGE5ZWJhMzE3Y2ZhYzM3OWZlNGM4OGYwYWFmNTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk4M2RiZTRlZjVlZmRmMzQ1YmU1ZWI3MDc5ZTg3NDE5NjZmYzRhOGI4ODU4ZWZmOGRiMWQwZjM1NDljMmMzODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBmZmFlZGUyY2Q2YTNhNTRjY2YzZDc4ZGRhYTFhOWY3YjE2ZTJmNDA0YmUxNzg1YjIxMTMzOTEyZTk3NTY4YjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d0f3ff44cb064ab295f6e40d942e862a",
+      "statement": "La evaluación del plan dietético admite asignación manual o por gramos por kilogramo, usa 4 kcal/g para proteína y carbohidrato y 9 kcal/g para grasa, y separa presupuesto no configurado, válido y excedido sin producir remanentes negativos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/diet/nutritionContract.ts#L338-L420",
+          "version": "repo-lines-v1:sha256:51636d36b6439b24c2d74dc32573fb909604beb10d37a33fee5f1723cf864c25:eyJzZWxlY3RlZExpbmVDb3VudCI6ODMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI0YzM4MTFlYjdlMzg4NDUzMGMwZWExNTFkM2RhNWJlY2NiZjExOGQ0YWI1ZTZmMjJlMDkzMGM5MzdjODdhN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzOGIyODI3NjlmMzc3ODA0YTM5NGM2MmViODM4NmYzOTk4YTI2ZGJmNmJhOTc0ODFjY2E5MzVmMGJlODgxNWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5NDg3M2FiZDAyNzE0ZDI2YjQ5MmU1OWQ3MDJkN2NlZDNmYzdlNzE1MmNjMDdiYTE0NjM1Y2JjMjI3YTQ0NDgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_254dd35f1c4f4d709d0d4882dffbf34f",
+      "statement": "Las fechas de dieta se representan como claves de calendario local y se construyen al mediodía local para evitar desplazamientos de día durante navegación y formato.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/diet/model.ts#L131-L180",
+          "version": "repo-lines-v1:sha256:0f22a47c9ff8011c45807fb3e413fee7890c995522d36c35e14e9724a10f2b72:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhZGJjZDFlYmRkMzVmYWZiZTQ4YWMyMWQwZTY3NjliMWU0MGE4MWQxYzdmZGYxNmEyNjg3NGE4ODIxZmEzMzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkZmE3NDEwYTJjZGY0NTRiMTE5YjgxZmEzNTk4ZWJlYWIyZjMyYzA4MTFhYzM1Yjc3NTQyYjA0OTVjMTkzZjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBhNDYzNzNhNzhmMGE0OTEyYjA5ZTc1OTAzZjdlNTA0ODM3MmEzZDM2OWJiZTU3OWI1ZTliNWY5OTc3M2Q4MDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b3c294d1cded4f99819602585f32c75d",
+      "statement": "Tanto el editor manual como add_meal_food validan los nutrientes antes de persistir; la tool además usa IDs derivados de operationId y recibos dentro del commit para hacer idempotentes los reintentos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L333-L466",
+          "version": "repo-lines-v1:sha256:795b80fc2a443d14fda0fec4d796bc945ddbeeb11ed7b0be077db8e2d73f81c3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTM0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2MjdjNTM4ZWE4NjY1MTNlMjIwZTAwODUzYzk2ZTY4MWNlZTY2OWI3NGFiYjQ2ZDJhNjZkYWQ5NTE3MzA2YjRmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxYmM5Mzc5OWVhM2VhZDI2Yjk1YTUwY2EyYzRhNDU4YWQ3N2NjNGM4OGVhYWFiMDllMDdiODA1ZjU0YmJmOWVkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI3YzcxZDk4MGFmZTE2NDBiZDYzMjgxMjI4ZDkzMmIwMGIwYWUzODNlNWIzMmNkMWMzNjFmODY2M2FkN2ZlMGYwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1YWEyOTJkYzg3ZTk1NDA1ZTNiZTllZTU5ZTEwZWVlOWNlMGE5MTVhNzE0MzdkMGY2NDFmYmJjOTZkMDQ5N2M2In0"
+        },
+        {
+          "resource": "repo://apps/mobile/controllers/dietController.ts#L622-L686",
+          "version": "repo-lines-v1:sha256:f97e04cc896bd1f7a4f163774d9036603630a4cf94dce6d1989ade8ab8aa7832:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzNGFkOTAzNTM5N2U0NmZmOThiOGI0MGJlNWQ5NWQ0NDk1MTVlMTIwNGFlYmU3OTk4M2FkMjkxYTUzNzcwZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyYmU2M2NlZGU4YzAyMjY2OTM4YTYwZDFjZDBjNGU0N2ZjMmM2OTRlMDlmN2QxYmJiZWFiYmU4ZGQzZTljMWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyZjVlOTc5MmIxOTQyNzA0NmIzNGU0ZTA3NGU1MDEzZTk2N2IxZGI2ZmNmMmZkYTBhMjA4ZDk2NTRmZmRiYTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3ZTI3ZDBkMDg1NWZjMjIyNzFjMmNjN2ZlMDcyMjkyYzhjYWNhZjA3MjM4MjhlZTQyZmU0OGZiZDI1NTI5M2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4f30811744ce4c2da4250b95b82e8a3c",
+      "statement": "Las mediciones usan fechas locales reales y no futuras; sus métricas presentes deben ser finitas y positivas, se redondean a dos decimales y body_fat_pct no puede superar 100.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/measurements/measurementContract.ts#L90-L225",
+          "version": "repo-lines-v1:sha256:a84a90fff0fa554801e7993a95a25e2c65f50f1eec0ca2990c0375e51eaff363:eyJzZWxlY3RlZExpbmVDb3VudCI6MTM2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhN2ZmYmJmMGY5YTlkN2JlYmYyY2MzZmI0YzJiOWQyYTE5MDE0ZjFkOWRjNmVlNTY0ZDFlMTQwNGZiOWUwZTZmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzOTRlODI4NjBmN2FlMWVlZDY0NzRkOTMyMWM5OGFmNjA3YmY3MjgxNDRiZjkxMDZlNTE1OGFhYmU3MzEwMzE5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI1YjZhYTIxZjYxMWRiYzc4MmY4NDQzYjJiM2MyNDY0NzUyZDc4MjM0YWVkYzVlZDE5YTliMmEyOTkxMjhjNTNhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwZjFhYzg4NGQyNTY1MDA5NWY2YmZjM2FlZjEwYzI4Y2IyOWQ4ZGMxOTBjMDgzODhlOGE2MzQyMmMwZDY5ZTIwIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_51d836c2937e4e178926f6ba045c7ce1",
+      "statement": "El upsert de mediciones fusiona por fecha sin borrar campos omitidos, rechaza fechas con duplicados históricos ambiguos y no permite dejar vacío un registro; el reemplazo por ID tampoco permite moverlo a una fecha ocupada.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/measurements/measurementContract.test.ts#L136-L220",
+          "version": "repo-lines-v1:sha256:43ea3656a074c5c848fbefe3032286f5434e0dcf27cb06fe4a969554dc742c2a:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzZTdkMmY2OTgzMTdiMWJmNmJmMjMzNmE2YjcyNThkNGJjNmIwMjRhNjRlYjdmMTEyOTc1MzE0MjVhYTgwZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyZDExY2FmNDNlOTdlZjM2OWU2YmVlZDFhMjY4YmQwNTgzOGYyOWI5ZGQyNTRiZjY5YmE2NDg4NDE0NzIzNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxNjQ4YmMyYWEyODlkNmM2YzcwZmQ2ZjIxMmY1OGQwMDU5YmYzMjUzMWU0YTQ1M2RlNzc2NjMyOTZmZDE1MzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkY2U3NGJhMWNiZGU1OWRjNzFhZmJmNDNhY2FhZGRkODliNzkxZWZiZDdkZjA2NTE2NTg4OGI1OGI1NDVjMTgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/measurements/measurementContract.ts#L450-L560",
+          "version": "repo-lines-v1:sha256:19229bc8f6cb4aecffb77964127d4390cadecd937ffe82a3d9e8f79f145b969d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTExLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmMmQ0YTY2MmQ1OTNmZjMxNDFjMTY2ZjhjNjU3ZmMyMzAwYzdhNGM3OGU0M2VhNGJjMzdjOTdkNDBjNzU2N2Y0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwNGJkOGYxZjJiYWY4OTY2YzIyZTFjZDgyY2JlZTFiZTZkMGZjMWY4NTJhYzlhNWM3YzhkMTNjZjNkNWJlZDIzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MjA0MGUwOTVhOTRlMmFkYTc0ZTQyMWYzNzE4NzUxYTkxYTgxMGJmZDY2ZjQ4ZjRlOTM5YzdiNzQ4MGViNjcwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiMGI3NWE0MmNlMDQxZjI2ODY3MGQ0YmE5ZjE4N2Q5ODIzMDMxMGI0M2Q3NDNiZjMyODY0OWMzNjg2MWQxNzYwIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_2328e43310934317ba011491891d3972",
+      "statement": "El patch de la tool de mediciones admite el JSON string heredado, valida campos a borrar y rechaza patches vacíos o que asignen y borren el mismo campo.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/measurements/measurementContract.ts#L336-L427",
+          "version": "repo-lines-v1:sha256:0e04cb336170f8afd2a4ff0a4e9a5423c2b26b2479b7b1145c6b6e19620ce9c3:eyJzZWxlY3RlZExpbmVDb3VudCI6OTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJkMWQ1Zjk5ZTQwOGM2MTNjZWE2N2Q0NjA4ZWMwNWE2MWIwY2VhMTBhODUxYjgxYWJiZDZjYTVjYWViMjQxMTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxMzg5YzIyY2JhNjliMjg3MzYyMTEyYTBiMGFmMjAxYzJlYTQ2ZjBlNTYxMmZlYTdkODlhMjAxN2EyMDkyMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjNzU2YjhkMWQ4MGEzMmNlYWQwNDgyODYxM2MxZTZjYzA5ODM5MGM0OGFmMDY5NjQ5N2Q0ODlhMDZlN2ExMWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_37942017a9b643a791a69c9a77f91dfc",
+      "statement": "Las mediciones se ordenan determinísticamente y se limitan a 1826 elementos; las lecturas derivadas deduplican por fecha de calendario y los periodos de gráfico se calculan con claves locales.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/measurements/measurementContract.ts#L1-L2",
+          "version": "repo-lines-v1:sha256:e2538028767706e2574d4f5c79859bc7ffac0537f299f63187a5db849f5d7d47:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDZhZWE5Y2I1MGQwYTRlZmM4ODE5YzFlMjI2MTkyNzdkNGE2N2E1NDExNmUyZTYxYWE0ZWVhMzljN2FiZTcwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTM1NDY3NDVmODY1MDVmOWZmNGQ3NWVhMDIxN2Y2ZDRkYTAwYWI0ZTJkZmE0NThjN2ZhNTQwOWY5MjQxODFhYSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/measurements/measurementContract.ts#L290-L323",
+          "version": "repo-lines-v1:sha256:82d48f29f6f6c7bf620169c23b76d6da2938e63a8e427838bfc33ba60c391ff8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1YTAzYzVkZjM5YzQ4NTYyMTQ4NjkyYTZiYzRkMTczZDI5MmQ4OTI0MjMwNzZkNWU3MzAzYmRkM2Y3NWY1ZTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY0OWJiZDI0YTRmMTlhYTZmOWU5Y2IyMDM4YjQyNzNmZTc0YzJlNjI4ZTQ2ZjRhZmVjMDg5YmUzMjNiN2UxMGIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/measurements/measurementContract.ts#L442-L447",
+          "version": "repo-lines-v1:sha256:1124795fb289188251c7eddff9f231e2fdf5fc7ca5abbcdd14b41a04263aaa28:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWJiMzA2ODlkYzk2YTg4ZjJhZjhhMWYyNjg3ZWRhZGIyZjBhOTNlY2RlZWYxMWVjMzhkZTRjZWZlOWRhZDNlOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDJhMmNiMjVhMTIyYjQ0MjIxYTYyMzRlYzY2MGE3YjVmYjdmOWJkZTdiM2I5ZTJiM2M1NTlhMGQ5NmZhYzczOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmM4OWMwNjdhMWRkYjE5MDJiYzBkZDljMGJhYjZmNjY5ZGNiM2ZiNmVmZjM3YmFjOWRmM2UwZWRkMWU5MTg4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDI2YTlkMzA3NWNiNTk5YmVlYTE3MmUzMmI1NjZkN2JhZjNmODQyMmExZDMxM2E4ODk3MDhhZWY0ZGVkN2E0MiJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/measurements/measurementContract.ts#L661-L727",
+          "version": "repo-lines-v1:sha256:42e5a4d4f984f29ebcc902e1ff951a746333c5dd7e49be8bade89dffff6c1f51:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyZDNjOTExOTc3MmU1NGNkOTcxYTllNDVjZWEzZDIxMjg0N2E3Y2UyNWVhOGJlZDcxZWZjZTZlMDlkNmI2ZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1NTRjMzU4MTYwYTFlNzY0ZjM3OTkyMzYyYzk3NTcxM2Y2ZmUxNWQ4OTcyNzYxZjBlNDdkYmE2MzYyMjAzMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmM2E3YjM0YTRhMTdhMDg4NDNjM2YyOWMxNjNjZjU5MGYzYjJkODQzNGQwYjEyZTM5M2FkZTViZDA3YTk2MWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2ce2eaacf7944223b45ffdf7408f8811",
+      "statement": "Los flujos manual y por tool de mediciones ejecutan los mismos contratos de mutación dentro del commit durable; read_measurement se niega a escoger entre duplicados del mismo día.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L254-L306",
+          "version": "repo-lines-v1:sha256:2d9a09c5111ba802d4e64a0c331bd55d1d05d0f33a7e0e5b9a522d162302daed:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxMTBlNmFjMTI2NTg4M2VlNjIwMDk3ZjJhMThjYTZhZTkyYWRhYjU1NDU2OWVjYjg1Y2I2YTgzOTIzOTI5ZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1MzU4ZTMwOGQ5NmYwYTNlMGI2ZjdiNWY3NzhmZGNkZGY4Y2U4N2VlZWQ2NTRmZjgxOWE4MjdkMzRiNDBjYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiZmJhM2RmYzFhYzA5YmEwMTVlNmU3NjQwNzJjNzQ0NWY1MWI5OWUzZDg5OWMyYTNkMzllZTE1NTMyYzUyMzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlYjY1M2EyYzA1OWExZGZlODAxNGMwOWViZmVlNjY3NTA2NmNjOTJiZWQyZGI0YzdiZjllMjg5M2ExODdiZGMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/controllers/measurementsController.ts#L703-L768",
+          "version": "repo-lines-v1:sha256:294ef0d2ca8f1c9fedc6a4684ea36c98d4990347166b7cfd92c6ff6edf7a3504:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0OTY1YjNlOTMyMzBlZDg5ODQyOTEyNzJhMjM2YWJhNjc2NTI2NDcxYmM1MDBkMWVmZmJjMDkzYTRiZWQ3YTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiMjA0MGQ4ZGRiOTAyOWYxZGRmZWYzMjRkOTczZjRjNDI3NzYxYmM1ODhjMTc0Zjg1Zjg1NjkyY2FiYTVjY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhNDFkNzNjNDUyMmJlYTM5ZmY4MTVlMjRiY2YxMzExODUzMWQ2NzFlYjNjZjUzMTIxODg1ZTExYTFjNDcyNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ2ODM2MzY3MmVlYjQzNmNmOTViZmJjODFjYjFkY2IyZThmZWMwODY1Yzc4MjdmMDFjYjFmMDgwMjk0MTQxMzUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-09-29T10:57:35.679Z"
+  }
+}

@@ -1,3 +1,3 @@
 # Archivos
 
-- [Integraciones VivaGym y actualizaciones](vivagym-and-updates.md) - Delimita la retirada ejecutable de VivaGym y del actualizador de APK, el tratamiento de credenciales heredadas y la publicación externa de APK de Production.
+- [Proveedores BYOK y proxy Anthropic de desarrollo](ai-providers.md) - Configuración local, verificación, persistencia y transporte de OpenAI, Anthropic y Google en web y móvil, incluidos el modo fake y los límites de seguridad del proxy CORS local.
