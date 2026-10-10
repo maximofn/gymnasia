@@ -1,0 +1,288 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:ea5e03f0ad470dc0b9df6f52edb747cc2ab481aa3df55f76f41e3dce7b308ade",
+  "claims": [
+    {
+      "id": "claim_f1e75ebd8f664f65bcf7fc45bd911355",
+      "statement": "En Staging y Production, el runtime selecciona el system prompt y la política sanitaria desde el mismo bundle firmado y los expone en un `AgentPolicyLease` profundamente inmutable, de modo que una petición conserva un único candidato durante sus reintentos y rondas de tools.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4766-L4831",
+          "version": "repo-lines-v1:sha256:6aeaaf846a3b5cc8405850a812468b00fa3f08cdf80a6c7bc0332be00742bf3f:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExZGY4N2E0NzMxNmM3MDhjNTUwMjA5OGU5YWY2YzQ0NTM0ZWI4MGJlYWRjZjYwNjMwMjhlZmNhODU5MzdhYmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxN2FmMTEwMWM5N2I3YzJmNTI1NDA3ODJlNjM0Y2M0NDQwZjBlOTcwMzQxZTUyZjk3NTIzMTFkNzhiN2Q3ZDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkODlmZGFjNDNmMzJmM2VjNzc3MjNiMDFkNGExZDNlNGE4MTMyMDE5M2M3NmY1OGI1YjY0NmVhYzQzYjJhODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlYzhhOGY3YTIxYjUyOTBiNGE3MjFiYWRlNzFmZjMwZGI1Yjk4NDQ2MzUzODc3N2QyZjVhMTU4NTlkNTk3MTcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.test.ts#L98-L113",
+          "version": "repo-lines-v1:sha256:36596a4dd09b1b04649c3925545f1a166ad549cc89227c673febc8ca50b88c59:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjNmYzMWQ1MDNiNjI5MjBkZTA4MTk3M2QyNDcyYzEwYjZjZGQxNzU1Y2ZhZDlkNmYzZGZjZDExYzllMjVjMTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5MWJkZjZmYTFjZTJlNTFiNzZlN2Y5ZmEwYmMyNjNkNjk2ZTc1YTA3NWM4YzFmNzliMGYxYmU4NjUwNjdmNDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L126-L171",
+          "version": "repo-lines-v1:sha256:4a06f8986f6e80e9996ce931b02999418d0b264cf0587da6e016b802fdbc4b7d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlYzEzNGJhZjAyMmQxZjA3MWI0MDk2NDg5ZGU5YWY2NzU5YzBlOTE3NjY3MDEzOWQ2ODcyY2M2Y2IzN2ZlNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0ZWY3YzFhMDAyYjRlOTY4ZmIyODYyMzRkYjgxZTc2OWNhNWFkYjkwODJmNmVmN2FhNzBjNzJkNDk4YjVmNjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L23-L44",
+          "version": "repo-lines-v1:sha256:c20cba94c836f0b2394bbcefff5e204c030fc3d623580b94fb1b36692e3a7c19:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllM2VhOWJhMzdlMDQ3NDU1Zjc0MDI3ODg4YjdkOTNhMDljNmY3ZjBmODQ0NjU1MTI5MWIzYTg0MTZiN2FmNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMTU1NjU2ZTc0OGRjOWVmMTQ0NzliYjBlNWU0NTI1YjgzZjQwZjUxNjFiMDJhN2U2NDFjZTQ0M2U0ZGI5NDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3OTNkMGM4MTI0MmU5ZDA4YzNkNzQ0ZjQ5YTdhNWQ3ZjhkYmQ1MDQ1OTY0YmE5NzlkYzFkNWU0OTQ1OGU5NzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c761c147d8194e9f80d98714d5f9187b",
+      "statement": "La verificación de un paquete de política exige entorno y canal exactos, tamaños acotados, JSON canónico, hashes, firmas Ed25519 de bundle y activación, certificado encadenado a una raíz compilada, protocolo compatible y tools conocidas por el binario.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicy.ts#L187-L219",
+          "version": "repo-lines-v1:sha256:a9ca74410575b9c52b9bfee7c9c05d586d377d5d83ce4935600de0a18fdd6af8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxMDA5MzliZDgyNTM3ZDhkZTlmNTc5ZmEwZDg4MDMxY2JmMDhkODZhNjczMGJhMWQzZjAzMjY2ZmM4ZTdlNzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmMGVhZTNmOTYwMWU4YzQxZThhMzIxM2Q0YTUyMTQ4YWZmZmI4ZjM4YTM1ZTc3NjQxMzFhNTA4NWRjMzNhZDkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdlYzdjNTcwMDA5NDk4ZjE1OTg1YjE3MzU0MDI3NWI5ZDJlNjYyYmI1ZWQ1ZGI3ZWRkNGQxNDlkZDVhYjNiMGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmNGZjNjMyYjYwM2YxMDQ0NGZmNTY1Y2FkMzY1NzNlMjgzN2Y4YWVkMDdiZmQ2YWIxY2Q1ZDczOWEzZDZjZDUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicy.ts#L251-L308",
+          "version": "repo-lines-v1:sha256:5b8ac490b917c573162fcf961be61aa9c2bb433062eca4679ff0241438f62734:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1YWM1NzBjMzBkMTFkMzJjOWVjMWJiNTVhZmM0YTNiYWRiMTFlYTdiMGFiNDg2NzE5ZjkxNWUyNGE4ZTBkZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzZjlmMjZmOWFmNWRjNGI0YjUzOTUyYTJmMmZjZGU4YTMwYWU1NDg2NzcxOTJjOTM4MzJmYTZlNWI1OGJmZGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxMjFkMDcwMzYyZjU4NmQ4NGEwMzI1NjVhNjU0NGI3YzY0ZTEzYjVlYmU3YTY1YzhlYTQ2NWE2OTg0YTkyMzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzOWNjMzRlZmIwN2U5MWJmZGVhOGE2MmRjYjdiNzM3NGIyZDBlMDY0YWU0NDViY2ViYzE2NGFiZDAwOGEwODYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicy.ts#L354-L425",
+          "version": "repo-lines-v1:sha256:a3db499db59c357f26cfc380be29ab9563742a8eb6eaf4438aecf926c0d0eab3:eyJzZWxlY3RlZExpbmVDb3VudCI6NzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwMDUyNjllMTRlOGI0Yjc0MGM3NzZlMjU4NjFjOGU2MmU3ZDgzNTMzZTRhZjVjMTYwYmYxYmI0ZGYyNzk3MmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4MzQ1ODY0MDc3OGNjMzZiMjE1YTMxNGQ3NzY0MDM4OWM3MzkwYWVmMTU1NDNjYWY4MTkxZDAzM2NkZTQ3NDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFjYzNlYjJhM2I0Yjk0NjczYzU2YTQ4NWFjY2RmMGQ4ODNjM2Q3MWY3YzI4MjIzZmY1Njc4MjY1NzlmNWFlZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3N2MyNDFhOGZiMzg4MzczOTE1ZWYyYTQxMzVlOTQ3OWIwNDEyYTc1NDEwMGVmMzE0MmE4NmQ4NDk3ZDIzNDUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicy.ts#L459-L527",
+          "version": "repo-lines-v1:sha256:cc8f2baa2ed0b3f92c267c315ea8e9886f930b2918d8bfd00420d2895bde0df0:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQzNjQzZWRhMGQ4Zjg3NDIyNWFhNDJiMTU1N2M4MGVjODYxNzA0OTUxMzMzOWVkYTc1NDYxZWZiMTZkODNhMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIxODM0MTk3NmNiMjkxNjU2ZDQ4Nzg1NjA1MDc2M2Q4YzMyYmMwZmFmYTk2MzM5YWZkYTExODZlMzMwNGI3YWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0OTQxOWY4OTJmZWRkY2VlYjUyZjc1YTk2ZGViM2UzNTNhNmU3YTdmYmY4ZTg1ZDVjMmNkNTNkOWVhNjRiMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicyRuntime.ts#L88-L105",
+          "version": "repo-lines-v1:sha256:139ca8eac1a63f089c88ce21c907edd335f119659ad41d63346d09292532e629:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkwOTI4OTY0YjMzNjc4OTQ3N2Q1NzJiMzczOWIxNWMxMTEyNDVlZmNiNmJiMTdhODU2YjhiMTA3NzE2NDY3YjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjMWNlOTkwNWQ2OTY5NTQyYzljYTFkNjdmYjU5ZDQxNzMyNjBjY2NjMmYwMGNjZTJkOTRiYzZlZjIyMTJhZjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjZjgwZTgzMjNlMDVlNGE5YmU2NjZkOWQ1ZDc4ZDBlODliMTNkMjI0ODkyMDNjOGNkNGE5MzkyMmFkNjdkM2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b332ed8f180f431fb3eaa75b86634c9b",
+      "statement": "La selección no local vuelve a verificar caché y snapshot, recupera en orden la copia activa, la anterior y el snapshot integrado, y rechaza como anti-rollback una secuencia menor o una secuencia repetida con otra identidad; una repetición idéntica es idempotente.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.test.ts#L278-L325",
+          "version": "repo-lines-v1:sha256:fe37d485b06ad5cd135d73565984315f67a03ab7c441869299948c6e7e9af3d7:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyYjk3MjRjMmIwMGQ1MDM3ZWZjNDZlYWFkNjQyMjZlNmJlZjJhZGUwZDRmMDQ1NDliMjEzYmVhNmYzYThlNGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZmYzM2MjVlNWVlMmM2NjExNWI3MzBjN2RhMGQwZjE2NDMxOGNhNWIzMDYyNzQxNDk4NDk3OTE5NTUyYTkyYWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY2NTkxZDM4NTA5ZDI1ZjMyZjdiODNhZDY0M2QzNzYxODgwYjMxNWUwNGE0ZmM3OWQwZDM2YzRiMzAwNzY1NWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE1ZDA2Mzg2ZjdhMzYzZjQxNWI0ZWI1ZTI3ZDA2MmYxNjEwZGRkNDAwMGM5ODU3YTQwMWQ4NzU2N2YwYTYxNWQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L329-L385",
+          "version": "repo-lines-v1:sha256:bfd26ed56a33cab987d4a5b3ad4685a54e3385888d7a0a43a5ecade65cd5c864:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1MjRlMTczNThhNTYwM2RmMGNkMzg1ZmZjOWIyYzY1ZjJmNzhiYzExNzQxNGY0MDBmMmNhMWJjMmY5OTUxMmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0ZmMxOTdlZmM1ZDIwNThkODg0MDQxMjFlMjVjOGViMjlmNjNkMjA5NDMzNmE0OTI2YjBmM2EyMGViYTA1Y2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3NjRhNTViNzlmMmY5NWRjMTc4Y2UzYTQ2NTkzZTVmZDBmODAyZWMwZTdhNTcyMmNkNzM4OGMzYjlhMWM4OTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ4MjIyYzQxYWY2ZGRjMTI1Y2FmMzZjNDkzMTkzZDEzZWQ1ZDg0OGU0ZTIzNDk0ZDNhYTM1NzIxNjc4MzhkOGUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L446-L470",
+          "version": "repo-lines-v1:sha256:59fdb883b3c22ccad00098e3b44d998384433fdad12bb3e507973a03c34ce867:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxNTE2ZTE0ZTIyN2I4ZTgxYTRiZjEzYWRlNTMyYmQ0ZDhkYTk2YWQzZTUyYmQ0MWJiNTRkOWUzYzgxMGFlNWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwYzQyNjkyNGU1YjhlMjEzZjA0NzI5MmQ1ODY2NjA0MmQ1NTlmNTRjMzdhM2RmMzk5N2RlOGZiMjI0MmRjMDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkZmExNDhjYzkxYzFkMWMwYjk1OTg3ZDE4MTU1ZWQ3MjM3ODA1NGI5ZTUwODAyODRlYzYyNDY0NjY4NjBjYWUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L523-L581",
+          "version": "repo-lines-v1:sha256:0249bb25641bec16799dda9f2ecd1f25ee5ea0869d9f0c12d010c64f9bcdc22a:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxZGMwYTA1Y2NmZDAyZmViODU4OTE0M2UwNDE4OTlhMjVkODEyYTFmNDNjNzk0Y2JmMjFiM2M5NWFhNmZhNDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2YjA0NDkxNDY5NzIyZTgzNjNhOTRlNDA0NDUzOGUwMTNhMmEyMTdlMzZiMWU1NjhiYTYwYWNiN2I0YzhmMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwNjNiZjJlNzlmMDBjMDliZmUwNGExMzVkZmRjNmY4NTk1ZjUyODU2MmIzMWFlNDIzY2ZkN2MxNGI2MDlhNWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFjMDhjYjdiODU0OTI2NGYxNWIyNGMyM2EzOTJiOTQ2YjM0ODM1ZTMyMDg1NGUwYWM1YTA1MzNjNTZjOWMzNmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4ac62eec82d74613a24917cd5be8568c",
+      "statement": "Las actualizaciones normales solo se activan en la frontera `new-conversation`; las activaciones críticas y los rollbacks también pueden activarse en `turn`, mientras `background` nunca cambia la política activa.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.test.ts#L213-L276",
+          "version": "repo-lines-v1:sha256:d7b1cbb62f3808d1303c5a45bb2ec2aa2d5d55c7834bc3076a54e24e45814da6:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNzZhZmM5OWE4MjRhYzBhNTU0NDMyNWRhMzE5ODdhN2JjOTM0MTdhNzBiOGNiMjc0N2QwNjE0NGNkNGZjODIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIwY2VkMTg5YzNlYWI3N2I2Y2U5MjE4Nzc3YWY5N2I4ODYzN2ViNjdkNzVkYzFmNWRhNGY2ZTgyZjQ1YjgwYjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU2ZThhNzUzZmMzODNjYTAyMjU5Yjg5YmRiM2VkZDNiOWUxODVhZTcyYjUyMzZjNzIyNmRmZDk2NDFlNmE0N2MifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L349-L353",
+          "version": "repo-lines-v1:sha256:6b61f981aa0ab7c60528ff0648d8d311b38d632b31d02eabb1de20fb634706bd:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODZiMTI5NzRmMmUzNmQ5OTI2OTFhYzc3M2MzMzBkODdiMjM0NDgxNDAzZTNkZjg4ZWE4OTRkYzU2OGE3OGNlMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmI1ODBlOTY0ZjgzYTQ3M2Y0M2Q0NDM4NDYyOTQ5ZDY4YjU2MDBmZGE3ODdmMTYzNzQ1ZDAwZGU4OWNiZjM2YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmY2YzMyMjFkOGMyMzY0NmQwZTA4NjBiZTg4NGU4NmQzMzM2Y2NhZGY0NmYxY2VhYjU5MjQ5NTI3NTE5NDA0NSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L473-L488",
+          "version": "repo-lines-v1:sha256:f7ade81b58da32ea5f191b0d1861d985763f5a7f79ccc19ad08249544720ee50:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5MmY3N2I5YzYyODEwNjFkZjk2OWZlZTgwZmYwMTY4OTMxNjQ3YmM5ODI0OWNmNjM5M2ViZjQ1NDQzOGM1OWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4ODdkYmU4ZTkyMTgzMzQzZGUyMzlkMDQyY2YxYmM1Y2NlMzkwM2VmMDFmZjhjOGJlMmY1NWI4YTZhMWZiOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhhZjE2MGRmN2E2MjM2OGNhMWI5YTdiZjExZjBhOGQ2ZDNiZWQzMjY3ZjAwNDlkOGYxNTU2MzhhOTllMDRlZGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_83b390d8ed384830a8bc57618c4919fe",
+      "statement": "La política sanitaria remota se fusiona monotónicamente con la compilada: conserva señales base, no reduce riesgo ni amplía permisos, no reemplaza respuestas locales y exige que toda regla nueva tenga un fallback compilado; cualquier error invalida el overlay completo.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L126-L137",
+          "version": "repo-lines-v1:sha256:7a26b24f857e6dd439a2555dca93510e2d5803a0ee433ae8cc2535c29f5dd9d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlYzEzNGJhZjAyMmQxZjA3MWI0MDk2NDg5ZGU5YWY2NzU5YzBlOTE3NjY3MDEzOWQ2ODcyY2M2Y2IzN2ZlNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0ZWY3YzFhMDAyYjRlOTY4ZmIyODYyMzRkYjgxZTc2OWNhNWFkYjkwODJmNmVmN2FhNzBjNzJkNDk4YjVmNjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwYTg2YWZlNDVlOWVlNjEwMWNlZDYwMzQ2NjI0MDBlYTE5NmY0ZWU2M2Y5MWFiNTk4ZTFlNjNhMTQ5ZGExNWMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.test.ts#L113-L142",
+          "version": "repo-lines-v1:sha256:65b5da181caae16cb88813700e33854f71cf8ca412d997d8932686e891138a97:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlNzkxY2Q4ZmQ3MmU1M2FhZWYzM2Y5NThkZjZjY2FiZjExNWMzZDI2NWM4ZmIyYjg1ZjZhMTNlYzlhNmY3MmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlZWVhZmEzZWY2ZmYwMTk1YjdkOGU1YWM5MWQxNjI1Mjg0YmJjYTkwYTk2YWI3NTllYzI1OTViM2E4M2NjNTYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.ts#L326-L393",
+          "version": "repo-lines-v1:sha256:5e50095b717ad186e5e02414b2b579d1f5405667eaf0a3a2108026b379082bd6:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3NTdiYTE5MWNhY2ZlMTFhNzVmMTE1MDVhODJkNjg1MzRhYWQ4YzdiMWQzMGZkZDQxYjM1ZWZiMzQ3NDljNjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUzM2QyODVhZjRlYzhmZjQwZmVjNjZkZTcxNzdkNjNjZDE5Mjk3NTkzYjA3NDJjYWU5NzM1MDE5ODhhNWQ4ZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmOTE1MmRkNGI3ZDBjODFkNDdlMmE3MTFkNTFlMTkxZTY2OWJhZTVlZThkYzRkYmUwMjA4YTNkNTJmNjA0YjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0ec44892b7aa4f49884fc6b6ce0d6e3e",
+      "statement": "El system prompt de transporte se compone con una única política local de identidad y transparencia, y el chat principal prohíbe que memoria personal u otros datos locales añadan texto al prompt; las pruebas contractuales comprueban que no exista esa vía de inyección.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4879-L4903",
+          "version": "repo-lines-v1:sha256:8fc31f30780902487ab45085761d5136c07b5aef1ef5fc404e3644fd35c76145:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzMzZmZDQ3ZmUzYjdjYTA0ZjY5NGQ4YzAzZmQ0YmE5MDMwOTY5MTg5OGYxZTliNmIzNjA2MGQzZjkwM2M1ZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5NmRlOGE2M2NjNWRjYjQxZWFlZTQ0MzI1ZDNjOTkxMzU0YzdiYWQ0N2RiZDU1NjczYjVkZTNjNGM3ZWE4ZmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1OTBhMzM4NTUzNjMxMmYyNmE5MTdkMDQyMWJlODIxZmI5YTU0MzIzOTcxNTI1NzVhOWRkNTliOWZkOWU3NWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhMmI1Yzk5NWRlZDIwZTMwMGZjYWQ1NTMxODkwMTViOGU0OGY2OGUyNTA2M2IzOTcxYTBhMTY3NzlkYjBmNTMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/aiTransparency.ts#L52-L85",
+          "version": "repo-lines-v1:sha256:929528a06e95a2f30cff0188e03697bcd4c4bbcba70bff1c76543a94daf41c65:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiNTg5YTdhNTAyNThjYTE1ZDFkZGNmNTVkODg1ZTZkMzBlYzExZWIyZjczNGEwMGRkM2FkYjc1NjRkYzM0ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJiM2Y2NWQ0MWQyNjdkN2ZmZDgwNjA5ZmJlMGIwZTc0OTY2ZTU3OGFlYzhhYmQ4ZTI3YzMxZWRlZjE0ZDUzMGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBkODNlMDEwMGM2MmJjYjQ1YTNkMTFmZmExMWFkOWRmMTlmMTk2MWEyZTE5ZTQ2NzY2ZTczMTA3ZjNjYmIwNzEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/personalData.contract.test.ts#L19-L45",
+          "version": "repo-lines-v1:sha256:590773e20d6a493c8144711d4f9132823be08f95764571c4181f3d2a82dd8361:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzOTlkYTMyNTk0Y2ZjNjQ4OWFmMDYxYzlhY2JhZTYxMjc5MTc3ODkxOTkzMGJmZGQ0ZTg0YTM1MDEwNDNmOWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyMDhiNzZjYTIzMjFhYWMwZTgzNDc1ZmE4OWMwNTYxMzdmZWJjMWVhZTU4NDg0ZTQyNTg5NTMzYzVjMThiODgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2MzUwNDljMWUyYzgwNWE3ZDZjZWIzOWE5NjMzNzVlMjZhZTM5ZTAxNmZkOTk3ODJkYjZiNDliZjNlNGU5OWEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolClient.ts#L55-L80",
+          "version": "repo-lines-v1:sha256:5922bd185cc7cdf1a03c4014a3da9fb6ddab538a293f1b25c45f71458c6ab750:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5YmM2MDQ2YWVlOTcxMjc0N2ZiOTk4NmE0Y2RkNzlmYjg5MzkyY2MwMTgwMjA0OTgyYzNhMjRkZTEyYjA1ZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1OTRiMjlmNDBkZTBmNDRjZWQ4ZjIxMWExYTMzNGEyYzc3ZWNlNWMwYmFlOWMzNzUyZDM1OGMyNDQ0ZDY1NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhMTk4YjVmZjcxYmI0MTJmY2FhOTBiODE3NzRlNjc5ODViMzFlN2JkZjQwNzZkMTI5MTVhNzUzNDY5MDAyOWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBmYjQwZjc1MWYxYmYzZmU0NzVmNzJkMmRjNDNjMjM2NjNkYWRhZTgxYzI1MTIyMjkwOWQ3OGM0ZDdjZTY5ZWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_250b5ade564a404b8d1a27c1c362af3c",
+      "statement": "El clasificador sanitario local se ejecuta antes del proveedor; `high` y `critical` omiten al proveedor y producen una respuesta local, mientras una decisión `elevated` solo puede consultar al proveedor BYOK activo con consentimiento vigente y nunca puede ser rebajada por el evaluador.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L1548-L1607",
+          "version": "repo-lines-v1:sha256:f95d971d809292c2f7daef74f5bc53007f94ca44eb5aaa968bb9cf3d789c310a:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyM2NmZDRiZjY0ZDU3ZTc4YmMwMWU3Y2I0MWIxNmIzODNkYTUwODM4YTU2MjQ2ODk3OTRjZDc1Y2ViNjcxZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1YjE0MjM5MWUwM2FmNWJhMDYzYzU4YzE0Y2JlYWYwYzU5NmNjMTk4YWZmYWYyZGJmNjhlNDE0NTIwNjQxMjQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4766-L4804",
+          "version": "repo-lines-v1:sha256:50ae8fa5ca1cc508e868da5181a20bdd619ebddfea2bdfcb6aaf10050b9c97a7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExZGY4N2E0NzMxNmM3MDhjNTUwMjA5OGU5YWY2YzQ0NTM0ZWI4MGJlYWRjZjYwNjMwMjhlZmNhODU5MzdhYmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAyYjQwNWJhMWE0ZGQyMmNiZDc3OTBjMDczNzJlNDI3YThhMzk0OTJiZmU3NDIyMGQ4MWFiYTIxOWQ3MTZmNGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkODlmZGFjNDNmMzJmM2VjNzc3MjNiMDFkNGExZDNlNGE4MTMyMDE5M2M3NmY1OGI1YjY0NmVhYzQzYjJhODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjMWViYzUzMzE4MzRjOTkzYjdlNDMzMGFkY2M4Y2Q2ZmJmM2E3YmZlY2I4NzAwZGYxYTczNzRhMWFjYWFiYzgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.ts#L121-L175",
+          "version": "repo-lines-v1:sha256:e133123a549f7733893519ef7c0f0e88d98885c89c8814ffecea68377886c25f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3NWQxYzNkYjIwMGJhMTVhMmExMGMwMWIwNGUxMjYxMWQ4YjczNDgzYWQyY2VmNzRmZDZlNzIzNDIzMTY1YmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1Mzk4N2ZlYWQyN2RlYjdjNGE1MmRlYzVkODNlZWY3NTkyZmU4NDNjMWM1ZWFmMTVkMTg1M2IwZDcyYzUzNTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzY2Y5N2VlZTQ1ZTAzZDZkOWJkMGJlZTg1ZTg5ZjA0ODUzZWRkMzBjYTVlYjAwMDVmNDQxMjg5ZTU4MTYxYjQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafetyConsent.ts#L159-L169",
+          "version": "repo-lines-v1:sha256:00b16a63cc96f1ef898c0ab6cd68fe1f2dd903fb9d583d1da0fe4618ce386101:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_468b848b8091439fbd84b7f60e9778e9",
+      "statement": "El consentimiento del evaluador sanitario está desactivado por defecto, se invalida al cambiar `consentVersion`, se apaga si no queda ninguna API key y no migra un permiso huérfano de un proveedor a otro.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/healthSafetyConsent.test.ts#L174-L206",
+          "version": "repo-lines-v1:sha256:d21a735f3176ee150cda47efbd683d286012b42d74af1345e9e7577c14674ff3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4Y2Y5YWUzOWMyYjcxNTdhODUzNTQ0ZmRhZDdkODkxMTdkYTljNjk5OTA1YzI5NjUxNjQzNjhlNmIyNjY0MmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJjNzQ2ZWEyODM0MTgzOTIzYjViNGIxY2EwOThmMmM0MWE1NWMyY2NkNGVkZWRiZjMyZWM1OTQ1MWUxYWE5NzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljNDE3OTZhYjdiYTc4ZjdiNjI2NzU3N2RlYTVlOWNiNWYyMWFiYzVmMzFhN2MwYTgyMjdkZDBiNDI5NmRhNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ4MTdmYmI3M2M5MmIzNmQ1ZTQ4OTZmZjUxYzFiNThlZWMzMzBiYmU5NjFiYTA1ZmM2MjA1Zjg2N2VhMWJjZjYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafetyConsent.test.ts#L52-L99",
+          "version": "repo-lines-v1:sha256:57b78f1c128bfcd1bb6caf9bce1f9831e52379d3a4203f47006c6978425cbc26:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyNTM4ZjRhMTFiY2NiNWQ3NDQzNTgxNjIxOTM3OTJhZjQzZjA0YzlmZWYzNjRiN2ZlNWNlYjIzZTE1YzlkYjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkwNjFiMDg3MzFjMjk3YWY2ZTFjNWQwNmUxMzUyYTM2NzA2N2M3NWEzNGE3OTRjOTAwZDgyZmQ5MzhiNjdmNmYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafetyConsent.ts#L37-L43",
+          "version": "repo-lines-v1:sha256:0ef4c929c1bf4a272c5e33d137e45c31c0b366e03efd284aec4e6f2806697e42:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTI1MDlkOTYyOTlkYTMxZDc0ZThmOTY3NTMxYTUwMmQ2Y2M0MzAyNWI1Y2ZhNjU5ZjQyNDg5MTA3MDUxMmUxYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDJhMmNiMjVhMTIyYjQ0MjIxYTYyMzRlYzY2MGE3YjVmYjdmOWJkZTdiM2I5ZTJiM2M1NTlhMGQ5NmZhYzczOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmQxM2FjOWVkOWNlOTQ5NjU3NmRkMThkOGEwNDFhY2MyOWU0OTU1NmRmMGM0MzEwMWJlY2EwNGEyNGMzYjAxZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzZjYmY5YWJjMGU4Y2I4YzRjYTk0ZmU3YjA2M2E0YmMyNWY4ZjY2NmQ0YzI1MGNkYmE4MmIzZDQzMmYxMzIwMCJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafetyConsent.ts#L63-L124",
+          "version": "repo-lines-v1:sha256:701d805c23cf55931d35894c8e69075a7bd053a3c6fd5c578c63da19ec61fbf4:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ1NzNjYzlhNDNlMWVmMjVlZGViYWVjYTFiZDAyNGEzNWFhNmNkNGE4NDE2NjcwMjQ0NDA1ODk3MGUwZjg5MDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExZDA3ODU1OTRjNTQ3NWQyZDM3MDY1MGI3MDQyZmE3YzNlNzkwZjRkMWRjNWZhYzkxYWYxMWFmZDY2OTEzNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNjMDdmNGU1NzgzZTU4NGMyZTY3ODY0ZDhlNzE4ODZkMGY1MTk3ZjIzODhjMDZiZWIxZWFhYjg4NTMzMzNlODcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a9687fd97eab4953b8ab3378338e9c48",
+      "statement": "Antes de ejecutar una tool, el runtime combina el riesgo de la consulta con una clasificación de su nombre y argumentos: riesgo elevado permite solo lectura y riesgo alto o crítico bloquea todas las tools.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L1610-L1650",
+          "version": "repo-lines-v1:sha256:a24a30224e2b95de70610a305bfec8f0a2903df9ca20db5740e69603ebd3f5f9:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljZTJkNWIxYzY1YjU1NGIyYzYyZTgyODhiZGE2NmQ5ZWQ3MDI3ODQzMGNkMTg0OTBlZDI3NTZjNTdlYmQwZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1OTY4ZWM5NWVhZjRhMmFkZjFkMWU1YjhiYWI0N2NhOGRjZjVlN2FkYzBkZTZhYjJlMzQ4OGE2ZGNhNjI2NTcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.test.ts#L72-L79",
+          "version": "repo-lines-v1:sha256:d9d5a8e89b481ef6a2f2414cb3ada80b86b1289dcddfa6404f69552db6ff15b5:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzUzNzA1YTM3Y2E0ZmY5NWIwY2I5N2JlNzVhMDFkMmQwNmI4ODU4ZmZmYjA0ODQwYTY3MWQ5YmVjMzRhZmQ5MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2EzZTQ2Zjk0Mjc2YjZmNmY0ZWQxZjAyYWY3OGJlZjZhMmVlMWM0MzlkZDU1ODRiOTczOTQ4MzEzMjE0ZDJiNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjc3OWQxMThkNmUzY2JmNDUwNTM5NzQ4ZGVlN2E0MzA3YWNiZTY0NDZjYmEyOTdmMjc2MGZhNWQwYmJhMWJjMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzUwOWU2ODVlN2Y3Y2MwYTQzZjNhOTEyMjVkODBhMTY3MjNlMmY0MzMwZTMxMTIyNzUyMjE2ZDVkMjAxY2UzZiJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.ts#L148-L175",
+          "version": "repo-lines-v1:sha256:4a595b67e02f288db74c42608bbb21c24e075ea41b276c46afb91aaa75e9327a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmZDQ1YzM1YjUzY2NjZGQ1YmM1ZWZmNDcyOGE2ZjQwNjUzMDJhNmI4NWNmNWFkNDc0MWRjNTExNjM0Yzc1YzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzY2Y5N2VlZTQ1ZTAzZDZkOWJkMGJlZTg1ZTg5ZjA0ODUzZWRkMzBjYTVlYjAwMDVmNDQxMjg5ZTU4MTYxYjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1e8c5e5605ab45e291769eac4e37277c",
+      "statement": "La puerta de streaming solo publica segmentos completos ya clasificados, retiene por completo las respuestas a entradas elevadas y vuelve a clasificar la salida final; una salida insegura se sustituye por una respuesta local sin revelar el segmento bloqueado.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4923-L4969",
+          "version": "repo-lines-v1:sha256:a6766eb00b8fc7fc3cee35906899e4c903b5bc0e3ba033df284b37d2975de05b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmY2Q4ZmQxZjk1M2M0ZGQ1ZjdkYTNmODkxNmMxYTg4MWVkZmVkZDY4M2Y4MWE4ZjY1YjJmMzY3Zjg0MzQyMTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3NjA2YzY2OTVhZDgxZmZjYTkxOGY3MjY1MWRiNTc2MzFmZjEwYTI4ZmM5YzNkMjg0OWYxYjg2NWY5MzgxMWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmZjUyZDQyYWQ5NDZlYzc1OWNhOTUwYzg5MGZmN2RlYzA5MjU1ZGE2NWY4ZmRiOWQyZWExM2ZmNjBhYWFmNWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMzNDBjMTJkNjA2MzQ3MjY3YTBmNWU3Nzc5YzBmNjE1Y2U5Y2FjMzllNDY3OTA3YjE0ZjkyMTg0YWNhZDc2OGEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.test.ts#L81-L110",
+          "version": "repo-lines-v1:sha256:d5c0e5dd947e3844857320d035d942b2abb7c93e3e18e0020f03189706f239fd:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmYWMyOGI2NzQ1NTdiZmVlMGIwMjMxMjc0NTg0MGFjMWM2ZTYxNDdhYmI0ZGQ3NWFlMzY3NzUwY2Y1NmE0ZWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxMDMyOTE0MjMwNjY5ZDcwM2I3OGI4NzBkYTIyYzcwYzA1MTViOWM2MzBjZTFlZTQ0YzVjMDA0ODk2NWViZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlMDdhZDBmN2Q2NWY4M2E5M2Y4YzlkMjg3YjFkZGMzYTBlNDFhZTJhNTJiMjQ2NzdiMTc1ZDVlNGJkNjUzYzAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.ts#L219-L276",
+          "version": "repo-lines-v1:sha256:83d0f5ae1499adf7973cfd6e24aced5bc640a4fc82b5a8c71ef0b9f536fa77a1:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhNWQ5MTU5NzUzYzNkNjhhZDc1OWY1N2IxMWIyMGQxZjQ1NmI0YWQ4NWRiODEyYzRkOTkwZGVkMDNhMjNhMGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyZTIwZGM2NzdiODRmZGEwOTNhYmYyZjY2YzUxNDkwOGNlNjAyMWQ1NDc4ZDQ1MjA4N2FhYzQ4YTQ4ZThmMDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_52d53dd35f7744bfafad08e0cba296e0",
+      "statement": "`prompts/AGENTS.md` es la fuente editable del prompt no sanitario y `policy/health-safety/` la fuente sanitaria; `sync:health-safety` regenera bloque y snapshots, `sync:chat-prompt` regenera el snapshot del prompt y los checks correspondientes detectan deriva de artefactos generados.",
+      "evidence": [
+        {
+          "resource": "repo://docs/architecture/chat-system-prompt.md#L76-L115",
+          "version": "repo-lines-v1:sha256:dd6e267592f77037f8090e664a0857dff06480f4544391d481b0e9f7f4953db2:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0ZDMzNWUxMmQ5OTg2MjkzNzcyM2NhMTRhMWU3MDU1NDFkYmViOWMxM2U2NWEzYmJjOTRlYmUwYzA4OWNmYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzNjI2ODZmN2FmMTAwOWZmMzQ1MGIyNGQ1YTM1YTMyOWQ0YTZiMGEzMzY0ZGNkODM5YTUwMzQ3NWUyZDg5ODkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxMWZiYzMxNzJjZmVjOGFkZDY0ZTRlY2MzY2YxZDYwZDU5ZmE1NWM0NGY0ZmJjYzE5YWExMjkyZjU3MjcwZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRjYzUwNDY4NDA2NzUzMmQ3ZGNlNGNlYWQzNjA0ZTEyZDU4MjlmYjlmNDhiMzc4NmIyMDNhYjEwYThjMDdlYjMifQ"
+        },
+        {
+          "resource": "repo://docs/architecture/health-safety-policy.md#L44-L87",
+          "version": "repo-lines-v1:sha256:a7c3cc0734cc8b685476e813388b327beec5647abbf807408b19cc4ff0e2f758:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzY2MyNzE2MGU2NDExMmMxNmIyYWIxYmRhYWE5NTFlOWJlOWU5ZDhmM2Q3N2E3NzY5ZTU4MjNjZDdhMzQwN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjMzdmYjM5ZTUyZTI0Mjk2YzY3OWJjN2EwODI3Njk1N2ZlN2RkZTQ4NzdiMWIwOGVmYTkzNTVjZjRkYTExYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjODRlYzA4Y2NhZTA4OGM1MTc4MzIwMTQ3MGI4YjgxMjVjNDZmNWVmZjM2MzY5NjBkNWRkZGViZWNhNTZiNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFiZGRhOThlNzI1Nzg5ZDdhN2ViYTI2YzNkOWRlMzU3ZDJjMmJhMDRkOTE0NWI0NGZiMTVkZDgyNjFmYTBhOTIifQ"
+        },
+        {
+          "resource": "repo://package.json#L8-L18",
+          "version": "repo-lines-v1:sha256:d7d33e9985f5ff71ca4407162bc774e68cc337dbce2ebe28eabeff17a49bb410:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0ZDZiNWIyZTg5OGQ5NThhODVkZDJiYzAwNjk1M2JlNTU1YjQ3NDY2NTU2ZmZjNGUyMTM0MmEwYjkxMWQ1MjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhOWU1ZGNlN2JiYzRkYTJkMzc1Y2I5MGY1MTJiZTY5NDY0Mjg2OGI5MGZjYTcwN2Q5NDgxMGI2M2Y1NmIzYzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI3OGVhOWI2ZjFiN2ZjYThjYWJhM2U0MWZmZmIxM2M3ODFiYWFlZGM1ODRmM2U3YzgxYTYzZWVlOGFiZjkyNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2OWQzMTA2MDM5MzExYTNmOWJlMThlYTgzNWFjMzMxZmIxMDUxYThlYjU1OWExMjIxNDExZWZkZmNhZTlhMDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6dd807b49e9943aca33050db7015f0ba",
+      "statement": "Las reglas provisionales se publican como protección pendiente de revisión profesional, y las evals LLM están declaradas como no autorizadoras y no obligatorias para pull requests; ninguna de ellas constituye aprobación clínica o autorización de promoción.",
+      "evidence": [
+        {
+          "resource": "repo://docs/architecture/health-safety-policy.md#L20-L42",
+          "version": "repo-lines-v1:sha256:21765b75963d08ff98fcc35d2bfacc608757495eb3e202281a27bfc75d7b5900:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlNTM1NWUzMDU0ZGEzMTY1ZmUwZjc5YzQ3OGNhNzRiNTZjNWYwOTU1MTc2NDQ3NzJjMDRlMThkOWI2NGYwNTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3OTFmNTRmYTFjYjMzZjIxZWMxMWI0YzMxZTUxZGIyZjBhMzY3ZjlkMjAzYmNhODM1NDFkNTg4YWQ4ZmMwZjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzZDQ4ZmMzNzJiNGQ5MjFmYTJjZjRiNDAxMDA3MGMzMDQ2OGM5OGI0ZWY5ZTlkZjFlMDUwOTc0ZjliYTk5NDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkYTIyOTJhMjg4MjlhN2U0ZWFkMzQxMTdjYmU3N2MyMGM1YmQ1ZjY0Zjk3OTAzYmIxNjdiNTBjMTI5NmQzMjYifQ"
+        },
+        {
+          "resource": "repo://docs/architecture/health-safety-policy.md#L89-L107",
+          "version": "repo-lines-v1:sha256:c5f2109ca7ddc6fb6beea7f097c9d79bd1ace6919b8666107b01a5b56e80a0e5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjYTBkMTEyM2NjZDQzYjAxNzQ1ZTE2MjFiOTMwMzE3ODliMzkzNWYzOGNjZWFjZGYzMjZiZDU3OTRlNTE3OGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMjU4OTUzZTkwNTQ3ODU3MzljOGZkNzk2ZWJlZWY1ZDI5Zjk4MGFmZTYyYzdkZTQ0ZDhjOTY2YjQ1NjcxZDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAwZjliYTJmYWI1Nzk1NGJkZjhhN2Q5ZDQzOWQ1OTM0YTE1ZTNiY2JhMjMwNWM1ZTIxMmUxZDczZTliMzMxYmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZkMDhiZTYzZWNkYmNlNGNlZjJmMWY2MzNjMGZmMGJiMzRkY2M4M2E2YmE0Yzc4OGVkZDUwOTNjMGRkMjA2YWIifQ"
+        },
+        {
+          "resource": "repo://policy/health-safety/llm-evaluation.json#L1-L10",
+          "version": "repo-lines-v1:sha256:95824eb8026fefcdd7b686bf02b0cafab3b43b9a083fca5a2502f6cfcb385714:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5ZDFhYzk0YzU4OGFlMDY0MDVhYzViMzQ4MmIyZTcyNDdmZmMxYzU5OTFhNzhlMTczM2M2ZGQxYmRjMmIyMTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNhOWVjYmMzOGI3NWE3ZTIyZmVjODE4YTYxNDZhMzRjYzkxNDI2MDFjZTVhNGI3OGY1MzY0ZmJiMmU5MzA4YzEifQ"
+        },
+        {
+          "resource": "repo://policy/health-safety/manifest.json#L4-L10",
+          "version": "repo-lines-v1:sha256:29761134ec31cf64ed23d2827cde2380cefd1058041f6ebf4564064bc14cc066:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmQ4ZTdiMjczNDFkMDk0NjdkMDg0ZGJlOGU0MDQyY2EzYWRmYTljMTliNTVkZDkzZmJjZDY2NDFiNjhjMjc2MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2Q1OGUwNTUzNDI3MjJmYTZkZWFkMjhhZTAyYTE5ZTA0MTljM2MzM2I1ZTNlNzUwMjdhZTY0NTYwNzA1OGZkNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGFmZDNmZDViYWNlY2E1NDAwNDZjZWU5NTk2MmIyMzQ1MWRkMDdiMGI2NjJhZGIyZGQ5NTJmYTc0MDZjNGU3OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjIxMjA5MDljNDg2MGUyMDhjNDI4ZmI3ZjliMDhjOWY1YjkxZDE3ZjVjZTM1Yzc3NTQ1NTgzNjI0NjI4ZWNiOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9a45d3630a1e40b1a6065f7396bbffa3",
+      "statement": "La caché firmada está aislada por variante y registra política activa, anterior, pendiente, secuencia máxima y estado de comprobación; los fallos de red degradan a caché o snapshot y un fallo de persistencia no invalida la política ya verificada para la petición actual.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicyRuntime.ts#L145-L160",
+          "version": "repo-lines-v1:sha256:0e0978534dad687fdef25326825e5dacdeeaade2c86ca0206d4e79ea2c454320:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjNWQ2MjRkZGNlOTVkZTEyMmVjYTAzNjQ0MTljMTMwZmUzZDVjOWQ1MzkzMzQ5MWIyYzI1NzFmMzE2NGY4ODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkYzJmNzBkMjVkZjJjN2JiYTAyZjFmNmIzYWYwMGJmOWFmNDQ0NjZiNWM4YTQwOTVmMDQ5ZjNiZjUzYTRmOTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1NWUyZDk2NDczZjY3YTU2YzMzZTIxNTc4NjM4YTU2OTI5NzAwMTA2MTQ5ZWI3YzVlOTFkYWRiNDBjOTIwZmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZlMmNkMDA1NzA3ZTI2ZTA5YmFmNDg0OGM3YTYzNDhiYjlhMjgyNzZhZmI0OWM2MWI2ZmFlNTFhYjM5MTZiNmEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicyRuntime.ts#L31-L43",
+          "version": "repo-lines-v1:sha256:216429bca7e2d267da321f6c059a60f8180714872dc3e913ba288e661e343c4f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzNTM1MzJjYjRlZWUyNTkwOGE4ZGM4MDI3MGY3NTU0MTg3YWYzZjg2N2UyM2NlMmVjYjc3OTBhM2YyODc2YzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY0NjU2MjllNWU3YTEzNDY4YzUxZThmZGI3M2Q0MWRmNTE3YWQxNzk0YzAyYzg5NmJkYWM1OTg2NDY5N2JjMDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNkMDg1N2M3YmU0MWRlNTdmMjk2MmFjZWMzNzgwOTc0YzVmMzRhYTY5NTc1Mjc3YWMwMDM2ODkyMTFkZTgxM2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImViMTRjNTQ3YWY1NDU3YzJjMTlkMzgwMjJhN2UyNDhhMGNjMjMzNzg1ZTgzNDJiNThlZWFlMjAyMTliMjBiMTIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.test.ts#L294-L313",
+          "version": "repo-lines-v1:sha256:3e717f9ab5ac9507aa6bb04febdaa24c7461a152fd1f00c0e7631a33dbe96e3c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3YzYxNDRjN2FlZjk0MzhiMjNiMzQ4OWVkM2Q2NWRmOTRmY2Q5NDYxZDVjOGFiZWJmMGZlNDA3YTI0MTUyZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJhZWVmYzhhNDQ5ZGVlZjAxNWNiYWQxYzYzOTgwOThlZWEzMDUyY2U1ZTdjOTRiN2E0ZDYxMmQzNjdhOTA4NzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3ZDM3N2RjMmIwYWZjNDZlYjI0OWYzNTBhN2I5M2Q5ZWM2OTg1ZmZjZGM2MjExMjllMzZlZDY3MTZkMWFkM2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmMzU1ZjFiNzU3OThkMmJiMTM4OGI3YWIwMThkM2I0MDU0MzdkMmEyNjBlZDU5YzE4Y2U3ZTY1YWRjYTU5ZGUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L114-L127",
+          "version": "repo-lines-v1:sha256:facdab201035552ebcb9f892fa6d6207f68ac339d20bad3ed1f82f252def0529:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2OGU5ZjM2MjliYTQzMjY4MjZhYmFlOWFjMzc4NWY4MjAxNWMwNjZlNzQyZjgzMzE1NzUwNjk1NWVjZDU5MjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3ZDUzYjE0YzFlZWVhYjA3Y2ExY2M1YmYyZmMzYTM5Y2Y2MjQxYTg1M2I5ODk1ZmFhODg3YjY2MTJhMjM0Y2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk1ZTIxNDU4Y2RhMjE2Y2YwMWM1ZWZjN2NmNzlmNTAxODlmN2Q4MGRmZTViOGYzZmRiOTNlOGMyM2IyZmNlNGUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L490-L504",
+          "version": "repo-lines-v1:sha256:64f0d3aeaaa645bfff8402ab7ce5277d0b45bb103079bddac32dbad60cfb795f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiY2ViODUwMDRmMWRiMDJkYzc3Nzc4ZmVhZjU5OTk2NGNiZDIwYzEyMjQzMGU2MDFhMTI2YmNmM2EyZmVmYzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4MzM0N2YzNDg0ZDJmMjZmMTRhMmY1NDAxNzIyNTg2YmM2MmE5NWM0MTMxMzJkNmZkYzg4YTZkMDE0MGQ2ZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVjNzhkNmQ2ODljMDk4ZDczNjQ0OWExZDM4MDZjNjAzNDdjZDQ3NmQ4OThkYThjMTk1ZTEwZDY5YzYwZWU5NzAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/signedPolicySelection.ts#L586-L592",
+          "version": "repo-lines-v1:sha256:d0cdda39950a87a138ace9b889da91d669e6a681bfe9f689eff266a98992a8d3:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmJjZmNjYmM1NjFhZWIwNGU1NTQxNGY5MjFjZGU4NjQ0ZWRkMTM3YmI0NTkxMzM0MDYzODBlODViMmMzZDhlOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjZhMmVkZWJmMjRlY2Q3YjI0OTJhZTUxZWZlZjA2ZmU0M2JlYzhmODM3ZTQ5MzA0OGNkYTY4N2MyM2I4ZWEyZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTdkODYzMmU1NGU5Mjk4YWJiOTU4NzI3ZTJkNTE0MDhhYmFmMTM2NjAzNTM3OTEwMTQwYWJmNjViMzBhYjYxMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.0",
+    "at": "2026-09-29T10:57:35.679Z"
+  }
+}

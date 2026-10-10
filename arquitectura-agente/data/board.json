@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-09-18",
+    "updated": "2026-10-08",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -107,7 +107,7 @@
         {
           "id": "GYM-249",
           "title": "La app se solapa con la barra de estado y la de navegación en Android 15+ (edge-to-edge sin insets)",
-          "state": "in_progress",
+          "state": "done",
           "summary": "En Android 15 o posterior el contenido se dibuja bajo la barra de estado y la de gestos: el título de Rutinas se pisa con la hora y el botón de nueva rutina queda pegado al borde inferior. Falta respetar las áreas seguras del sistema con el modo edge-to-edge obligatorio.",
           "dependsOn": [],
           "related": []
@@ -366,7 +366,7 @@
         {
           "id": "GYM-226",
           "title": "Automatizar la subida a Google Play de los cambios fusionados",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Hoy nada de lo que se fusiona llega a Play: el workflow compila un APK y publica una release de GitHub, sin AAB ni subida. Automatizarlo hasta el canal de pruebas internas.",
           "dependsOn": [],
           "related": [
@@ -746,7 +746,7 @@
         {
           "id": "GYM-37",
           "title": "3. Streaming: argumentos que llegan en deltas",
-          "state": "backlog",
+          "state": "done",
           "baseline": "done",
           "summary": "input_json_delta acumulado en el bloque tool_use (App.tsx:3302).",
           "dependsOn": [
@@ -757,7 +757,7 @@
         {
           "id": "GYM-38",
           "title": "4. Despachador: de nombre de tool a ejecutable",
-          "state": "backlog",
+          "state": "done",
           "baseline": "done",
           "summary": "handleToolCall en App.tsx:1469: cadena de if (name === X) sobre las 15 tools, siempre Promise<string>.",
           "dependsOn": [
@@ -768,7 +768,7 @@
         {
           "id": "GYM-39",
           "title": "5. Cerrar el bucle: reinyectar resultados y acotar rondas",
-          "state": "backlog",
+          "state": "done",
           "baseline": "done",
           "summary": "Bucle de 10 rondas en App.tsx:4688-4705. Al agotarlas termina en seco, sin mensaje ni traza.",
           "dependsOn": [
@@ -779,7 +779,7 @@
         {
           "id": "GYM-40",
           "title": "6. Validación de argumentos contra el schema",
-          "state": "backlog",
+          "state": "done",
           "baseline": "missing",
           "summary": "La validación es manual y distinta en cada tool; nunca se comprueba contra el input_schema declarado.",
           "dependsOn": [
@@ -801,7 +801,7 @@
         {
           "id": "GYM-42",
           "title": "8. Contrato de errores: is_error, try/catch y recuperación",
-          "state": "backlog",
+          "state": "in_progress",
           "baseline": "missing",
           "summary": "No se usa is_error: un fallo vuelve como texto normal, indistinguible de un resultado correcto.",
           "dependsOn": [
@@ -812,7 +812,7 @@
         {
           "id": "GYM-43",
           "title": "9. Ejecución paralela de tools independientes",
-          "state": "backlog",
+          "state": "done",
           "baseline": "missing",
           "summary": "El bucle las ejecuta en serie (App.tsx:4695-4699) aunque Anthropic las devuelva como independientes.",
           "dependsOn": [
@@ -1053,7 +1053,7 @@
         {
           "id": "GYM-68",
           "title": "Streaming: documentar el transporte SSE y el agrupado de deltas",
-          "state": "backlog",
+          "state": "done",
           "summary": "SSE sobre XHR en los tres proveedores, con deltas separados de contenido y thinking y agrupado a 40 ms. No hay cancelación por parte del usuario.",
           "baseline": "done",
           "dependsOn": [
@@ -1076,6 +1076,22 @@
           "related": [
             "GYM-43",
             "GYM-45"
+          ]
+        },
+        {
+          "id": "GYM-253",
+          "title": "Editar mensajes creando un checkpoint y rebobinando la conversación",
+          "state": "backlog",
+          "summary": "Permite editar un mensaje del usuario guardando antes un checkpoint recuperable y reenviando al agente solo el contexto hasta el mensaje editado.",
+          "dependsOn": [
+            "GYM-69"
+          ],
+          "related": [
+            "GYM-252",
+            "GYM-251",
+            "GYM-168",
+            "GYM-134",
+            "GYM-66"
           ]
         },
         {
@@ -2420,6 +2436,28 @@
           "related": [
             "GYM-202"
           ]
+        },
+        {
+          "id": "GYM-251",
+          "title": "Permitir copiar y seleccionar texto dentro de cada mensaje del chat",
+          "state": "todo",
+          "summary": "Hace que se pueda seleccionar un fragmento de una respuesta y copiarlo, con cada mensaje como unidad independiente para que «Seleccionar todo» no abarque la conversación entera.",
+          "dependsOn": [],
+          "related": [
+            "GYM-240",
+            "GYM-203"
+          ]
+        },
+        {
+          "id": "GYM-252",
+          "title": "Añadir un botón para copiar el contenido completo de cada mensaje del chat",
+          "state": "todo",
+          "summary": "Añade a cada mensaje un botón visible que copia el texto entero al portapapeles con una sola pulsación.",
+          "dependsOn": [],
+          "related": [
+            "GYM-240",
+            "GYM-251"
+          ]
         }
       ]
     },
@@ -3016,6 +3054,14 @@
           ]
         },
         {
+          "id": "GYM-254",
+          "title": "Gestionar localmente el contexto de OpenAI Responses durante el bucle de tools",
+          "state": "done",
+          "summary": "El móvil pasa a construir el contexto enviado a OpenAI en todas las rondas (con store: false y sin previous_response_id), lo que deja un punto claro donde aplicar después resúmenes o recortes.",
+          "dependsOn": [],
+          "related": []
+        },
+        {
           "id": "GYM-52",
           "title": "A2A (Agent2Agent): hablar con agentes de terceros",
           "state": "backlog",
@@ -3093,6 +3139,19 @@
           "dependsOn": [],
           "related": [
             "GYM-10"
+          ]
+        },
+        {
+          "id": "GYM-250",
+          "title": "Añadir un proveedor personalizado compatible con la API de OpenAI",
+          "state": "done",
+          "summary": "Permite configurar en Ajustes una URL base HTTPS, un modelo y una clave para usar servicios autoalojados o gateways compatibles con Chat Completions, sin backend ni proxy obligatorio.",
+          "dependsOn": [],
+          "related": [
+            "GYM-10",
+            "GYM-165",
+            "GYM-136",
+            "GYM-57"
           ]
         },
         {
@@ -3335,9 +3394,11 @@
     {
       "id": "accesibilidad",
       "title": "Validar la accesibilidad con usuarios reales",
-      "why": "Antes de desglosar e implementar cambios transversales, GYM-204 identifica una organización o comunidad adecuada, distingue pruebas con usuarios de auditoría o certificación y prepara un piloto seguro para que los criterios de la épica partan de feedback real.",
+      "why": "Antes de desglosar e implementar cambios transversales, GYM-204 identifica una organización o comunidad adecuada, distingue pruebas con usuarios de auditoría o certificación y prepara un piloto seguro para que los criterios de la épica partan de feedback real. Después, GYM-251 (ticket para permitir copiar y seleccionar texto dentro de cada mensaje del chat) hace seleccionable el texto y GYM-252 (ticket para añadir un botón que copie el mensaje completo) se apoya en ello.",
       "tickets": [
-        "GYM-204"
+        "GYM-204",
+        "GYM-251",
+        "GYM-252"
       ]
     },
     {
@@ -3375,12 +3436,13 @@
     {
       "id": "runtime",
       "title": "Runtime: documentar lo que ya funciona",
-      "why": "Tres de los cuatro ya están implementados y solo piden tests y artículo, así que son tan baratos como la fase anterior. GYM-69 sí es trabajo real y va el último porque conviene tener documentado antes dónde vive el estado (GYM-66). GYM-87 va después de GYM-68 porque necesita exponer el transporte que ese ticket documenta.",
+      "why": "Tres de los cuatro ya están implementados y solo piden tests y artículo, así que son tan baratos como la fase anterior. GYM-69 sí es trabajo real y va el último porque conviene tener documentado antes dónde vive el estado (GYM-66). GYM-87 va después de GYM-68 porque necesita exponer el transporte que ese ticket documenta. GYM-253 (ticket para editar mensajes creando un checkpoint y rebobinando la conversación) va después de GYM-69 porque reutiliza su esquema de checkpoints.",
       "tickets": [
         "GYM-66",
         "GYM-67",
         "GYM-68",
         "GYM-69",
+        "GYM-253",
         "GYM-87",
         "GYM-222"
       ]
