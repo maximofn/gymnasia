@@ -28,6 +28,8 @@ sources:
     resource: repo://ops/openwiki-automation-template/scripts/configure-personal-brain.mjs
   - id: openwiki-source-5bfd59f246d16a9ee874eb84
     resource: repo://ops/openwiki-automation-template/scripts/oauth-state.mjs
+  - id: openwiki-source-68f84bc25f09bcfbd954a68e
+    resource: repo://ops/openwiki-automation-template/scripts/openwiki-telemetry.mjs
   - id: openwiki-source-01798f36eec4fe65f6b96cd6
     resource: repo://ops/openwiki-automation-template/scripts/private-state.mjs
   - id: openwiki-source-e4328e2b0f1708f5d2181a7f
@@ -40,13 +42,10 @@ sources:
     resource: repo://ops/openwiki-automation-template/tests/private-state.test.mjs
   - id: openwiki-source-e204cf07a21df797f3596f66
     resource: repo://ops/openwiki-automation-template/tests/workflow.test.mjs
-  - id: openwiki-source-5f54a5d73b084f492a32d739
-    resource: repo://ops/openwiki-runtime-telemetry.json
-  - id: openwiki-source-0a13a298cbfa4034a28c8e67
-    resource: repo://ops/openwiki-automation-template/scripts/openwiki-telemetry.mjs
-  - id: openwiki-source-92686d2e99f44496bf2c35a1
-    resource: repo://ops/openwiki-automation-template/scripts/render-openwiki-telemetry.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-10T14:02:47.335Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-10T14:02:47.335Z
 ---
 
 # Automatización privada de OpenWiki
@@ -79,9 +78,9 @@ flowchart TD
 
 *El update solo publica documentación tras conservar el estado OAuth; puede preservar páginas ya terminadas aunque el comando de OpenWiki informe un fallo. El informe es un consumidor separado de metadatos, no de logs ni de contenido de fuentes.*
 
-El checkout no conserva credenciales de GitHub. Antes de invocar OpenWiki, el workflow comprueba que `AGENTS.md` enlaza con `CLAUDE.md`, materializa una copia para la herramienta y, al publicar, restaura ambos archivos desde `origin/main`. El commit elimina el checkpoint transitorio `openwiki/.run.json` e indexa únicamente `openwiki`, `.openwikiignore` y, cuando se renueva, `ops/openwiki-runtime-telemetry.json`; la rama se empuja con `--force-with-lease` contra el SHA observado y crea o actualiza una PR contra `main` solo cuando hay cambios preparados. El paso de commit requiere que el paso de OpenWiki haya concluido y que OAuth se haya cifrado, pero puede conservar páginas duraderas terminadas si el comando devolvió un resultado de fallo; después el workflow propaga ese fallo. Así se preserva la topología revisada de instrucciones, se evita publicar archivos ajenos a la wiki y se permite reanudar el trabajo mediante la PR.
+El checkout de la plantilla no conserva credenciales de GitHub. Antes de invocar OpenWiki, el workflow comprueba que `AGENTS.md` enlaza con `CLAUDE.md` y, al publicar, restaura ambos archivos desde `origin/main`. El commit elimina el checkpoint transitorio `openwiki/.run.json` e indexa únicamente `openwiki`, `.openwikiignore` y, si se publicó evidencia, `ops/openwiki-runtime-telemetry.json`. La evidencia se incorpora al checkout solo en un despacho manual o los lunes UTC; el artefacto saneado se conserva en cada ejecución que alcanza su colector. Si ya existía `openwiki/update`, el push usa `--force-with-lease` contra el SHA observado; si no existía, crea la rama sin esa opción. En ambos casos crea o actualiza la PR contra `main` solo cuando hay cambios preparados. El paso de commit requiere que el paso de OpenWiki haya concluido y que OAuth se haya cifrado, pero puede conservar páginas duraderas terminadas si el comando devolvió un resultado de fallo; después el workflow propaga ese fallo. Así se preserva la topología revisada de instrucciones, se evita publicar archivos ajenos a la wiki y se permite reanudar el trabajo mediante la PR.
 
-La instalación efectiva requiere Node 22.22.x: tanto el manifiesto como el lockfile fijan el paquete de la plantilla en la versión 1.0.0, Node `>=22.22.0 <23` y las dependencias directas `openwiki` 0.5.0, `langsmith` 0.7.17, `jsdom` 29.1.1 y `mermaid` 11.16.1. El lockfile confirma ese grafo para `npm ci`; por sí solo no demuestra un cambio de comportamiento distinto del que declaran el manifiesto y los workflows.
+La instalación efectiva requiere Node 22.22.x: tanto el manifiesto como el lockfile fijan el paquete de la plantilla en la versión 1.0.0, Node `>=22.22.0 <23` y las dependencias directas `openwiki` 0.6.0, `langsmith` 0.7.17, `jsdom` 29.1.1 y `mermaid` 11.16.1. El lockfile confirma ese grafo para `npm ci`; por sí solo no demuestra un cambio de comportamiento distinto del que declaran el manifiesto y los workflows.
 
 ## Estado sensible y ciclo de vida
 

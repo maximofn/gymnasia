@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:7ee53fd9f46742a9715356a9c0d40877e5fe58ae9286fe1d5e02e412dbd14be3",
+  "pageVersion": "sha256:a9c2557f313443e9c446a50e1081e2dd11bb9703d618b50fa6d7ed6ae81fdd80",
   "claims": [
     {
       "id": "claim_3b5430eb28124974972b79daa0da7be0",
@@ -60,7 +60,7 @@
         },
         {
           "resource": "repo://apps/mobile/agent/toolExecutor.ts#L254-L306",
-          "version": "repo-lines-v1:sha256:2d9a09c5111ba802d4e64a0c331bd55d1d05d0f33a7e0e5b9a522d162302daed:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxMTBlNmFjMTI2NTg4M2VlNjIwMDk3ZjJhMThjYTZhZTkyYWRhYjU1NDU2OWVjYjg1Y2I2YTgzOTIzOTI5ZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1MzU4ZTMwOGQ5NmYwYTNlMGI2ZjdiNWY3NzhmZGNkZGY4Y2U4N2VlZWQ2NTRmZjgxOWE4MjdkMzRiNDBjYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiZmJhM2RmYzFhYzA5YmEwMTVlNmU3NjQwNzJjNzQ0NWY1MWI5OWUzZDg5OWMyYTNkMzllZTE1NTMyYzUyMzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlYjY1M2EyYzA1OWExZGZlODAxNGMwOWViZmVlNjY3NTA2NmNjOTJiZWQyZGI0YzdiZjllMjg5M2ExODdiZGMifQ"
+          "version": "repo-lines-v1:sha256:8d7cb198085f9fc3faf6cb8d3eeae1428eced7044ae4456a1f73d5ba5a13b011:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxMTBlNmFjMTI2NTg4M2VlNjIwMDk3ZjJhMThjYTZhZTkyYWRhYjU1NDU2OWVjYjg1Y2I2YTgzOTIzOTI5ZDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1MzU4ZTMwOGQ5NmYwYTNlMGI2ZjdiNWY3NzhmZGNkZGY4Y2U4N2VlZWQ2NTRmZjgxOWE4MjdkMzRiNDBjYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiZmJhM2RmYzFhYzA5YmEwMTVlNmU3NjQwNzJjNzQ0NWY1MWI5OWUzZDg5OWMyYTNkMzllZTE1NTMyYzUyMzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlYjY1M2EyYzA1OWExZGZlODAxNGMwOWViZmVlNjY3NTA2NmNjOTJiZWQyZGI0YzdiZjllMjg5M2ExODdiZGMifQ"
         },
         {
           "resource": "repo://apps/mobile/measurements/measurementContract.ts#L368-L426",
@@ -147,10 +147,52 @@
           "version": "repo-lines-v1:sha256:b71a61f4b6b5ada56dcf5ff6357a961763950bf0b26c003631892affcf56eafb:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzMmI2NzVjNmZlYmEyZjcyYzVlNjVjM2RiNDZhMGZmMTQxMDc2NDUyMzlhMjdiNzMwYmFhOTZlM2MzNDU3YmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcwZThlNDA0NWM0ZTc5ZjQyMjdlYjY1NGE4MzY3ZTAwNDViYTJkMDUwYjdkZjQwNWM0ODQwMWMzMmVkMTNjYWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjZTJhYmVmMjE4MzM3MDI1MjRhODE2MGQ1ZTc0YWY3NmViNTRiZTQzZjMwOTU5MzMxZWE3Y2QyOWE5MjQ2ZmUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_798416a637db48088a32d63cbf116c4c",
+      "statement": "El guardado manual normaliza una foto nueva antes de la mutación, aplica la alta o edición dentro de `localStore.commit` y solo cierra el formulario después de un commit correcto; si falla la mutación o el commit, conserva el historial y limpia la foto propia recién creada que haya quedado sin referencias.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/controllers/measurementsController.ts#L605-L633",
+          "version": "repo-lines-v1:sha256:2c2832cd8b2006c44bd174e95cf970d3681eeda0a977d2289408ab927bf77302:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRkM2I5MTEwZTcxYTM1N2M0ZTliYjJmNjA2ZDk2ZWNmZDRlNjEwMWNlMDQwMDBmNGZmOWI5YzgyYTc1MjAwNWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyYzUzYzIwYWQxNWU4MjFhMGRlMDgxYzIyY2Q3M2FmNzk1NjI1OTUxODhmM2Y3NDQxNzcxYWY4OTU1Mjk3YmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0ZWZiNDFjOGI5M2Q1M2ZhMWM5OGRiMWYzOGJhOGUyN2JkZjJhOTA1N2JmMWUwMzYxZTQ3NWE4NGQ1MTRjYjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2OTM2MmI3MzY3YjhjYWUwMDljZGVhMjk1ZWU2ZGFjMjZhNmIyNmQ5ZWRkNmY5ZjIwMDI1MjI2YjJkOTE4MzgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/controllers/measurementsController.ts#L674-L769",
+          "version": "repo-lines-v1:sha256:e946f33482b7e618beed5c9fda3a152413e28d27dae8cd656a49f4aa1839821d:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyYzQ4Y2Q1YWEyY2E3OWE4NTQwZTBiMjBjNTE3NDAzZTFjYTJlODY3MjFhNjM3ZTZlNDRjNWY2ZDgxYWNiMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1ZTk3NjM2NjE5YzVhNzI3ZTkyOTMwM2Q5Njk0Y2RjMjRmNjFjNThkMTBmYzE0MzczZGJjYzIwNWMwM2Y2ODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUwMTZjMDY1OWMyM2E2ZjcxZDZhMDZkOGY1NjFmODdkNDQ1NDYyZDU0ZTk4OTg5OTkwYzhlYWFjY2M3OTk0OTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4d4e0c0a0fa64a9eb9e9cce1a65e761f",
+      "statement": "`write_measurement` exige un `commitStore`, deriva un ID determinista de `operationId` cuando está disponible, registra un recibo en la misma mutación y solo confirma el efecto después del commit; una excepción de persistencia se comunica como operación indeterminada, nunca como éxito.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.test.ts#L555-L567",
+          "version": "repo-lines-v1:sha256:1002dbfa7aab1f438456fddf47b9a630a8bd45ac878af71cf4cc1cf68ac69e82:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc3ODY0NGY5MTI5NjVmZTQ1MzUxZTZjZTEzMzMxNmU2MjRiYmIxNzE5MmYxZjIyMDAwMjYwMDgyNjk1MWIwYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2ZDM5MjQzNjdhMzUxYjU5OGU5NmJiZTZkOGE5NDljYzE2NGZkNmU3NDFiOGI4NDkzZTkzY2EwOWJiZGU5OGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlmZWIwZmY5ZWEyZmZjYWZhNzkzN2U0NDg3MGFlMjU4NmI5ZTkzYzk4MThlMmFlMDZjZmEwZDZmODYyZWZiMjcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L134-L144",
+          "version": "repo-lines-v1:sha256:07c8965900717b88b670a8bb18a6f79751637dd698df14de4e762967e8e5ea74:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYzM3Nzk3NjgwNTdiOGU1MzI5MjQ3YjQxZTI2NTRlOTQ4NTUzMzQ0Yzc4MjRiNDRmYTE4NTYzNzVkYjNjYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDUzNTRlYTJmZmQxMjk4YjhiM2RjOTBkMDU4NWJlODFmMzU4MWFmYTg3YTFlMThjNWI1NmMyN2U0MTkzZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhNjgyNjUyNWNjNzk2YmI2MDBiOGY4YTRmZjRiM2EwZjBjZTllNGI2ODk3MmUwYjNiNGFkNmE3ZWM4OWNiYjYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L272-L311",
+          "version": "repo-lines-v1:sha256:b76680160ca3fcc430dba5d1c08ef7d2385097179d1a58f06ab2ca8dcf93676e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlMWI3YjI5NDk5N2U5NzdlMDEyMzJmNjgwODQzMTI3ZDAxZjJlMDJkMTEwYmY5ODk1ZWI4ZDQzNTY4MzI4MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1MzU4ZTMwOGQ5NmYwYTNlMGI2ZjdiNWY3NzhmZGNkZGY4Y2U4N2VlZWQ2NTRmZjgxOWE4MjdkMzRiNDBjYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiZjE1NDIzMjYyZjc1OGFlZDRiNzE3ZDY4MmNjZTg5ZTQyMDQ2ODY2MmUyMzRhOTg4NWRjZTRmMTQ0ZmQwMTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlYjY1M2EyYzA1OWExZGZlODAxNGMwOWViZmVlNjY3NTA2NmNjOTJiZWQyZGI0YzdiZjllMjg5M2ExODdiZGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ee7adb86f79c47b68f535fa5a1f533a8",
+      "statement": "Tras la hidratación, el runtime intenta migrar fotos heredadas a almacenamiento propio y barrer huérfanas; en web conserva las mediciones pero avisa que no puede garantizar la persistencia de fotos, y comunica los fallos de migración para su revisión antes de exportar.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/controllers/measurementsController.ts#L792-L850",
+          "version": "repo-lines-v1:sha256:adae155b2e4e9469f972f65c091b89c3918d759a019c3471b5ea6e848c1ccc65:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5NjZmYmZhODg5OThkYTc0NjU2YzUwMTk0OTU2YzI1ZjA4NDk0NTc2NjBjMDA5ZmU2M2QxZTlmYTlkYzkzMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRkMmIxNzNlOGVkYzhkNmE5ZTA0ODllMjE3MTI0MzA5ZTZhOWVlMTVjOTExMWNmYTFlZjdmMmY2OWMyMzZjN2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkMjE5Y2U1ZDE2YmIyMjQ4NjNhNzMxMmI1ZGNkMWNjMjViYmVjMWNjYmMyMTA0YmM0ZmE5NDIzM2FiMWQwZWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyODQ5MWZhZDVjY2Q0MzgwZjBhYjhkOGY5MjNlZDA2Yzk3MzgwNzU4MTVlMTVlYTMwYWVjNTA4MTdhYWZkZDYifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-10-10T14:02:47.335Z"
   }
 }

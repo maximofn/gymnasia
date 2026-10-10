@@ -1,23 +1,17 @@
 ---
 type: guía de inicio
-title: Inicio rápido y mapa de cambios
-description: Orientación para iniciar Gymnasia, localizar el contrato responsable de cada cambio y elegir una validación proporcional. Distingue el producto Expo local-first de las integraciones opcionales y del tablero estático.
+title: Inicio rápido para cambios seguros
+description: Orientación para iniciar Gymnasia, localizar el contrato responsable de cada cambio y elegir una validación proporcional. Dirige a los subsistemas vigentes sin duplicar sus contratos.
 tags: [quickstart, architecture, mobile, agent, operations, local-first]
 sources:
   - id: openwiki-source-bb129131b6b18c7d2257c58a
     resource: repo://.github/workflows/board-deploy.yml
   - id: openwiki-source-fe0c9d29131f1d556c715974
     resource: repo://.github/workflows/board-reconcile.yml
-  - id: openwiki-source-8037e2358a2c4f9b2c722a11
-    resource: repo://AGENTS.md
   - id: openwiki-source-88e87a6a49f8c4bba044cff2
     resource: repo://apps/anthropic_proxy/README.md
   - id: openwiki-source-45602fc0f28e2e3187ce8790
     resource: repo://apps/feedback-worker/README.md
-  - id: openwiki-source-2f2b35de05051a97e2e7987a
-    resource: repo://apps/feedback-worker/src/contract.ts
-  - id: openwiki-source-00f3917787dfe248860adc3b
-    resource: repo://apps/feedback-worker/src/index.ts
   - id: openwiki-source-0c30fc96b9e7c8b57c35473c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
   - id: openwiki-source-0c63120d58188f63614c7f7c
@@ -30,10 +24,12 @@ sources:
     resource: repo://apps/mobile/index.js
   - id: openwiki-source-e86fe7b76c693666bc2cb828
     resource: repo://apps/mobile/package.json
-  - id: openwiki-source-566414ee4d2c02f464360b14
-    resource: repo://apps/mobile/scripts/storage-recovery.e2e.mjs
   - id: openwiki-source-114430aa111af7415a6646a6
     resource: repo://arquitectura-agente/README.md
+  - id: openwiki-source-a2371d6362e5db4bc834ad03
+    resource: repo://CLAUDE.md
+  - id: openwiki-source-90d99258b785f08bf4a29c4d
+    resource: repo://docs/security/prompt-policy-governance.md
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-b8a29657a8fc15f77c92ee7d
@@ -42,14 +38,15 @@ sources:
     resource: repo://policy/signing/trusted-roots.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-  - id: openwiki-source-2cc0790639fb245db6d26267
-    resource: repo://scripts/catalogs/generate.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-10T14:02:47.335Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-10T14:02:47.335Z
 ---
 
-# Inicio rápido y mapa de cambios
+# Inicio rápido para cambios seguros
 
 Gymnasia tiene una sola superficie de producto: el cliente Expo de `apps/mobile`, compartido por Android, iOS y web. Entrenamiento, dieta, mediciones, conversaciones, preferencias y configuración BYOK pertenecen al dispositivo o navegador; no hay cuentas, API de producto ni sincronización central obligatoria. Una integración de red puede enriquecer una función, pero su ausencia no debe impedir usar los dominios locales.
 

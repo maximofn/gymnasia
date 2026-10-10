@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:9ab82828d12da09f9f8232850ef055d046f3ee3f65f92ecb4abb019c6fbb6fc0",
+  "pageVersion": "sha256:f729d5de7fe6ae54ee0094b565fe822b445b1e7105faf0677957aef86058e3c0",
   "claims": [
     {
       "id": "claim_beb8f10affb7442c81b2686ddfefa831",
@@ -24,7 +24,7 @@
         },
         {
           "resource": "repo://apps/mobile/agent/providerToolClient.ts#L244-L302",
-          "version": "repo-lines-v1:sha256:f16335a88a333ae073a1206f7f7de9ebb4c6f76fe408e5657c7bd91715e1c99c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5NzViYTcwMGU4N2Q5MTA3YzhjNzc0OWM5NDdjMjliM2I4MzIzMTI5NzAxNGVkNjY0OTJhNThlNmNlMDk0MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlZjY5MDA3YTdlNzVjY2RiMmMxOWVmYTlkOTVjNDNiZjc4N2YzM2EyYjljODI2NWM0YTVjZTY0MmZlNmRiZWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyNWVhMjU3OTEzMGVjYjQ0YzllYjc0N2JkYzgwM2Y2MjBhZDQyZmMxNmU0ZDdhNThhMzYxZWYyNGVkMjQ1YTYifQ"
+          "version": "repo-lines-v1:sha256:6ae0e3e5e2df0710c8e8bcabcd3793a78640e2803a0315b651c962937a460f97:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5NzViYTcwMGU4N2Q5MTA3YzhjNzc0OWM5NDdjMjliM2I4MzIzMTI5NzAxNGVkNjY0OTJhNThlNmNlMDk0MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlZjY5MDA3YTdlNzVjY2RiMmMxOWVmYTlkOTVjNDNiZjc4N2YzM2EyYjljODI2NWM0YTVjZTY0MmZlNmRiZWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyNWVhMjU3OTEzMGVjYjQ0YzllYjc0N2JkYzgwM2Y2MjBhZDQyZmMxNmU0ZDdhNThhMzYxZWYyNGVkMjQ1YTYifQ"
         },
         {
           "resource": "repo://apps/mobile/agent/providerTransport.ts#L47-L75",
@@ -245,10 +245,64 @@
           "version": "repo-lines-v1:sha256:388179bbcc984d67061917bdc9b90abe8c9c33f56a1f0ed7e8ae05d437747577:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwYzZjOGY1YjFmMzk5ZTYwZWMzNDgzZTk4ZmNlZmY3ZjFhZWFkMTRhNzcwY2I3NTJkMGZkNTI4OTc3YWYxNjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0Y2RlYzkxYjY0NTk3NWFmZjc2MzI4MjY0ZjllMDZiNzAyMzIyNWE4NmY0NmEyNmIxZDc2ZmFmOTEyMzU4NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVlNzE0MDg5ZGY0NjlhMmI3NGNjODYwMjlhMzY2MjQ2YzUyMDA2Y2QxYTg5M2NlNGQwZGFhNTQxZWYyMGUyNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhM2U2ZWIxOTAxZWJhNDZkZTI1ZjZmOTUzMTM1ZmE5MzM1YTQzYmI0MjE0ZWEzYWMxMTIwNGZkOTdmNWY2NjEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_677dd6fcf440470798fad83093a614cf",
+      "statement": "Cuando `anthropicWebProxyUrl` está configurada, el cliente de herramientas de Anthropic envía cada turno SSE —incluidas las continuaciones y el turno final que prohíbe herramientas— al proxy con `api_key` y `workspace_id` en el cuerpo; sin esa URL, envía el mismo cuerpo directamente a `/v1/messages` con las cabeceras de Anthropic y la cabecera de acceso directo solo en web.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/providerToolClient.ts#L265-L320",
+          "version": "repo-lines-v1:sha256:8c0e2a23697999aec36b3c1d41cabc49ce82f9336f01c4cfd133a765d8fba3e1:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViMDczOTJmNWUwYmNiMmIzMWYyYmY5NWRmMGMxZjAyOGY2YTNlYTVjMWE2ZTU0YWRjZDJlZDQ1YjA4ODJlNWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyZDExY2FmNDNlOTdlZjM2OWU2YmVlZDFhMjY4YmQwNTgzOGYyOWI5ZGQyNTRiZjY5YmE2NDg4NDE0NzIzNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4NTYwZDdlM2Y0MTZlMzk2MDU3OWM2MzNkOTIyMjg1MzNmOTIyYTYwMzhjMDdjZDk5ODZlOTAxNTYzZmM5MjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk3NWQwYzQxZWI1ZTA0OThjNzExMWVlYmQ1M2Y1MGIxNjViYjE4ZjY2NWEwOGRhZWQwODY5YzFkM2E4YTgwYjIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerTransport.ts#L113-L122",
+          "version": "repo-lines-v1:sha256:2d9aaae509a6a8751f1abe05ba6596de4a36e6cbc72fc3004466fb9307f2e024:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlYTA5YzlhZWFhYTJkNTkzZTdjYzhlZjJmMGJkMDQ1ODFjMmFlZWUyOTkwNDdjNGZkYmFiOTk1ODZlNGE3NDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmYWMyY2Y1NWY0YWYzZjdkZWFhZjdiNWI1M2FmMzQ5M2Y1ZWNlOTg5MzBhZmEzOTc1OGFlNmJjY2UyNTdkMGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5MDhmOTYzYWUzODJmNjQwODQzYTJmMDhmODBlMTQxOTU2MTAyMjcyNjYwZWYzYTkxYWI2NTVlMjliNzU5M2EifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerTransport.ts#L56-L75",
+          "version": "repo-lines-v1:sha256:84425d33077f50966047122434b28db13b15fd4144867a54c907382da23c31f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3ZTM4ODQ3ZDBmYzNlMWE5M2Q5OTM4MThmOTllOWZkZDI4Yjg5ZmJjZWE3YWFiMjg3YTQ2YjFlMGQ1M2FjNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZlM2I1ZjExOGJiZjY1ZTgxMmJjOGNkZjI2NTMwMDcwZTI4YzE3MmYyMjMxMmNkYjEwYTg0NDU4YzBlMmUwNTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2M2ZhMDYwZGJiMjQwODRjMGNjMzRmNTQzNjU0MzU3MmVkNGJhMDU2YmUzOTNmNjhkYjM1NmFkYjA2NDAyNGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7af98a219c3946f3b98e22c07fdd6ca1",
+      "statement": "El catálogo agregado que devuelve el proxy se interpreta como una única página: el cliente reconoce `pagination`, conserva sus marcas `partial` y `truncated` y convierte cualquier catálogo incompleto en una advertencia; el acceso directo aplica el mismo recolector paginado contra Anthropic.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/anthropicModels.ts#L122-L189",
+          "version": "repo-lines-v1:sha256:61e9fafd992768c2e9c198fcfcbe1d8aea9b99f08bfd49b899341449f4cf8ffb:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJlNjQ1YThlZjk2ZDFmZTkzN2VjMzY4OTA4MTZmNmU5NGMxMjIyMWEyZTNkNjA0MGY3OTQ4ZGJhMmY4ODIwMzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiYmQ1YmU2OTliMjQ3ZTIyYWE1MGY5ZWZhNGU1ZDllNGRhMjkxMzE0NzYyZDBhN2E5ZGViMzdjNzJjMmFmZmQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/anthropicModels.ts#L54-L115",
+          "version": "repo-lines-v1:sha256:90265b3c5acf1de4a00ecf3e9c6b7fd7a2b1959211205d2633d14568413bd718:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjMDYzNzEzZmQxYTQ1Yjc3MDg2ZjI0YmQzOThlMGUzMTY3MDdjZWFiMDRiZGRkYzJjYjQ5NzU1MjdiZTZlNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ0MjNjOTAzNGY1NjJjZmM4MjkyZWE3ZmNkNmVkZmU5OTI0MDUwMjdlNWM2NGZlYjQ0MjkzYjA2ZGU3Nzg3NDYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerCatalog.ts#L90-L167",
+          "version": "repo-lines-v1:sha256:bccea3ecb2f938fbc86054012334315f15c677a9eb02af6c7aefcc9f8c2002a8:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiOTA0N2Y2NjgzMmI5YjkwM2EzMmQ4ODM5OGJkNjgxNzY5NzVmNThhZTcyZjU4MWY4YmE5ZWRkNTBmNTQzYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3YjA4OTI3ODk3Mzg5ODdkODE5NDZmNzVmYjNkYjM4ZjNkMTMyYWQ1MDY5ZWM1NjUwMWRmNDdjZWE4NDExNjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQzZDI5YTc0ZWE3NWMzZDI3Mzg3MTQxZGExYzJmMGJlNDdmNmU4YmUyNjZkZTA1MDMyYTM4NmNiNzE1MDMxM2IifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0427b350d20e42c18067530578a1bd47",
+      "statement": "Un evento SSE `error` —incluido el que inyecta el proxy al truncarse el upstream— hace que el parser Anthropic lance una excepción, y las pruebas del pipeline verifican que un turno marcado truncado se rechaza antes de ejecutar llamadas de herramientas.",
+      "evidence": [
+        {
+          "resource": "repo://apps/anthropic_proxy/cors-proxy.py#L410-L447",
+          "version": "repo-lines-v1:sha256:913ff18ec5a380493dcb1c5a9b3386b6f42b4b3fadd32c66131d138e8a011ec8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5OGIwOWU4MWE1ZTUzMmQ0N2IyYjNjN2UyNGI0OWVkNWY2ODMzNmZkZmQ2NzcxYTMyYWM5NWUzOTM4MDJkZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYzMTJiNmMyM2NlMDllMzIxOGU0ODc2ODNhYTRiM2E2ZTJkNTM3OGNlZmRiNThmMzc1NDE2NjdhMmIxMGZjZGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxMTk5MThjNDc1MWUzZmMzZDI5NTUyMjdhOWZhNTRmMWQ1ZGRkNmEwZjU3OGYzMWE2Nzk2MzQ5YjkxMjU3OTQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerPipeline.test.ts#L399-L428",
+          "version": "repo-lines-v1:sha256:a1f0b9a59353189da9970e2b91769ee3c9f80f9a425a8212baa996cb24b61a22:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmYWUxOWUzZGNhY2QxNGM2NWU4YTAzNDJhNjg3ZTM3MmM5OWFiODhiNGE2ODk1MDQwOGU1ZTczYjlkZWViZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJiZGJmMmE1NDcxNDIzNWI1N2ViNjg2YjI4NDhjYTk0MjU0YjhmZmE1ZjhkZDIzMjUwZTcyYzIxOTc0ZjE3ZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzZDQ5NDFiMjNhMjZiN2NkZmY2MWM5NGY2YWM1MWNjZGI0MjE0ZWMzNDAyMzYzZWU5ZmI1NjdiMzFhMzM1NjIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerStreamParsers.ts#L467-L489",
+          "version": "repo-lines-v1:sha256:52411bd97198a5a4d02fcc6a738143a556d34d4a2a7454d708fa1a49a8e5bd1c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2ZjA4NDEzMzE5ZmJkMzkzYWQyZDQ0OTAyYTAzYzYwMmNmMzY1NGUzMmNiYTkzODMzMWZkYzg2OWM5NDE1YTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlODFhNzQ0N2I1Yjg0MWJlM2RlYmY1NmM3ODYwMDY2MDFiMTVjODkyYTFhNWQ5ZTNiMTc5YjM1ZGM0ZjUxNGYifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-10-10T14:02:47.335Z"
   }
 }

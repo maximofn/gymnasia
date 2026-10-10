@@ -1,11 +1,8 @@
 ---
 type: guía operativa
-title: Build, release y estrategia de validación
+title: Build, release y validación
 description: Selecciona comprobaciones deterministas, E2E web, validación del tablero y gates de release para cambios de Gymnasia. Distingue la evidencia de navegador y checks estáticos de la que exige un binario o dispositivo nativo.
 tags: [operations, ci, testing, release, android, backup, recovery, board]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-29T12:03:05.365Z
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
     resource: repo://.github/workflows/agent-tests.yml
@@ -71,8 +68,6 @@ sources:
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-  - id: openwiki-source-45c16db7a918783b8b3616ab
-    resource: repo://scripts/production-release/local-build.test.mjs
   - id: openwiki-source-5bb7a7442c09c2e571325b53
     resource: repo://scripts/production-release/local-controller.mjs
   - id: openwiki-source-24a206e2ad72f4f0a1502c09
@@ -89,12 +84,13 @@ sources:
     resource: repo://scripts/production-release/verify-source.mjs
   - id: openwiki-source-fcf341cb7be3a3304b37a528
     resource: repo://scripts/production-release/vm-contract.test.mjs
-  - id: openwiki-source-b368a0060923f31656ab90b3
-    resource: repo://scripts/production-release/workflow.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-29T12:03:05.365Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-10T14:02:47.335Z
+generated: { by: "openwiki/0.6.0", at: "2026-10-10T14:02:47.335Z" }
 ---
 
-# Build, release y estrategia de validación
+# Build, release y validación
 
 ## Principio operativo
 
@@ -103,7 +99,7 @@ La validación debe ser proporcional al cambio y al contrato que podría rompers
 1. **Checks locales deterministas:** tipos, contratos, artefactos generados y regresiones con fixtures. Son la señal inicial reproducible tras `npm ci`.
 2. **E2E web controlada:** exporta React Native Web, sirve `apps/mobile/dist` y usa Playwright. Comprueba interfaz, estado y recuperación bajo respuestas simuladas; no valida Android ni iOS.
 3. **Gates de release:** combinan checks locales con controles de identidad, estado de GitHub y evidencia del binario. Se ejecutan para un candidato exacto, no como sustituto de una revisión ordinaria.
-4. **Actos protegidos y remotos:** la aprobación de `Production`, las credenciales administradas de Expo, EAS Submit, Play Internal, las releases de GitHub y la promoción de política requieren controles y credenciales propios. La compilación Android de release sucede localmente dentro de una VM desechable; no es una build remota de EAS.
+4. **Actos protegidos y remotos:** la aprobación de `Production`, las credenciales administradas de Expo, EAS Submit y el environment `Play Internal`, las releases de GitHub y la promoción de política requieren controles y credenciales propios. La compilación Android de release sucede localmente dentro de una VM desechable; no es una build remota de EAS.
 
 ```mermaid
 flowchart TD
@@ -275,7 +271,7 @@ La promoción de política es una operación manual protegida, distinta del merg
 
 El perfil EAS `production` fija `APP_ENV=production`, conserva `appVersionSource: remote`, incrementa el `versionCode` y produce el AAB. `production-apk` lo extiende, desactiva el incremento y fuerza `android.buildType: apk`, de modo que reutiliza el contador reservado por el AAB. La compilación local siempre ordena AAB antes de APK y exige que ambos manifiestos terminen con el mismo `versionCode`, superior al máximo entre la última evidencia publicada y `PLAY_VERSION_CODE_FLOOR`.
 
-No confunda las operaciones: `eas build --local` se ejecuta dos veces dentro del guest y **no** envía builds a la infraestructura remota de EAS. Después, otro job usa el perfil de submit `production` para subir por ruta únicamente el AAB ya verificado a Play Internal (`track: internal`, `releaseStatus: completed`). El APK se adjunta a la release de GitHub para instalación directa; no se envía a Play.
+No confunda las operaciones: `eas build --local` se ejecuta dos veces dentro del guest y **no** envía builds a la infraestructura remota de EAS. Después, otro job usa el perfil de submit `production` para subir por ruta únicamente el AAB ya verificado a la pista cerrada Alpha de Google Play (`track: alpha`, `releaseStatus: completed`). El APK se adjunta a la release de GitHub para instalación directa; no se envía a Play.
 
 ### Fronteras de confianza y flujo
 
@@ -286,7 +282,7 @@ sequenceDiagram
     participant VM as Guest desechable
     participant UA as Artifact no confiable
     participant VJ as Job verificador
-    participant PI as Play Internal
+    participant PI as Google Play Alpha
     GH->>GH: Selecciona y valida fuente exacta
     GH->>GH: Crea draft y reserva AAB y APK
     HC->>GH: Comprueba cola y aprobación
@@ -304,7 +300,7 @@ sequenceDiagram
     HC->>GH: Retira el runner efímero
 ```
 
-*GitHub orquesta y publica; el controlador root del host solo admite y aprovisiona; el guest compila; el artifact de Actions se trata como no confiable; y un runner administrado distinto verifica antes de Play y de la publicación.*
+*GitHub orquesta y publica; el controlador root del host solo admite y aprovisiona; el guest compila; el artifact de Actions se trata como no confiable; y un runner administrado distinto verifica antes de la pista Alpha de Google Play y de la publicación.*
 
 Los límites importan:
 

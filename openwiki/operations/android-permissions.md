@@ -3,6 +3,9 @@ type: guía operativa de Android
 title: Permisos y configuración Android
 description: Define los contratos que limitan permisos y configuración nativa generada por Expo antes de publicar Android. Explica los controles reproducibles del checkout, el prebuild aislado y la verificación del APK/AAB final.
 tags: [android, permissions, native-config, expo, release, privacy]
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-10T14:02:47.335Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -34,7 +37,7 @@ sources:
     resource: repo://scripts/production-release/verify-artifact.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-10T14:02:47.335Z" }
 ---
 
 # Permisos y configuración Android
@@ -108,7 +111,7 @@ Este contrato distingue dos listas que no deben mezclarse: el manifest **fuente*
 
 ### 3. Evidencia de release y del manifest fusionado
 
-El workflow `build-apk.yml` valida el SHA exacto con `verify:production-source`, que vuelve a ejecutar los gates canónicos —incluidos ambos checks y sus pruebas— y falla si alguno ensucia el checkout. Después, la compilación `production-apk` ocurre en un runner autoalojado dentro de una VM desechable; su APK y metadatos se transfieren como resultado no confiable a una cuarentena de verificación independiente.
+El workflow `build-apk.yml` valida el SHA exacto con `verify:production-source`, que vuelve a ejecutar los gates canónicos —incluidos ambos checks y sus pruebas— y falla si alguno ensucia el checkout. Después, `compile-android` construye primero el AAB y luego el APK en el runner autoalojado de la VM desechable; ambos binarios y sus metadatos se transfieren como resultados no confiables a una cuarentena de verificación independiente.
 
 `verify:production-artifact` extrae el manifest con herramientas Android (`apkanalyzer` para APK; `bundletool` para AAB), inspecciona firma, SDK, configuración integrada, sonidos, tamaño, hashes y MIME. Para permisos aplica dos condiciones sobre el manifest fusionado:
 

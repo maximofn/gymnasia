@@ -1,21 +1,21 @@
 ---
-okf:
-  version: 1
-  kind: code-wiki
-  status: grounded
-  scope: Flujo de borradores, validación, cálculo y persistencia de mediciones corporales en apps/mobile
-type: concepto
-title: Mediciones y métricas corporales
-description: Contrato, ciclo de edición y persistencia de las mediciones corporales móviles. Explica cómo el borrador de peso y altura alimenta el plan de dieta sin crear otra fuente de verdad.
+type: concepto técnico
+title: Mediciones corporales
+description: Contrato local-first para registrar, editar, calcular y consultar medidas corporales en la app móvil. Documenta las validaciones que impiden datos inválidos, conflictos por fecha y escrituras parciales del agente.
+tags: [mobile, measurements, validation, persistence, agent]
 summary: Contrato de mediciones, borradores de peso y altura, controladores de pantalla y persistencia local.
-tags: [mobile, measurements, validation, persistence, diet]
 related:
   - ./local-state-and-backup.md
   - ./diet-and-food-estimation.md
   - ../agent/runtime.md
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-10T14:02:47.335Z
 sources:
   - id: openwiki-source-ce025f2f0f394ccba9235558
     resource: repo://apps/mobile/agent/toolDefinitions.ts
+  - id: openwiki-source-165cffcff462003cd11223e2
+    resource: repo://apps/mobile/agent/toolExecutor.test.ts
   - id: openwiki-source-d3be928c369037f29888bc0b
     resource: repo://apps/mobile/agent/toolExecutor.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
@@ -32,39 +32,39 @@ sources:
     resource: repo://apps/mobile/measurements/measurementContract.ts
   - id: openwiki-source-2738c54d099fb7a1c8c82e19
     resource: repo://apps/mobile/measurements/measurementSummary.test.ts
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-10T14:02:47.335Z" }
 ---
 
-# Mediciones y métricas corporales
+# Mediciones corporales
 
-`apps/mobile/measurements/measurementContract.ts` es el límite de dominio para el historial: centraliza el formato almacenado, la normalización, las mutaciones y las lecturas derivadas. La pantalla de Medidas, el formulario de dieta y las herramientas del agente convergen en ese contrato y en el `LocalStore`; peso y altura no se duplican dentro de `dietSettings`.
+`apps/mobile/measurements/measurementContract.ts` es el límite de dominio del historial. Pantalla de Medidas, plan de dieta y herramientas del agente deben pasar por sus validaciones y mutaciones; así, peso y altura no tienen una segunda fuente persistida dentro de `dietSettings`. La colección vive en el almacén local de la app y puede contener fotos, por lo que sus datos y URIs deben tratarse como información personal local.
 
-## Registro e invariantes
+## Modelo e invariantes del historial
 
-Una `Measurement` tiene identidad estable (`id`), el día de calendario `measured_on`, el instante técnico `measured_at`, `photo_uri` opcional y diez métricas opcionales: peso, porcentaje de grasa, siete contornos y altura. Una normalización heredada puede derivar `measured_on` desde un `measured_at` válido; si necesita crear o cambiar el instante del día, usa mediodía local para evitar desplazamientos de fecha por zona horaria.
+Una `Measurement` tiene `id`, el día de calendario `measured_on`, el instante técnico `measured_at`, `photo_uri` opcional y diez métricas opcionales: peso, porcentaje de grasa, cuello, pecho, cintura, cadera, bíceps, cuádriceps, gemelo y altura. Durante la normalización de datos heredados se puede derivar `measured_on` de un `measured_at` válido; cuando hay que crear el instante de un día, se emplea el mediodía local para que la zona horaria no desplace la fecha.
 
-| Invariante | Consecuencia para quien cambia el código |
+| Invariante | Efecto seguro |
 |---|---|
-| Fecha | Debe ser una fecha real `AAAA-MM-DD` y no futura. |
-| Métrica | Debe ser finita y positiva; se redondea a dos decimales. `body_fat_pct` además no puede superar 100. Las cadenas con coma o punto decimal solo se habilitan en rutas de entrada compatibles. |
-| Contenido | Un registro debe conservar una métrica o una foto. Para quitar el último contenido se borra por `id`; no se persiste una medición vacía. |
-| Orden y capacidad | La colección se ordena por día descendente, luego `measured_at` e `id`, y se limita a 1.826 elementos. La mutación informa los elementos desplazados por el límite. |
-| Día duplicado | Los duplicados heredados se detectan y pueden editarse en el mismo día para corregirlos. No se puede hacer `upsert` sobre un día ambiguo ni mover una edición a un día ya ocupado. |
+| Fecha | Debe existir y usar `AAAA-MM-DD`; no puede ser futura. |
+| Métrica | Debe ser finita y positiva, se redondea a dos decimales y `body_fat_pct` no puede superar 100. Las rutas que reciben texto pueden habilitar coma o punto decimal. |
+| Contenido | Un registro debe conservar alguna métrica o una foto. No se persiste una medición vacía: para quitar el último contenido hay que eliminarla por `id`. |
+| Orden y capacidad | Se ordena por día descendente, después por `measured_at` e `id`, y se conservan como máximo 1.826 registros; la mutación informa los desplazados por el límite. |
+| Duplicados | Un historial heredado puede contener varios registros del mismo día y los detecta para revisión, pero no admite `upsert` en un día ambiguo ni mover una edición a un día ya ocupado. |
 
-`upsertMeasurementByDate` es un parche por fecha: con un único registro existente conserva métricas y foto omitidas. `replaceMeasurementById`, utilizado al editar desde el historial, reemplaza todos los valores del formulario y puede cambiar de fecha solo si no genera conflicto. Ambas rutas vuelven a aplicar validación, contenido mínimo, orden y límite.
+Hay dos semánticas de escritura deliberadamente distintas:
 
-## Borrador de peso y altura en el plan de dieta
+- `upsertMeasurementByDate` es un parche por fecha. Con un único registro del día, conserva métricas y foto que no se mencionen.
+- `replaceMeasurementById` es la edición explícita del historial: sustituye todos los valores del formulario y permite cambiar la fecha solo sin conflicto.
 
-El plan mantiene texto de edición local en `BodyMetricsDraft` (`weightInput` y `heightInput`), no una segunda copia persistida. `resolveBodyMetricsDraft` analiza ambos valores con `validateMeasurementMetric`, acepta coma decimal, y devuelve simultáneamente:
+Ambas rutas vuelven a validar, exigen contenido mínimo, ordenan y aplican el límite. No se debe saltar el contrato editando `measurements` directamente.
 
-- valores efectivos para cálculo: valor válido del borrador o, si está vacío, el último valor medido;
-- mensajes por campo y `hasIssues` si el texto no es un número positivo válido;
-- un `MeasurementPatch` únicamente con valores válidos, no vacíos y distintos del último registro.
+## Borrador de peso y altura del plan de dieta
 
-Un campo vacío no borra una medición y un campo inválido no se sustituye silenciosamente por el valor anterior: queda efectivo como `null`, marca el problema y no entra en el parche. Esto impide calcular o guardar el plan con datos de cuerpo inválidos, pero permite que macros por kg y el cálculo calórico usen el último dato conocido mientras el borrador está vacío.
+`BodyMetricsDraft` conserva únicamente el texto efímero de `weightInput` y `heightInput`. `resolveBodyMetricsDraft` lo analiza con `validateMeasurementMetric` y produce en una sola resolución los valores efectivos para el cálculo, los mensajes por campo y un `MeasurementPatch` mínimo.
+
+- Un valor válido del borrador prevalece sobre el último medido; uno vacío reutiliza el último valor conocido.
+- Un valor inválido no se sustituye silenciosamente: el valor efectivo queda en `null`, marca `hasIssues` y no se incluye en el parche.
+- Solo se incluyen valores válidos, no vacíos y diferentes del último registro. Por tanto, borrar el texto no borra una medida existente.
 
 ```mermaid
 flowchart TD
@@ -79,38 +79,58 @@ flowchart TD
     Upsert --> Settings
 ```
 
-*El plan calcula con el borrador resuelto, pero solo persiste peso y altura como medición de hoy cuando hay un cambio válido.*
+*El plan calcula con el borrador resuelto y solo escribe peso y altura como medición de hoy si existe un cambio válido.*
 
-Al guardar, `useDietSettingsRuntime` primero previsualiza el `upsertMeasurementByDate` contra el almacén actual. Si hay conflicto o error, no actualiza nada y muestra las incidencias. Si pasa, su mutador escribe en una sola actualización tanto `dietSettings` como la colección resultante. Así Home, Medidas, dieta y agente vuelven a leer el mismo historial. El identificador se crea antes del mutador para que una repetición del updater no genere IDs distintos.
+Al guardar, el runtime de dieta previsualiza el `upsert` contra el almacén actual. Si detecta un conflicto o error, no actualiza nada; si pasa, el mutador guarda conjuntamente `dietSettings` y la colección resultante. El identificador se crea antes del mutador para que una repetición del updater no produzca IDs distintos.
 
-## Pantalla de Medidas y persistencia
+## Pantalla, fotos y commit local
 
-`App.tsx` instancia `useMeasurementsRuntime` con el runtime del almacén local, servicios de plataforma, preferencias y un generador de IDs, y renderiza `MeasurementsScreen` con el modelo y las acciones del controlador. El runtime prepara el historial una vez por cambio de `store.measurements`; de ahí obtiene el último peso, la última altura y el resumen que consume la pantalla. Si no hay altura medida, usa como alternativa el `height_cm` válido de los ajustes de dieta para cálculos y presentación, sin copiarlo a una medición.
+`useMeasurementsRuntime` adapta `LocalStore`, servicios de plataforma, preferencias y la pantalla. Prepara el historial cuando cambia `store.measurements`, obtiene los últimos peso y altura y calcula el resumen. Si no existe altura medida, puede usar un `dietSettings.height_cm` válido como alternativa de lectura, sin copiarlo a una medición.
 
-La entrada manual conserva estado efímero para el formulario, fecha, foto, edición y carga. Al guardar:
+El formulario manual mantiene estado efímero para textos, fecha, foto, edición y carga. Su guardado sigue este orden:
 
-1. convierte cada texto con `parseOptionalPositiveMetricInput` y rechaza el primer valor inválido;
-2. exige por lo menos una métrica o una foto;
-3. para una alta aplica el parche por fecha; para edición usa el reemplazo completo por `id`;
-4. ejecuta la mutación dentro de `localStore.commit`, devuelve el estado anterior si el contrato falla y solo cierra el formulario después del commit exitoso.
+1. Convierte cada texto con `parseOptionalPositiveMetricInput` y detiene el proceso en el primer valor inválido.
+2. Exige por lo menos una métrica o foto.
+3. Normaliza una foto nueva a almacenamiento propio antes de mutar; solicita permisos de biblioteca o cámara y no conserva EXIF en la selección.
+4. Dentro de `localStore.commit`, aplica `upsertMeasurementByDate` en una alta o `replaceMeasurementById` al editar. Si el contrato falla, devuelve el estado previo.
+5. Solo tras el commit exitoso cierra el formulario. Después elimina ficheros de foto propios que ya no estén referenciados; también limpia una foto recién creada si la mutación o el commit fallan.
 
-Los selectores de visualización ordenan una vez el historial preparado. Para cada métrica escogen el primer valor finito de cada día, de modo que los duplicados heredados no hacen que tarjetas, último peso o gráficas dependan del orden de entrada. Los gráficos filtran un intervalo inclusivo de días de calendario y presentan los puntos cronológicamente. El porcentaje de grasa explícito tiene prioridad; si falta, se estima con cintura, cuello y altura —y también cadera para `female`—, devuelve `null` cuando faltan prerrequisitos y acota la estimación a 3–60 con un decimal.
+El controlador migra fotos heredadas a almacenamiento propio tras la hidratación. En web no puede garantizar que sigan disponibles tras cerrar el navegador y muestra un aviso de exportación; un fallo de migración conserva las mediciones y avisa para revisar las fotos antes de exportar.
 
-## Herramienta del agente
+Para los derivados, el historial preparado elige el primer valor finito de cada día: los duplicados heredados no hacen que tarjetas, último peso o gráficas dependan del orden de entrada. Los gráficos filtran un intervalo inclusivo de días y devuelven puntos cronológicos. El porcentaje de grasa explícito tiene prioridad; en su ausencia, la estimación usa cintura, cuello y altura —más cadera para `female`—, devuelve `null` si faltan prerrequisitos y limita el resultado a 3–60 con un decimal.
 
-`read_measurement` valida la fecha y rechaza un día duplicado antes de responder. Expone las métricas y `measured_on`, pero elimina `id`, `photo_uri` y `measured_at`. `write_measurement` declara un objeto estructurado de métricas y `clear_fields`: los campos omitidos se conservan, mientras que solo los solicitados para borrar pasan a `null`. El análisis rechaza campos desconocidos, un parche vacío y actualizar y borrar el mismo campo en la misma operación.
+## Herramientas del agente
 
-El ejecutor vuelve a validar y delega el `upsert` al mismo contrato. Requiere `context.commitStore`; en `App.tsx` ese callback adapta el `ToolStore` a `localStoreRuntime.commit`. Por tanto, el efecto se reconoce como confirmado solo después del commit y la herramienta devuelve un error si no dispone de persistencia durable o la mutación encuentra un conflicto. Al añadir una métrica, actualice `MEASUREMENT_METRIC_KEYS`, el esquema de `write_measurement` y las proyecciones de pantalla para que los límites no diverjan.
+`read_measurement` valida la fecha y rechaza un día duplicado antes de responder. Devuelve `measured_on` y las métricas, pero elimina `id`, `photo_uri` y `measured_at`; no use esta herramienta como acceso a fotos o identidad interna.
 
-## Pruebas focalizadas
+`write_measurement` recibe una fecha y un objeto `data` estructurado. Los campos omitidos se conservan y `clear_fields` expresa los borrados solicitados. El esquema y `parseMeasurementToolPatch` rechazan campos desconocidos, valores fuera de rango, parche vacío y pedir actualizar y borrar el mismo campo. El ejecutor vuelve a usar `upsertMeasurementByDate`, por lo que también rechaza fechas inválidas, registros vacíos y duplicados ambiguos.
 
-- `bodyMetricsDraft.test.ts` verifica coma/punto decimal, vacío como ausencia, rechazo de texto no finito o no positivo, valores efectivos, parche mínimo y preservación de las demás métricas al aplicarlo a hoy. Incluye propiedades con cadenas arbitrarias y números positivos formateados.
-- `measurementContract.test.ts` cubre calendario y futuro, redondeo y máximo de grasa, migración heredada, parches del agente, duplicados, reemplazo, borrado, límite y estimación/gráficas.
-- `measurementSummary.test.ts` compara resumen y gráficas contra una referencia, prueba historiales permutados y limita el trabajo a una ordenación y recorridos lineales. Sus contadores de rendimiento solo se exponen en web de desarrollo con `EXPO_PUBLIC_MEASUREMENT_PERF_TEST=1`.
+```mermaid
+sequenceDiagram
+    participant Agent as Agente
+    participant Executor as Tool executor
+    participant Contract as Measurement contract
+    participant Commit as LocalStore commit
+    Agent->>Executor: write_measurement con fecha y data
+    Executor->>Executor: Validar esquema y parche
+    Executor->>Contract: Validar fecha y preparar upsert
+    Executor->>Commit: Mutar measurements y recibo de operación
+    Commit-->>Executor: Commit confirmado o fallo
+    Executor-->>Agent: Éxito solo tras commit
+```
 
-Para cambios en el contrato o el borrador, ejecute:
+La herramienta exige `context.commitStore`; `App.tsx` lo adapta a `localStoreRuntime.commit`. Si no hay almacenamiento durable no escribe. Antes del commit se construye un ID determinista a partir de `operationId` cuando existe, y el mutador añade un recibo de `write_measurement`; tras un commit correcto marca el efecto como confirmado. Si el commit lanza, se transforma en estado indeterminado, no en una respuesta de éxito. Al extender métricas, actualice conjuntamente `MEASUREMENT_METRIC_KEYS`, el esquema de `write_measurement`, los modelos de presentación y las pruebas para evitar contratos divergentes.
+
+## Pruebas focalizadas y cambio seguro
+
+- `bodyMetricsDraft.test.ts` cubre coma/punto decimal, vacío como ausencia, texto no finito o no positivo, valores efectivos, parche mínimo y preservación de las demás métricas al aplicarlo. Incluye propiedades con cadenas arbitrarias y números positivos formateados.
+- `measurementContract.test.ts` cubre calendario, futuro, redondeo, máximo de grasa, migración heredada, parches, duplicados, reemplazo, borrado, límite y estimación/gráficas.
+- `measurementSummary.test.ts` compara resumen y gráficas contra una referencia, prueba historiales permutados y verifica una ordenación y recorridos lineales del historial preparado.
+- `toolExecutor.test.ts` comprueba que la herramienta completa un registro sin borrar campos omitidos, permite un borrado explícito, no muta ante entrada inválida o duplicados y no comunica éxito cuando falla la persistencia.
+
+Para modificar el contrato, el borrador o el ejecutor, ejecute:
 
 ```bash
-npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/measurements/bodyMetricsDraft.test.ts apps/mobile/measurements/measurementContract.test.ts apps/mobile/measurements/measurementSummary.test.ts
+npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/measurements/bodyMetricsDraft.test.ts apps/mobile/measurements/measurementContract.test.ts apps/mobile/measurements/measurementSummary.test.ts apps/mobile/agent/toolExecutor.test.ts
 npx tsc --noEmit -p apps/mobile/tsconfig.json
 ```
