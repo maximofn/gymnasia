@@ -3,9 +3,6 @@ type: servicio de integración
 title: Worker de feedback e incidencias verificables
 description: Worker opcional de Cloudflare que recibe feedback confirmado, aplica validación, privacidad, límites de abuso e idempotencia, y crea incidencias de GitHub verificables. La aplicación local-first sigue funcionando si el canal no está configurado o falla.
 tags: [feedback, cloudflare, github, privacy, security]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
 sources:
   - id: openwiki-source-ecc8cf626716f1ed125add59
     resource: repo://apps/feedback-worker/package.json
@@ -42,6 +39,9 @@ sources:
   - id: openwiki-source-a6ba9053969a3e00cd971742
     resource: repo://apps/mobile/app.config.ts
 generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-10T14:02:47.335Z
 ---
 
 # Worker de feedback e incidencias verificables

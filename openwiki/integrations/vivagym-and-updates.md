@@ -1,11 +1,8 @@
 ---
-type: límites de integración y distribución
-title: Integraciones retirables y actualizaciones
-description: Delimita la ausencia verificable de VivaGym y de un actualizador dentro del cliente, la eliminación de datos heredados y la distribución Android externa por GitHub Releases y Play Internal.
+type: flujo de integración y distribución
+title: VivaGym y actualizaciones de distribución
+description: Documenta la retirada verificable de VivaGym y del actualizador embebido, y el flujo durable que compila, verifica y promueve artefactos Android a Play Closed Alpha y GitHub Releases.
 tags: [integrations, vivagym, updates, android, releases]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-29T12:03:05.365Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -45,22 +42,29 @@ sources:
     resource: repo://scripts/production-release/local-controller.mjs
   - id: openwiki-source-eca432bcfe70b04e1d09e3d3
     resource: repo://scripts/production-release/release-transaction.mjs
+  - id: openwiki-source-a403a8897dea191dee6aa309
+    resource: repo://scripts/production-release/release-transaction.test.mjs
   - id: openwiki-source-71e03e0099e7b28d5a243456
     resource: repo://scripts/production-release/run-local-build.mjs
   - id: openwiki-source-a43fcdd54439cd4258ab69e4
     resource: repo://scripts/production-release/verify-artifact.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-29T12:03:05.365Z" }
+  - id: openwiki-source-b368a0060923f31656ab90b3
+    resource: repo://scripts/production-release/workflow.test.mjs
+generated: { by: "openwiki/0.6.0", at: "2026-10-10T14:02:47.335Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-10T14:02:47.335Z
 ---
 
-# Integraciones retirables y actualizaciones
+# VivaGym y actualizaciones de distribución
 
 Gymnasia mantiene tres contratos separados que no deben confundirse:
 
 1. **VivaGym no forma parte del runtime.** No hay autenticación, red, QR ni interfaz activa para esa integración.
 2. **Dos claves históricas de VivaGym se conservan solo para poder borrarlas.** Su presencia en el manifiesto de eliminación no reactiva la integración.
-3. **El cliente no contiene un actualizador de APK.** La compilación, verificación, entrega a Play Internal y publicación de binarios en GitHub ocurren fuera de la aplicación.
+3. **El cliente no contiene un actualizador de APK.** La compilación, verificación, promoción a la pista cerrada `alpha` de Google Play y publicación de binarios en GitHub ocurren fuera de la aplicación.
 
 Esta separación evita interpretar residuos de migración o infraestructura de distribución como capacidades del cliente. Para el estado local general, véase [Estado local, persistencia y copias](../mobile/local-state-and-backup.md); para permisos y controles de release, [Permisos Android](../operations/android-permissions.md) y [Build, release y pruebas](../operations/build-release-and-testing.md).
 
@@ -101,7 +105,7 @@ Android tampoco declara `REQUEST_INSTALL_PACKAGES`: `app.json` lo incluye en `bl
 
 El workflow `.github/workflows/build-apk.yml` produce **dos artefactos de la misma versión**:
 
-- `gymnasia.aab`, perfil `production`, se envía por path mediante EAS Submit a Google Play, track `internal`, con `releaseStatus: completed`.
+- `gymnasia.aab`, perfil `production`, se envía por path mediante EAS Submit a Google Play, pista cerrada `alpha`, con `releaseStatus: completed`.
 - `gymnasia.apk`, perfil `production-apk`, se adjunta a la misma GitHub Release para instalación directa externa.
 
 Esto no crea un canal de actualización en runtime: la app no consulta GitHub Releases ni descarga o instala el APK.
@@ -115,13 +119,13 @@ flowchart TD
     Approval --> BuildAAB["Build local AAB en wallabot"]
     BuildAAB --> BuildAPK["Build local APK con el mismo versionCode"]
     BuildAPK --> Quarantine["Cuarentena y verificación independiente"]
-    Quarantine --> PlayIntent["Persiste intención y envía AAB a Play Internal"]
+    Quarantine --> PlayIntent["Persiste intención y envía AAB a Play Closed Alpha"]
     PlayIntent --> PlayDone["Submission FINISHED y evidencia Play"]
     PlayDone --> Publish["Publica GitHub Release con AAB y APK"]
     Publish --> External["Instalación o distribución fuera del cliente"]
 ```
 
-*La release permanece como borrador hasta validar ambos binarios y completar Play Internal.*
+*La release permanece como borrador hasta validar ambos binarios y completar la promoción a Play Closed Alpha.*
 
 ### Triggers, cola y operaciones manuales
 
@@ -158,17 +162,17 @@ El draft debe seguir apuntando al commit fuente y contener los digests esperados
 
 ### Envío a Play y publicación final
 
-Después de validar ambos binarios, el workflow cambia al environment `Play Internal` y registra durablemente una intención ligada al SHA-256 del AAB y al `versionCode` **antes** de ejecutar EAS Submit. Solo sube el AAB local validado mediante `--path`; no adopta una build cloud. Persiste el submission ID, espera su estado terminal y únicamente acepta `FINISHED`. Un submission fallido conocido se reintenta por su ID sin volver a subir el AAB.
+Después de validar ambos binarios, el job usa el environment de GitHub `Play Internal` (nombre de protección) para promover a la pista cerrada `alpha` y registra durablemente una intención ligada al SHA-256 del AAB y al `versionCode` **antes** de ejecutar EAS Submit. Solo sube el AAB local validado mediante `--path`; no adopta una build cloud. Persiste el submission ID, espera su estado terminal y únicamente acepta `FINISHED`. Un submission fallido conocido se reintenta por su ID sin volver a subir el AAB.
 
 Si la petición pudo llegar a EAS pero no devolvió ID, la pata Play queda `uncertain`: el workflow se niega a repetir automáticamente la subida. Una persona debe reconciliarla y usar `adopt-submission` con el ID exacto. Esta regla evita duplicar envíos a Play.
 
 La transacción V2 mantiene patas independientes `aab`, `apk` y `play`. Los binarios recorren `prepared`, `building`, `built` y `validated`; Play recorre intención, submission observado y validación. Cualquier pata fallida lleva la transacción global a `failed`; reintentar o sustituir requiere una operación manual motivada. El historial de transiciones y el draft se conservan para reanudar sin cambiar commit ni inputs.
 
-La GitHub Release solo deja de ser draft cuando la transacción global es `validated`, Play tiene evidencia `FINISHED` para `internal / completed`, y la release conserva commit, MIME, tamaños y cadena de hashes de AAB, APK, fuente, Play y evidencias. La publicación final incluye ambos binarios, aunque el artefacto instalable directamente es `gymnasia.apk` y el AAB es exactamente el enviado a Play Internal.
+La GitHub Release solo deja de ser draft cuando la transacción global es `validated`, Play tiene evidencia `FINISHED` para `alpha / completed`, y la release conserva commit, MIME, tamaños y cadena de hashes de AAB, APK, fuente, Play y evidencias. La publicación final incluye ambos binarios, aunque el artefacto instalable directamente es `gymnasia.apk` y el AAB es exactamente el enviado a la pista cerrada `alpha`.
 
 ### Contradicción de política que sigue vigente
 
-La justificación de `REQUEST_INSTALL_PACKAGES` en `scripts/android-permissions/policy.json` afirma que Production se actualiza exclusivamente mediante Google Play. La ruta ejecutable publica también `gymnasia.apk` en GitHub para instalación directa. Esa frase de política es, por tanto, más restrictiva que la distribución vigente y debería corregirse al modificar la política. No cambia el contrato de runtime: ni Play Internal ni GitHub Releases habilitan al cliente para comprobar, descargar o instalar APK automáticamente.
+La justificación de `REQUEST_INSTALL_PACKAGES` en `scripts/android-permissions/policy.json` afirma que Production se actualiza exclusivamente mediante Google Play. La ruta ejecutable publica también `gymnasia.apk` en GitHub para instalación directa. Esa frase de política es, por tanto, más restrictiva que la distribución vigente y debería corregirse al modificar la política. No cambia el contrato de runtime: ni la pista `alpha` de Play ni GitHub Releases habilitan al cliente para comprobar, descargar o instalar APK automáticamente.
 
 ## Contratos y validación focalizada
 

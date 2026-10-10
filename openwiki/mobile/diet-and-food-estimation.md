@@ -38,10 +38,10 @@ sources:
     resource: repo://apps/mobile/scripts/diet-validation.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-10T14:02:47.335Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-10-10T14:02:47.335Z
 ---
 
 # Dieta y estimación de alimentos
@@ -161,7 +161,7 @@ Al editar cantidad de un elemento existente, `mealPerGramRef` guarda temporalmen
 
 El modal del estimador es una conversación distinta del agente general. Requiere una API key utilizable: prioriza `store.foodAIProvider` si está configurado, después el proveedor ya elegido por el modal y, finalmente, la prioridad del estimador. Si no existe proveedor, muestra un error y no intenta la red. Las credenciales BYOK y las particularidades de transporte se documentan en [Configuración BYOK de proveedores](../agent/provider-configuration.md).
 
-Se pueden adjuntar hasta seis imágenes desde biblioteca o cámara; se solicita el permiso correspondiente y se necesita base64 para adjuntarlas. Las imágenes se mandan solo con el último mensaje de usuario y dejan de reenviarse después de una respuesta válida del modelo. OpenAI, Anthropic y Google transmiten texto y razonamiento y pueden ejecutar hasta cinco rondas de la tool `scan_barcode`. En web, Anthropic rechaza explícitamente imágenes en este flujo; la estimación solo textual sigue sus reglas de transporte normales. Las solicitudes de estimación se reintentan hasta tres veces únicamente ante fallos transitorios identificados.
+Se pueden adjuntar hasta seis imágenes desde biblioteca o cámara; se solicita el permiso correspondiente y se necesita base64 para adjuntarlas. Las imágenes se mandan solo con el último mensaje de usuario y dejan de reenviarse después de una respuesta válida del modelo. OpenAI, Anthropic y Google transmiten texto y razonamiento y pueden ejecutar hasta cinco rondas de la tool `scan_barcode`. Un proveedor `custom_openai` recibe la misma definición compatible con Chat Completions: si el primer intento revela que no admite tools, el cliente vuelve a intentar sin ellas, cambia el prompt para impedir que finja una consulta y devuelve una advertencia; por tanto, la conversación puede continuar como estimación, pero sin lectura de código de barras. En web, Anthropic rechaza explícitamente imágenes en este flujo; la estimación solo textual sigue sus reglas de transporte normales. Las solicitudes de estimación se reintentan hasta tres veces únicamente ante fallos transitorios identificados.
 
 `scan_barcode` elimina espacios del código y consulta `https://world.openfoodfacts.org/api/v2/product/{barcode}.json`. Devuelve al modelo un JSON con identidad, porción, nutrientes por 100 g y por porción, ingredientes y Nutri-Score. Un HTTP fallido o producto inexistente se devuelve como resultado textual controlado para que el modelo pueda continuar o estimar visualmente; no escribe esos datos directamente en la dieta. La sesión recuerda si se usó la herramienta para clasificar una propuesta no encontrada como producto comercial, pero ese indicador no es procedencia persistida.
 

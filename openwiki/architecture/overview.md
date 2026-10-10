@@ -1,8 +1,10 @@
 ---
-type: arquitectura de producto
-title: Arquitectura local-first
-description: Gymnasia es un cliente Expo local-first para móvil y web cuyo estado de producto reside en el dispositivo. Esta página delimita los catálogos, la política de IA, los proveedores BYOK y el servicio opcional de feedback.
-tags: [local-first, mobile, web, byok, privacy]
+type: "Referencia"
+title: "Arquitectura y límites del sistema"
+openwiki_generated: true
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-10T14:02:47.335Z
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
@@ -52,10 +54,11 @@ sources:
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-10T14:02:47.335Z" }
 ---
 
-# Arquitectura local-first
+
+# Arquitectura y límites del sistema
 
 Gymnasia tiene una única superficie de producto: `apps/mobile`. `index.js` registra el mismo `App` de Expo para Android, iOS y web con `react-native-web`. Entrenamientos, dieta, medidas, conversaciones y preferencias se crean y conservan en el dispositivo: no dependen de una cuenta ni de una API de producto de Gymnasia. La red puede enriquecer una función concreta, pero no confirma ni autoriza las mutaciones de esos dominios.
 
@@ -140,6 +143,19 @@ La URL de feedback queda vacía por defecto en Development y se configura con el
 El Worker expone `GET /health`, `POST /feedback/issues` y `GET /feedback/issues/status`. Puede apagarse con `FEEDBACK_ENABLED=false`, aplica CORS a orígenes configurados, valida el payload y limita la creación por identificador de IP pseudonimizado mediante HMAC. Reserva una clave de idempotencia antes de crear la issue: un reintento ya completado devuelve la misma issue y una reserva en curso solicita reintento, evitando duplicados. Un fallo de GitHub libera la reserva y devuelve un error sin filtrar el estado del upstream. El token y el repositorio de GitHub viven exclusivamente en el entorno del Worker.
 
 La tarea programada redacta denuncias `report` que superan 30 días y poda contadores de límite de tasa. D1 conserva solo lo necesario para idempotencia, límites y ese ciclo de retención. No amplíe este Worker hacia perfiles, sesiones, telemetría de producto o copias de los dominios locales sin una excepción de arquitectura explícita y sus controles de privacidad.
+
+## Rutas de cambio y contratos
+
+Esta página establece el límite transversal; use la página del componente que posee el contrato antes de modificarlo:
+
+- [Shell y ciclo de vida de la aplicación](/openwiki/mobile/application-shell.md): arranque, navegación, persistencia local, variantes y degradaciones por plataforma.
+- [Runtime del agente](/openwiki/agent/runtime.md): *leases* de política, guardrails sanitarios, herramientas, proveedores y procedencia de una respuesta.
+- [Servicio Anthropic proxy](/openwiki/services/anthropic-proxy.md): contrato del proxy loopback y sus verificaciones de seguridad; no lo convierta en una ruta publicada.
+- [Servicio Feedback Worker](/openwiki/services/feedback-worker.md): endpoints, D1, idempotencia, límites y retención del único servicio que escribe fuera del dispositivo.
+- [Build, release y testing](/openwiki/operations/build-release-and-testing.md): variantes, promoción de política, artefactos y conjunto de validación de entrega.
+- [Quickstart](/openwiki/quickstart.md): preparación del entorno local y comandos de inicio.
+
+Los documentos o tableros históricos pueden describir planes, pero no sustituyen a los contratos ejecutables, scripts de comprobación y pruebas vinculados arriba.
 
 ## Invariantes para cambios seguros
 

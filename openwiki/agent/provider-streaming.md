@@ -5,12 +5,13 @@ okf:
   status: grounded
   scope: provider stream transports, parsers, and continuation protocols
 type: arquitectura de streaming
-title: Streaming y continuaciones de proveedores
-description: Explica cómo el chat móvil procesa SSE de OpenAI, Anthropic y Google, ejecuta herramientas por rondas y reconstruye las continuaciones sin perder los datos de protocolo.
+title: Streaming, continuaciones y bucles de proveedores
+description: Describe el procesamiento SSE y los contratos de continuación con herramientas de OpenAI, Anthropic y Google en el cliente móvil, incluidos el límite de rondas y el presupuesto local de Google.
 tags: [agent, streaming, sse, openai, anthropic, google]
 related:
   - ./runtime.md
   - ./provider-configuration.md
+  - ../operations/runtime-behavior.md
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
@@ -28,8 +29,6 @@ sources:
     resource: repo://apps/mobile/agent/providerStreamParsers.ts
   - id: openwiki-source-479fc45ac32d23cfffe17d8e
     resource: repo://apps/mobile/agent/providerStreamTransport.ts
-  - id: openwiki-source-9de55cc50318c64549e79726
-    resource: repo://apps/mobile/agent/providerToolClient.roundLimit.test.ts
   - id: openwiki-source-abc6fea468a7de09acfb0c4f
     resource: repo://apps/mobile/agent/providerToolClient.ts
   - id: openwiki-source-b14a4ecd65e83b5561f88e2a
@@ -44,21 +43,23 @@ sources:
     resource: repo://apps/mobile/agent/sse.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-10T14:02:47.335Z
+generated: { by: "openwiki/0.6.0", at: "2026-10-10T14:02:47.335Z" }
 ---
 
-# Streaming y continuaciones de proveedores
+# Streaming, continuaciones y bucles de proveedores
 
-`requestProviderToolChat` es el orquestador de chat con herramientas de `apps/mobile`. Separa las instrucciones de sistema, selecciona el transporte del proveedor, entrega deltas a la interfaz y delega la ejecución de efectos en el `executeTool` inyectado. El transporte solo convierte una respuesta en un turno estructurado; `providerToolLoop.ts` es quien decide si hay que continuar y construye el siguiente contexto.
+`requestProviderToolChat` es la entrada del chat móvil con herramientas. Compone las instrucciones, escoge el transporte del proveedor, reenvía deltas a la interfaz y entrega cada turno completo a un bucle específico. El transporte no decide efectos: el bucle valida el turno, correlaciona resultados y decide si debe pedir otra ronda.
 
-<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Parse error on line 14: ...ls Client->>Loop: run provider c Expecting '+', '-', '()', 'ACTOR', got 'loop' -->
-```text
+```mermaid
 sequenceDiagram
     participant UI as Chat UI
-    participant Client as Provider tool client
+    participant Client as Provider client
     participant Transport as Stream transport
     participant Parser as Turn parser
-    participant Loop as Tool loop
+    participant ToolRunner as Tool runner
     participant Executor as Tool executor
     UI->>Client: messages and handlers
     Client->>Transport: request current turn
@@ -66,68 +67,66 @@ sequenceDiagram
     Parser-->>UI: content and thinking deltas
     Parser-->>Client: completed turn
     alt turn requests tools
-        Client->>Loop: run provider continuation
-        Loop->>Executor: calls in provider order
-        Executor-->>Loop: results
-        Loop->>Transport: next turn with correlated results
-    else turn completed
+        Client->>ToolRunner: validate and continue
+        ToolRunner->>Executor: execute requested calls
+        Executor-->>ToolRunner: correlated results
+        ToolRunner->>Transport: next turn with results
+    else final turn
         Client-->>UI: accumulated response
     end
 ```
 
-*Flujo de una solicitud con streaming y, cuando procede, rondas de herramientas.*
+*Solicitud con streaming y, si el turno lo requiere, continuación de herramientas.*
 
 ## Encuadre, parsers y acumulación
 
-El encuadre común `splitSSEEvents` normaliza CRLF, emite únicamente registros terminados por una línea vacía y conserva el resto incompleto. `parseSSEEvent` descarta comentarios, usa `message` por defecto y concatena las líneas `data:`. Por ello Fetch y XHR pueden entregar cortes arbitrarios sin que el transporte tenga que conocer fronteras JSON o SSE.
+`splitSSEEvents` normaliza CRLF, entrega solo registros acabados por una línea vacía y conserva el resto; `parseSSEEvent` ignora comentarios, usa `message` por defecto y concatena líneas `data:`. Por tanto, Fetch y XHR pueden pasar cortes arbitrarios sin conocer las fronteras JSON o SSE.
 
-Cada solicitud de turno crea un parser. Los parsers de OpenAI y Anthropic ensamblan elementos por índice, publican deltas de contenido y razonamiento, y devuelven un indicador `truncated` si falta su evento terminal. OpenAI mantiene `responseId`, elementos de salida y fragmentos de argumentos; Anthropic reúne bloques `text`, `thinking` —incluida la firma— y `tool_use`, convirtiendo el JSON parcial de la herramienta al cerrar el bloque. El cliente mantiene acumuladores alrededor de todas las rondas para que el resultado y los callbacks no queden limitados al último turno.
+Cada petición crea un parser por turno. OpenAI reúne elementos por índice, `responseId` y fragmentos de argumentos; Anthropic reúne bloques `text`, `thinking` —incluida su firma— y `tool_use`, cuyo JSON se interpreta al cerrar el bloque. Ambos marcan el turno como truncado si falta su evento terminal. `requestProviderToolChat` mantiene acumuladores alrededor de todas las rondas: los callbacks y el resultado final contienen los deltas de contenido y razonamiento, no solo los del último turno.
 
-El parser de Google Interactions es intencionadamente más estricto: exige la creación de interacción, índices de paso ordenados, el ciclo `step.start`/`step.delta`/`step.stop`, pasos cerrados y una finalización coherente con `completed` o `requires_action`. Rechaza antes del bucle los eventos, JSON, argumentos, firmas, IDs, orden o cierre inválidos. Repetir la apertura o el cierre del mismo paso no reinicia el contenido ya reunido.
+Google Interactions aplica una máquina de estados más estricta. Exige `interaction.created`, pasos abiertos en índices consecutivos, el ciclo `step.start`/`step.delta`/`step.stop` y un cierre consistente con `completed` o `requires_action`. Rechaza JSON, argumentos, firmas, IDs, secuencia o cierre inválidos; un `step.start` repetido e idéntico no borra lo ya acumulado.
 
-## Transporte y errores de red
+## Transporte y fallos
 
-| Proveedor | Web | Nativo | Cierre y error relevante |
+| Proveedor | Web | Nativo | Semántica relevante |
 |---|---|---|---|
-| OpenAI | `Fetch` con `TextDecoder` incremental | `XMLHttpRequest` con progreso | 120 s; el bucle rechaza un turno truncado antes de ejecutar tools. |
-| Anthropic | `XMLHttpRequest` con progreso | `XMLHttpRequest` con progreso | 120 s; un HTTP 2xx sin `message_stop` se rechaza. |
-| Google | `Fetch` con `TextDecoder` incremental | `XMLHttpRequest` con progreso | 120 s; si falla la ruta incremental nativa antes de un delta visible, repite una vez con XHR bufferizado. |
+| OpenAI | Fetch con `TextDecoder` incremental | XHR con progreso | Tiempo de espera de 120 s; un turno truncado no llega a ejecutar herramientas. |
+| Anthropic | XHR con progreso | XHR con progreso | Tiempo de espera de 120 s; sin `message_stop` el parser lo marca truncado. |
+| Google | Fetch con `TextDecoder` incremental | XHR con progreso | Tiempo de espera de 120 s; si la ruta incremental falla antes de mostrar un delta, se repite una vez mediante XHR bufferizado. |
 
-En XHR se pasa al parser exclusivamente el sufijo de `responseText` posterior a `lastOffset`; Fetch decodifica bytes en modo streaming y hace lo mismo. Los códigos no exitosos, errores de red, timeout y errores de parser rechazan la petición. El fallback de Google no se permite una vez que se notificó contenido o razonamiento, para no duplicar texto visible.
+En XHR se entrega al parser únicamente el sufijo de `responseText` posterior a `lastOffset`; Fetch decodifica bytes de forma incremental. Estados HTTP no exitosos, fallo de red, timeout y errores de parser rechazan la solicitud. El fallback de Google no se intenta después de notificar contenido o razonamiento, para evitar duplicar texto visible.
 
-## Continuaciones y límites
+## Continuaciones, efectos y límite de rondas
 
-### OpenAI y Anthropic
+OpenAI añade al contexto los `outputItems` del turno y un `function_call_output` correlacionado por `call_id`. Anthropic conserva los bloques completos del asistente y añade un mensaje de usuario con `tool_result` correlacionado por `tool_use_id`; esto preserva pensamiento y otros datos de protocolo además del texto visible. Google añade un `function_result` con el mismo `call_id` y conserva los pasos recibidos. Los argumentos de OpenAI que no sean un objeto JSON no se ejecutan: se devuelve al modelo un resultado de error de entrada.
 
-Para OpenAI, el bucle requiere `responseId` si el turno contiene `function_call`, ejecuta las llamadas secuencialmente y continúa con `function_call_output` correlacionado mediante `call_id`. Los argumentos vacíos, no JSON, arrays o valores que no sean objeto se degradan a `{}` para el ejecutor. Para Anthropic, la continuación añade los bloques completos del asistente y un mensaje de usuario con cada `tool_result` vinculado por `tool_use_id`; así se conservan bloques de pensamiento y datos de protocolo, no solo el texto mostrado.
+Los tres bucles permiten como máximo `MAX_TOOL_ROUNDS = 10` rondas de herramientas. Si el turno posterior aún pide herramientas, no ejecutan esas llamadas: adjuntan un resultado sintético y hacen una única petición de cierre con `tool_choice: "none"`. Un cierre con tools, truncado, no completado o fallido se convierte en `ToolRoundLimitError`, en vez de presentar una respuesta parcial como final. Las llamadas de una ronda se conservan y sus resultados se devuelven en el orden del turno, pero se delegan a `executeToolBatch`; no se debe inferir de este módulo que los efectos se ejecuten estrictamente en serie. Los sobres de ejecución incluyen proveedor, ID remoto y ocurrencia para que el coordinador pueda identificar la operación.
 
-Los tres bucles tienen `MAX_TOOL_ROUNDS = 10`. Si queda una llamada pendiente, no la ejecutan: incorporan un resultado sintético y piden un único turno de cierre con las tools prohibidas. Si ese cierre falla, llega truncado o vuelve a solicitar una herramienta, se entrega `ToolRoundLimitError` en lugar de presentar una respuesta intermedia como final. La ejecución sigue siendo secuencial; un error posterior no revierte un efecto ya hecho, y el sobre de llamada incluye proveedor, ID remoto y ocurrencia para el coordinador de operaciones.
+Un fallo inesperado de una tool de solo lectura se transforma en un resultado controlado para el modelo; un error de operación indeterminada o de turno se propaga, evitando invitar a reintentar ciegamente un efecto potencialmente escrito.
 
-La configuración de razonamiento de Anthropic usa `enabled` con presupuesto para Claude 3 y 4.5, y `adaptive` con `display: "summarized"` para el resto, incluso modelos desconocidos.
+## Google Interactions: continuidad e historial
 
-### Google Interactions y presupuesto local
+`buildGoogleInteractionRequest` transmite `stream: true`, `store: false` y el historial local en `input`; no usa `previous_interaction_id`. El bucle detecta un replay de interacción no vacío y no vuelve a ejecutar sus tools, pero rechaza una identidad contradictoria o un ID de tool reutilizado entre rondas. Puesto que `store: false` permite un ID vacío, este no identifica replays.
 
-`buildGoogleInteractionRequest` envía `stream: true`, `store: false` y el historial local en `input`; no depende de `previous_interaction_id`. El bucle añade un `function_result` con el mismo `call_id` a cada llamada y vuelve a preparar el historial en cada ronda. Conserva pasos y campos opacos —en especial firmas—, evita ejecutar de nuevo una interacción repetida identificada y rechaza una identidad contradictoria o IDs de herramienta reutilizados entre rondas. Como `store: false` permite un ID vacío, ese valor no identifica replays.
+El metadato persistible de una respuesta Google es `GoogleConversationTurn`, con los pasos completos y el resumen de interacciones. Al restaurar, `buildGoogleHistory` solo incorpora esos pasos si pasan validación: no puede haber llamadas pendientes, firmas de pensamiento ausentes ni resultados mal correlacionados. La hidratación no ejecuta herramientas; si el metadato falta, el mensaje se representa como texto.
 
-El historial persistible de un asistente Google es `GoogleConversationTurn`: guarda los pasos e interacciones del turno completo. Al reconstruirlo, un turno validado aporta sus pasos técnicos; un mensaje sin ese metadato se representa como texto. La validación de restauración rechaza llamadas pendientes, firmas de pensamiento ausentes y correlaciones de resultados inválidas, por lo que hidratar un chat no ejecuta herramientas.
+## Presupuesto de contexto de Google
 
-Antes de red, `prepareGoogleInteractionRequest` limita el candidato a diez intercambios, 512 KiB de JSON sin imagen y 19 000 000 bytes del cuerpo completo. Un intercambio comienza en `user_input` y nunca se divide. El preparador elimina imágenes inline de intercambios anteriores —conserva texto o añade un marcador cuando la entrada era solo imagen— y, si sigue excedido, elimina intercambios completos desde el más antiguo. Si el intercambio activo no cabe, lanza `GoogleContextBudgetError`; no muta el historial local.
+Antes de abrir la red, `prepareGoogleInteractionRequest` prepara una copia del historial y no muta el original. Su presupuesto predeterminado es diez intercambios, 512 KiB de JSON sin datos de imagen y 19 000 000 bytes para el cuerpo total. El cliente Coach sustituye solo el máximo de intercambios por `COACH_CONTEXT_MESSAGE_LIMIT`; los dos límites de bytes se conservan.
 
-## Acceso web a Anthropic
+Un intercambio empieza en `user_input` y no se divide. Tras seleccionar los intercambios más recientes, el preparador elimina las imágenes inline de los intercambios anteriores —mantiene el texto o inserta un marcador si la entrada era solo imagen— y, si todavía supera un límite, elimina intercambios completos desde el más antiguo. Si el último intercambio seleccionado sigue sin caber, lanza `GoogleContextBudgetError`; el informe entregado a `onContextReport` describe la decisión, pero el callback nunca bloquea la petición ni convierte por sí solo este comportamiento en telemetría de producción.
 
-En web, Anthropic se llama directamente por defecto y añade `anthropic-dangerous-direct-browser-access`. El proxy solo se usa si se configura expresamente `EXPO_PUBLIC_API_BASE_URL`; el valor predeterminado es vacío para que el despliegue estático no intente llegar al localhost de un desarrollador. El proxy incluido acepta únicamente clientes loopback y se declara herramienta de desarrollo local, no backend de producción. Al usarlo, las credenciales llegan en el cuerpo del proxy y este las convierte en cabeceras hacia Anthropic.
+## Contraste de runtime y operación
 
-## Contraste de runtime y producción
+Esta página documenta el comportamiento implementado y las pruebas deterministas, no una muestra de tráfico ni métricas de producción. La evidencia operativa, sus límites y cualquier medición deben leerse junto con [Comportamiento de runtime](/openwiki/operations/runtime-behavior.md); ese informe debe enlazar aquí al atribuir a los parsers, transportes, truncamientos, rondas o presupuesto de Google su causa en el cliente.
 
-- **Observado.** El repositorio implementa rutas de streaming para los tres proveedores, la protección de truncamiento y el fallback XHR de Google descritos arriba. También contiene pruebas deterministas con fixtures SSE y pruebas de fragmentación; no son una observación de tráfico de producción.
-- **Correlacionado.** La configuración web opt-in del proxy, su cerrojo loopback y los transportes de cliente son coherentes con un despliegue web estático BYOK que llama directamente a los proveedores. La traza de contexto se entrega opcionalmente mediante `onGoogleContextReport`; este flujo no demuestra que exista telemetría desplegada ni que se haya recibido un evento real.
-- **Hipótesis.** Si se incorporan métricas operativas, conviene registrar solo estados y contadores allowlistados —proveedor, transporte, timeout, truncamiento, rondas y reporte de presupuesto— y no mensajes, argumentos, firmas ni resultados de tools. Debe validarse por separado contra la política de privacidad y el destino de observabilidad.
+En web, Anthropic se llama directamente por defecto y añade `anthropic-dangerous-direct-browser-access`. El proxy solo se usa cuando se configura `EXPO_PUBLIC_API_BASE_URL`; el proxy incluido está restringido a loopback y es una ayuda de desarrollo, no un backend de producción. Véase también [Configuración de proveedores](./provider-configuration.md).
 
 ## Pruebas focalizadas y cambios seguros
 
-`providerPipeline.test.ts` reproduce fixtures SSE de los tres dialectos con trozos repetidos y con particiones arbitrarias. Cubre el recorrido parser → herramienta → continuación, la correlación de llamadas múltiples, argumentos inválidos, errores del proveedor y truncamiento. `providerToolClient.roundLimit.test.ts` cubre la llamada de cierre tras el límite. Las pruebas de Google cubren la máquina de estados, replays, restauración del historial, presupuesto y paridad entre Fetch/XHR; `sse.test.ts` protege el encuadre común.
+`providerPipeline.test.ts` reproduce fixtures SSE de los tres proveedores con tamaños de fragmento repetidos y fronteras arbitrarias. Cubre parser → tool → continuación, correlación de varias llamadas, argumentos inválidos, errores del proveedor y truncamiento de Anthropic. Las pruebas de Google cubren su máquina de estados, replays, restauración, presupuesto y paridad de transporte; `sse.test.ts` protege el encuadre común y las pruebas de límite cubren la petición de cierre.
 
-Al modificar un dialecto, actualice conjuntamente el parser, el contrato de continuación del bucle y los transportes aplicables. No elimine IDs de llamada, firmas o bloques de razonamiento al persistir o continuar: son datos de protocolo. Añada fixtures que separen eventos y JSON en fronteras distintas, además del caso de stream completo.
+Al cambiar un dialecto, actualice parser, contrato de continuación y transportes aplicables como una unidad. No descarte `call_id`, firmas, bloques de razonamiento ni pasos persistidos: son datos de protocolo. Añada siempre una fixture de stream completo y casos que partan tanto el evento SSE como el JSON.
 
 ```bash
 npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/sse.test.ts apps/mobile/agent/providerPipeline.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/googleInteractions.test.ts
