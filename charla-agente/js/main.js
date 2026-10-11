@@ -119,6 +119,7 @@
     else if (k === "f" || k === "F") fullscreen();
     else if (k === "p" || k === "P") openPresenter();
     else if (k === "b" || k === "B" || k === ".") blackEl.classList.toggle("on");
+    else if (k === "i" || k === "I") go(QA_INDEX);
   }
   window.addEventListener("keydown", onKey);
   window.addEventListener("message", (e) => {
@@ -127,7 +128,13 @@
     else if (m.type === "go") { presenter = e.source; go(m.index); notify(); }
     else if (m.type === "key") { presenter = e.source; onKey({ key: m.key, preventDefault() {} }); }
   });
-  canvas.addEventListener("click", () => go(index + 1));
+  // En el turno de preguntas un clic suelto no avanza: se navega con los enlaces.
+  canvas.addEventListener("click", () => { if (STEPS[index].station !== "qa") go(index + 1); });
+  // Los enlaces del índice y de «volver» cambian el hash.
+  window.addEventListener("hashchange", () => {
+    const n = parseInt(location.hash.slice(1), 10);
+    if (n) go(n - 1);
+  });
   setTimeout(() => { hintEl.hidden = true; }, 9000);
 
   // ── Cámara ────────────────────────────────────────────────────
@@ -169,6 +176,30 @@
 
   // Con `?shot` el tiempo avanza aunque el render vaya lento (capturas sin GPU).
   const MAX_DT = location.search.includes("shot") ? 0.5 : 0.1;
+  // ── Turno de preguntas ────────────────────────────────────────
+  const qaEl = $("qa");
+  const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  let qaShown;
+  function renderQA(q) {
+    if (q === qaShown) return;
+    qaShown = q;
+    qaEl.classList.toggle("on", q !== null && q !== undefined);
+    if (q === null || q === undefined) return;
+    if (q === 0) {
+      const cols = ["Principiante", "Intermedio", "Avanzado"].map((level) => {
+        const items = QA.map((x, i) => [x, i]).filter(([x]) => x.level === level)
+          .map(([x, i]) => `<li><a href="#${QA_INDEX + 2 + i}"><span>${i + 1}</span>${esc(x.short)}</a></li>`).join("");
+        return `<section class="qa-col"><h2>${level}</h2><ol>${items}</ol></section>`;
+      }).join("");
+      qaEl.innerHTML = `<div class="qa-index"><h1>Preguntas<small>Pulsa una para ver la respuesta · <kbd>I</kbd> vuelve aquí</small></h1><div class="qa-cols">${cols}</div></div>`;
+      return;
+    }
+    const x = QA[q - 1];
+    qaEl.innerHTML = `<div class="qa-answer"><div class="qa-meta"><b>${x.level}</b><span>Pregunta ${q} de ${QA.length}</span></div>` +
+      `<h1>${esc(x.q)}</h1><ul>${x.a.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>` +
+      `<a class="qa-back" href="#${QA_INDEX + 1}">← Volver al índice <kbd>I</kbd></a>`;
+  }
+
   let last = performance.now();
   function frame(now) {
     const dt = Math.min((now - last) / 1000, MAX_DT);
@@ -209,14 +240,16 @@
     moralEl.classList.toggle("on", onMesa && !!mesa.moral);
     canvas.classList.toggle("blurred", onMesa && (!!mesa.title || !!mesa.moral));
     thanksEl.classList.toggle("on", onMesa && !!mesa.thanks);
-    const name = active === "mesa" ? "" : STATIONS[active].name;
+    const name = active === "mesa" || active === "qa" ? "" : STATIONS[active].name;
     if (chipEl.dataset.name !== name) {
       chipEl.dataset.name = name;
       const [num, text] = name.includes(" · ") ? name.split(" · ") : ["", name];
       chipEl.innerHTML = name ? (num ? `<b>${num.replace("Parada ", "")}</b>` : "") + `<span>${text}</span>` : "";
     }
     chipEl.classList.toggle("on", !!name);
-    progressEl.style.width = ((index + 1) / N) * 100 + "%";
+    progressEl.style.width = (Math.min(index + 1, QA_INDEX) / QA_INDEX) * 100 + "%";
+    progressEl.hidden = active === "qa";
+    renderQA(active === "qa" ? stations.qa.prev.q : null);
 
     finish.uniforms.uTime.value = t;
     composer.render();

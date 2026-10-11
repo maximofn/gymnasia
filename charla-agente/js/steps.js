@@ -12,6 +12,7 @@ window.STATIONS = {
   salud: { name: "Parada 5 · Lo que el agente no debe hacer", origin: [300, 0, 0], cam: [0, 0, 12, 0, 0, 0] },
   tests: { name: "Parada 6 · Cómo pruebo todo esto", origin: [360, 0, 0], cam: [0, 0, 12, 0, 0, 0] },
   pendiente: { name: "Lo que queda", origin: [420, 0, 0], cam: [0, 0, 12, 0, 0, 0] },
+  qa: { name: "Preguntas", origin: [480, 0, 0], cam: [0, 0, 12, 0, 0, 0] },
 };
 
 window.STEPS = [
@@ -269,6 +270,18 @@ window.STEPS = [
     notes: "Gracias.",
   },
 ];
+
+// ── 12. Preguntas ──────────────────────────────────────────────
+// Tras «Gracias», un índice con las preguntas de js/qa.js y una diapositiva por
+// pregunta. `I` vuelve al índice desde cualquier respuesta.
+window.QA_INDEX = window.STEPS.length;
+window.STEPS.push({
+  station: "qa", section: "Preguntas", set: { q: 0 },
+  notes: "[turno de preguntas]\n\nCuando te pregunten, búscala en la lista de la derecha y púlsala, o haz clic en ella en la proyección. Desde cualquier respuesta, la tecla I vuelve a este índice.\n\nSi la pregunta no está, contéstala sin diapositiva: el índice se queda de fondo.",
+});
+(window.QA || []).forEach((item, i) => {
+  window.STEPS.push({ station: "qa", set: { q: i + 1 }, notes: "«" + item.q + "»\n\n" + item.notes });
+});
 
 // Estado de una parada en el paso `index`: se acumulan los `set` de todos los
 // pasos anteriores de esa parada. La cámara es la del último paso con `cam`

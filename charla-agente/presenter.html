@@ -37,6 +37,10 @@
   button:hover { border-color: var(--muted); }
   button:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
   #status { color: var(--muted); font-size: 14px; margin-left: auto; }
+  .qlist { display: grid; gap: 4px; }
+  .qlist h3 { margin: 12px 0 4px; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--lime); }
+  .qlist button { text-align: left; font-size: 15px; padding: 6px 10px; border-radius: 8px; line-height: 1.3; }
+  .qlist button.cur { border-color: var(--lime); color: var(--lime); }
   @media (max-width: 760px) { main { grid-template-columns: 1fr; } aside { border-left: 0; padding-left: 0; border-top: 1px solid var(--border); padding-top: 16px; } }
 </style>
 </head>
@@ -52,7 +56,7 @@
 <main>
   <section id="now" aria-live="polite"></section>
   <aside>
-    <h2>Siguiente</h2>
+    <h2 id="asideTitle">Siguiente</h2>
     <div id="next"></div>
   </aside>
 </main>
@@ -62,6 +66,7 @@
   <span id="status">Esperando a la proyección… (ábrela y pulsa P allí)</span>
 </footer>
 
+<script src="js/qa.js"></script>
 <script src="js/steps.js"></script>
 <script>
 (function () {
@@ -88,8 +93,23 @@
     $("count").textContent = (index + 1) + " / " + N;
     $("now").innerHTML = paragraphs(s.notes);
     $("now").scrollTop = 0;
-    $("next").innerHTML = index + 1 < N ? paragraphs(STEPS[index + 1].notes) : "<p>Fin.</p>";
+    // En el turno de preguntas, la columna derecha es la lista para saltar a cada una.
+    const qa = s.station === "qa";
+    $("asideTitle").textContent = qa ? "Preguntas · I vuelve al índice" : "Siguiente";
+    if (qa) {
+      const cur = s.set.q;
+      $("next").innerHTML = '<div class="qlist">' + ["Principiante", "Intermedio", "Avanzado"].map((level) =>
+        "<h3>" + level + "</h3>" + QA.map((x, i) => x.level === level
+          ? '<button type="button" data-go="' + (QA_INDEX + 1 + i) + '"' + (cur === i + 1 ? ' class="cur"' : "") + ">" + (i + 1) + ". " + x.short.replace(/</g, "&lt;") + "</button>"
+          : "").join("")).join("") + "</div>";
+    } else {
+      $("next").innerHTML = index + 1 < N ? paragraphs(STEPS[index + 1].notes) : "<p>Fin.</p>";
+    }
   }
+  $("next").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-go]");
+    if (b) send({ type: "go", index: Number(b.dataset.go) });
+  });
   function send(msg) {
     const w = target();
     if (w) { w.postMessage(msg, "*"); $("status").textContent = "Conectado con la proyección"; }
@@ -108,7 +128,7 @@
     }
   });
   window.addEventListener("keydown", (e) => {
-    const nav = ["ArrowRight", "PageDown", " ", "Enter", "ArrowDown", "ArrowLeft", "PageUp", "Backspace", "ArrowUp", "Home", "End", "b", "B", "."];
+    const nav = ["ArrowRight", "PageDown", " ", "Enter", "ArrowDown", "ArrowLeft", "PageUp", "Backspace", "ArrowUp", "Home", "End", "b", "B", ".", "i", "I"];
     if (nav.includes(e.key) && document.activeElement.tagName !== "BUTTON") { e.preventDefault(); key(e.key); }
   });
   $("prev").addEventListener("click", () => key("ArrowLeft"));

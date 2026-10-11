@@ -18,11 +18,23 @@ Gymnasia. No forma parte de la app: es material para la charla y no se despliega
 | `P` | abrir la vista de presentador |
 | `F` | pantalla completa |
 | `B` o `.` | pantalla en negro |
+| `I` | índice de preguntas |
 
 Los mandos de presentación envían `AvPág`/`RePág` o flechas, así que funcionan sin
 configurar nada. Desde la vista de presentador también se puede avanzar con el
 teclado o los botones. El paso actual queda en la URL (`#12`), así que recargar no
 te devuelve al principio.
+
+### Turno de preguntas
+
+Después de «Gracias» viene un índice con las preguntas que puede hacer el público,
+por niveles. Cada una enlaza con una diapositiva que la responde, y desde cualquier
+respuesta `I` (o el enlace de abajo) vuelve al índice. En la vista de presentador,
+la columna derecha se convierte en esa misma lista: pulsa una pregunta y la
+proyección salta a su respuesta, con la respuesta completa en tu guion.
+
+Las preguntas y respuestas están en `js/qa.js`. Las notas marcadas con `[REVISA]`
+dependen de ti, no del código: complétalas antes de la charla.
 
 ## Cómo está hecha
 
@@ -32,6 +44,7 @@ Lo que brilla o cambia (el agente, los rayos, las columnas de calorías, la huel
 es geometría. Encima va un postprocesado: *bloom* solo para lo que pasa de 1 (el
 lima del agente), desenfoque de profundidad por ilustración, viñeta y grano.
 
+- `js/qa.js`: las preguntas del público con su respuesta proyectada y tu guion.
 - `js/steps.js`: el guion dividido en pasos. Cada paso dice en qué parada está la
   cámara, qué cambia en la escena y qué dices tú. Es lo primero que hay que tocar
   para cambiar el texto o el orden.

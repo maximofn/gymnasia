@@ -1296,5 +1296,33 @@
     };
   };
 
+  // ── Preguntas ─────────────────────────────────────────────────
+  // El texto es HTML (main.js); aquí solo el fondo: el agente o la ilustración
+  // de la respuesta, a la derecha.
+  WORLD.qa = function (ctx) {
+    const R = ctx.root;
+    const bd = backdrop(R, 0x131b12);
+    const bk = bokeh(R, [0xcbff1a, 0x8fa3c7], 10);
+    const coreG = group(R, 4.5, 0.2, -1.5);
+    const core = makeCore(coreG, 1.0);
+    const keys = [...new Set(QA.map((x) => x.img).filter(Boolean))];
+    const ims = {};
+    keys.forEach((key) => {
+      ims[key] = img(R, key, { shadow: true, float: 0.06, x: 4.2, y: -0.1, z: 0.5, h: Math.min(4.0, 4.0 / TEX[key].aspect) });
+    });
+    let sc = 1;
+    return function update(s, dt, t) {
+      bk(t);
+      const key = s.q ? QA[s.q - 1].img : null;
+      keys.forEach((k) => ims[k].to(ims[k].at({ o: k === key ? 1 : 0 }), dt, 4));
+      // En el índice el agente se aparta: detrás de la lista estorba.
+      sc = damp(sc, key || !s.q ? 0.001 : 1, 5, dt);
+      coreG.scale.setScalar(sc);
+      coreG.visible = sc > 0.01;
+      core.update(s.q ? 1 : 0.4, dt, t);
+      bd.to(0x131b12, dt);
+    };
+  };
+
   window.WORLD = WORLD;
 })();

@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 
 const dir = new URL(".", import.meta.url);
 const sandbox = { window: {} };
+vm.runInNewContext(readFileSync(new URL("js/qa.js", dir), "utf8"), sandbox);
 vm.runInNewContext(readFileSync(new URL("js/steps.js", dir), "utf8"), sandbox);
 const { STATIONS, STEPS, resolveStation, resolveCamera } = sandbox.window;
 Object.assign(sandbox, sandbox.window);
@@ -31,4 +32,15 @@ const assets = readFileSync(new URL("js/assets.js", dir), "utf8");
 for (const [, key] of world.matchAll(/img\(R, "([a-z-]+)"/g)) {
   assert.ok(assets.includes(`"${key}":"data:`), `falta la ilustración ${key}: ejecuta build-assets.mjs`);
 }
+// Preguntas: índice tras «Gracias» y una respuesta completa por pregunta.
+const { QA, QA_INDEX } = sandbox.window;
+assert.equal(STEPS[QA_INDEX - 1].set.thanks, 1, "el índice de preguntas va justo después de «Gracias»");
+assert.equal(STEPS.length, QA_INDEX + 1 + QA.length);
+QA.forEach((x, i) => {
+  const n = `pregunta ${i + 1}`;
+  assert.ok(["Principiante", "Intermedio", "Avanzado"].includes(x.level), `${n}: nivel`);
+  assert.ok(x.q && x.short && x.notes && x.a.length >= 2, `${n}: incompleta`);
+  if (x.img) assert.ok(assets.includes(`"${x.img}":"data:`), `${n}: falta la ilustración ${x.img}`);
+});
+console.log(`ok: ${QA.length} preguntas`);
 console.log(`ok: ${STEPS.length} pasos en ${Object.keys(STATIONS).length} paradas`);
