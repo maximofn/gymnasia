@@ -1,65 +1,79 @@
-// Proyección: escena, cámara, etiquetas, navegación y enlace con el presentador.
+// Proyección: render con postprocesado, cámara, etiquetas, navegación y enlace
+// con el presentador.
 (function () {
-  const C = WORLD_COLORS;
   const damp = (a, b, k, dt) => a + (b - a) * (1 - Math.exp(-k * dt));
 
   const canvas = document.getElementById("scene");
   const layer = document.getElementById("labels");
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.setClearColor(0x07090d, 1);
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(C.bg);
-  scene.fog = new THREE.Fog(C.bg, 26, 58);
-  scene.add(new THREE.AmbientLight(0x9aa6b8, 0.42));
-  scene.add(new THREE.HemisphereLight(0xdfe7f5, 0x07090d, 0.25));
-  const key = new THREE.DirectionalLight(0xffffff, 0.8);
-  key.castShadow = true;
-  key.shadow.mapSize.set(2048, 2048);
-  Object.assign(key.shadow.camera, { left: -11, right: 11, top: 11, bottom: -11, near: 1, far: 40 });
-  scene.add(key, key.target);
-  const rim = new THREE.PointLight(0x8fa3c7, 0.6, 16);
-  scene.add(rim);
+  scene.background = new THREE.Color(0x07090d);
+  const camera = new THREE.PerspectiveCamera(35, 16 / 9, 0.1, 300);
 
-  const camera = new THREE.PerspectiveCamera(38, 16 / 9, 0.1, 200);
+  // ── Postprocesado ─────────────────────────────────────────────
+  // Se renderiza en coma flotante para que solo lo que pasa de 1 (el lima del
+  // agente, los rayos) active el bloom; las ilustraciones nunca llegan.
+  const target = new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 });
+  const composer = new THREE.EffectComposer(renderer, target);
+  composer.addPass(new THREE.RenderPass(scene, camera));
+  const bloom = new THREE.UnrealBloomPass(new THREE.Vector2(1, 1), 0.85, 0.55, 0.95);
+  composer.addPass(bloom);
+  const finish = new THREE.ShaderPass({
+    uniforms: { tDiffuse: { value: null }, uTime: { value: 0 }, uRes: { value: new THREE.Vector2(1, 1) } },
+    vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+    fragmentShader: `
+      uniform sampler2D tDiffuse; uniform float uTime; uniform vec2 uRes; varying vec2 vUv;
+      float hash(vec2 p){ p = fract(p * vec2(443.897, 441.423)); p += dot(p, p.yx + 19.19); return fract((p.x + p.y) * p.x); }
+      void main(){
+        vec2 d = vUv - 0.5;
+        float r2 = dot(d, d);
+        // Aberración cromática muy leve hacia los bordes.
+        vec2 off = d * r2 * 0.012;
+        vec3 c = vec3(texture2D(tDiffuse, vUv + off).r, texture2D(tDiffuse, vUv).g, texture2D(tDiffuse, vUv - off).b);
+        // Las luces muy intensas se comprimen en vez de quemarse.
+        c = c / (1.0 + max(c - 1.0, 0.0) * 0.35);
+        c *= mix(1.0, 0.42, smoothstep(0.18, 0.62, r2 * 1.55));
+        float g = hash(vUv * uRes + fract(uTime * 7.31) * 113.0) - 0.5;
+        c += g * 0.035;
+        gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);
+      }`,
+  });
+  composer.addPass(finish);
 
   // ── Etiquetas HTML ancladas a puntos 3D ───────────────────────
   const labels = [];
   const stations = {};
-  Object.entries(STATIONS).forEach(([id, def]) => {
-    const root = new THREE.Group();
-    root.position.set(...def.origin);
-    scene.add(root);
-    const own = [];
-    let mark = 0;
-    const ctx = {
-      root,
-      label(html, cls, at) {
-        const el = document.createElement("div");
-        el.className = "lbl " + cls;
-        el.innerHTML = html;
-        layer.appendChild(el);
-        let obj = at;
-        if (Array.isArray(at)) {
-          obj = new THREE.Object3D();
-          obj.position.set(...at);
-          root.add(obj);
-        }
-        const l = { el, obj, on: false, o: 0, station: id };
-        labels.push(l);
-        own.push(l);
-        return l;
-      },
-      labelsSince() {
-        const out = own.slice(mark);
-        mark = own.length;
-        return out;
-      },
-    };
-    stations[id] = { id, def, root, update: WORLD[id](ctx), prev: {}, since: {} };
-  });
+  function buildStations() {
+    Object.entries(STATIONS).forEach(([id, def]) => {
+      const root = new THREE.Group();
+      root.position.set(...def.origin);
+      scene.add(root);
+      const ctx = {
+        root,
+        // `depth`: la etiqueta crece o encoge con la distancia, como un objeto más.
+        label(html, cls, at, opts = {}) {
+          const el = document.createElement("div");
+          el.className = "lbl " + cls;
+          el.innerHTML = html;
+          layer.appendChild(el);
+          let obj = at;
+          if (Array.isArray(at)) {
+            obj = new THREE.Object3D();
+            obj.position.set(...at);
+            root.add(obj);
+          }
+          const l = { el, obj, on: false, o: 0, k: opts.k || 1, station: id, depth: !!opts.depth, fade: 1 };
+          labels.push(l);
+          return l;
+        },
+      };
+      stations[id] = { id, def, root, update: WORLD[id](ctx), prev: {}, since: {} };
+    });
+    WORLD.ambient(scene);
+  }
 
   // ── Navegación ────────────────────────────────────────────────
   const N = STEPS.length;
@@ -67,22 +81,19 @@
   let presenter = null;
   let clock = 0;
 
-  const flashEl = document.getElementById("flash");
-  const chipEl = document.getElementById("chip");
-  const titleEl = document.getElementById("title");
-  const thanksEl = document.getElementById("thanks");
-  const blackEl = document.getElementById("black");
-  const hintEl = document.getElementById("hint");
-  const fadeEl = document.getElementById("fade");
+  const $ = (id) => document.getElementById(id);
+  const flashEl = $("flash"), chipEl = $("chip"), titleEl = $("title"), thanksEl = $("thanks");
+  const blackEl = $("black"), hintEl = $("hint"), fadeEl = $("fade"), progressEl = $("progress");
 
+  function retrigger(el) {
+    el.classList.remove("on");
+    void el.offsetWidth;
+    el.classList.add("on");
+  }
   function go(to) {
     to = Math.min(Math.max(to, 0), N - 1);
     if (to === index) return;
-    if (to === index + 1 && STEPS[to].flash) {
-      flashEl.classList.remove("on");
-      void flashEl.offsetWidth;
-      flashEl.classList.add("on");
-    }
+    if (to === index + 1 && STEPS[to].flash) retrigger(flashEl);
     index = to;
     history.replaceState(null, "", "#" + (index + 1));
     hintEl.hidden = true;
@@ -119,38 +130,55 @@
   canvas.addEventListener("click", () => go(index + 1));
   setTimeout(() => { hintEl.hidden = true; }, 9000);
 
-  // ── Bucle ─────────────────────────────────────────────────────
-  const camPos = new THREE.Vector3();
-  const camLook = new THREE.Vector3();
-  const goalPos = new THREE.Vector3();
-  const goalLook = new THREE.Vector3();
+  // ── Cámara ────────────────────────────────────────────────────
+  // Muelle críticamente amortiguado: arranca y frena suave, sin el tirón inicial
+  // de un acercamiento exponencial.
+  function spring() {
+    return { x: new THREE.Vector3(), v: new THREE.Vector3() };
+  }
+  const acc = new THREE.Vector3();
+  function stepSpring(s, goal, w, dt) {
+    // En subpasos cortos: con un paso largo el muelle se pasa de largo y oscila.
+    const n = Math.ceil(dt / (1 / 120));
+    for (let i = 0; i < n; i++) {
+      acc.subVectors(goal, s.x).multiplyScalar(w * w).addScaledVector(s.v, -2 * w);
+      s.v.addScaledVector(acc, dt / n);
+      s.x.addScaledVector(s.v, dt / n);
+    }
+  }
+  const camPos = spring(), camLook = spring();
+  const goalPos = new THREE.Vector3(), goalLook = new THREE.Vector3();
   const v = new THREE.Vector3();
-  (function initCamera() {
-    const c = resolveCamera(index);
-    const o = STATIONS[STEPS[index].station].origin;
-    camPos.set(o[0] + c[0], o[1] + c[1], o[2] + c[2]);
-    camLook.set(o[0] + c[3], o[1] + c[4], o[2] + c[5]);
-  })();
+  function cameraGoal(i) {
+    const c = resolveCamera(i);
+    const o = STATIONS[STEPS[i].station].origin;
+    goalPos.set(o[0] + c[0], o[1] + c[1], o[2] + c[2]);
+    goalLook.set(o[0] + c[3], o[1] + c[4], o[2] + c[5]);
+  }
 
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
     renderer.setSize(w, h, false);
+    composer.setPixelRatio(renderer.getPixelRatio());
+    composer.setSize(w, h);
+    finish.uniforms.uRes.value.set(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
   }
   window.addEventListener("resize", resize);
-  resize();
 
+  // Con `?shot` el tiempo avanza aunque el render vaya lento (capturas sin GPU).
+  const MAX_DT = location.search.includes("shot") ? 0.5 : 0.1;
   let last = performance.now();
   function frame(now) {
-    const dt = Math.min((now - last) / 1000, 0.1);
+    const dt = Math.min((now - last) / 1000, MAX_DT);
     last = now;
     clock += dt;
     const t = clock;
     const step = STEPS[index];
     const active = step.station;
+    WORLD.tick(t);
 
-    // Estado de cada parada y tiempo desde el último cambio de cada clave
     Object.values(stations).forEach((st) => {
       const s = resolveStation(st.id, index);
       Object.keys(s).forEach((k) => {
@@ -158,65 +186,73 @@
       });
       st.prev = s;
       const since = (k) => (st.since[k] === undefined ? 0 : t - st.since[k]);
-      st.update(s, dt, t, since);
+      st.update(s, dt, t, since, st.id === active);
     });
 
-    // Cámara
-    const c = resolveCamera(index);
-    const o = STATIONS[active].origin;
-    goalPos.set(o[0] + c[0], o[1] + c[1], o[2] + c[2]);
-    goalLook.set(o[0] + c[3], o[1] + c[4], o[2] + c[5]);
-    // Entre paradas lejanas (por ejemplo, del final al restaurante) se corta con
-    // un fundido en vez de cruzar volando todo el mundo.
-    if (camPos.distanceTo(goalPos) > 90) {
-      camPos.copy(goalPos);
-      camLook.copy(goalLook);
-      fadeEl.classList.remove("on");
-      void fadeEl.offsetWidth;
-      fadeEl.classList.add("on");
+    cameraGoal(index);
+    // Entre paradas lejanas (del final al restaurante) se corta con un fundido.
+    if (camPos.x.distanceTo(goalPos) > 100) {
+      camPos.x.copy(goalPos); camPos.v.set(0, 0, 0);
+      camLook.x.copy(goalLook); camLook.v.set(0, 0, 0);
+      retrigger(fadeEl);
     }
-    const far = camPos.distanceTo(goalPos) > 25;
-    const k = far ? 1.5 : 2.2;
-    camPos.set(damp(camPos.x, goalPos.x, k, dt), damp(camPos.y, goalPos.y, k, dt), damp(camPos.z, goalPos.z, k, dt));
-    camLook.set(damp(camLook.x, goalLook.x, k, dt), damp(camLook.y, goalLook.y, k, dt), damp(camLook.z, goalLook.z, k, dt));
-    camera.position.copy(camPos).add(v.set(Math.sin(t * 0.31) * 0.12, Math.sin(t * 0.23) * 0.07, 0));
-    camera.lookAt(camLook);
-
-    key.position.set(camLook.x + 4, camLook.y + 10, camLook.z + 6);
-    key.target.position.copy(camLook);
-    rim.position.set(camLook.x - 3.5, camLook.y + 3, camLook.z - 3);
+    stepSpring(camPos, goalPos, 2.6, dt);
+    stepSpring(camLook, goalLook, 2.6, dt);
+    // Respiración de cámara: un paralaje mínimo que hace que las capas parezcan reales.
+    camera.position.copy(camPos.x).add(v.set(Math.sin(t * 0.21) * 0.18, Math.sin(t * 0.17) * 0.1, 0));
+    camera.lookAt(camLook.x);
 
     // Superposiciones
     const mesa = stations.mesa.prev;
     const onMesa = active === "mesa";
     titleEl.classList.toggle("on", onMesa && !!mesa.title);
+    canvas.classList.toggle("blurred", onMesa && !!mesa.title);
     thanksEl.classList.toggle("on", onMesa && !!mesa.thanks);
-    const chip = active === "mesa" ? "" : STATIONS[active].name;
-    if (chipEl.textContent !== chip) chipEl.textContent = chip;
-    chipEl.classList.toggle("on", !!chip);
+    const name = active === "mesa" ? "" : STATIONS[active].name;
+    if (chipEl.dataset.name !== name) {
+      chipEl.dataset.name = name;
+      const [num, text] = name.includes(" · ") ? name.split(" · ") : ["", name];
+      chipEl.innerHTML = name ? (num ? `<b>${num.replace("Parada ", "")}</b>` : "") + `<span>${text}</span>` : "";
+    }
+    chipEl.classList.toggle("on", !!name);
+    progressEl.style.width = ((index + 1) / N) * 100 + "%";
 
-    renderer.render(scene, camera);
+    finish.uniforms.uTime.value = t;
+    composer.render();
 
     // Etiquetas
     const w = window.innerWidth, h = window.innerHeight;
+    const unit = h / 1080;
     for (const l of labels) {
       if (l.station !== active) l.on = false;
-      l.o = damp(l.o, l.on ? 1 : 0, 9, dt);
+      l.o = damp(l.o, l.on ? 1 : 0, 8 * l.k, dt);
       if (l.o < 0.01) {
         if (l.el.style.visibility !== "hidden") { l.el.style.visibility = "hidden"; l.el.style.opacity = 0; }
         continue;
       }
       l.obj.getWorldPosition(v);
+      const dist = v.distanceTo(camera.position);
       v.project(camera);
       if (v.z > 1) { l.el.style.visibility = "hidden"; continue; }
       const x = (v.x * 0.5 + 0.5) * w;
       const y = (-v.y * 0.5 + 0.5) * h;
+      const sc = unit * (l.depth ? Math.min(Math.max(12 / dist, 0.55), 1.7) : 1) * (0.94 + 0.06 * l.o);
       l.el.style.visibility = "visible";
-      l.el.style.opacity = l.o.toFixed(3);
-      l.el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%) scale(${(0.94 + 0.06 * l.o).toFixed(3)})`;
+      l.el.style.opacity = (l.o * l.fade).toFixed(3);
+      l.el.style.filter = l.o < 0.97 ? `blur(${((1 - l.o) * 8).toFixed(1)}px)` : "";
+      l.el.style.transform = `translate(${x.toFixed(1)}px, ${(y + (1 - l.o) * 14).toFixed(1)}px) translate(-50%, -50%) scale(${sc.toFixed(3)})`;
     }
 
     requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+
+  WORLD.load().then(() => {
+    buildStations();
+    resize();
+    cameraGoal(index);
+    camPos.x.copy(goalPos);
+    camLook.x.copy(goalLook);
+    document.getElementById("loading").classList.add("done");
+    requestAnimationFrame((now) => { last = now; frame(now); });
+  });
 })();

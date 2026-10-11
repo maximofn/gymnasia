@@ -26,4 +26,9 @@ STEPS.forEach((s, i) => {
 const night = STEPS.findIndex((s) => s.set.night === 1);
 assert.equal(resolveStation("duplicado", night).plates, 2);
 assert.equal(resolveStation("mesa", night).title, 1);
+// Toda ilustración que usa el mundo existe en js/assets.js (el carrito vacío es opcional).
+const assets = readFileSync(new URL("js/assets.js", dir), "utf8");
+for (const [, key] of world.matchAll(/img\(R, "([a-z-]+)"/g)) {
+  assert.ok(assets.includes(`"${key}":"data:`), `falta la ilustración ${key}: ejecuta build-assets.mjs`);
+}
 console.log(`ok: ${STEPS.length} pasos en ${Object.keys(STATIONS).length} paradas`);

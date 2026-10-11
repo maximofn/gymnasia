@@ -4,14 +4,14 @@
 // la cámara; `flash` dispara el destello de foto al avanzar; `notes` es lo que
 // dices tú y solo aparece en la vista de presentador.
 window.STATIONS = {
-  mesa: { name: "El restaurante", origin: [0, 0, 0], cam: [0, 5.2, 9.6, 0, 1.5, -0.5] },
-  datos: { name: "Parada 1 · Dónde viven los datos", origin: [70, 0, 0], cam: [0, 4.2, 11, 0, 1.6, 0] },
-  plato: { name: "Parada 2 · Del plato al dato", origin: [140, 0, 0], cam: [0, 4, 10, 0, 1.3, 0] },
-  tools: { name: "Parada 3 · El agente va a los datos", origin: [210, 0, 0], cam: [0, 5.5, 10.5, 0, 2, 0] },
-  duplicado: { name: "Parada 4 · El arroz dos veces", origin: [280, 0, 0], cam: [0, 3.4, 9, 0, 1.8, 0] },
-  salud: { name: "Parada 5 · Lo que el agente no debe hacer", origin: [350, 0, 0], cam: [0, 4.5, 12, 0, 2, -1.5] },
-  tests: { name: "Parada 6 · Cómo pruebo todo esto", origin: [420, 0, 0], cam: [0, 3.8, 10, 0, 1.8, 0] },
-  pendiente: { name: "Lo que queda", origin: [490, 0, 0], cam: [0, 15, 13, 0, 0, 0] },
+  mesa: { name: "El restaurante", origin: [0, 0, 0], cam: [0, 0, 12, 0, 0, 0] },
+  datos: { name: "Parada 1 · Dónde viven los datos", origin: [60, 0, 0], cam: [0, 0, 12, 0, 0, 0] },
+  plato: { name: "Parada 2 · Del plato al dato", origin: [120, 0, 0], cam: [0, 0, 12, 0, 0, 0] },
+  tools: { name: "Parada 3 · El agente va a los datos", origin: [180, 0, 0], cam: [0, 0.2, 12.5, 0, 0.2, 0] },
+  duplicado: { name: "Parada 4 · El arroz dos veces", origin: [240, 0, 0], cam: [0, 0, 12, 0, 0, 0] },
+  salud: { name: "Parada 5 · Lo que el agente no debe hacer", origin: [300, 0, 0], cam: [0, 0, 12, 0, 0, 0] },
+  tests: { name: "Parada 6 · Cómo pruebo todo esto", origin: [360, 0, 0], cam: [0, 0, 12, 0, 0, 0] },
+  pendiente: { name: "Lo que queda", origin: [420, 0, 0], cam: [0, 0, 12, 0, 0, 0] },
 };
 
 window.STEPS = [
@@ -38,12 +38,12 @@ window.STEPS = [
     notes: "Mientras tanto, el arroz se enfría.\n\n[pausa]",
   },
   {
-    station: "mesa", set: { tired: 1, jump: 0 }, cam: [0, 4.3, 2.9, 0, 3.2, -2.2],
+    station: "mesa", set: { tired: 1, jump: 0 }, cam: [2.8, -0.8, 7.8, 2.8, -0.9, 0],
     notes: "Y lo peor es que no es culpa de ChatGPT, ni de Claude. Son listísimos. El problema es que están ciegos: solo saben lo que tú les cuentas. Y muchas apps de gimnasio y de nutrición ni siquiera te dejan sacar tus datos para dárselos. Así que el pegamento entre todas esas apps eras tú.",
   },
   // ── 2. El después ────────────────────────────────────────────
   {
-    station: "mesa", section: "El después", flash: true, set: { cold: 0, tired: 0, kcal: 1 }, cam: [0, 5.2, 9.6, 0, 1.5, -0.5],
+    station: "mesa", section: "El después", flash: true, set: { cold: 0, tired: 0, kcal: 1 }, cam: [0, 0, 12, 0, 0, 0],
     notes: "Hoy hago una foto al arroz. La app me dice: unas 750 calorías, 25 gramos de proteína. Y lo guarda en la comida de hoy.",
   },
   {
@@ -60,7 +60,7 @@ window.STEPS = [
   },
   // ── 3. Presentación ──────────────────────────────────────────
   {
-    station: "mesa", section: "Presentación", set: { title: 1, cubeLabels: 0 }, cam: [0, 13, 21, 0, 1.2, 0],
+    station: "mesa", section: "Presentación", set: { title: 1, cubeLabels: 0 }, cam: [0, 0, 14, 0, 0, 0],
     notes: "[cambias de tono: más tranquilo y cercano]\n\nMe llamo Máximo Fernández, soy desarrollador de IA, y esa app es Gymnasia.\n\nHoy os voy a explicar cómo desarrollar un agente en una app de gimnasio y nutrición. No os voy a hablar de pantallas ni de botones, sino del agente: qué hay detrás de esa respuesta que llega sin que le hayas contado nada.",
   },
   // ── 4. Parada 1 ──────────────────────────────────────────────
@@ -94,7 +94,7 @@ window.STEPS = [
     notes: "Y antes de aceptarlo, la app lo valida. Si algo no cuadra, no entra en tu dieta.",
   },
   {
-    station: "plato", set: { barcode: 1 }, cam: [-2.2, 3.8, 10.5, -1.2, 2.0, 0],
+    station: "plato", set: { barcode: 1 }, cam: [-2.4, 0.2, 11, -2.4, 0.2, 0],
     notes: "Y si en la foto hay un código de barras, el agente lee los números y los busca en Open Food Facts, una base de datos abierta de productos. Si no lo encuentra, vuelve a mirar la foto y estima.\n\nUn LLM habla. Una app necesita números.",
   },
   // ── 6. Parada 3 ──────────────────────────────────────────────
@@ -111,11 +111,11 @@ window.STEPS = [
     notes: "Ojo: tu memoria personal no se le mete en el prompt de entrada. La consulta cuando le hace falta. Si le preguntas por una sentadilla, no necesita saber que odias el brócoli.",
   },
   {
-    station: "tools", set: { memory: 0, shadows: 1 }, cam: [14.5, 4.2, 7.5, 11, 1.6, 0],
+    station: "tools", set: { memory: 0, shadows: 1 }, cam: [17, 0.2, 12, 17, 0.2, 0],
     notes: "Y como cada proveedor, OpenAI, Anthropic y Google, pide estas herramientas a su manera, cada herramienta está definida una sola vez y de ahí salen los tres formatos.\n\n[pausa]",
   },
   {
-    station: "tools", set: { shadows: 0, form: 1 }, cam: [-11, 3.4, 10, -11, 2.1, 0],
+    station: "tools", set: { shadows: 0, form: 1 }, cam: [-17, 0.2, 11, -17, 0.2, 0],
     notes: "Esto parece sencillo, hasta que un día le pedí que apuntara mi peso. Solo el peso.",
   },
   {
@@ -145,11 +145,11 @@ window.STEPS = [
     notes: "Y el agente vuelve a guardar el arroz.\n\nPor la noche abres la app y ves que te has pasado 400 calorías.",
   },
   {
-    station: "duplicado", set: { night: 1 }, cam: [-1.2, 2.6, 10, -1.2, 0.8, 5.2],
+    station: "duplicado", set: { night: 1 }, cam: [-17, 0, 11.5, -17, 0, 0],
     notes: "Te fastidia. Cenas una manzana y te vas a la cama con hambre.\n\n[pausa larga]",
   },
   {
-    station: "duplicado", set: { night: 0, plates: 1, rewind: 1 }, cam: [0, 3.4, 9, 0, 1.8, 0],
+    station: "duplicado", set: { night: 0, plates: 1, rewind: 1 }, cam: [0, 0, 12, 0, 0, 0],
     notes: "No te habías pasado. Te faltaban 350. Te comiste el arroz una vez, y la app lo contó dos.\n\n[pausa]\n\nEn un chat normal, repetir una petición no pasa nada: como mucho te contesta dos veces. Pero un agente que escribe en tus datos, si repite, te deja un dato duplicado. Y con un dato duplicado acabas tomando decisiones equivocadas.",
   },
   {
@@ -165,7 +165,7 @@ window.STEPS = [
     notes: "¿Y si no puede saberlo? Entonces no lo repite. Te avisa. Prefiere preguntarte a apuntar otro arroz.\n\n[pausa]",
   },
   {
-    station: "duplicado", set: { doubt: 0, gap: 1 }, cam: [12, 2.6, 5.2, 12, 1.4, 0],
+    station: "duplicado", set: { doubt: 0, gap: 1 }, cam: [17, 0.4, 10, 17, 0.4, 0],
     notes: "Y aquí viene lo mejor. Lo arreglé, lo probé, todo funcionaba… y todavía quedaba un hueco de unos milisegundos, justo después de guardar el arroz y antes de apuntar que se había guardado, por el que se podía colar dos veces.",
   },
   {
@@ -173,7 +173,7 @@ window.STEPS = [
     notes: "Hizo falta un segundo arreglo para cerrarlo.",
   },
   {
-    station: "duplicado", set: { gap: 0, gapClosed: 0, compare: 1 }, cam: [2.5, 3.0, 8.4, 2.5, 2.0, 0],
+    station: "duplicado", set: { gap: 0, gapClosed: 0, compare: 1 }, cam: [2.3, 0, 10.5, 2.3, 0, 0],
     notes: "En un agente, ante la duda, no escribas dos veces: pregunta.",
   },
   // ── 8. Parada 5 ──────────────────────────────────────────────
@@ -194,11 +194,11 @@ window.STEPS = [
     notes: "Esas reglas no están escritas a mano dentro del prompt. Están escritas aparte, como reglas, con sus casos de prueba. Y de ahí se genera la parte del prompt que habla de salud. Además, todo lo que le dice al agente lo que puede y lo que no puede hacer va firmado, se prueba antes en un entorno de pruebas, y no llega a los usuarios sin que yo lo apruebe expresamente. Porque cambiar lo que un agente tiene permitido hacer es más peligroso que cambiar código: el cambio no te enseña sus consecuencias.\n\n[pausa]",
   },
   {
-    station: "salud", set: { seal: 0, stream: 1 }, cam: [0, 3.3, 10, 0, 2.6, 0],
+    station: "salud", set: { seal: 0, stream: 1 }, cam: [0, 0.4, 10.5, 0, 0.4, 0],
     notes: "Este filtro tiene un precio. A veces hace que parezca que la app funciona mal. Y me ha pasado dos veces.\n\nLa primera: me pasé una tarde convencido de que el streaming estaba roto. Unas respuestas salían poco a poco, palabra a palabra, y otras aparecían de golpe, enteras. Me puse a buscar el fallo… y no había fallo. Cuando la pregunta toca la salud, el filtro espera a tener la respuesta completa antes de enseñártela. Porque si te la va enseñando según llega, y a mitad de respuesta descubre que es peligrosa, ya la has leído.",
   },
   {
-    station: "salud", set: { stream: 0, tester: 1 }, cam: [0, 4.5, 12, 0, 2, -1.5],
+    station: "salud", set: { stream: 0, tester: 1 }, cam: [0, 0, 12, 0, 0, 0],
     notes: "La segunda: un tester me escribe y me dice que el agente no le contesta, que le sale un aviso rojo. Fui a mirar y esa versión de la app se había compilado sin las reglas de seguridad. Y el agente, en vez de funcionar sin ellas, se negó a funcionar.",
   },
   {
@@ -240,7 +240,7 @@ window.STEPS = [
     notes: "Lo quinto: saber lo que cuesta. Cuántos tokens gasta cada conversación, cuánto dinero es y dónde se va el tiempo de cada respuesta. Como la clave es de cada usuario, cada conversación la paga el usuario, así que tengo que saber lo que cuesta.\n\n[pausa]",
   },
   {
-    station: "pendiente", set: { a2a: 1 }, cam: [1.5, 6.4, 13, 1.5, 3.8, 3],
+    station: "pendiente", set: { a2a: 1 }, cam: [17, 0.3, 12, 17, 0.3, 0],
     notes: "Y lo último, que tiene su gracia.\n\nEmpecé esta historia quejándome de que mis apps no compartían datos con ChatGPT ni con Claude. Pues lo siguiente que quiero es que el agente de Gymnasia pueda hablar con otros agentes. Para eso quiero implementar un protocolo que se llama A2A, agent to agent, que sirve precisamente para eso: que dos agentes se entiendan entre ellos.",
   },
   {
@@ -261,7 +261,7 @@ window.STEPS = [
     notes: "Ahora, cuando me traen el arroz, le hago una foto… y me lo como caliente.\n\n[pausa]",
   },
   {
-    station: "mesa", set: {}, cam: [0, 3.2, 5.4, 0, 1, 0],
+    station: "mesa", set: {}, cam: [0.3, -0.5, 10.2, 0.3, -0.45, 0],
     notes: "Al final, lo difícil nunca fue que el agente supiera de nutrición. Eso ya lo sabía. Lo difícil era que supiera de mí sin que yo tuviera que contárselo. Y que, sabiéndolo, no lo estropeara.\n\n[pausa]",
   },
   {
