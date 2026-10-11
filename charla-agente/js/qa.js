@@ -1,8 +1,7 @@
 // Turno de preguntas. steps.js añade un índice y una diapositiva por pregunta.
 // `short` es el texto del índice; `a`, lo que se proyecta; `notes`, lo que
 // dices tú (solo en la vista de presentador); `img`, la ilustración de la
-// derecha (clave de js/assets.js). Las notas que empiezan por [REVISA] son
-// respuestas que dependen de ti y no del código: complétalas antes de la charla.
+// derecha (clave de js/assets.js).
 window.QA = [
   // ── Principiante ──────────────────────────────────────────────
   {
@@ -91,32 +90,32 @@ window.QA = [
     level: "Principiante", short: "¿Qué modelo me recomiendas?",
     q: "¿Qué modelo me recomiendas: OpenAI, Anthropic o Google?",
     a: [
-      "Para el día a día basta un modelo rápido y barato de cualquiera de los tres.",
+      "Cambia casi cada semana: os digo el mejor de hoy.",
       "Tiene que admitir herramientas; si no, el Coach no puede usarlo.",
       "Para fotos de comida, uno con visión.",
+      "Empieza por uno rápido y barato, y sube solo si se queda corto.",
     ],
-    notes: "[REVISA: añade tu preferencia real y por qué]\n\nLos tres funcionan, y la app está probada con los tres. Lo importante es que el modelo admita herramientas, porque sin ellas el Coach no puede trabajar, y que tenga visión si vas a usar el estimador con fotos.\n\nMi consejo: empieza con un modelo rápido y barato, y sube a uno más grande solo si notas que se queda corto.",
+    notes: "[di cuál es el mejor en ese momento]\n\nNo os voy a dar un nombre fijo, porque el mejor cambia casi cada semana. Hoy os diría este.\n\nLo que no cambia son los criterios: que admita herramientas, porque sin ellas el Coach no puede trabajar, y que tenga visión si vas a usar el estimador con fotos.\n\nY mi consejo: empieza con uno rápido y barato, y sube a uno más grande solo si notas que se queda corto.",
   },
   {
     level: "Principiante", short: "¿Es gratis? ¿Está para iPhone?",
     q: "¿La app es gratis? ¿Está para iPhone?",
     a: [
-      "Android: en Google Play, ahora en pruebas cerradas.",
-      "Web: gymnasia.maximofn.com.",
-      "iPhone: todavía no está publicada.",
-      "El modelo lo pagas tú con tu clave.",
+      "De momento solo hay versión para Android, y es gratis.",
+      "Cada uno pone sus claves y se paga sus tokens con el proveedor.",
+      "iPhone todavía no: no tengo iPhone para probarla.",
     ],
-    notes: "[REVISA: confirma el precio y los planes para iPhone]\n\nEn Android está en Google Play, de momento en pruebas cerradas. También hay versión web en gymnasia.maximofn.com.\n\nLa app no tiene servidor que pagar, así que el único coste es el del modelo, que va a tu cuenta.",
+    notes: "Hoy solo hay versión para Android, y es gratuita. No hay servidor que pagar: cada usuario pone sus claves de los proveedores y se paga sus tokens.\n\nTengo pensado cómo monetizarla en el futuro, pero eso ya lo contaré si se llega a ese punto.\n\n¿iPhone? Todavía no, por un motivo muy poco técnico: no tengo iPhone para probarla.",
   },
   {
     level: "Principiante", short: "¿Cuánto has tardado? ¿Has programado con IA?",
     q: "¿Cuánto has tardado en hacerla? ¿La has hecho solo? ¿Has programado con IA?",
     a: [
-      "La he hecho yo solo.",
-      "Programando con agentes de código: Claude Code y Codex.",
+      "Desde el 11 de febrero de 2026: ocho meses y más de 1.300 commits.",
+      "La he hecho yo solo, programando con agentes de código: Claude Code y Codex.",
       "Con tests y revisión en cada cambio: la IA escribe, yo decido.",
     ],
-    notes: "[REVISA: cuánto tiempo llevas y cuántas horas le dedicas]\n\nLa he hecho yo, programando con agentes de código. Pero ojo: no es «pídele una app y ya». Cada cambio va con sus tests, su revisión y su PR, y las decisiones de diseño, como el local-first o la idempotencia, son mías.\n\nLos agentes de código te dan velocidad. El criterio lo sigues poniendo tú.",
+    notes: "El primer commit es del 11 de febrero de 2026, así que llevo ocho meses, y más de 1.300 commits.\n\nY una curiosidad: ese primer commit montaba una web, una API y una base de datos en Supabase. Empecé exactamente por donde os conté en la primera parada, con un backend, y acabé tirándolo para hacerla local-first.\n\nLa he hecho yo, programando con agentes de código. Pero no es «pídele una app y ya»: cada cambio va con sus tests, su revisión y su PR, y las decisiones de diseño, como el local-first o la idempotencia, son mías.\n\nLos agentes de código te dan velocidad. El criterio lo sigues poniendo tú.",
   },
   {
     level: "Principiante", short: "¿Por qué no ChatGPT, si ya tiene memoria?",
@@ -265,11 +264,11 @@ window.QA = [
     level: "Intermedio", short: "¿Qué modelo usas y cuánto cuesta una conversación?",
     q: "¿Qué modelo usas tú y cuánto cuesta una conversación típica?",
     a: [
-      "Lo eliges de la lista que devuelve tu proveedor.",
-      "Hoy la app no mide el coste: es una de las tareas pendientes.",
-      "La caché de prompts lo bajaría bastante: el prompt y las herramientas se repiten.",
+      "Yo uso Qwen 3.8 27B en local, en mi máquina, y llego a él por VPN: me sale gratis.",
+      "La app admite cualquier servidor compatible con la API de OpenAI.",
+      "Con un proveedor de pago, hoy la app no mide el coste: está en las tareas pendientes.",
     ],
-    notes: "[REVISA: di qué modelo usas tú y, si lo sabes por tu panel del proveedor, lo que te cuesta al mes]\n\nLa app te enseña los modelos que ofrece tu proveedor y eliges.\n\nCuánto cuesta una conversación no lo sé medir todavía desde la app: contar tokens y coste por llamada es justo una de las tareas pendientes.\n\nY hay una mejora clara: el prompt y las 13 herramientas son idénticos en cada petición, así que la caché de prompts lo abarataría bastante.",
+    notes: "Yo, últimamente, ninguno de los tres grandes: uso Qwen 3.8 27B en local. Lo tengo corriendo en mi máquina y el móvil llega a él por una VPN, así que me sale gratis.\n\nSe puede porque la app admite, además de OpenAI, Anthropic y Google, cualquier servidor compatible con la API de OpenAI, con la URL que tú elijas.\n\nSi usas un proveedor de pago, cuánto cuesta cada conversación todavía no lo mide la app: contar tokens y coste por llamada es una de las tareas pendientes. Y la caché de prompts lo abarataría bastante, porque el prompt y las 13 herramientas se repiten en cada petición.",
   },
 
   // ── Avanzado ──────────────────────────────────────────────────
@@ -379,22 +378,21 @@ window.QA = [
     level: "Avanzado", short: "¿Cómo evitas los sesgos del modelo juez?",
     q: "¿Cómo evitarás los sesgos del modelo juez, sobre todo si es de la misma familia que el que responde?",
     a: [
-      "El juez será de una familia distinta a la del modelo evaluado.",
-      "Con rúbricas concretas y respuestas de referencia, no «¿está bien?».",
-      "Y revisando a mano una muestra para calibrarlo.",
+      "Todavía no hay juez: las evals son lo primero de lo que queda por hacer.",
+      "Cuando llegue a ese río, cruzaré ese puente.",
     ],
-    notes: "[REVISA: esto es un plan, todavía no está hecho; ajústalo a lo que pienses hacer]\n\nTres medidas.\n\nUna: no dejar que un modelo se juzgue a sí mismo: el juez será de otra familia.\n\nDos: no preguntarle «¿es buena esta respuesta?», sino darle una rúbrica concreta y una respuesta de referencia: ¿menciona las calorías que quedan?, ¿deriva a un profesional cuando toca?\n\nTres: revisar a mano una muestra de sus notas para ver si coincide conmigo. Si no coincide, el juez no vale.",
+    notes: "Todavía no hay juez: las evals son justo lo primero de la lista de lo que me queda.\n\nAsí que, cuando llegue a ese río, cruzaré ese puente.",
   },
   {
     level: "Avanzado", short: "A2A en un móvil sin servidor, ¿cómo?", img: "carrito",
     q: "A2A supone un agente accesible por HTTP. ¿Cómo lo hace una app sin servidor? ¿Cómo se autentica el otro agente?",
     a: [
-      "Tal cual, no puede: una app sin backend no recibe peticiones.",
-      "Hoy solo puede ser cliente: es Gymnasia quien llama al agente de la compra y le pasa tus objetivos.",
-      "Que otros nos llamen exigiría un relé, y eso rompe el «sin servidor».",
-      "La autenticación la pone el agente remoto, con los esquemas HTTP estándar.",
+      "Hoy no puede: una app sin backend no recibe peticiones; solo podría ser cliente.",
+      "Si hace falta, haré un pequeño backend solo para A2A.",
+      "Y buscaré la forma de que cada uno lo instale en local, para que sus datos sigan siendo suyos.",
+      "La autenticación la pone cada agente, con los esquemas HTTP estándar.",
     ],
-    notes: "Buena pregunta, porque es la grieta de mi ejemplo.\n\nUna app sin backend no puede ser servidor A2A: no tiene una URL a la que otro agente pueda llamar. Así que hoy solo puede ser cliente.\n\nEn la práctica, el flujo sería al revés de como lo conté: es Gymnasia quien llama al agente de la compra y le pasa tus calorías, tu proteína y tus gustos. Para el usuario el resultado es el mismo: el carrito llega sin brócoli.\n\nQue cualquier agente pudiera llamarnos exigiría un relé con servidor, y eso choca con el local-first. Está en el tablero como épica pendiente de desglosar.\n\nLa autenticación la define el agente remoto en su ficha: A2A usa los esquemas estándar de HTTP, como OAuth o claves de API.",
+    notes: "Hoy no puede, y lo dije en la charla: una app sin backend no tiene una URL a la que otro agente pueda llamar. Tal como está, Gymnasia solo podría ser cliente A2A, es decir, llamar ella al agente de la compra y pasarle tus objetivos.\n\nPara que otros agentes le pregunten, si hace falta, haré un pequeño backend solo para eso. Y buscaré la manera de que cada uno se lo pueda instalar en local, en su casa, para que sus datos sigan siendo suyos. Sería la misma idea del local-first, llevada un paso más allá.\n\nLa autenticación la declara cada agente en su ficha: A2A usa los esquemas estándar de HTTP, como OAuth o claves de API.",
   },
   {
     level: "Avanzado", short: "RGPD: ¿quién es responsable de los datos de salud?",
@@ -404,7 +402,7 @@ window.QA = [
       "El envío al proveedor va con tu cuenta y tu clave, bajo sus condiciones.",
       "La política de privacidad detalla qué se envía; sin clave, no sale nada.",
     ],
-    notes: "[REVISA: no soy abogado; si quieres, añade aquí la valoración legal que tengas]\n\nLa política de privacidad me identifica como responsable del tratamiento, pero en la práctica no dispongo de tus datos: no hay cuenta ni servidor. Tus derechos los ejerces sin intermediario: exportas, editas o borras desde la app.\n\nCuando hablas con el modelo, la petición sale de tu móvil con tu clave, hacia el proveedor que tú has elegido y bajo tu cuenta con él. Lo que se envía queda sujeto a su política y sus términos.\n\nLa política explica exactamente qué se envía en cada caso, y si no pones clave, no sale nada.",
+    notes: "Creo que no incumplo nada, y os explico por qué.\n\nLa política de privacidad me identifica como responsable del tratamiento, pero en la práctica no dispongo de vuestros datos: no hay cuenta ni servidor. Los derechos se ejercen sin intermediario: exportas, editas o borras desde la app.\n\nCuando hablas con el modelo, la petición sale de tu móvil con tu clave, hacia el proveedor que tú has elegido y bajo tu cuenta con él. Lo que se envía queda sujeto a su política y sus términos.\n\nLa política explica exactamente qué se envía en cada caso, y si no pones clave, no sale nada.",
   },
   {
     level: "Avanzado", short: "¿Por qué «strict: false» y no campos que admitan null?",
@@ -432,9 +430,9 @@ window.QA = [
     a: [
       "Sí, y daría privacidad total y funcionaría sin red.",
       "Hoy un modelo que cabe en un móvil se queda corto con 13 herramientas y fotos.",
-      "La app admite un servidor compatible con OpenAI: puedes apuntar a un modelo tuyo.",
+      "La app admite un servidor compatible con OpenAI: yo uso uno en mi máquina, por VPN.",
     ],
-    notes: "Lo he considerado, y es hacia donde iría si los modelos pequeños mejoran lo suficiente.\n\nHoy, un modelo que cabe en un móvil normal tiene problemas con lo que más necesita este agente: elegir bien entre 13 herramientas, rellenar argumentos con esquema y entender fotos de comida.\n\nMientras tanto, la app admite un proveedor compatible con la API de OpenAI con la URL que tú elijas. Si tienes un modelo propio sirviendo esa API por HTTPS, puedes usarlo.",
+    notes: "Lo he considerado, y es hacia donde iría si los modelos pequeños mejoran lo suficiente.\n\nHoy, un modelo que cabe en un móvil normal tiene problemas con lo que más necesita este agente: elegir bien entre 13 herramientas, rellenar argumentos con esquema y entender fotos de comida.\n\nMientras tanto, la app admite un proveedor compatible con la API de OpenAI con la URL que tú elijas. Yo mismo uso así Qwen 3.8 27B, en mi máquina y a través de una VPN: no corre en el móvil, pero los datos no salen de mi casa.",
   },
   {
     level: "Avanzado", short: "¿Usas caché de prompts?",

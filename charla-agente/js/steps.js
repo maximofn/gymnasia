@@ -209,7 +209,7 @@ window.STEPS = [
   // ── 9. Parada 6 ──────────────────────────────────────────────
   {
     station: "tests", section: "Parada 6", set: { shred: 0, offline: 0 },
-    notes: "Última parada. ¿Cómo pruebas algo que no responde dos veces igual?\n\nPues en los tests no hay ningún modelo de verdad. Hay un proveedor falso que devuelve respuestas grabadas.",
+    notes: "Última parada. ¿Cómo pruebas algo que no responde dos veces igual?\n\nPues en los tests no hay ningún modelo de verdad. Hay un proveedor falso que devuelve respuestas de ejemplo, escritas con el formato exacto de OpenAI, de Anthropic y de Google.",
   },
   {
     station: "tests", set: { shred: 1 },
@@ -242,7 +242,7 @@ window.STEPS = [
   },
   {
     station: "pendiente", set: { a2a: 1 }, cam: [17, 0.3, 12, 17, 0.3, 0],
-    notes: "Y lo último, que tiene su gracia.\n\nEmpecé esta historia quejándome de que mis apps no compartían datos con ChatGPT ni con Claude. Pues lo siguiente que quiero es que el agente de Gymnasia pueda hablar con otros agentes. Para eso quiero implementar un protocolo que se llama A2A, agent to agent, que sirve precisamente para eso: que dos agentes se entiendan entre ellos.",
+    notes: "Y lo último, que tiene su gracia.\n\nEmpecé esta historia quejándome de que mis apps no compartían datos con ChatGPT ni con Claude. Pues lo siguiente que quiero es que el agente de Gymnasia pueda hablar con otros agentes. Para eso quiero implementar un protocolo que se llama A2A, agent to agent, que sirve precisamente para eso: que dos agentes se entiendan entre ellos.\n\nEso sí: para que otro agente le pueda preguntar, el de Gymnasia tiene que poder recibir peticiones, y una app sin servidor no puede. Si hace falta, haré un pequeño backend solo para eso, y buscaré la manera de que cada uno se lo pueda instalar en local, para que sus datos sigan siendo suyos.",
   },
   {
     station: "pendiente", set: { cart: 1 },

@@ -1155,7 +1155,7 @@
     const core = makeCore(group(R, CORE.x, CORE.y, CORE.z), 0.85);
     const robot = img(R, "robot", { shadow: true, float: 0.03, x: 4.4, y: -0.4, z: 0, h: 5.8 });
     const tape = img(R, "casete", { shadow: true, float: 0.07, x: 1.4, y: -1.9, z: 1.8, h: 1.9, r: -0.08 });
-    const fixed = [ctx.label("proveedor falso", "tag", [4.4, 3.0, 0]), ctx.label("respuestas grabadas", "tag mini", [1.4, -2.75, 1.8])];
+    const fixed = [ctx.label("proveedor falso", "tag", [4.4, 3.0, 0]), ctx.label("respuestas de ejemplo", "tag mini", [1.4, -2.75, 1.8])];
 
     const A = V(1.2, -1.5, 1.9), B = V(-3.3, 0.5, 0.2);
     const N = 16;

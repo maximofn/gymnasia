@@ -33,8 +33,7 @@ respuesta `I` (o el enlace de abajo) vuelve al índice. En la vista de presentad
 la columna derecha se convierte en esa misma lista: pulsa una pregunta y la
 proyección salta a su respuesta, con la respuesta completa en tu guion.
 
-Las preguntas y respuestas están en `js/qa.js`. Las notas marcadas con `[REVISA]`
-dependen de ti, no del código: complétalas antes de la charla.
+Las preguntas y respuestas están en `js/qa.js`.
 
 ## Cómo está hecha
 
