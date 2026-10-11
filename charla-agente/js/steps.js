@@ -178,7 +178,7 @@ window.STEPS = [
   },
   // ── 8. Parada 5 ──────────────────────────────────────────────
   {
-    station: "salud", section: "Parada 5", set: { ask: 1, risk: 0, seal: 0, stream: 0, tester: 0 },
+    station: "salud", section: "Parada 5", set: { ask: 1, risk: 0, seal: 0, stream: 0, tester: 0, verdict: 0 },
     notes: "Quinta parada. Tú ves que te has pasado, aunque no te hayas pasado. Y le preguntas al agente: «si mañana no como nada, ¿lo compenso?».\n\nEsa pregunta no le llega al modelo tal cual. Antes pasa por un filtro de salud, que va aparte del prompt, y que decide cómo de arriesgada es.",
   },
   {
@@ -202,7 +202,7 @@ window.STEPS = [
     notes: "La segunda: un tester me escribe y me dice que el agente no le contesta, que le sale un aviso rojo. Fui a mirar y esa versión de la app se había compilado sin las reglas de seguridad. Y el agente, en vez de funcionar sin ellas, se negó a funcionar.",
   },
   {
-    station: "salud", set: {},
+    station: "salud", set: { verdict: 1 },
     notes: "Para el tester fue un fastidio, claro. Pero piensa en la alternativa: un agente contestando preguntas de salud sin ninguna regla.\n\n[pausa]\n\nEntre un agente que a veces no te contesta y uno que te contesta lo que no debe, me quedo con el primero.",
   },
   // ── 9. Parada 6 ──────────────────────────────────────────────
@@ -253,7 +253,7 @@ window.STEPS = [
   },
   // ── 11. Cierre ───────────────────────────────────────────────
   {
-    station: "mesa", section: "Cierre", set: { title: 0, merge: 0, cubeLabels: 0, cold: 1, islands: 1, jump: 0 },
+    station: "mesa", section: "Cierre", set: { title: 0, merge: 0, cubeLabels: 0, cold: 1, islands: 1, jump: 0, moral: 0 },
     notes: "[vuelves al restaurante del principio]\n\n¿Os acordáis del arroz enfriándose mientras yo copiaba y pegaba mi vida en ChatGPT?",
   },
   {
@@ -261,11 +261,11 @@ window.STEPS = [
     notes: "Ahora, cuando me traen el arroz, le hago una foto… y me lo como caliente.\n\n[pausa]",
   },
   {
-    station: "mesa", set: {}, cam: [0.3, -0.5, 10.2, 0.3, -0.45, 0],
+    station: "mesa", set: { moral: 1 },
     notes: "Al final, lo difícil nunca fue que el agente supiera de nutrición. Eso ya lo sabía. Lo difícil era que supiera de mí sin que yo tuviera que contárselo. Y que, sabiéndolo, no lo estropeara.\n\n[pausa]",
   },
   {
-    station: "mesa", set: { thanks: 1 },
+    station: "mesa", set: { thanks: 1, moral: 0 },
     notes: "Gracias.",
   },
 ];

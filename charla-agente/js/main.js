@@ -83,7 +83,7 @@
 
   const $ = (id) => document.getElementById(id);
   const flashEl = $("flash"), chipEl = $("chip"), titleEl = $("title"), thanksEl = $("thanks");
-  const blackEl = $("black"), hintEl = $("hint"), fadeEl = $("fade"), progressEl = $("progress");
+  const blackEl = $("black"), hintEl = $("hint"), fadeEl = $("fade"), progressEl = $("progress"), moralEl = $("moral");
 
   function retrigger(el) {
     el.classList.remove("on");
@@ -206,7 +206,8 @@
     const mesa = stations.mesa.prev;
     const onMesa = active === "mesa";
     titleEl.classList.toggle("on", onMesa && !!mesa.title);
-    canvas.classList.toggle("blurred", onMesa && !!mesa.title);
+    moralEl.classList.toggle("on", onMesa && !!mesa.moral);
+    canvas.classList.toggle("blurred", onMesa && (!!mesa.title || !!mesa.moral));
     thanksEl.classList.toggle("on", onMesa && !!mesa.thanks);
     const name = active === "mesa" ? "" : STATIONS[active].name;
     if (chipEl.dataset.name !== name) {

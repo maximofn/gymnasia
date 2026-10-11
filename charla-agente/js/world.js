@@ -452,7 +452,9 @@
     R.add(new THREE.LineSegments(linkGeo, linkMat));
     const ask = ctx.label("¿Me he pasado esta semana?", "bubble", [3.2, 2.85, 1.5]);
     const answer = ctx.label("Vas bien. Ayer hiciste pierna y el lunes pesabas 82 kg. Para cenar, salmón con patata. Sin brócoli.", "bubble ok-b", [-3.7, 2.3, 1.5]);
-    const nothing = ctx.label("Y no le he contado nada.", "big", [0, -3.05, 2.5]);
+    const nothing = ctx.label("Y no le he contado nada.", "big", [0, 0.1, 3]);
+    // Huecos alrededor del móvil, para que los iconos nunca lo tapen.
+    const SLOTS = [[-3.2, 0.9], [3.0, 1.4], [-2.7, -1.3], [2.8, -1.1]];
 
     // La foto
     const finder = corners(group(R, 0, -0.45, 1.1), 5.4, 3.6, 0.55, 0.045, basic(hdr(C.lime, 2.2), 1));
@@ -465,7 +467,7 @@
     // Cierre: el bocado
     const fork = img(R, "tenedor", { float: 0.02, x: 0.8, y: -2.0, z: 2, h: 1.7 });
 
-    let orbit = 0, orbitSpeed = 0.45, phase = 0, mixCold = 0;
+    let orbit = 0, orbitSpeed = 1, phase = 0, mixCold = 0;
     return function update(s, dt, t, since) {
       bk(t);
       const L = s.bite ? "bite" : s.merge ? "merge" : s.kcal ? "hero" : s.islands ? "antes" : "hero";
@@ -519,26 +521,26 @@
       // Gymnasia
       const showGym = (L === "merge" || L === "bite") && !(converging && mk < 0.95);
       const G = L === "bite" ? { x: -4.2, y: 0.4, z: -0.6, h: 4.0 } : { x: 0, y: 0.2, z: 0, h: 5 };
-      gym.to({ ...G, o: showGym ? 1 : 0, sat: 1, br: 1 }, dt, 4);
+      gym.to({ ...G, o: showGym ? 1 : 0, ...dimmed }, dt, 4);
       const bk2 = s.merge ? smooth((mk - 0.85) / 0.25) * (1 - smooth((mk - 1.15) / 0.9)) : 0;
       burst.position.set(gym.s.x, gym.s.y, gym.s.z + 0.3);
       burst.scale.setScalar(2 + bk2 * 7);
       burst.material.opacity = bk2 * 0.45;
 
-      orbitSpeed = damp(orbitSpeed, freeze ? 0 : s.cubeLabels ? 0.12 : 0.45, 3, dt);
+      orbitSpeed = damp(orbitSpeed, freeze ? 0 : 1, 3, dt);
       orbit += dt * orbitSpeed;
       const showIcons = L === "merge" && mk > 1.0;
       icons.forEach((ic, i) => {
-        const a = orbit + ic.off;
-        // Órbita alrededor del móvil, en el plano de la pantalla, para no taparlo.
-        const x = gym.s.x + Math.cos(a) * 3.3, y = gym.s.y + Math.sin(a) * 2.1, z = gym.s.z + 0.3 + Math.sin(a + 1) * 0.6;
-        ic.im.to({ x, y, z, o: showIcons ? 1 : 0, sat: 1, br: 1 }, dt, 6);
+        // Cada icono gira despacio sobre su hueco; al congelarse, se para.
+        const a = orbit * 0.6 + ic.off;
+        const x = gym.s.x + SLOTS[i][0] + Math.cos(a) * 0.22, y = gym.s.y + SLOTS[i][1] + Math.sin(a) * 0.16, z = gym.s.z + 0.3;
+        ic.im.to({ x, y, z, o: showIcons ? 1 : 0, ...dimmed }, dt, 6);
         ic.anchor.position.set(x, y - 0.8, z);
         ic.label.on = showIcons && !!s.cubeLabels;
         linkPos.set([gym.s.x, gym.s.y - 0.2, gym.s.z, ic.im.mesh.position.x, ic.im.mesh.position.y, ic.im.mesh.position.z], i * 6);
       });
       linkGeo.attributes.position.needsUpdate = true;
-      linkMat.opacity = damp(linkMat.opacity, showIcons ? 0.45 : 0, 3, dt);
+      linkMat.opacity = damp(linkMat.opacity, showIcons ? (freeze ? 0.08 : 0.45) : 0, 3, dt);
       ask.on = L === "merge" && !freeze && !s.cubeLabels && !s.title && mk > 1.6;
       answer.on = ask.on && mk > 2.8;
       nothing.on = freeze && since("freeze") > 0.6;
@@ -1097,6 +1099,8 @@
 
     const tester = ctx.label("El agente no me contesta, me sale un aviso rojo.", "bubble", [-3.9, 2.4, 1.5]);
     const alert = ctx.label("Esta compilación no tiene la política firmada", "tag bad big-tag", [0, -3.3, 0.5]);
+    const better = ctx.label('<div class="c-title">me quedo con este</div><div class="v-text">Un agente que a veces no te contesta</div>', "card lime verdict", [-3.1, 0, 2]);
+    const worse = ctx.label('<div class="c-title">antes que con este</div><div class="v-text">Un agente que te contesta lo que no debe</div>', "card red verdict", [3.1, 0, 2]);
 
     return function update(s, dt, t, since) {
       bk(t);
@@ -1106,11 +1110,11 @@
       // El rojo y el ámbar se queman a blanco con el bloom si pasan mucho de 1.
       archMat.color.lerp(hdr(archColor, dimArch ? 0.9 : archColor === C.lime ? 2.0 : 1.25), 1 - Math.exp(-6 * dt));
       field.material.color.lerp(tmpC.setHex(archColor), 1 - Math.exp(-6 * dt));
-      fadeTo(arch.parent, s.stream ? 0.12 : 1, dt, 3);
+      fadeTo(arch.parent, s.stream || s.verdict ? 0.12 : 1, dt, 3);
       filterTag.on = !!s.ask && !s.risk;
 
       tools.forEach((x) => {
-        x.label.on = !s.stream && !s.seal;
+        x.label.on = !s.stream && !s.seal && !s.verdict;
         x.label.fade = s.tester ? 0.4 : 1;
         if (x.lock) x.lock.on = s.risk === 2 && since("risk") > 1.6;
       });
@@ -1134,8 +1138,10 @@
         right.el.innerHTML = '<div class="c-title">Pregunta de salud</div><div class="p-body' + (done ? "" : " wait") + '">' +
           (done ? HEALTH : "esperando a tener la respuesta completa…") + "</div>";
       }
-      tester.on = !!s.tester;
-      alert.on = !!s.tester && since("tester") > 1;
+      tester.on = !!s.tester && !s.verdict;
+      alert.on = !!s.tester && !s.verdict && since("tester") > 1;
+      better.on = !!s.verdict;
+      worse.on = !!s.verdict && since("verdict") > 0.5;
       bd.to(s.tester || s.risk === 3 ? 0x2a1214 : s.risk === 2 ? 0x2a1d0c : 0x16210f, dt, 1.5);
     };
   };
@@ -1246,7 +1252,7 @@
     const a2aTag = ctx.label("A2A · agent to agent", "tag ok", [AX - 0.8, 1.15, 0]);
     const cartAsk = ctx.label("¿Cuántas calorías? ¿Cuánta proteína? ¿Qué le gusta?", "bubble", [AX + 1.6, 3.0, 0.5]);
     const gymAnswer = ctx.label("2.200 kcal · 140 g de proteína · sin brócoli", "bubble ok-b", [AX - 3.2, 2.8, 0.5]);
-    const broc = img(R, "brocoli", { float: 0, x: AX + 3.9, y: 0.2, z: 0.8, h: 1.3 });
+    const broc = img(R, "brocoli", { float: 0, x: AX + 4.2, y: 0.45, z: 0.8, h: 1.4 });
     const noBroc = ctx.label("sin brócoli", "tag ok big-tag", [AX + 3.9, 2.5, 0.5]);
 
     return function update(s, dt, t, since) {
@@ -1281,7 +1287,7 @@
       if (s.broccoli) {
         const k = since("broccoli");
         const p = smooth(k / 1.5);
-        broc.to({ x: AX + 3.9 + p * 2.4, y: 0.2 + Math.sin(p * Math.PI) * 2.4 - p * 2.6, z: 0.8 + p, h: 1.3 + p * 0.4, r: -p * 2.5, o: k < 1.4 ? 1 : 0, sat: 1 - p * 0.6 }, dt, 30);
+        broc.to({ x: AX + 4.2 + p * 2.2, y: 0.45 + Math.sin(p * Math.PI) * 2.4 - p * 2.8, z: 0.8 + p, h: 1.4 + p * 0.4, r: -p * 2.5, o: k < 1.4 ? 1 : 0, sat: 1 - p * 0.6 }, dt, 30);
       } else {
         broc.to({ o: 0 }, dt, 8);
       }
