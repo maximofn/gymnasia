@@ -103,3 +103,18 @@ test("la release sigue en draft hasta verificar AAB, APK y Play", () => {
   assert.match(workflow, /EAS submission:/);
   assert.match(workflow, /Play: \\`\$\(jq -r '\.legs\.play\.track' \/tmp\/android-release-transaction\.json\) \/ completed \/ FINISHED\\`/);
 });
+
+test("bloquea antes del envío sin credencial y valida bytes y recibo de Google antes de publicar", () => {
+  const restore = workflow.indexOf("Restore validated AAB and durable evidence");
+  const intent = workflow.indexOf("Persist submission intent before contacting EAS");
+  const submit = workflow.indexOf("Submit only the validated wallabot AAB");
+  const receipt = workflow.indexOf("Verify the exact AAB and completed track at Google Play");
+  const bind = workflow.indexOf("Create and bind Play evidence");
+  const publish = workflow.indexOf('--draft=false --latest');
+  assert.ok(workflow.indexOf("Require Google verification credential") < restore);
+  assert.ok(restore < intent && intent < submit && submit < receipt && receipt < bind && bind < publish);
+  assert.match(workflow.slice(restore, intent), /submit-artifact\.mjs/);
+  assert.match(workflow.slice(submit, receipt), /--source-evidence[\s\S]*--artifact-evidence/);
+  assert.match(workflow.slice(receipt, bind), /GOOGLE_PLAY_SERVICE_ACCOUNT_JSON/);
+  assert.match(workflow.slice(bind, publish), /--google-receipt \/tmp\/production-google-play-receipt\.json/);
+});
