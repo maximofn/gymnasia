@@ -235,7 +235,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Diecisiete cosas que cuestan tiempo si no se saben:
+Dieciocho cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -389,6 +389,17 @@ Diecisiete cosas que cuestan tiempo si no se saben:
     septiembre de 2026 al cerrar GYM-39. `PLACEHOLDER` ignora ahora los `<url>`
     que empiezan por `http(s)://`; si reaparece con otro formato, relee la línea
     con `get` y busca cualquier `<...>` que Linear haya añadido.
+
+18. **Linear limita `first` a 250 y `list --all` no pagina.** El síntoma al
+    pedir `list --all --limit 300` es `Argument Validation Error` con
+    `first must not be greater than 250`. Usa `--limit 250` como máximo en ese
+    comando. `--all` incluye estados completados y cancelados, pero no garantiza
+    devolver todos los tickets: si hay más de 250, quedan fuera de la primera
+    página. Antes de concluir que un ticket no existe, importa el módulo como
+    en "Edición masiva" y consulta `issues(first: 250, after: $after)` con
+    `pageInfo { hasNextPage endCursor }`, repitiendo con `endCursor` hasta que
+    `hasNextPage` sea falso. Verificado el 10 de octubre de 2026 con 256 tickets:
+    la primera página devolvió 250 y la segunda, los seis restantes.
 
 ## Notas
 
