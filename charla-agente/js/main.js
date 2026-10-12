@@ -186,16 +186,12 @@
     qaEl.classList.toggle("on", q !== null && q !== undefined);
     if (q === null || q === undefined) return;
     if (q === 0) {
-      const cols = ["Principiante", "Intermedio", "Avanzado"].map((level) => {
-        const items = QA.map((x, i) => [x, i]).filter(([x]) => x.level === level)
-          .map(([x, i]) => `<li><a href="#${QA_INDEX + 2 + i}"><span>${i + 1}</span>${esc(x.short)}</a></li>`).join("");
-        return `<section class="qa-col"><h2>${level}</h2><ol>${items}</ol></section>`;
-      }).join("");
-      qaEl.innerHTML = `<div class="qa-index"><h1>Preguntas<small>Pulsa una para ver la respuesta · <kbd>I</kbd> vuelve aquí</small></h1><div class="qa-cols">${cols}</div></div>`;
+      const items = QA.map((x, i) => `<li><a href="#${QA_INDEX + 2 + i}"><span>${i + 1}</span>${esc(x.short)}</a></li>`).join("");
+      qaEl.innerHTML = `<div class="qa-index"><h1>Preguntas<small>Pulsa una para ver la respuesta · <kbd>I</kbd> vuelve aquí</small></h1><ol class="qa-cols">${items}</ol></div>`;
       return;
     }
     const x = QA[q - 1];
-    qaEl.innerHTML = `<div class="qa-answer"><div class="qa-meta"><b>${x.level}</b><span>Pregunta ${q} de ${QA.length}</span></div>` +
+    qaEl.innerHTML = `<div class="qa-answer"><div class="qa-meta"><span>Pregunta ${q} de ${QA.length}</span></div>` +
       `<h1>${esc(x.q)}</h1><ul>${x.a.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>` +
       `<a class="qa-back" href="#${QA_INDEX + 1}">← Volver al índice <kbd>I</kbd></a>`;
   }

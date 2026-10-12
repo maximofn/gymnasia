@@ -38,7 +38,6 @@ assert.equal(STEPS[QA_INDEX - 1].set.thanks, 1, "el índice de preguntas va just
 assert.equal(STEPS.length, QA_INDEX + 1 + QA.length);
 QA.forEach((x, i) => {
   const n = `pregunta ${i + 1}`;
-  assert.ok(["Principiante", "Intermedio", "Avanzado"].includes(x.level), `${n}: nivel`);
   assert.ok(x.q && x.short && x.notes && x.a.length >= 2, `${n}: incompleta`);
   if (x.img) assert.ok(assets.includes(`"${x.img}":"data:`), `${n}: falta la ilustración ${x.img}`);
 });

@@ -28,10 +28,11 @@ te devuelve al principio.
 ### Turno de preguntas
 
 Después de «Gracias» viene un índice con las preguntas que puede hacer el público,
-por niveles. Cada una enlaza con una diapositiva que la responde, y desde cualquier
-respuesta `I` (o el enlace de abajo) vuelve al índice. En la vista de presentador,
-la columna derecha se convierte en esa misma lista: pulsa una pregunta y la
-proyección salta a su respuesta, con la respuesta completa en tu guion.
+en tres columnas y sin etiqueta de nivel, para que nadie sienta que su pregunta es
+«de principiante». Cada una enlaza con una diapositiva que la responde, y desde
+cualquier respuesta `I` (o el enlace de abajo) vuelve al índice. En la vista de
+presentador, la columna derecha se convierte en esa misma lista: pulsa una pregunta
+y la proyección salta a su respuesta, con la respuesta completa en tu guion.
 
 Las preguntas y respuestas están en `js/qa.js`.
 
