@@ -331,12 +331,18 @@ durante 14 días y permitía **solicitar** acceso. No se solicitó ni se public�
   `npm run check:prompt-policy`, `npm run check:data-inventory` y
   `npm run check:legal`, correctos. Se limitó la concurrencia de la suite móvil
   tras un timeout de cifrado bajo carga, sin cambiar la prueba ni sus límites.
+- `npm run test:agent:e2e`: correcto; smoke web de Coach con OpenAI falso y
+  proveedor Development local, sin llamadas a proveedores reales ni deployments.
 - Privacidad: se recorrió `docs/legal/privacy-change-checklist.md`. Los hosts y
   credenciales nuevos son operativos, fuera del bundle; no cambian datos, destinos,
   permisos ni almacenamiento de `apps/mobile`, raíz del inventario. No corresponde
   modificar inventario de datos personales ni política legal por este cambio.
-- **Pendiente antes del cierre:** configurar la clave existente en el environment
-  con autorización explícita para enviarla a GitHub, revisar/fusionar la PR y
-  actualizar el plan de pruebas del ticket con esa evidencia. Una promoción real
-  a producción sigue pendiente del acceso de Google y de autorización explícita;
-  no se debe marcar como probada por disponer de tests simulados.
+- La clave existente quedó configurada como secreto de `Play Internal` el 12 de
+  octubre de 2026, 19:52 UTC, tras autorización explícita del propietario. No se
+  generaron claves nuevas ni se ampliaron permisos; ningún valor secreto forma
+  parte de estas evidencias.
+- El cierre de la auditoría acredita los controles y el procedimiento anterior.
+  Una promoción real a producción sigue pendiente del acceso de Google y de
+  autorización explícita; no se marca como ejecutada por disponer de tests
+  simulados. Cuando Google habilite el canal, aplicar el procedimiento manual
+  conservando el bundle ya validado y las evidencias de destino y territorios.
