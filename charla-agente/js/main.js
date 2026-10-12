@@ -83,6 +83,7 @@
 
   const $ = (id) => document.getElementById(id);
   const flashEl = $("flash"), chipEl = $("chip"), titleEl = $("title"), thanksEl = $("thanks");
+  const brandEl = $("brand");
   const blackEl = $("black"), hintEl = $("hint"), fadeEl = $("fade"), progressEl = $("progress"), moralEl = $("moral");
 
   function retrigger(el) {
@@ -103,7 +104,7 @@
     if (presenter && !presenter.closed) presenter.postMessage({ type: "state", index }, "*");
   }
   function openPresenter() {
-    presenter = window.open("presenter.html", "gymnasia-presentador", "width=1180,height=780");
+    presenter = window.open("presenter.html" + location.search, "gymnasia-presentador", "width=1180,height=780");
     setTimeout(notify, 600);
   }
   function fullscreen() {
@@ -130,6 +131,7 @@
   });
   // En el turno de preguntas un clic suelto no avanza: se navega con los enlaces.
   canvas.addEventListener("click", () => { if (STEPS[index].station !== "qa") go(index + 1); });
+  brandEl.addEventListener("click", () => go(index + 1));
   // Los enlaces del índice y de «volver» cambian el hash.
   window.addEventListener("hashchange", () => {
     const n = parseInt(location.hash.slice(1), 10);
@@ -230,6 +232,8 @@
     camera.lookAt(camLook.x);
 
     // Superposiciones
+    const brand = STEPS[index].brand || "";
+    if (brandEl.dataset.on !== brand) brandEl.dataset.on = brand;
     const mesa = stations.mesa.prev;
     const onMesa = active === "mesa";
     titleEl.classList.toggle("on", onMesa && !!mesa.title);
