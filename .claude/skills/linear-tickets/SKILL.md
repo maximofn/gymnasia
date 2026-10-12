@@ -235,7 +235,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Diecisiete cosas que cuestan tiempo si no se saben:
+Dieciocho cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -283,8 +283,9 @@ Diecisiete cosas que cuestan tiempo si no se saben:
 7. **Linear limita `issues(first: ...)` a 250 resultados.** El síntoma al usar
    `list --limit 251` (o un valor mayor) es `Argument Validation Error` con
    `first must not be greater than 250`. Usa como máximo `--limit 250`; si el
-   equipo supera esa cifra, el script necesitará paginación antes de poder
-   auditar el inventario completo en una sola consulta.
+   equipo supera esa cifra, `list --limit` sigue siendo una lectura limitada.
+   `board` sí recorre automáticamente todas las páginas de 250 resultados;
+   no auditar el inventario completo a partir de un `list` limitado.
 
 8. **Un worktree no hereda el vínculo ignorado de Vercel.** El síntoma al
    desplegar el tablero es `Searching for existing projects` seguido de
@@ -389,6 +390,16 @@ Diecisiete cosas que cuestan tiempo si no se saben:
     septiembre de 2026 al cerrar GYM-39. `PLACEHOLDER` ignora ahora los `<url>`
     que empiezan por `http(s)://`; si reaparece con otro formato, relee la línea
     con `get` y busca cualquier `<...>` que Linear haya añadido.
+
+18. **Una sola página de Linear puede fingir que se borró un ticket antiguo.**
+    Síntoma: `board` informa `SOBRA` o `missingFromLinear` y bloquea `--apply-safe`,
+    pero `get` encuentra el ticket, sin archivar y con su estado correcto. Al
+    superar 250 issues, el antiguo inventario descartaba la segunda página;
+    detectado con GYM-6 (ticket para investigar el QR de acceso de VivaGym) al
+    cerrar GYM-225 (ticket para auditar los gates de publicación de Production).
+    `fetch_board_nodes` sigue ahora `pageInfo.hasNextPage/endCursor` y pasa
+    `after`; rechaza cursores que no avanzan e identifiers repetidos. No eliminar
+    tarjetas por un supuesto borrado sin verificar antes el ticket real.
 
 ## Notas
 

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-10-09",
+    "updated": "2026-10-12",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -365,7 +365,7 @@
         {
           "id": "GYM-225",
           "title": "Verificar que la promoción a Production no puede saltarse los gates de pruebas",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Auditar ramas, workflows, builds locales y promociones de Play para asegurar que Production solo recibe commits autorizados con gates y artefactos verificables.",
           "dependsOn": [],
           "related": [
@@ -2653,6 +2653,14 @@
       "title": "Tickets sueltos (sin épica)",
       "summary": "Trabajo de producto y de plataforma que en Linear vive fuera de las épicas reflejadas en el tablero.",
       "tickets": [
+        {
+          "id": "GYM-5",
+          "title": "Sincronización de datos con almacenamiento en la nube",
+          "state": "in_progress",
+          "summary": "Respaldar y restaurar datos mediante archivos y proveedores de almacenamiento en la nube, manteniendo la app local-first y sin backend propio.",
+          "dependsOn": [],
+          "related": []
+        },
         {
           "id": "GYM-8",
           "title": "Crear componentes",
