@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { closeSync, existsSync, mkdirSync, openSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { closeSync, existsSync, fstatSync, mkdirSync, openSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { assertReleaseTransaction } from "./release-transaction.mjs";
 import { localToolchain, sha256 } from "./local-build.mjs";
+import { readLocalBuildFailure } from "./local-build-diagnostics.mjs";
 
 const inputs = resolve(process.argv[2]);
 const root = process.cwd();
@@ -12,7 +13,7 @@ const temporary = process.env.RUNNER_TEMP;
 assert.ok(temporary && temporary !== "/", "RUNNER_TEMP es obligatorio.");
 const privateDirectory = join(temporary, "local-build-private");
 mkdirSync(privateDirectory, { recursive: false, mode: 0o700 });
-const log = openSync(join(privateDirectory, "build.log"), "wx", 0o600);
+const log = openSync(join(privateDirectory, "build.log"), "wx+", 0o600);
 const contract = {
   aab: { profile: "production", output: join(temporary, "gymnasia.aab"), metadata: join(temporary, "local-build-aab-metadata.json") },
   apk: { profile: "production-apk", output: join(temporary, "gymnasia.apk"), metadata: join(temporary, "local-build-apk-metadata.json") },
@@ -33,6 +34,8 @@ function build(legName, transaction, sdk) {
   assert.equal(attempt.runAttempt, process.env.GITHUB_RUN_ATTEMPT);
   const working = join(privateDirectory, `${legName}-work`);
   const gradle = join(privateDirectory, `${legName}-gradle`);
+  const logOffset = fstatSync(log).size;
+  console.log(`Build local ${legName.toUpperCase()} iniciada.`);
   const result = spawnSync("eas", [
     "build", "--platform", "android", "--profile", target.profile,
     "--local", "--non-interactive", "--freeze-credentials", "--output", target.output,
@@ -60,6 +63,13 @@ function build(legName, transaction, sdk) {
       GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.workers.max=4 -Dorg.gradle.jvmargs=-Xmx4g",
     },
   });
+  if (result.status !== 0) {
+    console.error(`Diagnóstico local ${legName.toUpperCase()}: ${JSON.stringify({
+      ...readLocalBuildFailure(log, logOffset, result),
+      privateDirectoryExists: existsSync(privateDirectory),
+      workingDirectoryExists: existsSync(working),
+    })}`);
+  }
   assert.equal(result.status, 0, `La compilación local ${legName} falló; el registro privado se destruye con la VM.`);
   assert.ok(existsSync(target.output) && statSync(target.output).isFile(), `No se generó ${target.output}.`);
   const metadata = {
