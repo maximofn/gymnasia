@@ -43,6 +43,39 @@ class ApiKeyLoadingTests(unittest.TestCase):
                 self.assertEqual(linear.load_api_key(), "lin_api_worktree")
 
 
+class BoardPaginationTests(unittest.TestCase):
+    def test_reads_every_page_without_treating_old_tickets_as_deleted(self):
+        first = [{"identifier": f"GYM-{number}", "title": "Ticket", "state": {"name": "Done"}}
+                 for number in range(7, 257)]
+        old = {"identifier": "GYM-6", "title": "Investigar el QR de VivaGym", "state": {"name": "Done"}}
+        pages = [
+            {"issues": {"nodes": first, "pageInfo": {"hasNextPage": True, "endCursor": "page-1"}}},
+            {"issues": {"nodes": [old], "pageInfo": {"hasNextPage": False, "endCursor": "page-2"}}},
+        ]
+        with mock.patch.object(linear, "query", side_effect=pages) as query:
+            self.assertEqual(linear.fetch_board_nodes("gym"), [*first, old])
+            self.assertEqual(query.call_args_list[0].args[1], {"key": "GYM", "first": 250, "after": None})
+            self.assertEqual(query.call_args_list[1].args[1]["after"], "page-1")
+
+    def test_refuses_a_missing_or_repeated_cursor(self):
+        for cursors in [[None], ["same", "same"]]:
+            pages = [{"issues": {"nodes": [], "pageInfo": {"hasNextPage": True, "endCursor": cursor}}}
+                     for cursor in cursors]
+            with self.subTest(cursors=cursors), mock.patch.object(linear, "query", side_effect=pages):
+                with self.assertRaisesRegex(ValueError, "no avanza"):
+                    linear.fetch_board_nodes("GYM")
+
+    def test_refuses_duplicate_identifiers_in_different_pages(self):
+        node = {"identifier": "GYM-6", "title": "Ticket", "state": {"name": "Done"}}
+        pages = [
+            {"issues": {"nodes": [node], "pageInfo": {"hasNextPage": True, "endCursor": "page-1"}}},
+            {"issues": {"nodes": [node], "pageInfo": {"hasNextPage": False, "endCursor": "page-2"}}},
+        ]
+        with mock.patch.object(linear, "query", side_effect=pages):
+            with self.assertRaisesRegex(ValueError, "repite un ticket"):
+                linear.fetch_board_nodes("GYM")
+
+
 class BoardSynchronizationTests(unittest.TestCase):
     @staticmethod
     def board(title="Titulo local", state="todo", ignore=None):
