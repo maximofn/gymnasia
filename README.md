@@ -19,6 +19,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `ejercicios/`: Repositorio de ejercicios (JSONs + imagenes generadas)
 - `scripts/catalogs/`: Contratos, generador y validaciones comunes de los cuatro catálogos
 - `arquitectura-agente/`: Tablero de seguimiento de epicas y tickets (espejo manual de Linear, sitio estatico en Vercel)
+- `charla-agente/`: Presentacion 3D (three.js) de la charla sobre el agente; abrir `index.html`, sin build ni red
 - `policy/health-safety/`: Reglas y casos sanitarios versionados que generan la protección del agente
 - `policy/signing/`: Raíces y certificados públicos, configuración y bundle firmado actual; nunca contiene claves privadas
 - `scripts/health-safety/`: Generador, puerta determinista, fixtures e informes sanitarios
