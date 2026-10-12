@@ -800,7 +800,7 @@
     );
     const rows = form.el.querySelectorAll(".f-row.inv b");
     const request = ctx.label("Apunta mi peso: 82 kg", "bubble", [FX - 3.3, 2.5, 0.5]);
-    const whyTag = ctx.label("OpenAI volvía obligatorios los campos opcionales", "tag amber", [FX, -2.35, 0.5]);
+    const whyTag = ctx.label("OpenAI rellenaba el formulario entero", "tag amber", [FX, -2.35, 0.5]);
     const gateMat = basic(hdr(C.lime, 2.2), 1);
     const gate = outline(group(R, FX, 0.2, -0.4), 3.4, 3.4, 0.05, gateMat);
     const gateFill = new THREE.Mesh(PLANE, basic(C.lime, 0.05));
