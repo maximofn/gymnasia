@@ -25,6 +25,15 @@ configurar nada. Desde la vista de presentador también se puede avanzar con el
 teclado o los botones. El paso actual queda en la URL (`#12`), así que recargar no
 te devuelve al principio.
 
+### NetCoreConf Madrid '26
+
+Abre `index.html?netcore` para dar la charla con la plantilla del evento. La
+escena va dentro del marco de su diapositiva 3 (fondo, líneas y logo), y se añaden
+tres diapositivas: la portada con el título y los patrocinadores al principio, y los
+patrocinadores otra vez antes de «Gracias». La numeración de la URL se desplaza dos
+pasos. Las imágenes salen de la plantilla que compartió la organización y viven en
+`netcore/`, junto con Poppins, la fuente de la plantilla (licencia SIL OFL 1.1).
+
 ### Turno de preguntas
 
 Después de «Gracias» viene un índice con las preguntas que puede hacer el público,
