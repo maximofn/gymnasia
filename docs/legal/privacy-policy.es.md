@@ -208,7 +208,7 @@ de vigilancia de abusos que OpenAI pueda conservar según la configuración de t
 Ese contenido queda sujeto a la política de privacidad y a los términos del proveedor
 que hayas elegido, bajo tu propia cuenta con él:
 
-- [OpenAI](https://openai.com/policies/privacy-policy)
+- [OpenAI](https://openai.com/policies/privacy-policy/)
 - [Anthropic](https://www.anthropic.com/legal/privacy)
 - [Google](https://policies.google.com/privacy)
 
