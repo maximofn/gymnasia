@@ -196,7 +196,7 @@ abuse monitoring logs that OpenAI may retain under your account's configuration.
 That content is subject to the privacy policy and terms of the provider you chose, under
 your own account with them:
 
-- [OpenAI](https://openai.com/policies/privacy-policy)
+- [OpenAI](https://openai.com/policies/privacy-policy/)
 - [Anthropic](https://www.anthropic.com/legal/privacy)
 - [Google](https://policies.google.com/privacy)
 
