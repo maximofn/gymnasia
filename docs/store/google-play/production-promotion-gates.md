@@ -318,6 +318,10 @@ durante 14 días y permitía **solicitar** acceso. No se solicitó ni se public�
   aprobados y hashes de las evidencias coincidentes con los digests de GitHub.
 - [Submission de Expo](https://expo.dev/accounts/maximofn/projects/gymnasia/submissions/94490a64-e2cb-4c16-8319-d5e32edd7cf3):
   terminado; Play Console mostraba 1.51.0/86 disponible en Alpha, con un país.
+- [Recibo consultado directamente a Google](evidence/production-google-play-receipt-1.51.0.json),
+  12 de octubre de 2026, 19:47 UTC: confirma `versionCode` 86, track Alpha
+  `completed` y SHA-256 `da0e58b92952b03a48daaaac413cffd35992388b6414f62ce21b03e65edbd34a`,
+  idéntico al AAB validado. El edit temporal fue descartado; no se publicó nada.
 - Las regresiones reproducen sin credenciales ni red el envío sin evidencia, la
   sustitución de bytes, la huella recibida incorrecta, el track no completado y
   fallos de consulta/limpieza. Las propiedades generan hashes y archivos distintos.
@@ -331,8 +335,8 @@ durante 14 días y permitía **solicitar** acceso. No se solicitó ni se public�
   credenciales nuevos son operativos, fuera del bundle; no cambian datos, destinos,
   permisos ni almacenamiento de `apps/mobile`, raíz del inventario. No corresponde
   modificar inventario de datos personales ni política legal por este cambio.
-- **Pendiente antes del cierre:** configurar la clave existente en el environment,
-  ejecutar la consulta real y conservar el recibo, revisar/fusionar la PR y
+- **Pendiente antes del cierre:** configurar la clave existente en el environment
+  con autorización explícita para enviarla a GitHub, revisar/fusionar la PR y
   actualizar el plan de pruebas del ticket con esa evidencia. Una promoción real
   a producción sigue pendiente del acceso de Google y de autorización explícita;
   no se debe marcar como probada por disponer de tests simulados.
