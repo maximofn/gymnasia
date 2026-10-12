@@ -662,6 +662,7 @@
     // El dato que no pasa
     const reject = makeBar(R, 6.6, Y0, 1.0, 2.4);
     const rejectTag = ctx.label("−40 g grasa", "tag bad", [6.0, 0.4, 0.2]);
+    let lastReject = 0;
 
     // Código de barras
     const product = img(R, "producto", { shadow: true, float: 0.04, x: -4.6, y: -0.5, z: 1.5, h: 3.8 });
@@ -706,7 +707,10 @@
       }
 
       if (s.reject) {
-        const k = since("reject");
+        // Se repite cada 4 s mientras lo explicas, por si alguien no lo vio.
+        const k = since("reject") % 4;
+        if (k < lastReject) reject.set(0, null);
+        lastReject = k;
         const x = lerp(8.5, 6.0, smooth(k / 0.9));
         const fall = smooth((k - 1.4) / 0.9);
         reject.g.position.set(x + fall * 0.8, Y0 - fall * 2.4, 0.4);
@@ -810,7 +814,8 @@
       bk(t);
       core.update(1, dt, t);
       spin += dt * (s.query ? 0.03 : 0.12);
-      const k = s.query ? since("query") : -1;
+      // La consulta se repite cada 9 s: dos lecturas y la respuesta.
+      const k = s.query ? since("query") % 9 : -1;
       const A = tools[0], B = tools[10];
       let target = null, src = null, p = 0, back = -1;
       if (s.query) {
@@ -931,6 +936,7 @@
     }
     glow(print, 2.6, C.lime, 0.12);
     const printTag = ctx.label("misma huella: no se repite", "tag ok", [PX, PY - 1.15, 1]);
+    let lastRetry = 0;
     const partsTag = ctx.label('<div class="c-title">la huella</div><div class="p-row">conversación</div><div class="p-row">herramienta</div><div class="p-row">datos</div><div class="p-row">1.ª o 2.ª vez en el turno</div>', "card", [PX, PY - 3.0, 1]);
 
     // Libreta
@@ -1016,9 +1022,13 @@
       print.rotation.z = t * 0.15;
       const retry = plates[2];
       if (s.print) {
-        const fall = smooth(kp / 0.8);
-        const u = clamp01((kp - 0.8) / 0.9);
-        retry.to({ x: PX + u * 2.2, y: lerp(4.6, PY + 0.9, fall) + Math.sin(u * Math.PI) * 0.9 - u * 1.8, z: 1.3, h: 0.9, r: -u * 2.2, o: kp < 1.7 ? 1 : 0 }, dt, 30);
+        // La huella se queda; el plato repetido vuelve a caer cada 3,5 s.
+        const kr = kp % 3.5;
+        if (kr < lastRetry) Object.assign(retry.s, { x: PX, y: 4.6, r: 0, o: 0 });
+        lastRetry = kr;
+        const fall = smooth(kr / 0.8);
+        const u = clamp01((kr - 0.8) / 0.9);
+        retry.to({ x: PX + u * 2.2, y: lerp(4.6, PY + 0.9, fall) + Math.sin(u * Math.PI) * 0.9 - u * 1.8, z: 1.3, h: 0.9, r: -u * 2.2, o: kr < 1.7 ? 1 : 0 }, dt, 30);
       } else {
         retry.to({ o: 0 }, dt, 8);
       }

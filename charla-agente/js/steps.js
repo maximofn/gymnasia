@@ -91,7 +91,7 @@ window.STEPS = [
     notes: "Por eso la foto no la mira el mismo agente con el que hablas. La mira un agente especializado en comida. Y no le dejo contestar con texto libre: le obligo a devolver un formato fijo, con las calorías y los macros en sus casillas.",
   },
   {
-    station: "plato", set: { reject: 1 },
+    station: "plato", set: { reject: 1 }, cam: [0.6, 0, 13, 0.6, 0, 0],
     notes: "Y antes de aceptarlo, la app lo valida. Si algo no cuadra, no entra en tu dieta.",
   },
   {
@@ -121,7 +121,7 @@ window.STEPS = [
   },
   {
     station: "tools", set: { invent: 1 },
-    notes: "Y cuando fui a mirar, había medidas de cintura y de cadera que yo nunca le había dado. Se las había inventado.\n\n¿Por qué? Porque OpenAI, sin avisarte, convertía en obligatorios campos que yo había puesto como opcionales. Y el modelo, muy obediente, rellenó el formulario entero.",
+    notes: "Y cuando fui a mirar, había medidas de cintura y de cadera que yo nunca le había dado. Se las había inventado.\n\n¿Por qué? Porque OpenAI, sin avisarte, rellenaba el formulario entero. Y el modelo, muy servicial, pensó que hacían falta todos los datos.",
   },
   {
     station: "tools", set: { customs: 1 },
