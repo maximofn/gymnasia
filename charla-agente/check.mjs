@@ -42,4 +42,15 @@ QA.forEach((x, i) => {
   if (x.img) assert.ok(assets.includes(`"${x.img}":"data:`), `${n}: falta la ilustración ${x.img}`);
 });
 console.log(`ok: ${QA.length} preguntas`);
+
+// Con ?netcore: portada y patrocinadores delante, y patrocinadores antes de «Gracias».
+const nc = { window: {}, location: { search: "?netcore" } };
+vm.runInNewContext(readFileSync(new URL("js/qa.js", dir), "utf8"), nc);
+vm.runInNewContext(readFileSync(new URL("js/steps.js", dir), "utf8"), nc);
+const NS = nc.window.STEPS, NQ = nc.window.QA_INDEX;
+assert.equal(NS.length, STEPS.length + 3);
+assert.deepEqual([NS[0].brand, NS[1].brand, NS[NQ - 2].brand], ["cover", "sponsors", "sponsors"]);
+assert.equal(NS[NQ - 1].set.thanks, 1);
+assert.equal(NS.filter((s) => s.brand).length, 3);
+console.log(`ok: ${NS.length} pasos con el formato de NetCoreConf`);
 console.log(`ok: ${STEPS.length} pasos en ${Object.keys(STATIONS).length} paradas`);

@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>El viaje del arroz</title>
 <link rel="stylesheet" href="fonts.css">
+<link rel="stylesheet" href="netcore/poppins.css">
+<script>if (/netcore/.test(location.search)) document.documentElement.classList.add("netcore");</script>
 <style>
   /* Colores del sistema de diseño de Gymnasia; el lima solo para el agente y lo que funciona. */
   :root {
@@ -156,9 +158,29 @@
   .qa-back:hover, .qa-back:focus-visible { color: var(--text); border-color: rgba(203, 255, 26, 0.5); outline: none; }
 
   @media (prefers-reduced-motion: reduce) { #flash.on { animation: none; } }
+
+  /* ── NetCoreConf (index.html?netcore) ─────────────────────────
+     La charla entera va dentro del marco de la plantilla del evento (su
+     diapositiva 3): fondo, líneas y logo alrededor, y la escena como una
+     pantalla entre las dos líneas. El transform hace que todo lo que es
+     position: fixed dentro de #stage se coloque y se recorte respecto a él. */
+  #brand { display: none; }
+  html.netcore body { background: #150f3a url(netcore/marco.jpg) center / cover no-repeat; }
+  html.netcore #stage { position: fixed; inset: 0; overflow: hidden; transform: translateY(3%) scale(0.76); border-radius: 26px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 40px 120px rgba(5, 2, 30, 0.65); }
+  html.netcore #brand { display: grid; place-items: center; position: fixed; inset: 0; background: #0b0820; pointer-events: none; opacity: 0; transition: opacity .6s; }
+  html.netcore #brand:is([data-on="cover"], [data-on="sponsors"]) { opacity: 1; pointer-events: auto; }
+  #brand .slide { grid-area: 1 / 1; width: min(100vw, 177.78vh); aspect-ratio: 16 / 9; position: relative; container-type: size; opacity: 0; transition: opacity .6s; }
+  #brand[data-on="cover"] .cover, #brand[data-on="sponsors"] .sponsors { opacity: 1; }
+  #brand img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .cover-text { position: absolute; left: 55%; right: 7%; top: 22%; bottom: 14%; display: flex; flex-direction: column; justify-content: center; gap: 4cqh; font-family: "Poppins", var(--font); color: #fff; }
+  .cover-text h1 { margin: 0; font-size: 6.6cqh; line-height: 1.14; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+  .cover-text p { margin: 0; font-size: 2.9cqh; color: rgba(255, 255, 255, 0.82); }
+  .cover-text p b { font-weight: 600; color: #fff; }
+  .cover-text .app { font-size: 2.2cqh; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255, 255, 255, 0.6); }
 </style>
 </head>
 <body>
+<div id="stage">
 <canvas id="scene" aria-label="Escena 3D de la charla"></canvas>
 <div id="labels"></div>
 <div id="chip"></div>
@@ -187,6 +209,18 @@
 <div id="progress"></div>
 <div id="flash"></div>
 <div id="fade"></div>
+</div>
+<div id="brand" data-on="">
+  <div class="slide cover">
+    <img src="netcore/portada.jpg" alt="">
+    <div class="cover-text">
+      <h1>Cómo desarrollar un agente en una app de gimnasio y nutrición</h1>
+      <p><b>Máximo Fernández</b> · Desarrollador de IA</p>
+      <p class="app">Gymnasia</p>
+    </div>
+  </div>
+  <div class="slide sponsors"><img src="netcore/patrocinadores.jpg" alt="Patrocinadores de NetCoreConf Madrid 2026"></div>
+</div>
 <div id="black"></div>
 <div id="loading">Cargando…</div>
 <div id="hint"><kbd>→</kbd> avanzar · <kbd>←</kbd> volver · <kbd>P</kbd> guion · <kbd>F</kbd> pantalla completa · <kbd>B</kbd> negro · <kbd>I</kbd> preguntas</div>

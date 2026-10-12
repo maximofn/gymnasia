@@ -271,6 +271,23 @@ window.STEPS = [
   },
 ];
 
+// ── NetCoreConf ─────────────────────────────────────────────────
+// Con index.html?netcore la charla va dentro del marco de la plantilla del
+// evento: su portada y sus patrocinadores al principio, y los patrocinadores
+// otra vez antes de «Gracias». `brand` tapa la escena con esa diapositiva.
+window.NETCORE = typeof location !== "undefined" && /netcore/.test(location.search);
+if (window.NETCORE) {
+  const sponsors = () => ({
+    station: "mesa", set: {}, brand: "sponsors",
+    notes: "[diapositiva de patrocinadores de NetCoreConf]\n\nGracias a los patrocinadores, que hacen posible el evento.",
+  });
+  window.STEPS.splice(window.STEPS.findIndex((s) => s.set.thanks), 0, sponsors());
+  window.STEPS.unshift({
+    station: "mesa", section: "NetCoreConf", set: {}, brand: "cover",
+    notes: "[portada de NetCoreConf con el título de la charla]\n\nEspera a que te presenten.",
+  }, sponsors());
+}
+
 // ── 12. Preguntas ──────────────────────────────────────────────
 // Tras «Gracias», un índice con las preguntas de js/qa.js y una diapositiva por
 // pregunta. `I` vuelve al índice desde cualquier respuesta.
