@@ -407,6 +407,10 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
           path: .release-controller
+          filter: blob:none
+          sparse-checkout: |
+            scripts
+            ops/android-build
 
       - name: Restore immutable local inputs
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
