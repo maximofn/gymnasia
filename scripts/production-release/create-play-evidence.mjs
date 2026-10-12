@@ -4,6 +4,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { assertReleaseTransaction } from "./release-transaction.mjs";
 import { loadReleasePolicy } from "./production-release.mjs";
+import { assertGooglePlayReceipt } from "./google-play-receipt.mjs";
 
 function argumentsFrom(argv) {
   const options = {};
@@ -11,7 +12,7 @@ function argumentsFrom(argv) {
     if (!argv[index]?.startsWith("--") || argv[index + 1] === undefined) throw new Error("Argumentos inválidos.");
     options[argv[index].slice(2)] = argv[index + 1];
   }
-  for (const name of ["transaction", "submission", "output"]) {
+  for (const name of ["transaction", "submission", "google-receipt", "output"]) {
     if (!options[name]) throw new Error(`Falta --${name}.`);
   }
   return options;
@@ -21,6 +22,8 @@ const options = argumentsFrom(process.argv.slice(2));
 const transaction = assertReleaseTransaction(JSON.parse(readFileSync(resolve(options.transaction), "utf8")));
 const submission = JSON.parse(readFileSync(resolve(options.submission), "utf8"));
 const policy = loadReleasePolicy();
+const googleReceiptBytes = readFileSync(resolve(options["google-receipt"]));
+const googleReceipt = assertGooglePlayReceipt(JSON.parse(googleReceiptBytes), transaction);
 const violations = [];
 if (transaction.schemaVersion !== 2 || transaction.state !== "submitting") violations.push("La transacción no está enviando.");
 if (submission.id !== transaction.legs.play.submission?.id) violations.push("El submission no coincide con la intención durable.");
@@ -35,6 +38,8 @@ const evidence = {
   result: violations.length === 0 ? "passed" : "failed",
   verifiedAt: new Date().toISOString(),
   provider: policy.play.provider,
+  googleReceipt,
+  googleReceiptSha256: createHash("sha256").update(googleReceiptBytes).digest("hex"),
   profile: policy.play.profile,
   track: policy.play.track,
   releaseStatus: policy.play.releaseStatus,

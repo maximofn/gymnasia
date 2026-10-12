@@ -659,6 +659,15 @@ jobs:
           eas-version: 24.3.0
           token: ${{ secrets.EXPO_TOKEN }}
 
+      - name: Require Google verification credential before any submission
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          test -n "$GOOGLE_PLAY_SERVICE_ACCOUNT_JSON" || {
+            echo "::error::Configura la cuenta de servicio auditada en Play Internal para verificar el AAB recibido por Google."; exit 1;
+          }
+          node .release-controller/scripts/production-release/google-play-receipt.mjs --check-credential true
+
       - name: Restore validated AAB and durable evidence
         env:
           GH_TOKEN: ${{ github.token }}
@@ -674,6 +683,10 @@ jobs:
           cp /tmp/release/android-release-transaction.json /tmp/
           test "$(jq -r '.state' /tmp/android-release-transaction.json)" = artifacts-validated || \
             test "$(jq -r '.state' /tmp/android-release-transaction.json)" = submitting
+          node .release-controller/scripts/production-release/submit-artifact.mjs \
+            --artifact /tmp/release/gymnasia.aab --transaction /tmp/android-release-transaction.json \
+            --source-evidence /tmp/release/production-source-evidence.json \
+            --artifact-evidence /tmp/release/production-aab-evidence.json
 
       - name: Persist submission intent before contacting EAS
         id: intent
@@ -707,7 +720,12 @@ jobs:
         if: steps.intent.outputs.operation == 'submit'
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: node .release-controller/scripts/production-release/eas-submit.mjs submit --artifact /tmp/release/gymnasia.aab --output /tmp/eas-submit-created.json
+        run: |
+          node .release-controller/scripts/production-release/eas-submit.mjs submit \
+            --artifact /tmp/release/gymnasia.aab --transaction /tmp/android-release-transaction.json \
+            --source-evidence /tmp/release/production-source-evidence.json \
+            --artifact-evidence /tmp/release/production-aab-evidence.json \
+            --output /tmp/eas-submit-created.json
 
       - name: Retry the known failed submission without uploading again
         if: steps.intent.outputs.operation == 'retry'
@@ -765,6 +783,13 @@ jobs:
             --event observe-play --leg play --submission-id "$SUBMISSION_ID" --status "$STATUS" --reason "$REASON"
           gh release upload "$TAG" /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
 
+      - name: Verify the exact AAB and completed track at Google Play
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+        run: |
+          node .release-controller/scripts/production-release/google-play-receipt.mjs \
+            --transaction /tmp/android-release-transaction.json --output /tmp/production-google-play-receipt.json
+
       - name: Create and bind Play evidence
         env:
           GH_TOKEN: ${{ github.token }}
@@ -774,12 +799,13 @@ jobs:
           set -euo pipefail
           node .release-controller/scripts/production-release/create-play-evidence.mjs \
             --transaction /tmp/android-release-transaction.json --submission /tmp/eas-submit-final.json \
+            --google-receipt /tmp/production-google-play-receipt.json \
             --output /tmp/production-play-evidence.json
           EVIDENCE_SHA="$(sha256sum /tmp/production-play-evidence.json | cut -d' ' -f1)"
           node .release-controller/scripts/production-release/release-transaction.mjs transition \
             --input /tmp/android-release-transaction.json --output /tmp/android-release-transaction.json \
             --event validate-play --leg play --evidence-sha256 "$EVIDENCE_SHA"
-          gh release upload "$TAG" /tmp/android-release-transaction.json /tmp/production-play-evidence.json \
+          gh release upload "$TAG" /tmp/android-release-transaction.json /tmp/production-play-evidence.json /tmp/production-google-play-receipt.json \
             --repo "$GITHUB_REPOSITORY" --clobber
 
       - name: Verify the full release, write summary and publish
@@ -795,7 +821,7 @@ jobs:
           gh api "/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" > /tmp/github-release.json
           test "$(jq -r '.draft' /tmp/github-release.json)" = true
           test "$(jq -r '.target_commitish' /tmp/github-release.json)" = "$SOURCE_COMMIT"
-          for ASSET in gymnasia.aab gymnasia.apk production-source-evidence.json production-aab-evidence.json production-apk-evidence.json production-play-evidence.json android-release-transaction.json; do
+          for ASSET in gymnasia.aab gymnasia.apk production-source-evidence.json production-aab-evidence.json production-apk-evidence.json production-play-evidence.json production-google-play-receipt.json android-release-transaction.json; do
             jq -e --arg name "$ASSET" '.assets[] | select(.name == $name and .digest != null)' /tmp/github-release.json >/dev/null
           done
           test "$(jq -r '.state' /tmp/android-release-transaction.json)" = validated
@@ -812,6 +838,8 @@ jobs:
           done
           PLAY_DIGEST="$(jq -r --arg name production-play-evidence.json '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json)"
           test "$PLAY_DIGEST" = "sha256:$(jq -r '.legs.play.evidenceSha256' /tmp/android-release-transaction.json)"
+          GOOGLE_DIGEST="$(jq -r --arg name production-google-play-receipt.json '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json)"
+          test "$GOOGLE_DIGEST" = "sha256:$(jq -r '.googleReceiptSha256' /tmp/production-play-evidence.json)"
           SOURCE_DIGEST="$(jq -r --arg name production-source-evidence.json '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json)"
           test "$SOURCE_DIGEST" = "sha256:$(jq -r '.source.evidenceSha256' /tmp/release/production-aab-evidence.json)"
           test "$(jq -r '.source.evidenceSha256' /tmp/release/production-aab-evidence.json)" = \

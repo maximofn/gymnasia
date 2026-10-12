@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { verifySubmissionArtifact } from "./submit-artifact.mjs";
 
 const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}";
 const TERMINAL = new Set(["FINISHED", "ERRORED", "CANCELED"]);
@@ -89,6 +90,15 @@ async function main() {
   if (!options.output) throw new Error("Falta --output.");
   if (command === "submit") {
     if (!options.artifact) throw new Error("Falta --artifact.");
+    for (const name of ["transaction", "source-evidence", "artifact-evidence"]) {
+      if (!options[name]) throw new Error(`Falta --${name}; no se enviará un AAB sin evidencia.`);
+    }
+    verifySubmissionArtifact({
+      artifact: resolve(options.artifact),
+      transaction: JSON.parse(readFileSync(resolve(options.transaction), "utf8")),
+      sourceBytes: readFileSync(resolve(options["source-evidence"])),
+      evidenceBytes: readFileSync(resolve(options["artifact-evidence"])),
+    });
     const output = run([
       "submit", "--platform", "android", "--profile", "production",
       "--path", resolve(options.artifact), "--non-interactive", "--no-wait",

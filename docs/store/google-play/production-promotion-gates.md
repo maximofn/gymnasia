@@ -83,6 +83,7 @@ Los estados globales son `prepared`, `building`, `artifacts-validated`,
 - `gymnasia.apk` y `production-apk-evidence.json`;
 - `production-play-evidence.json`;
 - `production-source-evidence.json`;
+- `production-google-play-receipt.json`, con el hash y el canal consultados a Google;
 - `android-release-transaction.json`;
 - snapshot, bundle de política y referencia de versión usados por la build.
 
@@ -200,3 +201,148 @@ Solo después se cierra GYM-226 (ticket para automatizar la subida a Google
 Play), se coordina el resultado con GYM-199 (ticket para validar el AAB en
 pruebas internas y cerradas) y se sincroniza el tablero. Promover a producción
 requiere una decisión humana.
+
+## Comprobación de los bytes enviados y recibidos
+
+Antes de crear una intención de envío, el controlador vuelve a leer el AAB
+descargado del borrador y compara su tamaño y SHA-256 con la transacción y con
+`production-aab-evidence.json`. También comprueba la cadena hasta la evidencia
+de fuente y sus gates. `eas-submit.mjs submit` repite esta comprobación y exige
+los tres ficheros de evidencia: una ruta y un token no bastan para enviarlo.
+
+La confirmación `FINISHED` de Expo no acredita por sí sola los bytes que recibió
+Google. Una vez terminado el submission, `google-play-receipt.mjs` consulta el
+bundle por `versionCode` y el track `alpha` en Google Play. Solo acepta el mismo
+SHA-256 y una release `completed`. El recibo se incorpora a la evidencia de Play
+y se conserva también como asset independiente. Si Google no responde, devuelve
+otro hash o no conserva esa versión en Alpha, la release de GitHub sigue siendo
+borrador; la recuperación consulta el submission existente, sin subir de nuevo.
+
+El verificador usa `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`, secreto del environment
+`Play Internal`, con la clave de la misma cuenta de servicio auditada que usa
+EAS. No se le concede acceso a producción ni permisos globales. Antes de enviar,
+el workflow comprueba que Google acepta esa credencial. La clave y el token OAuth
+solo están en memoria y nunca se escriben en assets ni en logs. No pegar el JSON
+en el repositorio ni en el chat. Desde un fichero privado existente:
+
+```bash
+gh secret set GOOGLE_PLAY_SERVICE_ACCOUNT_JSON --repo maximofn/gymnasia \
+  --env 'Play Internal' < /ruta/privada/clave-existente.json
+```
+
+La API de Google requiere abrir un `edit` para leer los bundles: es una copia
+temporal, no una publicación. El verificador no modifica tracks, no sube archivos
+y nunca hace `commit`; descarta su edit incluso cuando la comparación falla.
+Solo corre con el submission en `FINISHED`, dentro de la cola serial de releases.
+No ejecutar una operación manual simultánea con esa cuenta: abrir otro edit
+invalidaría el suyo. La CLI local permite verificar una transacción ya terminada:
+
+```bash
+node scripts/production-release/google-play-receipt.mjs \
+  --transaction /ruta/android-release-transaction.json \
+  --service-account-file /ruta/privada/clave-existente.json \
+  --output /ruta/production-google-play-receipt.json
+```
+
+Fuentes del contrato: [bundles y SHA-256](https://developers.google.com/android-publisher/api-ref/rest/v3/edits.bundles),
+[lectura de bundles](https://developers.google.com/android-publisher/api-ref/rest/v3/edits.bundles/list)
+y [aislamiento y duración de edits](https://developers.google.com/android-publisher/edits).
+
+## Matriz de publicación y frontera del propietario
+
+Auditoría de GYM-225 (ticket para impedir publicaciones de Production sin las
+pruebas y autorización acordadas), realizada el 12 de octubre de 2026.
+`Production` es la variante y el environment de build; no significa que el track
+público `production` de Google Play esté habilitado.
+
+| Camino | Ref, environment y perfil | Destino | Control obligatorio |
+|---|---|---|---|
+| Merge o push publicable | PR a `main`, `Production`, AAB `production` + APK `production-apk` | GitHub y Alpha | Ruleset sin bypass, autorización y política de la PR, 20 gates sobre el commit, aprobación humana, verificación de ambos binarios y recibo de Google |
+| `workflow_dispatch` | Solo `refs/heads/main`; misma transacción y perfiles | GitHub y Alpha | Misma puerta; retry/reconcile conservan commit, código y binarios, no admiten ref arbitrario |
+| Build local en wallabot | Fuente exacta de la transacción, VM desechable, mismos perfiles | Artifacts en cuarentena | Gates antes de compilar, firma, snapshot, manifest, permisos, versión y hash antes de subir; nueva comparación justo antes de EAS |
+| Build independiente o EAS directo | No es una vía de publicación autorizada | Ninguno | Usar el workflow en `main`; una build aislada no hereda ni sustituye autorización o evidencias |
+| Promoción manual entre tracks | AAB ya validado, mismo `versionCode` | Track elegido en Play | Procedimiento del propietario indicado abajo; Play no ejecuta los checks de GitHub |
+
+El ruleset activo de `main` exige PR y `prompt-policy`,
+`gymnasia/owner-authorization`, `gymnasia/policy-promotion`; no tiene actores de
+bypass. Suite determinista, type-check, salud, permisos Android y E2E se repiten
+antes de publicar, aunque no sean checks obligatorios para el merge. Production
+admite solo ramas protegidas, exige a `maximofn` y no permite bypass de admins.
+El propietario puede aprobar su propia build: es el responsable autorizado.
+
+Play Console tenía exactamente dos usuarios: el propietario, con todos los
+permisos, y `gymnasia-play-submit@gymnasia-play-review.iam.gserviceaccount.com`.
+El servicio tiene cuatro permisos de Gymnasia: lectura de información, lectura
+de calidad, publicación en pruebas y gestión de canales/testers. No tiene
+permisos de cuenta, administrador o publicación en producción. La cuenta Expo
+es personal; la pantalla de miembros no permite añadir colaboradores sin
+convertirla en organización.
+
+**Frontera de confianza:** el propietario de Google Play conserva control total
+y puede operar directamente en esa plataforma. GitHub no puede impedirlo ni
+exigir sus pruebas allí. El contrato prohíbe usar esa vía para subir binarios
+nuevos de Production: la única operación manual autorizable es promover el
+artefacto validado, conservando las evidencias. No se afirma que una instrucción
+operativa sea un bloqueo técnico del propietario. Tampoco se amplían los permisos
+del servicio de envío para automatizar el track público.
+
+### Promoción manual sin recompilación
+
+1. Esperar a una transacción `validated`, con AAB, APK, evidencia de fuente,
+   evidencia de Play y recibo de Google publicados. Los históricos anteriores a
+   esta comprobación necesitan generar primero el recibo de Google; no basta
+   con copiar el hash de la transacción.
+2. Registrar la decisión explícita del propietario: tag, commit, `versionCode`,
+   SHA-256 del AAB, track de origen/destino y países autorizados. El alcance
+   inicial es España; ampliar territorios requiere la decisión contemplada por
+   GYM-201 (ticket para publicar primero en España y ampliar después territorios).
+3. Usar en Play el bundle existente de ese `versionCode`, mediante promoción o
+   selección de biblioteca. No recompilar ni subir otro archivo en ese paso.
+4. Antes de confirmar, comprobar código de versión, origen, destino y países;
+   conservar la captura y la referencia a la release. La aprobación de un build
+   en GitHub no autoriza por sí sola publicar en el canal público.
+5. Tras la operación, conservar la evidencia visible del track de destino y su
+   mismo `versionCode`, vinculada al recibo del bundle original. La firma de
+   distribución de Play puede diferir de la firma de subida: comparar el AAB
+   original, no el APK regenerado por Google.
+
+Esta última operación no se ejecutó en la auditoría: Google aún no había
+habilitado producción ni prueba abierta, y el menú de promoción las mostraba
+desactivadas. El panel ya marcaba cumplidos los requisitos de al menos 12 testers
+durante 14 días y permitía **solicitar** acceso. No se solicitó ni se publicó.
+
+### Evidencias y límites de cierre
+
+- [Release 1.51.0](https://github.com/maximofn/gymnasia/releases/tag/v1.51.0):
+  fuente `f38755747371e932cd9385234637b908e3156e45`, `versionCode` 86, 20 gates
+  aprobados y hashes de las evidencias coincidentes con los digests de GitHub.
+- [Submission de Expo](https://expo.dev/accounts/maximofn/projects/gymnasia/submissions/94490a64-e2cb-4c16-8319-d5e32edd7cf3):
+  terminado; Play Console mostraba 1.51.0/86 disponible en Alpha, con un país.
+- [Recibo consultado directamente a Google](evidence/production-google-play-receipt-1.51.0.json),
+  12 de octubre de 2026, 19:47 UTC: confirma `versionCode` 86, track Alpha
+  `completed` y SHA-256 `da0e58b92952b03a48daaaac413cffd35992388b6414f62ce21b03e65edbd34a`,
+  idéntico al AAB validado. El edit temporal fue descartado; no se publicó nada.
+- Las regresiones reproducen sin credenciales ni red el envío sin evidencia, la
+  sustitución de bytes, la huella recibida incorrecta, el track no completado y
+  fallos de consulta/limpieza. Las propiedades generan hashes y archivos distintos.
+- Validación local de la implementación: `npm run test:production-release`,
+  71/71; `npm --workspace apps/mobile run test:deterministic -- --maxWorkers=2`,
+  966/966; `npm --workspace apps/mobile exec -- tsc --noEmit`, correcto;
+  `npm run check:prompt-policy`, `npm run check:data-inventory` y
+  `npm run check:legal`, correctos. Se limitó la concurrencia de la suite móvil
+  tras un timeout de cifrado bajo carga, sin cambiar la prueba ni sus límites.
+- `npm run test:agent:e2e`: correcto; smoke web de Coach con OpenAI falso y
+  proveedor Development local, sin llamadas a proveedores reales ni deployments.
+- Privacidad: se recorrió `docs/legal/privacy-change-checklist.md`. Los hosts y
+  credenciales nuevos son operativos, fuera del bundle; no cambian datos, destinos,
+  permisos ni almacenamiento de `apps/mobile`, raíz del inventario. No corresponde
+  modificar inventario de datos personales ni política legal por este cambio.
+- La clave existente quedó configurada como secreto de `Play Internal` el 12 de
+  octubre de 2026, 19:52 UTC, tras autorización explícita del propietario. No se
+  generaron claves nuevas ni se ampliaron permisos; ningún valor secreto forma
+  parte de estas evidencias.
+- El cierre de la auditoría acredita los controles y el procedimiento anterior.
+  Una promoción real a producción sigue pendiente del acceso de Google y de
+  autorización explícita; no se marca como ejecutada por disponer de tests
+  simulados. Cuando Google habilite el canal, aplicar el procedimiento manual
+  conservando el bundle ya validado y las evidencias de destino y territorios.
