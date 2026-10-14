@@ -241,7 +241,7 @@ export async function requestProviderToolChat(
       const results = await executeToolBatch(calls, async (call) =>
         call.envelope === null
           ? { output: formatToolInputError(["Los argumentos deben ser un objeto JSON válido."]), isError: true }
-          : executeToolSafely(options.executeTool, call.name, call.envelope.args, call.envelope), undefined, options.toolBatchDiagnostics);
+          : executeToolSafely(options.executeTool, call.name, call.envelope.args, call.envelope), 1, options.toolBatchDiagnostics);
       history.push(...calls.map((call, index) => ({
         role: "tool" as const, content: results[index].output, tool_call_id: call.id,
       })));

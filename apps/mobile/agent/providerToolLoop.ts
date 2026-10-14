@@ -131,7 +131,7 @@ export async function runGoogleToolLoop(input: {
           occurrence: nextOccurrence(occurrences, call.name, call.arguments),
         } }));
       const results = await executeToolBatch(calls, (call) =>
-        executeToolSafely(input.executeTool, call.name, call.arguments, call.envelope), undefined, input.toolBatchDiagnostics);
+        executeToolSafely(input.executeTool, call.name, call.arguments, call.envelope), 1, input.toolBatchDiagnostics);
       const outputs: GoogleStep[] = calls.map((call, index) => ({
         type: "function_result", name: call.name, call_id: call.id,
         result: [{ type: "text", text: results[index].output }],
@@ -262,7 +262,7 @@ export async function runOpenAIToolLoop<TTurn extends OpenAIToolTurn>(input: {
     const results = await executeToolBatch(calls, async (call) =>
       call.envelope === null
         ? { output: formatToolInputError(["Los argumentos deben ser un objeto JSON válido."]), isError: true }
-        : executeToolSafely(input.executeTool, call.name, call.envelope.args, call.envelope), undefined, input.toolBatchDiagnostics);
+        : executeToolSafely(input.executeTool, call.name, call.envelope.args, call.envelope), 1, input.toolBatchDiagnostics);
     activeItems.push(...calls.map((call, index) => ({
       type: "function_call_output", call_id: call.call_id, output: results[index].output,
     })));
@@ -349,7 +349,7 @@ export async function runAnthropicToolLoop<TTurn extends AnthropicToolTurn>(inpu
       } };
     });
     const results = await executeToolBatch(calls, (call) =>
-      executeToolSafely(input.executeTool, call.name, call.envelope.args, call.envelope), undefined, input.toolBatchDiagnostics);
+      executeToolSafely(input.executeTool, call.name, call.envelope.args, call.envelope), 1, input.toolBatchDiagnostics);
     const toolResults = calls.map((call, index) => ({
       type: "tool_result", tool_use_id: call.id, content: results[index].output,
       ...(results[index].isError ? { is_error: true } : {}),
