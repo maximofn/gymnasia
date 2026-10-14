@@ -8,8 +8,26 @@ contrato de errores de las tools de Coach). El guión está en
   miniatura (1280×720). `03-rotulo.png` tiene fondo transparente para ir sobre cámara.
   Los pasos de una misma diapositiva (`-1`, `-2`…) comparten encuadre: un corte o un
   fundido entre ellos revela el siguiente elemento al ritmo de la locución.
-- `slides.html`: la fuente. Ábrela en Chrome y avanza con `→`, espacio o clic.
-- `render.mjs`: regenera `png/` tras cambiar `slides.html`:
+- `slides.html`: la presentación animada, pensada para grabarla en pantalla
+  completa (por ejemplo con OBS) mientras narras. Ábrela en Chrome desde el
+  repositorio: la tipografía sale de `charla-agente/fonts.css`.
+
+| Tecla | Acción |
+| --- | --- |
+| `→`, espacio, `Intro`, `AvPág`, clic | siguiente paso |
+| `←`, `RePág`, `Retroceso` | paso anterior |
+| `F` | pantalla completa |
+| `H` | oculta la barra de capítulo y progreso |
+
+  El fotograma actual queda en la URL (`slides.html#12`): recargar no te devuelve
+  al principio y puedes saltar a cualquier paso. Con movimiento reducido activado
+  en el sistema, todo aparece sin animación.
+
+  La firma visual es el tique: cada llamada a una tool es un recibo de papel que se
+  imprime, viaja por el diagrama y recibe un sello («Sin confirmar», «Rechazada»,
+  «Guardado ×1»).
+- `render.mjs`: regenera `png/` con el estado final de cada paso (abre la página
+  con `?static`):
 
 ```bash
 node docs/videos/coach-tool-errors/render.mjs

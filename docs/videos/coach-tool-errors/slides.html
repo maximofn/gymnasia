@@ -3,394 +3,641 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Errores de tools · visuales</title>
+<title>Errores de tools</title>
 <link rel="stylesheet" href="../../../charla-agente/fonts.css">
 <style>
-  /* Paleta de Gymnasia, la misma que charla-agente: lima para lo que funciona, ámbar para lo incierto, rojo para el fallo. */
+  /* Paleta de Gymnasia (charla-agente): lima para lo que funciona, ámbar para lo incierto, rojo para el fallo.
+     La firma visual es el tique: cada llamada a una tool es un recibo de papel que se imprime, viaja y se sella. */
+  @property --glow { syntax: "<color>"; inherits: true; initial-value: rgba(203, 255, 26, 0.10); }
   :root {
-    --bg: #07090D; --surface: #141820; --border: #252B35; --text: #F4F7FB; --muted: #A6AFBC;
-    --lime: #CBFF1A; --red: #FF5A5F; --amber: #FFB020; --edge: rgba(255, 255, 255, 0.09);
+    --bg: #07090D; --surface: #11151C; --surface2: #181D26; --border: #252B35; --text: #F4F7FB; --muted: #A6AFBC; --dim: #5B6472;
+    --lime: #CBFF1A; --red: #FF5A5F; --amber: #FFB020; --paper: #EEF1E8; --ink: #0B0E13;
+    --ink-red: #D2343A; --ink-amber: #C97700; --ink-green: #3F7F00;
     --font: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --mono: ui-monospace, "SF Mono", Menlo, monospace;
+    --ease: cubic-bezier(.16, 1, .3, 1);
     color-scheme: dark;
   }
   html, body { margin: 0; height: 100%; background: #000; color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; overflow: hidden; }
-  body.transparent { background: transparent; }
-  .slide { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; box-sizing: border-box; padding: 90px 120px; display: flex; flex-direction: column; justify-content: center; gap: 40px;
-    background: radial-gradient(1200px 700px at 75% 0%, rgba(203, 255, 26, 0.06), transparent 60%), var(--bg); }
-  .slide.small { width: 1280px; height: 720px; padding: 60px 70px; }
-  .slide.clear { background: transparent; }
+  body.transparent, body.transparent #stage { background: transparent; }
+
+  /* Escenario 1920×1080 escalado a la ventana; el fondo cambia de tono con el ánimo de la escena. */
+  #stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 50% 50%; background: var(--bg); transition: --glow 1.2s; }
+  #stage.mood-amber { --glow: rgba(255, 176, 32, 0.12); } #stage.mood-red { --glow: rgba(255, 90, 95, 0.12); }
+  #bg { position: absolute; inset: -60px; pointer-events: none;
+    background: radial-gradient(900px 600px at 78% 8%, var(--glow), transparent 70%), radial-gradient(700px 500px at 8% 100%, var(--glow), transparent 70%),
+      radial-gradient(circle, rgba(255, 255, 255, 0.07) 1.2px, transparent 1.6px) 0 0 / 40px 40px;
+    animation: drift 40s linear infinite; }
+  #grain { position: absolute; inset: 0; pointer-events: none; opacity: .07; mix-blend-mode: overlay; z-index: 9;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  body.transparent #bg, body.transparent #grain, body.transparent #hud { display: none; }
+  @keyframes drift { to { transform: translate(40px, 40px); } }
+
+  #hud { position: absolute; left: 120px; right: 120px; top: 42px; display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 18px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); pointer-events: none; z-index: 5; transition: opacity .5s; }
+  #hud .bar { display: flex; gap: 6px; } #hud .bar i { width: 34px; height: 4px; border-radius: 2px; background: var(--border); transition: background .5s; }
+  #hud .bar i.on { background: var(--lime); box-shadow: 0 0 10px rgba(203, 255, 26, .5); }
+  #stage.nohud #hud, body.hide-hud #hud { opacity: 0; }
+
+  .slide { position: absolute; inset: 0; box-sizing: border-box; padding: 110px 120px 80px; display: flex; flex-direction: column; justify-content: center; gap: 40px; }
   .slide[hidden] { display: none; }
-  [data-s] { opacity: 0; transition: opacity .35s; }
-  [data-s].in { opacity: 1; }
+  .slide.leaving { animation: leave .45s var(--ease) both; pointer-events: none; }
+  @keyframes leave { to { opacity: 0; transform: scale(.97); filter: blur(10px); } }
+  .abs { position: relative; } .abs > * { position: absolute !important; }
 
-  h1 { margin: 0; font-size: 64px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; text-wrap: balance; }
-  h2 { margin: 0; font-size: 50px; font-weight: 700; letter-spacing: -0.03em; }
-  .kicker { font-family: var(--mono); font-size: 22px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-  .kicker.lime { color: var(--lime); } .kicker.amber { color: var(--amber); }
-  .muted { color: var(--muted); }
-  code, .mono { font-family: var(--mono); }
-  code { color: var(--lime); font-size: 0.92em; }
-  .row { display: flex; gap: 32px; align-items: stretch; }
-  .col { display: flex; flex-direction: column; gap: 24px; }
-  .grow { flex: 1; }
-  .center { align-items: center; justify-content: center; text-align: center; }
-  .arrow { font-size: 54px; color: var(--muted); align-self: center; }
+  /* Revelado por pasos: data-s="k" aparece en el paso k; data-a elige la animación; --d la retrasa. */
+  [data-s]:not(.in) { opacity: 0; }
+  [data-s].in { animation: rise .9s var(--ease) var(--d, 0s) both; }
+  [data-s].in[data-a="pop"] { animation-name: pop; animation-duration: .7s; }
+  [data-s].in[data-a="stamp"] { animation: stamp .55s cubic-bezier(.3, 1.5, .5, 1) var(--d, 0s) both; }
+  [data-s].in[data-a="print"] { animation: print 1.4s cubic-bezier(.5, 0, .2, 1) var(--d, 0s) both; }
+  [data-s].in[data-a="deal"] { animation: deal .9s var(--ease) var(--d, 0s) both; }
+  [data-s].in[data-a="glitch"] { animation: rise .5s var(--ease) var(--d, 0s) both, glitch .7s steps(1) calc(var(--d, 0s) + .35s) both; }
+  [data-s].in[data-a="fade"] { animation-name: fade; }
+  [data-s].in[data-a="wipe"] { animation: wipe 1s var(--ease) var(--d, 0s) both; }
+  [data-s].in[data-a="drop"] { animation: drop .6s cubic-bezier(.5, 1.6, .5, 1) var(--d, 0s) both; }
+  path[data-s] { stroke-dasharray: 1; }
+  path[data-s].in { animation: draw .9s var(--ease) var(--d, 0s) both; }
+  .pkt[data-s].in { animation: travel 1.1s cubic-bezier(.6, 0, .25, 1) var(--d, 0s) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(46px); filter: blur(14px); } to { opacity: 1; transform: none; filter: none; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pop { 0% { opacity: 0; transform: scale(.5); } 60% { opacity: 1; transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes stamp { 0% { opacity: 0; transform: rotate(var(--r, -11deg)) scale(2.8); } 60% { opacity: 1; transform: rotate(var(--r, -11deg)) scale(.93); } 100% { opacity: 1; transform: rotate(var(--r, -11deg)) scale(1); } }
+  /* El papel sale de la ranura: lo que queda por encima de ella está recortado. */
+  @keyframes print { from { clip-path: inset(100% -60px -60px -60px); transform: translateY(-100%); } to { clip-path: inset(0 -60px -60px -60px); transform: none; } }
+  @keyframes deal { from { opacity: 0; transform: translate(-260px, 220px) rotate(-16deg) scale(.8); } to { opacity: 1; transform: none; } }
+  @keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+  @keyframes drop { from { opacity: 0; transform: translateY(-160px) scaleY(.4); } to { opacity: 1; transform: none; } }
+  @keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes travel { 0% { offset-distance: 0%; opacity: 0; } 10% { opacity: 1; } 88% { opacity: 1; offset-distance: 100%; } 100% { opacity: 0; offset-distance: 100%; } }
+  @keyframes glitch { 0% { transform: translate(-6px, 0); clip-path: inset(10% 0 55% 0); text-shadow: 4px 0 var(--red), -4px 0 #31E1FF; }
+    20% { transform: translate(5px, 0); clip-path: inset(60% 0 8% 0); } 40% { transform: translate(-3px, 2px); clip-path: inset(30% 0 30% 0); }
+    60% { transform: translate(4px, -2px); clip-path: none; } 80% { transform: none; text-shadow: 2px 0 var(--red), -2px 0 #31E1FF; } 100% { transform: none; clip-path: none; text-shadow: none; } }
+  @keyframes thunk { 0%, 100% { transform: none; } 15% { transform: translate(7px, 5px) rotate(.5deg); } 35% { transform: translate(-6px, -3px) rotate(-.4deg); } 55% { transform: translate(4px, 2px); } 75% { transform: translate(-2px, -1px); } }
+  @keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(203, 255, 26, .7); } 100% { box-shadow: 0 0 0 26px rgba(203, 255, 26, 0); } }
+  @keyframes caret { 50% { opacity: 0; } }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+  @keyframes scan { 0% { top: 0; } 50% { top: calc(100% - 4px); } 100% { top: 0; } }
+  @keyframes grow { from { transform: scaleX(.5); } to { transform: scaleX(1); } }
+  @keyframes suck { to { transform: translate(var(--dx), var(--dy)) scale(.15); opacity: 0; filter: blur(8px); } }
+  @keyframes blink { 50% { opacity: .35; } }
+  @keyframes spark { to { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; } }
 
-  .bubble { background: #ECF0F6; color: #0B0E13; padding: 26px 34px; border-radius: 30px 30px 30px 8px; font-size: 38px; font-weight: 500; line-height: 1.3; max-width: 1100px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); }
-  .bubble.bot { background: var(--lime); border-radius: 30px 30px 8px 30px; align-self: flex-end; }
-  .bubble.warn { background: var(--amber); border-radius: 30px 30px 8px 30px; align-self: flex-end; }
-  .who { font-family: var(--mono); font-size: 20px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  /* Tipografía */
+  h1 { margin: 0; font-size: 76px; font-weight: 700; letter-spacing: -0.04em; line-height: 1.02; text-wrap: balance; }
+  h2 { margin: 0; font-size: 58px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; }
+  .eyebrow { font-family: var(--mono); font-size: 22px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .eyebrow.lime { color: var(--lime); } .eyebrow.amber { color: var(--amber); }
+  .muted { color: var(--muted); } .lime { color: var(--lime); } .red { color: var(--red); } .amber-t { color: var(--amber); }
+  code { font-family: var(--mono); color: var(--lime); font-size: .9em; }
+  .row { display: flex; gap: 32px; align-items: stretch; } .col { display: flex; flex-direction: column; gap: 24px; } .grow { flex: 1; }
+  .caret::after { content: ""; display: inline-block; width: .5ch; height: 1em; background: currentColor; margin-left: 3px; vertical-align: -0.12em; animation: caret 1s steps(1) infinite; }
 
-  .card { background: var(--surface); border: 2px solid var(--border); border-radius: 24px; padding: 30px 34px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45); font-size: 30px; line-height: 1.35; }
-  .card .t { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
-  .card .k { font-family: var(--mono); font-size: 20px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
-  .card.ok { border-color: rgba(203, 255, 26, 0.55); box-shadow: 0 0 70px rgba(203, 255, 26, 0.12), 0 18px 50px rgba(0, 0, 0, 0.45); }
-  .card.ok .t, .card.ok .k { color: var(--lime); }
-  .card.amber { border-color: rgba(255, 176, 32, 0.6); } .card.amber .t, .card.amber .k { color: var(--amber); }
-  .card.bad { border-color: rgba(255, 90, 95, 0.6); } .card.bad .t, .card.bad .k { color: var(--red); }
-  .card.dashed { border-style: dashed; }
-  .card.ghost { background: transparent; }
-  .line { display: flex; justify-content: space-between; gap: 24px; padding: 12px 0; border-top: 1px solid var(--edge); }
+  /* Chat */
+  .who { font-family: var(--mono); font-size: 19px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .bubble { background: #ECF0F6; color: var(--ink); padding: 26px 34px; border-radius: 32px 32px 32px 8px; font-size: 38px; font-weight: 500; line-height: 1.3; box-shadow: 0 20px 60px rgba(0, 0, 0, .5); min-height: 1.3em; }
+  .bubble.bot { background: var(--lime); border-radius: 32px 32px 8px 32px; box-shadow: 0 0 80px rgba(203, 255, 26, .3), 0 20px 60px rgba(0, 0, 0, .5); position: relative; }
+  .bubble.warn { background: var(--amber); border-radius: 32px 32px 8px 32px; }
+
+  /* Tarjetas */
+  .card { position: relative; background: linear-gradient(180deg, var(--surface2), var(--surface)); border: 1.5px solid var(--border); border-radius: 26px; padding: 30px 34px; font-size: 29px; line-height: 1.35; box-shadow: 0 24px 60px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .05); }
+  .card .t { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; line-height: 1.15; }
+  .card .k { font-family: var(--mono); font-size: 19px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .card.ok { border-color: rgba(203, 255, 26, .5); box-shadow: 0 0 90px rgba(203, 255, 26, .10), 0 24px 60px rgba(0, 0, 0, .45); } .card.ok .t, .card.ok .k { color: var(--lime); }
+  .card.amber { border-color: rgba(255, 176, 32, .55); box-shadow: 0 0 90px rgba(255, 176, 32, .08), 0 24px 60px rgba(0, 0, 0, .45); } .card.amber .t, .card.amber .k { color: var(--amber); }
+  .card.bad { border-color: rgba(255, 90, 95, .55); box-shadow: 0 0 90px rgba(255, 90, 95, .10), 0 24px 60px rgba(0, 0, 0, .45); } .card.bad .t, .card.bad .k { color: var(--red); }
+  .card.dashed { border-style: dashed; } .card.ghost { background: transparent; box-shadow: none; }
+  .line { display: flex; justify-content: space-between; gap: 24px; padding: 11px 0; border-top: 1px solid rgba(255, 255, 255, .07); }
   .line b { font-variant-numeric: tabular-nums; }
-  .red { color: var(--red); } .lime { color: var(--lime); } .amber-t { color: var(--amber); }
-  .tag { display: inline-block; font-size: 24px; padding: 8px 18px; border-radius: 999px; border: 1px solid var(--edge); background: rgba(255, 255, 255, 0.04); color: var(--muted); }
-  .tag.ok { color: var(--lime); border-color: rgba(203, 255, 26, 0.45); }
-  .tag.bad { color: var(--red); border-color: rgba(255, 90, 95, 0.5); }
-  .tag.amber { color: var(--amber); border-color: rgba(255, 176, 32, 0.5); }
-  .strike { text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 3px; }
-  .note { font-size: 28px; color: var(--muted); border-left: 4px solid var(--lime); padding: 6px 0 6px 22px; }
-  .note.amber { border-color: var(--amber); }
-  .num { display: inline-flex; width: 56px; height: 56px; border-radius: 50%; align-items: center; justify-content: center; background: var(--lime); color: #0B0E13; font-weight: 700; font-size: 30px; flex: none; }
+  .tag { display: inline-block; font-size: 25px; padding: 9px 20px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .04); color: var(--muted); white-space: nowrap; }
+  .tag.ok { color: var(--lime); border-color: rgba(203, 255, 26, .45); } .tag.bad { color: var(--red); border-color: rgba(255, 90, 95, .5); } .tag.amber { color: var(--amber); border-color: rgba(255, 176, 32, .5); }
+  .note { font-size: 30px; color: var(--muted); border-left: 4px solid var(--lime); padding: 6px 0 6px 24px; line-height: 1.35; }
+  .note.amber { border-color: var(--amber); } .note.red { border-color: var(--red); }
+  .strike { position: relative; display: inline-block; }
+  .in .strike::after { content: ""; position: absolute; left: -6px; right: -6px; top: 52%; height: 5px; background: var(--red); border-radius: 3px; animation: wipe .5s var(--ease) calc(var(--d, 0s) + .7s) both; }
 
-  /* Recorrido de una llamada: dos carriles y cinco pasos. */
-  .lanes { position: relative; flex: 1; }
-  .lane { position: absolute; left: 0; right: 0; border: 2px dashed var(--border); border-radius: 28px; }
-  .lane .kicker { position: absolute; left: 28px; top: 18px; }
-  .node { position: absolute; width: 300px; box-sizing: border-box; background: var(--surface); border: 2px solid var(--border); border-radius: 22px; padding: 20px 22px; font-size: 26px; line-height: 1.3; }
+  /* El tique */
+  .tk { position: relative; width: 520px; filter: drop-shadow(0 30px 50px rgba(0, 0, 0, .6)); }
+  .tk .paper { background: var(--paper); color: var(--ink); font-family: var(--mono); font-size: 24px; line-height: 1.45; padding: 30px 32px 44px;
+    border-radius: 6px 6px 0 0; -webkit-mask: radial-gradient(circle 10px at 13px 100%, #0000 97%, #000 100%) 0 0 / 26px 100% repeat-x; mask: radial-gradient(circle 10px at 13px 100%, #0000 97%, #000 100%) 0 0 / 26px 100% repeat-x; }
+  .tk .hd { display: flex; justify-content: space-between; font-size: 18px; letter-spacing: .16em; text-transform: uppercase; color: #5D6470; }
+  .tk .op { font-family: var(--font); font-size: 40px; font-weight: 700; letter-spacing: -0.02em; margin: 10px 0 6px; }
+  .tk .rule { border-top: 2px dashed #B8BEB0; margin: 16px 0; }
+  .tk .r { display: flex; justify-content: space-between; } .tk .r span { color: #5D6470; }
+  .tk .prog { height: 10px; border-radius: 5px; background: #D5D9CE; overflow: hidden; margin-top: 18px; }
+  .tk .prog i { display: block; height: 100%; width: 72%; background: var(--ink); border-radius: 5px; transform-origin: left; animation: saving 2.2s var(--ease) 2.6s both; }
+  .tk.stalled .prog i { background: var(--ink-amber); animation: blink .8s steps(1) infinite; }
+  @keyframes saving { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .tk .status { margin-top: 10px; font-size: 20px; letter-spacing: .1em; text-transform: uppercase; color: #5D6470; }
+  .slot { height: 14px; border-radius: 7px; background: #000; box-shadow: 0 0 0 2px #1E242D, 0 0 40px rgba(203, 255, 26, .35), inset 0 -3px 8px rgba(203, 255, 26, .35); margin: 0 -20px; position: relative; z-index: 2; }
+  .stamp { position: absolute; z-index: 3; font-family: var(--font); font-weight: 700; font-size: 46px; letter-spacing: .04em; text-transform: uppercase; padding: 6px 22px; border: 6px solid currentColor; border-radius: 12px;
+    color: var(--ink-amber); transform: rotate(var(--r, -11deg)); mix-blend-mode: multiply; white-space: nowrap;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.4 1.7'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .stamp.red { color: var(--ink-red); } .stamp.green { color: var(--ink-green); }
+  .stamp.dark { mix-blend-mode: normal; color: var(--red); background: rgba(7, 9, 13, .7); }
+  .tk:has(.stamp.in) .paper { animation: thunk .5s ease-out .4s both; }
+
+  /* Diagramas */
+  svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  svg.wires path { fill: none; stroke: #4A5361; stroke-width: 4; stroke-linecap: round; }
+  svg.wires path.lime { stroke: var(--lime); filter: drop-shadow(0 0 8px rgba(203, 255, 26, .6)); }
+  svg.wires path.amber { stroke: var(--amber); } svg.wires path.red { stroke: var(--red); }
+  .pkt { left: 0; top: 0; width: 64px; height: 40px; margin: -20px 0 0 -32px; border-radius: 6px; offset-rotate: 0deg; z-index: 4;
+    background: repeating-linear-gradient(180deg, transparent 0 9px, #9AA195 9px 12px) center / 70% 100% no-repeat, var(--paper); box-shadow: 0 0 30px rgba(203, 255, 26, .8), 0 0 0 3px var(--lime); }
+  .pkt.result { background: var(--lime); box-shadow: 0 0 34px rgba(203, 255, 26, .9); }
+  .node { width: 300px; box-sizing: border-box; background: linear-gradient(180deg, var(--surface2), var(--surface)); border: 1.5px solid var(--border); border-radius: 22px; padding: 20px 22px; font-size: 25px; line-height: 1.3; box-shadow: 0 20px 50px rgba(0, 0, 0, .45); }
   .node .t { font-size: 30px; font-weight: 700; margin-bottom: 6px; }
-  .node.model { border-color: rgba(203, 255, 26, 0.55); } .node.model .t { color: var(--lime); }
-  .lanes svg { position: absolute; inset: 0; overflow: visible; }
-  .lanes path { fill: none; stroke: var(--muted); stroke-width: 4; marker-end: url(#tip); }
+  .node.model { border-color: rgba(203, 255, 26, .55); } .node.model .t { color: var(--lime); }
+  .lane { border: 2px dashed #222833; border-radius: 30px; }
+  .lane .eyebrow { position: absolute; left: 30px; top: 20px; font-size: 19px; }
+  .badge { display: inline-flex; align-items: center; justify-content: center; min-width: 74px; height: 74px; padding: 0 12px; box-sizing: border-box; border-radius: 37px; background: var(--lime); color: var(--ink); font-weight: 700; font-size: 32px; letter-spacing: 0; flex: none; }
+  .badge.on { animation: ring 1.2s ease-out infinite; }
+  .icon { width: 84px; height: 84px; }
+  .icon path, .icon circle { fill: none; stroke: currentColor; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
 
-  /* Fragmento del contrato. */
-  .json { font-family: var(--mono); font-size: 40px; line-height: 1.7; background: var(--surface); border: 2px solid var(--border); border-radius: 24px; padding: 34px 44px; }
-  .json div { padding: 0 14px; border-radius: 10px; transition: background .3s; }
-  .json div.on { background: rgba(203, 255, 26, 0.16); box-shadow: inset 4px 0 0 var(--lime); }
-  .json .key { color: var(--lime); } .json .str { color: #F2C78B; } .json .lit { color: #8FC8FF; }
-  .ann { font-size: 32px; white-space: nowrap; display: flex; gap: 18px; align-items: center; height: 61.2px; }
-  .ann b { color: var(--text); }
+  /* Contrato JSON impreso en el tique */
+  .json { font-family: var(--mono); font-size: 37px; line-height: 1.75; }
+  .json .ln { padding: 0 18px; border-radius: 10px; transition: opacity .4s, background .4s; white-space: pre; }
+  .json.focus .ln { opacity: .25; } .json.focus .ln.on { opacity: 1; background: rgba(63, 127, 0, .14); box-shadow: inset 5px 0 0 var(--ink-green); }
+  .json .key { color: #2E6A00; } .json .str { color: #8A4B00; } .json .lit { color: #0050B3; }
+  .ann { font-size: 34px; font-weight: 600; display: flex; align-items: center; gap: 18px; white-space: nowrap; }
+  .ann::before { content: ""; width: 70px; height: 3px; background: var(--lime); animation: wipe .5s var(--ease) var(--d, 0s) both; }
 
-  table { border-collapse: collapse; font-size: 36px; width: 100%; }
-  th { text-align: left; font-family: var(--mono); font-size: 22px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 400; padding: 0 24px 18px; }
-  td { padding: 30px 24px; border-top: 1px solid var(--border); vertical-align: top; }
-  td small { display: block; font-size: 26px; color: var(--muted); margin-top: 8px; }
-  td code { font-size: 36px; }
+  /* Registro del día: barras relativas, sin valores nutricionales inventados */
+  .ledger .bars { display: grid; grid-template-columns: 170px 1fr; gap: 12px 18px; align-items: center; font-size: 22px; color: var(--muted); margin-top: 18px; }
+  .ledger .track { height: 16px; border-radius: 8px; background: rgba(255, 255, 255, .06); }
+  .ledger .track i { display: block; height: 100%; border-radius: 8px; background: var(--muted); transform: scaleX(.5); transform-origin: left; }
+  .ledger.dup.in .track i { background: var(--red); animation: grow 1.1s var(--ease) 1.4s both; }
+  .x2 { position: absolute; right: -26px; top: -30px; background: var(--red); color: #fff; font-weight: 700; font-size: 44px; padding: 6px 22px; border-radius: 18px; box-shadow: 0 0 50px rgba(255, 90, 95, .6); }
+  .scanbox { position: relative; overflow: hidden; }
+  .in .scanbox::after { content: ""; position: absolute; left: 0; right: 0; height: 4px; background: var(--lime); box-shadow: 0 0 24px 6px rgba(203, 255, 26, .5); animation: scan 2.4s ease-in-out 1s 2 both; }
+  .console { font-family: var(--mono); font-size: 28px; line-height: 1.6; background: #05070A; border: 1.5px solid var(--border); border-radius: 22px; padding: 28px 32px; }
+  .console .c { color: var(--dim); margin-bottom: 18px; }
+  .console .v { float: right; color: var(--lime); font-size: 44px; font-weight: 700; line-height: 1.1; }
+  .spark { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; border-radius: 50%; background: var(--lime); pointer-events: none; box-shadow: 0 0 12px var(--lime); }
+
+  .shine { background: linear-gradient(100deg, var(--lime) 30%, #F4FFD0 45%, var(--lime) 60%) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 3.5s linear 1.2s infinite; }
+  .word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: .1em; margin-bottom: -.1em; }
+  .word > span { display: inline-block; }
+  .in .word > span { animation: wordup 1s var(--ease) both; }
+  @keyframes wordup { from { transform: translateY(110%); } to { transform: none; } }
+  .in .underline { position: relative; } .in .underline::after { content: ""; position: absolute; left: 0; right: 0; bottom: .06em; height: .09em; background: var(--lime); border-radius: 4px; animation: wipe .8s var(--ease) 1.4s both; box-shadow: 0 0 30px rgba(203, 255, 26, .6); }
+  .in .flicker { animation: wordup 1s var(--ease) .58s both, glitch .6s steps(1) 1.5s both; }
+
+  /* Exportación a PNG y movimiento reducido: todo en su estado final. */
+  body.static *, body.static *::before, body.static *::after { animation-duration: 1ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; } }
 </style>
 </head>
 <body>
+<div id="stage">
+<div id="bg"></div>
+<div id="hud"><span id="chapter"></span><span class="bar" id="bar"></span></div>
 
-<!-- Miniatura de YouTube (1280×720). -->
-<section class="slide small" data-id="00-miniatura" data-w="1280" data-h="720" style="justify-content: space-between">
-  <div class="kicker lime">Agentes de IA</div>
-  <h1 style="font-size: 92px">Falló la tool.<br><span class="lime">¿Y ahora qué?</span></h1>
-  <div class="row" style="gap: 22px; align-items: center">
-    <div class="card amber" style="padding: 20px 28px"><div class="t" style="margin: 0">Guardado sin confirmar</div></div>
-    <div class="arrow" style="font-size: 44px">→</div>
-    <div class="card bad" style="padding: 20px 28px"><div class="t" style="margin: 0">¿Comida ×2?</div></div>
+<!-- Miniatura de YouTube -->
+<section class="slide" data-id="00-miniatura" data-w="1280" data-h="720" data-nohud data-mood="amber" style="padding: 70px 80px; flex-direction: row; align-items: center; gap: 30px">
+  <div class="col grow" style="gap: 22px">
+    <div class="eyebrow lime" style="font-size: 20px">Agentes de IA</div>
+    <h1 style="font-size: 108px; line-height: .95">Falló<br>la tool.<br><span class="lime">¿La<br>repito?</span></h1>
+  </div>
+  <div style="position: relative; width: 470px; height: 560px">
+    <div class="tk" style="position: absolute; width: 400px; left: 60px; top: 20px; transform: rotate(8deg)">
+      <div class="paper" style="font-size: 20px; filter: brightness(.82)"><div class="hd"><span>Tool call</span><span>#7F3A</span></div><div class="op" style="font-size: 32px">Guardar comida</div><div class="rule"></div>
+        <div class="r"><span>arroz cocido</span><b>200 g</b></div><div class="r"><span>pollo</span><b>150 g</b></div><div class="r"><span>fecha</span><b>hoy</b></div></div>
+      <div class="stamp red" style="right: 6px; top: 40px; font-size: 64px; --r: 9deg">×2</div>
+    </div>
+    <div class="tk" style="position: absolute; width: 420px; left: 0; top: 130px; transform: rotate(-4deg)">
+      <div class="paper" style="font-size: 21px"><div class="hd"><span>Tool call</span><span>#7F3A</span></div><div class="op" style="font-size: 34px">Guardar comida</div><div class="rule"></div>
+        <div class="r"><span>arroz cocido</span><b>200 g</b></div><div class="r"><span>pollo</span><b>150 g</b></div><div class="r"><span>fecha</span><b>hoy</b></div><div class="rule"></div><div class="r"><span>estado</span><b>???</b></div></div>
+      <div class="stamp" style="left: 14px; top: 150px; font-size: 42px">Sin confirmar</div>
+    </div>
   </div>
 </section>
 
 <!-- 1. Una comida que podría aparecer dos veces -->
-<section class="slide" data-id="01-peticion" data-steps="3">
-  <div><div class="who">Usuario</div><div class="bubble">Apunta mi comida: 200 g de arroz cocido y 150 g de pollo</div></div>
-  <div class="card amber" data-s="2" style="align-self: flex-start"><div class="t">Guardado sin confirmar</div>La app no puede confirmar si la comida quedó registrada.</div>
-  <div class="col" data-s="3" style="gap: 14px">
-    <div class="kicker">Dos posibilidades, no un fallo reproducido</div>
+<section class="slide" data-id="01-peticion" data-steps="3" data-ch="Una comida que podría aparecer dos veces" style="gap: 34px">
+  <div class="row" style="align-items: flex-start; gap: 60px">
+    <div class="grow" data-s="1" data-a="fade"><div class="who">Usuario</div><div class="bubble caret" data-fx="type">Apunta mi comida: doscientos gramos de arroz cocido y ciento cincuenta de pollo.</div></div>
+    <div style="width: 520px">
+      <div class="slot" data-s="1" data-a="fade" style="--d: 1.4s"></div>
+      <div class="tk" id="tk1" data-s="1" data-a="print" style="--d: 1.8s">
+        <div class="paper"><div class="hd"><span>Tool call</span><span>#7F3A</span></div><div class="op">Guardar comida</div><div class="rule"></div>
+          <div class="r"><span>arroz cocido</span><b>200 g</b></div><div class="r"><span>pollo</span><b>150 g</b></div><div class="r"><span>fecha</span><b>hoy</b></div>
+          <div class="prog"><i></i></div><div class="status" id="st1">Guardando…</div></div>
+        <div class="stamp" data-s="2" data-a="stamp" style="left: 60px; top: 262px">Sin confirmar</div>
+      </div>
+    </div>
+  </div>
+  <div class="col" data-s="3" data-a="fade" style="gap: 14px">
+    <div class="eyebrow">Tu registro de hoy · dos posibilidades, no un fallo reproducido</div>
     <div class="row">
-      <div class="card grow"><div class="k">Posibilidad A · una comida</div>
-        <div class="line"><span>Arroz cocido</span><b>200 g</b></div><div class="line"><span>Pollo</span><b>150 g</b></div></div>
-      <div class="card bad grow"><div class="k">Posibilidad B · dos comidas</div>
-        <div class="line"><span>Arroz cocido</span><b>200 g</b></div><div class="line"><span>Pollo</span><b>150 g</b></div>
-        <div class="line"><span>Arroz cocido</span><b class="red">+200 g</b></div><div class="line"><span>Pollo</span><b class="red">+150 g</b></div>
-        <div class="line red"><span>Calorías y macros del día</span><b>el doble</b></div></div>
+      <div class="card ledger grow" data-s="3" data-a="deal"><div class="k">Si se guardó una vez</div>
+        <div class="line"><span>Arroz cocido · Pollo</span><b>200 g · 150 g</b></div>
+        <div class="bars"><span>Calorías</span><div class="track"><i></i></div><span>Proteínas</span><div class="track"><i></i></div><span>Hidratos</span><div class="track"><i></i></div><span>Grasas</span><div class="track"><i></i></div></div></div>
+      <div class="card bad ledger dup grow" data-s="3" data-a="deal" style="--d: .25s"><div class="k">Si la repetimos y ya estaba</div>
+        <div class="line"><span>Arroz cocido · Pollo</span><b>200 g · 150 g</b></div><div class="line red" data-s="3" style="--d: 1s"><span>Arroz cocido · Pollo</span><b>+200 g · +150 g</b></div>
+        <div class="bars"><span>Calorías</span><div class="track"><i></i></div><span>Proteínas</span><div class="track"><i></i></div><span>Hidratos</span><div class="track"><i></i></div><span>Grasas</span><div class="track"><i></i></div></div>
+        <div class="x2" data-s="3" data-a="pop" style="--d: 2.3s">×2</div></div>
     </div>
   </div>
 </section>
 
-<section class="slide center" data-id="02-titulo">
-  <div class="kicker lime">Agentes de IA</div>
-  <h1 style="font-size: 96px; max-width: 1500px">Cómo debe actuar un agente cuando falla una tool</h1>
-  <div class="row" style="font-size: 36px; gap: 18px">
-    <span class="tag">Qué ocurrió</span><span class="tag">Qué se puede comprobar</span><span class="tag ok">Cómo seguir sin duplicar</span>
+<section class="slide" data-id="02-titulo" data-nohud style="padding-left: 160px">
+  <div class="eyebrow lime" data-s="1" data-a="fade">Agentes de IA · Serie Gymnasia</div>
+  <h1 data-s="1" data-a="fade" style="font-size: 136px; line-height: 1.02">
+    <span class="word"><span style="animation-delay: .1s">Cómo</span></span> <span class="word"><span style="animation-delay: .18s">debe</span></span> <span class="word"><span style="animation-delay: .26s">actuar</span></span><br>
+    <span class="word"><span style="animation-delay: .34s">un</span></span> <span class="word"><span style="animation-delay: .42s">agente</span></span> <span class="word"><span style="animation-delay: .5s">cuando</span></span><br>
+    <span class="word"><span class="red flicker">falla</span></span> <span class="word"><span style="animation-delay: .66s">una</span></span> <span class="word"><span class="lime underline" style="animation-delay: .74s">tool</span></span>
+  </h1>
+  <div class="row" style="gap: 16px; margin-top: 10px">
+    <span class="tag" data-s="1" data-a="pop" style="--d: 1.6s; font-size: 30px">Qué ocurrió</span><span class="tag" data-s="1" data-a="pop" style="--d: 1.75s; font-size: 30px">Qué se puede comprobar</span><span class="tag ok" data-s="1" data-a="pop" style="--d: 1.9s; font-size: 30px">Cómo seguir sin duplicar</span>
   </div>
 </section>
 
-<!-- Rótulo inferior con fondo transparente. -->
-<section class="slide clear" data-id="03-rotulo" data-transparent style="justify-content: flex-end; padding-bottom: 110px">
-  <div class="card" style="align-self: flex-start; padding: 22px 34px; background: rgba(20, 24, 32, 0.92)">
-    <div class="t" style="margin: 0">Gymnasia <span class="lime">· Coach</span></div>
-    <div class="muted">Serie: construyendo un agente de IA paso a paso</div>
+<section class="slide" data-id="03-rotulo" data-transparent data-nohud style="justify-content: flex-end; padding-bottom: 110px">
+  <div class="row" data-s="1" data-a="wipe" style="align-self: flex-start; gap: 0; filter: drop-shadow(0 20px 40px rgba(0,0,0,.5))">
+    <div style="width: 12px; background: var(--lime); border-radius: 6px 0 0 6px; box-shadow: 0 0 30px rgba(203,255,26,.6)"></div>
+    <div style="background: rgba(11, 14, 19, .94); padding: 22px 36px; border-radius: 0 18px 18px 0; border: 1px solid #252B35; border-left: 0">
+      <div style="font-size: 38px; font-weight: 700; letter-spacing: -0.02em">Gymnasia <span class="lime">· Coach</span></div>
+      <div class="muted" style="font-size: 26px">Serie: construyendo un agente de IA paso a paso</div>
+    </div>
   </div>
 </section>
 
 <!-- 2. Quién pide la operación y quién la ejecuta -->
-<section class="slide" data-id="04-llamada-tool" data-steps="2">
-  <div class="kicker">Una llamada a una tool · ejemplo ilustrativo</div>
-  <div class="row" style="align-items: center">
-    <div class="card ok" style="width: 760px">
-      <div class="k">Operación</div><div class="t">Guardar comida</div>
-      <div class="k" style="margin-top: 26px">Datos</div>
-      <div class="line"><span>alimento</span><b>arroz cocido</b></div>
-      <div class="line"><span>cantidad</span><b>200 g</b></div>
-      <div class="line"><span>fecha</span><b>hoy</b></div>
+<section class="slide" data-id="04-llamada-tool" data-steps="2" data-ch="Quién pide y quién ejecuta">
+  <div class="row" style="align-items: center; gap: 0">
+    <div style="width: 1000px; position: relative">
+      <div class="eyebrow" data-s="1" data-a="fade" style="margin-bottom: 24px">Una llamada a una tool · ejemplo ilustrativo</div>
+      <div class="slot" data-s="1" data-a="fade" style="width: 600px"></div>
+      <div class="tk" data-s="1" data-a="print" style="width: 560px; --d: .3s">
+        <div class="paper"><div class="hd"><span>Tool call</span><span>#7F3A</span></div><div class="op">Guardar comida</div><div class="rule"></div>
+          <div class="r"><span>alimento</span><b>arroz cocido</b></div><div class="r"><span>cantidad</span><b>200 g</b></div><div class="r"><span>fecha</span><b>hoy</b></div></div>
+      </div>
+      <div class="ann" data-s="1" data-a="fade" style="position: absolute; left: 580px; top: 140px; --d: 1.5s">Qué operación</div>
+      <div class="ann" data-s="1" data-a="fade" style="position: absolute; left: 580px; top: 290px; --d: 1.8s">Con qué datos</div>
     </div>
-    <div class="col grow" data-s="2" style="font-size: 40px; gap: 30px; padding-left: 40px">
-      <div><span class="lime">El modelo</span> la pide.</div>
-      <div>El <b>harness</b> la comprueba y la ejecuta.</div>
+    <div class="col grow" style="gap: 34px">
+      <div class="card ok" data-s="2" data-a="deal"><div class="k">Modelo</div><div class="t">La pide</div>Indica qué quiere hacer y con qué datos.</div>
+      <div class="card" data-s="2" data-a="deal" style="--d: .25s"><div class="k">Harness · programa local</div><div class="t">La comprueba y la ejecuta</div>Coordina al modelo con las funciones de la app.</div>
     </div>
   </div>
 </section>
 
-<section class="slide" data-id="05-recorrido" data-steps="6" style="gap: 24px">
-  <h2>Quién pide y quién ejecuta</h2>
-  <div class="lanes">
-    <div class="lane" style="top: 0; height: 330px"><div class="kicker lime">Modelo · proveedor</div></div>
-    <div class="lane" style="top: 380px; height: 400px"><div class="kicker" style="top: auto; bottom: 18px">Programa local · harness y aplicación</div></div>
-    <svg viewBox="0 0 1680 790">
-      <defs><marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#A6AFBC" stroke="none"/></marker></defs>
-      <path data-s="2" d="M180,275 V585 H330"/>
-      <path data-s="3" d="M640,585 H682"/>
-      <path data-s="4" d="M992,585 H1034"/>
-      <path data-s="5" d="M1344,585 H1500 V285"/>
+<section class="slide" data-id="05-recorrido" data-steps="6" data-ch="Quién pide y quién ejecuta" style="gap: 26px">
+  <h2 data-s="1" data-a="fade">El recorrido de una llamada</h2>
+  <div class="abs" style="height: 790px">
+    <div class="lane" data-s="1" data-a="fade" style="left: 0; right: 0; top: 0; height: 330px"><div class="eyebrow lime">Modelo · proveedor</div></div>
+    <div class="lane" data-s="1" data-a="fade" style="left: 0; right: 0; top: 380px; height: 400px"><div class="eyebrow" style="top: auto; bottom: 20px">Programa local · harness y aplicación</div></div>
+    <svg class="wires" viewBox="0 0 1680 790">
+      <path data-s="2" class="lime" pathLength="1" d="M180,275 V585 H330"/>
+      <path data-s="3" class="lime" pathLength="1" d="M640,585 H682"/>
+      <path data-s="4" class="lime" pathLength="1" d="M992,585 H1034"/>
+      <path data-s="5" class="lime" pathLength="1" d="M1344,585 H1500 V285"/>
     </svg>
-    <div class="node model" data-s="1" style="left: 30px; top: 85px"><div class="t">1 · Modelo</div>Solicita una operación y espera el resultado</div>
-    <div class="node" data-s="2" style="left: 340px; top: 470px"><div class="t">2 · Harness</div>Comprueba que existe, que se puede usar y la forma de los datos</div>
-    <div class="node" data-s="3" style="left: 692px; top: 470px; border-color: rgba(203, 255, 26, 0.55)"><div class="t">3 · Aplicación</div>Ejecuta la función <span class="lime">una vez</span></div>
-    <div class="node" data-s="4" style="left: 1044px; top: 470px"><div class="t">4 · Harness</div>Entrega el resultado si permite continuar</div>
-    <div class="node model" data-s="5" style="left: 1350px; top: 85px"><div class="t">5 · Modelo</div>Responde o solicita otra operación</div>
-    <div class="tag ok" data-s="6" style="position: absolute; left: 1010px; top: 700px">Entregar la salida no vuelve a guardar la comida</div>
+    <div class="pkt" data-s="2" style="offset-path: path('M180,275 V585 H330')"></div>
+    <div class="pkt" data-s="3" style="offset-path: path('M640,585 H682')"></div>
+    <div class="pkt" data-s="4" style="offset-path: path('M992,585 H1034')"></div>
+    <div class="pkt result" data-s="5" style="offset-path: path('M1344,585 H1500 V285')"></div>
+    <div class="node model" data-s="1" data-a="pop" style="left: 30px; top: 85px; --d: .3s"><div class="t">1 · Modelo</div>Solicita una operación y espera el resultado</div>
+    <div class="node" data-s="2" data-a="pop" style="left: 340px; top: 470px; --d: .9s"><div class="t">2 · Harness</div>Comprueba que existe, que se puede usar y la forma de los datos</div>
+    <div class="node" data-s="3" data-a="pop" style="left: 692px; top: 470px; --d: .6s; border-color: rgba(203,255,26,.6)"><div class="t lime">3 · Aplicación</div>Ejecuta la función</div>
+    <div data-s="3" data-a="pop" style="left: 940px; top: 420px; --d: 1.2s"><span class="badge" data-at="6">×1</span></div>
+    <div class="node" data-s="4" data-a="pop" style="left: 1044px; top: 470px; --d: .6s"><div class="t">4 · Harness</div>Entrega el resultado si permite continuar</div>
+    <div class="node model" data-s="5" data-a="pop" style="left: 1350px; top: 85px; --d: 1s"><div class="t">5 · Modelo</div>Responde o solicita otra operación</div>
+    <div class="tag ok" data-s="6" style="left: 640px; top: 700px; font-size: 28px">Entregar la salida no vuelve a guardar la comida</div>
   </div>
 </section>
 
 <!-- 3. El mismo mensaje de error puede necesitar decisiones distintas -->
-<section class="slide" data-id="06-peso" data-steps="5">
+<section class="slide" data-id="06-peso" data-steps="5" data-ch="El mismo error, decisiones distintas">
   <div class="row" style="align-items: flex-end; gap: 28px">
-    <div><div class="who">Usuario</div><div class="bubble">¿Cuánto pesaba hace un mes?</div></div>
-    <span class="tag">Supuesto: la fecha ya está calculada</span>
+    <div data-s="1" data-a="fade"><div class="who">Usuario</div><div class="bubble caret" data-fx="type">¿Cuánto pesaba hace un mes?</div></div>
+    <span class="tag" data-s="1" style="--d: 1.2s">Supuesto: la fecha ya está calculada</span>
   </div>
-  <div class="row grow" style="align-items: flex-start">
-    <div class="col" data-s="5" style="width: 400px">
-      <div class="kicker">Antes de ejecutar</div>
-      <div class="card dashed bad"><div class="t">Fecha con formato no aceptado</div>El harness la rechaza sin hacer la lectura y deja corregirla.</div>
+  <div class="row" style="align-items: flex-start; gap: 40px">
+    <div class="col" style="width: 400px">
+      <div class="eyebrow" data-s="5" data-a="fade">Antes de ejecutar</div>
+      <div class="card dashed bad" data-s="5" data-a="deal"><div class="t">Fecha con formato no aceptado</div>El harness la rechaza sin hacer la lectura y deja corregirla.
+        <div class="stamp dark" data-s="5" data-a="stamp" style="right: -40px; bottom: -60px; font-size: 38px; --r: -8deg; --d: .6s">Rechazada</div></div>
     </div>
-    <div class="col grow" data-s="2">
-      <div class="kicker">Al ejecutar la consulta</div>
+    <div class="col grow">
+      <div class="eyebrow" data-s="2" data-a="fade">Al ejecutar la consulta</div>
       <div class="row">
-        <div class="card ok grow" data-s="2"><div class="t">Peso encontrado</div><span style="font-size: 54px; font-weight: 700">76 kg</span></div>
-        <div class="card amber grow" data-s="3"><div class="t">Sin registro ese día</div>Quizá haya otra medida cercana que ayude.</div>
-        <div class="card bad grow" data-s="4"><div class="t">No se pudo leer el almacenamiento</div>Aún no sabemos qué medidas contiene.</div>
+        <div class="card ok grow" data-s="2" data-a="deal"><div class="t">Peso encontrado</div><span style="font-size: 80px; font-weight: 700; letter-spacing: -0.03em"><span data-fx="count" data-to="76">76</span> kg</span></div>
+        <div class="card amber grow" data-s="3" data-a="deal"><div class="t">Sin registro ese día</div>Quizá haya otra medida cercana que ayude.</div>
+        <div class="card bad grow" data-s="4" data-a="glitch"><div class="t">No se pudo leer el almacenamiento</div>Aún no sabemos qué medidas contiene.</div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="slide center" data-id="07-error-generico" data-steps="2">
-  <div class="row" style="gap: 20px">
-    <span class="tag amber">Sin registro ese día</span><span class="tag bad">No se pudo leer</span><span class="tag bad">Formato no aceptado</span>
+<section class="slide" data-id="07-error-generico" data-steps="2" data-ch="El mismo error, decisiones distintas" data-mood="red">
+  <div class="abs" style="height: 700px">
+    <span class="tag amber" data-s="1" style="left: 120px; top: 40px; font-size: 32px; --dx: 560px; --dy: 300px; animation: pop .6s var(--ease) both, suck .8s cubic-bezier(.6,0,.8,.4) 1.4s both">Sin registro ese día</span>
+    <span class="tag bad" data-s="1" style="left: 560px; top: 0; font-size: 32px; --dx: 0px; --dy: 340px; animation: pop .6s var(--ease) .15s both, suck .8s cubic-bezier(.6,0,.8,.4) 1.55s both">No se pudo leer el almacenamiento</span>
+    <span class="tag bad" data-s="1" style="left: 1240px; top: 40px; font-size: 32px; --dx: -480px; --dy: 300px; animation: pop .6s var(--ease) .3s both, suck .8s cubic-bezier(.6,0,.8,.4) 1.7s both">Formato no aceptado</span>
+    <div class="card" data-s="1" style="left: 380px; width: 920px; top: 270px; box-sizing: border-box; text-align: center; font-size: 96px; font-weight: 700; letter-spacing: -0.03em; padding: 50px 0; animation: fade .6s both, thunk .5s ease-out 2.3s both">«Error al consultar»</div>
+    <div class="note red" data-s="2" style="left: 380px; top: 560px; font-size: 40px">Mezcla situaciones que piden decisiones distintas</div>
   </div>
-  <div class="arrow">↓</div>
-  <div class="card" style="font-size: 72px; font-weight: 700; padding: 40px 70px">«Error al consultar»</div>
-  <div class="note amber" data-s="2" style="font-size: 36px; text-align: left">Mezcla situaciones que piden decisiones distintas</div>
 </section>
 
-<section class="slide" data-id="08-contrato" data-steps="4" style="justify-content: center">
-  <div class="kicker lime">Contrato de errores</div>
-  <div class="col" style="font-size: 52px; font-weight: 600; gap: 34px">
-    <div class="row" data-s="1" style="align-items: center"><span class="num">1</span>¿La operación falló?</div>
-    <div class="row" data-s="2" style="align-items: center"><span class="num">2</span>¿Qué problema ocurrió?</div>
-    <div class="row" data-s="3" style="align-items: center"><span class="num">3</span>¿Qué se permite hacer ahora?</div>
+<section class="slide" data-id="08-contrato" data-steps="4" data-ch="El mismo error, decisiones distintas">
+  <div class="eyebrow lime" data-s="1" data-a="fade">Contrato de errores · tres preguntas</div>
+  <div class="col" style="font-size: 68px; font-weight: 700; letter-spacing: -0.03em; gap: 40px">
+    <div class="row" data-s="1" style="align-items: center"><span class="badge" data-at="1">1</span>¿La operación falló?</div>
+    <div class="row" data-s="2" style="align-items: center"><span class="badge" data-at="2">2</span>¿Qué problema ocurrió?</div>
+    <div class="row" data-s="3" style="align-items: center"><span class="badge" data-at="3">3</span>¿Qué se permite hacer ahora?</div>
   </div>
-  <div class="note" data-s="4" style="margin-top: 20px">La marca de error la pone el programa que ejecuta. El texto del usuario sigue siendo contenido del usuario.</div>
+  <div class="note" data-s="4" style="margin-top: 16px; max-width: 1400px">La marca de error la pone el programa que ejecuta. El texto del usuario sigue siendo contenido del usuario.</div>
 </section>
 
 <!-- 4. Corregir, buscar una alternativa o parar -->
-<section class="slide" data-id="09-decisiones" data-steps="4" style="justify-content: center">
-  <table>
-    <tr><th>Decisión</th><th data-s="4">Identificador en el contrato</th></tr>
-    <tr data-s="1"><td>Corregir los argumentos antes de ejecutar<small>La operación aún no se ha hecho: se arregla la petición.</small></td><td><code data-s="4">correct_arguments</code></td></tr>
-    <tr data-s="2"><td>Elegir otra consulta útil dentro de la petición<small>Sin inventar el dato: si la medida es de otro día, se dice de qué día.</small></td><td><code data-s="4">choose_alternative</code></td></tr>
-    <tr data-s="3"><td>Detener el turno<small>No se permiten más operaciones y se avisa al usuario.</small></td><td><code data-s="4">stop_turn</code></td></tr>
-  </table>
+<section class="slide" data-id="09-decisiones" data-steps="4" data-ch="Corregir, buscar una alternativa o parar">
+  <h2 data-s="1" data-a="fade">Tres decisiones</h2>
+  <div class="row" style="gap: 30px">
+    <div class="card grow" data-s="1" data-a="deal" style="color: var(--lime)">
+      <svg class="icon" viewBox="0 0 84 84"><path data-s="1" pathLength="1" style="--d: .5s" d="M14 70 L34 66 L70 30 L54 14 L18 50 Z M48 20 L64 36"/></svg>
+      <div class="t" style="color: var(--text); margin-top: 18px">Corregir los argumentos antes de ejecutar</div><div class="muted">La operación aún no se ha hecho: se arregla la petición.</div>
+      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code class="caret" data-s="4" data-a="fade" data-fx="type">correct_arguments</code></div></div>
+    <div class="card grow" data-s="2" data-a="deal" style="color: var(--amber)">
+      <svg class="icon" viewBox="0 0 84 84"><path data-s="2" pathLength="1" style="--d: .5s" d="M12 42 H38 C50 42 50 18 66 18 M38 42 C50 42 50 66 66 66 M58 10 L68 18 L58 26 M58 58 L68 66 L58 74"/></svg>
+      <div class="t" style="color: var(--text); margin-top: 18px">Elegir otra consulta útil dentro de la petición</div><div class="muted">Sin inventar el dato: si la medida es de otro día, se dice de qué día.</div>
+      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code class="caret" data-s="4" data-a="fade" data-fx="type" data-delay="900">choose_alternative</code></div></div>
+    <div class="card grow" data-s="3" data-a="deal" style="color: var(--red)">
+      <svg class="icon" viewBox="0 0 84 84"><path data-s="3" pathLength="1" style="--d: .5s" d="M28 8 H56 L76 28 V56 L56 76 H28 L8 56 V28 Z M28 42 H56"/></svg>
+      <div class="t" style="color: var(--text); margin-top: 18px">Detener el turno</div><div class="muted">No se permiten más operaciones y se avisa al usuario.</div>
+      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code class="caret" data-s="4" data-a="fade" data-fx="type" data-delay="1600">stop_turn</code></div></div>
+  </div>
+  <div class="eyebrow" data-s="4" style="--d: 2s">Identificadores tal como aparecen en el contrato</div>
 </section>
 
-<section class="slide" data-id="10-contrato-json" data-steps="6">
-  <div class="kicker">Fragmento ilustrativo del contrato interno</div>
-  <div class="row" style="align-items: flex-start">
-    <div class="json" style="width: 1220px; font-size: 36px">
-      <div>{</div>
-      <div data-at="2">&nbsp;&nbsp;<span class="key">"is_error"</span>: <span class="lit">true</span>,</div>
-      <div data-at="3">&nbsp;&nbsp;<span class="key">"error"</span>: <span class="str">"not_found"</span>,</div>
-      <div data-at="4">&nbsp;&nbsp;<span class="key">"message"</span>: <span class="str">"No hay registro para esa fecha."</span>,</div>
-      <div data-at="5">&nbsp;&nbsp;<span class="key">"recovery"</span>: <span class="str">"choose_alternative"</span></div>
-      <div>}</div>
+<section class="slide" data-id="10-contrato-json" data-steps="6" data-ch="Corregir, buscar una alternativa o parar">
+  <div class="eyebrow" data-s="1" data-a="fade">Fragmento ilustrativo del contrato interno</div>
+  <div class="row" style="align-items: flex-start; gap: 40px">
+    <div style="width: 1180px">
+      <div class="slot" data-s="1" data-a="fade"></div>
+      <div class="tk" data-s="1" data-a="print" style="width: 1180px; --d: .2s">
+        <div class="paper"><div class="hd"><span>Resultado de la tool</span><span>#7F3A</span></div><div class="rule"></div>
+          <div class="json"><div class="ln">{</div><div class="ln" data-at="2">  <span class="key">"is_error"</span>: <span class="lit">true</span>,</div><div class="ln" data-at="3">  <span class="key">"error"</span>: <span class="str">"not_found"</span>,</div><div class="ln" data-at="4">  <span class="key">"message"</span>: <span class="str">"No hay registro para esa fecha."</span>,</div><div class="ln" data-at="5">  <span class="key">"recovery"</span>: <span class="str">"choose_alternative"</span></div><div class="ln">}</div></div></div>
+        <div class="stamp red" data-s="2" data-a="stamp" style="right: 40px; top: 110px; --r: 8deg; font-size: 40px; --d: .2s">Falló</div>
+      </div>
     </div>
-    <div class="col muted" style="padding-top: 95px; gap: 0">
-      <div class="ann" data-s="2">← <b>Falló</b></div>
-      <div class="ann" data-s="3">← <b>Qué problema</b></div>
-      <div class="ann" data-s="4">← <b>La explicación</b></div>
-      <div class="ann" data-s="5">← <b>Qué se permite ahora</b></div>
+    <div class="col" style="padding-top: 157px; gap: 0">
+      <div class="ann" data-s="2" data-a="fade" style="height: 64.75px">Falló</div>
+      <div class="ann" data-s="3" data-a="fade" style="height: 64.75px">Qué problema</div>
+      <div class="ann" data-s="4" data-a="fade" style="height: 64.75px">La explicación</div>
+      <div class="ann lime" data-s="5" data-a="fade" style="height: 64.75px">Qué se permite</div>
     </div>
   </div>
   <div class="note amber" data-s="6">Que falte un peso no autoriza a crear uno: el harness sigue comprobando cada nueva petición.</div>
 </section>
 
 <!-- 5. Un error de la app tiene que llegar como error de la app -->
-<section class="slide" data-id="11-donde-falla" data-steps="3">
-  <h2>¿Dónde se produjo el fallo?</h2>
-  <div class="row">
-    <div class="card ok grow"><div class="k">Proveedor del modelo</div><div class="t">Entrega la petición ✓</div>Responde correctamente y pide guardar la comida.</div>
-    <div class="arrow">→</div>
-    <div class="card grow" data-s="1"><div class="k">App</div><div class="t">Intenta guardar</div><div data-s="2" class="red" style="font-weight: 700">✕ Falla la escritura en el almacenamiento</div></div>
+<section class="slide" data-id="11-donde-falla" data-steps="3" data-ch="Un error de la app llega como error de la app">
+  <h2 data-s="1" data-a="fade">¿Dónde se produjo el fallo?</h2>
+  <div class="abs" style="height: 300px">
+    <div class="card ok" data-s="1" data-a="deal" style="left: 0; top: 0; width: 700px; height: 300px; box-sizing: border-box"><div class="k">Proveedor del modelo</div><div class="t">Entrega la petición</div>Responde bien y pide guardar la comida.
+      <svg class="icon" viewBox="0 0 84 84" style="position: absolute; right: 30px; top: 30px; color: var(--lime)"><circle cx="42" cy="42" r="34"/><path data-s="1" pathLength="1" style="--d: .7s" d="M26 43 L37 54 L59 30"/></svg></div>
+    <svg class="wires" viewBox="0 0 1680 300"><path data-s="1" class="lime" pathLength="1" style="--d: 1s" d="M700,150 H980"/></svg>
+    <div class="pkt" data-s="1" style="offset-path: path('M700,150 H980'); --d: 1.1s"></div>
+    <div class="card" data-s="1" data-a="deal" style="left: 980px; top: 0; width: 700px; height: 300px; box-sizing: border-box; overflow: hidden; --d: .2s"><div class="k">App · almacenamiento local</div><div class="t">Intenta guardar</div>
+      <div class="red" data-s="2" data-a="glitch" style="font-weight: 700; font-size: 38px; margin-top: 24px">✕ Falla la escritura</div>
+      <svg viewBox="0 0 700 300" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none"><path data-s="2" pathLength="1" d="M560,0 L500,80 L585,125 L490,215 L540,300" style="fill: none; stroke: var(--red); stroke-width: 4; --d: .15s; filter: drop-shadow(0 0 10px rgba(255,90,95,.8))"/></svg></div>
   </div>
-  <div class="row" data-s="3">
-    <div class="card bad ghost grow"><div class="t strike">«Error del proveedor»</div>Señala el servicio equivocado.</div>
-    <div class="card bad ghost grow"><div class="t strike">Excepción con detalles internos</div>No dice si la comida se guardó.</div>
+  <div class="row">
+    <div class="card bad ghost grow" data-s="3" data-a="deal"><div class="t"><span class="strike">«Error del proveedor»</span></div>Señala el servicio equivocado.</div>
+    <div class="card bad ghost grow" data-s="3" data-a="deal" style="--d: .2s"><div class="t"><span class="strike">Excepción con detalles internos</span></div>No dice si la comida se guardó.</div>
   </div>
 </section>
 
-<section class="slide" data-id="12-destinatarios" data-steps="3">
-  <h2>Un mensaje adecuado para cada destinatario</h2>
-  <div class="row grow" style="align-items: flex-start">
-    <div class="card grow" data-s="1"><div class="k">Desarrollo</div><div class="t">Diagnóstico</div>Los detalles para investigar el fallo.</div>
-    <div class="card ok grow" data-s="2"><div class="k">Modelo</div><div class="t">Estado y permisos</div>Qué operación falló, qué está confirmado y qué puede hacer después.</div>
-    <div class="card amber grow" data-s="3"><div class="k">Usuario</div><div class="t">Resultado y siguiente paso</div>Una respuesta que le permita seguir usando la app.</div>
+<section class="slide" data-id="12-destinatarios" data-steps="3" data-ch="Un error de la app llega como error de la app">
+  <h2 data-s="1" data-a="fade">Un mensaje adecuado para cada destinatario</h2>
+  <div class="abs" style="height: 640px">
+    <div class="card bad" data-s="1" data-a="pop" style="left: 590px; width: 500px; top: 20px; box-sizing: border-box; text-align: center; padding: 22px"><div class="t" style="margin: 0">Fallo al guardar</div></div>
+    <svg class="wires" viewBox="0 0 1680 640">
+      <path data-s="1" pathLength="1" style="--d: .4s" d="M840,108 C840,240 250,210 250,320"/>
+      <path data-s="2" class="lime" pathLength="1" d="M840,108 V320"/>
+      <path data-s="3" class="amber" pathLength="1" d="M840,108 C840,240 1430,210 1430,320"/>
+    </svg>
+    <div class="card" data-s="1" data-a="pop" style="left: 0; width: 500px; top: 320px; box-sizing: border-box; --d: .9s"><div class="k">Desarrollo</div><div class="t">Diagnóstico</div>Los detalles para investigar el fallo.</div>
+    <div class="card ok" data-s="2" data-a="pop" style="left: 590px; width: 500px; top: 320px; box-sizing: border-box; --d: .6s"><div class="k">Modelo</div><div class="t">Estado y permisos</div>Qué operación falló, qué está confirmado y qué puede hacer después.</div>
+    <div class="card amber" data-s="3" data-a="pop" style="left: 1180px; width: 500px; top: 320px; box-sizing: border-box; --d: .6s"><div class="k">Usuario</div><div class="t">Resultado y siguiente paso</div>Una respuesta que le permita seguir usando la app.</div>
   </div>
 </section>
 
 <!-- 6. Volvamos a la comida: comprobar antes de repetir -->
-<section class="slide" data-id="13-diseno-posible" data-steps="6" style="gap: 30px">
-  <div class="kicker amber">Diseño posible · comprobar antes de detenerse</div>
-  <div class="row" style="align-items: center">
-    <div class="col" style="width: 470px">
-      <div class="card amber"><div class="t">Guardado sin confirmar</div></div>
-      <div class="col" data-s="2" style="gap: 12px; font-size: 26px">
-        <span class="tag">¿Falló antes de guardarla?</span><span class="tag">¿Se guardó y falló la confirmación?</span>
-      </div>
+<section class="slide" data-id="13-diseno-posible" data-steps="6" data-ch="Comprobar antes de repetir" data-mood="amber">
+  <div class="abs" style="height: 860px">
+    <div class="eyebrow amber" data-s="1" data-a="fade" style="left: 0; top: 0; border: 1.5px dashed var(--amber); padding: 10px 20px; border-radius: 12px">Diseño posible · comprobar antes de detenerse</div>
+    <div class="tk" data-s="1" data-a="deal" style="left: 0; top: 110px; width: 420px">
+      <div class="paper" style="font-size: 21px"><div class="hd"><span>Tool call</span><span>#7F3A</span></div><div class="op" style="font-size: 32px">Guardar comida</div><div class="rule"></div>
+        <div class="r"><span>arroz cocido</span><b>200 g</b></div><div class="r"><span>pollo</span><b>150 g</b></div><div class="r"><span>fecha</span><b>hoy</b></div><div style="height: 70px"></div></div>
+      <div class="stamp" style="left: 40px; top: 238px; font-size: 36px">Sin confirmar</div>
     </div>
-    <div class="arrow" data-s="3">→</div>
-    <div class="card" data-s="3" style="width: 420px"><div class="k">Solo lectura</div><div class="t">Consulta de comprobación</div>Identifica la acción concreta, no otra comida parecida.
-      <div style="margin-top: 16px"><span class="tag">petición ⇄ registro</span></div></div>
-    <div class="arrow" data-s="4">→</div>
-    <div class="col grow" style="gap: 18px; font-size: 26px">
-      <div class="card ok" data-s="4" style="padding: 20px 26px; font-size: 26px"><div class="t" style="font-size: 30px">Esa comida está guardada</div>Confirmar: «He apuntado tu comida».</div>
-      <div class="card" data-s="5" style="padding: 20px 26px; font-size: 26px"><div class="t" style="font-size: 30px">Confirmado que no se guardó</div>El harness puede permitir completarla.</div>
-      <div class="card bad" data-s="6" style="padding: 20px 26px; font-size: 26px"><div class="t" style="font-size: 30px">Ambiguo o la comprobación falla</div>Detenerse sin repetir la escritura.</div>
+    <div class="col" style="left: 0; top: 520px; width: 460px; gap: 12px; align-items: flex-start">
+      <span class="tag" data-s="2" data-a="pop">¿Falló antes de guardarla?</span><span class="tag" data-s="2" data-a="pop" style="--d: .2s">¿Se guardó y falló la confirmación?</span>
     </div>
+    <svg class="wires" viewBox="0 0 1680 860">
+      <path data-s="3" pathLength="1" d="M430,270 H540"/>
+      <path data-s="4" class="lime" pathLength="1" d="M1030,300 C1110,300 1090,170 1170,170"/>
+      <path data-s="5" pathLength="1" d="M1030,300 C1100,300 1100,345 1170,345"/>
+      <path data-s="6" class="red" pathLength="1" d="M1030,300 C1110,300 1090,510 1170,510"/>
+    </svg>
+    <div class="card" data-s="3" data-a="pop" style="left: 550px; top: 110px; width: 480px; box-sizing: border-box; --d: .5s"><div class="k">Solo lectura</div><div class="t">Consulta de comprobación</div>
+      <div class="scanbox" style="font-family: var(--mono); font-size: 21px; margin-top: 14px; border-radius: 10px; background: #05070A; padding: 6px 16px">
+        <div class="line" style="border: 0; color: var(--dim)"><span>ayer · arroz, pollo</span><span>otra comida</span></div>
+        <div class="line"><span>hoy · batido</span><span>&nbsp;</span></div>
+        <div class="line"><span>hoy · arroz, pollo</span><span class="amber-t">¿es esta?</span></div></div>
+      <div style="margin-top: 16px; font-size: 25px">Identifica la acción concreta, no otra comida parecida.</div>
+      <div style="margin-top: 14px"><span class="tag" style="font-family: var(--mono); font-size: 21px">petición #7F3A ⇄ registro</span></div></div>
+    <div class="card ok" data-s="4" data-a="pop" style="left: 1170px; top: 100px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Esa comida está guardada</div>Confirmar: «He apuntado tu comida».</div>
+    <div class="card" data-s="5" data-a="pop" style="left: 1170px; top: 280px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Confirmado que no se guardó</div>El harness puede permitir completarla.</div>
+    <div class="card bad" data-s="6" data-a="pop" style="left: 1170px; top: 445px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Ambiguo o la comprobación falla</div>Detenerse sin repetir la escritura.</div>
+    <div class="bubble warn caret" data-s="6" data-fx="type" data-delay="1200" style="left: 480px; right: 0; top: 650px; font-size: 34px">No puedo confirmar si se guardó la comida. Comprueba tu registro antes de volver a añadirla.</div>
   </div>
-  <div class="bubble warn" data-s="6" style="font-size: 32px">No puedo confirmar si se guardó la comida. Comprueba tu registro antes de volver a añadirla.</div>
 </section>
 
-<section class="slide" data-id="14-probado-gymnasia" data-steps="2" style="justify-content: center">
-  <div class="kicker lime">Lo que probamos en Gymnasia</div>
-  <div class="row" style="align-items: center">
-    <div class="card bad grow"><div class="t">Fallo de escritura</div></div>
-    <div class="arrow">→</div>
-    <div class="card grow"><div class="t">Parada local del turno</div></div>
-    <div class="arrow">→</div>
-    <div class="card ok grow"><div class="t">Sin segunda escritura</div></div>
+<section class="slide" data-id="14-probado-gymnasia" data-steps="2" data-ch="Comprobar antes de repetir">
+  <div class="eyebrow lime" data-s="1" data-a="fade">Lo que probamos en Gymnasia</div>
+  <div class="row" style="align-items: center; gap: 26px">
+    <div class="card bad grow" data-s="1" data-a="glitch" style="--d: .2s"><div class="t" style="margin: 0">Fallo de escritura</div></div>
+    <div data-s="1" data-a="fade" style="font-size: 54px; color: var(--muted); --d: .6s">→</div>
+    <div class="card grow" data-s="1" data-a="pop" style="--d: .8s"><div class="t" style="margin: 0">Parada local del turno</div></div>
+    <div data-s="1" data-a="drop" style="--d: 1.3s; width: 14px; height: 170px; border-radius: 7px; background: var(--red); box-shadow: 0 0 40px rgba(255,90,95,.7)"></div>
+    <div class="card ghost grow" data-s="1" data-a="fade" style="--d: 1.6s; border-style: dashed; color: var(--dim)"><div class="t" style="margin: 0"><span class="strike">Segunda escritura</span></div></div>
   </div>
-  <div class="row" data-s="2" style="gap: 18px"><span class="tag">Sin consulta adicional al modelo</span><span class="tag">Sin repetir el guardado</span></div>
+  <div class="row" style="gap: 18px"><span class="tag" data-s="2" data-a="pop">Sin consulta adicional al modelo</span><span class="tag" data-s="2" data-a="pop" style="--d: .15s">Sin repetir el guardado</span></div>
+  <div class="note" data-s="2" style="--d: .4s">Para comprobar antes, habría que permitirlo antes de ordenar la parada. Una vez detenido el turno, el modelo no puede continuar por su cuenta.</div>
 </section>
 
 <!-- 7. Cómo sabemos que las decisiones se respetan -->
-<section class="slide" data-id="15-visible-vs-ejecutado" data-steps="3" style="justify-content: center">
-  <table>
-    <tr><th>Caso</th><th>Respuesta visible</th><th>Operaciones realmente ejecutadas</th></tr>
-    <tr data-s="2"><td>Argumentos inválidos</td><td>Se corrige la petición</td><td class="lime">La función no se ejecuta antes de corregirlos</td></tr>
-    <tr data-s="3"><td>Fallo simulado al guardar</td><td>No confirma el éxito</td><td class="lime">Ninguna segunda escritura automática</td></tr>
-  </table>
-</section>
-
-<section class="slide" data-id="16-proveedores" data-steps="3">
-  <div class="card ok" style="align-self: center; text-align: center"><div class="k">Harness</div><div class="t">Decide el estado</div>Qué pasó · qué se permite después</div>
-  <div class="note" data-s="2" style="align-self: center">Un adaptador por API lo expresa en su formato y lo enlaza con la llamada original</div>
-  <div class="row" data-s="3" style="font-size: 27px">
-    <div class="card grow"><div class="t">OpenAI Responses</div>
-      <div class="line"><span>Mensaje</span><code>function_call_output</code></div>
-      <div class="line"><span>Contrato</span><span>serializado en <code>output</code></span></div>
-      <div class="line"><span>Correlación</span><code>call_id</code></div></div>
-    <div class="card grow"><div class="t">Anthropic Messages</div>
-      <div class="line"><span>Mensaje</span><code>tool_result</code></div>
-      <div class="line"><span>Marca</span><code>is_error: true</code></div>
-      <div class="line"><span>Correlación</span><code>tool_use_id</code></div></div>
-    <div class="card grow"><div class="t">Google Interactions</div>
-      <div class="line"><span>Mensaje</span><code>function_result</code></div>
-      <div class="line"><span>Marca</span><code>is_error: true</code></div>
-      <div class="line"><span>Correlación</span><code>call_id</code></div></div>
+<section class="slide" data-id="15-visible-vs-ejecutado" data-steps="3" data-ch="Cómo sabemos que se respetan">
+  <div class="row" style="gap: 40px">
+    <div class="col grow" data-s="1" data-a="deal"><div class="eyebrow">Respuesta visible</div>
+      <div class="card" style="min-height: 330px; box-sizing: border-box">
+        <div data-s="2" style="font-size: 32px; padding: 14px 0">Argumentos inválidos <span class="muted">→</span> se corrige la petición</div>
+        <div data-s="3" style="font-size: 32px; padding: 14px 0; border-top: 1px solid rgba(255,255,255,.07)">Fallo al guardar <span class="muted">→</span> no confirma el éxito</div></div></div>
+    <div class="col grow" data-s="1" data-a="deal" style="--d: .2s"><div class="eyebrow lime">Operaciones realmente ejecutadas</div>
+      <div class="console" style="min-height: 330px; box-sizing: border-box">
+        <div class="c">$ pruebas con respuestas simuladas</div>
+        <div data-s="2" data-a="fade" style="padding: 10px 0">ejecuciones antes de corregir <span class="v" data-fx="count" data-to="0">0</span></div>
+        <div data-s="3" data-a="fade" style="padding: 10px 0">escrituras automáticas extra <span class="v" data-fx="count" data-to="0">0</span></div></div></div>
   </div>
 </section>
 
-<section class="slide" data-id="17-evidencia" data-steps="2" style="justify-content: center">
-  <div class="kicker lime">Prueba en la web con un modelo real</div>
+<section class="slide" data-id="16-proveedores" data-steps="3" data-ch="Cómo sabemos que se respetan">
+  <div class="abs" style="height: 820px">
+    <div class="card ok" data-s="1" data-a="pop" style="left: 590px; width: 500px; top: 0; text-align: center; box-sizing: border-box"><div class="k">Harness</div><div class="t">Decide el estado</div>Qué pasó · qué se permite después</div>
+    <div class="note" data-s="2" style="left: 360px; top: 220px; width: 960px; box-sizing: border-box">Un adaptador por API lo expresa en su formato y lo enlaza con la llamada original</div>
+    <svg class="wires" viewBox="0 0 1680 820">
+      <path data-s="3" class="lime" pathLength="1" d="M840,330 C840,420 260,380 260,470"/>
+      <path data-s="3" class="lime" pathLength="1" style="--d: .15s" d="M840,330 V470"/>
+      <path data-s="3" class="lime" pathLength="1" style="--d: .3s" d="M840,330 C840,420 1420,380 1420,470"/>
+    </svg>
+    <div class="pkt result" data-s="3" style="offset-path: path('M840,330 C840,420 260,380 260,470'); --d: .3s"></div>
+    <div class="pkt result" data-s="3" style="offset-path: path('M840,330 V470'); --d: .45s"></div>
+    <div class="pkt result" data-s="3" style="offset-path: path('M840,330 C840,420 1420,380 1420,470'); --d: .6s"></div>
+    <div class="card" data-s="3" data-a="pop" style="left: 0; width: 520px; top: 470px; box-sizing: border-box; font-size: 26px; --d: 1.1s"><div class="t">OpenAI Responses</div>
+      <div class="line"><span>Mensaje</span><code>function_call_output</code></div><div class="line"><span>Contrato</span><span>serializado en <code>output</code></span></div><div class="line"><span>Correlación</span><code>call_id</code></div></div>
+    <div class="card" data-s="3" data-a="pop" style="left: 580px; width: 520px; top: 470px; box-sizing: border-box; font-size: 26px; --d: 1.25s"><div class="t">Anthropic Messages</div>
+      <div class="line"><span>Mensaje</span><code>tool_result</code></div><div class="line"><span>Marca</span><code>is_error: true</code></div><div class="line"><span>Correlación</span><code>tool_use_id</code></div></div>
+    <div class="card" data-s="3" data-a="pop" style="left: 1160px; width: 520px; top: 470px; box-sizing: border-box; font-size: 26px; --d: 1.4s"><div class="t">Google Interactions</div>
+      <div class="line"><span>Mensaje</span><code>function_result</code></div><div class="line"><span>Marca</span><code>is_error: true</code></div><div class="line"><span>Correlación</span><code>call_id</code></div></div>
+  </div>
+</section>
+
+<section class="slide" data-id="17-evidencia" data-steps="2" data-ch="Cómo sabemos que se respetan">
+  <div class="eyebrow lime" data-s="1" data-a="fade">Prueba en la web con un modelo real</div>
   <div class="row">
-    <div class="card ok grow"><div class="k">Lectura</div><div class="t">Faltaba un peso</div>Consultó otra fecha que se había indicado en la prueba.</div>
-    <div class="card ok grow"><div class="k">Escritura</div><div class="t">Fallo local al guardar</div>El programa detuvo el turno.</div>
+    <div class="card ok grow" data-s="1" data-a="deal"><svg class="icon" viewBox="0 0 84 84" style="color: var(--lime); float: right"><circle cx="42" cy="42" r="34"/><path data-s="1" pathLength="1" style="--d: .8s" d="M26 43 L37 54 L59 30"/></svg>
+      <div class="k">Lectura</div><div class="t">Faltaba un peso</div>Consultó otra fecha que se había indicado en la prueba.</div>
+    <div class="card ok grow" data-s="1" data-a="deal" style="--d: .25s"><svg class="icon" viewBox="0 0 84 84" style="color: var(--lime); float: right"><circle cx="42" cy="42" r="34"/><path data-s="1" pathLength="1" style="--d: 1.05s" d="M26 43 L37 54 L59 30"/></svg>
+      <div class="k">Escritura</div><div class="t">Fallo local al guardar</div>El programa detuvo el turno.</div>
   </div>
-  <div class="note amber" data-s="2">Evidencia de esos recorridos. No demuestra que cualquier modelo busque solo la mejor fecha.</div>
+  <div class="note amber" data-s="2">Evidencia de esos recorridos. No demuestra que cualquier modelo busque solo la mejor fecha, ni que este formato siempre mejore su respuesta.</div>
 </section>
 
 <!-- 8. Qué te llevas para tu agente -->
-<section class="slide" data-id="18-cierre-comida" data-steps="2" style="justify-content: center">
-  <div><div class="who">Usuario</div><div class="bubble">Apunta mi comida: 200 g de arroz cocido y 150 g de pollo</div></div>
+<section class="slide" data-id="18-cierre-comida" data-steps="2" data-ch="Qué te llevas para tu agente">
+  <div data-s="1" data-a="fade"><div class="who">Usuario</div><div class="bubble" style="display: inline-block">Apunta mi comida: doscientos gramos de arroz cocido y ciento cincuenta de pollo.</div></div>
   <div class="row" style="align-items: flex-end">
-    <div class="card ok" data-s="1" style="width: 620px"><div class="k">Una sola ración</div>
-      <div class="line"><span>Arroz cocido</span><b>200 g</b></div><div class="line"><span>Pollo</span><b>150 g</b></div></div>
+    <div class="tk" data-s="1" data-a="deal" style="--d: .3s">
+      <div class="paper"><div class="hd"><span>Tu registro de hoy</span><span>#7F3A</span></div><div class="op">Una sola ración</div><div class="rule"></div>
+        <div class="r"><span>arroz cocido</span><b>200 g</b></div><div class="r"><span>pollo</span><b>150 g</b></div><div style="height: 90px"></div></div>
+      <div class="stamp green" data-s="1" data-a="stamp" style="right: 40px; bottom: 50px; --r: -7deg; --d: 1s">Guardado ×1</div>
+    </div>
     <div class="grow"></div>
-    <div class="bubble bot" data-s="2">He apuntado tu comida.</div>
+    <div class="bubble bot caret" data-s="2" data-fx="type burst" style="font-size: 46px">He apuntado tu comida.</div>
   </div>
 </section>
 
-<section class="slide" data-id="19-resumen" data-steps="5" style="justify-content: center">
-  <div class="kicker">Sin confirmar → comprobar antes de repetir</div>
-  <div class="col" style="font-size: 44px; gap: 26px">
-    <div class="row" data-s="1" style="align-items: center"><span class="tag ok" style="width: 380px; font-size: 32px">Está guardada</span>Confirmar</div>
-    <div class="row" data-s="2" style="align-items: center"><span class="tag" style="width: 380px; font-size: 32px">Falta y está permitido</span>Completar la acción</div>
-    <div class="row" data-s="3" style="align-items: center"><span class="tag bad" style="width: 380px; font-size: 32px">Seguimos sin saberlo</span>Parar y ayudar a revisar el registro</div>
+<section class="slide" data-id="19-resumen" data-steps="5" data-ch="Qué te llevas para tu agente">
+  <div class="eyebrow amber" data-s="1" data-a="fade">Sin confirmar → comprobar antes de repetir</div>
+  <div class="col" style="font-size: 46px; gap: 26px; font-weight: 500">
+    <div class="row" data-s="1" style="align-items: center"><span class="tag ok" style="width: 420px; font-size: 32px; text-align: center">Está guardada</span>Confirmar</div>
+    <div class="row" data-s="2" style="align-items: center"><span class="tag" style="width: 420px; font-size: 32px; text-align: center">Falta y está permitido</span>Completar la acción</div>
+    <div class="row" data-s="3" style="align-items: center"><span class="tag bad" style="width: 420px; font-size: 32px; text-align: center">Seguimos sin saberlo</span>Parar y ayudar a revisar el registro</div>
   </div>
-  <h1 data-s="4" style="font-size: 84px; margin-top: 40px">Qué pasó <span class="muted">·</span> <span class="lime">Qué se permite después</span></h1>
+  <h1 data-s="4" style="font-size: 100px; margin-top: 30px">Qué pasó <span class="muted">·</span> <span class="shine">Qué se permite después</span></h1>
   <div class="note" data-s="5">El modelo usa esa información. El harness controla las operaciones.</div>
 </section>
 
-<section class="slide" data-id="20-referencias" style="justify-content: center">
-  <div class="kicker">En la descripción</div>
-  <div class="card"><div class="k">Artículo completo · contrato, proveedores y pruebas</div><div class="t mono" style="font-size: 40px">maximofn.com/gymnasia-agent-tool-errors</div></div>
-  <div class="card"><div class="k">Índice de la serie</div><div class="t mono" style="font-size: 40px">maximofn.com/gymnasia-agent#serie</div></div>
+<section class="slide" data-id="20-referencias" data-ch="Qué te llevas para tu agente">
+  <div class="eyebrow" data-s="1" data-a="fade">En la descripción</div>
+  <div class="card" data-s="1" data-a="deal" style="--d: .2s"><div class="k">Artículo completo · contrato, proveedores y pruebas</div><div class="t" style="font-family: var(--mono); font-size: 44px">maximofn.com/gymnasia-agent-tool-errors</div></div>
+  <div class="card" data-s="1" data-a="deal" style="--d: .4s"><div class="k">Índice de la serie</div><div class="t" style="font-family: var(--mono); font-size: 44px">maximofn.com/gymnasia-agent#serie</div></div>
 </section>
+<div id="grain"></div>
+</div>
 
 <script>
-  // Cada diapositiva tiene pasos (data-steps); un elemento con data-s="k" aparece desde el paso k,
-  // y uno con data-at="k" se resalta solo en ese paso. render.mjs llama a show() para exportar.
+  // Un fotograma es (diapositiva, paso). data-s="k" aparece en el paso k y data-at="k" se resalta solo en él.
+  // data-fx dispara efectos con JS al aparecer: type (texto letra a letra), count (contador) y burst (chispas).
+  // render.mjs abre la página con ?static y llama a show() para exportar el estado final de cada paso.
+  const isStatic = new URLSearchParams(location.search).has("static");
+  if (isStatic) document.body.classList.add("static");
+  const moving = !isStatic && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const stage = document.getElementById("stage");
   const slides = [...document.querySelectorAll(".slide")];
   const frames = slides.flatMap((s, i) => Array.from({ length: +(s.dataset.steps || 1) }, (_, k) => [i, k + 1]));
+  const chapters = [...new Set(slides.map((s) => s.dataset.ch).filter(Boolean))];
+  document.getElementById("bar").innerHTML = chapters.map(() => "<i></i>").join("");
+  for (const el of document.querySelectorAll('[data-fx~="type"]')) el.dataset.text = el.textContent;
+
+  const fx = {
+    type(el) {
+      clearInterval(el._t); clearTimeout(el._w); const text = el.dataset.text;
+      if (!moving) { el.textContent = text; return; }
+      el.textContent = ""; let n = 0;
+      el._w = setTimeout(() => { el._t = setInterval(() => { el.textContent = text.slice(0, ++n); if (n >= text.length) clearInterval(el._t); }, 34); }, +(el.dataset.delay || 250));
+    },
+    count(el) {
+      const to = +el.dataset.to; if (!moving || !to) { el.textContent = to; return; }
+      const t0 = performance.now() + 500;
+      const tick = (t) => { const p = Math.min(1, Math.max(0, (t - t0) / 1200)); el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(tick); };
+      requestAnimationFrame(tick);
+    },
+    burst(el) {
+      if (!moving) return;
+      setTimeout(() => {
+        for (let k = 0; k < 46; k++) {
+          const s = document.createElement("i"); s.className = "spark"; const a = Math.random() * Math.PI * 2, r = 160 + Math.random() * 320;
+          s.style.setProperty("--x", Math.cos(a) * r + "px"); s.style.setProperty("--y", Math.sin(a) * r + "px");
+          s.style.animation = `spark ${0.8 + Math.random() * 0.8}s cubic-bezier(.1,.8,.3,1) both`; if (k % 3 === 0) s.style.background = "#fff";
+          el.appendChild(s); setTimeout(() => s.remove(), 1800);
+        }
+      }, 1000);
+    },
+  };
+
+  let current = -1;
   window.slideList = () => slides.map((s) => ({ id: s.dataset.id, steps: +(s.dataset.steps || 1),
     w: +(s.dataset.w || 1920), h: +(s.dataset.h || 1080), transparent: s.hasAttribute("data-transparent") }));
   window.show = (i, step) => {
-    slides.forEach((s, j) => { s.hidden = j !== i; });
     const s = slides[i];
-    s.querySelectorAll("[data-s]").forEach((e) => e.classList.toggle("in", +e.dataset.s <= step));
+    if (i !== current) {
+      const old = slides[current];
+      slides.forEach((x, j) => { if (j !== i && x !== old) x.hidden = true; });
+      if (old && moving) { old.classList.add("leaving"); setTimeout(() => { if (slides[current] !== old) old.hidden = true; old.classList.remove("leaving"); }, 450); }
+      else if (old) old.hidden = true;
+      s.querySelectorAll(".in").forEach((e) => e.classList.remove("in"));
+      s.hidden = false; current = i;
+    }
+    for (const e of s.querySelectorAll("[data-s]")) {
+      const on = +e.dataset.s <= step, was = e.classList.contains("in");
+      e.classList.toggle("in", on);
+      if (on && !was) for (const f of [e, ...e.querySelectorAll("[data-fx]")])
+        if (f.dataset.fx && f.closest("[data-s]") === e) f.dataset.fx.split(" ").forEach((name) => fx[name](f));
+    }
     s.querySelectorAll("[data-at]").forEach((e) => e.classList.toggle("on", +e.dataset.at === step));
+    s.querySelectorAll(".json").forEach((j) => j.classList.toggle("focus", !!j.querySelector(".ln.on")));
+    if (s.dataset.id === "01-peticion") {
+      document.getElementById("tk1").classList.toggle("stalled", step >= 2);
+      document.getElementById("st1").textContent = step >= 2 ? "Sin confirmación" : "Guardando…";
+    }
+    const w = +(s.dataset.w || 1920), h = +(s.dataset.h || 1080);
+    stage.style.width = w + "px"; stage.style.height = h + "px";
+    stage.style.transform = `translate(-50%, -50%) scale(${Math.min(innerWidth / w, innerHeight / h)})`;
+    stage.className = (s.dataset.mood ? "mood-" + s.dataset.mood : "") + (s.hasAttribute("data-nohud") ? " nohud" : "");
     document.body.classList.toggle("transparent", s.hasAttribute("data-transparent"));
-    const k = Math.min(innerWidth / (+s.dataset.w || 1920), innerHeight / (+s.dataset.h || 1080));
-    s.style.transform = `scale(${k})`;
+    const ch = chapters.indexOf(s.dataset.ch);
+    document.getElementById("chapter").textContent = ch >= 0 ? `${ch + 1}/${chapters.length} · ${s.dataset.ch}` : "";
+    document.querySelectorAll("#bar i").forEach((b, j) => b.classList.toggle("on", j <= ch));
   };
-  // Vista previa: flechas o clic para avanzar; el fotograma actual queda en la URL.
+
+  // Navegación: → / espacio / clic avanzan, ← retrocede, H oculta la barra superior, F pantalla completa.
   let f = Math.min(+location.hash.slice(1) || 0, frames.length - 1);
-  const go = (n) => { f = Math.max(0, Math.min(frames.length - 1, n)); location.hash = f; show(...frames[f]); };
-  addEventListener("keydown", (e) => { if (e.key === "ArrowRight" || e.key === " ") go(f + 1); if (e.key === "ArrowLeft") go(f - 1); });
+  const go = (n) => { f = Math.max(0, Math.min(frames.length - 1, n)); history.replaceState(null, "", "#" + f); show(...frames[f]); };
+  addEventListener("keydown", (e) => {
+    if (["ArrowRight", " ", "PageDown", "Enter"].includes(e.key)) { e.preventDefault(); go(f + 1); }
+    if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) go(f - 1);
+    if (e.key === "h" || e.key === "H") document.body.classList.toggle("hide-hud");
+    if (e.key === "f" || e.key === "F") document.documentElement.requestFullscreen?.();
+  });
   addEventListener("click", () => go(f + 1));
+  addEventListener("hashchange", () => { const n = +location.hash.slice(1) || 0; if (n !== f) go(n); });
   addEventListener("resize", () => show(...frames[f]));
-  show(...frames[f]);
+  if (!isStatic) show(...frames[f]);
 </script>
 </body>
 </html>
