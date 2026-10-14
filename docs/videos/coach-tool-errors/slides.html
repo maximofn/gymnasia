@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Errores de tools · visuales</title>
+<link rel="stylesheet" href="../../../charla-agente/fonts.css">
+<style>
+  /* Paleta de Gymnasia, la misma que charla-agente: lima para lo que funciona, ámbar para lo incierto, rojo para el fallo. */
+  :root {
+    --bg: #07090D; --surface: #141820; --border: #252B35; --text: #F4F7FB; --muted: #A6AFBC;
+    --lime: #CBFF1A; --red: #FF5A5F; --amber: #FFB020; --edge: rgba(255, 255, 255, 0.09);
+    --font: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, monospace;
+    color-scheme: dark;
+  }
+  html, body { margin: 0; height: 100%; background: #000; color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; overflow: hidden; }
+  body.transparent { background: transparent; }
+  .slide { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; box-sizing: border-box; padding: 90px 120px; display: flex; flex-direction: column; justify-content: center; gap: 40px;
+    background: radial-gradient(1200px 700px at 75% 0%, rgba(203, 255, 26, 0.06), transparent 60%), var(--bg); }
+  .slide.small { width: 1280px; height: 720px; padding: 60px 70px; }
+  .slide.clear { background: transparent; }
+  .slide[hidden] { display: none; }
+  [data-s] { opacity: 0; transition: opacity .35s; }
+  [data-s].in { opacity: 1; }
+
+  h1 { margin: 0; font-size: 64px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; text-wrap: balance; }
+  h2 { margin: 0; font-size: 50px; font-weight: 700; letter-spacing: -0.03em; }
+  .kicker { font-family: var(--mono); font-size: 22px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .kicker.lime { color: var(--lime); } .kicker.amber { color: var(--amber); }
+  .muted { color: var(--muted); }
+  code, .mono { font-family: var(--mono); }
+  code { color: var(--lime); font-size: 0.92em; }
+  .row { display: flex; gap: 32px; align-items: stretch; }
+  .col { display: flex; flex-direction: column; gap: 24px; }
+  .grow { flex: 1; }
+  .center { align-items: center; justify-content: center; text-align: center; }
+  .arrow { font-size: 54px; color: var(--muted); align-self: center; }
+
+  .bubble { background: #ECF0F6; color: #0B0E13; padding: 26px 34px; border-radius: 30px 30px 30px 8px; font-size: 38px; font-weight: 500; line-height: 1.3; max-width: 1100px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5); }
+  .bubble.bot { background: var(--lime); border-radius: 30px 30px 8px 30px; align-self: flex-end; }
+  .bubble.warn { background: var(--amber); border-radius: 30px 30px 8px 30px; align-self: flex-end; }
+  .who { font-family: var(--mono); font-size: 20px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+
+  .card { background: var(--surface); border: 2px solid var(--border); border-radius: 24px; padding: 30px 34px; box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45); font-size: 30px; line-height: 1.35; }
+  .card .t { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .card .k { font-family: var(--mono); font-size: 20px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .card.ok { border-color: rgba(203, 255, 26, 0.55); box-shadow: 0 0 70px rgba(203, 255, 26, 0.12), 0 18px 50px rgba(0, 0, 0, 0.45); }
+  .card.ok .t, .card.ok .k { color: var(--lime); }
+  .card.amber { border-color: rgba(255, 176, 32, 0.6); } .card.amber .t, .card.amber .k { color: var(--amber); }
+  .card.bad { border-color: rgba(255, 90, 95, 0.6); } .card.bad .t, .card.bad .k { color: var(--red); }
+  .card.dashed { border-style: dashed; }
+  .card.ghost { background: transparent; }
+  .line { display: flex; justify-content: space-between; gap: 24px; padding: 12px 0; border-top: 1px solid var(--edge); }
+  .line b { font-variant-numeric: tabular-nums; }
+  .red { color: var(--red); } .lime { color: var(--lime); } .amber-t { color: var(--amber); }
+  .tag { display: inline-block; font-size: 24px; padding: 8px 18px; border-radius: 999px; border: 1px solid var(--edge); background: rgba(255, 255, 255, 0.04); color: var(--muted); }
+  .tag.ok { color: var(--lime); border-color: rgba(203, 255, 26, 0.45); }
+  .tag.bad { color: var(--red); border-color: rgba(255, 90, 95, 0.5); }
+  .tag.amber { color: var(--amber); border-color: rgba(255, 176, 32, 0.5); }
+  .strike { text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 3px; }
+  .note { font-size: 28px; color: var(--muted); border-left: 4px solid var(--lime); padding: 6px 0 6px 22px; }
+  .note.amber { border-color: var(--amber); }
+  .num { display: inline-flex; width: 56px; height: 56px; border-radius: 50%; align-items: center; justify-content: center; background: var(--lime); color: #0B0E13; font-weight: 700; font-size: 30px; flex: none; }
+
+  /* Recorrido de una llamada: dos carriles y cinco pasos. */
+  .lanes { position: relative; flex: 1; }
+  .lane { position: absolute; left: 0; right: 0; border: 2px dashed var(--border); border-radius: 28px; }
+  .lane .kicker { position: absolute; left: 28px; top: 18px; }
+  .node { position: absolute; width: 300px; box-sizing: border-box; background: var(--surface); border: 2px solid var(--border); border-radius: 22px; padding: 20px 22px; font-size: 26px; line-height: 1.3; }
+  .node .t { font-size: 30px; font-weight: 700; margin-bottom: 6px; }
+  .node.model { border-color: rgba(203, 255, 26, 0.55); } .node.model .t { color: var(--lime); }
+  .lanes svg { position: absolute; inset: 0; overflow: visible; }
+  .lanes path { fill: none; stroke: var(--muted); stroke-width: 4; marker-end: url(#tip); }
+
+  /* Fragmento del contrato. */
+  .json { font-family: var(--mono); font-size: 40px; line-height: 1.7; background: var(--surface); border: 2px solid var(--border); border-radius: 24px; padding: 34px 44px; }
+  .json div { padding: 0 14px; border-radius: 10px; transition: background .3s; }
+  .json div.on { background: rgba(203, 255, 26, 0.16); box-shadow: inset 4px 0 0 var(--lime); }
+  .json .key { color: var(--lime); } .json .str { color: #F2C78B; } .json .lit { color: #8FC8FF; }
+  .ann { font-size: 32px; white-space: nowrap; display: flex; gap: 18px; align-items: center; height: 61.2px; }
+  .ann b { color: var(--text); }
+
+  table { border-collapse: collapse; font-size: 36px; width: 100%; }
+  th { text-align: left; font-family: var(--mono); font-size: 22px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-weight: 400; padding: 0 24px 18px; }
+  td { padding: 30px 24px; border-top: 1px solid var(--border); vertical-align: top; }
+  td small { display: block; font-size: 26px; color: var(--muted); margin-top: 8px; }
+  td code { font-size: 36px; }
+</style>
+</head>
+<body>
+
+<!-- Miniatura de YouTube (1280×720). -->
+<section class="slide small" data-id="00-miniatura" data-w="1280" data-h="720" style="justify-content: space-between">
+  <div class="kicker lime">Agentes de IA</div>
+  <h1 style="font-size: 92px">Falló la tool.<br><span class="lime">¿Y ahora qué?</span></h1>
+  <div class="row" style="gap: 22px; align-items: center">
+    <div class="card amber" style="padding: 20px 28px"><div class="t" style="margin: 0">Guardado sin confirmar</div></div>
+    <div class="arrow" style="font-size: 44px">→</div>
+    <div class="card bad" style="padding: 20px 28px"><div class="t" style="margin: 0">¿Comida ×2?</div></div>
+  </div>
+</section>
+
+<!-- 1. Una comida que podría aparecer dos veces -->
+<section class="slide" data-id="01-peticion" data-steps="3">
+  <div><div class="who">Usuario</div><div class="bubble">Apunta mi comida: 200 g de arroz cocido y 150 g de pollo</div></div>
+  <div class="card amber" data-s="2" style="align-self: flex-start"><div class="t">Guardado sin confirmar</div>La app no puede confirmar si la comida quedó registrada.</div>
+  <div class="col" data-s="3" style="gap: 14px">
+    <div class="kicker">Dos posibilidades, no un fallo reproducido</div>
+    <div class="row">
+      <div class="card grow"><div class="k">Posibilidad A · una comida</div>
+        <div class="line"><span>Arroz cocido</span><b>200 g</b></div><div class="line"><span>Pollo</span><b>150 g</b></div></div>
+      <div class="card bad grow"><div class="k">Posibilidad B · dos comidas</div>
+        <div class="line"><span>Arroz cocido</span><b>200 g</b></div><div class="line"><span>Pollo</span><b>150 g</b></div>
+        <div class="line"><span>Arroz cocido</span><b class="red">+200 g</b></div><div class="line"><span>Pollo</span><b class="red">+150 g</b></div>
+        <div class="line red"><span>Calorías y macros del día</span><b>el doble</b></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide center" data-id="02-titulo">
+  <div class="kicker lime">Agentes de IA</div>
+  <h1 style="font-size: 96px; max-width: 1500px">Cómo debe actuar un agente cuando falla una tool</h1>
+  <div class="row" style="font-size: 36px; gap: 18px">
+    <span class="tag">Qué ocurrió</span><span class="tag">Qué se puede comprobar</span><span class="tag ok">Cómo seguir sin duplicar</span>
+  </div>
+</section>
+
+<!-- Rótulo inferior con fondo transparente. -->
+<section class="slide clear" data-id="03-rotulo" data-transparent style="justify-content: flex-end; padding-bottom: 110px">
+  <div class="card" style="align-self: flex-start; padding: 22px 34px; background: rgba(20, 24, 32, 0.92)">
+    <div class="t" style="margin: 0">Gymnasia <span class="lime">· Coach</span></div>
+    <div class="muted">Serie: construyendo un agente de IA paso a paso</div>
+  </div>
+</section>
+
+<!-- 2. Quién pide la operación y quién la ejecuta -->
+<section class="slide" data-id="04-llamada-tool" data-steps="2">
+  <div class="kicker">Una llamada a una tool · ejemplo ilustrativo</div>
+  <div class="row" style="align-items: center">
+    <div class="card ok" style="width: 760px">
+      <div class="k">Operación</div><div class="t">Guardar comida</div>
+      <div class="k" style="margin-top: 26px">Datos</div>
+      <div class="line"><span>alimento</span><b>arroz cocido</b></div>
+      <div class="line"><span>cantidad</span><b>200 g</b></div>
+      <div class="line"><span>fecha</span><b>hoy</b></div>
+    </div>
+    <div class="col grow" data-s="2" style="font-size: 40px; gap: 30px; padding-left: 40px">
+      <div><span class="lime">El modelo</span> la pide.</div>
+      <div>El <b>harness</b> la comprueba y la ejecuta.</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-id="05-recorrido" data-steps="6" style="gap: 24px">
+  <h2>Quién pide y quién ejecuta</h2>
+  <div class="lanes">
+    <div class="lane" style="top: 0; height: 330px"><div class="kicker lime">Modelo · proveedor</div></div>
+    <div class="lane" style="top: 380px; height: 400px"><div class="kicker" style="top: auto; bottom: 18px">Programa local · harness y aplicación</div></div>
+    <svg viewBox="0 0 1680 790">
+      <defs><marker id="tip" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#A6AFBC" stroke="none"/></marker></defs>
+      <path data-s="2" d="M180,275 V585 H330"/>
+      <path data-s="3" d="M640,585 H682"/>
+      <path data-s="4" d="M992,585 H1034"/>
+      <path data-s="5" d="M1344,585 H1500 V285"/>
+    </svg>
+    <div class="node model" data-s="1" style="left: 30px; top: 85px"><div class="t">1 · Modelo</div>Solicita una operación y espera el resultado</div>
+    <div class="node" data-s="2" style="left: 340px; top: 470px"><div class="t">2 · Harness</div>Comprueba que existe, que se puede usar y la forma de los datos</div>
+    <div class="node" data-s="3" style="left: 692px; top: 470px; border-color: rgba(203, 255, 26, 0.55)"><div class="t">3 · Aplicación</div>Ejecuta la función <span class="lime">una vez</span></div>
+    <div class="node" data-s="4" style="left: 1044px; top: 470px"><div class="t">4 · Harness</div>Entrega el resultado si permite continuar</div>
+    <div class="node model" data-s="5" style="left: 1350px; top: 85px"><div class="t">5 · Modelo</div>Responde o solicita otra operación</div>
+    <div class="tag ok" data-s="6" style="position: absolute; left: 1010px; top: 700px">Entregar la salida no vuelve a guardar la comida</div>
+  </div>
+</section>
+
+<!-- 3. El mismo mensaje de error puede necesitar decisiones distintas -->
+<section class="slide" data-id="06-peso" data-steps="5">
+  <div class="row" style="align-items: flex-end; gap: 28px">
+    <div><div class="who">Usuario</div><div class="bubble">¿Cuánto pesaba hace un mes?</div></div>
+    <span class="tag">Supuesto: la fecha ya está calculada</span>
+  </div>
+  <div class="row grow" style="align-items: flex-start">
+    <div class="col" data-s="5" style="width: 400px">
+      <div class="kicker">Antes de ejecutar</div>
+      <div class="card dashed bad"><div class="t">Fecha con formato no aceptado</div>El harness la rechaza sin hacer la lectura y deja corregirla.</div>
+    </div>
+    <div class="col grow" data-s="2">
+      <div class="kicker">Al ejecutar la consulta</div>
+      <div class="row">
+        <div class="card ok grow" data-s="2"><div class="t">Peso encontrado</div><span style="font-size: 54px; font-weight: 700">76 kg</span></div>
+        <div class="card amber grow" data-s="3"><div class="t">Sin registro ese día</div>Quizá haya otra medida cercana que ayude.</div>
+        <div class="card bad grow" data-s="4"><div class="t">No se pudo leer el almacenamiento</div>Aún no sabemos qué medidas contiene.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide center" data-id="07-error-generico" data-steps="2">
+  <div class="row" style="gap: 20px">
+    <span class="tag amber">Sin registro ese día</span><span class="tag bad">No se pudo leer</span><span class="tag bad">Formato no aceptado</span>
+  </div>
+  <div class="arrow">↓</div>
+  <div class="card" style="font-size: 72px; font-weight: 700; padding: 40px 70px">«Error al consultar»</div>
+  <div class="note amber" data-s="2" style="font-size: 36px; text-align: left">Mezcla situaciones que piden decisiones distintas</div>
+</section>
+
+<section class="slide" data-id="08-contrato" data-steps="4" style="justify-content: center">
+  <div class="kicker lime">Contrato de errores</div>
+  <div class="col" style="font-size: 52px; font-weight: 600; gap: 34px">
+    <div class="row" data-s="1" style="align-items: center"><span class="num">1</span>¿La operación falló?</div>
+    <div class="row" data-s="2" style="align-items: center"><span class="num">2</span>¿Qué problema ocurrió?</div>
+    <div class="row" data-s="3" style="align-items: center"><span class="num">3</span>¿Qué se permite hacer ahora?</div>
+  </div>
+  <div class="note" data-s="4" style="margin-top: 20px">La marca de error la pone el programa que ejecuta. El texto del usuario sigue siendo contenido del usuario.</div>
+</section>
+
+<!-- 4. Corregir, buscar una alternativa o parar -->
+<section class="slide" data-id="09-decisiones" data-steps="4" style="justify-content: center">
+  <table>
+    <tr><th>Decisión</th><th data-s="4">Identificador en el contrato</th></tr>
+    <tr data-s="1"><td>Corregir los argumentos antes de ejecutar<small>La operación aún no se ha hecho: se arregla la petición.</small></td><td><code data-s="4">correct_arguments</code></td></tr>
+    <tr data-s="2"><td>Elegir otra consulta útil dentro de la petición<small>Sin inventar el dato: si la medida es de otro día, se dice de qué día.</small></td><td><code data-s="4">choose_alternative</code></td></tr>
+    <tr data-s="3"><td>Detener el turno<small>No se permiten más operaciones y se avisa al usuario.</small></td><td><code data-s="4">stop_turn</code></td></tr>
+  </table>
+</section>
+
+<section class="slide" data-id="10-contrato-json" data-steps="6">
+  <div class="kicker">Fragmento ilustrativo del contrato interno</div>
+  <div class="row" style="align-items: flex-start">
+    <div class="json" style="width: 1220px; font-size: 36px">
+      <div>{</div>
+      <div data-at="2">&nbsp;&nbsp;<span class="key">"is_error"</span>: <span class="lit">true</span>,</div>
+      <div data-at="3">&nbsp;&nbsp;<span class="key">"error"</span>: <span class="str">"not_found"</span>,</div>
+      <div data-at="4">&nbsp;&nbsp;<span class="key">"message"</span>: <span class="str">"No hay registro para esa fecha."</span>,</div>
+      <div data-at="5">&nbsp;&nbsp;<span class="key">"recovery"</span>: <span class="str">"choose_alternative"</span></div>
+      <div>}</div>
+    </div>
+    <div class="col muted" style="padding-top: 95px; gap: 0">
+      <div class="ann" data-s="2">← <b>Falló</b></div>
+      <div class="ann" data-s="3">← <b>Qué problema</b></div>
+      <div class="ann" data-s="4">← <b>La explicación</b></div>
+      <div class="ann" data-s="5">← <b>Qué se permite ahora</b></div>
+    </div>
+  </div>
+  <div class="note amber" data-s="6">Que falte un peso no autoriza a crear uno: el harness sigue comprobando cada nueva petición.</div>
+</section>
+
+<!-- 5. Un error de la app tiene que llegar como error de la app -->
+<section class="slide" data-id="11-donde-falla" data-steps="3">
+  <h2>¿Dónde se produjo el fallo?</h2>
+  <div class="row">
+    <div class="card ok grow"><div class="k">Proveedor del modelo</div><div class="t">Entrega la petición ✓</div>Responde correctamente y pide guardar la comida.</div>
+    <div class="arrow">→</div>
+    <div class="card grow" data-s="1"><div class="k">App</div><div class="t">Intenta guardar</div><div data-s="2" class="red" style="font-weight: 700">✕ Falla la escritura en el almacenamiento</div></div>
+  </div>
+  <div class="row" data-s="3">
+    <div class="card bad ghost grow"><div class="t strike">«Error del proveedor»</div>Señala el servicio equivocado.</div>
+    <div class="card bad ghost grow"><div class="t strike">Excepción con detalles internos</div>No dice si la comida se guardó.</div>
+  </div>
+</section>
+
+<section class="slide" data-id="12-destinatarios" data-steps="3">
+  <h2>Un mensaje adecuado para cada destinatario</h2>
+  <div class="row grow" style="align-items: flex-start">
+    <div class="card grow" data-s="1"><div class="k">Desarrollo</div><div class="t">Diagnóstico</div>Los detalles para investigar el fallo.</div>
+    <div class="card ok grow" data-s="2"><div class="k">Modelo</div><div class="t">Estado y permisos</div>Qué operación falló, qué está confirmado y qué puede hacer después.</div>
+    <div class="card amber grow" data-s="3"><div class="k">Usuario</div><div class="t">Resultado y siguiente paso</div>Una respuesta que le permita seguir usando la app.</div>
+  </div>
+</section>
+
+<!-- 6. Volvamos a la comida: comprobar antes de repetir -->
+<section class="slide" data-id="13-diseno-posible" data-steps="6" style="gap: 30px">
+  <div class="kicker amber">Diseño posible · comprobar antes de detenerse</div>
+  <div class="row" style="align-items: center">
+    <div class="col" style="width: 470px">
+      <div class="card amber"><div class="t">Guardado sin confirmar</div></div>
+      <div class="col" data-s="2" style="gap: 12px; font-size: 26px">
+        <span class="tag">¿Falló antes de guardarla?</span><span class="tag">¿Se guardó y falló la confirmación?</span>
+      </div>
+    </div>
+    <div class="arrow" data-s="3">→</div>
+    <div class="card" data-s="3" style="width: 420px"><div class="k">Solo lectura</div><div class="t">Consulta de comprobación</div>Identifica la acción concreta, no otra comida parecida.
+      <div style="margin-top: 16px"><span class="tag">petición ⇄ registro</span></div></div>
+    <div class="arrow" data-s="4">→</div>
+    <div class="col grow" style="gap: 18px; font-size: 26px">
+      <div class="card ok" data-s="4" style="padding: 20px 26px; font-size: 26px"><div class="t" style="font-size: 30px">Esa comida está guardada</div>Confirmar: «He apuntado tu comida».</div>
+      <div class="card" data-s="5" style="padding: 20px 26px; font-size: 26px"><div class="t" style="font-size: 30px">Confirmado que no se guardó</div>El harness puede permitir completarla.</div>
+      <div class="card bad" data-s="6" style="padding: 20px 26px; font-size: 26px"><div class="t" style="font-size: 30px">Ambiguo o la comprobación falla</div>Detenerse sin repetir la escritura.</div>
+    </div>
+  </div>
+  <div class="bubble warn" data-s="6" style="font-size: 32px">No puedo confirmar si se guardó la comida. Comprueba tu registro antes de volver a añadirla.</div>
+</section>
+
+<section class="slide" data-id="14-probado-gymnasia" data-steps="2" style="justify-content: center">
+  <div class="kicker lime">Lo que probamos en Gymnasia</div>
+  <div class="row" style="align-items: center">
+    <div class="card bad grow"><div class="t">Fallo de escritura</div></div>
+    <div class="arrow">→</div>
+    <div class="card grow"><div class="t">Parada local del turno</div></div>
+    <div class="arrow">→</div>
+    <div class="card ok grow"><div class="t">Sin segunda escritura</div></div>
+  </div>
+  <div class="row" data-s="2" style="gap: 18px"><span class="tag">Sin consulta adicional al modelo</span><span class="tag">Sin repetir el guardado</span></div>
+</section>
+
+<!-- 7. Cómo sabemos que las decisiones se respetan -->
+<section class="slide" data-id="15-visible-vs-ejecutado" data-steps="3" style="justify-content: center">
+  <table>
+    <tr><th>Caso</th><th>Respuesta visible</th><th>Operaciones realmente ejecutadas</th></tr>
+    <tr data-s="2"><td>Argumentos inválidos</td><td>Se corrige la petición</td><td class="lime">La función no se ejecuta antes de corregirlos</td></tr>
+    <tr data-s="3"><td>Fallo simulado al guardar</td><td>No confirma el éxito</td><td class="lime">Ninguna segunda escritura automática</td></tr>
+  </table>
+</section>
+
+<section class="slide" data-id="16-proveedores" data-steps="3">
+  <div class="card ok" style="align-self: center; text-align: center"><div class="k">Harness</div><div class="t">Decide el estado</div>Qué pasó · qué se permite después</div>
+  <div class="note" data-s="2" style="align-self: center">Un adaptador por API lo expresa en su formato y lo enlaza con la llamada original</div>
+  <div class="row" data-s="3" style="font-size: 27px">
+    <div class="card grow"><div class="t">OpenAI Responses</div>
+      <div class="line"><span>Mensaje</span><code>function_call_output</code></div>
+      <div class="line"><span>Contrato</span><span>serializado en <code>output</code></span></div>
+      <div class="line"><span>Correlación</span><code>call_id</code></div></div>
+    <div class="card grow"><div class="t">Anthropic Messages</div>
+      <div class="line"><span>Mensaje</span><code>tool_result</code></div>
+      <div class="line"><span>Marca</span><code>is_error: true</code></div>
+      <div class="line"><span>Correlación</span><code>tool_use_id</code></div></div>
+    <div class="card grow"><div class="t">Google Interactions</div>
+      <div class="line"><span>Mensaje</span><code>function_result</code></div>
+      <div class="line"><span>Marca</span><code>is_error: true</code></div>
+      <div class="line"><span>Correlación</span><code>call_id</code></div></div>
+  </div>
+</section>
+
+<section class="slide" data-id="17-evidencia" data-steps="2" style="justify-content: center">
+  <div class="kicker lime">Prueba en la web con un modelo real</div>
+  <div class="row">
+    <div class="card ok grow"><div class="k">Lectura</div><div class="t">Faltaba un peso</div>Consultó otra fecha que se había indicado en la prueba.</div>
+    <div class="card ok grow"><div class="k">Escritura</div><div class="t">Fallo local al guardar</div>El programa detuvo el turno.</div>
+  </div>
+  <div class="note amber" data-s="2">Evidencia de esos recorridos. No demuestra que cualquier modelo busque solo la mejor fecha.</div>
+</section>
+
+<!-- 8. Qué te llevas para tu agente -->
+<section class="slide" data-id="18-cierre-comida" data-steps="2" style="justify-content: center">
+  <div><div class="who">Usuario</div><div class="bubble">Apunta mi comida: 200 g de arroz cocido y 150 g de pollo</div></div>
+  <div class="row" style="align-items: flex-end">
+    <div class="card ok" data-s="1" style="width: 620px"><div class="k">Una sola ración</div>
+      <div class="line"><span>Arroz cocido</span><b>200 g</b></div><div class="line"><span>Pollo</span><b>150 g</b></div></div>
+    <div class="grow"></div>
+    <div class="bubble bot" data-s="2">He apuntado tu comida.</div>
+  </div>
+</section>
+
+<section class="slide" data-id="19-resumen" data-steps="5" style="justify-content: center">
+  <div class="kicker">Sin confirmar → comprobar antes de repetir</div>
+  <div class="col" style="font-size: 44px; gap: 26px">
+    <div class="row" data-s="1" style="align-items: center"><span class="tag ok" style="width: 380px; font-size: 32px">Está guardada</span>Confirmar</div>
+    <div class="row" data-s="2" style="align-items: center"><span class="tag" style="width: 380px; font-size: 32px">Falta y está permitido</span>Completar la acción</div>
+    <div class="row" data-s="3" style="align-items: center"><span class="tag bad" style="width: 380px; font-size: 32px">Seguimos sin saberlo</span>Parar y ayudar a revisar el registro</div>
+  </div>
+  <h1 data-s="4" style="font-size: 84px; margin-top: 40px">Qué pasó <span class="muted">·</span> <span class="lime">Qué se permite después</span></h1>
+  <div class="note" data-s="5">El modelo usa esa información. El harness controla las operaciones.</div>
+</section>
+
+<section class="slide" data-id="20-referencias" style="justify-content: center">
+  <div class="kicker">En la descripción</div>
+  <div class="card"><div class="k">Artículo completo · contrato, proveedores y pruebas</div><div class="t mono" style="font-size: 40px">maximofn.com/gymnasia-agent-tool-errors</div></div>
+  <div class="card"><div class="k">Índice de la serie</div><div class="t mono" style="font-size: 40px">maximofn.com/gymnasia-agent#serie</div></div>
+</section>
+
+<script>
+  // Cada diapositiva tiene pasos (data-steps); un elemento con data-s="k" aparece desde el paso k,
+  // y uno con data-at="k" se resalta solo en ese paso. render.mjs llama a show() para exportar.
+  const slides = [...document.querySelectorAll(".slide")];
+  const frames = slides.flatMap((s, i) => Array.from({ length: +(s.dataset.steps || 1) }, (_, k) => [i, k + 1]));
+  window.slideList = () => slides.map((s) => ({ id: s.dataset.id, steps: +(s.dataset.steps || 1),
+    w: +(s.dataset.w || 1920), h: +(s.dataset.h || 1080), transparent: s.hasAttribute("data-transparent") }));
+  window.show = (i, step) => {
+    slides.forEach((s, j) => { s.hidden = j !== i; });
+    const s = slides[i];
+    s.querySelectorAll("[data-s]").forEach((e) => e.classList.toggle("in", +e.dataset.s <= step));
+    s.querySelectorAll("[data-at]").forEach((e) => e.classList.toggle("on", +e.dataset.at === step));
+    document.body.classList.toggle("transparent", s.hasAttribute("data-transparent"));
+    const k = Math.min(innerWidth / (+s.dataset.w || 1920), innerHeight / (+s.dataset.h || 1080));
+    s.style.transform = `scale(${k})`;
+  };
+  // Vista previa: flechas o clic para avanzar; el fotograma actual queda en la URL.
+  let f = Math.min(+location.hash.slice(1) || 0, frames.length - 1);
+  const go = (n) => { f = Math.max(0, Math.min(frames.length - 1, n)); location.hash = f; show(...frames[f]); };
+  addEventListener("keydown", (e) => { if (e.key === "ArrowRight" || e.key === " ") go(f + 1); if (e.key === "ArrowLeft") go(f - 1); });
+  addEventListener("click", () => go(f + 1));
+  addEventListener("resize", () => show(...frames[f]));
+  show(...frames[f]);
+</script>
+</body>
+</html>
