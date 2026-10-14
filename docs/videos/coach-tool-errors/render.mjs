@@ -21,7 +21,7 @@ for (const [i, s] of slides.entries()) {
   await page.setViewportSize({ width: s.w, height: s.h });
   for (let step = 1; step <= s.steps; step++) {
     await page.evaluate(([i, step]) => window.show(i, step), [i, step]);
-    await page.waitForTimeout(30);
+    await page.waitForTimeout(120);
     const name = s.steps > 1 ? `${s.id}-${step}` : s.id;
     await page.screenshot({ path: `${out}${name}.png`, omitBackground: s.transparent });
     count++;

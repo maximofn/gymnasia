@@ -10,6 +10,7 @@
      La firma visual es el tique: cada llamada a una tool es un recibo de papel que se imprime, viaja y se sella. */
   @property --glow { syntax: "<color>"; inherits: true; initial-value: rgba(203, 255, 26, 0.10); }
   :root {
+    --cam-w: 560px; --cam-h: 340px;
     --bg: #07090D; --surface: #11151C; --surface2: #181D26; --border: #252B35; --text: #F4F7FB; --muted: #A6AFBC; --dim: #5B6472;
     --lime: #CBFF1A; --red: #FF5A5F; --amber: #FFB020; --paper: #EEF1E8; --ink: #0B0E13;
     --ink-red: #D2343A; --ink-amber: #C97700; --ink-green: #3F7F00;
@@ -33,15 +34,20 @@
   body.transparent #bg, body.transparent #grain, body.transparent #hud { display: none; }
   @keyframes drift { to { transform: translate(40px, 40px); } }
 
-  #hud { position: absolute; left: 120px; right: 120px; top: 42px; display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 18px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); pointer-events: none; z-index: 5; transition: opacity .5s; }
+  #hud { position: absolute; left: 120px; top: 42px; display: flex; gap: 28px; align-items: center; font-family: var(--mono); font-size: 18px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); pointer-events: none; z-index: 5; transition: opacity .5s; }
   #hud .bar { display: flex; gap: 6px; } #hud .bar i { width: 34px; height: 4px; border-radius: 2px; background: var(--border); transition: background .5s; }
   #hud .bar i.on { background: var(--lime); box-shadow: 0 0 10px rgba(203, 255, 26, .5); }
   #stage.nohud #hud, body.hide-hud #hud { opacity: 0; }
+  /* Zona de la cámara (arriba a la derecha): ninguna escena pone contenido ahí. C la enseña para encuadrar. */
+  #cam { position: absolute; right: 0; top: 0; width: var(--cam-w); height: var(--cam-h); box-sizing: border-box; border: 3px dashed var(--amber); background: rgba(255, 176, 32, .08); z-index: 8; display: none;
+    font-family: var(--mono); font-size: 20px; letter-spacing: .14em; text-transform: uppercase; color: var(--amber); align-items: center; justify-content: center; }
+  body.show-cam #cam { display: flex; }
 
   .slide { position: absolute; inset: 0; box-sizing: border-box; padding: 110px 120px 80px; display: flex; flex-direction: column; justify-content: center; gap: 40px; }
   .slide[hidden] { display: none; }
   .slide.leaving { animation: leave .45s var(--ease) both; pointer-events: none; }
   @keyframes leave { to { opacity: 0; transform: scale(.97); filter: blur(10px); } }
+  .slide > h1, .slide > h2, .slide > .eyebrow, .slide > .note { align-self: flex-start; }
   .abs { position: relative; } .abs > * { position: absolute !important; }
 
   /* Revelado por pasos: data-s="k" aparece en el paso k; data-a elige la animación; --d la retrasa. */
@@ -192,6 +198,7 @@
 <div id="stage">
 <div id="bg"></div>
 <div id="hud"><span id="chapter"></span><span class="bar" id="bar"></span></div>
+<div id="cam">Cámara</div>
 
 <!-- Miniatura de YouTube -->
 <section class="slide" data-id="00-miniatura" data-w="1280" data-h="720" data-nohud data-mood="amber" style="padding: 70px 80px; flex-direction: row; align-items: center; gap: 30px">
@@ -216,7 +223,7 @@
 <!-- 1. Una comida que podría aparecer dos veces -->
 <section class="slide" data-id="01-peticion" data-steps="3" data-ch="Una comida que podría aparecer dos veces" style="gap: 34px">
   <div class="row" style="align-items: flex-start; gap: 60px">
-    <div class="grow" data-s="1" data-a="fade"><div class="who">Usuario</div><div class="bubble caret" data-fx="type">Apunta mi comida: doscientos gramos de arroz cocido y ciento cincuenta de pollo.</div></div>
+    <div data-s="1" data-a="fade" style="width: 640px"><div class="who">Usuario</div><div class="bubble caret" data-fx="type">Apunta mi comida: doscientos gramos de arroz cocido y ciento cincuenta de pollo.</div></div>
     <div style="width: 520px">
       <div class="slot" data-s="1" data-a="fade" style="--d: 1.4s"></div>
       <div class="tk" id="tk1" data-s="1" data-a="print" style="--d: 1.8s">
@@ -276,7 +283,7 @@
       <div class="ann" data-s="1" data-a="fade" style="position: absolute; left: 580px; top: 140px; --d: 1.5s">Qué operación</div>
       <div class="ann" data-s="1" data-a="fade" style="position: absolute; left: 580px; top: 290px; --d: 1.8s">Con qué datos</div>
     </div>
-    <div class="col grow" style="gap: 34px">
+    <div class="col grow" style="gap: 34px; align-self: flex-end; margin-bottom: -120px">
       <div class="card ok" data-s="2" data-a="deal"><div class="k">Modelo</div><div class="t">La pide</div>Indica qué quiere hacer y con qué datos.</div>
       <div class="card" data-s="2" data-a="deal" style="--d: .25s"><div class="k">Harness · programa local</div><div class="t">La comprueba y la ejecuta</div>Coordina al modelo con las funciones de la app.</div>
     </div>
@@ -286,24 +293,24 @@
 <section class="slide" data-id="05-recorrido" data-steps="6" data-ch="Quién pide y quién ejecuta" style="gap: 26px">
   <h2 data-s="1" data-a="fade">El recorrido de una llamada</h2>
   <div class="abs" style="height: 790px">
-    <div class="lane" data-s="1" data-a="fade" style="left: 0; right: 0; top: 0; height: 330px"><div class="eyebrow lime">Modelo · proveedor</div></div>
+    <div class="lane" data-s="1" data-a="fade" style="left: 0; width: 1210px; top: 0; height: 330px"><div class="eyebrow lime">Modelo · proveedor</div></div>
     <div class="lane" data-s="1" data-a="fade" style="left: 0; right: 0; top: 380px; height: 400px"><div class="eyebrow" style="top: auto; bottom: 20px">Programa local · harness y aplicación</div></div>
     <svg class="wires" viewBox="0 0 1680 790">
-      <path data-s="2" class="lime" pathLength="1" d="M180,275 V585 H330"/>
-      <path data-s="3" class="lime" pathLength="1" d="M640,585 H682"/>
-      <path data-s="4" class="lime" pathLength="1" d="M992,585 H1034"/>
-      <path data-s="5" class="lime" pathLength="1" d="M1344,585 H1500 V285"/>
+      <path data-s="2" class="lime" pathLength="1" d="M165,265 V585 H295"/>
+      <path data-s="3" class="lime" pathLength="1" d="M570,585 H605"/>
+      <path data-s="4" class="lime" pathLength="1" d="M880,585 H915"/>
+      <path data-s="5" class="lime" pathLength="1" d="M1055,470 V255"/>
     </svg>
-    <div class="pkt" data-s="2" style="offset-path: path('M180,275 V585 H330')"></div>
-    <div class="pkt" data-s="3" style="offset-path: path('M640,585 H682')"></div>
-    <div class="pkt" data-s="4" style="offset-path: path('M992,585 H1034')"></div>
-    <div class="pkt result" data-s="5" style="offset-path: path('M1344,585 H1500 V285')"></div>
-    <div class="node model" data-s="1" data-a="pop" style="left: 30px; top: 85px; --d: .3s"><div class="t">1 · Modelo</div>Solicita una operación y espera el resultado</div>
-    <div class="node" data-s="2" data-a="pop" style="left: 340px; top: 470px; --d: .9s"><div class="t">2 · Harness</div>Comprueba que existe, que se puede usar y la forma de los datos</div>
-    <div class="node" data-s="3" data-a="pop" style="left: 692px; top: 470px; --d: .6s; border-color: rgba(203,255,26,.6)"><div class="t lime">3 · Aplicación</div>Ejecuta la función</div>
-    <div data-s="3" data-a="pop" style="left: 940px; top: 420px; --d: 1.2s"><span class="badge" data-at="6">×1</span></div>
-    <div class="node" data-s="4" data-a="pop" style="left: 1044px; top: 470px; --d: .6s"><div class="t">4 · Harness</div>Entrega el resultado si permite continuar</div>
-    <div class="node model" data-s="5" data-a="pop" style="left: 1350px; top: 85px; --d: 1s"><div class="t">5 · Modelo</div>Responde o solicita otra operación</div>
+    <div class="pkt" data-s="2" style="offset-path: path('M165,265 V585 H295')"></div>
+    <div class="pkt" data-s="3" style="offset-path: path('M570,585 H605')"></div>
+    <div class="pkt" data-s="4" style="offset-path: path('M880,585 H915')"></div>
+    <div class="pkt result" data-s="5" style="offset-path: path('M1055,470 V255')"></div>
+    <div class="node model" data-s="1" data-a="pop" style="left: 30px; top: 85px; width: 270px; --d: .3s"><div class="t">1 · Modelo</div>Solicita una operación y espera el resultado</div>
+    <div class="node" data-s="2" data-a="pop" style="left: 300px; top: 470px; width: 270px; --d: .9s"><div class="t">2 · Harness</div>Comprueba que existe, que se puede usar y la forma de los datos</div>
+    <div class="node" data-s="3" data-a="pop" style="left: 610px; top: 470px; width: 270px; --d: .6s; border-color: rgba(203,255,26,.6)"><div class="t lime">3 · Aplicación</div>Ejecuta la función</div>
+    <div data-s="3" data-a="pop" style="left: 840px; top: 420px; --d: 1.2s"><span class="badge" data-at="6">×1</span></div>
+    <div class="node" data-s="4" data-a="pop" style="left: 920px; top: 470px; width: 270px; --d: .6s"><div class="t">4 · Harness</div>Entrega el resultado si permite continuar</div>
+    <div class="node model" data-s="5" data-a="pop" style="left: 920px; top: 85px; width: 270px; --d: 1s"><div class="t">5 · Modelo</div>Responde o solicita otra operación</div>
     <div class="tag ok" data-s="6" style="left: 640px; top: 700px; font-size: 28px">Entregar la salida no vuelve a guardar la comida</div>
   </div>
 </section>
@@ -332,12 +339,12 @@
 </section>
 
 <section class="slide" data-id="07-error-generico" data-steps="2" data-ch="El mismo error, decisiones distintas" data-mood="red">
-  <div class="abs" style="height: 700px">
-    <span class="tag amber" data-s="1" style="left: 120px; top: 40px; font-size: 32px; --dx: 560px; --dy: 300px; animation: pop .6s var(--ease) both, suck .8s cubic-bezier(.6,0,.8,.4) 1.4s both">Sin registro ese día</span>
-    <span class="tag bad" data-s="1" style="left: 560px; top: 0; font-size: 32px; --dx: 0px; --dy: 340px; animation: pop .6s var(--ease) .15s both, suck .8s cubic-bezier(.6,0,.8,.4) 1.55s both">No se pudo leer el almacenamiento</span>
-    <span class="tag bad" data-s="1" style="left: 1240px; top: 40px; font-size: 32px; --dx: -480px; --dy: 300px; animation: pop .6s var(--ease) .3s both, suck .8s cubic-bezier(.6,0,.8,.4) 1.7s both">Formato no aceptado</span>
-    <div class="card" data-s="1" style="left: 380px; width: 920px; top: 270px; box-sizing: border-box; text-align: center; font-size: 96px; font-weight: 700; letter-spacing: -0.03em; padding: 50px 0; animation: fade .6s both, thunk .5s ease-out 2.3s both">«Error al consultar»</div>
-    <div class="note red" data-s="2" style="left: 380px; top: 560px; font-size: 40px">Mezcla situaciones que piden decisiones distintas</div>
+  <div class="abs" style="height: 800px">
+    <span class="tag amber" data-s="1" style="left: 120px; top: 170px; font-size: 32px; --dx: 560px; --dy: 300px; animation: pop .6s var(--ease) both, suck .8s cubic-bezier(.6,0,.8,.4) 1.4s both">Sin registro ese día</span>
+    <span class="tag bad" data-s="1" style="left: 560px; top: 130px; font-size: 32px; --dx: 0px; --dy: 340px; animation: pop .6s var(--ease) .15s both, suck .8s cubic-bezier(.6,0,.8,.4) 1.55s both">No se pudo leer el almacenamiento</span>
+    <span class="tag bad" data-s="1" style="left: 1240px; top: 170px; font-size: 32px; --dx: -480px; --dy: 300px; animation: pop .6s var(--ease) .3s both, suck .8s cubic-bezier(.6,0,.8,.4) 1.7s both">Formato no aceptado</span>
+    <div class="card" data-s="1" style="left: 380px; width: 920px; top: 400px; box-sizing: border-box; text-align: center; font-size: 96px; font-weight: 700; letter-spacing: -0.03em; padding: 50px 0; animation: fade .6s both, thunk .5s ease-out 2.3s both">«Error al consultar»</div>
+    <div class="note red" data-s="2" style="left: 380px; top: 690px; font-size: 40px">Mezcla situaciones que piden decisiones distintas</div>
   </div>
 </section>
 
@@ -379,7 +386,7 @@
       <div class="tk" data-s="1" data-a="print" style="width: 1180px; --d: .2s">
         <div class="paper"><div class="hd"><span>Resultado de la tool</span><span>#7F3A</span></div><div class="rule"></div>
           <div class="json"><div class="ln">{</div><div class="ln" data-at="2">  <span class="key">"is_error"</span>: <span class="lit">true</span>,</div><div class="ln" data-at="3">  <span class="key">"error"</span>: <span class="str">"not_found"</span>,</div><div class="ln" data-at="4">  <span class="key">"message"</span>: <span class="str">"No hay registro para esa fecha."</span>,</div><div class="ln" data-at="5">  <span class="key">"recovery"</span>: <span class="str">"choose_alternative"</span></div><div class="ln">}</div></div></div>
-        <div class="stamp red" data-s="2" data-a="stamp" style="right: 40px; top: 110px; --r: 8deg; font-size: 40px; --d: .2s">Falló</div>
+        <div class="stamp red" data-s="2" data-a="stamp" style="right: 50px; bottom: 70px; --r: 8deg; font-size: 40px; --d: .2s">Falló</div>
       </div>
     </div>
     <div class="col" style="padding-top: 157px; gap: 0">
@@ -439,9 +446,9 @@
     </div>
     <svg class="wires" viewBox="0 0 1680 860">
       <path data-s="3" pathLength="1" d="M430,270 H540"/>
-      <path data-s="4" class="lime" pathLength="1" d="M1030,300 C1110,300 1090,170 1170,170"/>
-      <path data-s="5" pathLength="1" d="M1030,300 C1100,300 1100,345 1170,345"/>
-      <path data-s="6" class="red" pathLength="1" d="M1030,300 C1110,300 1090,510 1170,510"/>
+      <path data-s="4" class="lime" pathLength="1" d="M1030,300 C1100,300 1100,300 1170,300"/>
+      <path data-s="5" pathLength="1" d="M1030,300 C1110,300 1090,470 1170,470"/>
+      <path data-s="6" class="red" pathLength="1" d="M1030,300 C1110,300 1090,640 1170,640"/>
     </svg>
     <div class="card" data-s="3" data-a="pop" style="left: 550px; top: 110px; width: 480px; box-sizing: border-box; --d: .5s"><div class="k">Solo lectura</div><div class="t">Consulta de comprobación</div>
       <div class="scanbox" style="font-family: var(--mono); font-size: 21px; margin-top: 14px; border-radius: 10px; background: #05070A; padding: 6px 16px">
@@ -450,10 +457,10 @@
         <div class="line"><span>hoy · arroz, pollo</span><span class="amber-t">¿es esta?</span></div></div>
       <div style="margin-top: 16px; font-size: 25px">Identifica la acción concreta, no otra comida parecida.</div>
       <div style="margin-top: 14px"><span class="tag" style="font-family: var(--mono); font-size: 21px">petición #7F3A ⇄ registro</span></div></div>
-    <div class="card ok" data-s="4" data-a="pop" style="left: 1170px; top: 100px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Esa comida está guardada</div>Confirmar: «He apuntado tu comida».</div>
-    <div class="card" data-s="5" data-a="pop" style="left: 1170px; top: 280px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Confirmado que no se guardó</div>El harness puede permitir completarla.</div>
-    <div class="card bad" data-s="6" data-a="pop" style="left: 1170px; top: 445px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Ambiguo o la comprobación falla</div>Detenerse sin repetir la escritura.</div>
-    <div class="bubble warn caret" data-s="6" data-fx="type" data-delay="1200" style="left: 480px; right: 0; top: 650px; font-size: 34px">No puedo confirmar si se guardó la comida. Comprueba tu registro antes de volver a añadirla.</div>
+    <div class="card ok" data-s="4" data-a="pop" style="left: 1170px; top: 225px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Esa comida está guardada</div>Confirmar: «He apuntado tu comida».</div>
+    <div class="card" data-s="5" data-a="pop" style="left: 1170px; top: 395px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Confirmado que no se guardó</div>El harness puede permitir completarla.</div>
+    <div class="card bad" data-s="6" data-a="pop" style="left: 1170px; top: 565px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Ambiguo o la comprobación falla</div>Detenerse sin repetir la escritura.</div>
+    <div class="bubble warn caret" data-s="6" data-fx="type" data-delay="1200" style="left: 480px; right: 0; top: 735px; font-size: 34px">No puedo confirmar si se guardó la comida. Comprueba tu registro antes de volver a añadirla.</div>
   </div>
 </section>
 
@@ -519,7 +526,7 @@
 
 <!-- 8. Qué te llevas para tu agente -->
 <section class="slide" data-id="18-cierre-comida" data-steps="2" data-ch="Qué te llevas para tu agente">
-  <div data-s="1" data-a="fade"><div class="who">Usuario</div><div class="bubble" style="display: inline-block">Apunta mi comida: doscientos gramos de arroz cocido y ciento cincuenta de pollo.</div></div>
+  <div data-s="1" data-a="fade"><div class="who">Usuario</div><div class="bubble" style="display: inline-block; max-width: 1080px">Apunta mi comida: doscientos gramos de arroz cocido y ciento cincuenta de pollo.</div></div>
   <div class="row" style="align-items: flex-end">
     <div class="tk" data-s="1" data-a="deal" style="--d: .3s">
       <div class="paper"><div class="hd"><span>Tu registro de hoy</span><span>#7F3A</span></div><div class="op">Una sola ración</div><div class="rule"></div>
@@ -558,6 +565,8 @@
   if (isStatic) document.body.classList.add("static");
   const moving = !isStatic && !matchMedia("(prefers-reduced-motion: reduce)").matches;
   const stage = document.getElementById("stage");
+  const css = getComputedStyle(document.documentElement);
+  window.cameraZone = () => ({ x: 1920 - parseFloat(css.getPropertyValue("--cam-w")), y: 0, w: parseFloat(css.getPropertyValue("--cam-w")), h: parseFloat(css.getPropertyValue("--cam-h")) });
   const slides = [...document.querySelectorAll(".slide")];
   const frames = slides.flatMap((s, i) => Array.from({ length: +(s.dataset.steps || 1) }, (_, k) => [i, k + 1]));
   const chapters = [...new Set(slides.map((s) => s.dataset.ch).filter(Boolean))];
@@ -632,6 +641,7 @@
     if (["ArrowRight", " ", "PageDown", "Enter"].includes(e.key)) { e.preventDefault(); go(f + 1); }
     if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) go(f - 1);
     if (e.key === "h" || e.key === "H") document.body.classList.toggle("hide-hud");
+    if (e.key === "c" || e.key === "C") document.body.classList.toggle("show-cam");
     if (e.key === "f" || e.key === "F") document.documentElement.requestFullscreen?.();
   });
   addEventListener("click", () => go(f + 1));

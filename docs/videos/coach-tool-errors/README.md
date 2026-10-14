@@ -18,6 +18,7 @@ contrato de errores de las tools de Coach). El guión está en
 | `←`, `RePág`, `Retroceso` | paso anterior |
 | `F` | pantalla completa |
 | `H` | oculta la barra de capítulo y progreso |
+| `C` | enseña la zona reservada para la cámara |
 
   El fotograma actual queda en la URL (`slides.html#12`): recargar no te devuelve
   al principio y puedes saltar a cualquier paso. Con movimiento reducido activado
@@ -50,3 +51,14 @@ duplicada se rotula como posibilidad, la comprobación previa como «Diseño pos
 y separada de lo probado en Gymnasia, el JSON como fragmento ilustrativo y la
 evidencia real con su alcance. Colores y tipografía (Space Grotesk, desde
 `charla-agente/fonts.css`) son los de la app.
+
+## Zona de la cámara
+
+La esquina superior derecha (560×340 px del lienzo de 1920×1080) queda libre para
+superponer la cámara. Su tamaño está en `--cam-w` y `--cam-h` de `slides.html`.
+Tras mover algo de sitio, comprueba que ningún paso la invade:
+
+```bash
+node docs/videos/coach-tool-errors/check-camera.mjs
+```
+
