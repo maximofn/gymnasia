@@ -86,9 +86,19 @@ function parsePayload(value, channel) {
   return payload;
 }
 
-async function githubJson(url) {
-  const response = await fetch(url, {
-    headers: { Accept: "application/vnd.github+json" },
+export async function githubJson(url, {
+  token = process.env.GITHUB_TOKEN?.trim() || process.env.GH_TOKEN?.trim(),
+  fetchImpl = fetch,
+} = {}) {
+  if (new URL(url).origin !== "https://api.github.com") {
+    throw new Error("La consulta de deployment debe usar la API de GitHub.");
+  }
+  const response = await fetchImpl(url, {
+    redirect: "error",
+    headers: {
+      Accept: "application/vnd.github+json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   });
   if (!response.ok) throw new Error(`${url}: ${response.status}`);
   return response.json();

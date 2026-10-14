@@ -77,6 +77,43 @@ Si falta `android.buildType`, EAS genera un `.aab` por defecto que no se puede i
 
 ## Generar el APK
 
+### Preparar la política firmada de Staging
+
+Antes de compilar `staging` o `preview`, desde la raíz:
+
+```bash
+npm run prepare:policy-snapshot -- --environment staging
+APP_ENV=staging npm --workspace apps/mobile run eas-build-pre-install
+```
+
+El preparador descarga y verifica la política ya aprobada del canal Staging;
+no promociona ni modifica sus instrucciones. Development utiliza su snapshot
+local. Production prepara sus archivos mediante el workflow obligatorio.
+
+Si la compilación se hace en otro checkout o una VM, hay que preparar allí el
+snapshot o transferir **los cuatro archivos generados juntos**:
+
+- `apps/mobile/agent/generated/chatSystemPrompt.generated.ts`
+- `apps/mobile/agent/generated/healthSafetyPolicy.generated.ts`
+- `apps/mobile/agent/generated/policySnapshot.generated.json`
+- `apps/mobile/agent/generated/signedPolicySnapshot.generated.ts`
+
+Trampa: copiar solo el prompt, la política sanitaria y los metadatos permite
+que Ajustes muestre una versión y un hash correctos, mientras Coach responde
+«La compilación no contiene un snapshot firmado». El cuarto módulo del checkout
+local contiene `null`: los metadatos no sustituyen el paquete firmado. La
+verificación `eas-build-pre-install` comprueba firmas, canal y coherencia de los
+cuatro archivos antes de compilar. Este hook forma parte del
+[ciclo de build de EAS](https://docs.expo.dev/build-reference/npm-hooks/).
+
+Antes de entregar una APK para medir tools, probar también el flujo visible:
+abrir Trazas, borrarlas, ejecutar una consulta en Coach y volver a Trazas. Deben
+aparecer los tiempos y habilitarse Copiar trazas. Ver marcadores de diagnóstico
+en el binario o comprobar sus hashes no demuestra este flujo. Comprobar además
+que Staging puede usar su política integrada sin necesitar una actualización
+remota. Nunca atribuir las llamadas al modelo solo porque su respuesta dice
+que las ejecutó: confirmarlas con las trazas.
+
 ### 1. Verificar el estado del proyecto
 
 ```bash

@@ -770,6 +770,12 @@ async function runAgentChatE2E(
 
   logStep(`Abriendo la app y Gymnasia Coach con ${provider} (development local)`);
   await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await page.getByTestId("nav-tab-settings").click({ timeout: STEP_TIMEOUT_MS });
+  await page.getByTestId("settings-tab-traces").scrollIntoViewIfNeeded();
+  await page.getByTestId("settings-tab-traces").click({ timeout: STEP_TIMEOUT_MS });
+  await page.getByText("Borrar", { exact: true }).click({ timeout: STEP_TIMEOUT_MS });
+  await page.getByText("Sin trazas todavía.", { exact: true })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="nav-tab-chat"]').click({ timeout: STEP_TIMEOUT_MS });
   await page.locator('[data-testid="ai-identity-disclosure-main-chat"]')
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
@@ -808,6 +814,13 @@ async function runAgentChatE2E(
     }
   }
   assert(!JSON.stringify(requestBodies).includes("batch_finished"), "los tiempos no se envían al proveedor");
+  logStep("Volviendo a Trazas después de Coach, sin pulsar recargar");
+  await page.getByTestId("nav-tab-settings").click({ timeout: STEP_TIMEOUT_MS });
+  await page.getByText("[toolPerformance] batch_finished", { exact: false })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  assert(Number.parseInt(await page.getByText(/^\d+ entrada\(s\)$/).innerText(), 10) > 0);
+  await page.screenshot({ path: join(screenshotRoot, `agent-tool-traces-${provider}.png`), fullPage: true });
+  await page.getByTestId("nav-tab-chat").click({ timeout: STEP_TIMEOUT_MS });
   const systemPrompt = providerSystemPrompt(provider, requestBodies[0]);
   assert.equal(typeof systemPrompt, "string");
   assert.equal(transparencyMarkerCount(systemPrompt), 1);

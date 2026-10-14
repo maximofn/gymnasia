@@ -170,4 +170,8 @@ test("EAS conserva los perfiles locales y publica el AAB de Production en Prueba
   assert.match(snapshotScript, /policySnapshot\.generated\.json/);
   assert.match(snapshotScript, /healthSafetyPolicy\.generated\.ts/);
   assert.match(snapshotScript, /runtimePolicySha256/);
+  const preparationJob = buildWorkflow.slice(buildWorkflow.indexOf("  prepare-production:"), buildWorkflow.indexOf("  compile-android:"));
+  assert.match(preparationJob, /deployments: read/);
+  assert.match(preparationJob, /Prepare new immutable policy inputs[\s\S]*GH_TOKEN: \$\{\{ github\.token \}\}/);
+  assert.doesNotMatch(preparationJob, /deployments: write/);
 });

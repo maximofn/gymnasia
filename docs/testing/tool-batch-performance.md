@@ -199,6 +199,22 @@ Los tiempos se toman antes de escribir cada evento y la persistencia del
 registro no se espera para continuar la ejecución. Ambas variantes deben
 llevar exactamente esta misma instrumentación para que su coste sea comparable.
 
+### Incidencias detectadas en las APK 1.52.0
+
+La prueba del 14 de octubre de 2026 en un Huawei P30 detectó dos problemas antes
+de poder medir el rendimiento. El APK Staging incorporaba el prompt y sus
+metadatos, pero no `signedPolicySnapshot.generated.ts` con el paquete firmado;
+Coach bloqueaba la consulta. Staging necesita una compilación corregida que
+prepare y verifique los cuatro módulos de la política ya aprobada.
+
+En Producción, el panel podía seguir mostrando «Sin trazas todavía» al volver
+desde Coach: su controlador consideraba activo el apartado Trazas aunque la
+pestaña principal fuese Coach. Los eventos se guardaban, pero el panel no los
+volvía a cargar. En esa APK, el botón ↻ permite recuperarlos. La regresión web
+ahora borra las trazas, ejecuta una tool y exige ver `batch_finished` al volver
+a Ajustes sin pulsar recargar. No hay todavía una comparación de tiempos del
+teléfono; la respuesta del modelo por sí sola no acredita las llamadas reales.
+
 ### Petición idéntica para ambas apps
 
 Usa el mismo teléfono, conexión, proveedor y modelo. En un chat nuevo de cada
