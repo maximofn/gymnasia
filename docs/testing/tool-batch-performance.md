@@ -215,6 +215,25 @@ ahora borra las trazas, ejecuta una tool y exige ver `batch_finished` al volver
 a Ajustes sin pulsar recargar. No hay todavía una comparación de tiempos del
 teléfono; la respuesta del modelo por sí sola no acredita las llamadas reales.
 
+Tras pulsar ↻, el mantenedor recuperó las trazas de Producción 1.52.0, build 88,
+del P30. Contienen tres lotes con tres `search_exercises` cada uno, límite 4 y
+máximo de tres tools activas. En todos, la última llamada comienza antes de que
+termine la primera: el solapamiento también se observa en los offsets.
+
+| Lote | Duración del lote | Tools activas máximas | Excepciones |
+| --- | --- | --- | --- |
+| 1 | 2886,38 ms | 3 | 0 |
+| 2 | 2558,04 ms | 3 | 0 |
+| 3 | 2630,19 ms | 3 | 0 |
+
+La mediana de estas tres muestras es 2630,19 ms. Los nueve resultados tienen
+`outcome: returned`, que también puede representar un error recuperable: las
+trazas de tiempos no contienen sus argumentos ni resultados. No registran el
+proveedor/modelo ni el estado de caché. Estas muestras acreditan concurrencia
+nativa; hace falta Staging en serie para calcular una mejora comparativa. La
+evidencia conserva solo los tiempos relativos y los recuentos en
+`benchmarks/tool-batch/native-production-1.52.0.json`.
+
 ### Petición idéntica para ambas apps
 
 Usa el mismo teléfono, conexión, proveedor y modelo. En un chat nuevo de cada
