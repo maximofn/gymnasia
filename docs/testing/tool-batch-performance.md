@@ -199,6 +199,41 @@ Los tiempos se toman antes de escribir cada evento y la persistencia del
 registro no se espera para continuar la ejecución. Ambas variantes deben
 llevar exactamente esta misma instrumentación para que su coste sea comparable.
 
+### Incidencias detectadas en las APK 1.52.0
+
+La prueba del 14 de octubre de 2026 en un Huawei P30 detectó dos problemas antes
+de poder medir el rendimiento. El APK Staging incorporaba el prompt y sus
+metadatos, pero no `signedPolicySnapshot.generated.ts` con el paquete firmado;
+Coach bloqueaba la consulta. Staging necesita una compilación corregida que
+prepare y verifique los cuatro módulos de la política ya aprobada.
+
+En Producción, el panel podía seguir mostrando «Sin trazas todavía» al volver
+desde Coach: su controlador consideraba activo el apartado Trazas aunque la
+pestaña principal fuese Coach. Los eventos se guardaban, pero el panel no los
+volvía a cargar. En esa APK, el botón ↻ permite recuperarlos. La regresión web
+ahora borra las trazas, ejecuta una tool y exige ver `batch_finished` al volver
+a Ajustes sin pulsar recargar. No hay todavía una comparación de tiempos del
+teléfono; la respuesta del modelo por sí sola no acredita las llamadas reales.
+
+Tras pulsar ↻, el mantenedor recuperó las trazas de Producción 1.52.0, build 88,
+del P30. Contienen tres lotes con tres `search_exercises` cada uno, límite 4 y
+máximo de tres tools activas. En todos, la última llamada comienza antes de que
+termine la primera: el solapamiento también se observa en los offsets.
+
+| Lote | Duración del lote | Tools activas máximas | Excepciones |
+| --- | --- | --- | --- |
+| 1 | 2886,38 ms | 3 | 0 |
+| 2 | 2558,04 ms | 3 | 0 |
+| 3 | 2630,19 ms | 3 | 0 |
+
+La mediana de estas tres muestras es 2630,19 ms. Los nueve resultados tienen
+`outcome: returned`, que también puede representar un error recuperable: las
+trazas de tiempos no contienen sus argumentos ni resultados. No registran el
+proveedor/modelo ni el estado de caché. Estas muestras acreditan concurrencia
+nativa; hace falta Staging en serie para calcular una mejora comparativa. La
+evidencia conserva solo los tiempos relativos y los recuentos en
+`benchmarks/tool-batch/native-production-1.52.0.json`.
+
 ### Petición idéntica para ambas apps
 
 Usa el mismo teléfono, conexión, proveedor y modelo. En un chat nuevo de cada

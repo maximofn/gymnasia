@@ -2723,7 +2723,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     createFoodId: () => uid("food"),
   });
   const traceSettingsController = useTraceSettingsController({
-    active: settingsTab === "traces",
+    active: tab === "settings" && settingsTab === "traces",
     policyBusy: policyRefreshBusy,
     policyResult: policyRefreshResult,
     policyStatus: policyRuntimeStatus,

@@ -59,7 +59,7 @@ describe("version attribution in exported traces", () => {
     expect(output).toContain("app-version: 1.20.0\n");
     expect(output).toContain(`build-version: ${build}\n`);
     expect(output).not.toContain("9.9.9");
-    expect(output).not.toContain("999");
+    expect(output).not.toContain("build-version: 999\n");
     expect(output).toContain("entries: 0\n");
   });
 

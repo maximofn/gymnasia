@@ -164,6 +164,7 @@ jobs:
     # single Production deployment, so GitHub asks for human approval once.
     permissions:
       contents: write
+      deployments: read
     outputs:
       release_id: ${{ needs.select-transaction.outputs.release_id || steps.draft.outputs.release_id }}
       should_build: ${{ steps.reserve.outputs.should_build }}
@@ -250,6 +251,8 @@ jobs:
 
       - name: Prepare new immutable policy inputs
         if: needs.select-transaction.outputs.action == 'build' && needs.select-transaction.outputs.mode == 'new'
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
