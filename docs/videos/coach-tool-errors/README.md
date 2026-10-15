@@ -20,6 +20,9 @@ contrato de errores de las tools de Coach). El guión está en
 | `H` | oculta la barra de capítulo y progreso |
 | `C` | enseña la zona reservada para la cámara |
 
+  `slides.html?all` enseña todas las escenas en su estado final, una debajo de otra:
+  sirve para revisarla de un vistazo y para pasarle un inspector de páginas.
+
   El fotograma actual queda en la URL (`slides.html#12`): recargar no te devuelve
   al principio y puedes saltar a cualquier paso. Con movimiento reducido activado
   en el sistema, los elementos solo aparecen con un fundido, sin desplazamientos.
