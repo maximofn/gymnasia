@@ -10,7 +10,7 @@
      La firma visual es el tique: cada llamada a una tool es un recibo de papel que se imprime, viaja y se sella. */
   :root {
     --cam-w: 560px; --cam-h: 340px;
-    --bg: #07090D; --surface: #11151C; --surface2: #181D26; --border: #252B35; --text: #F4F7FB; --muted: #A6AFBC; --dim: #5B6472;
+    --bg: #07090D; --surface: #11151C; --surface2: #181D26; --border: #252B35; --text: #F4F7FB; --muted: #A6AFBC; --dim: #8590A0;
     --lime: #CBFF1A; --red: #FF5A5F; --amber: #FFB020; --paper: #EEF1E8; --ink: #0B0E13;
     --ink-red: #D2343A; --ink-amber: #C97700; --ink-green: #3F7F00;
     --font: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -22,6 +22,8 @@
   }
   html, body { margin: 0; height: 100%; background: #000; color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; overflow: hidden; }
   body.transparent, body.transparent #stage { background: transparent; }
+  ::selection { background: var(--lime); color: var(--ink); }
+  body.idle, body.idle * { cursor: none; }
 
   /* Escenario 1920×1080 escalado a la ventana; el fondo cambia de tono con el ánimo de la escena. */
   #stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 50% 50%; background: var(--bg); }
@@ -29,17 +31,11 @@
     background: radial-gradient(900px 600px at 78% 8%, var(--c), transparent 70%), radial-gradient(700px 500px at 8% 100%, var(--c), transparent 70%); }
   #glow-lime { --c: rgba(203, 255, 26, 0.10); } #glow-amber { --c: rgba(255, 176, 32, 0.12); } #glow-red { --c: rgba(255, 90, 95, 0.12); }
   #stage:not(.mood-amber):not(.mood-red) #glow-lime, #stage.mood-amber #glow-amber, #stage.mood-red #glow-red { opacity: 1; }
-  #bg { position: absolute; inset: -60px; pointer-events: none;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 1.2px, transparent 1.6px) 0 0 / 40px 40px;
-    animation: drift 40s linear infinite; }
-  #grain { position: absolute; inset: 0; pointer-events: none; opacity: .07; mix-blend-mode: overlay; z-index: 9;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E"); }
-  body.transparent #bg, body.transparent #grain, body.transparent #hud { display: none; }
-  @keyframes drift { to { transform: translate(40px, 40px); } }
+  body.transparent .glow, body.transparent #hud { display: none; }
 
-  #hud { position: absolute; left: 120px; top: 42px; display: flex; gap: 28px; align-items: center; font-family: var(--mono); font-size: 18px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); pointer-events: none; z-index: 5; transition: opacity .5s; }
+  #hud { position: absolute; left: 120px; top: 42px; display: flex; gap: 28px; align-items: center; font-size: 20px; font-weight: 500; color: var(--dim); pointer-events: none; z-index: 5; transition: opacity .5s; }
   #hud .bar { display: flex; gap: 6px; } #hud .bar i { width: 34px; height: 4px; border-radius: 2px; background: var(--border); transition: background .5s; }
-  #hud .bar i.on { background: var(--lime); box-shadow: 0 0 10px rgba(203, 255, 26, .5); }
+  #hud .bar i.on { background: var(--lime); }
   #stage.nohud #hud, body.hide-hud #hud { opacity: 0; }
   /* Zona de la cámara (arriba a la derecha): ninguna escena pone contenido ahí. C la enseña para encuadrar. */
   #cam { position: absolute; right: 0; top: 0; width: var(--cam-w); height: var(--cam-h); box-sizing: border-box; border: 3px dashed var(--amber); background: rgba(255, 176, 32, .08); z-index: 8; display: none;
@@ -56,7 +52,7 @@
 
   /* Revelado por pasos: data-s="k" aparece en el paso k; data-a elige la animación; --d la retrasa. */
   [data-s]:not(.in) { opacity: 0; }
-  [data-s].in { animation: rise .7s var(--ease-out) var(--d, 0s) both; }
+  [data-s].in { animation: rise .55s var(--ease-out) var(--d, 0s) both; }
   [data-s].in[data-a="pop"] { animation-name: pop; animation-duration: .5s; }
   [data-s].in[data-a="stamp"] { animation: stamp .5s var(--ease-out) var(--d, 0s) both; }
   [data-s].in[data-a="print"] { animation: print 1.2s var(--ease-drawer) var(--d, 0s) both; }
@@ -68,7 +64,7 @@
   path[data-s] { stroke-dasharray: 1; }
   path[data-s].in { animation: draw .8s var(--ease-in-out) var(--d, 0s) both; }
   .pkt[data-s].in { animation: travel 1s var(--ease-in-out) var(--d, 0s) both; }
-  @keyframes rise { from { opacity: 0; transform: translateY(28px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes pop { 0% { opacity: 0; transform: scale(.92); } 60% { opacity: 1; transform: scale(1.02); } 100% { opacity: 1; transform: scale(1); } }
   @keyframes stamp { 0% { opacity: 0; transform: rotate(var(--r, -11deg)) scale(1.9); } 55% { opacity: 1; transform: rotate(var(--r, -11deg)) scale(.97); } 100% { opacity: 1; transform: rotate(var(--r, -11deg)) scale(1); } }
@@ -83,9 +79,7 @@
     20% { transform: translate(5px, 0); clip-path: inset(60% 0 8% 0); } 40% { transform: translate(-3px, 2px); clip-path: inset(30% 0 30% 0); }
     60% { transform: translate(4px, -2px); clip-path: none; } 80% { transform: none; text-shadow: 2px 0 var(--red), -2px 0 #31E1FF; } 100% { transform: none; clip-path: none; text-shadow: none; } }
   @keyframes thunk { 0%, 100% { transform: none; } 15% { transform: translate(7px, 5px) rotate(.5deg); } 35% { transform: translate(-6px, -3px) rotate(-.4deg); } 55% { transform: translate(4px, 2px); } 75% { transform: translate(-2px, -1px); } }
-  @keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(203, 255, 26, .7); } 100% { box-shadow: 0 0 0 26px rgba(203, 255, 26, 0); } }
   @keyframes caret { 50% { opacity: 0; } }
-  @keyframes shimmer { to { background-position: -200% 0; } }
   @keyframes scan { 0%, 100% { transform: translateY(-100%); } 50% { transform: none; } }
   @keyframes grow { from { transform: scaleX(.5); } to { transform: scaleX(1); } }
   @keyframes suck { to { transform: translate(var(--dx), var(--dy)) scale(.15); opacity: 0; filter: blur(8px); } }
@@ -94,8 +88,8 @@
 
   /* Tipografía */
   h1 { margin: 0; font-size: 76px; font-weight: 700; letter-spacing: -0.04em; line-height: 1.02; text-wrap: balance; }
-  h2 { margin: 0; font-size: 58px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; }
-  .eyebrow { font-family: var(--mono); font-size: 22px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  h2 { margin: 0; font-size: 58px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; text-wrap: balance; }
+  .eyebrow { font-size: 26px; font-weight: 500; color: var(--muted); }
   .eyebrow.lime { color: var(--lime); } .eyebrow.amber { color: var(--amber); }
   .muted { color: var(--muted); } .lime { color: var(--lime); } .red { color: var(--red); } .amber-t { color: var(--amber); }
   code { font-family: var(--mono); color: var(--lime); font-size: .9em; }
@@ -103,25 +97,25 @@
   .typing::after { content: ""; display: inline-block; width: .5ch; height: 1em; background: currentColor; margin-left: 3px; vertical-align: -0.12em; animation: caret 1s steps(1) infinite; }
 
   /* Chat */
-  .who { font-family: var(--mono); font-size: 19px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .who { font-size: 22px; font-weight: 500; color: var(--muted); margin-bottom: 12px; }
   .bubble { background: #ECF0F6; color: var(--ink); padding: 26px 34px; border-radius: 32px 32px 32px 8px; font-size: 38px; font-weight: 500; line-height: 1.3; box-shadow: 0 20px 60px rgba(0, 0, 0, .5); min-height: 1.3em; }
-  .bubble.bot { background: var(--lime); border-radius: 32px 32px 8px 32px; box-shadow: 0 0 80px rgba(203, 255, 26, .3), 0 20px 60px rgba(0, 0, 0, .5); position: relative; }
+  .bubble.bot { background: var(--lime); border-radius: 32px 32px 8px 32px; box-shadow: 0 20px 50px rgba(0, 0, 0, .5); position: relative; }
   .bubble.warn { background: var(--amber); border-radius: 32px 32px 8px 32px; }
 
   /* Tarjetas */
-  .card { position: relative; background: linear-gradient(180deg, var(--surface2), var(--surface)); border: 1.5px solid var(--border); border-radius: 26px; padding: 30px 34px; font-size: 29px; line-height: 1.35; box-shadow: 0 24px 60px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .05); }
+  .card { position: relative; background: linear-gradient(180deg, var(--surface2), var(--surface)); border: 1.5px solid var(--border); border-radius: 16px; padding: 30px 34px; font-size: 29px; line-height: 1.35; }
   .card .t { font-size: 36px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; line-height: 1.15; }
-  .card .k { font-family: var(--mono); font-size: 19px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
-  .card.ok { border-color: rgba(203, 255, 26, .5); box-shadow: 0 0 90px rgba(203, 255, 26, .10), 0 24px 60px rgba(0, 0, 0, .45); } .card.ok .t, .card.ok .k { color: var(--lime); }
-  .card.amber { border-color: rgba(255, 176, 32, .55); box-shadow: 0 0 90px rgba(255, 176, 32, .08), 0 24px 60px rgba(0, 0, 0, .45); } .card.amber .t, .card.amber .k { color: var(--amber); }
-  .card.bad { border-color: rgba(255, 90, 95, .55); box-shadow: 0 0 90px rgba(255, 90, 95, .10), 0 24px 60px rgba(0, 0, 0, .45); } .card.bad .t, .card.bad .k { color: var(--red); }
+  .card .k { font-size: 24px; font-weight: 500; color: var(--muted); margin-bottom: 12px; }
+  .card.ok { border-color: rgba(203, 255, 26, .5); } .card.ok .t, .card.ok .k { color: var(--lime); }
+  .card.amber { border-color: rgba(255, 176, 32, .55); } .card.amber .t, .card.amber .k { color: var(--amber); }
+  .card.bad { border-color: rgba(255, 90, 95, .55); } .card.bad .t, .card.bad .k { color: var(--red); }
   .card.dashed { border-style: dashed; } .card.ghost { background: transparent; box-shadow: none; }
   .line { display: flex; justify-content: space-between; gap: 24px; padding: 11px 0; border-top: 1px solid rgba(255, 255, 255, .07); }
   .line b { font-variant-numeric: tabular-nums; }
   .tag { display: inline-block; font-size: 25px; padding: 9px 20px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .12); background: rgba(255, 255, 255, .04); color: var(--muted); white-space: nowrap; }
   .tag.ok { color: var(--lime); border-color: rgba(203, 255, 26, .45); } .tag.bad { color: var(--red); border-color: rgba(255, 90, 95, .5); } .tag.amber { color: var(--amber); border-color: rgba(255, 176, 32, .5); }
-  .note { font-size: 30px; color: var(--muted); border-left: 4px solid var(--lime); padding: 6px 0 6px 24px; line-height: 1.35; }
-  .note.amber { border-color: var(--amber); } .note.red { border-color: var(--red); }
+  .note { font-size: 32px; color: var(--muted); line-height: 1.4; max-width: 58ch; text-wrap: pretty; }
+  .note.red { color: var(--text); }
   .strike { position: relative; display: inline-block; }
   .in .strike::after { content: ""; position: absolute; left: -6px; right: -6px; top: 52%; height: 5px; background: var(--red); border-radius: 3px; animation: wipe .5s var(--ease-out) calc(var(--d, 0s) + .7s) both; }
 
@@ -138,7 +132,7 @@
   .tk.stalled .prog i { background: var(--ink-amber); animation: blink .8s steps(1) infinite; }
   @keyframes saving { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .tk .status { margin-top: 10px; font-size: 20px; letter-spacing: .1em; text-transform: uppercase; color: #5D6470; }
-  .slot { height: 14px; border-radius: 7px; background: #000; box-shadow: 0 0 0 2px #1E242D, 0 0 40px rgba(203, 255, 26, .35), inset 0 -3px 8px rgba(203, 255, 26, .35); margin: 0 -20px; position: relative; z-index: 2; }
+  .slot { height: 14px; border-radius: 7px; background: #000; box-shadow: 0 0 0 2px #1E242D, inset 0 -3px 0 rgba(203, 255, 26, .55); margin: 0 -20px; position: relative; z-index: 2; }
   .stamp { position: absolute; z-index: 3; font-family: var(--font); font-weight: 700; font-size: 46px; letter-spacing: .04em; text-transform: uppercase; padding: 6px 22px; border: 6px solid currentColor; border-radius: 12px;
     color: var(--ink-amber); transform: rotate(var(--r, -11deg)); mix-blend-mode: multiply; white-space: nowrap;
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.4 1.7'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -149,19 +143,25 @@
   /* Diagramas */
   svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
   svg.wires path { fill: none; stroke: #4A5361; stroke-width: 4; stroke-linecap: round; }
-  svg.wires path.lime { stroke: var(--lime); filter: drop-shadow(0 0 8px rgba(203, 255, 26, .6)); }
+  svg.wires path.lime { stroke: var(--lime); }
   svg.wires path.amber { stroke: var(--amber); } svg.wires path.red { stroke: var(--red); }
   .pkt { left: 0; top: 0; width: 64px; height: 40px; margin: -20px 0 0 -32px; border-radius: 6px; offset-rotate: 0deg; z-index: 4;
-    background: repeating-linear-gradient(180deg, transparent 0 9px, #9AA195 9px 12px) center / 70% 100% no-repeat, var(--paper); box-shadow: 0 0 30px rgba(203, 255, 26, .8), 0 0 0 3px var(--lime); }
-  .pkt.result { background: var(--lime); box-shadow: 0 0 34px rgba(203, 255, 26, .9); }
-  .node { width: 300px; box-sizing: border-box; background: linear-gradient(180deg, var(--surface2), var(--surface)); border: 1.5px solid var(--border); border-radius: 22px; padding: 20px 22px; font-size: 25px; line-height: 1.3; box-shadow: 0 20px 50px rgba(0, 0, 0, .45); }
+    background: repeating-linear-gradient(180deg, transparent 0 9px, #9AA195 9px 12px) center / 70% 100% no-repeat, var(--paper); box-shadow: 0 0 0 3px var(--lime), 0 8px 16px rgba(0, 0, 0, .6); }
+  .pkt.result { background: var(--lime); box-shadow: 0 8px 16px rgba(0, 0, 0, .6); }
+  .node { width: 300px; box-sizing: border-box; background: linear-gradient(180deg, var(--surface2), var(--surface)); border: 1.5px solid var(--border); border-radius: 16px; padding: 20px 22px; font-size: 25px; line-height: 1.3; }
   .node .t { font-size: 30px; font-weight: 700; margin-bottom: 6px; }
   .node.model { border-color: rgba(203, 255, 26, .55); } .node.model .t { color: var(--lime); }
   .lane { border: 2px dashed #222833; border-radius: 30px; }
-  .lane .eyebrow { position: absolute; left: 30px; top: 20px; font-size: 19px; }
+  .lane .eyebrow { position: absolute; left: 30px; top: 18px; font-size: 22px; }
   .badge { display: inline-flex; align-items: center; justify-content: center; min-width: 74px; height: 74px; padding: 0 12px; box-sizing: border-box; border-radius: 37px; background: var(--lime); color: var(--ink); font-weight: 700; font-size: 32px; letter-spacing: 0; flex: none; }
-  .badge.on { animation: ring 1.2s ease-out infinite; }
+  .qs > div { transition: color .4s ease; } .qs > div.on { color: var(--lime); }
+  .dec { display: grid; grid-template-columns: 1fr 520px; gap: 40px; align-items: center; padding: 30px 0; border-top: 1px solid var(--border); font-size: 29px; }
+  .dec .t { font-size: 40px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .dec code { font-size: 40px; color: var(--c, var(--lime)); min-height: 1.3em; }
+  .badge.on { outline: 3px solid var(--lime); outline-offset: 6px; }
   .icon { width: 84px; height: 84px; }
+  .ar { width: 1em; height: 1em; vertical-align: -0.12em; color: var(--muted); }
+  .ar path { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
   .icon path, .icon circle { fill: none; stroke: currentColor; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
 
   /* Contrato JSON impreso en el tique */
@@ -177,27 +177,26 @@
   .ledger .track { height: 16px; border-radius: 8px; background: rgba(255, 255, 255, .06); }
   .ledger .track i { display: block; height: 100%; border-radius: 8px; background: var(--muted); transform: scaleX(.5); transform-origin: left; }
   .ledger.dup.in .track i { background: var(--red); animation: grow 1.1s var(--ease-out) 1.4s both; }
-  .x2 { position: absolute; right: -26px; top: -30px; background: var(--red); color: #fff; font-weight: 700; font-size: 44px; padding: 6px 22px; border-radius: 18px; box-shadow: 0 0 50px rgba(255, 90, 95, .6); }
+  .x2 { position: absolute; right: -26px; top: -30px; background: var(--red); color: #fff; font-weight: 700; font-size: 44px; padding: 6px 22px; border-radius: 14px; box-shadow: 0 10px 24px rgba(0, 0, 0, .5); }
   .scanbox { position: relative; overflow: hidden; }
   /* Haz de lectura: un pseudo de toda la altura con la línea en su borde inferior, movido con transform. */
   .in .scanbox::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent calc(100% - 40px), rgba(203, 255, 26, .22) calc(100% - 4px), var(--lime) 0); animation: scan 2.4s var(--ease-in-out) 1s 2 both; }
   .console { font-family: var(--mono); font-size: 28px; line-height: 1.6; background: #05070A; border: 1.5px solid var(--border); border-radius: 22px; padding: 28px 32px; }
   .console .c { color: var(--dim); margin-bottom: 18px; }
   .console .v { float: right; color: var(--lime); font-size: 44px; font-weight: 700; line-height: 1.1; }
-  .spark { position: absolute; z-index: -1; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--lime); pointer-events: none; box-shadow: 0 0 12px var(--lime); }
+  .spark { position: absolute; z-index: -1; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--lime); pointer-events: none; }
 
-  .shine { background: linear-gradient(100deg, var(--lime) 30%, #F4FFD0 45%, var(--lime) 60%) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 3.5s linear 1.2s infinite; }
   .word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: .1em; margin-bottom: -.1em; }
   .word > span { display: inline-block; }
   .in .word > span { animation: wordup 1s var(--ease-out) both; }
   @keyframes wordup { from { transform: translateY(110%); } to { transform: none; } }
-  .in .underline { position: relative; } .in .underline::after { content: ""; position: absolute; left: 0; right: 0; bottom: .06em; height: .09em; background: var(--lime); border-radius: 4px; animation: wipe .8s var(--ease-out) 1.4s both; box-shadow: 0 0 30px rgba(203, 255, 26, .6); }
+  .in .underline { position: relative; } .in .underline::after { content: ""; position: absolute; left: 0; right: 0; bottom: .06em; height: .09em; background: var(--lime); border-radius: 4px; animation: wipe .8s var(--ease-out) 1.4s both; }
   .in .flicker { animation: wordup 1s var(--ease-out) .58s both, glitch .6s steps(1) 1.5s both; }
 
   /* Exportación a PNG y movimiento reducido: todo en su estado final. */
   body.static *, body.static *::before, body.static *::after { animation-duration: 1ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; }
   @media (prefers-reduced-motion: reduce) {
-    #bg, .badge.on, .shine, .in .scanbox::after, .tk:has(.stamp.in) .paper { animation: none !important; }
+    .in .scanbox::after, .tk:has(.stamp.in) .paper { animation: none !important; }
     [data-s].in, [data-s].in[data-a], .in .word > span, .in .flicker { animation: fade .3s ease both !important; }
     .pkt[data-s].in { animation: none !important; opacity: 0; }
     .slide.leaving { animation: fade .2s ease reverse both !important; }
@@ -207,14 +206,12 @@
 <body>
 <div id="stage">
 <div class="glow" id="glow-lime"></div><div class="glow" id="glow-amber"></div><div class="glow" id="glow-red"></div>
-<div id="bg"></div>
 <div id="hud"><span id="chapter"></span><span class="bar" id="bar"></span></div>
 <div id="cam">Cámara</div>
 
 <!-- Miniatura de YouTube -->
 <section class="slide" data-id="00-miniatura" data-w="1280" data-h="720" data-nohud data-mood="amber" style="padding: 70px 80px; flex-direction: row; align-items: center; gap: 30px">
   <div class="col grow" style="gap: 22px">
-    <div class="eyebrow lime" style="font-size: 20px">Agentes de IA</div>
     <h1 style="font-size: 108px; line-height: .95">Falló<br>la tool.<br><span class="lime">¿La<br>repito?</span></h1>
   </div>
   <div style="position: relative; width: 470px; height: 560px">
@@ -246,12 +243,12 @@
     </div>
   </div>
   <div class="col" data-s="3" data-a="fade" style="gap: 14px">
-    <div class="eyebrow">Tu registro de hoy · dos posibilidades, no un fallo reproducido</div>
+    <h2 style="font-size: 40px">Tu registro de hoy, en las dos posibilidades <span class="muted" style="font-weight: 500">(no es un fallo reproducido)</span></h2>
     <div class="row">
-      <div class="card ledger grow" data-s="3" data-a="deal"><div class="k">Si se guardó una vez</div>
+      <div class="card ledger grow" data-s="3" data-a="deal"><div class="t" style="font-size: 30px; color: var(--muted)">Si se guardó una vez</div>
         <div class="line"><span>Arroz cocido · Pollo</span><b>200 g · 150 g</b></div>
         <div class="bars"><span>Calorías</span><div class="track"><i></i></div><span>Proteínas</span><div class="track"><i></i></div><span>Hidratos</span><div class="track"><i></i></div><span>Grasas</span><div class="track"><i></i></div></div></div>
-      <div class="card bad ledger dup grow" data-s="3" data-a="deal" style="--d: .25s"><div class="k">Si la repetimos y ya estaba</div>
+      <div class="card bad ledger dup grow" data-s="3" data-a="deal" style="--d: .25s"><div class="t" style="font-size: 30px">Si la repetimos y ya estaba</div>
         <div class="line"><span>Arroz cocido · Pollo</span><b>200 g · 150 g</b></div><div class="line red" data-s="3" style="--d: 1s"><span>Arroz cocido · Pollo</span><b>+200 g · +150 g</b></div>
         <div class="bars"><span>Calorías</span><div class="track"><i></i></div><span>Proteínas</span><div class="track"><i></i></div><span>Hidratos</span><div class="track"><i></i></div><span>Grasas</span><div class="track"><i></i></div></div>
         <div class="x2" data-s="3" data-a="pop" style="--d: 2.3s">×2</div></div>
@@ -260,8 +257,7 @@
 </section>
 
 <section class="slide" data-id="02-titulo" data-nohud style="padding-left: 160px">
-  <div class="eyebrow lime" data-s="1" data-a="fade">Agentes de IA · Serie Gymnasia</div>
-  <h1 data-s="1" data-a="fade" style="font-size: 136px; line-height: 1.02">
+  <h1 data-s="1" data-a="fade" style="font-size: 96px; line-height: 1.04">
     <span class="word"><span style="animation-delay: .1s">Cómo</span></span> <span class="word"><span style="animation-delay: .18s">debe</span></span> <span class="word"><span style="animation-delay: .26s">actuar</span></span><br>
     <span class="word"><span style="animation-delay: .34s">un</span></span> <span class="word"><span style="animation-delay: .42s">agente</span></span> <span class="word"><span style="animation-delay: .5s">cuando</span></span><br>
     <span class="word"><span class="red flicker">falla</span></span> <span class="word"><span style="animation-delay: .66s">una</span></span> <span class="word"><span class="lime underline" style="animation-delay: .74s">tool</span></span>
@@ -273,8 +269,7 @@
 
 <section class="slide" data-id="03-rotulo" data-transparent data-nohud style="justify-content: flex-end; padding-bottom: 110px">
   <div class="row" data-s="1" data-a="wipe" style="align-self: flex-start; gap: 0; filter: drop-shadow(0 20px 40px rgba(0,0,0,.5))">
-    <div style="width: 12px; background: var(--lime); border-radius: 6px 0 0 6px; box-shadow: 0 0 30px rgba(203,255,26,.6)"></div>
-    <div style="background: rgba(11, 14, 19, .94); padding: 22px 36px; border-radius: 0 18px 18px 0; border: 1px solid #252B35; border-left: 0">
+    <div style="background: rgba(11, 14, 19, .94); padding: 22px 36px; border-radius: 16px; border: 1px solid #252B35">
       <div style="font-size: 38px; font-weight: 700; letter-spacing: -0.02em">Gymnasia <span class="lime">· Coach</span></div>
       <div class="muted" style="font-size: 26px">Serie: construyendo un agente de IA paso a paso</div>
     </div>
@@ -285,7 +280,7 @@
 <section class="slide" data-id="04-llamada-tool" data-steps="2" data-ch="Quién pide y quién ejecuta">
   <div class="row" style="align-items: center; gap: 0">
     <div style="width: 1000px; position: relative">
-      <div class="eyebrow" data-s="1" data-a="fade" style="margin-bottom: 24px">Una llamada a una tool · ejemplo ilustrativo</div>
+      <h2 data-s="1" data-a="fade" style="margin-bottom: 30px">Una llamada a una tool <span class="muted" style="font-weight: 500; font-size: 32px">· ejemplo ilustrativo</span></h2>
       <div class="slot" data-s="1" data-a="fade" style="width: 600px"></div>
       <div class="tk" data-s="1" data-a="print" style="width: 560px; --d: .3s">
         <div class="paper"><div class="hd"><span>Tool call</span><span>#7F3A</span></div><div class="op">Guardar comida</div><div class="rule"></div>
@@ -295,8 +290,8 @@
       <div class="ann" data-s="1" data-a="fade" style="position: absolute; left: 580px; top: 290px; --d: 1.8s">Con qué datos</div>
     </div>
     <div class="col grow" style="gap: 34px; align-self: flex-end; margin-bottom: -120px">
-      <div class="card ok" data-s="2" data-a="deal"><div class="k">Modelo</div><div class="t">La pide</div>Indica qué quiere hacer y con qué datos.</div>
-      <div class="card" data-s="2" data-a="deal" style="--d: .25s"><div class="k">Harness · programa local</div><div class="t">La comprueba y la ejecuta</div>Coordina al modelo con las funciones de la app.</div>
+      <div class="card ok" data-s="2" data-a="deal"><div class="t">El modelo la pide</div>Indica qué quiere hacer y con qué datos.</div>
+      <div class="card" data-s="2" data-a="deal" style="--d: .25s"><div class="t">El harness la comprueba y la ejecuta</div>Coordina al modelo con las funciones de la app.</div>
     </div>
   </div>
 </section>
@@ -360,11 +355,11 @@
 </section>
 
 <section class="slide" data-id="08-contrato" data-steps="4" data-ch="El mismo error, decisiones distintas">
-  <div class="eyebrow lime" data-s="1" data-a="fade">Contrato de errores · tres preguntas</div>
-  <div class="col" style="font-size: 68px; font-weight: 700; letter-spacing: -0.03em; gap: 40px">
-    <div class="row" data-s="1" style="align-items: center"><span class="badge" data-at="1">1</span>¿La operación falló?</div>
-    <div class="row" data-s="2" style="align-items: center"><span class="badge" data-at="2">2</span>¿Qué problema ocurrió?</div>
-    <div class="row" data-s="3" style="align-items: center"><span class="badge" data-at="3">3</span>¿Qué se permite hacer ahora?</div>
+  <h2 data-s="1" data-a="fade" class="muted" style="font-size: 44px">El contrato de errores responde a tres preguntas</h2>
+  <div class="col qs" style="font-size: 76px; font-weight: 700; letter-spacing: -0.03em; gap: 34px">
+    <div data-s="1" data-at="1">¿La operación falló?</div>
+    <div data-s="2" data-at="2">¿Qué problema ocurrió?</div>
+    <div data-s="3" data-at="3">¿Qué se permite hacer ahora?</div>
   </div>
   <div class="note" data-s="4" style="margin-top: 16px; max-width: 1400px">La marca de error la pone el programa que ejecuta. El texto del usuario sigue siendo contenido del usuario.</div>
 </section>
@@ -372,25 +367,16 @@
 <!-- 4. Corregir, buscar una alternativa o parar -->
 <section class="slide" data-id="09-decisiones" data-steps="4" data-ch="Corregir, buscar una alternativa o parar">
   <h2 data-s="1" data-a="fade">Tres decisiones</h2>
-  <div class="row" style="gap: 30px">
-    <div class="card grow" data-s="1" data-a="deal" style="color: var(--lime)">
-      <svg class="icon" viewBox="0 0 84 84"><path data-s="1" pathLength="1" style="--d: .5s" d="M14 70 L34 66 L70 30 L54 14 L18 50 Z M48 20 L64 36"/></svg>
-      <div class="t" style="color: var(--text); margin-top: 18px">Corregir los argumentos antes de ejecutar</div><div class="muted">La operación aún no se ha hecho: se arregla la petición.</div>
-      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code data-s="4" data-a="fade" data-fx="type">correct_arguments</code></div></div>
-    <div class="card grow" data-s="2" data-a="deal" style="color: var(--amber)">
-      <svg class="icon" viewBox="0 0 84 84"><path data-s="2" pathLength="1" style="--d: .5s" d="M12 42 H38 C50 42 50 18 66 18 M38 42 C50 42 50 66 66 66 M58 10 L68 18 L58 26 M58 58 L68 66 L58 74"/></svg>
-      <div class="t" style="color: var(--text); margin-top: 18px">Elegir otra consulta útil dentro de la petición</div><div class="muted">Sin inventar el dato: si la medida es de otro día, se dice de qué día.</div>
-      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code data-s="4" data-a="fade" data-fx="type" data-delay="900">choose_alternative</code></div></div>
-    <div class="card grow" data-s="3" data-a="deal" style="color: var(--red)">
-      <svg class="icon" viewBox="0 0 84 84"><path data-s="3" pathLength="1" style="--d: .5s" d="M28 8 H56 L76 28 V56 L56 76 H28 L8 56 V28 Z M28 42 H56"/></svg>
-      <div class="t" style="color: var(--text); margin-top: 18px">Detener el turno</div><div class="muted">No se permiten más operaciones y se avisa al usuario.</div>
-      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code data-s="4" data-a="fade" data-fx="type" data-delay="1600">stop_turn</code></div></div>
+  <div class="col decisions" style="gap: 0">
+    <div class="dec" data-s="1"><div><div class="t">Corregir los argumentos antes de ejecutar</div><div class="muted">La operación aún no se ha hecho: se arregla la petición.</div></div><code data-s="4" data-a="fade" data-fx="type">correct_arguments</code></div>
+    <div class="dec" data-s="2" style="--c: var(--amber)"><div><div class="t">Elegir otra consulta útil dentro de la petición</div><div class="muted">Sin inventar el dato: si la medida es de otro día, se dice de qué día.</div></div><code data-s="4" data-a="fade" data-fx="type" data-delay="900">choose_alternative</code></div>
+    <div class="dec" data-s="3" style="--c: var(--red)"><div><div class="t">Detener el turno</div><div class="muted">No se permiten más operaciones y se avisa al usuario.</div></div><code data-s="4" data-a="fade" data-fx="type" data-delay="1600">stop_turn</code></div>
   </div>
-  <div class="eyebrow" data-s="4" style="--d: 2s">Identificadores tal como aparecen en el contrato</div>
+  <p class="note" data-s="4" style="--d: 2s; margin: 0">Los identificadores, tal como aparecen en el contrato.</p>
 </section>
 
 <section class="slide" data-id="10-contrato-json" data-steps="6" data-ch="Corregir, buscar una alternativa o parar">
-  <div class="eyebrow" data-s="1" data-a="fade">Fragmento ilustrativo del contrato interno</div>
+  <h2 data-s="1" data-a="fade" style="font-size: 44px">Fragmento ilustrativo del contrato interno</h2>
   <div class="row" style="align-items: flex-start; gap: 40px">
     <div style="width: 1180px">
       <div class="slot" data-s="1" data-a="fade"></div>
@@ -407,20 +393,20 @@
       <div class="ann lime" data-s="5" data-a="fade" style="height: 64.75px">Qué se permite</div>
     </div>
   </div>
-  <div class="note amber" data-s="6">Que falte un peso no autoriza a crear uno: el harness sigue comprobando cada nueva petición.</div>
+  <div class="note" data-s="6">Que falte un peso no autoriza a crear uno: el harness sigue comprobando cada nueva petición.</div>
 </section>
 
 <!-- 5. Un error de la app tiene que llegar como error de la app -->
 <section class="slide" data-id="11-donde-falla" data-steps="3" data-ch="Un error de la app llega como error de la app">
   <h2 data-s="1" data-a="fade">¿Dónde se produjo el fallo?</h2>
   <div class="abs" style="height: 300px">
-    <div class="card ok" data-s="1" data-a="deal" style="left: 0; top: 0; width: 700px; height: 300px; box-sizing: border-box"><div class="k">Proveedor del modelo</div><div class="t">Entrega la petición</div>Responde bien y pide guardar la comida.
+    <div class="card ok" data-s="1" data-a="deal" style="left: 0; top: 0; width: 700px; height: 300px; box-sizing: border-box; padding-right: 140px"><div class="t">El proveedor entrega la petición</div>Responde bien y pide guardar la comida.
       <svg class="icon" viewBox="0 0 84 84" style="position: absolute; right: 30px; top: 30px; color: var(--lime)"><circle cx="42" cy="42" r="34"/><path data-s="1" pathLength="1" style="--d: .7s" d="M26 43 L37 54 L59 30"/></svg></div>
     <svg class="wires" viewBox="0 0 1680 300"><path data-s="1" class="lime" pathLength="1" style="--d: 1s" d="M700,150 H980"/></svg>
     <div class="pkt" data-s="1" style="offset-path: path('M700,150 H980'); --d: 1.1s"></div>
-    <div class="card" data-s="1" data-a="deal" style="left: 980px; top: 0; width: 700px; height: 300px; box-sizing: border-box; overflow: hidden; --d: .2s"><div class="k">App · almacenamiento local</div><div class="t">Intenta guardar</div>
-      <div class="red" data-s="2" data-a="glitch" style="font-weight: 700; font-size: 38px; margin-top: 24px">✕ Falla la escritura</div>
-      <svg viewBox="0 0 700 300" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none"><path data-s="2" pathLength="1" d="M560,0 L500,80 L585,125 L490,215 L540,300" style="fill: none; stroke: var(--red); stroke-width: 4; --d: .15s; filter: drop-shadow(0 0 10px rgba(255,90,95,.8))"/></svg></div>
+    <div class="card" data-s="1" data-a="deal" style="left: 980px; top: 0; width: 700px; height: 300px; box-sizing: border-box; overflow: hidden; --d: .2s"><div class="t">La app intenta guardarla</div>
+      <div class="red" data-s="2" data-a="glitch" style="font-weight: 700; font-size: 38px; margin-top: 24px"><svg class="ar" viewBox="0 0 24 24" aria-hidden="true" style="color: var(--red)"><path d="M6 6l12 12M18 6L6 18"/></svg> Falla la escritura</div>
+      <svg viewBox="0 0 700 300" style="position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none"><path data-s="2" pathLength="1" d="M560,0 L500,80 L585,125 L490,215 L540,300" style="fill: none; stroke: var(--red); stroke-width: 4; --d: .15s; "/></svg></div>
   </div>
   <div class="row">
     <div class="card bad ghost grow" data-s="3" data-a="deal"><div class="t"><span class="strike">«Error del proveedor»</span></div>Señala el servicio equivocado.</div>
@@ -437,9 +423,9 @@
       <path data-s="2" class="lime" pathLength="1" d="M840,108 V320"/>
       <path data-s="3" class="amber" pathLength="1" d="M840,108 C840,240 1430,210 1430,320"/>
     </svg>
-    <div class="card" data-s="1" data-a="pop" style="left: 0; width: 500px; top: 320px; box-sizing: border-box; --d: .9s"><div class="k">Desarrollo</div><div class="t">Diagnóstico</div>Los detalles para investigar el fallo.</div>
-    <div class="card ok" data-s="2" data-a="pop" style="left: 590px; width: 500px; top: 320px; box-sizing: border-box; --d: .6s"><div class="k">Modelo</div><div class="t">Estado y permisos</div>Qué operación falló, qué está confirmado y qué puede hacer después.</div>
-    <div class="card amber" data-s="3" data-a="pop" style="left: 1180px; width: 500px; top: 320px; box-sizing: border-box; --d: .6s"><div class="k">Usuario</div><div class="t">Resultado y siguiente paso</div>Una respuesta que le permita seguir usando la app.</div>
+    <div class="card" data-s="1" data-a="pop" style="left: 0; width: 500px; top: 320px; box-sizing: border-box; --d: .9s"><div class="t">Desarrollo: diagnóstico</div>Los detalles para investigar el fallo.</div>
+    <div class="card ok" data-s="2" data-a="pop" style="left: 590px; width: 500px; top: 320px; box-sizing: border-box; --d: .6s"><div class="t">Modelo: estado y permisos</div>Qué operación falló, qué está confirmado y qué puede hacer después.</div>
+    <div class="card amber" data-s="3" data-a="pop" style="left: 1180px; width: 500px; top: 320px; box-sizing: border-box; --d: .6s"><div class="t">Usuario: resultado y siguiente paso</div>Una respuesta que le permita seguir usando la app.</div>
   </div>
 </section>
 
@@ -461,13 +447,13 @@
       <path data-s="5" pathLength="1" d="M1030,300 C1110,300 1090,470 1170,470"/>
       <path data-s="6" class="red" pathLength="1" d="M1030,300 C1110,300 1090,640 1170,640"/>
     </svg>
-    <div class="card" data-s="3" data-a="pop" style="left: 550px; top: 110px; width: 480px; box-sizing: border-box; --d: .5s"><div class="k">Solo lectura</div><div class="t">Consulta de comprobación</div>
+    <div class="card" data-s="3" data-a="pop" style="left: 550px; top: 110px; width: 480px; box-sizing: border-box; --d: .5s"><div class="t">Consulta de solo lectura</div>
       <div class="scanbox" style="font-family: var(--mono); font-size: 21px; margin-top: 14px; border-radius: 10px; background: #05070A; padding: 6px 16px">
         <div class="line" style="border: 0; color: var(--dim)"><span>ayer · arroz, pollo</span><span>otra comida</span></div>
         <div class="line"><span>hoy · batido</span><span>&nbsp;</span></div>
         <div class="line"><span>hoy · arroz, pollo</span><span class="amber-t">¿es esta?</span></div></div>
       <div style="margin-top: 16px; font-size: 25px">Identifica la acción concreta, no otra comida parecida.</div>
-      <div style="margin-top: 14px"><span class="tag" style="font-family: var(--mono); font-size: 21px">petición #7F3A ⇄ registro</span></div></div>
+      <div style="margin-top: 14px"><span class="tag" style="font-family: var(--mono); font-size: 21px">petición #7F3A enlazada a su registro</span></div></div>
     <div class="card ok" data-s="4" data-a="pop" style="left: 1170px; top: 225px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Esa comida está guardada</div>Confirmar: «He apuntado tu comida».</div>
     <div class="card" data-s="5" data-a="pop" style="left: 1170px; top: 395px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Confirmado que no se guardó</div>El harness puede permitir completarla.</div>
     <div class="card bad" data-s="6" data-a="pop" style="left: 1170px; top: 565px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Ambiguo o la comprobación falla</div>Detenerse sin repetir la escritura.</div>
@@ -476,12 +462,12 @@
 </section>
 
 <section class="slide" data-id="14-probado-gymnasia" data-steps="2" data-ch="Comprobar antes de repetir">
-  <div class="eyebrow lime" data-s="1" data-a="fade">Lo que probamos en Gymnasia</div>
+  <h2 data-s="1" data-a="fade">Lo que probamos en Gymnasia</h2>
   <div class="row" style="align-items: center; gap: 26px">
     <div class="card bad grow" data-s="1" data-a="glitch" style="--d: .2s"><div class="t" style="margin: 0">Fallo de escritura</div></div>
-    <div data-s="1" data-a="fade" style="font-size: 54px; color: var(--muted); --d: .6s">→</div>
+    <div data-s="1" data-a="fade" style="font-size: 54px; --d: .6s"><svg class="ar" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></div>
     <div class="card grow" data-s="1" data-a="pop" style="--d: .8s"><div class="t" style="margin: 0">Parada local del turno</div></div>
-    <div data-s="1" data-a="drop" style="--d: 1.3s; width: 14px; height: 170px; border-radius: 7px; background: var(--red); box-shadow: 0 0 40px rgba(255,90,95,.7)"></div>
+    <div data-s="1" data-a="drop" style="--d: 1.3s; width: 14px; height: 170px; border-radius: 7px; background: var(--red)"></div>
     <div class="card ghost grow" data-s="1" data-a="fade" style="--d: 1.6s; border-style: dashed; color: var(--dim)"><div class="t" style="margin: 0"><span class="strike">Segunda escritura</span></div></div>
   </div>
   <div class="row" style="gap: 18px"><span class="tag" data-s="2" data-a="pop">Sin consulta adicional al modelo</span><span class="tag" data-s="2" data-a="pop" style="--d: .15s">Sin repetir el guardado</span></div>
@@ -493,8 +479,8 @@
   <div class="row" style="gap: 40px">
     <div class="col grow" data-s="1" data-a="deal"><div class="eyebrow">Respuesta visible</div>
       <div class="card" style="min-height: 330px; box-sizing: border-box">
-        <div data-s="2" style="font-size: 32px; padding: 14px 0">Argumentos inválidos <span class="muted">→</span> se corrige la petición</div>
-        <div data-s="3" style="font-size: 32px; padding: 14px 0; border-top: 1px solid rgba(255,255,255,.07)">Fallo al guardar <span class="muted">→</span> no confirma el éxito</div></div></div>
+        <div data-s="2" style="font-size: 32px; padding: 14px 0">Argumentos inválidos <svg class="ar" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg> se corrige la petición</div>
+        <div data-s="3" style="font-size: 32px; padding: 14px 0; border-top: 1px solid rgba(255,255,255,.07)">Fallo al guardar <svg class="ar" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg> no confirma el éxito</div></div></div>
     <div class="col grow" data-s="1" data-a="deal" style="--d: .2s"><div class="eyebrow lime">Operaciones realmente ejecutadas</div>
       <div class="console" style="min-height: 330px; box-sizing: border-box">
         <div class="c">$ pruebas con respuestas simuladas</div>
@@ -505,8 +491,8 @@
 
 <section class="slide" data-id="16-proveedores" data-steps="3" data-ch="Cómo sabemos que se respetan">
   <div class="abs" style="height: 820px">
-    <div class="card ok" data-s="1" data-a="pop" style="left: 590px; width: 500px; top: 0; text-align: center; box-sizing: border-box"><div class="k">Harness</div><div class="t">Decide el estado</div>Qué pasó · qué se permite después</div>
-    <div class="note" data-s="2" style="left: 360px; top: 220px; width: 960px; box-sizing: border-box">Un adaptador por API lo expresa en su formato y lo enlaza con la llamada original</div>
+    <div class="card ok" data-s="1" data-a="pop" style="left: 500px; width: 680px; top: 0; text-align: center; box-sizing: border-box"><div class="t">El harness decide el estado</div>Qué pasó · qué se permite después</div>
+    <div class="note" data-s="2" style="left: 360px; top: 210px; width: 960px; box-sizing: border-box; text-align: center">Un adaptador por API lo expresa en su formato y lo enlaza con la llamada original</div>
     <svg class="wires" viewBox="0 0 1680 820">
       <path data-s="3" class="lime" pathLength="1" d="M840,330 C840,420 260,380 260,470"/>
       <path data-s="3" class="lime" pathLength="1" style="--d: .15s" d="M840,330 V470"/>
@@ -525,14 +511,14 @@
 </section>
 
 <section class="slide" data-id="17-evidencia" data-steps="2" data-ch="Cómo sabemos que se respetan">
-  <div class="eyebrow lime" data-s="1" data-a="fade">Prueba en la web con un modelo real</div>
+  <h2 data-s="1" data-a="fade">Prueba en la web con un modelo real</h2>
   <div class="row">
     <div class="card ok grow" data-s="1" data-a="deal"><svg class="icon" viewBox="0 0 84 84" style="color: var(--lime); float: right"><circle cx="42" cy="42" r="34"/><path data-s="1" pathLength="1" style="--d: .8s" d="M26 43 L37 54 L59 30"/></svg>
-      <div class="k">Lectura</div><div class="t">Faltaba un peso</div>Consultó otra fecha que se había indicado en la prueba.</div>
+      <div class="t">Lectura: faltaba un peso</div>Consultó otra fecha que se había indicado en la prueba.</div>
     <div class="card ok grow" data-s="1" data-a="deal" style="--d: .25s"><svg class="icon" viewBox="0 0 84 84" style="color: var(--lime); float: right"><circle cx="42" cy="42" r="34"/><path data-s="1" pathLength="1" style="--d: 1.05s" d="M26 43 L37 54 L59 30"/></svg>
-      <div class="k">Escritura</div><div class="t">Fallo local al guardar</div>El programa detuvo el turno.</div>
+      <div class="t">Escritura: fallo local al guardar</div>El programa detuvo el turno.</div>
   </div>
-  <div class="note amber" data-s="2">Evidencia de esos recorridos. No demuestra que cualquier modelo busque solo la mejor fecha, ni que este formato siempre mejore su respuesta.</div>
+  <div class="note" data-s="2">Evidencia de esos recorridos. No demuestra que cualquier modelo busque solo la mejor fecha, ni que este formato siempre mejore su respuesta.</div>
 </section>
 
 <!-- 8. Qué te llevas para tu agente -->
@@ -550,22 +536,21 @@
 </section>
 
 <section class="slide" data-id="19-resumen" data-steps="5" data-ch="Qué te llevas para tu agente">
-  <div class="eyebrow amber" data-s="1" data-a="fade">Sin confirmar → comprobar antes de repetir</div>
+  <h2 data-s="1" data-a="fade">Sin confirmar: comprobar antes de repetir</h2>
   <div class="col" style="font-size: 46px; gap: 26px; font-weight: 500">
     <div class="row" data-s="1" style="align-items: center"><span class="tag ok" style="width: 420px; font-size: 32px; text-align: center">Está guardada</span>Confirmar</div>
     <div class="row" data-s="2" style="align-items: center"><span class="tag" style="width: 420px; font-size: 32px; text-align: center">Falta y está permitido</span>Completar la acción</div>
     <div class="row" data-s="3" style="align-items: center"><span class="tag bad" style="width: 420px; font-size: 32px; text-align: center">Seguimos sin saberlo</span>Parar y ayudar a revisar el registro</div>
   </div>
-  <h1 data-s="4" style="font-size: 100px; margin-top: 30px">Qué pasó <span class="muted">·</span> <span class="shine">Qué se permite después</span></h1>
+  <h1 data-s="4" style="font-size: 96px; margin-top: 30px">Qué pasó <span class="muted">·</span> <span class="lime">Qué se permite después</span></h1>
   <div class="note" data-s="5">El modelo usa esa información. El harness controla las operaciones.</div>
 </section>
 
 <section class="slide" data-id="20-referencias" data-ch="Qué te llevas para tu agente">
-  <div class="eyebrow" data-s="1" data-a="fade">En la descripción</div>
-  <div class="card" data-s="1" data-a="deal" style="--d: .2s"><div class="k">Artículo completo · contrato, proveedores y pruebas</div><div class="t" style="font-family: var(--mono); font-size: 44px">maximofn.com/gymnasia-agent-tool-errors</div></div>
+  <h2 data-s="1" data-a="fade">En la descripción</h2>
+  <div class="card" data-s="1" data-a="deal" style="--d: .2s"><div class="k">Artículo completo, con el contrato, los proveedores y las pruebas</div><div class="t" style="font-family: var(--mono); font-size: 44px">maximofn.com/gymnasia-agent-tool-errors</div></div>
   <div class="card" data-s="1" data-a="deal" style="--d: .4s"><div class="k">Índice de la serie</div><div class="t" style="font-family: var(--mono); font-size: 44px">maximofn.com/gymnasia-agent#serie</div></div>
 </section>
-<div id="grain"></div>
 </div>
 
 <script>
@@ -657,6 +642,7 @@
     if (e.key === "f" || e.key === "F") document.documentElement.requestFullscreen?.();
   });
   addEventListener("click", () => go(f + 1));
+  let idle; addEventListener("mousemove", () => { document.body.classList.remove("idle"); clearTimeout(idle); idle = setTimeout(() => document.body.classList.add("idle"), 1500); });
   addEventListener("hashchange", () => { const n = +location.hash.slice(1) || 0; if (n !== f) go(n); });
   addEventListener("resize", () => show(...frames[f]));
   if (!isStatic) show(...frames[f]);
