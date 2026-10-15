@@ -22,7 +22,7 @@ contrato de errores de las tools de Coach). El guión está en
 
   El fotograma actual queda en la URL (`slides.html#12`): recargar no te devuelve
   al principio y puedes saltar a cualquier paso. Con movimiento reducido activado
-  en el sistema, todo aparece sin animación.
+  en el sistema, los elementos solo aparecen con un fundido, sin desplazamientos.
 
   La firma visual es el tique: cada llamada a una tool es un recibo de papel que se
   imprime, viaja por el diagrama y recibe un sello («Sin confirmar», «Rechazada»,

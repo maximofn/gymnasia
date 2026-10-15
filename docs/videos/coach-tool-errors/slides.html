@@ -8,7 +8,6 @@
 <style>
   /* Paleta de Gymnasia (charla-agente): lima para lo que funciona, ámbar para lo incierto, rojo para el fallo.
      La firma visual es el tique: cada llamada a una tool es un recibo de papel que se imprime, viaja y se sella. */
-  @property --glow { syntax: "<color>"; inherits: true; initial-value: rgba(203, 255, 26, 0.10); }
   :root {
     --cam-w: 560px; --cam-h: 340px;
     --bg: #07090D; --surface: #11151C; --surface2: #181D26; --border: #252B35; --text: #F4F7FB; --muted: #A6AFBC; --dim: #5B6472;
@@ -16,18 +15,22 @@
     --ink-red: #D2343A; --ink-amber: #C97700; --ink-green: #3F7F00;
     --font: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --mono: ui-monospace, "SF Mono", Menlo, monospace;
-    --ease: cubic-bezier(.16, 1, .3, 1);
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
     color-scheme: dark;
   }
   html, body { margin: 0; height: 100%; background: #000; color: var(--text); font-family: var(--font); -webkit-font-smoothing: antialiased; overflow: hidden; }
   body.transparent, body.transparent #stage { background: transparent; }
 
   /* Escenario 1920×1080 escalado a la ventana; el fondo cambia de tono con el ánimo de la escena. */
-  #stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 50% 50%; background: var(--bg); transition: --glow 1.2s; }
-  #stage.mood-amber { --glow: rgba(255, 176, 32, 0.12); } #stage.mood-red { --glow: rgba(255, 90, 95, 0.12); }
+  #stage { position: absolute; left: 50%; top: 50%; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 50% 50%; background: var(--bg); }
+  .glow { position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 1.2s ease;
+    background: radial-gradient(900px 600px at 78% 8%, var(--c), transparent 70%), radial-gradient(700px 500px at 8% 100%, var(--c), transparent 70%); }
+  #glow-lime { --c: rgba(203, 255, 26, 0.10); } #glow-amber { --c: rgba(255, 176, 32, 0.12); } #glow-red { --c: rgba(255, 90, 95, 0.12); }
+  #stage:not(.mood-amber):not(.mood-red) #glow-lime, #stage.mood-amber #glow-amber, #stage.mood-red #glow-red { opacity: 1; }
   #bg { position: absolute; inset: -60px; pointer-events: none;
-    background: radial-gradient(900px 600px at 78% 8%, var(--glow), transparent 70%), radial-gradient(700px 500px at 8% 100%, var(--glow), transparent 70%),
-      radial-gradient(circle, rgba(255, 255, 255, 0.07) 1.2px, transparent 1.6px) 0 0 / 40px 40px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 1.2px, transparent 1.6px) 0 0 / 40px 40px;
     animation: drift 40s linear infinite; }
   #grain { position: absolute; inset: 0; pointer-events: none; opacity: .07; mix-blend-mode: overlay; z-index: 9;
     background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E"); }
@@ -45,34 +48,35 @@
 
   .slide { position: absolute; inset: 0; box-sizing: border-box; padding: 110px 120px 80px; display: flex; flex-direction: column; justify-content: center; gap: 40px; }
   .slide[hidden] { display: none; }
-  .slide.leaving { animation: leave .45s var(--ease) both; pointer-events: none; }
-  @keyframes leave { to { opacity: 0; transform: scale(.97); filter: blur(10px); } }
+  .slide.leaving { animation: leave .24s var(--ease-out) both; pointer-events: none; }
+  .slide.late [data-s].in { animation-delay: calc(var(--d, 0s) + .22s); }
+  @keyframes leave { to { opacity: 0; transform: scale(.98); filter: blur(4px); } }
   .slide > h1, .slide > h2, .slide > .eyebrow, .slide > .note { align-self: flex-start; }
   .abs { position: relative; } .abs > * { position: absolute !important; }
 
   /* Revelado por pasos: data-s="k" aparece en el paso k; data-a elige la animación; --d la retrasa. */
   [data-s]:not(.in) { opacity: 0; }
-  [data-s].in { animation: rise .9s var(--ease) var(--d, 0s) both; }
-  [data-s].in[data-a="pop"] { animation-name: pop; animation-duration: .7s; }
-  [data-s].in[data-a="stamp"] { animation: stamp .55s cubic-bezier(.3, 1.5, .5, 1) var(--d, 0s) both; }
-  [data-s].in[data-a="print"] { animation: print 1.4s cubic-bezier(.5, 0, .2, 1) var(--d, 0s) both; }
-  [data-s].in[data-a="deal"] { animation: deal .9s var(--ease) var(--d, 0s) both; }
-  [data-s].in[data-a="glitch"] { animation: rise .5s var(--ease) var(--d, 0s) both, glitch .7s steps(1) calc(var(--d, 0s) + .35s) both; }
+  [data-s].in { animation: rise .7s var(--ease-out) var(--d, 0s) both; }
+  [data-s].in[data-a="pop"] { animation-name: pop; animation-duration: .5s; }
+  [data-s].in[data-a="stamp"] { animation: stamp .5s var(--ease-out) var(--d, 0s) both; }
+  [data-s].in[data-a="print"] { animation: print 1.2s var(--ease-drawer) var(--d, 0s) both; }
+  [data-s].in[data-a="deal"] { animation: deal .9s var(--ease-out) var(--d, 0s) both; }
+  [data-s].in[data-a="glitch"] { animation: rise .5s var(--ease-out) var(--d, 0s) both, glitch .7s steps(1) calc(var(--d, 0s) + .35s) both; }
   [data-s].in[data-a="fade"] { animation-name: fade; }
-  [data-s].in[data-a="wipe"] { animation: wipe 1s var(--ease) var(--d, 0s) both; }
-  [data-s].in[data-a="drop"] { animation: drop .6s cubic-bezier(.5, 1.6, .5, 1) var(--d, 0s) both; }
+  [data-s].in[data-a="wipe"] { animation: wipe 1s var(--ease-out) var(--d, 0s) both; }
+  [data-s].in[data-a="drop"] { animation: drop .5s var(--ease-out) var(--d, 0s) both; }
   path[data-s] { stroke-dasharray: 1; }
-  path[data-s].in { animation: draw .9s var(--ease) var(--d, 0s) both; }
-  .pkt[data-s].in { animation: travel 1.1s cubic-bezier(.6, 0, .25, 1) var(--d, 0s) both; }
-  @keyframes rise { from { opacity: 0; transform: translateY(46px); filter: blur(14px); } to { opacity: 1; transform: none; filter: none; } }
+  path[data-s].in { animation: draw .8s var(--ease-in-out) var(--d, 0s) both; }
+  .pkt[data-s].in { animation: travel 1s var(--ease-in-out) var(--d, 0s) both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(28px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes pop { 0% { opacity: 0; transform: scale(.5); } 60% { opacity: 1; transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
-  @keyframes stamp { 0% { opacity: 0; transform: rotate(var(--r, -11deg)) scale(2.8); } 60% { opacity: 1; transform: rotate(var(--r, -11deg)) scale(.93); } 100% { opacity: 1; transform: rotate(var(--r, -11deg)) scale(1); } }
+  @keyframes pop { 0% { opacity: 0; transform: scale(.92); } 60% { opacity: 1; transform: scale(1.02); } 100% { opacity: 1; transform: scale(1); } }
+  @keyframes stamp { 0% { opacity: 0; transform: rotate(var(--r, -11deg)) scale(1.9); } 55% { opacity: 1; transform: rotate(var(--r, -11deg)) scale(.97); } 100% { opacity: 1; transform: rotate(var(--r, -11deg)) scale(1); } }
   /* El papel sale de la ranura: lo que queda por encima de ella está recortado. */
   @keyframes print { from { clip-path: inset(100% -60px -60px -60px); transform: translateY(-100%); } to { clip-path: inset(0 -60px -60px -60px); transform: none; } }
-  @keyframes deal { from { opacity: 0; transform: translate(-260px, 220px) rotate(-16deg) scale(.8); } to { opacity: 1; transform: none; } }
+  @keyframes deal { from { opacity: 0; transform: translate(-140px, 120px) rotate(-8deg) scale(.94); } to { opacity: 1; transform: none; } }
   @keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-  @keyframes drop { from { opacity: 0; transform: translateY(-160px) scaleY(.4); } to { opacity: 1; transform: none; } }
+  @keyframes drop { from { opacity: 0; transform: translateY(-120px); } to { opacity: 1; transform: none; } }
   @keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
   @keyframes travel { 0% { offset-distance: 0%; opacity: 0; } 10% { opacity: 1; } 88% { opacity: 1; offset-distance: 100%; } 100% { opacity: 0; offset-distance: 100%; } }
   @keyframes glitch { 0% { transform: translate(-6px, 0); clip-path: inset(10% 0 55% 0); text-shadow: 4px 0 var(--red), -4px 0 #31E1FF; }
@@ -82,11 +86,11 @@
   @keyframes ring { 0% { box-shadow: 0 0 0 0 rgba(203, 255, 26, .7); } 100% { box-shadow: 0 0 0 26px rgba(203, 255, 26, 0); } }
   @keyframes caret { 50% { opacity: 0; } }
   @keyframes shimmer { to { background-position: -200% 0; } }
-  @keyframes scan { 0% { top: 0; } 50% { top: calc(100% - 4px); } 100% { top: 0; } }
+  @keyframes scan { 0%, 100% { transform: translateY(-100%); } 50% { transform: none; } }
   @keyframes grow { from { transform: scaleX(.5); } to { transform: scaleX(1); } }
   @keyframes suck { to { transform: translate(var(--dx), var(--dy)) scale(.15); opacity: 0; filter: blur(8px); } }
   @keyframes blink { 50% { opacity: .35; } }
-  @keyframes spark { to { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; } }
+  @keyframes spark { 0% { transform: none; opacity: 1; } 65% { opacity: 1; } 100% { transform: translate(var(--x), var(--y)) scale(.4); opacity: 0; } }
 
   /* Tipografía */
   h1 { margin: 0; font-size: 76px; font-weight: 700; letter-spacing: -0.04em; line-height: 1.02; text-wrap: balance; }
@@ -96,7 +100,7 @@
   .muted { color: var(--muted); } .lime { color: var(--lime); } .red { color: var(--red); } .amber-t { color: var(--amber); }
   code { font-family: var(--mono); color: var(--lime); font-size: .9em; }
   .row { display: flex; gap: 32px; align-items: stretch; } .col { display: flex; flex-direction: column; gap: 24px; } .grow { flex: 1; }
-  .caret::after { content: ""; display: inline-block; width: .5ch; height: 1em; background: currentColor; margin-left: 3px; vertical-align: -0.12em; animation: caret 1s steps(1) infinite; }
+  .typing::after { content: ""; display: inline-block; width: .5ch; height: 1em; background: currentColor; margin-left: 3px; vertical-align: -0.12em; animation: caret 1s steps(1) infinite; }
 
   /* Chat */
   .who { font-family: var(--mono); font-size: 19px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
@@ -119,7 +123,7 @@
   .note { font-size: 30px; color: var(--muted); border-left: 4px solid var(--lime); padding: 6px 0 6px 24px; line-height: 1.35; }
   .note.amber { border-color: var(--amber); } .note.red { border-color: var(--red); }
   .strike { position: relative; display: inline-block; }
-  .in .strike::after { content: ""; position: absolute; left: -6px; right: -6px; top: 52%; height: 5px; background: var(--red); border-radius: 3px; animation: wipe .5s var(--ease) calc(var(--d, 0s) + .7s) both; }
+  .in .strike::after { content: ""; position: absolute; left: -6px; right: -6px; top: 52%; height: 5px; background: var(--red); border-radius: 3px; animation: wipe .5s var(--ease-out) calc(var(--d, 0s) + .7s) both; }
 
   /* El tique */
   .tk { position: relative; width: 520px; filter: drop-shadow(0 30px 50px rgba(0, 0, 0, .6)); }
@@ -130,7 +134,7 @@
   .tk .rule { border-top: 2px dashed #B8BEB0; margin: 16px 0; }
   .tk .r { display: flex; justify-content: space-between; } .tk .r span { color: #5D6470; }
   .tk .prog { height: 10px; border-radius: 5px; background: #D5D9CE; overflow: hidden; margin-top: 18px; }
-  .tk .prog i { display: block; height: 100%; width: 72%; background: var(--ink); border-radius: 5px; transform-origin: left; animation: saving 2.2s var(--ease) 2.6s both; }
+  .tk .prog i { display: block; height: 100%; width: 72%; background: var(--ink); border-radius: 5px; transform-origin: left; animation: saving 2.2s var(--ease-out) 2.6s both; }
   .tk.stalled .prog i { background: var(--ink-amber); animation: blink .8s steps(1) infinite; }
   @keyframes saving { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .tk .status { margin-top: 10px; font-size: 20px; letter-spacing: .1em; text-transform: uppercase; color: #5D6470; }
@@ -140,7 +144,7 @@
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.4 1.7'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E"); }
   .stamp.red { color: var(--ink-red); } .stamp.green { color: var(--ink-green); }
   .stamp.dark { mix-blend-mode: normal; color: var(--red); background: rgba(7, 9, 13, .7); }
-  .tk:has(.stamp.in) .paper { animation: thunk .5s ease-out .4s both; }
+  .tk:has(.stamp.in) .paper { animation: thunk .5s var(--ease-out) .4s both; }
 
   /* Diagramas */
   svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
@@ -166,36 +170,43 @@
   .json.focus .ln { opacity: .25; } .json.focus .ln.on { opacity: 1; background: rgba(63, 127, 0, .14); box-shadow: inset 5px 0 0 var(--ink-green); }
   .json .key { color: #2E6A00; } .json .str { color: #8A4B00; } .json .lit { color: #0050B3; }
   .ann { font-size: 34px; font-weight: 600; display: flex; align-items: center; gap: 18px; white-space: nowrap; }
-  .ann::before { content: ""; width: 70px; height: 3px; background: var(--lime); animation: wipe .5s var(--ease) var(--d, 0s) both; }
+  .ann::before { content: ""; width: 70px; height: 3px; background: var(--lime); animation: wipe .5s var(--ease-out) var(--d, 0s) both; }
 
   /* Registro del día: barras relativas, sin valores nutricionales inventados */
   .ledger .bars { display: grid; grid-template-columns: 170px 1fr; gap: 12px 18px; align-items: center; font-size: 22px; color: var(--muted); margin-top: 18px; }
   .ledger .track { height: 16px; border-radius: 8px; background: rgba(255, 255, 255, .06); }
   .ledger .track i { display: block; height: 100%; border-radius: 8px; background: var(--muted); transform: scaleX(.5); transform-origin: left; }
-  .ledger.dup.in .track i { background: var(--red); animation: grow 1.1s var(--ease) 1.4s both; }
+  .ledger.dup.in .track i { background: var(--red); animation: grow 1.1s var(--ease-out) 1.4s both; }
   .x2 { position: absolute; right: -26px; top: -30px; background: var(--red); color: #fff; font-weight: 700; font-size: 44px; padding: 6px 22px; border-radius: 18px; box-shadow: 0 0 50px rgba(255, 90, 95, .6); }
   .scanbox { position: relative; overflow: hidden; }
-  .in .scanbox::after { content: ""; position: absolute; left: 0; right: 0; height: 4px; background: var(--lime); box-shadow: 0 0 24px 6px rgba(203, 255, 26, .5); animation: scan 2.4s ease-in-out 1s 2 both; }
+  /* Haz de lectura: un pseudo de toda la altura con la línea en su borde inferior, movido con transform. */
+  .in .scanbox::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent calc(100% - 40px), rgba(203, 255, 26, .22) calc(100% - 4px), var(--lime) 0); animation: scan 2.4s var(--ease-in-out) 1s 2 both; }
   .console { font-family: var(--mono); font-size: 28px; line-height: 1.6; background: #05070A; border: 1.5px solid var(--border); border-radius: 22px; padding: 28px 32px; }
   .console .c { color: var(--dim); margin-bottom: 18px; }
   .console .v { float: right; color: var(--lime); font-size: 44px; font-weight: 700; line-height: 1.1; }
-  .spark { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; border-radius: 50%; background: var(--lime); pointer-events: none; box-shadow: 0 0 12px var(--lime); }
+  .spark { position: absolute; z-index: -1; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--lime); pointer-events: none; box-shadow: 0 0 12px var(--lime); }
 
   .shine { background: linear-gradient(100deg, var(--lime) 30%, #F4FFD0 45%, var(--lime) 60%) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 3.5s linear 1.2s infinite; }
   .word { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: .1em; margin-bottom: -.1em; }
   .word > span { display: inline-block; }
-  .in .word > span { animation: wordup 1s var(--ease) both; }
+  .in .word > span { animation: wordup 1s var(--ease-out) both; }
   @keyframes wordup { from { transform: translateY(110%); } to { transform: none; } }
-  .in .underline { position: relative; } .in .underline::after { content: ""; position: absolute; left: 0; right: 0; bottom: .06em; height: .09em; background: var(--lime); border-radius: 4px; animation: wipe .8s var(--ease) 1.4s both; box-shadow: 0 0 30px rgba(203, 255, 26, .6); }
-  .in .flicker { animation: wordup 1s var(--ease) .58s both, glitch .6s steps(1) 1.5s both; }
+  .in .underline { position: relative; } .in .underline::after { content: ""; position: absolute; left: 0; right: 0; bottom: .06em; height: .09em; background: var(--lime); border-radius: 4px; animation: wipe .8s var(--ease-out) 1.4s both; box-shadow: 0 0 30px rgba(203, 255, 26, .6); }
+  .in .flicker { animation: wordup 1s var(--ease-out) .58s both, glitch .6s steps(1) 1.5s both; }
 
   /* Exportación a PNG y movimiento reducido: todo en su estado final. */
   body.static *, body.static *::before, body.static *::after { animation-duration: 1ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; }
-  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; } }
+  @media (prefers-reduced-motion: reduce) {
+    #bg, .badge.on, .shine, .in .scanbox::after, .tk:has(.stamp.in) .paper { animation: none !important; }
+    [data-s].in, [data-s].in[data-a], .in .word > span, .in .flicker { animation: fade .3s ease both !important; }
+    .pkt[data-s].in { animation: none !important; opacity: 0; }
+    .slide.leaving { animation: fade .2s ease reverse both !important; }
+  }
 </style>
 </head>
 <body>
 <div id="stage">
+<div class="glow" id="glow-lime"></div><div class="glow" id="glow-amber"></div><div class="glow" id="glow-red"></div>
 <div id="bg"></div>
 <div id="hud"><span id="chapter"></span><span class="bar" id="bar"></span></div>
 <div id="cam">Cámara</div>
@@ -223,7 +234,7 @@
 <!-- 1. Una comida que podría aparecer dos veces -->
 <section class="slide" data-id="01-peticion" data-steps="3" data-ch="Una comida que podría aparecer dos veces" style="gap: 34px">
   <div class="row" style="align-items: flex-start; gap: 60px">
-    <div data-s="1" data-a="fade" style="width: 640px"><div class="who">Usuario</div><div class="bubble caret" data-fx="type">Apunta mi comida: doscientos gramos de arroz cocido y ciento cincuenta de pollo.</div></div>
+    <div data-s="1" data-a="fade" style="width: 640px"><div class="who">Usuario</div><div class="bubble" data-fx="type">Apunta mi comida: doscientos gramos de arroz cocido y ciento cincuenta de pollo.</div></div>
     <div style="width: 520px">
       <div class="slot" data-s="1" data-a="fade" style="--d: 1.4s"></div>
       <div class="tk" id="tk1" data-s="1" data-a="print" style="--d: 1.8s">
@@ -318,7 +329,7 @@
 <!-- 3. El mismo mensaje de error puede necesitar decisiones distintas -->
 <section class="slide" data-id="06-peso" data-steps="5" data-ch="El mismo error, decisiones distintas">
   <div class="row" style="align-items: flex-end; gap: 28px">
-    <div data-s="1" data-a="fade"><div class="who">Usuario</div><div class="bubble caret" data-fx="type">¿Cuánto pesaba hace un mes?</div></div>
+    <div data-s="1" data-a="fade"><div class="who">Usuario</div><div class="bubble" data-fx="type">¿Cuánto pesaba hace un mes?</div></div>
     <span class="tag" data-s="1" style="--d: 1.2s">Supuesto: la fecha ya está calculada</span>
   </div>
   <div class="row" style="align-items: flex-start; gap: 40px">
@@ -340,10 +351,10 @@
 
 <section class="slide" data-id="07-error-generico" data-steps="2" data-ch="El mismo error, decisiones distintas" data-mood="red">
   <div class="abs" style="height: 800px">
-    <span class="tag amber" data-s="1" style="left: 120px; top: 170px; font-size: 32px; --dx: 560px; --dy: 300px; animation: pop .6s var(--ease) both, suck .8s cubic-bezier(.6,0,.8,.4) 1.4s both">Sin registro ese día</span>
-    <span class="tag bad" data-s="1" style="left: 560px; top: 130px; font-size: 32px; --dx: 0px; --dy: 340px; animation: pop .6s var(--ease) .15s both, suck .8s cubic-bezier(.6,0,.8,.4) 1.55s both">No se pudo leer el almacenamiento</span>
-    <span class="tag bad" data-s="1" style="left: 1240px; top: 170px; font-size: 32px; --dx: -480px; --dy: 300px; animation: pop .6s var(--ease) .3s both, suck .8s cubic-bezier(.6,0,.8,.4) 1.7s both">Formato no aceptado</span>
-    <div class="card" data-s="1" style="left: 380px; width: 920px; top: 400px; box-sizing: border-box; text-align: center; font-size: 96px; font-weight: 700; letter-spacing: -0.03em; padding: 50px 0; animation: fade .6s both, thunk .5s ease-out 2.3s both">«Error al consultar»</div>
+    <span class="tag amber" data-s="1" style="left: 120px; top: 170px; font-size: 32px; --dx: 560px; --dy: 300px; animation: pop .6s var(--ease-out) both, suck .8s var(--ease-in-out) 1.4s both">Sin registro ese día</span>
+    <span class="tag bad" data-s="1" style="left: 560px; top: 130px; font-size: 32px; --dx: 0px; --dy: 340px; animation: pop .6s var(--ease-out) .15s both, suck .8s var(--ease-in-out) 1.55s both">No se pudo leer el almacenamiento</span>
+    <span class="tag bad" data-s="1" style="left: 1240px; top: 170px; font-size: 32px; --dx: -480px; --dy: 300px; animation: pop .6s var(--ease-out) .3s both, suck .8s var(--ease-in-out) 1.7s both">Formato no aceptado</span>
+    <div class="card" data-s="1" style="left: 380px; width: 920px; top: 400px; box-sizing: border-box; text-align: center; font-size: 96px; font-weight: 700; letter-spacing: -0.03em; padding: 50px 0; animation: fade .6s both, thunk .5s var(--ease-out) 2.3s both">«Error al consultar»</div>
     <div class="note red" data-s="2" style="left: 380px; top: 690px; font-size: 40px">Mezcla situaciones que piden decisiones distintas</div>
   </div>
 </section>
@@ -365,15 +376,15 @@
     <div class="card grow" data-s="1" data-a="deal" style="color: var(--lime)">
       <svg class="icon" viewBox="0 0 84 84"><path data-s="1" pathLength="1" style="--d: .5s" d="M14 70 L34 66 L70 30 L54 14 L18 50 Z M48 20 L64 36"/></svg>
       <div class="t" style="color: var(--text); margin-top: 18px">Corregir los argumentos antes de ejecutar</div><div class="muted">La operación aún no se ha hecho: se arregla la petición.</div>
-      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code class="caret" data-s="4" data-a="fade" data-fx="type">correct_arguments</code></div></div>
+      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code data-s="4" data-a="fade" data-fx="type">correct_arguments</code></div></div>
     <div class="card grow" data-s="2" data-a="deal" style="color: var(--amber)">
       <svg class="icon" viewBox="0 0 84 84"><path data-s="2" pathLength="1" style="--d: .5s" d="M12 42 H38 C50 42 50 18 66 18 M38 42 C50 42 50 66 66 66 M58 10 L68 18 L58 26 M58 58 L68 66 L58 74"/></svg>
       <div class="t" style="color: var(--text); margin-top: 18px">Elegir otra consulta útil dentro de la petición</div><div class="muted">Sin inventar el dato: si la medida es de otro día, se dice de qué día.</div>
-      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code class="caret" data-s="4" data-a="fade" data-fx="type" data-delay="900">choose_alternative</code></div></div>
+      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code data-s="4" data-a="fade" data-fx="type" data-delay="900">choose_alternative</code></div></div>
     <div class="card grow" data-s="3" data-a="deal" style="color: var(--red)">
       <svg class="icon" viewBox="0 0 84 84"><path data-s="3" pathLength="1" style="--d: .5s" d="M28 8 H56 L76 28 V56 L56 76 H28 L8 56 V28 Z M28 42 H56"/></svg>
       <div class="t" style="color: var(--text); margin-top: 18px">Detener el turno</div><div class="muted">No se permiten más operaciones y se avisa al usuario.</div>
-      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code class="caret" data-s="4" data-a="fade" data-fx="type" data-delay="1600">stop_turn</code></div></div>
+      <div style="margin-top: 26px; font-size: 34px; min-height: 1.4em"><code data-s="4" data-a="fade" data-fx="type" data-delay="1600">stop_turn</code></div></div>
   </div>
   <div class="eyebrow" data-s="4" style="--d: 2s">Identificadores tal como aparecen en el contrato</div>
 </section>
@@ -460,7 +471,7 @@
     <div class="card ok" data-s="4" data-a="pop" style="left: 1170px; top: 225px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Esa comida está guardada</div>Confirmar: «He apuntado tu comida».</div>
     <div class="card" data-s="5" data-a="pop" style="left: 1170px; top: 395px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Confirmado que no se guardó</div>El harness puede permitir completarla.</div>
     <div class="card bad" data-s="6" data-a="pop" style="left: 1170px; top: 565px; width: 510px; box-sizing: border-box; padding: 20px 26px; font-size: 26px; --d: .6s"><div class="t" style="font-size: 30px">Ambiguo o la comprobación falla</div>Detenerse sin repetir la escritura.</div>
-    <div class="bubble warn caret" data-s="6" data-fx="type" data-delay="1200" style="left: 480px; right: 0; top: 735px; font-size: 34px">No puedo confirmar si se guardó la comida. Comprueba tu registro antes de volver a añadirla.</div>
+    <div class="bubble warn" data-s="6" data-fx="type" data-delay="1200" style="left: 480px; right: 0; top: 735px; font-size: 34px">No puedo confirmar si se guardó la comida. Comprueba tu registro antes de volver a añadirla.</div>
   </div>
 </section>
 
@@ -534,7 +545,7 @@
       <div class="stamp green" data-s="1" data-a="stamp" style="right: 40px; bottom: 50px; --r: -7deg; --d: 1s">Guardado ×1</div>
     </div>
     <div class="grow"></div>
-    <div class="bubble bot caret" data-s="2" data-fx="type burst" style="font-size: 46px">He apuntado tu comida.</div>
+    <div class="bubble bot" data-s="2" data-fx="type burst" style="font-size: 46px">He apuntado tu comida.</div>
   </div>
 </section>
 
@@ -578,7 +589,7 @@
       clearInterval(el._t); clearTimeout(el._w); const text = el.dataset.text;
       if (!moving) { el.textContent = text; return; }
       el.textContent = ""; let n = 0;
-      el._w = setTimeout(() => { el._t = setInterval(() => { el.textContent = text.slice(0, ++n); if (n >= text.length) clearInterval(el._t); }, 34); }, +(el.dataset.delay || 250));
+      el._w = setTimeout(() => { el.classList.add("typing"); el._t = setInterval(() => { el.textContent = text.slice(0, ++n); if (n >= text.length) { clearInterval(el._t); setTimeout(() => el.classList.remove("typing"), 900); } }, 34); }, +(el.dataset.delay || 250));
     },
     count(el) {
       const to = +el.dataset.to; if (!moving || !to) { el.textContent = to; return; }
@@ -592,10 +603,10 @@
         for (let k = 0; k < 46; k++) {
           const s = document.createElement("i"); s.className = "spark"; const a = Math.random() * Math.PI * 2, r = 160 + Math.random() * 320;
           s.style.setProperty("--x", Math.cos(a) * r + "px"); s.style.setProperty("--y", Math.sin(a) * r + "px");
-          s.style.animation = `spark ${0.8 + Math.random() * 0.8}s cubic-bezier(.1,.8,.3,1) both`; if (k % 3 === 0) s.style.background = "#fff";
-          el.appendChild(s); setTimeout(() => s.remove(), 1800);
+          s.style.animation = `spark ${1.1 + Math.random() * 0.7}s var(--ease-out) both`; if (k % 3 === 0) s.style.background = "#fff";
+          el.appendChild(s); setTimeout(() => s.remove(), 1900);
         }
-      }, 1000);
+      }, +(el.dataset.delay || 250) + (el.dataset.text || "").length * 34 + 120); // después del tecleo, que reescribe el texto
     },
   };
 
@@ -607,9 +618,10 @@
     if (i !== current) {
       const old = slides[current];
       slides.forEach((x, j) => { if (j !== i && x !== old) x.hidden = true; });
-      if (old && moving) { old.classList.add("leaving"); setTimeout(() => { if (slides[current] !== old) old.hidden = true; old.classList.remove("leaving"); }, 450); }
+      if (old && moving) { old.classList.add("leaving"); setTimeout(() => { if (slides[current] !== old) old.hidden = true; old.classList.remove("leaving"); }, 240); }
       else if (old) old.hidden = true;
       s.querySelectorAll(".in").forEach((e) => e.classList.remove("in"));
+      s.classList.toggle("late", !!(old && moving));
       s.hidden = false; current = i;
     }
     for (const e of s.querySelectorAll("[data-s]")) {
