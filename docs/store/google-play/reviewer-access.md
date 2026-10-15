@@ -1,13 +1,14 @@
 # Acceso del revisor de Google Play
 
-Preparado el 15 de octubre de 2026 para GYM-199 (ticket para publicar y validar
+Preparado y comprobado el 15 de octubre de 2026 para GYM-199 (ticket para publicar y validar
 el AAB en pruebas de Google Play). Reutiliza la credencial y la custodia de
 GYM-196 (ticket para preparar una credencial BYOK temporal de revisión).
 
 ## Configuración privada de Play Console
 
 En **Monitorizar y mejorar → Política y programas → Contenido de la aplicación
-→ Acceso a la aplicación**, declarar que una parte requiere acceso especial.
+→ Datos de inicio de sesión** (antes **Acceso a la aplicación**), declarar que
+una parte requiere acceso especial.
 Las rutinas, la dieta y las medidas no requieren una cuenta de Gymnasia; la IA
 necesita una clave del proveedor.
 
@@ -15,22 +16,23 @@ Conservar la credencial del proyecto dedicado `gymnasia-play-review` en el
 campo privado existente. Su fuente de recuperación es Bitwarden. Este documento
 contiene únicamente instrucciones, nunca el valor de la clave.
 
-Nombre propuesto de la instrucción: **Google Gemini reviewer access**.
+Nombre de la instrucción existente: **Google Gemini API key for review**.
 
 Texto en inglés para el campo de instrucciones:
 
-> No account needed. Open Settings (gear) > Proveedor IA > Google. Paste the
-> private review API key, keep the default Gemini model shown by the app and tap
-> Guardar. Select Google for Gymnasia Coach and Food Estimator. Open Coach and
-> ask "What is 3 + 4?" (expect 7). Test the estimator with a sample food photo.
-> If it fails, remove spaces from the key and check the selected model; for HTTP
-> 429, retry after 60s. Persistent error: maximofn@maximofn.com.
+> No account needed. Open Settings (gear) > Proveedor IA > Google. Paste the API
+> key from the Password field above, keep the default Gemini model and tap
+> Guardar. Select Google for Gymnasia Coach and Food Estimator. Ask Coach
+> 'What is 3 + 4?' (expect 7); test the estimator with a sample food photo. On
+> errors, remove spaces from the key and check the model. For HTTP 429, retry
+> after 60s. No 2FA, subscription, payment or location restriction.
 
 El modelo predeterminado del código revisado el 15 de octubre es
 `gemini-3.8-flash` (`apps/mobile/agent/providerTransport.ts`). La app migra el
 antiguo default `gemini-3.6-flash`; no copiar su identificador histórico como
-instrucción para una versión nueva. La disponibilidad del modelo para la clave
-de revisión debe comprobarse con la entrega instalada desde Play.
+instrucción para una versión nueva. La clave de revisión ha respondido
+correctamente con el modelo actual mediante la API Interactions, sin almacenar
+la conversación en el proveedor (`store: false`).
 
 ## Comprobación del acceso
 
@@ -52,7 +54,7 @@ La credencial sigue disponible para revisiones posteriores. Su rotación y la
 actualización de Bitwarden conservan el procedimiento con solape de GYM-196
 (ticket para preparar una credencial BYOK temporal de revisión).
 
-## Evidencias y pendiente actual
+## Evidencias y estado actual
 
 - **28 de agosto de 2026:** GYM-196 (ticket para preparar una credencial BYOK
   temporal de revisión) documenta instrucciones privadas en inglés, clave
@@ -63,12 +65,21 @@ actualización de Bitwarden conservan el procedimiento con solape de GYM-196
   del snapshot y denuncia de respuestas en un móvil actualizado desde Play.
   Esta confirmación no identifica una nueva compilación ni acredita por sí sola
   el uso de la credencial exclusiva de revisión.
-- **Pendiente:** guardar o confirmar estas instrucciones y repetir la prueba
-  con la credencial de revisión y el modelo actual. La sesión de Play Console
-  permitió comprobar el informe previo al lanzamiento, aún ausente, pero las
-  operaciones posteriores para abrir Acceso a la aplicación agotaron el tiempo
-  de espera y la conexión con la pestaña dejó de estar disponible. No se ha
-  cambiado la clave ni se afirma una validación nueva.
+- **15 de octubre de 2026, acceso del revisor:** instrucciones guardadas y
+  reabiertas para comprobar que coinciden con el texto anterior. La huella
+  SHA-256 de la clave de Play coincide con la de la única clave del proyecto
+  dedicado, restringida a Generative Language API. La comprobación privada no
+  imprime ni guarda la clave en archivos.
+- **Prueba real del servicio:** HTTP 200 con `gemini-3.8-flash`; respuesta `7`
+  a la pregunta anterior y evento terminal `interaction.completed`. Se usa el
+  contrato de Interactions de la app, streaming y `store: false`, mediante
+  Python estándar. Esta comprobación valida la credencial y el servicio; la QA
+  nativa sigue siendo la confirmación del mantenedor descrita arriba.
+- **Envío del 15 de octubre de 2026:** tras la autorización explícita del
+  mantenedor, se envía únicamente la actualización de estas instrucciones.
+  El Resumen de publicación confirma **Cambios en revisión** y enumera solo
+  las instrucciones de los datos de inicio de sesión. La revisión de Google
+  sigue pendiente; la clave existente se conserva sin modificaciones.
 
 ## Referencias
 
