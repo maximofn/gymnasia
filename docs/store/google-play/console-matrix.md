@@ -44,18 +44,18 @@ resultado que produzcan las respuestas reales; no se manipulará para obtener un
 
 ## App access
 
-Seleccionar que parte de la funcionalidad requiere acceso especial. Texto para
-el revisor:
-
-> Gymnasia no requiere cuenta. Las rutinas, la dieta y las medidas funcionan al
-> abrir la aplicación. Para probar las funciones de IA, abre Configuración →
-> Proveedor IA → Google, pega la clave temporal proporcionada en el campo
-> privado de acceso, pulsa Guardar y vuelve a Chat. La clave es exclusiva de la
-> revisión, está limitada y se revocará cuando termine.
+Seleccionar que parte de la funcionalidad requiere acceso especial. Las
+[instrucciones en inglés y el procedimiento de comprobación](reviewer-access.md)
+describen el acceso a Coach y al estimador, la selección del modelo vigente y
+la recuperación de errores. Ese documento distingue la preparación de las
+instrucciones de su guardado y validación efectivos en Play Console.
 
 La clave de GYM-196 (ticket para preparar una credencial BYOK temporal para la
 revisión de Google Play) se pega únicamente en el campo privado de Play Console.
 Nunca se copia al repositorio, a una captura ni a un comentario.
+La credencial se mantiene válida para revisiones posteriores. Su rotación se
+hace con solape y comprobación de la sustituta antes de revocar la anterior,
+siguiendo el procedimiento privado de ese ticket.
 
 ## Data safety
 

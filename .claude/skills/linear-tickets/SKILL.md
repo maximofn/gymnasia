@@ -235,7 +235,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Dieciocho cosas que cuestan tiempo si no se saben:
+Diecinueve cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -400,6 +400,15 @@ Dieciocho cosas que cuestan tiempo si no se saben:
     `fetch_board_nodes` sigue ahora `pageInfo.hasNextPage/endCursor` y pasa
     `after`; rechaza cursores que no avanzan e identifiers repetidos. No eliminar
     tarjetas por un supuesto borrado sin verificar antes el ticket real.
+
+19. **Linear convierte algunos fragmentos de comandos en emojis si no son código.**
+    El síntoma al guardar `test:train:e2e` como texto normal es que la descripción
+    releída contiene `test🚋e2e`: el editor interpreta `:train:` como un shortcode.
+    Rodea los comandos y nombres de scripts con backticks Markdown antes de
+    enviarlos, por ejemplo `` `npm run test:train:e2e` ``, y relee el ticket para
+    comprobar que conserva el comando literal. Pasa ese Markdown desde Python o
+    con comillas simples en shell para evitar la sustitución descrita en la
+    trampa 6.
 
 ## Notas
 

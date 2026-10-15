@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-10-12",
+    "updated": "2026-10-15",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -324,9 +324,9 @@
         },
         {
           "id": "GYM-199",
-          "title": "Publicar el AAB en pruebas internas y después en pruebas cerradas",
+          "title": "Publicar y validar el AAB en pruebas cerradas de Google Play",
           "state": "in_progress",
-          "summary": "Validar primero el AAB en el track interno y promover exactamente el mismo artefacto al track cerrado con testers, feedback e incidencias trazables.",
+          "summary": "Validar la entrega automática del AAB en Alpha, las pruebas de los testers y el acceso del revisor; queda confirmar este último en Play Console.",
           "dependsOn": [
             "GYM-197",
             "GYM-198"
