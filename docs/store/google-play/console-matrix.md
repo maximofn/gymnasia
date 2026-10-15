@@ -153,6 +153,14 @@ Verificación final en Play Console, 29 de agosto de 2026:
 - el resumen de publicación conserva los cambios para el flujo posterior de
   revisión y prueba cerrada, sin activar Producción.
 
+## Prueba cerrada y solicitud de producción
+
+El [expediente de la prueba cerrada](closed-test-production-access.md) recoge
+el cumplimiento reconocido por Play el 15 de octubre de 2026, el feedback,
+las correcciones y las respuestas enviadas para solicitar acceso a producción.
+Play confirma la recepción del formulario a las 13:55 de ese día; la decisión
+de acceso y el lanzamiento público siguen pendientes.
+
 ## Fuentes oficiales verificadas el 29 de agosto de 2026
 
 - [Recursos de vista previa](https://support.google.com/googleplay/android-developer/answer/9866151?hl=es): icono PNG de 512×512, feature graphic de 1024×500 sin alfa, capturas 9:16 de 1080×1920, tagline por debajo del 20 % y alt text de hasta 140 caracteres.

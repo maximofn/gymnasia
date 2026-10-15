@@ -340,7 +340,7 @@
         {
           "id": "GYM-200",
           "title": "Conseguir y coordinar al menos 12 testers durante 14 días",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Reclutar con margen, mantener al menos 12 personas inscritas durante 14 días cuando lo exija la cuenta y convertir su actividad y feedback en evidencia.",
           "dependsOn": [
             "GYM-199"
@@ -352,7 +352,7 @@
         {
           "id": "GYM-201",
           "title": "Publicar en producción en España y ampliar después al resto del mundo",
-          "state": "todo",
+          "state": "in_progress",
           "summary": "Solicitar producción con la evidencia de la prueba cerrada, desplegar por etapas en España y ampliar luego a los demás territorios elegibles tras revisar estabilidad y cumplimiento.",
           "dependsOn": [
             "GYM-200"
