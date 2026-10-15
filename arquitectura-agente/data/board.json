@@ -325,8 +325,8 @@
         {
           "id": "GYM-199",
           "title": "Publicar y validar el AAB en pruebas cerradas de Google Play",
-          "state": "in_progress",
-          "summary": "Validar la entrega automática del AAB en Alpha, las pruebas de los testers y el acceso del revisor; queda confirmar este último en Play Console.",
+          "state": "done",
+          "summary": "AAB y pruebas móviles validados; credencial comprobada e instrucciones del revisor enviadas a Google. Informe previo ausente aceptado como excepción.",
           "dependsOn": [
             "GYM-197",
             "GYM-198"
