@@ -1,5 +1,5 @@
 # Archivos
 
-- [Configuración BYOK de proveedores](provider-configuration.md) - Contratos de configuración, credenciales, verificación, descubrimiento y transporte BYOK para OpenAI, Anthropic, Google y servidores compatibles con OpenAI en la aplicación móvil.
-- [Streaming y continuaciones de proveedores](provider-streaming.md) - Explica cómo el chat móvil procesa SSE de OpenAI, Anthropic y Google, ejecuta herramientas por rondas y reconstruye las continuaciones sin perder los datos de protocolo.
-- [Runtime del agente y herramientas](runtime.md) - Describe la orquestación del turno de Coach, la autorización y continuación de herramientas, los reintentos remotos y la recuperación de escrituras mediante journal y recibos. Delimita el contexto efectivo de Google y cómo interpretar evidencia de runtime sin confundirla con tasas de flota.
+- [Configuración BYOK de proveedores](provider-configuration.md) - Contratos locales para elegir, validar, persistir y usar credenciales y modelos BYOK de OpenAI, Anthropic, Google y servidores compatibles con OpenAI en la aplicación móvil.
+- [Transporte y streaming de proveedores](provider-streaming.md) - Describe el transporte SSE, los parsers, las continuaciones con herramientas y el presupuesto de contexto para OpenAI, Anthropic y Google en el chat móvil.
+- [Runtime del agente y herramientas](runtime.md) - Contratos del turno conversacional de Coach, su autorización de herramientas y la recuperación segura de efectos. Explica reintentos, lotes, límites de rondas e idempotencia de escrituras.

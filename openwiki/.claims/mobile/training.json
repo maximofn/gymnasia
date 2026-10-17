@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:88776797cdcad7f5b5b816aacedccbe53471bea614e256e7dc205aa2fa018072",
+  "pageVersion": "sha256:fee96174ce648f12fd081298e71a0a8f1caecddbd44e804a6cb7acfe416fe50d",
   "claims": [
     {
       "id": "claim_4f128aa30b194c0d8433f3fffe412436",
@@ -315,10 +315,38 @@
           "version": "repo-lines-v1:sha256:275dc62f4356a6d7691f367b51e63413cb260105310c19ff4dde9ac9c4b75665:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5ZjJkNDc4NGViMGY5MGM5ODI2NzE5MDliOTFjMjU3OTMxMTI5MTJmN2UyYjc4Y2Y2OWYzZTNmYmE5NGE5ZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlMzhkZTJmMDVlZGM3MTU1OTBiNWE1OWQ3NjQ4ZTgwYmFkMWE2OWUyMDg5ZWNlNzYwMGEwYmFmMDJjYjAwOGYifQ"
         }
       ]
+    },
+    {
+      "id": "claim_4a56ce3fb096437aa3bbdbc65f490895",
+      "statement": "`TrainingOverlays.tsx` se limita a presentar modelos y delegar decisiones en acciones del controlador; sus diálogos exigen una elección explícita para descartar el borrador, resolver un conflicto de plantilla o guardar una sesión parcial, y el cierre de una sesión con cambios de prescripción permite conservar el borrador o mantener la plantilla canónica.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/screens/TrainingOverlays.tsx#L329-L470",
+          "version": "repo-lines-v1:sha256:82a5e1fa357336c87b68be1e25b300393665250f3540aa268a97781a3cf41fe0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI4Y2MwZjhjOGUzZGJjZmNhYTNhYzE5M2U3MDk2ZWQ3NmQzZmNmZjMzNTI3NTZkYTllY2I4ZjBhZTZlMzE4ZDI0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0NzM2OTU2ODM5YzYzNWJhZDc0ZmUzNzZmOTg4ZjNmNWVjYjkwMjJkZmZmNzM1MmU4ODM2ZDEwNzdkNTJlMjdiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI2ODBkMmRkNGYyODlkMjZkYzc1N2MyYjY1YTA2YzM5MjI3YTY3MTdjNGI0OGI1YTM5NzkyYzlmMTFlNDFhZWE2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MiwiZm9sbG93aW5nQ29udGV4dEhhc2giOiI5MTU3MGIwZTU1ZDViMGZlYmZiYjNiY2YwZjM2ODRhZjJjZmU4NWJjNmIxODFlNjZmMjg0MWY3MjFlMzgzMzMxIn0"
+        }
+      ]
+    },
+    {
+      "id": "claim_c2024bcf99174ffe8cf7d41a05a94820",
+      "statement": "La batería E2E de entrenamiento separa la recuperación de series avanzadas y la ruta de uso básica: `test:train:series:e2e` comprueba que un tipo desconocido reparable no envíe el almacén a recuperación y que los datos avanzados y el sello sobrevivan una recarga, mientras que `test:train:e2e` verifica desde datos borrados la validación de borrador, operaciones de rutina, finalización y descarte confirmado.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/train-series-migration.e2e.mjs#L228-L280",
+          "version": "repo-lines-v1:sha256:ebf8bf4e96dcb5681f3048d68a8e52fab14438f7971633b4116ff8dddeec7aca:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0MDMyMGViMjM2NWViZmQxM2ViOTAxNGJjZjRhNmU2YTg4NmVmZGI1OTJjYjBlYmVhZDY0NTAyZmJkOGY3ZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4YjQzYmI1ODIxM2FhOTBkY2MzMDk4NTc5NDJhNTYzYzJiMWY2NzExYTI2NDAwNjdjMTNmZDZhY2I1YjAzYjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3OTQxOGM1MjYwNDJlMmZjODNhMTA2YjUwNDNhZjBjZmJjOGZjYjIzOTM2M2I0MmQyMzMyYmQ2NTkzMTE4OTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjZjQwNmRhZjk1NmMzNjFmMjM0ODY2Mzc2MGY3MzU4YzY2YzQ2OTEyZDdhMDE2YjQzYjc5OWViMjI1MDE2NDYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/train-usability.e2e.mjs#L194-L297",
+          "version": "repo-lines-v1:sha256:88f0aa91bebc63eecc24ddce0e69fcbc41cddae8d2cb7efed5c1be3fee070713:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA0LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyNjIzNDkxZDk4OWMyMzQ2MDE1NzdkZjBjY2ZmOTA1MGYxZmM2Y2Y1NmQxMmQ5YmFkZWRhYTcyMjAwYmJlZjhmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYzc2ZTljODU4ZDhmNDdlMTZkZGQ3NzlhYmZjOWY4ZmU2MDA1YjU0NmY2MTJmNWRmNTc4YjVlNmMzMGZmNzVkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI1MDRhMTI5ZjA5NmI2ODcyNGU3OTUxNTg4ZGUwYmY5NDVjZDA1Zjg2YmM5MDRmYjVmNWRmZGUwYTg4NjYzMGQyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlODM2NzY3YWNhMzBiODJlOWQ2MWEwNjc0NzkzNjA2OWNhMGQyODc1M2RkYjE0NGRhYTg5NmU4NjU2MjQ0ZTZiIn0"
+        },
+        {
+          "resource": "repo://package.json#L66-L70",
+          "version": "repo-lines-v1:sha256:b942be14e8213fabacf0b19916e207fa7b2b9feaed969d6ab484a5a59ccaa7ba:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2Y3Y2FiNzY2M2MwOWZiYTM1MDM5MjA4MDFhYjZlZThlNTdkMGQyYTZjNWRlZjg5OTc3MjU1MWQyMjFmODc0YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDgwNGVmZTJlN2E2ZDM4OTU2ZTZlYTc0OTk1YzRmNTE2MGZkYTg1ZWNjZTQ4YjU5ZGU2YTU1OWVmMTg2MmI1MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTkxMWQwYjlmZDNhYzljNDE2NjliNzRkYzdjYmE4NTMwZmIzNzE5ZDBhMTYyY2E4YmI3NzU2NjgzZjMxNDYwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzRkZDE2ZTkzNTI3YjIxNTkyNTczMzk0NmZkYzU0YzgzZTUwYzE2YTUwZDU0YjIyYWNkMDM4NDI5OWE5NDlkZCJ9"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-10-17T11:49:19.843Z"
   }
 }

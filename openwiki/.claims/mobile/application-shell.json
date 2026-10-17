@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:d5bd484affc6fb5ef9204bcb31a8af756cc77883d4e48f6abe6b518d58ba78f4",
+  "pageVersion": "sha256:1d57b502cd0744061d7d1e4248bb106566d5de88ed506da3a59240232792a941",
   "claims": [
     {
       "id": "claim_aca396b7cc1e477696babb6c28b70e97",
@@ -249,10 +249,50 @@
           "version": "repo-lines-v1:sha256:2c01ad1723e53f5431b32b6d35f1ec8c922d1e4e88be1d097e36510f010abc27:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyOTA1ZTI1MjVkYTJmNTFhNjc1N2NlYTQyMzZhY2Y4YTRiMDIyNWI0ZmE3YWQ1Nzc0MjkyNTE5MGM5MDQ5OTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU1NzkxMGVlY2MxOWNlNjQ2MTk2MjliZWUyODZjYmY3MTg5OGZiOWJjYzhkODllMWQwNzAwOGZkYjJkMTRjYjcifQ"
         }
       ]
+    },
+    {
+      "id": "claim_68436726f7c94a38a952763c12de48af",
+      "statement": "GymnasiaApp compone los runtimes y controladores de dominio y entrega a las pantallas contratos de modelo y acciones; por ejemplo, el shell inyecta en useHomeController la navegación a Entrenamiento y el inicio de sesión, y HomeScreen recibe el controlador resultante.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L2626-L2719",
+          "version": "repo-lines-v1:sha256:4d7dbdc34e062e15d4f9538207ed318bf2cee1e77854412747c7f312b6339818:eyJzZWxlY3RlZExpbmVDb3VudCI6OTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhYWYwNGNlMjUyOWQ2ZWM5ODJjMmE2NDAyZjk2ODI2MzIwNGY5ZTZmYTAxOTI2OGYyM2UyNGRmYzljYmUyZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMjcwM2FjNDM2ODBlNDVkNzMwY2I5OTYyMDNlNGY2ZTQwM2I1MmY1OGM0NmYzMGIzNzEyZTRhODE2ZWViM2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5ZGY3M2JhOTMzYzAzNGRmMzZlNzZiNjg5ZWY1YjlmNTljNGZlYmZmYjEzY2M4YjY3ODUxNjVhNzk3YWVlMGUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8934-L8967",
+          "version": "repo-lines-v1:sha256:cf5b3482dd70c1d5ca8f847d11f93f327b4c98f90044d00fb8774a88d2045c7c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1YmIyOTFjYmM2OWQ0NDRlMzViOGY2MWUwNzZkMjI1MzM4ZjljZGU5MzNjYjIwNWFjODMwNzVlYzMwYzRlNDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1NzU1NGY0NjAxZTMwYjU3NDZmYzg0OWQ1NDM2ZmU5OTM1YjE2ZDFkZDhiYmM0ZTJmMWU1NDA5ZmFhM2VhYjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3YzRiZjRiOTNmY2E1OWVlYjI4ZWU0ZjRhYzU2MGIyYjMwYzIzM2U3YzBjYWU1YmUwZjhiM2NkNmUzYTk2OWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwZDU2ZWNiYTRkOTgzNmZiMmFlYjE5NzEwYTg2MGM4ZmViOWUxOGI0OTZlZTk3NmY5MGMyMWIwMWJmOTM4YWMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/controllers/homeController.ts#L198-L221",
+          "version": "repo-lines-v1:sha256:161c9350ae5d8e270227714a261406fd530a4d3ea825efacea5dbd7f3e8987e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3MTMxNmNiYjlkMmMwM2JmOWMxZThkZWQ4M2ZjOTdhZTQwY2EwMmU1OTljOGI0YzI5OTg1NWI5ZWI5NmNjNzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyMDg4M2I2OWY2M2IzMTZhMzkxZDI1Y2VmMTE3YTk0ZDliZjc5OWZhYWI1NzVlMWE2YmJlYjNlMTRlYmEyY2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4Mjk5MDkzMWY1N2U3ZDk5Y2IzOWMxOTRiMjczODA1YWEwYmVmZWVhNDBjNzVmZjRhZGZiNDE2NmEyODFkMWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/controllers/homeController.ts#L71-L82",
+          "version": "repo-lines-v1:sha256:f552ec59523c0cd598e19ea454636e0beb2ce7434086728892fecb408a8543c7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxMjc4N2JjZjQ0NDIxMzg4NDBlNDUyMTZhOWYyZWQ5MmRiNjQ1ZGZiNDE0ZTE1NGRlNzZmYzRjZjY0M2JlNDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNmMTM5ZjZmNzg2YzJlNTcxNjExMDMyZTFkYzhiZTA4MDAwY2NlNWQ4ODNjN2I2Y2RkNTIzZDE3YTAzMDYxOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyN2U4YzFlMzMwNjQ5Yjg5YTNhOGVjZWU4NzIxNDhmYjU1MzY3ZDdlZTgwZTU4M2RjMjg2OThhZDAxOWMzNjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fad529153d584f0eb4541fdf5d48036e",
+      "statement": "La E2E de navegación del shell exporta un bundle web de desarrollo, siembra el almacenamiento local y valida los seis destinos y capas representativas en 390 px y 960 px, comprobando además que cada formato muestra solamente sus selectores de navegación correspondientes.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L114-L190",
+          "version": "repo-lines-v1:sha256:1916fdf5018761a39d14893b5c7c23135bfa38f1f163144cd6d86ea39cb4d974:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0ZDYxZmEyM2JkZDZhZjIyOTZkMDUzZDk2MWM5NWJjNzhlMjA4ZjQyNTY4YzkwMWUxYWNiYjIzNWRhYzg1MjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0MzgxZjJlMmY1MDhmNzUxMjIyN2I2NzhhNmRkNWYzYTQxNzlkNWI1NTBmZDVjOGMyMDIxOWYxZDQ1ZWUwNTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4ZDE5MzdkYWVlNjdmNjllZTczYjMyNjhjMmM3NTk3NGNhMDljYmQ5MThiMzUxMDI0Y2ZmZWRmM2ZmY2VhZDAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L192-L235",
+          "version": "repo-lines-v1:sha256:04dcc2015469146de5313dfb32fbb379daa24a3320b10f93a1f1aea18b8c80e4:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2ODY4ZmI0YzUyZmI5NmZkMWFjOWQxZGQ3ZmU1YTdhZTg4NDU0NTMyZWI3NzExZjFiZGRkMWM4NmMwYWMwZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3ZWRiYjI2YjY5YzQ5MDIwODRkZmJmZWY3MWQ5YTU0MmIwN2U5MGNhM2QwZDE0MmY5YTIyM2M0YzcwZmI4ZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1MzIwNzNiYWEyNDg0OGU5YWI5OGNmYWU1OWUxMzllN2U1ZDIzNmQ4NjFmM2ZiZjgzNmEyOTNlZDcwOWZiNTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY1MTg3NDFhNzIxMTkzZmU1YTA1OTU4OWRjYWEyNmE4YmQwNTM1YWZmZjM0ZmEyNTZhODA5ZjU4MmMwOTk1MDMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L55-L85",
+          "version": "repo-lines-v1:sha256:eee591b123a3373ab7b8985e48a20081dae7bde9d43a1b3a7d674ee094804b12:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhNzQwOWNmODJlYTYxNWUxYmQ5MGEzOTM0ZjU1ZmRjYTFhZTZhM2VkMGYyMTRhNWI4MmIxYzJlM2JmNzJlNDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3N2NjODY0ZGM3YTU2MmU1YTU0OTNmZjI2ODM2MjUxNjM5ZmE1ODk3Y2M4ZDNkZTQyNTE2ZGU3MTJlMzU1MDkifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-10-17T11:49:19.843Z"
   }
 }

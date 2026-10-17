@@ -7,8 +7,8 @@ okf:
   scope: Configuración BYOK, persistencia y verificación de proveedores de IA móviles
 type: concepto de configuración
 title: Configuración BYOK de proveedores
-description: Contratos de configuración, credenciales, verificación, descubrimiento y transporte BYOK para OpenAI, Anthropic, Google y servidores compatibles con OpenAI en la aplicación móvil.
-summary: Ciclo de vida de credenciales, modelos, verificación, descubrimiento y transporte por plataforma.
+description: Contratos locales para elegir, validar, persistir y usar credenciales y modelos BYOK de OpenAI, Anthropic, Google y servidores compatibles con OpenAI en la aplicación móvil.
+summary: Ciclo de vida local de credenciales, modelos, verificación, descubrimiento y transporte por plataforma.
 tags: [agent, configuration, providers, credentials, byok, mobile, openai-compatible]
 related:
   - ./runtime.md
@@ -17,7 +17,7 @@ related:
   - ../services/anthropic-proxy.md
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-10-17T11:49:19.843Z
 sources:
   - id: openwiki-source-88e87a6a49f8c4bba044cff2
     resource: repo://apps/anthropic_proxy/README.md
@@ -57,109 +57,107 @@ sources:
     resource: repo://apps/mobile/app.config.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
 ---
 
 # Configuración BYOK de proveedores
 
-La aplicación móvil admite cuatro configuraciones BYOK: `openai`, `anthropic`, `google` y `custom_openai`. Las tres primeras se conectan a sus APIs conocidas; la última permite un servidor HTTPS que implemente el contrato OpenAI Chat Completions. La configuración es local al dispositivo: no debe documentarse ni registrarse una clave real.
+La aplicación móvil admite cuatro configuraciones BYOK: `openai`, `anthropic`, `google` y `custom_openai`. Las tres primeras se conectan a sus APIs conocidas; la última permite un servidor HTTPS que implemente el contrato OpenAI Chat Completions. La configuración pertenece al dispositivo, no a un backend de cuentas: no debe documentarse, exportarse ni registrarse una clave real.
 
-Esta página cubre la frontera entre Ajustes y las solicitudes al proveedor. Para el streaming y las continuaciones de herramientas, consulte [Streaming de proveedores](./provider-streaming.md); para el recorrido de un turno y los límites estáticos que se deben contrastar con observabilidad, consulte [Comportamiento en ejecución y oportunidades](../operations/runtime-behavior.md). Esa página enlaza de vuelta aquí porque una traza de proveedor no prueba ni expone una credencial, y estos contratos no prueban disponibilidad, coste ni latencia remota.
+Esta página cubre la frontera entre Ajustes y las solicitudes al proveedor. Para streaming y continuaciones de herramientas, consulte [Streaming de proveedores](./provider-streaming.md); para el recorrido de un turno, consulte [Runtime del agente](./runtime.md). La configuración o una traza local no demuestran disponibilidad, coste ni latencia del servicio remoto.
 
-## Modelo y normalización
+## Contrato normalizado y selección
 
-`ProviderConfiguration` guarda `provider`, `is_active`, `api_key`, `model`, `base_url?`, `workspace_id?` y `reasoning_effort?`; el borrador omite `is_active`, de modo que editar no publica un cambio. `PROVIDERS` define el orden canónico `openai`, `anthropic`, `google`, `custom_openai`. La normalización siempre devuelve una entrada por cada uno y exactamente una activa: conserva la primera activa por ese orden o activa OpenAI si no había ninguna.
+`ProviderConfiguration` guarda `provider`, `is_active`, `api_key`, `model`, `base_url?`, `workspace_id?` y `reasoning_effort?`; `ProviderDraft` no incluye `is_active`, por lo que editar no publica ni selecciona nada. `PROVIDERS` define el orden canónico `openai`, `anthropic`, `google`, `custom_openai`.
 
-La normalización recorta claves y modelos. OpenAI, Anthropic y Google completan un modelo vacío con su valor predeterminado; `custom_openai` conserva un modelo vacío para obligar a que se configure explícitamente. Se migran `gpt-4o-mini` y los valores Google heredados al modelo actual, mientras que un modelo personalizado no vacío se conserva. `base_url` solo se conserva para `custom_openai`, `workspace_id` solo para Anthropic y `reasoning_effort` solo para OpenAI.
+La normalización devuelve siempre una entrada por proveedor y exactamente una activa: conserva la primera activa según ese orden o activa OpenAI si no había ninguna. Recorta claves y modelos; completa un modelo vacío para OpenAI, Anthropic y Google, pero conserva vacío el de `custom_openai` para exigir un ID explícito. Migra `gpt-4o-mini` y los valores Google heredados al valor actual sin sustituir un modelo personalizado no vacío.
 
-El esfuerzo de razonamiento OpenAI depende de la familia del modelo. Si el esfuerzo almacenado deja de ser compatible, se sustituye por `medium` cuando está permitido, por la primera alternativa soportada o por `null`. Anthropic decide el formato de `thinking` al construir la petición: Claude 3 y 4.5 reciben el modo heredado con presupuesto, y los demás —incluido uno desconocido— el modo adaptativo resumido.
+Los campos específicos no se filtran entre proveedores: `base_url` solo sobrevive en `custom_openai`, `workspace_id` solo en Anthropic y `reasoning_effort` solo en OpenAI. El esfuerzo de razonamiento OpenAI se vuelve a calcular contra la familia del modelo: un valor no compatible pasa a `medium` si está permitido, a la primera alternativa soportada o a `null`. Anthropic decide el formato de `thinking` al construir la petición: Claude 3 y 4.5 reciben el modo heredado con presupuesto; los demás, incluso un modelo desconocido, reciben el modo adaptativo resumido.
 
-Para guardar Anthropic, un Workspace ID no vacío debe empezar por `wrkspc_`. La aplicación lo transmite como cabecera y convierte los errores que indican que falta en una instrucción accionable. Las claves directas viajan en cabeceras (`Authorization: Bearer`, `x-api-key` o `x-goog-api-key`), no en la URL.
+Un guardado con clave activa al candidato; actualizar un proveedor sin clave o borrar su clave no cambia la selección activa. La selección y el estado `chatProvider` visibles se actualizan únicamente después del commit del repositorio, de modo que un fallo de escritura no cambia silenciosamente el proveedor en uso.
 
-### Servidor compatible con OpenAI
+## Límites de secreto y persistencia local
 
-`custom_openai` requiere clave, ID de modelo y `base_url`. La URL se valida antes de guardar: debe ser `https://` absoluta, sin credenciales, espacios, consulta, fragmento ni separadores de ruta ambiguos. A partir de esa base se forman únicamente `/models` y `/chat/completions`; las llamadas omiten credenciales HTTP del navegador y usan el bearer BYOK.
+Las claves son secretos locales. OpenAI usa `Authorization: Bearer`, Anthropic `x-api-key` y Google `x-goog-api-key`; no se incorporan a URLs. Un Workspace ID Anthropic no vacío debe empezar por `wrkspc_`, se transmite como `anthropic-workspace-id`, y los errores que indican que falta se convierten en una instrucción para configurarlo.
 
-El catálogo `/models` es una comodidad, no una condición para guardar: si el servidor responde 404, 405 o 501, se marca como no disponible y la persona puede escribir el ID manualmente. La verificación trata ese caso como advertencia; una prueba explícita del modelo realiza una petición de chat no streaming y puede consumir API. En conversación intenta SSE y vuelve a una respuesta JSON normal únicamente cuando el servidor declara que no admite streaming.
+`ProviderConfigurationRepository` es la autoridad durable. Serializa commits y guarda diarios de esquema 1 con `revision`, `committed` y `pending`: escribe primero el candidato pendiente, comprueba de nuevo que la operación sigue vigente y solo después lo confirma. Si el candidato quedó obsoleto o falla una escritura, intenta restaurar el commit anterior. Durante la hidratación, un `pending` superviviente nunca se promociona; se recupera el último `committed` y se repara el diario de forma conservadora.
 
-## Persistencia, secretos e importación
-
-`ProviderConfigurationRepository` es la autoridad durable. Serializa los commits y persiste snapshots de esquema 1 con `revision`, `committed` y `pending`: escribe el candidato pendiente, vuelve a comprobar que la operación sigue vigente y finaliza el commit. Si falla una escritura o el candidato se vuelve obsoleto, restaura el commit anterior. Al hidratar, un `pending` superviviente nunca se promociona; se recupera el último `committed` y un diario solo-pending se descarta.
-
-| Plataforma | Almacenamiento canónico | Tratamiento de la copia |
+| Plataforma | Almacenamiento canónico | Consecuencia de privacidad y fallo |
 |---|---|---|
-| Web | Diario dedicado en AsyncStorage | Contiene las credenciales; el navegador no ofrece el aislamiento de SecureStore. |
-| Nativo con SecureStore | Diario en SecureStore | AsyncStorage recibe un espejo con `api_key: ""`. |
-| Nativo sin almacenamiento seguro | No se puede persistir una nueva configuración | La configuración anterior permanece activa y Ajustes informa el fallo. |
+| Web | Diario dedicado en AsyncStorage | Incluye las credenciales; el navegador no proporciona el aislamiento de SecureStore. Quien tenga acceso al perfil del navegador puede potencialmente leerlas. |
+| Nativo con SecureStore | Diario en SecureStore | AsyncStorage recibe un espejo saneado con `api_key: ""`; el diario con secretos permanece en el almacenamiento seguro. |
+| Nativo sin almacenamiento seguro | No se crea repositorio para una configuración nueva | El guardado falla, se mantiene la configuración anterior y Ajustes informa el fallo. |
 
-El agregado general se sanea con `stripProviderApiKeys`, por lo que no se convierte en una segunda fuente de secretos. Las copias de seguridad no exportan claves. Al importar, se sanea el archivo y se conservan la clave y el Workspace ID Anthropic que ya están en el dispositivo; el backup no puede inyectar ni reemplazar esos secretos.
+El agregado general se sanea con `stripProviderApiKeys`, por lo que no se convierte en una segunda fuente de secretos. Las copias de seguridad no exportan claves. Al importar, se sanea el archivo y se conservan la clave y el Workspace ID Anthropic ya existentes en el dispositivo: un backup no puede inyectar ni reemplazar esos secretos. Al abrir el diálogo de borrado se enmascara la clave persistida; no se muestra el texto transitorio del borrador.
 
 ```mermaid
 stateDiagram-v2
     [*] --> Draft
-    Draft --> Verifying: save with key
-    Draft --> Persisting: save without key
-    Verifying --> Rejected: verification fails
-    Verifying --> Persisting: verification succeeds
-    Persisting --> Committed: journal commit
-    Persisting --> SaveFailed: error or stale
-    Rejected --> Draft: edit or retry
-    SaveFailed --> Draft: edit or retry
-    Committed --> Draft: edit
+    Draft --> Verifying: guardar con clave
+    Draft --> Persisting: guardar sin clave
+    Verifying --> Rejected: verificación falla
+    Verifying --> Persisting: verificación correcta
+    Persisting --> Committed: commit del diario
+    Persisting --> SaveFailed: error u operación obsoleta
+    Rejected --> Draft: editar o reintentar
+    SaveFailed --> Draft: editar o reintentar
+    Committed --> Draft: editar
 ```
 
-*El candidato solo llega al estado visible después de un commit confirmado; borrar una clave no hace verificación de red.*
+*Estados de un guardado de proveedor: el candidato solo llega al estado visible después de un commit confirmado; borrar una clave no hace una llamada de red.*
 
-## Guardado, selección y presentación
+## Verificar antes de persistir
 
-Guardar normaliza el borrador. Con una clave no vacía, valida los requisitos específicos y verifica la conexión antes de persistir; con una clave vacía persiste la eliminación sin red. Un guardado con clave activa el candidato; una eliminación no altera la selección activa. La selección explícita de chat también se confirma primero en el repositorio y solo entonces actualiza `chatProvider` y el estado visible. Así, una escritura fallida no cambia silenciosamente el proveedor en uso.
-
-Las revisiones de borrador, guardado, descubrimiento y configuración global forman tokens de operaciones asíncronas. Editar, iniciar otro guardado o iniciar otro descubrimiento invalida el token anterior; una respuesta antigua no actualiza interfaz ni persistencia. Una clave hidratada se presenta como pendiente de comprobar: ese indicador no es una garantía de conectividad ni bloquea a los consumidores.
-
-La presentación distingue `checking`, conectado, advertencia y error. No muestra la clave completa: la confirmación de borrado toma y enmascara la clave ya persistida, no el texto transitorio del borrador.
-
-## Verificación y catálogo
-
-`fetchProviderConfiguration` aborta por defecto a los 15 segundos y traduce el aborto a un error legible. Sin clave, la verificación devuelve una advertencia sin red; en modo fixture devuelve éxito local sin red.
+Al guardar, la aplicación normaliza el borrador y valida requisitos locales. Si hay clave, verifica la conexión antes de persistir; sin clave persiste la eliminación sin red. `fetchProviderConfiguration` aborta por defecto a los 15 segundos y traduce el aborto a un error legible. En modo fixture, la verificación devuelve éxito local sin red; sin clave devuelve una advertencia sin red.
 
 | Proveedor | Verificación | Resultado especial |
 |---|---|---|
-| OpenAI | `GET https://api.openai.com/v1/models` | Cualquier 2xx confirma la conexión. |
-| Anthropic directo | `POST https://api.anthropic.com/v1/messages` con `max_tokens: 1` | Un 404 confirma la clave pero advierte que el modelo no está disponible. |
-| Google | `GET .../v1beta/models/{model}` | Cualquier 2xx confirma la conexión. |
-| OpenAI compatible | `GET {base_url}/models` | 404, 405 o 501 permiten guardar con advertencia; otros errores rechazan. |
+| OpenAI | `GET https://api.openai.com/v1/models` | Cualquier respuesta 2xx confirma la conexión. |
+| Anthropic directo | `POST https://api.anthropic.com/v1/messages` con `max_tokens: 1` | Un 404 confirma la clave pero avisa que el modelo no está disponible. |
+| Google | `GET .../v1beta/models/{model}` | Cualquier respuesta 2xx confirma la conexión. |
+| OpenAI compatible | `GET {base_url}/models` | 404, 405 y 501 permiten guardar con advertencia; otros errores rechazan. |
 
-El selector no es una lista de permitidos: el modelo permanece editable. OpenAI consulta `/v1/models`; Google consulta `/v1beta/models`, quita `models/`, deduplica, ordena y filtra los modelos que declaran métodos de generación incompatibles. Anthropic pagina de 100 en 100, deduplica IDs y se limita a 20 páginas; comunica un catálogo parcial o truncado en vez de hacerlo pasar por completo.
+La verificación es una comprobación de credencial y endpoint, no una prueba completa de cada capacidad de conversación. En particular, la prueba explícita del modelo de un servidor compatible usa una petición de chat no streaming y puede consumir API. El selector de modelo tampoco es una lista de permitidos: el modelo sigue siendo editable.
 
-## Transporte y operación
+Las revisiones de borrador, guardado, descubrimiento y configuración global son tokens de operaciones asíncronas. Editar, iniciar otro guardado o iniciar otro descubrimiento invalida el token previo; una respuesta antigua no actualiza interfaz ni persistencia. Una clave hidratada se presenta como pendiente de comprobar, pero ese indicador no garantiza conectividad ni bloquea a los consumidores.
 
-OpenAI y Google acceden directamente en web y nativo. Google genera contra Interactions con `store: false`; verificación y catálogo usan Models, por lo que la presencia en catálogo no garantiza capacidad de Interactions. El endpoint local de Google solo se permite con puerto válido en Development y la clave ficticia `e2e-local-fake-key`; cualquier otra combinación falla en vez de desviar tráfico real.
+## Catálogo y capacidades
 
-Anthropic también es directo por defecto. En web añade `anthropic-dangerous-direct-browser-access` para permitir que la página lea la respuesta CORS; nativo no lo envía. El proxy Anthropic es opcional y solo se selecciona en web cuando `EXPO_PUBLIC_API_BASE_URL` queda no vacío tras recortar y quitar barras finales. No existe fallback automático al proxy tras un fallo directo.
+OpenAI consulta `/v1/models`. Google consulta `/v1beta/models`, quita el prefijo `models/`, deduplica, ordena y excluye modelos que declaran métodos de generación incompatibles. Anthropic pagina de 100 en 100, deduplica IDs y se limita a 20 páginas, comunicando un catálogo parcial o truncado en lugar de hacerlo pasar por completo.
+
+Para `custom_openai`, `/models` es una comodidad, no un requisito para guardar. La base se normaliza antes de guardarla: debe ser una URL `https://` absoluta, sin credenciales, espacios, consulta, fragmento ni separadores ambiguos. A partir de ella solo se forman `/models` y `/chat/completions`. La consulta de catálogo omite credenciales HTTP del navegador, rechaza redirecciones y envía el bearer BYOK; además limita la respuesta a 1 MiB y oculta la clave si el servidor la refleja en un mensaje de error. Si el catálogo responde 404, 405 o 501, se permite escribir el ID manualmente.
+
+No se debe inferir que un modelo listado soporta streaming, herramientas, imágenes o el contrato de Interactions de Google. Son capacidades independientes. En conversación, el compatible con OpenAI intenta SSE y solo vuelve a JSON normal cuando el servidor declara que no soporta streaming; el resto de detalles del transporte pertenece a [Streaming de proveedores](./provider-streaming.md).
+
+## Transporte, proxy opcional y datos que salen del dispositivo
+
+OpenAI y Google se usan directamente tanto en web como en nativo. Google genera con Interactions y `store: false`; verificación y catálogo usan Models, por lo que aparecer en el catálogo no garantiza capacidad de Interactions. Un endpoint local de Google solo se habilita con puerto válido en Development y la clave ficticia `e2e-local-fake-key`; otra combinación falla en lugar de desviar tráfico real.
+
+Anthropic también es directo por defecto. En web añade `anthropic-dangerous-direct-browser-access` para que la página pueda leer la respuesta CORS; en nativo no se envía. Por ello una clave BYOK almacenada en web queda accesible para quien pueda inspeccionar esa sesión del navegador. El proxy Anthropic es opcional: solo se elige en web cuando `EXPO_PUBLIC_API_BASE_URL` no queda vacío después de recortar y quitar barras finales. No hay fallback automático al proxy tras un fallo directo.
 
 ```mermaid
 flowchart TD
-    Request["Anthropic request"] --> Choice{"Web with configured base"}
-    Choice -->|"yes"| Proxy["Optional local proxy"]
-    Choice -->|"no"| Direct["Direct Anthropic API"]
-    Proxy --> Upstream["Anthropic Messages API"]
+    Request["Solicitud Anthropic"] --> Choice{"Web con base configurada"}
+    Choice -->|"sí"| Proxy["Proxy local opcional"]
+    Choice -->|"no"| Direct["API Anthropic directa"]
+    Proxy --> Upstream["API Messages de Anthropic"]
     Direct --> Upstream
 ```
 
-*El proxy entra por una decisión explícita de configuración web, no como backend requerido por la aplicación.*
+*La ruta del proxy es una decisión explícita de configuración web, no un backend obligatorio de la aplicación.*
 
-Con proxy, modelos, verificación y mensajes usan las rutas `/chat/providers/anthropic/models`, `/verify` y `/messages`. Recibe la clave en JSON y la transforma en cabecera upstream; sus límites de confianza y uso local se describen en [Proxy CORS de Anthropic para navegador](../services/anthropic-proxy.md).
+Con proxy, catálogo, verificación y mensajes usan `/chat/providers/anthropic/models`, `/verify` y `/messages`. La app entrega la clave en JSON para que el proxy la transforme en cabecera upstream; revise sus límites de confianza y operación local en [Proxy CORS de Anthropic para navegador](../services/anthropic-proxy.md). Con cualquiera de las rutas, el contenido de la conversación y la clave necesaria viajan al proveedor seleccionado o al proxy configurado; elegir BYOK no vuelve local el procesamiento remoto.
 
-Los consumidores omiten configuraciones sin clave; `custom_openai` también queda fuera si faltan modelo o URL. El estimador de alimentos prueba, en orden, Google, OpenAI, Anthropic y OpenAI compatible. El modo `fake` solo puede seleccionarse en desarrollo mediante `DEV_PROVIDER_MODE`; por defecto desarrollo usa fixtures y staging/producción BYOK. Chat principal, chat con herramientas y estimador cortocircuitan antes de la red en ese modo y no incorporan una clave real de desarrollo.
+Los consumidores omiten configuraciones sin clave; `custom_openai` también se omite si faltan modelo o URL. El estimador de alimentos prueba, en orden, Google, OpenAI, Anthropic y OpenAI compatible. El modo `fake` solo puede seleccionarse en desarrollo mediante `DEV_PROVIDER_MODE`; por defecto desarrollo usa fixtures y staging/producción BYOK. Chat principal, chat con herramientas y estimador cortocircuitan antes de la red en ese modo y no incorporan una clave real de desarrollo.
 
-## Cambios seguros y pruebas
+## Cambio seguro y pruebas focalizadas
 
-Al añadir o cambiar un proveedor, actualice conjuntamente el tipo y normalizadores, persistencia y saneamiento, requisitos de guardado, verificación, catálogo, transporte y consumidores. Conserve la autenticación fuera de URLs, el único proveedor activo y los tokens de invalidez. Para un servidor compatible, no relaje la validación HTTPS ni suponga que `/models`, SSE o tools están disponibles: son capacidades independientes.
+Al añadir o modificar un proveedor, actualice conjuntamente el tipo y normalizadores, persistencia y saneamiento, validación de guardado, verificación, catálogo, transporte y consumidores. Mantenga la autenticación fuera de URLs, el único proveedor activo y los tokens de invalidez. Para un servidor compatible, no relaje HTTPS ni suponga que `/models`, SSE o tools están disponibles.
 
-Ejecute las pruebas focalizadas desde la raíz:
+Ejecute desde la raíz:
 
 ```bash
 npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/providerConfiguration.test.ts apps/mobile/agent/providerConfigurationPersistence.test.ts apps/mobile/agent/providerCredentials.test.ts apps/mobile/agent/providerVerification.test.ts apps/mobile/agent/providerCatalog.test.ts apps/mobile/agent/customOpenAIChat.test.ts apps/mobile/agent/providerTransport.test.ts apps/mobile/agent/providerTransport.contract.test.ts
 ```
 
-Estas pruebas fijan contratos de normalización, rollback, aislamiento de secretos, tokens obsoletos, verificación y transporte. No prueban la disponibilidad ni el coste de servicios remotos.
+Estas pruebas fijan contratos de normalización, rollback del diario, aislamiento de secretos, tokens obsoletos, verificación y transporte. No prueban disponibilidad, coste, CORS desplegado ni comportamiento de servicios remotos.

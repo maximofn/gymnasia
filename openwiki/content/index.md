@@ -1,4 +1,4 @@
 # Archivos
 
-- [Generación y validación de imágenes de catálogo](image-generation.md) - Flujo operativo para generar imágenes de alimentos y ejercicios con Hugging Face, conservar las referencias de catálogo y validar WebP, proporción y artefactos derivados antes de publicar.
-- [Catálogos de contenido y publicación](repositories.md) - Contratos de edición, generación y publicación de los catálogos alimentarios, comerciales, recetas y ejercicios; consumo remoto validado y persistencia offline en la app móvil.
+- [Generación y publicación de imágenes de catálogo](image-generation.md) - Flujo para crear imágenes de alimentos y ejercicios, validar sus contratos y publicar los catálogos derivados que consumen los clientes. Distingue fichas y prompts editables de recursos y agregados generados.
+- [Repositorios de contenido y catálogos](repositories.md) - Cadena de edición, generación, validación y publicación de catálogos alimentarios y de ejercicios; contratos de consumo remoto y caché offline de la app móvil.

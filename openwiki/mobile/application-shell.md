@@ -1,8 +1,11 @@
 ---
 type: arquitectura de shell móvil
-title: Shell y navegación de la aplicación móvil
-description: El shell Expo de Gymnasia coordina el arranque protegido, los destinos React, las superficies de pantalla y el retorno de Atrás. Esta página fija las barreras de hidratación, los insets seguros y los contratos mínimos para modificar esa integración.
+title: Shell de aplicación móvil
+description: El shell Expo de Gymnasia coordina el arranque local-first, la composición de pantallas y controladores, la navegación adaptativa y el retorno de Android. Define las barreras que impiden publicar o sobrescribir datos locales sin comprobar.
 tags: [mobile, application-shell, expo, navigation, hydration, react-native]
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-17T11:49:19.843Z
 sources:
   - id: openwiki-source-a6ba9053969a3e00cd971742
     resource: repo://apps/mobile/app.config.ts
@@ -24,6 +27,8 @@ sources:
     resource: repo://apps/mobile/runtimeEnvironment.ts
   - id: openwiki-source-13b3cbcccd9499e5edfcca02
     resource: repo://apps/mobile/screens/AppShell.tsx
+  - id: openwiki-source-ee382022b458bb4be8f1d137
+    resource: repo://apps/mobile/scripts/shell-navigation.e2e.mjs
   - id: openwiki-source-566414ee4d2c02f464360b14
     resource: repo://apps/mobile/scripts/storage-recovery.e2e.mjs
   - id: openwiki-source-a37cf68b40d9429a8dfe2b36
@@ -34,117 +39,108 @@ sources:
     resource: repo://apps/mobile/shell/shellRegistry.test.ts
   - id: openwiki-source-e5d6f282bc4f08b4d12f037b
     resource: repo://apps/mobile/shell/shellRegistry.ts
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
 ---
 
-# Shell y navegación de la aplicación móvil
+# Shell de aplicación móvil
 
-`apps/mobile/index.js` registra `App` mediante `registerRootComponent`. `App` conserva una generación de runtime y, después de un borrado local, remonta `GymnasiaApp` con una `key` nueva y el resultado del borrado. Por ello, `GymnasiaApp` concentra la composición del shell local-first —estado de pantalla, almacenamiento, controladores y superficies globales— sin reemplazar los límites de cada dominio.
+`apps/mobile/index.js` registra `App` con `registerRootComponent`. `App` es deliberadamente pequeño: instala un único `SafeAreaProvider`, conserva una generación de runtime y monta `GymnasiaApp`. Tras un borrado local completado, incrementa la generación y remonta el árbol con una `key` nueva; el resultado del borrado se entrega al nuevo shell para mostrar el resultado y, si fue incompleto, abrir Configuración. `GymnasiaApp` es el compositor de runtime local, estado de navegación, controladores y superficies globales, no un sustituto de los límites de cada dominio.
 
-## Arranque protegido e hidratación
+## Arranque local-first y barrera de hidratación
 
-El runtime parte de `createInitialStore()`, `loading: true` e `isHydrated: false`, y ejecuta `runLocalStoreHydration` al montar. Antes de normalizar o publicar estado React inspecciona el agregado local. Un resultado `recoverable` o `corrupt` mantiene `isHydrated` en falso y sustituye el shell por `LocalStoreRecoveryScreen`; un error que no puede pasar a cuarentena muestra `LocalStoreStartupFailureScreen`, que solo permite reintentar. La aplicación no se presenta como vacía ni persiste sobre un agregado sin comprobar.
+El runtime comienza con `createInitialStore()`, `loading: true` e `isHydrated: false`. Al montar, `runLocalStoreHydration` inspecciona el agregado local **antes** de normalizarlo, publicarlo en React o persistirlo. Un resultado `recoverable` o `corrupt` mantiene la barrera cerrada y sustituye el shell por `LocalStoreRecoveryScreen`. Si un error no puede llevarse a cuarentena, aparece `LocalStoreStartupFailureScreen`, que permite reintentar pero no presenta una aplicación vacía.
 
 ```mermaid
 flowchart TD
     Entry["index.js"] --> Root["App y SafeAreaProvider"]
     Root --> Inspect["Inspeccionar almacenamiento local"]
-    Inspect --> Quarantine{"Resultado recuperable o corrupto"}
+    Inspect --> Quarantine{"Datos recuperables o corruptos"}
     Quarantine -->|"sí"| Recovery["Pantalla de recuperación"]
     Quarantine -->|"no"| Normalize["Normalizar e hidratar"]
-    Normalize --> Commit["Confirmar representación canónica"]
+    Normalize --> Commit["Confirmar agregado canónico"]
     Commit --> Secondary["Cargar estado secundario"]
-    Secondary --> Ready["isHydrated true"]
-    Normalize --> Failure["Fallo no recuperable"]
+    Secondary --> Ready["isHydrated verdadero"]
+    Normalize --> Failure["Fallo de inicio"]
     Failure --> Retry["Pantalla de fallo y reintento"]
 ```
 
-*El arranque separa la cuarentena protectora de la ruta que puede publicar y persistir el estado normalizado.*
+*El agregado principal se inspecciona y se confirma antes de que el shell habilite sus escrituras.*
 
-En la ruta válida, el shell carga y migra las claves de proveedor según plataforma, confirma la representación canónica del agregado y solo después lee sesión activa, instantánea y borrador de sesión, preferencias, salud de alarmas y consentimiento. Los fallos del almacén seguro o de datos secundarios se comunican como no fatales cuando es posible; no invalidan automáticamente el agregado principal. Al final reemplaza los runtimes y estados React, habilita `isHydrated` y refresca los diagnósticos de notificaciones.
+En la ruta válida, el shell carga y migra las claves de proveedor según plataforma, confirma la representación canónica del agregado y luego lee sesión activa, instantánea y borrador de plantilla, preferencias, salud de alarmas y consentimiento. Los fallos de SecureStore o de datos secundarios se señalan como no fatales cuando es posible: no invalidan por sí solos el agregado principal. Solo al reemplazar los runtimes y el estado React se activa `isHydrated`; después se refrescan los diagnósticos de notificaciones.
 
-`isHydrated` es una barrera de escritura: la persistencia del agregado, de la sesión y de su borrador retorna mientras sea falso. Si un `commit` es ambiguo o queda bloqueado, el shell se deshidrata e inspecciona de nuevo antes de permitir más escrituras. No retire esta barrera al extraer una pantalla o controlador.
+`isHydrated` es una barrera de escritura. Los runtimes que persisten el agregado, la sesión y el borrador deben retornar mientras sea falso. Si el `commit` es ambiguo o queda bloqueado, el shell vuelve a inspeccionar y solo vuelve a habilitarse mediante una ruta válida. No retire esta condición al mover una pantalla, un hook o un controlador.
 
-### Recuperación deliberada
+### Recuperación explícita
 
-La pantalla de recuperación no muestra valores del usuario en sus detalles; lista rutas y códigos de incidencias. Sus acciones son:
+La recuperación no revela valores del usuario en sus detalles: expone rutas y códigos de incidencias. Sus operaciones son recuperar la última instantánea verificada, exportar el payload en cuarentena con contraseña, reintentar la inspección sin respetar una cuarentena previa o descartar los datos afectados tras confirmación. Al descartar, se escribe un `createInitialStore()` con la configuración de proveedores disponible y se eliminan sesión activa, instantánea y borrador de sesión; no implica borrar indiscriminadamente preferencias u otras particiones personales.
 
-- **Recuperar última copia**, solo si hay una instantánea verificada; restaura y vuelve a hidratar.
-- **Guardar copia dañada**, si se conserva el payload; solicita contraseña y exporta contenido cifrado.
-- **Volver a intentarlo**, que inspecciona de nuevo sin respetar una cuarentena previa para aceptar una reparación externa.
-- **Descartar estos datos y empezar de cero**, protegido por confirmación.
+## Composición: shell, runtimes, controladores y UI
 
-Al descartar, `discardAffected` escribe un `createInitialStore()` con las claves de proveedor cargadas —o las predeterminadas— y elimina la sesión activa, su instantánea de plantilla y su borrador. No borra las particiones de datos personales ni preferencias. La E2E de recuperación comprueba que un JSON roto permanece intacto hasta una acción explícita, que la exportación está cifrada, que los detalles omiten valores privados y que reintento, restauración y descarte solo eliminan la cuarentena por una ruta válida.
+`GymnasiaApp` posee el ensamblaje y los efectos transversales: crea el runtime de almacén local, hidrata estado, conecta servicios de plataforma y decide qué superficie se renderiza. Los hooks de dominio reciben datos y capacidades concretas —por ejemplo `useDietRuntime`, `useMeasurementsRuntime` y los runtimes de Configuración— y exponen controladores con `model`, `actions` y, cuando corresponde, `back`. Las pantallas reciben esos contratos (`HomeScreen`, `DietMealsScreen`, `MeasurementsScreen`, pantallas de entrenamiento y `SettingsScreen`) en lugar de leer directamente almacenamiento o servicios de plataforma.
+
+El shell conserva el estado que cruza dominios o compone vistas: pestaña, sesión activa, ruta anidada de entrenamiento y overlays globales. El controlador de Inicio ilustra la frontera: recibe `openTraining` y `startTrainingSession` desde el shell; si hay sesión abre Entrenamiento, si hay una plantilla ejecutable inicia esa plantilla y, si no, abre Entrenamiento para crearla. Por tanto una pantalla no debe inventar otra ruta ni persistir por fuera del runtime que la posee.
 
 ## Insets y superficie raíz
 
-`App` envuelve exactamente una instancia de `GymnasiaApp` en `SafeAreaProvider`; la superficie normal de `GymnasiaApp` es un `SafeAreaView` de `react-native-safe-area-context`. Esto es necesario para los insets bajo edge-to-edge de Android: no se debe importar `SafeAreaView` desde `react-native` ni compensar `StatusBar.currentHeight` manualmente, porque duplicaría el margen del contenedor raíz.
+La superficie normal se dibuja dentro de un `SafeAreaView` de `react-native-safe-area-context`. Con el modo edge-to-edge de Android no se debe importar el `SafeAreaView` del core de React Native ni añadir `StatusBar.currentHeight`: ambos provocarían insets ausentes o duplicados. Los `Modal` nativos quedan fuera del contenedor raíz, por lo que cada modal debe aplicar su propio `SafeAreaView` de la misma biblioteca. El contrato estático protege un proveedor raíz único y prohíbe las compensaciones manuales y el import del core.
 
-Los `Modal` nativos se dibujan fuera de ese contenedor, así que cada uno debe aplicar su propio `SafeAreaView` de la misma biblioteca. El contrato estático enumera los modales nativos actuales —informe de IA, recuperación local y contraseña de copia— y falla si aparece el import del core, una compensación manual o más de un proveedor raíz.
+## Navegación: un estado, dos formatos
 
-## Navegación: un estado, dos presentaciones
+No hay rutas URL ni una pila principal restaurable. `TAB_DESTINATIONS` es el registro único de los `TabKey`: `home`, `training`, `diet`, `measures`, `chat` y `settings`; también declara etiqueta, iconos y `testID`. La pestaña es estado React, inicialmente Inicio salvo un restablecimiento incompleto, que abre Configuración. El shell selecciona el contenido de la pestaña y las rutas secundarias conservan su propio estado y controlador.
 
-No hay rutas URL ni una pila principal restaurable. `TAB_DESTINATIONS` es el registro único de `TabKey`: `home`, `training`, `diet`, `measures`, `chat` y `settings`. `tab` es estado React; comienza en Inicio y comienza en Configuración únicamente cuando un restablecimiento por borrado informa estado `incomplete`. El renderizado de `App` selecciona la pantalla de cada pestaña y las vistas secundarias —detalle/editor de rutina, sesión, selectores y overlays— conservan su estado/controlador propio.
+`usesDesktopNavigation` solo devuelve escritorio cuando `Platform.OS === "web"` y el viewport tiene al menos 960 px. En ese caso se monta `DesktopSidebar`; en web estrecha y en iOS/Android se usa la navegación compacta de `AppHeader`, incluso si el dispositivo nativo es ancho. Ambos controles llaman al mismo `onTabChange`, por lo que cambiar el ancho intercambia el control visual sin reiniciar `tab` ni una vista anidada.
 
-La página Inicio no reproduce reglas de navegación: `useHomeController` recibe los destinos desde el shell. Su acción primaria abre Entrenamiento si hay una sesión activa o no existe plantilla ejecutable; solo inicia la primera plantilla ejecutable cuando no hay sesión activa. Así la tarjeta de Inicio comparte el mismo `setTab("training")` y el arranque de sesión que el resto del shell.
-
-El registro de destinos también define etiquetas, iconos y `testID` de ambos formatos. `usesDesktopNavigation` habilita escritorio exclusivamente en `Platform.OS === "web"` con viewport de al menos 960 px. En ese caso se monta `DesktopSidebar`; en web estrecha y en iOS/Android, incluso con pantalla grande, `AppHeader` monta la banda horizontal. Ambos invocan el mismo `onTabChange`, por lo que cambiar el ancho intercambia el control visual sin reiniciar `tab` ni el estado anidado.
-
-| Formato | Registro visual | Selectores |
+| Formato | Navegación | Selectores |
 |---|---|---|
-| Escritorio web | Barra lateral de 246 px con los seis destinos. | `desktop-nav-${key}` |
-| Compacto, web estrecha y nativo | Banda horizontal en el encabezado con los mismos destinos. | `nav-tab-${key}` |
+| Escritorio web | Barra lateral con los seis destinos. | `desktop-nav-${key}` |
+| Compacto, web estrecha y nativo | Banda del encabezado con los mismos destinos. | `nav-tab-${key}` |
 
-Añadir una pestaña exige actualizar `TAB_DESTINATIONS` **y** el renderizado de contenido de `App`; las dos barras se derivan del registro. Las pruebas de `shellRegistry` fijan destinos, frontera de 960 px, selectores únicos y que Android/iOS nunca reciban escritorio por su ancho.
+Añadir una pestaña exige actualizar `TAB_DESTINATIONS` **y** el renderizado de contenido de `App`; ambas barras se derivan del registro, pero el contenido no. Las pruebas del registro fijan destinos, la frontera de 960 px, selectores únicos y que Android/iOS nunca adopten escritorio solo por su ancho.
 
-## Atrás de Android y propiedad de superficies
+## Atrás de Android y propiedad de las superficies
 
-`SHELL_BACK_LAYERS` registra las capas que pertenecen a `BackHandler`: identificador, alcance, prioridad única descendente, `testID`, propietario y comportamiento. `App.tsx` construye de forma exhaustiva el mapa de visibilidad y el de handlers desde controladores y estado local. `resolveShellBackCommand` elige la primera capa activa según el orden del registro. Existe una sola suscripción Android, estable, que consulta un `ref` actualizado en cada render y por tanto usa el estado y handler actuales sin resuscribirse.
+`SHELL_BACK_LAYERS` registra cada superficie propiedad de `BackHandler`: identificador, alcance, prioridad única descendente, `testID`, propietario y comportamiento. `App.tsx` debe construir de forma exhaustiva el mapa de visibilidad y el de handlers a partir de estado local y de controladores. `resolveShellBackCommand` toma la primera capa activa en ese orden; existe una única suscripción Android estable que consulta un `ref` actualizado en cada render, evitando resuscripciones y cierres obsoletos.
 
 ```mermaid
 flowchart TD
     Back["Atrás físico"] --> Layer{"Capa registrada activa"}
-    Layer -->|"sí"| Close["Ejecutar handler de mayor prioridad"]
+    Layer -->|"sí"| Close["Ejecutar handler prioritario"]
     Layer -->|"no"| Template{"Ruta de plantilla"}
     Template -->|"editor sucio"| Draft["Pedir descarte"]
     Template -->|"otra ruta abierta"| TemplateClose["Cerrar plantilla"]
     Template -->|"cerrada"| Session{"Sesión activa"}
     Session -->|"sí"| Discard["Pedir descarte de sesión"]
-    Session -->|"no"| Tab{"Pestaña no es Inicio"}
+    Session -->|"no"| Tab{"Pestaña fuera de Inicio"}
     Tab -->|"sí"| Home["Ir a Inicio"]
     Tab -->|"no"| System["Delegar en Android"]
 ```
 
-*Las capas visuales prevalecen sobre rutas anidadas, sesión y pestaña; solo Inicio sin superficie administrada devuelve el control al sistema.*
+*Una capa registrada prevalece sobre rutas anidadas, sesión y pestaña; Inicio sin superficie administrada devuelve el evento al sistema.*
 
-Los `Modal` nativos y las pantallas de recuperación/fallo figuran por separado en `SYSTEM_OWNED_SHELL_SURFACES`: React Native gestiona `onRequestClose` de los modales y las pantallas de arranque delegan en el sistema; no participan en el resolvedor global. Al crear una superficie, regístrela con propietario y prioridad si debe responder a Atrás; renderizarla no basta.
+Los modales nativos y las pantallas de recuperación/fallo aparecen separadamente en `SYSTEM_OWNED_SHELL_SURFACES`: React Native gestiona `onRequestClose` de los modales y el arranque delega al sistema. Una nueva superficie que deba responder a Atrás necesita registro, estado de visibilidad, handler y prueba; renderizarla no basta.
 
-## Sesión, avisos locales y retorno a primer plano
+## Sesión, alertas locales y ciclo de vida
 
-Al iniciar una sesión se solicita permiso de notificaciones y, en Android, se crea o consulta el canal local `rest_end_alert` con importancia máxima, sonido, vibración, visibilidad pública y `bypassDnd`. Los errores se trazan y no impiden continuar con el entrenamiento. El shell prepara el aviso de descanso al entrar en un descanso programable: cancela avisos anteriores, valida sesión y preferencias y programa una notificación fechada con el instante esperado. Al pasar a segundo plano persiste el reloj conciliado y conserva el aviso armado solo si sigue siendo aplicable.
+Al iniciar una sesión se solicitan permisos de notificación y, en Android, se crea o consulta el canal `rest_end_alert`. Un fallo se traza pero no bloquea el entrenamiento. Cuando empieza un descanso programable, el shell cancela avisos anteriores, valida sesión y preferencias y programa la notificación para el instante esperado. Al pasar a segundo plano persiste el reloj conciliado y conserva el aviso solo si sigue aplicando.
 
-En primer plano, el temporizador reproduce la alerta interna al terminar el descanso. El `setNotificationHandler` suprime banner y sonido de una notificación de descanso recibida en primer plano para evitar duplicados. Los listeners, la bandeja y la última respuesta aportan evidencia de entrega y el retraso respecto de `expected_at_ms`; esa evidencia decide si se reproduce la alerta interna recuperada en la ventana de respaldo.
+En primer plano, el reloj reproduce la alerta interna al terminar. El `setNotificationHandler` global suprime banner y sonido de una notificación de descanso recibida en primer plano para evitar una alerta duplicada. La bandeja, listeners y la última respuesta aportan evidencia de entrega y el retraso frente a `expected_at_ms`; esa evidencia determina si corresponde la alerta recuperada al volver.
 
-## Variantes Expo, permisos y aislamiento
+## Variantes Expo, permisos y aislamiento local
 
-`app.config.ts` exige `APP_ENV` y acepta `development`, `staging` o `production`. Cada variante recibe nombre, identificadores iOS/Android, canal de política y espacio de nombres. Desarrollo usa proveedor `fake` por defecto y puede cambiar a `byok` con `DEV_PROVIDER_MODE`; staging y producción usan `byok`. La configuración inyecta esos valores, versión de configuración y metadatos de política en `expo.extra`, y configura el endpoint de incidencias.
+`app.config.ts` exige `APP_ENV` con `development`, `staging` o `production`. Cada variante define nombre, identificador iOS/Android, canal de política y espacio de nombres. Desarrollo usa `fake` por defecto y puede usar `byok` con `DEV_PROVIDER_MODE`; staging y producción usan `byok`. El config inyecta esa configuración, la versión de configuración, metadatos de política y el endpoint de incidencias en `expo.extra`; `resolveRuntimeEnvironment` rechaza extras ausentes, híbridos o incompatibles.
 
-Al arrancar, `resolveRuntimeEnvironment` rechaza extras ausentes, híbridos o incompatibles y metadatos de política inválidos. AsyncStorage y SecureStore no productivos se prefijan con el espacio de nombres; producción conserva claves canónicas. Así las instalaciones de prueba no comparten estado local con producción.
-
-El manifiesto declara `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM` en Android, y bloquea explícitamente `USE_EXACT_ALARM`, instalación de paquetes, micrófono y ventanas superpuestas. `app.config.ts` añade dinámicamente `expo-notifications` con sonidos empaquetados. No se declara permiso de servicio en primer plano.
+Las claves AsyncStorage y SecureStore se prefijan fuera de producción mediante el espacio de nombres; producción usa las claves canónicas. Esto evita que instalaciones de prueba compartan estado local con producción. El manifiesto Android declara `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`, bloquea `USE_EXACT_ALARM`, instalación de paquetes, micrófono y ventanas superpuestas, y no declara servicio en primer plano. `app.config.ts` añade dinámicamente `expo-notifications` y sus sonidos empaquetados.
 
 ## Validación enfocada
 
-Use controles proporcionales al límite modificado:
+Use validación proporcional al límite modificado:
 
 ```bash
 npm --workspace apps/mobile exec tsc --noEmit
 npm --workspace apps/mobile run test:deterministic -- shell/shellRegistry.test.ts shell/shellRegistry.contract.test.ts shell/safeArea.contract.test.ts
 npm --workspace apps/mobile run build:web
+npm --workspace apps/mobile run test:shell-navigation:e2e
 npm --workspace apps/mobile run test:storage-recovery:e2e
 ```
 
-`shellRegistry.test.ts` cubre destinos, prioridad determinista y los fallbacks plantilla/sesión/pestaña/sistema, incluso mediante propiedades sobre combinaciones de capas. `shellRegistry.contract.test.ts` exige una suscripción estable, estados y handlers exhaustivos y `testID` para cada superficie. `safeArea.contract.test.ts` es estática: cubre todos los fuentes de la app y protege los insets de Android. Para cambios en permisos, canales, audio o alarmas, la exportación web no basta: valide una compilación nativa con permisos concedidos y denegados y una transición real a segundo plano/primer plano.
+`shellRegistry.test.ts` cubre destinos, prioridades y fallbacks de plantilla, sesión, pestaña y sistema; el contrato exige una suscripción estable, handlers/estados exhaustivos y `testID` por superficie. `safeArea.contract.test.ts` inspecciona todas las fuentes de la app para proteger los insets de Android. `shell-navigation.e2e.mjs` exporta el bundle web de desarrollo, siembra un almacén local y recorre los seis destinos a 390 y 960 px; además verifica que capas representativas se abren y cierran sin perder estado de vista anidada. Para permisos, canales, audio o alarmas, la exportación web no sustituye una compilación nativa probada con permisos concedidos y denegados y una transición real entre segundo plano y primer plano.

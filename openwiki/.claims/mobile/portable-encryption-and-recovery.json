@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:ff109e3edc317414a5336f9cad13fd9affc0b661b69b1e617f8b5afd3afdb87b",
+  "pageVersion": "sha256:01277c9f38979b859e13ebc44969cea24dba115cc494ef6c07ff4126160a69f7",
   "claims": [
     {
       "id": "claim_30492e8645b24753aa31b7f944c3000b",
@@ -227,10 +227,24 @@
           "version": "repo-lines-v1:sha256:742319ddd27e711be9d048b1c600966fd477b87f1ff649ad02606858a406a2ad:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmMjY1NjE4Yzc2YmQyMjU2OWMwNDY3YjliYmJhNGRkMjRlODZjNjBlZWY2MDBiODFhZTgxY2U0ZGYyYTUyNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_b89ffd801d6944c69201ce98d5efee53",
+      "statement": "Las credenciales históricas de VivaGym (`vivagym.email` y `vivagym.password`) se retienen en SecureStore durante actualizaciones normales sin que la integración retirada las lea o escriba, pero se incluyen como claves literales en el inventario de borrado completo de datos personales.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/legacySecureStorage.ts#L1-L9",
+          "version": "repo-lines-v1:sha256:2d49f15776998fa7bdabb81258f087379ee725b9348b4409dab20a163438f2ce:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFjYTFjYjQ3YjIyODg4OTM4ZDMwZjcwNjlkYjJjMmVkZDViM2ZiOTIyZTAwZjZhNDA4YjcyYmJhNjc2NmI0MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmNkYzc2ZDEyZTUzMDRkMzA3OWVkYjVmODkwMDA3ZWEwNWYyMjZlNGQ5M2I2OTU2ODQ2MGNhZmFmODAwNzQ0YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.ts#L70-L81",
+          "version": "repo-lines-v1:sha256:1ca5147d9a8629a32736f159ec364c119f27af86991fc1afe033bfa8556f020a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZkYWQ4ODdiOTE3ZGVhMGRhMjM1N2U5Y2I2ZTA0NzYyZTg2YWYwZDE4Mjk4YmNlMGU1MDJjYTRkYTEyNzJhN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZGM3NmQxMmU1MzA0ZDMwNzllZGI1Zjg5MDAwN2VhMDVmMjI2ZTRkOTNiNjk1Njg0NjBjYWZhZjgwMDc0NGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlNzg0ZGJkMzM0NzcxODgyMGU4ZDNlYmZlZjc4YjQ0MDA3NDdkNmY0NjNmZmJlNDlkNjk3ZTQ5YjE4NTRkZmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkZWYwZWYyOTQ5OTA0YzlkODY4NGFkZmY4OGYyNWM5MzE2OGM2ZjJkZWQ3MGY4NGRkM2E2Y2YwZGJkZGUyY2MifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-10-17T11:49:19.843Z"
   }
 }

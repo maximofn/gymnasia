@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:b1fefe48f018ce0b38ba5c8646938017e8de250b03c189895bd9547004e8b85b",
+  "pageVersion": "sha256:df7f945f7af15eadf77abe38dfc64478e9f3f9e6aaf74cabe99cc6e1dc750041",
   "claims": [
     {
       "id": "claim_593d6e5c167c4d37bb621397b1ddd1a3",
@@ -387,10 +387,78 @@
           "version": "repo-lines-v1:sha256:62b2db12ecc25964fd0021bb5c32466e4661c8ea6905713e14a662c5121079f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlNjI1OTM1MWViMTIwMjI1ZTJjZGUwYzlhZjg2ZTg1ODZmMjJlYzMyYzQ5NjVlNDE3MmMwZTA0ZTYxMWVhOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjZGRiYmIyNTAxN2NlNjVmMzQ5MTMxODlkNjc2YmFkZTlmN2I2MDUzYjU4NjQ0ZWE2ZjE4OTg0M2M0ZGU2ZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2M2ZhMDYwZGJiMjQwODRjMGNjMzRmNTQzNjU0MzU3MmVkNGJhMDU2YmUzOTNmNjhkYjM1NmFkYjA2NDAyNGUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_2bb26b74de6f4419a5b077c6f6f6e62a",
+      "statement": "En web, el diario de configuración BYOK se persiste en AsyncStorage con credenciales, mientras que en nativo con SecureStore el diario canónico se guarda allí y el espejo de AsyncStorage se sanea dejando `api_key` vacío; si no hay almacenamiento seguro nativo, la aplicación no crea el repositorio y rechaza guardar una nueva configuración.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L3978-L4031",
+          "version": "repo-lines-v1:sha256:1653ccfca476ca5c440b57d507a9ca800de5274edd0aeec5c36d8456e34785a8:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4ZjEzZDhjMTc4ZjVjNzgzZTZmNDQxYmQ5YWUwNmRiYzllZTY1YTNkNGNlMTdiY2NhMWEzNmFiZWZhOWZiODgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY1NWFmNDBmNzE0MjE2MzY2NmQ4ZmZhMjdjM2JjNTYwNDZlMDZlOWFhMTllMTg4ZDQ5ZmUzZjFiZWQwYWU5MzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwZjE3MWE3MDdiODI0MmIzYzA1YTY3MmU4YjBmNDExNmViNWVmYjM5NTY2M2JlNTcwMTM4MzE1YTk0Nzk4NjAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L8112-L8147",
+          "version": "repo-lines-v1:sha256:90eb279f697a8f8599c77ea29baea8c20c511db7e97d4b9c655364762ec66bd3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2MjY0MTJiYWI3ZmYwMjNiZDc1NDM2ZWVhOGYyOGYyOTUzMDE2MDkwNzA1NTViMTQwYmZlN2ViN2QwMzdhMjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJlOTE5NDQ3MTZhMjI4NDRjZmMyMjM0YTQ4OTEwNDUzNTU5ZTRmZjIyZGUxNzEzOWQxYWQxODA0YjJlMDRhMWEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerConfigurationPersistence.ts#L131-L160",
+          "version": "repo-lines-v1:sha256:ebbbab252fc488c87dad05358f05049f168f9b2e362906a0ff220eeb7a994854:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg5MmMzYmYxZTFiZjg5NGQzMjYzYjE5M2UzNTU5ZDExOThkNmFlZTQwZTgyODVmNGNjZGIyZjlmZTBmZGM4NDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhN2U4ZjdhNTczYmNlNDI4MmQyN2FlYzc2N2E0NjYxOTc5M2NlNTU2OWVkOTc5NzgzZGY4NTRlN2YxNTNkYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjZjNlNzEzNGM1ZWM3ZTZiNzU2NmVmZjExMWM0YTYxMDllYWQ4MWZlOTdhNzNiNTBiZTJjMGEwZjg4NGY5NWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhN2JlMDlhZmQ5ZGM2ZjUzZWFhYzk0YjkyYjkwOGMzZDQ5MjNjMjM5Zjk1MjI1MWQxZjcxOWY5NDM1NGQyMjMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b1c29da5f3d04edfaf6143f146785609",
+      "statement": "La consulta de modelos de un proveedor `custom_openai` exige HTTPS y usa `GET {base_url}/models` con bearer BYOK, `credentials: \"omit\"` y redirecciones rechazadas; limita el cuerpo a 1 MiB y elimina la clave de los mensajes de error reflejados.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIModels.ts#L10-L28",
+          "version": "repo-lines-v1:sha256:e65f3b9ef0776392e84034dcec0359211dcf94bb7d170397117f475ae84c94c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmYzY1MjU0NDVhMzkwNjY0Yjk5Njc4NzI5MTU5MDc5M2ZiMmQxMjk3MGRlOGZiMDk1NTNjMmQzNGE2ZmM1OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0ODcxMmZhMjZiNTZlMzIxYWI5NzU3NjMwNWE1MDM0MzI1YzRmZjM4YjEwODllY2I3MGU0NTc2NWJkMmMwZGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5NjllYmEyOGM1MWJkM2JkNGFlYzM2MDY1ZDQ0ZWYxZDhiMTY3NWU5ZWQ1MDUwNTAxMjA1OTljNzYwNTY0NzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk1OTZhODNlZGYxYjJlNTI2NzNmZDc2YThmODRjODlmNGU3MzIxNGRkODZjZTYyNzJjNGRjOTE5NmE3NmVkZWQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIModels.ts#L31-L85",
+          "version": "repo-lines-v1:sha256:3e6e78c1d9a5091291c5e6d5df84210f4e35b478b9dc01e399be96fb0855f086:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1YzU1OWRjZWQyYTNiNTI4OTc4OWVlMGMxM2Q2YmRkZmU3ZTUyM2U1NGRmMDI1Mzc4MzZlNmYxNjM4Yjg1ZTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4NmFiZWY0N2ZjYWU1MTJhNDdjNTY2OGQ0NjJkN2EyYzA3MTliN2M3Y2FhNjhhZjQ5Yzg5Y2VhNDA1NDllYzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM0ODEwNDI5YWEwYjlhOTE3OTAwODg0MmU4NjZlYjI4N2FlNzMxNWVkZTYwZTFmMTRiZGI5ZjUzN2E5YjRmZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmNzM5YTA2YzFjYmIxMjQ0ZTMzNjNkMzhiY2Y5ZmE1MGNlODRmZWQzOTljMjE5M2EzYzdmMDhkNTk5MThiMmEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIUrl.ts#L1-L27",
+          "version": "repo-lines-v1:sha256:6c28e45ed08bb4fcd0dc0ff0f5b5f56cfc796233a76926ba958db3862866066e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ2YzVlNzgxMmJiYTkwNTcxMzhlYmEwM2FkYzdlMTc0NDc4ZWQzY2JlMTIxYmMwNGM2YzJhODI3YzRiNzIyMzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlZDkxYzQyMzkwOTA5YzFkY2YxNzQ3MWQ2M2I0OTNiYWYzNDJiYWFiZTQwYjk3ZmZmNzZkNGM3YzRjYmI0Y2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_525dd0ad516f4e9e95a009248f83cd4e",
+      "statement": "La conexión directa a Anthropic desde web añade la cabecera `anthropic-dangerous-direct-browser-access` para hacer legible la respuesta CORS; por tanto, una clave BYOK que reside en el navegador debe tratarse como expuesta a quien pueda inspeccionar esa sesión.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/providerChatClient.ts#L223-L241",
+          "version": "repo-lines-v1:sha256:389a5afcc818fcefb287e4fae1d29251a2988242239cab041d31dec4619a1fdd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFjMjdlYzIzMWY2ZjQ0YjNhMDk5YjBlNTkyNTdmNTc0NjZiYzI2ZTAzZDNjNTI4Y2RiZGFjNzFkNzBmMzdmZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2NzdkMmYwMzFlOThiNWU5MTFjNWFkNGZiOWIyMTg2YTkzMjUyMmU4ZjQ2ZWU0MGJhYmZhZTNkYTAwZmMxMjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5NjNjYTc3NDA5M2Y1N2NkNTBmYTdhOWI1MjI0NzIxM2Y4OGI2ZWI4NWNkMzMwOTQ4YzRjNmYwNjYyNzA1ZjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJlYWVlZTc1ZGQ1ZWFkZTZiYzRiODQwMGUxMTYwZDIyNGQ1NjMxODhhMzczNzYwMDVhNzNjNzY1MTBkOGZlZTMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerTransport.ts#L47-L75",
+          "version": "repo-lines-v1:sha256:62b2db12ecc25964fd0021bb5c32466e4661c8ea6905713e14a662c5121079f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlNjI1OTM1MWViMTIwMjI1ZTJjZGUwYzlhZjg2ZTg1ODZmMjJlYzMyYzQ5NjVlNDE3MmMwZTA0ZTYxMWVhOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjZGRiYmIyNTAxN2NlNjVmMzQ5MTMxODlkNjc2YmFkZTlmN2I2MDUzYjU4NjQ0ZWE2ZjE4OTg0M2M0ZGU2ZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2M2ZhMDYwZGJiMjQwODRjMGNjMzRmNTQzNjU0MzU3MmVkNGJhMDU2YmUzOTNmNjhkYjM1NmFkYjA2NDAyNGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f29eac2bb185486f9010516000a12a9d",
+      "statement": "La ruta Anthropic mediante proxy es opcional y se selecciona solo en web cuando se configura una URL base; las solicitudes envían al proxy credenciales y contenido en JSON para que este contacte con Anthropic, por lo que BYOK no implica procesamiento local.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/providerChatClient.ts#L212-L241",
+          "version": "repo-lines-v1:sha256:7efd5d6633a93278cc85fa0751234f4ff618cd85ebc1eac0687fb727533453cd:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5NzViYTcwMGU4N2Q5MTA3YzhjNzc0OWM5NDdjMjliM2I4MzIzMTI5NzAxNGVkNjY0OTJhNThlNmNlMDk0MjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2NzdkMmYwMzFlOThiNWU5MTFjNWFkNGZiOWIyMTg2YTkzMjUyMmU4ZjQ2ZWU0MGJhYmZhZTNkYTAwZmMxMjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmMzVmY2E0Yzg5MWZkYWUyMjkwNTk1ZDE3YjY2NWRhMDRiMTRmNWUxMGYyNjM0ODRkNGQ1M2I0YWE5YTdiNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJlYWVlZTc1ZGQ1ZWFkZTZiYzRiODQwMGUxMTYwZDIyNGQ1NjMxODhhMzczNzYwMDVhNzNjNzY1MTBkOGZlZTMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerChatClient.ts#L94-L141",
+          "version": "repo-lines-v1:sha256:f70b5bdc34cffaeb752a8c35142d82015722a851d36f558d219b18c587531513:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2N2JmMzRhNGQxMGIyMmZjYzkyZjQzMGIwYjViMmVjMTQxZmY5Y2QyODI2NDMwZDMxNzZmMDRhZmUxYWIzZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlZDUzZDY3NTNhNjkxN2RlMWRlNDAwMjgzNDYzZGZhY2RkNzcyZmExZmJlZTFmYTFlNTBjOGQwMTQyODQ2ZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2ZDcyZjA5MzA1NzM3YzZiYzIzNTRjNDk5ZGMyM2VhNTE0MWNmYjVlNDBmMmRhZWUyNGM0NzM0Mjk4NjYxYzcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerVerification.ts#L103-L142",
+          "version": "repo-lines-v1:sha256:048421ae0668cfc9d6e4ebdbf94d0ace269c1b883f47b2890b721cd167732821:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkNzA1ZTRmYmMwNjUyNzRkOTZkMTUyYzYyMTA5YWY4NmEzMDc3NjNkZjUyZGRjZmVjMjMzNzE1YmFjZTA4NWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxYmZjNWFjYWVmNzE5Y2E3NTdmYmM1NzRjOGMxN2ZlNjJmYjAyNTlkYTkyNzFlNGU5YmFjNjZjYjFjZTZiMjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkxZTE3Y2E1MDllODlhNDNhNmNlNzc3ZmI0YTMzYTMyNjJkOTBiOGRiYTNmOGQ2YmU4NTllZmM0NDZiYjMwYjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhMDYzYTgyYWQ3YTIwNmY0MTMxNjJlMmNjOGMwZmFmNGYwZGQ4MWM3ZjNkYjQ2MzQxNWRkNjBmYzlhZjlhMGQifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-10-17T11:49:19.843Z"
   }
 }

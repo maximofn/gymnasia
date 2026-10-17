@@ -1,7 +1,7 @@
 ---
 type: automatización operativa
-title: Automatización privada de OpenWiki
-description: Flujo privado de GitHub Actions que actualiza documentación de Gymnasia, conserva estados sensibles cifrados y emite un informe diario saneado. Describe sus fronteras operativas y cómo diagnosticarlo sin convertirlo en parte del runtime del producto.
+title: Automatización de OpenWiki
+description: Flujos privados de GitHub Actions que actualizan la documentación de Gymnasia, conservan estados sensibles cifrados y emiten telemetría e informes saneados. Describe sus fronteras operativas, diagnósticos y validación sin convertirlos en runtime del producto.
 tags: [openwiki, github-actions, langsmith, oauth, automation]
 openwiki:
   roles: [operations, workflow, testing]
@@ -40,16 +40,13 @@ sources:
     resource: repo://ops/openwiki-automation-template/tests/private-state.test.mjs
   - id: openwiki-source-e204cf07a21df797f3596f66
     resource: repo://ops/openwiki-automation-template/tests/workflow.test.mjs
-  - id: openwiki-source-5f54a5d73b084f492a32d739
-    resource: repo://ops/openwiki-runtime-telemetry.json
-  - id: openwiki-source-0a13a298cbfa4034a28c8e67
-    resource: repo://ops/openwiki-automation-template/scripts/openwiki-telemetry.mjs
-  - id: openwiki-source-92686d2e99f44496bf2c35a1
-    resource: repo://ops/openwiki-automation-template/scripts/render-openwiki-telemetry.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-17T11:49:19.843Z
 ---
 
-# Automatización privada de OpenWiki
+# Automatización de OpenWiki
 
 `ops/openwiki-automation-template` es un runner documental privado, separado de la aplicación Gymnasia. Mantiene dos ámbitos: el **Code Brain**, que puede proponer cambios exclusivamente bajo `openwiki/` y `.openwikiignore` en la rama `openwiki/update`, y un **Personal Brain** que permanece privado. Ninguno es una dependencia de ejecución de `apps/mobile`, del agente ni de los Workers del producto. Para el runtime y la entrega de Gymnasia, consulte [Inicio rápido](../quickstart.md) y [Compilación, publicación y validación](build-release-and-testing.md).
 
@@ -81,7 +78,7 @@ flowchart TD
 
 El checkout no conserva credenciales de GitHub. Antes de invocar OpenWiki, el workflow comprueba que `AGENTS.md` enlaza con `CLAUDE.md`, materializa una copia para la herramienta y, al publicar, restaura ambos archivos desde `origin/main`. El commit elimina el checkpoint transitorio `openwiki/.run.json` e indexa únicamente `openwiki`, `.openwikiignore` y, cuando se renueva, `ops/openwiki-runtime-telemetry.json`; la rama se empuja con `--force-with-lease` contra el SHA observado y crea o actualiza una PR contra `main` solo cuando hay cambios preparados. El paso de commit requiere que el paso de OpenWiki haya concluido y que OAuth se haya cifrado, pero puede conservar páginas duraderas terminadas si el comando devolvió un resultado de fallo; después el workflow propaga ese fallo. Así se preserva la topología revisada de instrucciones, se evita publicar archivos ajenos a la wiki y se permite reanudar el trabajo mediante la PR.
 
-La instalación efectiva requiere Node 22.22.x: tanto el manifiesto como el lockfile fijan el paquete de la plantilla en la versión 1.0.0, Node `>=22.22.0 <23` y las dependencias directas `openwiki` 0.5.0, `langsmith` 0.7.17, `jsdom` 29.1.1 y `mermaid` 11.16.1. El lockfile confirma ese grafo para `npm ci`; por sí solo no demuestra un cambio de comportamiento distinto del que declaran el manifiesto y los workflows.
+La instalación efectiva requiere Node 22.22.x: tanto el manifiesto como el lockfile fijan el paquete de la plantilla en la versión 1.0.0, Node `>=22.22.0 <23` y las dependencias directas `openwiki` 0.6.0, `langsmith` 0.7.17, `jsdom` 29.1.1 y `mermaid` 11.16.1. El lockfile confirma ese grafo para `npm ci`; por sí solo no demuestra un cambio de comportamiento distinto del que declaran el manifiesto y los workflows.
 
 ## Estado sensible y ciclo de vida
 

@@ -52,7 +52,10 @@ sources:
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-17T11:49:19.843Z
 ---
 
 # Arquitectura local-first
@@ -125,7 +128,7 @@ Al arrancar puede utilizarse una caché válida marcada como `cached` o `stale`.
 
 ## Política y llamadas de IA
 
-El agente obtiene un *lease* de política al iniciar una conversación o un turno. En `Local` usa el snapshot integrado. En los canales remotos, el runtime resuelve una activación, descarga el bundle y su firma, y comprueba hash, firma Ed25519, entorno, canal y contrato de herramientas contra raíces públicas integradas. Puede recurrir a caché o snapshot integrado según el resultado de verificación, pero no debe aceptar contenido remoto no autenticado.
+El agente obtiene un *lease* de política al iniciar una conversación o un turno. En `Local` usa el snapshot integrado. En los canales remotos, primero consulta los deployments de GitHub del repositorio para el `task` `gymnasia-policy` y el canal solicitado; solo considera un deployment cuyo estado más reciente sea `success`. La resolución se memoriza —incluidos los errores— durante cinco minutos. El payload se admite únicamente si tiene el esquema exacto esperado y URLs de descarga de la release candidata permitida; después el runtime descarga el bundle y su firma, y comprueba hash, firma Ed25519, entorno, canal y contrato de herramientas contra raíces públicas integradas. Puede recurrir a caché o snapshot integrado según el resultado de verificación, pero no debe aceptar contenido remoto no autenticado.
 
 El *lease* congela prompt, política sanitaria combinada, procedencia y contexto de activación para ese uso. Los flujos de conversación, asistente de alimentos personales y estimación nutricional usan esa selección para clasificar la entrada y para adjuntar `policy_context` a respuestas, incluso cuando el guardrail bloquea la llamada al proveedor. Modificar la entrega de política exige preservar los contratos sanitarios y de herramientas.
 

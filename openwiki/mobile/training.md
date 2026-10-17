@@ -1,6 +1,6 @@
 ---
 type: concepto de dominio
-title: Entrenamiento y sesiones
+title: Entrenamiento móvil
 description: Contratos y ciclo recuperable de plantillas, series, sesiones, historial y descansos de entrenamiento. Distingue los datos durables de los controles de interfaz y las validaciones que evitan perder trabajo o duplicar resúmenes.
 tags: [mobile, training, workout-templates, workout-execution, transactions]
 sources:
@@ -8,12 +8,18 @@ sources:
     resource: repo://apps/mobile/App.tsx
   - id: openwiki-source-d85e28abe300f8689fbec4b2
     resource: repo://apps/mobile/controllers/trainingController.ts
+  - id: openwiki-source-1466bf85220fb21f725d9cd7
+    resource: repo://apps/mobile/screens/TrainingOverlays.tsx
   - id: openwiki-source-0c1c1cf9365f0a086537a465
     resource: repo://apps/mobile/scripts/train-compound-execution.e2e.mjs
   - id: openwiki-source-925b08011eb916f5e46a3640
     resource: repo://apps/mobile/scripts/train-history-snapshot.e2e.mjs
+  - id: openwiki-source-0602fc7950f80faa65975108
+    resource: repo://apps/mobile/scripts/train-series-migration.e2e.mjs
   - id: openwiki-source-3d1e8494385688fc7860919a
     resource: repo://apps/mobile/scripts/train-series-operations.e2e.mjs
+  - id: openwiki-source-b420fd5182e554792b6268b9
+    resource: repo://apps/mobile/scripts/train-usability.e2e.mjs
   - id: openwiki-source-ce2a29d26d2fc9bbc6f67477
     resource: repo://apps/mobile/training/restNotificationContract.ts
   - id: openwiki-source-3f488b56edb095ad7ccfcb94
@@ -44,11 +50,11 @@ sources:
     resource: repo://package.json
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+    at: 2026-10-17T11:49:19.843Z
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
 ---
 
-# Entrenamiento y sesiones
+# Entrenamiento móvil
 
 El dominio separa la **prescripción editable** (`WorkoutTemplate`) de una **ejecución recuperable** (`WorkoutSession`) y de su resultado inmutable (`WorkoutSessionSummary`). Los módulos puros de `apps/mobile/training/` son la autoridad de contratos, normalización, cálculo y transiciones; `apps/mobile/App.tsx` posee el estado React, las colas de persistencia, la integración con `AsyncStorage`, el reloj y `expo-notifications`. Los controladores de `apps/mobile/controllers/trainingController.ts` no duplican esas reglas: adaptan modelo y acciones a pantallas, overlays y la pila de volver.
 
@@ -65,6 +71,8 @@ Para los límites generales de persistencia y restauración, véase [Estado loca
 | Integración de dispositivo | La alarma programada, el permiso y el canal Android son efectos reconciliados desde el descanso durable; no son la fuente de verdad del reloj. |
 
 `useTrainingCatalogController`, `useTrainingSessionController`, `useTrainingEditorController`, `useTrainingDetailController` y `useTrainingHistoryController` exponen `model`, `actions` y capas de retroceso. Mantienen el último input en un `ref`, por lo que las acciones memorizadas delegan al estado actual; los manejadores de volver cierran primero la capa abierta correspondiente. El controlador no posee ni persiste las mutaciones de entrenamiento.
+
+`TrainingOverlays.tsx` es una capa de presentación: recibe esos modelos y acciones y no escribe almacenamiento. Sus diálogos hacen explícitas tres decisiones que no se deben inferir del cierre de una vista: descartar un borrador de editor, resolver un conflicto de plantilla y continuar o guardar una sesión parcial. Cuando la sesión modificó la prescripción, el overlay de finalización muestra el diff y obliga a elegir conservar el borrador o mantener la rutina canónica antes de cerrar la resolución.
 
 ## Plantillas, series e identidades
 
@@ -154,6 +162,8 @@ Si las notificaciones están desactivadas no agenda nada. En Android inicializa 
 
 - `series.contract.test.ts` impide que `App.tsx` reintroduzca tipos, normalización, copias o firmas de series; también verifica que solo la importación sea estricta y que el sello no se filtre a la raíz del almacén.
 - Las pruebas de contratos, propiedades y regresión de `seriesContract`, `workoutTemplateOperations` y `workoutTemplateTransactions` cubren reparación, identidades, copias, cambios de tipo, validación, rebase y conflictos.
+- `npm run test:train:series:e2e` siembra el almacén web con tempo, `dropset` y un tipo desconocido; comprueba que el dato reparable no active la recuperación, que los datos avanzados sobrevivan una recarga y que la rutina se selle. `npm run test:train:series-operations:e2e` extiende ese límite a borradores, clones, parciales, elección explícita de plantilla y recuperación tras recarga.
+- `npm run test:train:e2e` parte de datos locales borrados y recorre la ruta de uso básica: rechaza una rutina inválida sin persistirla, crea y reorganiza ejercicios y rutinas, completa una sesión saltando descansos y exige dos pulsaciones para descartar otra. Es una prueba Playwright de interfaz, no un sustituto de los contratos puros.
 - `workoutExecution.test.ts`, `workoutSessionModel.test.ts` y `workoutSessionClock.test.ts` cubren expansión, descansos, deduplicación, migración, pausas, huecos largos, retroceso de reloj y alerta única por ciclo. `restNotificationContract.test.ts` y su prueba de reanudación cubren el payload y la reconciliación de alarmas.
 - `workoutHistory.test.ts` verifica instantáneas sin datos de catálogo o imágenes, independencia frente a ediciones, discrepancias sin sobrescritura, legado, rechazo estricto e impacto de sesiones parciales en racha y semana.
 - `npm run test:train:history:e2e` recorre historial global, cálculo coincidente y discrepante, plantilla eliminada, legado y el ciclo de exportar, borrar actividad, restaurar y rechazar una instantánea incompatible sin alterar lo ya restaurado.
@@ -162,6 +172,8 @@ Antes de modificar estos contratos o el flujo, ejecute al menos:
 
 ```bash
 npm --workspace apps/mobile run test:deterministic
+npm run test:train:e2e
+npm run test:train:series:e2e
 npm run test:train:series-operations:e2e
 npm run test:train:compound:e2e
 npm run test:train:history:e2e

@@ -1,10 +1,11 @@
 ---
-type: "Referencia"
-title: "Estado local, borrado y recuperación"
-openwiki_generated: true
+type: referencia de arquitectura
+title: Estado local, recuperación, borrado y copias
+description: Modelo local-first de Gymnasia Mobile para persistencia, migración segura, cuarentena, borrado verificable y copias portables sin depender de la red.
+tags: [mobile, local-first, persistence, recovery, backup, privacy]
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-10-17T11:49:19.843Z
 sources:
   - id: openwiki-source-98e300a08b181f278443549a
     resource: repo://apps/mobile/agent/providerConfigurationPersistence.ts
@@ -26,23 +27,28 @@ sources:
     resource: repo://apps/mobile/persistence/localStoreRecovery.ts
   - id: openwiki-source-2c7bb274ff3842d79f3b5fb9
     resource: repo://apps/mobile/persistence/localStoreRuntime.ts
+  - id: openwiki-source-eef79724d4d28fd64585d5a5
+    resource: repo://apps/mobile/scripts/local-data-deletion.e2e.mjs
   - id: openwiki-source-566414ee4d2c02f464360b14
     resource: repo://apps/mobile/scripts/storage-recovery.e2e.mjs
   - id: openwiki-source-3c944c63cf864826c8ed237d
     resource: repo://apps/mobile/storage/localDataDeletion.test.ts
   - id: openwiki-source-eb61d67eccd058343c908bca
     resource: repo://apps/mobile/storage/localDataDeletion.ts
+  - id: openwiki-source-66920783c38e13847be3baac
+    resource: repo://apps/mobile/storage/userPreferences.ts
+  - id: openwiki-source-347f47887ee4a17e22e4fa48
+    resource: repo://apps/mobile/storage/userPreferencesPresentation.ts
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-3ab934c3755042efcadeb0bc
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
 ---
 
-
-# Estado local, borrado y recuperación
+# Estado local, recuperación, borrado y copias
 
 Gymnasia Mobile es **local-first**: el estado de uso se mantiene en React y se persiste en el dispositivo. No se debe interpretar una exportación como una copia gestionada por la aplicación: contiene datos de salud, actividad y conversaciones, y quien la exporta debe custodiarla como información sensible.
 
@@ -123,7 +129,9 @@ Este flujo **no es atómico** entre React, `AsyncStorage`, `SecureStore` y el di
 
 ## Preferencias y secretos
 
-Las preferencias se leen como una partición secundaria durante la hidratación y se normalizan antes de publicarse. Un fallo al leer una partición secundaria se comunica como no fatal: no convierte por sí solo el agregado principal en vacío ni autoriza una sobrescritura. Al importar, las reparaciones de preferencias se informan como advertencia.
+Las preferencias viven en `gymnasia.mobile.user_prefs.v1`, fuera del agregado principal. Su esquema 1 contiene el período y la métrica del gráfico de medidas, además de las opciones de notificaciones. `normalizeStoredUserPreferences()` acepta documentos sin versión como legado y reemplaza de forma independiente los valores inválidos por los predeterminados, devolviendo códigos de reparación; por ello una preferencia corrupta no bloquea ni vacía el `LocalStore` principal. Durante la hidratación se registran solo códigos de reparación y se publica la versión normalizada; un fallo de lectura de cualquier partición secundaria se comunica como no fatal. Al importar, las reparaciones de preferencias se informan como advertencia.
+
+La presentación de preferencias es exhaustiva respecto a `UserPreferences`: cada nueva clave debe decidirse como fila visible, nota de que se configura en otra pantalla u opción interna oculta. Así, las etiquetas del panel no exponen accidentalmente claves crudas al ampliar el esquema.
 
 El agregado persistido no es autoridad para secretos. Durante hidratación, la aplicación combina configuraciones heredadas con credenciales seguras y migra al `ProviderConfigurationRepository`. En nativo, este escribe un journal completo en `SecureStore` y un espejo sin API keys en `AsyncStorage`; un `pending` sobreviviente se revierte al último commit en vez de promocionarse automáticamente. Si el almacén seguro falla, la aplicación puede continuar con los datos principales, pero muestra que las claves no pudieron comprobarse.
 
@@ -157,6 +165,7 @@ Las pruebas relevantes son:
 - `persistence/localStoreRecovery.test.ts`: migración idempotente, diagnósticos sin secretos, cuarentena byte a byte, snapshot con hash, bloqueo durable, commits ambiguos, restauración y descarte selectivo.
 - `storage/localDataDeletion.test.ts`: éxito solo tras borrar y verificar, continuidad ante fallos, timeout reintentable, propiedades con órdenes arbitrarios y correspondencia entre manifiesto e inventario de privacidad.
 - `backup/backupFormat.test.ts` y `backup/portableEncryption.test.ts`: ZIP v3, entrada v2/v1, hashes y límites de medios, JPEG, manipulación del sobre y autenticación.
-- `scripts/storage-recovery.e2e.mjs`: en web verifica que recuperación no sobrescriba JSON roto, no contacte proveedores, exporte cuarentena cifrada y permita reintentar o restaurar un snapshot.
+- `scripts/storage-recovery.e2e.mjs`: en web verifica que recuperación no sobrescriba JSON roto, no contacte proveedores, exporte cuarentena cifrada y permita reintentar, restaurar un snapshot o descartar únicamente el agregado y las claves de sesión dependientes.
+- `scripts/local-data-deletion.e2e.mjs`: construye un bundle web de desarrollo, siembra marcadores en las particiones y comprueba los dos alcances: el parcial conserva memoria, alimentos, preferencias, cachés y configuración de proveedor, mientras que el total elimina también una futura partición con prefijo del espacio de nombres y conserva exclusivamente la caché de política firmada.
 
 Al añadir una partición persistida, decidir primero si es parte del agregado, un dato independiente, caché, estado efímero o secreto. Después definir validación/migración, su comportamiento de recuperación, ambos alcances de borrado y si debe ser portable. No añadir un campo raíz al agregado sin actualizar el validador: por diseño, los campos raíz desconocidos bloquean la escritura para proteger datos de una versión no compatible.

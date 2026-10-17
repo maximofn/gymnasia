@@ -15,10 +15,18 @@ sources:
     resource: repo://.github/workflows/owner-authorization.yml
   - id: openwiki-source-0820b15716e58461fe98c290
     resource: repo://.github/workflows/promote-policy.yml
+  - id: openwiki-source-0c30fc96b9e7c8b57c35473c
+    resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
   - id: openwiki-source-20c0a5fed6edf138cc34eb1e
     resource: repo://apps/mobile/agent/chatSystemPrompt.test.ts
   - id: openwiki-source-07cb7eed054f7e41355c6c1d
     resource: repo://apps/mobile/agent/chatSystemPrompt.ts
+  - id: openwiki-source-c8058179f2f675901a8caa09
+    resource: repo://apps/mobile/agent/healthSafety.ts
+  - id: openwiki-source-b2693d9761a280d07d5f6836
+    resource: repo://apps/mobile/agent/healthSafetyConsent.ts
+  - id: openwiki-source-8281cde290f55702198714d3
+    resource: repo://apps/mobile/agent/healthSafetyRuntime.ts
   - id: openwiki-source-8b741701f8108bee557e6f1d
     resource: repo://policy/health-safety/manifest.json
   - id: openwiki-source-602fdf716e72233c1c36c709
@@ -45,10 +53,10 @@ sources:
     resource: repo://scripts/policy-promotion/signing.test.mjs
   - id: openwiki-source-cf7c9acb7f23cfca2b8f4fcd
     resource: repo://scripts/prompt-policy/policy.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-10-17T11:49:19.843Z
 ---
 
 # Gobernanza de prompts y política
@@ -69,6 +77,12 @@ Además del mecanismo de paquete firmado descrito en [Entrega y activación de p
 
 Esta selección no verifica por sí misma un paquete Ed25519 ni autoriza una promoción: conserva la disponibilidad de la **copia de prompt** dentro de su ámbito. La confianza y activación de una política firmada siguen correspondiendo a la cadena de bundle, raíces y activación; no mezcle los dos mecanismos al cambiar el runtime.
 
+### Lease único para prompt y política sanitaria
+
+El runtime normal no compone el prompt y la política sanitaria desde fuentes independientes. `acquireAgentPolicyLease` construye un lease inmutable por frontera (`background` u otra `PolicyBoundary`): en canal `Local` usa los snapshots integrados; en los demás canales resuelve la política firmada. El lease asocia el prompt, la política sanitaria, candidato, deployment, activación, secuencia y estado de runtime, y emite una traza sin incluir el contenido. Si la política sanitaria firmada no satisface el contrato móvil, la creación del lease falla.
+
+Al construir un lease firmado, la política remota se **fusiona de manera restrictiva** con la compilada: una regla existente solo puede elevar el riesgo, reducir permisos de tools y añadir señales; una regla nueva necesita un `fallbackRuleId` integrado y reutiliza sus respuestas localizadas. La validación exige esquema, versiones, IDs, señales y reglas no vacías. `loadHealthSafetyPolicy` captura cualquier error de política firmada y vuelve a la política integrada, registrando únicamente el motivo/candidato en trazas. Esto preserva una barrera local incluso ante indisponibilidad o contenido remoto incompatible.
+
 ```mermaid
 flowchart TD
     Health["Reglas y runtime sanitarios"] --> Sync["Sincronización determinista"]
@@ -85,6 +99,14 @@ flowchart TD
 ```
 
 *Las fuentes controlan tanto los snapshots locales como el candidato firmado; Staging precede a Production.*
+
+## Aplicación local, consentimiento y privacidad
+
+La política de runtime clasifica texto de entrada y salida de forma determinista tras normalizarlo. Una coincidencia de riesgo `high` o `critical` bloquea las tools; `elevated` solo permite tools de lectura y la ausencia de riesgo permite todas. Para una tool, se toma el máximo entre la decisión de conversación y la de sus argumentos. La respuesta de seguridad se produce localmente a partir de la regla o su fallback, con metadatos de regla, motivo, nivel, idioma, fuente y versión, en vez de confiar en texto generado por el modelo.
+
+La salida en streaming no se muestra sin control: si la entrada ya tiene riesgo, mantiene todo el contenido; de otro modo, libera únicamente segmentos completos que no disparen una señal de salida. En cuanto aparece una señal, mantiene el resto y, al finalizar, reclasifica el contenido completo. Un cambio de política debe conservar estas propiedades de bloqueo y no limitarse a modificar la redacción del prompt.
+
+La segunda clasificación por proveedor es opcional y requiere consentimiento explícito persistido. El estado empieza desactivado, está ligado a `consentVersion` y se restablece a apagado si la versión ya no coincide con la política vigente. Solo se permite activar el interruptor si hay una API key no vacía de un proveedor compatible; el evaluador solo recibe la consulta ambigua mediante el proveedor **activo** que aún tiene clave. Una migración del esquema anterior nunca convierte el consentimiento huérfano de un proveedor sin clave en permiso para enviar texto a otro. Por tanto, una evaluación LLM es una capa opt-in y no debe usarse como autorización de la política ni como sustituto de las barreras deterministas.
 
 ## Puertas locales y de PR
 
@@ -141,9 +163,9 @@ npm run check:policy-trust
 
 ## Cobertura de pruebas y extensión segura
 
-Las pruebas de `scripts/health-safety` cubren validación de política, revisión profesional de reglas aprobadas, exfiltración, deriva del bloque gestionado, referencias, tools y fixtures, corpus determinista e invariantes de generación. Las pruebas de promoción y firma ejercitan bundles/activaciones canónicos, alteraciones, certificados no autorizados o fuera de vigencia, incompatibilidad de canal/protocolo/tools, rollback y los contratos del workflow, incluida la separación entre Staging y Production. `apps/mobile/agent/chatSystemPrompt.test.ts` cubre el orden remoto–caché–integrado, rechazo por hash o metadatos, migración heredada y el hecho de que errores de diagnóstico o de persistencia no bloqueen una selección válida.
+Las pruebas de `scripts/health-safety` cubren validación de política, revisión profesional de reglas aprobadas, exfiltración, deriva del bloque gestionado, referencias, tools y fixtures, corpus determinista e invariantes de generación. Las pruebas de promoción y firma ejercitan bundles/activaciones canónicos, alteraciones, certificados no autorizados o fuera de vigencia, incompatibilidad de canal/protocolo/tools, rollback y los contratos del workflow, incluida la separación entre Staging y Production. `apps/mobile/agent/chatSystemPrompt.test.ts` cubre el orden remoto–caché–integrado, rechazo por hash o metadatos, migración heredada y el hecho de que errores de diagnóstico o de persistencia no bloqueen una selección válida. Las pruebas de salud móvil cubren clasificación, bloqueo de tools y streaming; las de consentimiento comprueban el valor inicial desactivado, invalidación por versión, ausencia de clave, migración y que solo el proveedor activo con clave puede evaluar.
 
-Al ampliar esta superficie, trate como cambio coordinado cualquier ajuste de esquema, regla, runtime, tool requerida, fuente del bundle o workflow. Añada casos y pruebas que demuestren el nuevo invariante, conserve la generación determinista y no convierta una evaluación LLM, un informe o una notificación en una autorización. La firma verificable y los checks de PR cubren capas distintas y deben mantenerse independientes.
+Al ampliar esta superficie, trate como cambio coordinado cualquier ajuste de esquema, regla, runtime, tool requerida, fuente del bundle o workflow. Añada casos y pruebas que demuestren el nuevo invariante, conserve la generación determinista y no convierta una evaluación LLM, un informe o una notificación en una autorización. La firma verificable y los checks de PR cubren capas distintas y deben mantenerse independientes. En especial, pruebe tanto la política local como el lease firmado: el fallback, la fusión restrictiva y el consentimiento son contratos de seguridad, no detalles de interfaz.
 
 ## Contexto histórico
 
