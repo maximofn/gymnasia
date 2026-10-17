@@ -5,7 +5,7 @@ description: Worker opcional de Cloudflare que recibe feedback confirmado, aplic
 tags: [feedback, cloudflare, github, privacy, security]
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-10-17T11:49:19.843Z
 sources:
   - id: openwiki-source-ecc8cf626716f1ed125add59
     resource: repo://apps/feedback-worker/package.json
@@ -41,7 +41,7 @@ sources:
     resource: repo://apps/mobile/agent/feedbackPipeline.test.ts
   - id: openwiki-source-a6ba9053969a3e00cd971742
     resource: repo://apps/mobile/app.config.ts
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
 ---
 
 # Worker de feedback e incidencias verificables
@@ -152,4 +152,4 @@ La suite Vitest no usa red ni credenciales: emplea un doble de D1 y `fetch` simu
 npm --workspace apps/feedback-worker run test
 ```
 
-Al modificar la frontera móvil, ejecute también la prueba de contrato indicada en el frontmatter anterior del repositorio y las pruebas `feedbackClient` y `feedbackPipeline`; estas verifican que proveedor, tool, ejecutor y cliente HTTP nunca confirmen una incidencia después de un error remoto o una referencia malformada.
+Al modificar la frontera móvil, ejecute también `feedbackContract.contract.test.ts` y las pruebas `feedbackClient` y `feedbackPipeline`; estas anclan la paridad del contrato y verifican que proveedor, tool, ejecutor y cliente HTTP nunca confirmen una incidencia después de un error remoto o una referencia malformada.

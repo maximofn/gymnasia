@@ -1,7 +1,7 @@
 ---
 type: concepto
-title: Catálogos de contenido y publicación
-description: Contratos de edición, generación y publicación de los catálogos alimentarios, comerciales, recetas y ejercicios; consumo remoto validado y persistencia offline en la app móvil.
+title: Repositorios de contenido y catálogos
+description: Cadena de edición, generación, validación y publicación de catálogos alimentarios y de ejercicios; contratos de consumo remoto y caché offline de la app móvil.
 tags: [content, catalogs, validation, offline, mobile]
 sources:
   - id: openwiki-source-929e8e1df23628a3f3848ff8
@@ -28,6 +28,8 @@ sources:
     resource: repo://apps/mobile/catalogs/types.ts
   - id: openwiki-source-995845c56a7bfd93585a131a
     resource: repo://apps/mobile/controllers/catalogController.ts
+  - id: openwiki-source-1d477406340582311e84da48
+    resource: repo://apps/mobile/runtimeEnvironment.ts
   - id: openwiki-source-bd210931c947e300164b7a63
     resource: repo://apps/mobile/scripts/catalogs.e2e.mjs
   - id: openwiki-source-d54ece17be93a2b0fabf9d35
@@ -44,13 +46,13 @@ sources:
     resource: repo://scripts/catalogs/schemas/ejercicio.schema.json
   - id: openwiki-source-025372dfd931964e023a41cf
     resource: repo://scripts/catalogs/schemas/food-entry.schema.json
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-10-17T11:49:19.843Z
 ---
 
-# Catálogos de contenido y publicación
+# Repositorios de contenido y catálogos
 
 Los directorios versionados `alimentos/`, `productos_comerciales/`, `recetas/` y `ejercicios/` contienen contenido curado público. Se editan fichas JSON individuales y los recursos que estas declaran; los agregados, índices y schemas de cliente son derivados reproducibles, no una segunda fuente de verdad. La app es local-first: los tres catálogos nutricionales se consumen como agregados completos, mientras que ejercicios usa un catálogo paginado y versionado en `ejercicios/catalog-v1/`.
 
@@ -68,7 +70,7 @@ El límite de propiedad es deliberado: `user_personal_foods` es una fuente local
 
 El generador recorre las fichas por nombre de archivo y produce los agregados en ese orden estable. El índice de alimentos contiene `{id, name}`; el de ejercicios, IDs. Además copia `alimentos/all.json` como baseline integrado y transpone los schemas de alimento y ejercicio al TypeScript que usa el parser móvil. Por tanto, al cambiar contenido o schemas hay que regenerar y confirmar tanto fuente como derivados.
 
-Las fichas nutricionales comparten un contrato estricto: ID, nombre, categoría, valores nutricionales y porción obligatorios, sin propiedades adicionales; los valores numéricos son finitos y no negativos. Una receta es, a estos efectos, una ficha nutricional calculada por 100 g, no una receta ejecutable. Las fichas de ejercicio requieren sus metadatos, instrucciones y ambas imágenes; sus rutas deben ser exactamente `images/<id>-male.webp` y `images/<id>-female.webp`, y el ID debe coincidir con el nombre del JSON.
+Las fichas nutricionales comparten un contrato estricto: ID, nombre, categoría, valores nutricionales y porción obligatorios, sin propiedades adicionales; los valores numéricos son finitos y no negativos. Una receta se modela, a estos efectos, como una ficha nutricional por 100 g, no como una receta ejecutable. Las fichas de ejercicio requieren sus metadatos, instrucciones y ambas imágenes; sus rutas deben ser exactamente `images/<id>-male.webp` y `images/<id>-female.webp`, y el ID debe coincidir con el nombre del JSON.
 
 Antes de generar, la inspección detecta JSON o schema inválido, discrepancia fichero/ID, IDs repetidos —también entre los tres dominios nutricionales—, rutas inseguras o con capitalización distinta, recursos ausentes o huérfanos, bytes que no decodifican como WebP y proporciones erróneas. Las imágenes nutricionales han de ser 1:1 y las de ejercicio 16:9; `images/` no es un área de borradores.
 
@@ -105,7 +107,7 @@ Para ejercicios, `catalog-v1` fija una versión como hash SHA-256 del catálogo 
 
 ## Fuentes nutricionales, procedencia y caché offline
 
-El registro define `gymnasia_foods`, `gymnasia_products` y `gymnasia_recipes`, todos publicados desde GitHub Raw hacia sus respectivos `all.json`. `gymnasia_foods` incluye el baseline generado para que una instalación nueva conserve una base de alimentos sin red; productos y recetas no. Cada fuente tiene claves de caché actual y heredada, procedencia y parser propio.
+El registro define `gymnasia_foods`, `gymnasia_products` y `gymnasia_recipes`, todos publicados desde GitHub Raw hacia sus respectivos `all.json`. `gymnasia_foods` incluye el baseline generado para que una instalación nueva conserve una base de alimentos sin red; productos y recetas no. Cada fuente tiene claves de caché actual y heredada, procedencia y parser propio. Las claves se pasan por `scopedStorageKey`, de modo que el caché de catálogos queda en el espacio de almacenamiento de la variante de ejecución activa y no se comparte por accidente entre entornos.
 
 El parser rechaza un array cuyo `sourceId` o `source` declarado contradiga la fuente desde la que se lee. Tras validar la forma de las fichas, vuelve a añadir esa procedencia. `sourceId` también decide el directorio remoto de imágenes (`alimentos`, `productos_comerciales` o `recetas`); para alimentos personales el resultado es `null`.
 
@@ -145,6 +147,10 @@ La exploración solicita una página por cursor. La búsqueda normaliza minúscu
 Las referencias persistidas no dependen del nombre visible: usan `{ schemaVersion, sourceId, itemId }` dentro de un enlace `linked`, que registra cómo se creó, o `unresolved`, que conserva el motivo. Al resolver los IDs enlazados, la app sincroniza nombre, grupo muscular e imagen en las plantillas. Un cambio de nombre publicado mantiene así el vínculo y actualiza su presentación.
 
 Para contenido heredado sin enlace, la migración automática solo acepta una coincidencia exacta o un alias con candidato único. Una coincidencia ambigua no se adivina: sigue sin resolver y requiere selección explícita. Los runtimes de UI también capturan una generación de ejecución y bloquean escrituras cuando se invalida, evitando que solicitudes tardías reintroduzcan datos después de borrar el almacenamiento.
+
+## Procedencia de ejercicios
+
+Parte de los metadatos e instrucciones de ejercicios adapta `hasaneyldrm/exercises-dataset` fijado al commit `7455efae41b330c265e7cd4b78dfa848e7ce5ebd`, bajo MIT; los textos se traducen, normalizan y revisan para el schema propio. No se copian, redistribuyen ni usan como referencia las imágenes o GIF del origen —pertenecen a Gym Visual—: las ilustraciones del catálogo se generan desde cero. Véase también [Generación de imágenes](image-generation.md).
 
 ## Cambio seguro y pruebas enfocadas
 

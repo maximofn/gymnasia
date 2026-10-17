@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:e25970126bb493a97d26303d49e8854a809528ccddcb80871b52dee2d5e9de73",
+  "pageVersion": "sha256:54e7727ffc6a95efb14a4defe25785691658bf06d8296cd850305243072ac391",
   "claims": [
     {
       "id": "claim_9a1401aed8cd41a9939bba88412e46ae",
@@ -285,10 +285,32 @@
           "version": "repo-lines-v1:sha256:26b1c7889affed263a7839964243a70924cf862678a27d4b6195ebef57ad79e4:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2ZmFiNDU2MGRhMjE1Nzc5NzY0MTA1NjNjYWE2Y2NjOTBmZjJmYWU4Nzk5NTg4N2E4Nzc2MzcxODIwMDRiODkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI0MjlmNjY3NWZmZDk4NWFiZjhiZGE3OTQyYTQxMmY5MTVkNThiNTEyNjcxZjJkMTUyZGY0ODhhYTMxNTFjZDkifQ"
         }
       ]
+    },
+    {
+      "id": "claim_6f296f65b7a8448a93b3dcdea2993130",
+      "statement": "Las definiciones nutricionales y la caché V4 de ejercicios derivan sus claves mediante `scopedStorageKey`, que las sitúa en el namespace de almacenamiento de la variante de ejecución activa.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/catalogs/exerciseCatalogRuntime.ts#L1-L7",
+          "version": "repo-lines-v1:sha256:b9fdb257aa07e69415792f7fd2812fa473524405cf1de4783d5fd300538c5b51:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjViYzkwYzBjMzAwZWVhYjU2NTc4YjY0ZTVkMjE5N2JiNTcwOGYzMzUyYjlmNTRiNmNlOGY2NzAwZmRhMTVkZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODNmOGI0MTFhOTRmZTc3OTRlNjc3NGU1MjAyNzk4ZDUwZDhkNzYzM2M5NDZlNmQ0MWQ0YTBmN2ZjZGFmMjdmOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWQ5MzNlZTY5NWJlMjYwNjAyNWNmNTJkZmRiYmNlNzRhYTUxYjI5N2JiNjNmMWJmYWJiZGQwN2ZkNzZiNzcwZiJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/catalogs/sources.ts#L1-L4",
+          "version": "repo-lines-v1:sha256:22bcab771704828d84f7a51af19595f200b1c80b296ec247cfe35b458f9a095f:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjViYzkwYzBjMzAwZWVhYjU2NTc4YjY0ZTVkMjE5N2JiNTcwOGYzMzUyYjlmNTRiNmNlOGY2NzAwZmRhMTVkZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFiN2Y5MDc4ZTllNGUxYTQ5ZGJkOTgyZmJmYjFhZTlmZWUzNTk0OWE2OGE1N2I3YWI1YTg0YTlkNzJlMDUyYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTgyMTAyYTk5OWY4NmRhM2M4ZmIyNjExYWYxNzQ0YTllNzkzZjEwYzEwYWIzNTZlNWQwZjg5ZDc3YTFmZDM4NSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/catalogs/sources.ts#L54-L60",
+          "version": "repo-lines-v1:sha256:30189f1dd1d782323eae40216541faebb59931d9d756c59637cfe3e07cc654c3:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDk1ZmEwZjExMTdiNWVhNDA0MzQxNDBkZGUxYTM0MGM3MjBkZGJmMzI2MjEyZTE5MTgzOGQ0YjE1NmQzMTZiYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGQyOTMwNzBhNDI4MDI4MmRkYTYzY2I3ODE5ZDg5MTdjZmM5NmU3NjE2NjM5YzM5Y2ZhYzBlZTFmMDRmNmQyYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzA5YjRiMjBiM2FkMmMyZDgyNTgxOGE4MTc1MjM2MDllNjE1MjdkNDNjNmQ1NjFkZDhhNzA1ZjcxZWRlYjhkMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGJlN2UyZWFlOWU4ODk5ZDQ4NzMwNDNmYTEyMWJjZjRmYTFjYjk3NDgyNzg5NmYxYjNkNWQyODZjMTQ2NWFmYyJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/runtimeEnvironment.ts#L17-L19",
+          "version": "repo-lines-v1:sha256:618ab83d654dabd2a56a7cb5c558c49a5b97f37c350bb4bf74c9d7060cbe7fc1:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTk4ZjAwMDJlY2YyZjNjNjJlODMzYzk3NWQzNDlkODZmNWIxMDA1ZWQxNmNmMmY3MmY0ODZlYTU1NmVkNzNlZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjhhYTcxYTk2MDU4OTc4MzM3MGRlM2YzMWFkZjRjNWYwNWU4ZGI0Njc3NTc2OGY5NjIwODk0YjJhYmRkYmY0NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTY0NzRiMjBlZTA1ZjdmZmM1OGJjZjYxYTM3YzEwNTA4ODJlODM2YjMwYTU5MTYxNWYwZWEyNDYwN2Y2ZWMyNSJ9"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-10-17T11:49:19.843Z"
   }
 }

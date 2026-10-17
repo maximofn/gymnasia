@@ -1,11 +1,8 @@
 ---
 type: servicio estático de seguimiento
-title: Tablero de arquitectura
+title: Tablero de arquitectura y automatización de tickets
 description: Superficie estática que proyecta un espejo versionado de tickets de Linear y su cadena de conciliación, validación y despliegue. Separa el inventario y los planes de trabajo del runtime ejecutable de Gymnasia.
 tags: [architecture-board, static-site, linear, github-actions, vercel]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-29T12:03:05.365Z
 sources:
   - id: openwiki-source-95db82d22801961ce58f4a00
     resource: repo://.claude/skills/linear-tickets/scripts/linear.py
@@ -41,10 +38,13 @@ sources:
     resource: repo://scripts/board-automation/verify-production.mjs
   - id: openwiki-source-2d527a0a2fddf1f1e4422fcf
     resource: repo://scripts/board-automation/workflow-contract.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-29T12:03:05.365Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-17T11:49:19.843Z
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
 ---
 
-# Tablero de arquitectura
+# Tablero de arquitectura y automatización de tickets
 
 ## Propósito y límite arquitectónico
 

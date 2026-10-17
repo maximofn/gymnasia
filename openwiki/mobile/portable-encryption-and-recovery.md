@@ -1,7 +1,7 @@
 ---
 type: referencia técnica
-title: Cifrado portátil y recuperación
-description: Contrato del sobre cifrado portable v3 de Gymnasia, el empaquetado e importación de copias y la recuperación local desde cuarentena. Describe límites, fallos seguros y validaciones para operar o cambiar estos flujos sin exponer datos sensibles.
+title: Cifrado portátil e importación
+description: Contrato del sobre cifrado portable v3 de Gymnasia, el empaquetado, la importación de copias y la recuperación local desde cuarentena. Describe límites, fallos seguros y validaciones para operar o cambiar estos flujos sin exponer datos sensibles.
 tags: [mobile, backup, encryption, recovery, privacy, local-storage]
 sources:
   - id: openwiki-source-929e8e1df23628a3f3848ff8
@@ -16,25 +16,29 @@ sources:
     resource: repo://apps/mobile/backup/portableEncryption.ts
   - id: openwiki-source-85f985fa223d29eb9c8b24fa
     resource: repo://apps/mobile/backup/PortablePasswordModal.tsx
+  - id: openwiki-source-0e92cb77fd176eeee493660d
+    resource: repo://apps/mobile/legacySecureStorage.ts
   - id: openwiki-source-7385ff07d119a125cc2d0f88
     resource: repo://apps/mobile/persistence/localStoreRecovery.test.ts
   - id: openwiki-source-f6b98cd46b889ff9fc8877c4
     resource: repo://apps/mobile/persistence/localStoreRecovery.ts
   - id: openwiki-source-566414ee4d2c02f464360b14
     resource: repo://apps/mobile/scripts/storage-recovery.e2e.mjs
+  - id: openwiki-source-eb61d67eccd058343c908bca
+    resource: repo://apps/mobile/storage/localDataDeletion.ts
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-3ab934c3755042efcadeb0bc
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-10-17T11:49:19.843Z
 ---
 
-# Cifrado portátil y recuperación
+# Cifrado portátil e importación
 
 Gymnasia es local-first: una copia portable la guarda y transporta la persona usuaria, y una cuarentena protege el almacenamiento local que no se puede leer o sustituir con seguridad. Ambos artefactos pueden contener datos de salud, conversaciones y, en web, credenciales de IA; ninguno se envía a un servicio para cifrar, descifrar o recuperar.
 
@@ -138,6 +142,12 @@ El lector exige esas claves exactas, parámetros exactos, hex minúsculo con lon
 
 El cifrado autentica confidencialidad e integridad del archivo frente a quien no conoce la contraseña; no recupera una contraseña perdida, no autentica identidad, no sincroniza ni conserva copias, y no protege el plaintext una vez abierto. La UI y la CLI deben evitar registrar contraseña, plaintext o `rawPayload`; los diagnósticos de estructura muestran rutas y códigos saneados, no valores ni nombres de campos desconocidos. Quien cambie parámetros o el orden JSON del sobre debe crear y soportar explícitamente una versión: el lector v3 no negocia variantes de algoritmo.
 
+### Compatibilidad heredada y credenciales retiradas
+
+La compatibilidad de importación está acotada a los formatos v1 y v2 descritos arriba; no convierte un ZIP v3 sin sobre en una entrada válida ni usa datos de copias antiguas para cambiar los parámetros criptográficos v3. Mantener estas rutas separadas evita que una detección por ZIP o JSON reduzca las validaciones del formato actual.
+
+Hay además dos claves históricas de `SecureStore`, `vivagym.email` y `vivagym.password`. Una versión anterior pudo haberlas escrito para la integración VivaGym; la aplicación retirada no las lee ni las escribe durante una actualización normal, de modo que se conservan para una posible restauración de esa integración y no forman parte de una copia portable. El borrado explícito de **todos los datos personales** sí las incluye como objetivos literales de borrado seguro. No las añada de nuevo a la persistencia ordinaria ni las migre a un backup sin una decisión explícita de producto y una revisión de privacidad.
+
 ## Cuarentena local y descifrado seguro
 
 `LocalStoreRecoveryRepository` inspecciona agregado primario, snapshot y cuarentena de forma serializada. Un snapshot aceptable tiene versión 1, payload JSON con forma válida y SHA-256 coincidente. Un primary inválido, ausente pese a snapshot, ilegible o no verificable tras escritura produce/respeta una cuarentena con payload bruto si está disponible, su hash y incidencias saneadas. Una cuarentena válida bloquea commits ordinarios incluso si el primary parece válido tras reiniciar; ello evita escribir encima de los datos que motivaron el bloqueo.
@@ -161,6 +171,7 @@ La CLI comprueba que entrada y salida sean distintas, que la entrada sea un arch
 - Para tocar el envelope, conserve el vector determinista y las pruebas de round-trip por más de un fragmento, alteración, truncamiento, bytes sobrantes y contraseña. `apps/mobile/backup/portableEncryption.test.ts` es la especificación ejecutable del wire format.
 - Para tocar paquetes o medios, pruebe producción v3, lectura v1/v2 explícita, límites, deduplicación/prioridad, validación de rutas y enlaces, SHA-256 y que una foto corrupta no descarte la medición. `apps/mobile/backup/backupFormat.test.ts` cubre esas fronteras.
 - Para tocar la cuarentena, pruebe que el primary se conserva byte a byte, que snapshot y hash se verifican, que el lock persiste, que la escritura ambigua queda bloqueada y que el descarte no borra datos independientes. La unidad responsable es `apps/mobile/persistence/localStoreRecovery.test.ts`.
+- Si se modifica el inventario de credenciales retiradas o el borrado local, mantenga la prueba contractual `apps/mobile/agent/vivagymRemoval.contract.test.ts`: las claves históricas deben preservarse en actividad y aparecer en el manifiesto de borrado total.
 - Ejecute la integración web `npm run test:storage-recovery:e2e` al modificar la interfaz, persistencia o exportación de recuperación, y `npm run test:recovery-cli` al cambiar el procedimiento Node. La E2E comprueba que el JSON defectuoso no se sobrescribe, que la exportación se cifra y que el flujo de recuperación no contacta proveedores; no sustituye una prueba en iOS/Android.
 
 Consulte [Estado local, recuperación, borrado y copias](local-state-and-backup.md) para propiedad de particiones y borrado, y [Build, release y estrategia de validación](../operations/build-release-and-testing.md) para la selección de checks y sus límites.

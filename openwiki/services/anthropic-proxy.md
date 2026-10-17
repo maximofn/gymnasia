@@ -1,6 +1,6 @@
 ---
-type: servicio de diagnóstico local
-title: Proxy local de Anthropic
+type: proxy de diagnóstico local
+title: Proxy Anthropic de diagnóstico
 description: Utilidad FastAPI opcional para depurar desde el navegador el contrato de Anthropic mediante una pasarela en loopback. No es un backend móvil ni un componente de producción y protege las credenciales BYOK contra una exposición compartida.
 tags: [service, anthropic, proxy, cors, development, security]
 sources:
@@ -42,10 +42,13 @@ sources:
     resource: repo://scripts/anthropic-proxy/check.mjs
   - id: openwiki-source-06bd7c851908a218f4ac8a15
     resource: repo://scripts/anthropic-proxy/check.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-17T11:49:19.843Z
 ---
 
-# Proxy local de Anthropic
+# Proxy Anthropic de diagnóstico
 
 ## Propósito y frontera de seguridad
 

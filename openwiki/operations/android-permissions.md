@@ -10,6 +10,8 @@ sources:
     resource: repo://apps/mobile/app.config.ts
   - id: openwiki-source-3de323c9f3752d72d82de839
     resource: repo://apps/mobile/app.json
+  - id: openwiki-source-ee5b295fb9c3f0589728d747
+    resource: repo://apps/mobile/eas.json
   - id: openwiki-source-e6092e57680c1313a5efe04e
     resource: repo://apps/mobile/notifications/notificationSounds.json
   - id: openwiki-source-eabbb9df6bf2993bf11b4c2d
@@ -34,7 +36,10 @@ sources:
     resource: repo://scripts/production-release/verify-artifact.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-17T11:49:19.843Z
 ---
 
 # Permisos y configuración Android
@@ -108,7 +113,7 @@ Este contrato distingue dos listas que no deben mezclarse: el manifest **fuente*
 
 ### 3. Evidencia de release y del manifest fusionado
 
-El workflow `build-apk.yml` valida el SHA exacto con `verify:production-source`, que vuelve a ejecutar los gates canónicos —incluidos ambos checks y sus pruebas— y falla si alguno ensucia el checkout. Después, la compilación `production-apk` ocurre en un runner autoalojado dentro de una VM desechable; su APK y metadatos se transfieren como resultado no confiable a una cuarentena de verificación independiente.
+El workflow `build-apk.yml` valida el SHA exacto con `verify:production-source`, que vuelve a ejecutar los gates canónicos —incluidos ambos checks y sus pruebas— y falla si alguno ensucia el checkout. Después, compila primero el AAB Production y después el APK `production-apk` en un runner autoalojado dentro de una VM desechable; los binarios y sus metadatos se transfieren como resultados no confiables a una cuarentena de verificación independiente.
 
 `verify:production-artifact` extrae el manifest con herramientas Android (`apkanalyzer` para APK; `bundletool` para AAB), inspecciona firma, SDK, configuración integrada, sonidos, tamaño, hashes y MIME. Para permisos aplica dos condiciones sobre el manifest fusionado:
 
@@ -118,6 +123,12 @@ El workflow `build-apk.yml` valida el SHA exacto con `verify:production-source`,
 El segundo control detecta tanto permisos inesperados como retiradas no revisadas. La lista es mayor que los cuatro permisos declarados porque documenta el conjunto completo observado en el binario, incluidas aportaciones legítimas de librerías y permisos específicos de launcher o paquete. `expectedMergedExtras` sirve para documentar aportaciones relevantes y para el inventario de Data safety; no relaja la igualdad del artefacto.
 
 Antes de publicar, el workflow también liga la evidencia al commit, transacción y snapshot de política, verifica paquete `com.maximofn.gymnasia`, SDK mínimo/objetivo, certificado de subida y versión, y mantiene el borrador si compilar o verificar falla. No publique ni interprete un APK local como equivalente de esta cadena protegida.
+
+### Perfiles EAS y destinos de distribución
+
+`eas.json` separa las variantes por `APP_ENV`: `development` es un development client de distribución interna; `staging` y su alias `preview` son APK internos; `production` usa incremento automático de versión; y `production-apk` hereda Production, desactiva ese incremento y fuerza `buildType: "apk"`. La transacción de release genera primero el AAB con el perfil `production` y después el APK con `production-apk`, por lo que ambos deben conservar el mismo `versionCode` validado.
+
+Los dos binarios se verifican en cuarentena, pero el destino Play recibe únicamente el AAB validado. El job de envío restaura el AAB y sus evidencias durables, rechaza una transacción que no esté en estado validado, obtiene el recibo de Google Play y solo entonces comprueba los digests de fuente, AAB, APK y evidencias antes de convertir el borrador de GitHub en una release publicada. El APK sigue siendo el asset para instalación directa, no un sustituto del bundle enviado a Play.
 
 ## Operación y cambios seguros
 

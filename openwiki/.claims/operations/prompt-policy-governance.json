@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f02ca4e936a337e1e3887a696cfe775dbc680acdd9b5858ff21d7768b056a768",
+  "pageVersion": "sha256:98e7049487de849146f8061f4a613c72756db4062d8f5c98db8c7f3e2084e542",
   "claims": [
     {
       "id": "claim_3cae44c38d1241898ba34e7117baf5f6",
@@ -223,10 +223,80 @@
           "version": "repo-lines-v1:sha256:7b878b943d83aa516e3ff606090cb15075e20cde633104b07b1c89252f7d9229:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJjMDEyZDJjODI0ZGQxNWRhMGJkMmQzODRhNzc0ZGE3ZTZhZDBkMjY2ZGY4ZjA1NTBkZmVlNzNmZWVmMzVhMmJiIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNzc5ZDExOGQ2ZTNjYmY0NTA1Mzk3NDhkZWU3YTQzMDdhY2JlNjQ0NmNiYTI5N2YyNzYwZmE1ZDBiYmExYmMyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIwYjFlMjQ5YjUyMTRlYzljNTlkNWUxZWQzYTYxZWM1ZTM4NTgzMDgyMjU5OGMxZGM4OGE1ZjRiNWZkMmE0NTM5In0"
         }
       ]
+    },
+    {
+      "id": "claim_4471268dbfc84d1e98dd8472d1811dc9",
+      "statement": "`acquireAgentPolicyLease` crea por frontera un objeto profundamente inmutable que une prompt, política sanitaria, contexto de activación y estado: usa snapshots integrados para el canal `Local` y, en otros canales, resuelve una política firmada; rechaza el lease si la política sanitaria remota no cumple el contrato móvil.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L108-L171",
+          "version": "repo-lines-v1:sha256:324f26b159413f3b8959f72bfe71adb70ffb7a011a68620fba028c8ae5276b2e:eyJzZWxlY3RlZExpbmVDb3VudCI6NjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzMjc2YmI1NGEyMmI5ZGM5YjJhNzY2MTU5OTE0YzljZTY5MTA5ZDY0MDQxNWU2OTVmMWM3NjkyODJiOWY2MDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/agentPolicyRuntime.ts#L23-L44",
+          "version": "repo-lines-v1:sha256:c20cba94c836f0b2394bbcefff5e204c030fc3d623580b94fb1b36692e3a7c19:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllM2VhOWJhMzdlMDQ3NDU1Zjc0MDI3ODg4YjdkOTNhMDljNmY3ZjBmODQ0NjU1MTI5MWIzYTg0MTZiN2FmNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMTU1NjU2ZTc0OGRjOWVmMTQ0NzliYjBlNWU0NTI1YjgzZjQwZjUxNjFiMDJhN2U2NDFjZTQ0M2U0ZGI5NDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3OTNkMGM4MTI0MmU5ZDA4YzNkNzQ0ZjQ5YTdhNWQ3ZjhkYmQ1MDQ1OTY0YmE5NzlkYzFkNWU0OTQ1OGU5NzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a5b3684a050d446589f4fbc90528f826",
+      "statement": "La fusión de política sanitaria firmada con la integrada es restrictiva: para una regla existente conserva el mayor riesgo y el modo de tools menos permisivo, une señales, y una regla nueva solo se acepta con `fallbackRuleId` integrado, cuyas respuestas localizadas reutiliza.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.ts#L295-L393",
+          "version": "repo-lines-v1:sha256:4f7c3374477fd32d500bbcb5a41bd9ac2c03976fd9acd40efd6ee0a81ecc897f:eyJzZWxlY3RlZExpbmVDb3VudCI6OTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhZTZmYThhMjM5ZWNlN2Y5YjVkNjg3MjBjOWNiMDA0ZTc2OGUwNjQwYzEyNGY5MTIwOTQ4YjlhYTQxYmY2M2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkYzczMmUyNTdmNzQ1MmIwZWE0NjY3ZGI4YjM4ZDU1YWEwZDNiOTZjZmJiNmE3M2I1NDdmNjAwNTlmYTdjOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmOTE1MmRkNGI3ZDBjODFkNDdlMmE3MTFkNTFlMTkxZTY2OWJhZTVlZThkYzRkYmUwMjA4YTNkNTJmNjA0YjEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c1c456c431194283a1a3b3835697307e",
+      "statement": "El runtime sanitario aplica una barrera determinista local: riesgos `high` y `critical` bloquean tools, `elevated` permite solo lectura y una tool considera el mayor riesgo entre conversación y argumentos; el gate de streaming retiene contenido ante riesgo de entrada o salida y reclasifica el resultado final.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.ts#L121-L175",
+          "version": "repo-lines-v1:sha256:e133123a549f7733893519ef7c0f0e88d98885c89c8814ffecea68377886c25f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3NWQxYzNkYjIwMGJhMTVhMmExMGMwMWIwNGUxMjYxMWQ4YjczNDgzYWQyY2VmNzRmZDZlNzIzNDIzMTY1YmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1Mzk4N2ZlYWQyN2RlYjdjNGE1MmRlYzVkODNlZWY3NTkyZmU4NDNjMWM1ZWFmMTVkMTg1M2IwZDcyYzUzNTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkzY2Y5N2VlZTQ1ZTAzZDZkOWJkMGJlZTg1ZTg5ZjA0ODUzZWRkMzBjYTVlYjAwMDVmNDQxMjg5ZTU4MTYxYjQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafety.ts#L228-L275",
+          "version": "repo-lines-v1:sha256:3a65ca73f2f83b4af0580239a51ca36ef7174accb8938924889f9aa55992d712:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2YWJlNjRmZDlhY2ExZmQyOWMzZWE1MmY4MDc5YzMxYzQ5MmIzMjZlNmI5MmQ3ODY2YjM1ZmY1MDVkZTU5MjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM0ZjgxY2E4OTQ4NTVmMDAyZjM4NDM4YzQ2N2U0NmFmNzU4YTI0YWZhYzEzNmZmNzYzOThmZjY2ZWUzNTkzZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJlZThhN2UyZWRiMDdiNjczYmVmYzdhYzE0NmI1NjgzNWY1YjE2OTQyOGE5YzI5MTdlNDExMzFhZWYwMGY5MTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c3981d4f7d1e49dbb151c57b05c0497a",
+      "statement": "El consentimiento para evaluación sanitaria por proveedor empieza desactivado, se invalida cuando cambia `consentVersion` y no puede activarse sin una API key configurada; la evaluación solo se permite con el proveedor activo que conserva clave, y la migración heredada no transfiere consentimiento desde un proveedor sin clave.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/healthSafetyConsent.ts#L159-L169",
+          "version": "repo-lines-v1:sha256:00b16a63cc96f1ef898c0ab6cd68fe1f2dd903fb9d583d1da0fe4618ce386101:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafetyConsent.ts#L37-L43",
+          "version": "repo-lines-v1:sha256:0ef4c929c1bf4a272c5e33d137e45c31c0b366e03efd284aec4e6f2806697e42:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTI1MDlkOTYyOTlkYTMxZDc0ZThmOTY3NTMxYTUwMmQ2Y2M0MzAyNWI1Y2ZhNjU5ZjQyNDg5MTA3MDUxMmUxYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDJhMmNiMjVhMTIyYjQ0MjIxYTYyMzRlYzY2MGE3YjVmYjdmOWJkZTdiM2I5ZTJiM2M1NTlhMGQ5NmZhYzczOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmRlY2FiNTUxOTJjYzg4NTFkMzU2N2MyYzZhYjZjMWEwMGRmOTU3MGRiMDM3NTA2Y2Q2NjNlOGJjYTRiMTI3OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzZjYmY5YWJjMGU4Y2I4YzRjYTk0ZmU3YjA2M2E0YmMyNWY4ZjY2NmQ0YzI1MGNkYmE4MmIzZDQzMmYxMzIwMCJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafetyConsent.ts#L63-L74",
+          "version": "repo-lines-v1:sha256:b98a96027bbb4d6fb4e2b993097bd455609201a59c9e05be0422077d14c9ca0a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjExZDA3ODU1OTRjNTQ3NWQyZDM3MDY1MGI3MDQyZmE3YzNlNzkwZjRkMWRjNWZhYzkxYWYxMWFmZDY2OTEzNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3MDQzZGJmMTYzNzgxYTM0NmZjYmRiYTNjYzVjY2I2ZTBhN2JjZDE0ZjVkMGQwZjZiMDc4N2RkMmZmOTQ5M2YifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/healthSafetyConsent.ts#L81-L143",
+          "version": "repo-lines-v1:sha256:b74e8872751412f6098087a6425ecb21ec1cf3f7ea08a0da18277749ea4e8cc7:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgwNWQzNDIwZmI4MWVlNjJhNDlmMTIyNGVmY2M3NGM3YjIyZjEyZmY3M2VmOWEwODVkNDc5OThlMzUzMTM3YmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0NGQzYjVjZmU4OTgyNzg0NDJiZDA1YzcwMGM4OGZmZjEwNWUyMTM3ZDIxZWU2M2QwNzA2MDg5MDI3MzNmMjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_06b472920e394b51a356f4249f430904",
+      "statement": "Cuando la obtención de un lease firmado falla, `loadHealthSafetyPolicy` devuelve la política sanitaria integrada y registra una traza de fallback con el código `signed-policy-unavailable`.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/healthSafetyRuntime.ts#L19-L48",
+          "version": "repo-lines-v1:sha256:840a305ca54f5620a75d7d7ce345f0facbee1a9580db539dbdeba77bfc6e8936:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzNWIzMGQ3ZGQ0ZWJmNWQxYzUwOTY4ODY3NTZmNGQwMGFlMDZlZmM1MDZiMzdmODJiOWNlMjRlZmJkYWQ2NTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiZjg2NjUwZjhmOTA1MjVmNGUwYmYwZGMwYjc4ZTkyZjQyZWRmNTA5YTBlNTRkNDhmOGY4MjhjY2M1MGU0NTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiZjFhMmFhMzdkMmQxNjliOTE1MDA3YWJlZjg4NWE0YmI1N2Q2MTUzNTNmYjJiMTZlZDc0YmY3NzM1MWFlNDYifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-10-17T11:49:19.843Z"
   }
 }

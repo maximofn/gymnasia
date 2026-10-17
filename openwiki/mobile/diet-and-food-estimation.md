@@ -34,14 +34,16 @@ sources:
     resource: repo://apps/mobile/diet/nutritionContract.test.ts
   - id: openwiki-source-8aba0bf9311cc293c41365a3
     resource: repo://apps/mobile/diet/nutritionContract.ts
+  - id: openwiki-source-cbd3d3f12f3220efe623e4e6
+    resource: repo://apps/mobile/screens/DietOverlays.tsx
   - id: openwiki-source-c9f6603922c4b3374dc5d61a
     resource: repo://apps/mobile/scripts/diet-validation.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-10-17T11:49:19.843Z
 ---
 
 # Dieta y estimación de alimentos
@@ -125,7 +127,10 @@ flowchart TD
     Route --> Catalog["Selecciona o escribe nombre de catálogo"]
     Route --> Manual["Introduce totales manuales"]
     Route --> Estimate["Describe o fotografía para estimar"]
-    Estimate --> Extract["Extraer JSON nutricional"]
+    Estimate --> SafeInput{"Entrada permitida"}
+    SafeInput -->|"no"| Correct
+    SafeInput -->|"sí"| EstimateReply["Conversar y estimar"]
+    EstimateReply --> Extract["Extraer JSON nutricional"]
     Extract --> EstimateValid{"Estructura válida"}
     EstimateValid -->|"no"| Correct["No persistir y pedir corrección"]
     EstimateValid -->|"sí"| Match
@@ -161,7 +166,11 @@ Al editar cantidad de un elemento existente, `mealPerGramRef` guarda temporalmen
 
 El modal del estimador es una conversación distinta del agente general. Requiere una API key utilizable: prioriza `store.foodAIProvider` si está configurado, después el proveedor ya elegido por el modal y, finalmente, la prioridad del estimador. Si no existe proveedor, muestra un error y no intenta la red. Las credenciales BYOK y las particularidades de transporte se documentan en [Configuración BYOK de proveedores](../agent/provider-configuration.md).
 
-Se pueden adjuntar hasta seis imágenes desde biblioteca o cámara; se solicita el permiso correspondiente y se necesita base64 para adjuntarlas. Las imágenes se mandan solo con el último mensaje de usuario y dejan de reenviarse después de una respuesta válida del modelo. OpenAI, Anthropic y Google transmiten texto y razonamiento y pueden ejecutar hasta cinco rondas de la tool `scan_barcode`. En web, Anthropic rechaza explícitamente imágenes en este flujo; la estimación solo textual sigue sus reglas de transporte normales. Las solicitudes de estimación se reintentan hasta tres veces únicamente ante fallos transitorios identificados.
+Se pueden adjuntar hasta seis imágenes desde biblioteca o cámara; cada ruta solicita su permiso y requiere que el selector proporcione `uri` y base64. La foto nueva se envía con el último mensaje de usuario; sus IDs pasan a la lista de enviadas únicamente tras obtener una respuesta, por lo que no se reenvía en los turnos posteriores. El estado de incompatibilidad de foto de un proveedor/modelo se conserva localmente para ofrecer elegir otro modelo, no para fingir que la foto fue analizada.
+
+Antes de llamar al proveedor, el estimador adquiere la política de seguridad vigente y clasifica el texto. Una solicitud bloqueada se sustituye por una respuesta local y no habilita «Añadir alimento»; para riesgo elevado, la evaluación con el proveedor solo se realiza si existe consentimiento. La salida en streaming también atraviesa la compuerta de seguridad antes de hacerse visible. Esta es una implicación concreta del [comportamiento del runtime](../operations/runtime-behavior.md): una respuesta de estimación, incluso si llegó desde el proveedor, no es automáticamente una respuesta apta para persistir.
+
+OpenAI, Anthropic y Google transmiten texto y razonamiento y ejecutan como máximo cinco rondas de `scan_barcode`. Un proveedor `custom_openai` intenta el mismo protocolo: si el servidor rechaza tools, repite sin ellas y devuelve un aviso para impedir que el modelo afirme una consulta de código de barras. Las solicitudes se reintentan hasta tres veces solo ante errores transitorios identificados.
 
 `scan_barcode` elimina espacios del código y consulta `https://world.openfoodfacts.org/api/v2/product/{barcode}.json`. Devuelve al modelo un JSON con identidad, porción, nutrientes por 100 g y por porción, ingredientes y Nutri-Score. Un HTTP fallido o producto inexistente se devuelve como resultado textual controlado para que el modelo pueda continuar o estimar visualmente; no escribe esos datos directamente en la dieta. La sesión recuerda si se usó la herramienta para clasificar una propuesta no encontrada como producto comercial, pero ese indicador no es procedencia persistida.
 

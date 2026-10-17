@@ -4,7 +4,7 @@ okf_version: "0.2"
 
 # Archivos
 
-- [Inicio rápido y mapa de cambios](quickstart.md) - Orientación para iniciar Gymnasia, localizar el contrato responsable de cada cambio y elegir una validación proporcional. Distingue el producto Expo local-first de las integraciones opcionales y del tablero estático.
+- [Inicio rápido y mapa de cambios](quickstart.md) - Itinerario para ejecutar Gymnasia localmente, localizar el contrato que posee un cambio y escoger validación proporcional. Separa el cliente Expo local-first de las integraciones remotas opcionales y de los planes históricos.
 
 # Directorios
 

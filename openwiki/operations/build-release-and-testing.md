@@ -3,9 +3,6 @@ type: guía operativa
 title: Build, release y estrategia de validación
 description: Selecciona comprobaciones deterministas, E2E web, validación del tablero y gates de release para cambios de Gymnasia. Distingue la evidencia de navegador y checks estáticos de la que exige un binario o dispositivo nativo.
 tags: [operations, ci, testing, release, android, backup, recovery, board]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-29T12:03:05.365Z
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
     resource: repo://.github/workflows/agent-tests.yml
@@ -71,16 +68,10 @@ sources:
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-  - id: openwiki-source-45c16db7a918783b8b3616ab
-    resource: repo://scripts/production-release/local-build.test.mjs
-  - id: openwiki-source-5bb7a7442c09c2e571325b53
-    resource: repo://scripts/production-release/local-controller.mjs
   - id: openwiki-source-24a206e2ad72f4f0a1502c09
     resource: repo://scripts/production-release/production-release.mjs
   - id: openwiki-source-eca432bcfe70b04e1d09e3d3
     resource: repo://scripts/production-release/release-transaction.mjs
-  - id: openwiki-source-a403a8897dea191dee6aa309
-    resource: repo://scripts/production-release/release-transaction.test.mjs
   - id: openwiki-source-71e03e0099e7b28d5a243456
     resource: repo://scripts/production-release/run-local-build.mjs
   - id: openwiki-source-a43fcdd54439cd4258ab69e4
@@ -91,7 +82,10 @@ sources:
     resource: repo://scripts/production-release/vm-contract.test.mjs
   - id: openwiki-source-b368a0060923f31656ab90b3
     resource: repo://scripts/production-release/workflow.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-29T12:03:05.365Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-17T11:49:19.843Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-17T11:49:19.843Z
 ---
 
 # Build, release y estrategia de validación
@@ -103,7 +97,7 @@ La validación debe ser proporcional al cambio y al contrato que podría rompers
 1. **Checks locales deterministas:** tipos, contratos, artefactos generados y regresiones con fixtures. Son la señal inicial reproducible tras `npm ci`.
 2. **E2E web controlada:** exporta React Native Web, sirve `apps/mobile/dist` y usa Playwright. Comprueba interfaz, estado y recuperación bajo respuestas simuladas; no valida Android ni iOS.
 3. **Gates de release:** combinan checks locales con controles de identidad, estado de GitHub y evidencia del binario. Se ejecutan para un candidato exacto, no como sustituto de una revisión ordinaria.
-4. **Actos protegidos y remotos:** la aprobación de `Production`, las credenciales administradas de Expo, EAS Submit, Play Internal, las releases de GitHub y la promoción de política requieren controles y credenciales propios. La compilación Android de release sucede localmente dentro de una VM desechable; no es una build remota de EAS.
+4. **Actos protegidos y remotos:** la aprobación de `Production`, las credenciales administradas de Expo, EAS Submit, la publicación en la pista Alpha de Play, las releases de GitHub y la promoción de política requieren controles y credenciales propios. La compilación Android de release sucede localmente dentro de una VM desechable; no es una build remota de EAS.
 
 ```mermaid
 flowchart TD
@@ -275,7 +269,7 @@ La promoción de política es una operación manual protegida, distinta del merg
 
 El perfil EAS `production` fija `APP_ENV=production`, conserva `appVersionSource: remote`, incrementa el `versionCode` y produce el AAB. `production-apk` lo extiende, desactiva el incremento y fuerza `android.buildType: apk`, de modo que reutiliza el contador reservado por el AAB. La compilación local siempre ordena AAB antes de APK y exige que ambos manifiestos terminen con el mismo `versionCode`, superior al máximo entre la última evidencia publicada y `PLAY_VERSION_CODE_FLOOR`.
 
-No confunda las operaciones: `eas build --local` se ejecuta dos veces dentro del guest y **no** envía builds a la infraestructura remota de EAS. Después, otro job usa el perfil de submit `production` para subir por ruta únicamente el AAB ya verificado a Play Internal (`track: internal`, `releaseStatus: completed`). El APK se adjunta a la release de GitHub para instalación directa; no se envía a Play.
+No confunda las operaciones: `eas build --local` se ejecuta dos veces dentro del guest y **no** envía builds a la infraestructura remota de EAS. Después, otro job usa el perfil de submit `production` para subir por ruta únicamente el AAB ya verificado a la pista Alpha de Play (`track: alpha`, `releaseStatus: completed`). El APK se adjunta a la release de GitHub para instalación directa; no se envía a Play.
 
 ### Fronteras de confianza y flujo
 
@@ -286,7 +280,7 @@ sequenceDiagram
     participant VM as Guest desechable
     participant UA as Artifact no confiable
     participant VJ as Job verificador
-    participant PI as Play Internal
+    participant PA as Play Alpha
     GH->>GH: Selecciona y valida fuente exacta
     GH->>GH: Crea draft y reserva AAB y APK
     HC->>GH: Comprueba cola y aprobación
@@ -297,8 +291,8 @@ sequenceDiagram
     VJ->>UA: Descarga en cuarentena
     VJ->>VJ: Vincula intentos y verifica ambos artefactos
     VJ->>GH: Adjunta bytes y evidencias al draft
-    GH->>PI: Envía solo el AAB validado
-    PI-->>GH: Devuelve estado FINISHED
+    GH->>PA: Envía solo el AAB validado
+    PA-->>GH: Devuelve estado FINISHED
     GH->>GH: Verifica digests y publica la release
     HC->>VM: Apaga y elimina overlay y seed
     HC->>GH: Retira el runner efímero
@@ -345,7 +339,7 @@ Dentro de la VM, `run-local-build.mjs` vuelve a comprobar repositorio, ref, even
 
 El job `verify-artifacts` no confía en esa salida. Tras descargarla en cuarentena, aplica `finish-local`, persiste la transacción y ejecuta `verify:production-artifact` para cada pata. El AAB exige `bundletool` fijado por versión y SHA, validación de bundle y firma JAR; el APK usa `apkanalyzer`, `apksigner` y `aapt2`. Ambos se contrastan con la evidencia de fuente, snapshot de política, intento local, package, versión, SDK, certificado, permisos, sonidos, configuración, tamaño, MIME y nombre. Solo los bytes que pasan se renombran, reciben evidencia, se ligan por SHA-256/tamaño/`versionCode` y se adjuntan al draft. Los dos `versionCode` deben coincidir.
 
-A continuación, `submit-play-and-release` registra durablemente la intención **antes** de contactar EAS Submit. Sube por `--path` el AAB validado, liga el ID de submission y espera un estado terminal. Un submit conocido que falla puede usar `eas submit:retry` sin volver a cargar el AAB; si la petición pudo aceptarse pero se perdió el ID, queda `uncertain` y el flujo prohíbe otra subida hasta adoptar manualmente el ID exacto. La release sigue como draft hasta que Play esté `FINISHED`, exista su evidencia y una comprobación final confirme target SHA, estado `validated`, presencia, MIME, tamaño y cadena de digests de AAB, APK, fuente, Play y transacción. Solo entonces se publica como latest.
+A continuación, `submit-play-and-release` registra durablemente la intención **antes** de contactar EAS Submit. Sube por `--path` el AAB validado, adopta el ID que devuelve EAS y espera un estado terminal. Un fallo terminal conocido crea un intento de reintento ligado al ID anterior y usa `eas submit:retry`, sin volver a cargar el AAB; si la petición pudo aceptarse pero se perdió el ID, queda `uncertain` y el flujo prohíbe otra subida hasta adoptar manualmente el ID exacto. La release sigue como draft hasta que Play esté `FINISHED`, exista su evidencia y una comprobación final confirme target SHA, estado `validated`, presencia, MIME, tamaño y cadena de digests de AAB, APK, fuente, Play y transacción. Solo entonces se publica como latest.
 
 ### Reanudación y fallos seguros
 
