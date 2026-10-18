@@ -2,14 +2,16 @@
 
 Expediente de GYM-201 (ticket para publicar primero en España y ampliar después
 los países). Preparación del **18 de octubre de 2026**. El acceso a producción
-está concedido y la cohorte está cerrada; el lanzamiento público está **pendiente
-de autorización del propietario y de envío a revisión**.
+está concedido y la cohorte está cerrada. El propietario autoriza el envío y la
+publicación de **1.52.2 (89), solo España**, manteniendo pendiente el fallo visual
+del temporizador. Google registra el **envío 11, En revisión**, el 18 de octubre
+a las **14:47, hora de Madrid**. La disponibilidad pública sigue sin verificarse.
 
 ## Estado preparado en Play Console
 
 Se ha guardado una versión con el bundle existente **89 (1.52.2)**, seleccionado
 mediante **Añadir de la biblioteca**. No se ha recompilado ni vuelto a subir el
-AAB. El resumen de publicación contiene exactamente dos cambios sin enviar:
+AAB. Antes de enviarlo, el resumen de publicación contenía exactamente dos cambios:
 
 1. Producción: **89 (1.52.2), Iniciar lanzamiento completo**.
 2. Países/Territorios: **Añadir 1 país/región: España**.
@@ -22,15 +24,44 @@ revisión de Google ni acredita que la app esté publicada.
 
 **Publicación gestionada está desactivada.** Enviar estos cambios a revisión
 puede conducir a la publicación cuando Google los apruebe, sin otro botón de
-liberación. La autorización final debe cubrir ese efecto, la versión y España.
-La aprobación de acceso y el «empieza» con el que se inicia esta preparación no
-se registran como aprobación de publicar este artefacto concreto.
+liberación. El mantenedor autoriza expresamente ese efecto, la versión y España con la
+respuesta **«Autorizo»**, después de revisar el alcance y el fallo visual
+pendiente. La autorización de acceso y el «empieza» anterior se conservan como
+etapas distintas; no sustituyen esta aprobación final.
 
 - [Resumen de publicación](https://play.google.com/console/u/0/developers/8108994737998375347/app/4972645631625321604/publishing).
 - [Revisión de la versión preparada](https://play.google.com/console/u/0/developers/8108994737998375347/app/4972645631625321604/tracks/4697566130441339396/releases/1/review).
 - [Acceso concedido y cierre de la cohorte](closed-test-production-access.md).
 
 ![Dos cambios sin enviar: versión 89 y España; publicación gestionada desactivada](evidence/production-spain-ready-2026-10-18.png)
+
+## Envío autorizado y recepción de Google
+
+El 18 de octubre de 2026, tras la confirmación explícita del mantenedor, se
+pulsa **Enviar 2 cambios a revisión** y se confirma **Enviar cambios a revisión**.
+El detalle persistente del envío registra:
+
+| Campo de Play Console | Resultado observado |
+|---|---|
+| ID de envío | **11** |
+| Fuente | Play Console |
+| Cambios enviados | **18 de octubre de 2026, 14:47**, hora de Madrid |
+| Estado | **En revisión** |
+| Producción | **89 (1.52.2), Iniciar lanzamiento completo** |
+| Países/Territorios | **Añadir 1 país/región: España** |
+
+[Detalle del envío 11](https://play.google.com/console/u/0/developers/8108994737998375347/app/4972645631625321604/publishing/submission-activity/11/details)
+y [registro estructurado de la observación](evidence/production-spain-submission-11-2026-10-18.json).
+La hora de la consola tiene precisión de minuto: no se inventan segundos. La
+pantalla del envío identifica el código 89; el hash se vincula mediante la
+cadena de evidencias del AAB ya comprobada, no como si la pantalla lo mostrara.
+
+![Envío 11: versión 89 y España, enviados a las 14:47 y en revisión](evidence/production-spain-submission-11-2026-10-18.png)
+
+Esta evidencia acredita recepción y estado de revisión. La aprobación de
+Google, la disponibilidad pública, la instalación y la actualización siguen
+pendientes. La propuesta de observación posterior no inicia su cómputo con
+este envío. No se amplía a otros países.
 
 ## Artefacto candidato y comprobaciones
 
@@ -106,15 +137,19 @@ y [distribución en la UE](https://support.google.com/googleplay/android-develop
   en oficinas ES/EM, con todas las clases y estados; control `gimnasio`: 86
   resultados. [Alcance y capturas](../../legal/trademark-clearance.md#actualización-previa-al-lanzamiento-18-de-octubre-de-2026).
 - [x] Comprobaciones rápidas terminadas: Play permite enviar los cambios a revisión.
-- [ ] Aprobación explícita de publicar el artefacto anterior en España,
-  incluyendo las incidencias conocidas y la advertencia de desofuscación.
-- [ ] Enviar los dos cambios a revisión y registrar fecha, estado y resultado.
+- [x] Aprobación explícita del mantenedor: «Autorizo», para enviar y publicar
+  1.52.2 (89) en España, manteniendo pendiente el fallo visual declarado. La
+  advertencia de desofuscación y el alcance técnico restante constan en el
+  expediente revisado.
+- [x] Dos cambios enviados el 18 de octubre a las 14:47, hora de Madrid;
+  envío 11 en revisión. La aprobación y disponibilidad siguen pendientes.
 - [ ] Verificar disponibilidad e instalación desde producción y completar el
   seguimiento posterior.
 
 GYM-256 (ticket para colocar el temporizador en el ejercicio correcto) sigue
-pendiente. Su excepción autorizaba **solicitar acceso** declarándolo en el
-roadmap; no se amplía esa autorización a esta publicación. GYM-244 (ticket para
+pendiente. La excepción inicial autorizaba **solicitar acceso** declarándolo en
+el roadmap; el 18 de octubre el mantenedor autoriza además el envío para
+publicación de este artefacto en España con ese fallo pendiente. GYM-244 (ticket para
 investigar Coach sin snapshot firmado) conserva su investigación y criterios
 pendientes. La QA funcional previa y el snapshot validado del candidato no
 cierran por sí solos ese ticket.

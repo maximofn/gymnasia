@@ -177,6 +177,8 @@ queda cerrada el 18 de octubre con el checklist y sus evidencias resueltos.
 El [expediente del lanzamiento inicial en España](production-spain-launch.md)
 identifica la candidata 1.52.2 (89), los hashes y evidencias comprobados, las
 notas es-ES y los dos cambios preparados en Play el 18 de octubre de 2026.
-El envío a revisión y la publicación siguen pendientes de autorización expresa.
+El mantenedor autoriza expresamente el envío y la publicación en España. Google
+registra el envío 11, **En revisión**, el 18 de octubre a las **14:47, hora de
+Madrid**. La aprobación de Google y la disponibilidad pública siguen pendientes.
 La primera publicación no admite porcentajes; la propuesta de observación
 previa a ampliar países se conserva separada de la aprobación de publicar.
