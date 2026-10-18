@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-10-15",
+    "updated": "2026-10-18",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -340,7 +340,7 @@
         {
           "id": "GYM-200",
           "title": "Conseguir y coordinar al menos 12 testers durante 14 días",
-          "state": "in_progress",
+          "state": "done",
           "summary": "Reclutar con margen, mantener al menos 12 personas inscritas durante 14 días cuando lo exija la cuenta y convertir su actividad y feedback en evidencia.",
           "dependsOn": [
             "GYM-199"

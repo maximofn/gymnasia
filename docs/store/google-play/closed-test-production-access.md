@@ -123,8 +123,10 @@ contiene el texto aportado.
 
 ![Play Console confirma que el acceso a producción se ha concedido](evidence/production-access-granted-2026-10-18.jpg)
 
-Esta aprobación acredita el acceso al canal. No acredita por sí sola que
-cada participante haya completado los tres recorridos del plan E2E interno.
+La aprobación acredita el acceso al canal. La evidencia del E2E individual
+es independiente: el 18 de octubre el mantenedor confirma expresamente que
+los 12 participantes instalaron la app, completaron un entrenamiento y usaron
+el chat.
 
 ## Evidencias del checklist de coordinación
 
@@ -134,7 +136,7 @@ prueba. Las ejecuciones históricas no se presentan como pruebas nuevas.
 | Categoría | Resultado y evidencia |
 | --- | --- |
 | Unitarios | No aplica: la tarea coordina una cohorte externa y no añade lógica de aplicación. Las pruebas del código permanecen en sus tickets y en la evidencia del AAB. |
-| E2E | Pendiente de confirmar los tres pasos para los 12 participantes: instalación, un entrenamiento completo y chat. GYM-199 (ticket para validar la distribución cerrada) acredita la QA del mantenedor del 15 de octubre, no una ejecución por persona. La aprobación de Google tampoco se usa para inferir esa cobertura. |
+| E2E | El mantenedor confirma expresamente el 18 de octubre que los 12 participantes instalaron la app, completaron un entrenamiento y usaron el chat. Se registra como confirmación humana de la cohorte, separada de la QA del mantenedor del 15 de octubre en GYM-199 (ticket para validar la distribución cerrada) y de la aprobación de Google. No se inventan fechas, dispositivos ni versiones por participante. |
 | Integración con proveedor falso | Evidencia heredada del AAB 1.50.1 (80) en GYM-199 (ticket para validar la distribución cerrada): `test:agent:e2e` con OpenAI falso correcto. El acceso real del revisor se probó adicionalmente el 15 de octubre con su credencial dedicada, respuesta `7`, HTTP 200 y evento terminal de Gemini; el caso seguro está en `reviewer-access.md`. No se distribuye ni se registra esa credencial como parte de esta formalización. |
 | Contrato | Cumplimiento de 12 testers durante 14 días comprobado el 15 de octubre; solicitud recibida ese día y acceso concedido comprobado en Play el 18 de octubre. Capturas y respuestas conservadas en este expediente. |
 | Regresión | Peso y preferencias: QA del mantenedor del 18 de septiembre en las versiones 1.45.0 y 1.45.1; márgenes de Android: confirmación del tester del 8 de octubre en GYM-249 (ticket para evitar el solapamiento con barras); consentimiento sanitario: E2E con proveedor interceptado y migración en GYM-247 (ticket para impedir activar la evaluación sanitaria sin clave); Coach y flujos principales: QA nativa del mantenedor del 15 de octubre. Se conservan las excepciones del temporizador y el alcance técnico pendiente del snapshot, sin atribuir su corrección. |
@@ -142,8 +144,22 @@ prueba. Las ejecuciones históricas no se presentan como pruebas nuevas.
 
 La regresión documenta las comprobaciones del mantenedor, el tester y las
 pruebas automáticas citadas; no afirma que todos los participantes hayan
-repetido todas las correcciones. El requisito individual del E2E se mantiene
-pendiente hasta disponer de su confirmación.
+repetido todas las correcciones. El E2E individual queda resuelto con la
+confirmación humana del mantenedor del 18 de octubre sobre instalación,
+entrenamiento y chat para los 12 participantes.
+
+## Cierre de la coordinación el 18 de octubre
+
+GYM-200 (ticket para coordinar los 12 testers durante 14 días) queda cerrado
+con las seis categorías resueltas o justificadas como no aplicables. La
+previsualización del cierre protegido fue válida y se guardó el comentario
+de evidencias antes de pasar el ticket a Done. La confirmación del mantenedor
+sobre los 12 participantes resuelve el último E2E pendiente; la aprobación de
+Google conserva su evidencia independiente.
+
+El cierre de la coordinación no cierra las incidencias técnicas ni publica
+la app. GYM-201 (ticket para publicar primero en España) continúa con las
+comprobaciones de lanzamiento pendientes.
 
 ## Caso seguro para comprobar Coach
 

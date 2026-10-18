@@ -160,7 +160,8 @@ el cumplimiento reconocido por Play el 15 de octubre de 2026, el feedback,
 las correcciones y las respuestas enviadas para solicitar acceso a producción.
 Play confirma la recepción del formulario a las 13:55 de ese día. El acceso
 a producción está concedido, comprobado en el panel el 18 de octubre. El
-lanzamiento público continúa pendiente.
+lanzamiento público continúa pendiente. La coordinación de la prueba cerrada
+queda cerrada el 18 de octubre con el checklist y sus evidencias resueltos.
 
 ## Fuentes oficiales verificadas el 29 de agosto de 2026
 
