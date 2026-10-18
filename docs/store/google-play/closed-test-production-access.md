@@ -1,16 +1,17 @@
 # Prueba cerrada y acceso a producción de Google Play
 
-Estado comprobado el **15 de octubre de 2026** para GYM-200 (ticket para
+Estado actualizado el **18 de octubre de 2026** para GYM-200 (ticket para
 coordinar la prueba cerrada) y GYM-201 (ticket para publicar primero en España).
-La solicitud de acceso a producción se envió el **15 de octubre de 2026 a las
-13:55, hora de Madrid**. Play Console confirma su recepción y la revisión del
-formulario. El lanzamiento público inicial en España continúa pendiente de
-aprobación y de su preparación específica.
+La solicitud se envió el **15 de octubre de 2026 a las 13:55, hora de Madrid**.
+El **18 de octubre** se comprueba directamente en Play Console que Google ha
+concedido el acceso a producción, después de que el mantenedor comunique el
+correo de aprobación. El panel mantiene Producción como **Inactivo**: el
+lanzamiento público inicial en España sigue pendiente.
 
 ## Cumplimiento de la cohorte
 
 El [panel de control de Gymnasia](https://play.google.com/console/u/0/developers/8108994737998375347/app/4972645631625321604/app-dashboard)
-marca como completadas las tres tareas:
+mostraba completadas el 15 de octubre las tres tareas:
 
 - Publicar una versión de prueba cerrada.
 - Tener al menos 12 testers que hayan aceptado participar.
@@ -47,8 +48,8 @@ Play. No se atribuye esa ejecución a todos los testers ni se infiere una
 versión instalada que el mantenedor no indicó.
 
 El [acceso del revisor](reviewer-access.md) está preparado y comprobado. La
-actualización de sus instrucciones permanece en revisión en Google el
-15 de octubre; es un envío distinto de la solicitud de acceso a producción.
+actualización de sus instrucciones se envió a revisión el 15 de octubre; ese
+envío es distinto de la solicitud de acceso a producción.
 
 ## Respuestas enviadas
 
@@ -97,10 +98,10 @@ estimación del primer año.
 
 ## Recepción de la solicitud
 
-Play Console muestra **Hemos recibido tu solicitud de acceso a producción** y
-**Solicitud enviada el hoy, 13:55**. Indica que revisa el formulario y avisará
-por correo al propietario; el plazo orientativo es de siete días o menos,
-aunque puede ser mayor.
+El 15 de octubre Play Console mostraba **Hemos recibido tu solicitud de acceso a producción** y
+**Solicitud enviada el hoy, 13:55**. Indicaba que revisaba el formulario y
+avisaría por correo al propietario, con un plazo orientativo de siete días
+o menos que podía ser mayor.
 
 ![Google Play confirma la recepción del formulario y su revisión](evidence/production-access-submitted-2026-10-15.jpg)
 
@@ -111,13 +112,57 @@ corrección ni completa sus pruebas. GYM-244 (ticket para investigar el Coach
 sin snapshot) conserva sus criterios técnicos pendientes; la evidencia
 funcional de Coach se limita a la QA confirmada por el mantenedor.
 
+## Acceso concedido comprobado el 18 de octubre
+
+El mantenedor comunica el correo que concede acceso a Gymnasia
+(`com.maximofn.gymnasia`). La lectura directa del panel confirma el mensaje
+**¡Enhorabuena! Tu aplicación tiene acceso a producción en Google Play** y
+que la solicitud se ha concedido. La comprobación se fecha el 18 de octubre;
+no se deduce del correo una hora o una fecha anterior de aprobación que no
+contiene el texto aportado.
+
+![Play Console confirma que el acceso a producción se ha concedido](evidence/production-access-granted-2026-10-18.jpg)
+
+Esta aprobación acredita el acceso al canal. No acredita por sí sola que
+cada participante haya completado los tres recorridos del plan E2E interno.
+
+## Evidencias del checklist de coordinación
+
+La revisión del 18 de octubre conserva la procedencia y la fecha de cada
+prueba. Las ejecuciones históricas no se presentan como pruebas nuevas.
+
+| Categoría | Resultado y evidencia |
+| --- | --- |
+| Unitarios | No aplica: la tarea coordina una cohorte externa y no añade lógica de aplicación. Las pruebas del código permanecen en sus tickets y en la evidencia del AAB. |
+| E2E | Pendiente de confirmar los tres pasos para los 12 participantes: instalación, un entrenamiento completo y chat. GYM-199 (ticket para validar la distribución cerrada) acredita la QA del mantenedor del 15 de octubre, no una ejecución por persona. La aprobación de Google tampoco se usa para inferir esa cobertura. |
+| Integración con proveedor falso | Evidencia heredada del AAB 1.50.1 (80) en GYM-199 (ticket para validar la distribución cerrada): `test:agent:e2e` con OpenAI falso correcto. El acceso real del revisor se probó adicionalmente el 15 de octubre con su credencial dedicada, respuesta `7`, HTTP 200 y evento terminal de Gemini; el caso seguro está en `reviewer-access.md`. No se distribuye ni se registra esa credencial como parte de esta formalización. |
+| Contrato | Cumplimiento de 12 testers durante 14 días comprobado el 15 de octubre; solicitud recibida ese día y acceso concedido comprobado en Play el 18 de octubre. Capturas y respuestas conservadas en este expediente. |
+| Regresión | Peso y preferencias: QA del mantenedor del 18 de septiembre en las versiones 1.45.0 y 1.45.1; márgenes de Android: confirmación del tester del 8 de octubre en GYM-249 (ticket para evitar el solapamiento con barras); consentimiento sanitario: E2E con proveedor interceptado y migración en GYM-247 (ticket para impedir activar la evaluación sanitaria sin clave); Coach y flujos principales: QA nativa del mantenedor del 15 de octubre. Se conservan las excepciones del temporizador y el alcance técnico pendiente del snapshot, sin atribuir su corrección. |
+| Fuzzing / property-based | No aplica: no hay lógica o espacio de entradas nuevo en la coordinación de personas. Las propiedades de las correcciones se conservan en sus tickets. |
+
+La regresión documenta las comprobaciones del mantenedor, el tester y las
+pruebas automáticas citadas; no afirma que todos los participantes hayan
+repetido todas las correcciones. El requisito individual del E2E se mantiene
+pendiente hasta disponer de su confirmación.
+
+## Caso seguro para comprobar Coach
+
+En una instalación o actualización desde Play, configurar una clave propia
+del proveedor elegido, sin compartirla ni incorporarla a las evidencias.
+Enviar **What is 3 + 4?**, comprobar una respuesta completa con el resultado
+**7** y registrar solo fecha, versión y resultado. Una rutina y datos ficticios
+permiten probar el guardado sin recopilar datos de salud de los participantes.
+La integración con proveedor falso pertenece a las pruebas automáticas; no
+se presenta como un modo disponible en la build BYOK de producción.
+
 ## Siguiente fase
 
-Esperar la decisión de Google y conservar la comunicación recibida. Si se
-aprueba el acceso, preparar la versión pública inicial limitada a España en
-GYM-201 (ticket para publicar primero en España), con sus comprobaciones de
-artefacto, disponibilidad y estabilidad. La solicitud recibida no activa una
-versión pública ni acredita la aprobación del acceso.
+El acceso concedido permite preparar el lanzamiento inicial limitado a España
+en GYM-201 (ticket para publicar primero en España), con sus comprobaciones de
+artefacto, disponibilidad y estabilidad. La app continúa sin una versión
+pública activa en el panel consultado el 18 de octubre. GYM-244 (ticket para
+investigar el Coach sin snapshot) y GYM-256 (ticket para situar el descanso en
+el ejercicio correcto) conservan sus estados y sus pruebas propias.
 
 ## Referencias
 
