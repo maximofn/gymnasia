@@ -271,3 +271,25 @@ Según el plan de pruebas de GYM-193:
 - **Si cambia el nombre** del producto, en cuyo caso hay que rehacerla entera.
 - **Al ampliar a territorios nuevos**, con las oficinas de esos territorios en
   `fOffices`.
+
+## Actualización previa al lanzamiento: 18 de octubre de 2026
+
+Para GYM-201 (ticket para publicar primero en España y ampliar después los
+países), se repite la consulta literal «contiene gymnasia» en TMview, oficinas
+**España/OEPM (ES) y EUIPO (EM)**, sin filtros de clase ni de estado. La interfaz
+web muestra **sin filas**. La consulta de control «contiene gimnasio», con las
+mismas oficinas, devuelve **86 resultados**; el control permite distinguir el
+resultado vacío de un fallo general del buscador.
+
+La llamada directa a la API cerró la conexión (`RemoteDisconnected`); no se
+interpreta como cero coincidencias ni se insiste en esa vía. Las dos consultas
+se completaron después en la interfaz web de TMview.
+
+- [Consulta literal sin filas](../store/google-play/evidence/trademark-gymnasia-2026-10-18.png).
+- [Control con 86 resultados](../store/google-play/evidence/trademark-control-2026-10-18.png).
+- [Registro de ambos métodos y alcance](../store/google-play/evidence/trademark-refresh-2026-10-18.json).
+
+Esta actualización cubre solo la consulta literal y su control. No repite el
+análisis de signos similares ni los usos comerciales de agosto, no garantiza
+libertad de uso y no amplía la conclusión a Francia, Turquía u otros mercados.
+Se conserva el alcance preliminar y las condiciones del informe original.

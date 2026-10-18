@@ -171,3 +171,12 @@ queda cerrada el 18 de octubre con el checklist y sus evidencias resueltos.
 - [Declaración de apps de salud](https://support.google.com/googleplay/android-developer/answer/14738291?hl=es) y [política de contenido de salud](https://support.google.com/googleplay/android-developer/answer/16679511?hl=es): se declaran Activity and Fitness y Nutrition and Weight Management; la descripción incluye que no es un dispositivo médico y que no diagnostica, trata, cura ni previene enfermedades.
 - [Etiquetado de recursos creados con IA](https://support.google.com/googleplay/android-developer/answer/17262077?hl=es): la declaración es individual por cada asset introducido en Play Console.
 - [Contenido generado por IA](https://support.google.com/googleplay/android-developer/answer/13985936?hl=es): las apps conversacionales deben permitir denunciar contenido dentro de la propia aplicación.
+
+## Preparación del primer lanzamiento público
+
+El [expediente del lanzamiento inicial en España](production-spain-launch.md)
+identifica la candidata 1.52.2 (89), los hashes y evidencias comprobados, las
+notas es-ES y los dos cambios preparados en Play el 18 de octubre de 2026.
+El envío a revisión y la publicación siguen pendientes de autorización expresa.
+La primera publicación no admite porcentajes; la propuesta de observación
+previa a ampliar países se conserva separada de la aprobación de publicar.
