@@ -2359,13 +2359,14 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                           }}
                         >
                           <View
-                            style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}
+                            style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 10 }}
                           >
-                            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flexGrow: 1, flexBasis: 190, minWidth: 190 }}>
                               <View
                                 style={{
                                   width: 42,
                                   height: 42,
+                                  flexShrink: 0,
                                   borderRadius: 12,
                                   backgroundColor: providerMeta.avatar_bg,
                                   alignItems: "center",
@@ -2376,8 +2377,13 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                                   {providerMeta.label.charAt(0)}
                                 </Text>
                               </View>
-                              <View style={{ flex: 1 }}>
-                                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: key.provider === "custom_openai" ? 23 : 29 }}>
+                              <View style={{ flex: 1, minWidth: 0 }}>
+                                <Text
+                                  numberOfLines={1}
+                                  adjustsFontSizeToFit
+                                  minimumFontScale={0.75}
+                                  style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: key.provider === "custom_openai" ? 21 : 29 }}
+                                >
                                   {providerMeta.label}
                                 </Text>
                                 <Text
@@ -2391,6 +2397,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                             <View
                               style={{
                                 borderRadius: mobileTheme.radius.pill,
+                                flexShrink: 0,
                                 paddingHorizontal: 10,
                                 minHeight: 28,
                                 backgroundColor: statusMeta.backgroundColor,
