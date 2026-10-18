@@ -158,8 +158,10 @@ Verificación final en Play Console, 29 de agosto de 2026:
 El [expediente de la prueba cerrada](closed-test-production-access.md) recoge
 el cumplimiento reconocido por Play el 15 de octubre de 2026, el feedback,
 las correcciones y las respuestas enviadas para solicitar acceso a producción.
-Play confirma la recepción del formulario a las 13:55 de ese día; la decisión
-de acceso y el lanzamiento público siguen pendientes.
+Play confirma la recepción del formulario a las 13:55 de ese día. El acceso
+a producción está concedido, comprobado en el panel el 18 de octubre. El
+lanzamiento público continúa pendiente. La coordinación de la prueba cerrada
+queda cerrada el 18 de octubre con el checklist y sus evidencias resueltos.
 
 ## Fuentes oficiales verificadas el 29 de agosto de 2026
 
