@@ -1,6 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { memo } from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { DialogLayer } from "../components/Dialog";
 
 import type { ExerciseCatalogEntry } from "../catalogs/types";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
@@ -17,7 +18,7 @@ export const ExerciseCatalogDetailOverlay = memo(function ExerciseCatalogDetailO
 }) {
   if (!exercise) return null;
   return (
-    <View testID={shellSurfaceTestId("exercise-catalog-detail")} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.88)", zIndex: 998, justifyContent: "center", alignItems: "center" }}>
+    <DialogLayer testID={shellSurfaceTestId("exercise-catalog-detail")} style={{ backgroundColor: "rgba(0,0,0,0.88)", zIndex: 998 }}>
       <View style={{ width: "92%", maxHeight: "90%", backgroundColor: mobileTheme.color.bgSurface, borderRadius: 20, padding: 20, gap: 14 }}>
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
           <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "800", fontSize: 20, flex: 1 }}>
@@ -63,6 +64,6 @@ export const ExerciseCatalogDetailOverlay = memo(function ExerciseCatalogDetailO
           </Text>
         </ScrollView>
       </View>
-    </View>
+    </DialogLayer>
   );
 });

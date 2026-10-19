@@ -1,0 +1,843 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-10-19",
+  "source": "https://gymnasia.maximofn.com/",
+  "publishedVersion": "1.52.1",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "method": "Recorrido manual mediante navegador y DevTools (CDP). Capturas reales de la app publicada.",
+  "screens": [
+    {
+      "id": "01-home",
+      "title": "Home",
+      "area": "Inicio",
+      "image": "screens/01-home.jpg",
+      "components": [
+        "Button",
+        "StatCard"
+      ]
+    },
+    {
+      "id": "02-rutinas-lista",
+      "title": "Rutinas lista",
+      "area": "Rutinas",
+      "image": "screens/02-rutinas-lista.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "03-rutina-nueva",
+      "title": "Rutina nueva",
+      "area": "Rutinas",
+      "image": "screens/03-rutina-nueva.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "04-catalogo-ejercicios",
+      "title": "Catalogo ejercicios",
+      "area": "Rutinas",
+      "image": "screens/04-catalogo-ejercicios.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "05-ejercicio-personalizado",
+      "title": "Ejercicio personalizado",
+      "area": "Rutinas",
+      "image": "screens/05-ejercicio-personalizado.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "06-confirmar-descartar",
+      "title": "Confirmar descartar",
+      "area": "Rutinas",
+      "image": "screens/06-confirmar-descartar.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "07-rutina-detalle",
+      "title": "Rutina detalle",
+      "area": "Rutinas",
+      "image": "screens/07-rutina-detalle.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "08-rutina-editor",
+      "title": "Rutina editor",
+      "area": "Rutinas",
+      "image": "screens/08-rutina-editor.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "09-selector-serie",
+      "title": "Selector serie",
+      "area": "Rutinas",
+      "image": "screens/09-selector-serie.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "10-sesion-activa",
+      "title": "Sesion activa",
+      "area": "Rutinas",
+      "image": "screens/10-sesion-activa.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "11-sesion-descanso",
+      "title": "Sesion descanso",
+      "area": "Rutinas",
+      "image": "screens/11-sesion-descanso.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "12-sesion-confirmar-parcial",
+      "title": "Sesion confirmar parcial",
+      "area": "Rutinas",
+      "image": "screens/12-sesion-confirmar-parcial.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "13-sesion-resumen",
+      "title": "Sesion resumen",
+      "area": "Rutinas",
+      "image": "screens/13-sesion-resumen.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "14-historial",
+      "title": "Historial",
+      "area": "Rutinas",
+      "image": "screens/14-historial.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "15-historial-detalle",
+      "title": "Historial detalle",
+      "area": "Rutinas",
+      "image": "screens/15-historial-detalle.jpg",
+      "components": [
+        "Button",
+        "ChartCard",
+        "OptionChips",
+        "ChoiceChip",
+        "TextField",
+        "DialogLayer",
+        "DialogCard",
+        "ProgressBar"
+      ]
+    },
+    {
+      "id": "16-dieta-vacia",
+      "title": "Dieta vacia",
+      "area": "Dieta",
+      "image": "screens/16-dieta-vacia.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "FoodThumbnail",
+        "DietItemThumbnail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "17-dieta-alimento-manual",
+      "title": "Dieta alimento manual",
+      "area": "Dieta",
+      "image": "screens/17-dieta-alimento-manual.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "FoodThumbnail",
+        "DietItemThumbnail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "18-estimador-alimentos",
+      "title": "Estimador alimentos",
+      "area": "Dieta",
+      "image": "screens/18-estimador-alimentos.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "FoodThumbnail",
+        "DietItemThumbnail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "19-dieta-fecha",
+      "title": "Dieta fecha",
+      "area": "Dieta",
+      "image": "screens/19-dieta-fecha.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "FoodThumbnail",
+        "DietItemThumbnail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "20-medidas",
+      "title": "Medidas",
+      "area": "Medidas",
+      "image": "screens/20-medidas.jpg",
+      "components": [
+        "Button",
+        "StatCard",
+        "ChartCard",
+        "TextField",
+        "DialogLayer"
+      ]
+    },
+    {
+      "id": "21-medidas-selector",
+      "title": "Medidas selector",
+      "area": "Medidas",
+      "image": "screens/21-medidas-selector.jpg",
+      "components": [
+        "Button",
+        "StatCard",
+        "ChartCard",
+        "TextField",
+        "DialogLayer"
+      ]
+    },
+    {
+      "id": "22-medidas-formulario",
+      "title": "Medidas formulario",
+      "area": "Medidas",
+      "image": "screens/22-medidas-formulario.jpg",
+      "components": [
+        "Button",
+        "StatCard",
+        "ChartCard",
+        "TextField",
+        "DialogLayer"
+      ]
+    },
+    {
+      "id": "23-medidas-fecha",
+      "title": "Medidas fecha",
+      "area": "Medidas",
+      "image": "screens/23-medidas-fecha.jpg",
+      "components": [
+        "Button",
+        "StatCard",
+        "ChartCard",
+        "TextField",
+        "DialogLayer"
+      ]
+    },
+    {
+      "id": "24-coach-inicial",
+      "title": "Coach inicial",
+      "area": "Coach",
+      "image": "screens/24-coach-inicial.jpg",
+      "components": [
+        "Button",
+        "TextField"
+      ]
+    },
+    {
+      "id": "25-config-dieta",
+      "title": "Config dieta",
+      "area": "Configuración",
+      "image": "screens/25-config-dieta.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "26-config-entreno",
+      "title": "Config entreno",
+      "area": "Configuración",
+      "image": "screens/26-config-entreno.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "27-config-alimentos",
+      "title": "Config alimentos",
+      "area": "Configuración",
+      "image": "screens/27-config-alimentos.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "28-config-productos",
+      "title": "Config productos",
+      "area": "Configuración",
+      "image": "screens/28-config-productos.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "29-config-alimentos-personales",
+      "title": "Config alimentos personales",
+      "area": "Configuración",
+      "image": "screens/29-config-alimentos-personales.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "30-config-medidas",
+      "title": "Config medidas",
+      "area": "Configuración",
+      "image": "screens/30-config-medidas.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "31-config-preferencias",
+      "title": "Config preferencias",
+      "area": "Configuración",
+      "image": "screens/31-config-preferencias.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "32-config-notificaciones",
+      "title": "Config notificaciones",
+      "area": "Configuración",
+      "image": "screens/32-config-notificaciones.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "33-config-datos",
+      "title": "Config datos",
+      "area": "Configuración",
+      "image": "screens/33-config-datos.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "34-config-trazas",
+      "title": "Config trazas",
+      "area": "Configuración",
+      "image": "screens/34-config-trazas.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "35-config-memoria",
+      "title": "Config memoria",
+      "area": "Configuración",
+      "image": "screens/35-config-memoria.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "36-config-proveedor",
+      "title": "Config proveedor",
+      "area": "Configuración",
+      "image": "screens/36-config-proveedor.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "37-copia-contrasena",
+      "title": "Copia contrasena",
+      "area": "Configuración",
+      "image": "screens/37-copia-contrasena.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "38-confirmar-borrado",
+      "title": "Confirmar borrado",
+      "area": "Configuración",
+      "image": "screens/38-confirmar-borrado.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "39-alimento-personal-formulario",
+      "title": "Alimento personal formulario",
+      "area": "Configuración",
+      "image": "screens/39-alimento-personal-formulario.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "SearchField",
+        "ChoiceRow",
+        "ChoiceChip",
+        "NumberStepper",
+        "ToggleField",
+        "FoodThumbnail",
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "40-rutinas-sin-resultados",
+      "title": "Rutinas sin resultados",
+      "area": "Rutinas · vacío",
+      "image": "screens/40-rutinas-sin-resultados.jpg",
+      "components": [
+        "Button"
+      ]
+    },
+    {
+      "id": "41-dieta-busqueda",
+      "title": "Dieta busqueda",
+      "area": "Dieta · detalle",
+      "image": "screens/41-dieta-busqueda.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "FoodThumbnail",
+        "DietItemThumbnail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "42-dieta-porcion",
+      "title": "Dieta porcion",
+      "area": "Dieta · detalle",
+      "image": "screens/42-dieta-porcion.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "FoodThumbnail",
+        "DietItemThumbnail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "43-dieta-con-alimentos",
+      "title": "Dieta con alimentos",
+      "area": "Dieta · detalle",
+      "image": "screens/43-dieta-con-alimentos.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "FoodThumbnail",
+        "DietItemThumbnail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "44-dieta-menu-alimento",
+      "title": "Dieta menu alimento",
+      "area": "Dieta · detalle",
+      "image": "screens/44-dieta-menu-alimento.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "FoodThumbnail",
+        "DietItemThumbnail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "45-dieta-repetir-fecha",
+      "title": "Dieta repetir fecha",
+      "area": "Dieta · detalle",
+      "image": "screens/45-dieta-repetir-fecha.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "FoodThumbnail",
+        "DietItemThumbnail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "46-dieta-error-fecha",
+      "title": "Dieta error fecha",
+      "area": "Dieta · detalle",
+      "image": "screens/46-dieta-error-fecha.jpg",
+      "components": [
+        "Button",
+        "TextField",
+        "FoodThumbnail",
+        "DietItemThumbnail",
+        "DialogLayer",
+        "DialogCard"
+      ]
+    },
+    {
+      "id": "47-alimento-ficha",
+      "title": "Alimento ficha",
+      "area": "Catálogos",
+      "image": "screens/47-alimento-ficha.jpg",
+      "components": [
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "FoodThumbnail",
+        "DialogLayer"
+      ]
+    },
+    {
+      "id": "48-catalogo-consulta",
+      "title": "Catalogo consulta",
+      "area": "Catálogos",
+      "image": "screens/48-catalogo-consulta.jpg",
+      "components": [
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "FoodThumbnail",
+        "DialogLayer"
+      ]
+    },
+    {
+      "id": "49-ejercicio-ficha",
+      "title": "Ejercicio ficha",
+      "area": "Catálogos",
+      "image": "screens/49-ejercicio-ficha.jpg",
+      "components": [
+        "FoodCatalogRow",
+        "FoodCatalogDetail",
+        "FoodThumbnail",
+        "DialogLayer"
+      ]
+    },
+    {
+      "id": "50-alimento-personal-ia",
+      "title": "Alimento personal ia",
+      "area": "Alimentos personales · IA",
+      "image": "screens/50-alimento-personal-ia.jpg",
+      "components": [
+        "Button",
+        "TextField"
+      ]
+    },
+    {
+      "id": "51-coach-procesando",
+      "title": "Coach procesando",
+      "area": "Coach · conversación",
+      "image": "screens/51-coach-procesando.jpg",
+      "components": [
+        "Button",
+        "TextField"
+      ]
+    },
+    {
+      "id": "52-coach-respuesta",
+      "title": "Coach respuesta",
+      "area": "Coach · conversación",
+      "image": "screens/52-coach-respuesta.jpg",
+      "components": [
+        "Button",
+        "TextField"
+      ]
+    },
+    {
+      "id": "53-denunciar-respuesta",
+      "title": "Denunciar respuesta",
+      "area": "Coach · conversación",
+      "image": "screens/53-denunciar-respuesta.jpg",
+      "components": [
+        "Button",
+        "TextField"
+      ]
+    },
+    {
+      "id": "54-proveedor-selector",
+      "title": "Proveedor selector",
+      "area": "Configuración · selector",
+      "image": "screens/54-proveedor-selector.jpg",
+      "components": [
+        "Button"
+      ]
+    }
+  ]
+}

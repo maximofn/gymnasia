@@ -1,6 +1,5 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { memo } from "react";
-import ConfettiCannon from "react-native-confetti-cannon";
 import {
   Image,
   KeyboardAvoidingView,
@@ -8,24 +7,29 @@ import {
   Pressable,
   ScrollView,
   Text,
-  TextInput,
-  View,
+  View
 } from "react-native";
+import ConfettiCannon from "react-native-confetti-cannon";
+import { Button } from "../components/Button";
+import { DialogCard, DialogLayer } from "../components/Dialog";
+import { OptionChips } from "../components/OptionChips";
+import { ProgressBar } from "../components/ProgressBar";
+import { TextField } from "../components/TextField";
 
 import { ExerciseCatalogBrowser } from "../catalogs/ExerciseCatalogBrowser";
 import type {
   TrainingCatalogActions,
   TrainingCatalogModel,
+  TrainingDetailExercise,
   TrainingResolutionActions,
   TrainingResolutionModel,
-  TrainingDetailExercise,
   TrainingSessionModel,
 } from "../controllers/trainingController";
-import { ALL_SERIES_TYPES, SERIES_TYPE_META } from "../training/seriesPresentation";
-import { formatClock } from "../training/presentationModel";
-import { diffWorkoutTemplates } from "../training/workoutTemplateOperations";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import { mobileTheme } from "../theme";
+import { formatClock } from "../training/presentationModel";
+import { ALL_SERIES_TYPES, SERIES_TYPE_META } from "../training/seriesPresentation";
+import { diffWorkoutTemplates } from "../training/workoutTemplateOperations";
 
 export const ActiveSessionMiniBar = memo(function ActiveSessionMiniBar({
   model,
@@ -56,9 +60,7 @@ export const ActiveSessionMiniBar = memo(function ActiveSessionMiniBar({
             {currentMuscle ? "•" : ""} {session.completed_effort_count}/{session.total_effort_count} esfuerzos
           </Text>
         </View>
-        <View style={{ height: 3, borderRadius: 999, backgroundColor: "rgba(255,255,255,0.08)", marginTop: 4, overflow: "hidden" }}>
-          <View style={{ width: `${model.progressPercent}%`, height: "100%", borderRadius: 999, backgroundColor: mobileTheme.color.brandPrimary }} />
-        </View>
+        <ProgressBar percent={model.progressPercent} style={{ marginTop: 4 }} />
       </View>
       <View style={{ alignItems: "flex-end", gap: 2 }}>
         <Text style={{ color: "#F2F5FA", fontSize: 16, fontWeight: "700" }}>{formatClock(session.elapsed_seconds)}</Text>
@@ -129,13 +131,13 @@ export const TrainingCatalogOverlays = memo(function TrainingCatalogOverlays({
               <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 14, gap: 20, paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
                 <View style={{ gap: 6 }}>
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Nombre *</Text>
-                  <TextInput
+                  <TextField
                     testID="training-exercise-custom-name"
                     value={draft.name}
                     onChangeText={(name) => actions.updateCustomDraft((current) => ({ ...current, name }))}
                     placeholder="Ej: Flexiones, Sentadilla búlgara..."
                     placeholderTextColor={mobileTheme.color.textSecondary}
-                    style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, paddingHorizontal: 12, paddingVertical: 10, color: mobileTheme.color.textPrimary, fontSize: 16, backgroundColor: "#171B23", minHeight: 48 }}
+                    style={{ paddingVertical: 10, fontSize: 16, backgroundColor: "#171B23", minHeight: 48}}
                   />
                 </View>
 
@@ -171,7 +173,7 @@ export const TrainingCatalogOverlays = memo(function TrainingCatalogOverlays({
 
                 <View style={{ gap: 6 }}>
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Instrucciones</Text>
-                  <TextInput
+                  <TextField
                     value={draft.instructions}
                     onChangeText={(instructions) => actions.updateCustomDraft((current) => ({ ...current, instructions }))}
                     placeholder="Describe cómo realizar el ejercicio..."
@@ -179,7 +181,7 @@ export const TrainingCatalogOverlays = memo(function TrainingCatalogOverlays({
                     multiline
                     numberOfLines={4}
                     textAlignVertical="top"
-                    style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, paddingHorizontal: 12, paddingVertical: 10, color: mobileTheme.color.textPrimary, fontSize: 14, backgroundColor: "#171B23", minHeight: 100 }}
+                    style={{ paddingVertical: 10, fontSize: 14, backgroundColor: "#171B23", minHeight: 100}}
                   />
                 </View>
 
@@ -227,34 +229,6 @@ export const TrainingCatalogOverlays = memo(function TrainingCatalogOverlays({
     </>
   );
 });
-
-function OptionChips({
-  label,
-  options,
-  selected,
-  onToggle,
-}: {
-  label: string;
-  options: ReadonlyArray<string>;
-  selected(option: string): boolean;
-  onToggle(option: string, selected: boolean): void;
-}) {
-  return (
-    <View style={{ gap: 6 }}>
-      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>{label}</Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-        {options.map((option) => {
-          const active = selected(option);
-          return (
-            <Pressable key={option} onPress={() => onToggle(option, active)} style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: mobileTheme.radius.pill, borderWidth: 1, borderColor: active ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle, backgroundColor: active ? "rgba(160,204,0,0.12)" : "#0D1117" }}>
-              <Text style={{ color: active ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>{option}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
 
 export const TrainingExerciseDetailOverlay = memo(function TrainingExerciseDetailOverlay({
   exercise,
@@ -337,41 +311,35 @@ export const TrainingResolutionOverlays = memo(function TrainingResolutionOverla
   return (
     <>
       {model.discardDraftOpen ? (
-        <View testID={shellSurfaceTestId("training-template-discard")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20, alignItems: "center", justifyContent: "center", zIndex: 620, elevation: 62 }}>
+        <DialogLayer testID={shellSurfaceTestId("training-template-discard")} style={{ backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20, zIndex: 620, elevation: 62 }}>
           <View style={{ width: "100%", maxWidth: 370, borderRadius: 24, borderWidth: 1, borderColor: "#252B35", backgroundColor: "#141820", padding: 20, gap: 14 }}>
             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 24, fontWeight: "800" }}>¿Descartar cambios?</Text>
             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 15, lineHeight: 21 }}>El borrador no se ha guardado. La rutina original no se modificará.</Text>
-            <Pressable testID="training-editor-keep-editing" onPress={actions.keepEditing} style={{ minHeight: 50, borderRadius: 14, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center" }}>
-              <Text style={{ color: "#06090D", fontSize: 17, fontWeight: "800" }}>Seguir editando</Text>
-            </Pressable>
+            <Button testID="training-editor-keep-editing" onPress={actions.keepEditing} label="Seguir editando" style={{ minHeight: 50, borderRadius: 14, gap: 0 }} textStyle={{ color: "#06090D", fontSize: 17, fontWeight: "800" }} />
             <Pressable testID="training-editor-confirm-discard" onPress={actions.discardDraft} style={{ minHeight: 48, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,77,79,0.55)", backgroundColor: "rgba(255,77,79,0.12)", alignItems: "center", justifyContent: "center" }}>
               <Text style={{ color: "#FF8A8A", fontSize: 16, fontWeight: "800" }}>Descartar cambios</Text>
             </Pressable>
           </View>
-        </View>
+        </DialogLayer>
       ) : null}
 
       {model.conflictOpen ? (
-        <View testID={shellSurfaceTestId("training-template-conflict")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20, alignItems: "center", justifyContent: "center", zIndex: 621, elevation: 63 }}>
+        <DialogLayer testID={shellSurfaceTestId("training-template-conflict")} style={{ backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20, zIndex: 621, elevation: 63 }}>
           <View style={{ width: "100%", maxWidth: 390, borderRadius: 24, borderWidth: 1, borderColor: "#3B424E", backgroundColor: "#141820", padding: 20, gap: 12 }}>
             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 24, fontWeight: "800" }}>La rutina cambió fuera del editor</Text>
             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 15, lineHeight: 21 }}>Hay una versión más reciente. Elige qué contenido quieres conservar; no sobrescribiremos nada sin tu permiso.</Text>
-            <Pressable testID="training-editor-conflict-load-current" onPress={actions.loadCurrentTemplate} style={{ minHeight: 50, borderRadius: 14, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center" }}>
-              <Text style={{ color: "#06090D", fontSize: 16, fontWeight: "800" }}>Cargar versión actual</Text>
-            </Pressable>
-            <Pressable testID="training-editor-conflict-overwrite" onPress={actions.overwriteTemplate} style={{ minHeight: 48, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)", backgroundColor: "#1B1F27", alignItems: "center", justifyContent: "center" }}>
-              <Text style={{ color: "#E7EBF3", fontSize: 16, fontWeight: "800" }}>Guardar mis cambios</Text>
-            </Pressable>
+            <Button testID="training-editor-conflict-load-current" onPress={actions.loadCurrentTemplate} label="Cargar versión actual" style={{ minHeight: 50, borderRadius: 14, gap: 0 }} textStyle={{ color: "#06090D", fontSize: 16, fontWeight: "800" }} />
+            <Button testID="training-editor-conflict-overwrite" onPress={actions.overwriteTemplate} label="Guardar mis cambios" style={{ minHeight: 48, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.1)", backgroundColor: "#1B1F27", gap: 0 }} textStyle={{ color: "#E7EBF3", fontSize: 16, fontWeight: "800" }} />
             <Pressable testID="training-editor-conflict-continue" onPress={actions.continueAfterConflict} style={{ minHeight: 42, alignItems: "center", justifyContent: "center" }}>
               <Text style={{ color: "#A6AFBC", fontSize: 15, fontWeight: "700" }}>Seguir editando</Text>
             </Pressable>
           </View>
-        </View>
+        </DialogLayer>
       ) : null}
 
       {model.partialFinishOpen ? (
-        <View testID={shellSurfaceTestId("training-partial-finish")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20, alignItems: "center", justifyContent: "center", zIndex: 610, elevation: 61 }}>
-          <View style={{ width: "100%", maxWidth: 370, borderRadius: 26, borderWidth: 1, borderColor: "rgba(245,197,66,0.24)", backgroundColor: "#12151C", paddingHorizontal: 20, paddingTop: 22, paddingBottom: 18, alignItems: "center", gap: 14 }}>
+        <DialogLayer testID={shellSurfaceTestId("training-partial-finish")} style={{ backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20, zIndex: 610, elevation: 61 }}>
+          <DialogCard style={{ maxWidth: 370, borderRadius: 26, borderColor: "rgba(245,197,66,0.24)", paddingHorizontal: 20, paddingTop: 22, paddingBottom: 18, alignItems: "center", gap: 14 }}>
             <View style={{ width: 70, height: 70, borderRadius: 999, backgroundColor: "rgba(245,197,66,0.16)", alignItems: "center", justifyContent: "center" }}>
               <Ionicons name="alert-circle-outline" size={32} color="#F5C542" />
             </View>
@@ -379,19 +347,17 @@ export const TrainingResolutionOverlays = memo(function TrainingResolutionOverla
             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 16, lineHeight: 22, textAlign: "center" }}>
               Has completado {model.completedEffortCount} de {model.totalEffortCount} esfuerzos. Puedes continuar o guardar lo realizado como una sesión parcial.
             </Text>
-            <Pressable testID="training-partial-continue" onPress={actions.continuePartialSession} style={{ width: "100%", minHeight: 52, borderRadius: 14, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center" }}>
-              <Text style={{ color: "#06090D", fontSize: 18, fontWeight: "800" }}>Seguir entrenando</Text>
-            </Pressable>
+            <Button testID="training-partial-continue" onPress={actions.continuePartialSession} label="Seguir entrenando" style={{ width: "100%", minHeight: 52, borderRadius: 14, gap: 0 }} textStyle={{ color: "#06090D", fontSize: 18, fontWeight: "800" }} />
             <Pressable testID="training-partial-save" onPress={actions.savePartialSession} style={{ width: "100%", minHeight: 50, borderRadius: 14, borderWidth: 1, borderColor: "rgba(245,197,66,0.34)", backgroundColor: "rgba(245,197,66,0.08)", alignItems: "center", justifyContent: "center" }}>
               <Text style={{ color: "#F5D66D", fontSize: 17, fontWeight: "800" }}>Guardar como parcial</Text>
             </Pressable>
-          </View>
-        </View>
+          </DialogCard>
+        </DialogLayer>
       ) : null}
 
       {completion ? (
-        <View testID={shellSurfaceTestId("workout-completion")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20, alignItems: "center", justifyContent: "center", zIndex: 600, elevation: 60 }}>
-          <View style={{ width: "100%", maxWidth: 370, borderRadius: 26, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)", backgroundColor: "#12151C", paddingHorizontal: 20, paddingTop: 22, paddingBottom: 16, alignItems: "center", gap: 14 }}>
+        <DialogLayer testID={shellSurfaceTestId("workout-completion")} style={{ backgroundColor: "rgba(0,0,0,0.72)", paddingHorizontal: 20, zIndex: 600, elevation: 60 }}>
+          <DialogCard style={{ maxWidth: 370, borderRadius: 26, borderColor: "rgba(255,255,255,0.08)", paddingHorizontal: 20, paddingTop: 22, alignItems: "center", gap: 14 }}>
             <View style={{ width: 70, height: 70, borderRadius: 999, backgroundColor: completion.kind === "partial" ? "rgba(245,197,66,0.16)" : completion.kind === "discard" ? "rgba(255,75,75,0.16)" : "rgba(0,198,107,0.22)", alignItems: "center", justifyContent: "center" }}>
               <Ionicons name={completion.kind === "completed" ? "trophy-outline" : completion.kind === "partial" ? "save-outline" : "exit-outline"} size={30} color={completion.kind === "partial" ? "#F5C542" : completion.kind === "discard" ? "#FF6B6B" : "#00D06E"} />
             </View>
@@ -436,12 +402,7 @@ export const TrainingResolutionOverlays = memo(function TrainingResolutionOverla
                       <Text key={summary} style={{ width: "100%", color: "#D7DDE7", fontSize: 13 }}>• {summary}</Text>
                     ))
                   : null}
-                <Pressable onPress={() => actions.finalizeWithTemplateChanges(completion.canonical_conflict)} testID="training-complete-apply-changes" style={{ width: "100%", minHeight: 52, borderRadius: 14, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8 }}>
-                  <Feather name="check" size={16} color="#06090D" />
-                  <Text style={{ color: "#06090D", fontSize: completion.kind === "partial" ? 17 : 22, fontWeight: "800", textAlign: "center" }}>
-                    {completion.kind === "completed" ? "Conservar cambios" : completion.kind === "partial" ? "Guardar parcial y conservar cambios" : "Abandonar y conservar cambios"}
-                  </Text>
-                </Pressable>
+                <Button onPress={() => actions.finalizeWithTemplateChanges(completion.canonical_conflict)} testID="training-complete-apply-changes" label={completion.kind === "completed" ? "Conservar cambios" : completion.kind === "partial" ? "Guardar parcial y conservar cambios" : "Abandonar y conservar cambios"} icon={<Feather name="check" size={16} color="#06090D" />} style={{ width: "100%", minHeight: 52, borderRadius: 14, gap: 8 }} textStyle={{ color: "#06090D", fontSize: completion.kind === "partial" ? 17 : 22, fontWeight: "800", textAlign: "center" }} />
                 <Pressable onPress={actions.revertTemplateChanges} testID="training-complete-revert-changes" style={{ width: "100%", minHeight: 52, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)", backgroundColor: "#1A1F28", alignItems: "center", justifyContent: "center" }}>
                   <Text style={{ color: "#E5EAF3", fontSize: completion.kind === "partial" ? 17 : 22, fontWeight: "700", textAlign: "center" }}>
                     {completion.kind === "completed" ? "Mantener rutina actual" : completion.kind === "partial" ? "Guardar parcial y mantener rutina" : "Abandonar y mantener rutina"}
@@ -456,16 +417,14 @@ export const TrainingResolutionOverlays = memo(function TrainingResolutionOverla
                 <Text style={{ color: "#9CA6B5", fontSize: 16, textAlign: "center", lineHeight: 22 }}>
                   {completion.kind === "partial" ? "Guardamos lo que has realizado sin contarlo como un entrenamiento completado." : "Buen trabajo. La sesión quedó registrada correctamente."}
                 </Text>
-                <Pressable onPress={actions.finishOrClose} testID="training-complete-close" style={{ width: "100%", minHeight: 52, borderRadius: 14, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center" }}>
-                  <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>{model.hasActiveSession ? "Finalizar" : "Cerrar"}</Text>
-                </Pressable>
+                <Button onPress={actions.finishOrClose} testID="training-complete-close" label={model.hasActiveSession ? "Finalizar" : "Cerrar"} style={{ width: "100%", minHeight: 52, borderRadius: 14, gap: 0 }} textStyle={{ color: "#06090D", fontSize: 22, fontWeight: "800" }} />
               </>
             )}
-          </View>
+          </DialogCard>
           {completion.kind === "completed" ? (
             <ConfettiCannon count={120} origin={{ x: -10, y: 0 }} autoStart fadeOut explosionSpeed={400} fallSpeed={2800} colors={["#CBFF1A", "#00D06E", "#4ECDC4", "#FFE66D", "#FF6B6B", "#FFFFFF"]} />
           ) : null}
-        </View>
+        </DialogLayer>
       ) : null}
     </>
   );

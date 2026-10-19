@@ -5,9 +5,10 @@ import {
   Pressable,
   ScrollView,
   Text,
-  TextInput,
-  View,
+  View
 } from "react-native";
+import { Button, Button as PrimaryButton } from "../components/Button";
+import { TextField } from "../components/TextField";
 
 import {
   AI_DISCLOSURE_MESSAGE_KIND,
@@ -21,31 +22,6 @@ import {
 import { AiResponseReportAction } from "../AiResponseReportModal";
 import { HealthSafetyNotice } from "../HealthSafetyNotice";
 import { mobileTheme } from "../theme";
-
-function PrimaryButton({ label, onPress, disabled, icon, testID }: { label: string; onPress: () => void; disabled?: boolean; icon?: import("react").ReactNode; testID?: string }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      disabled={disabled}
-      testID={testID}
-      accessibilityLabel={label}
-      accessibilityRole="button"
-      style={{
-        height: 46,
-        borderRadius: 12,
-        backgroundColor: mobileTheme.color.brandPrimary,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: icon ? 10 : 0,
-        opacity: disabled ? 0.6 : 1,
-      }}
-    >
-      {icon}
-      <Text style={{ color: "#06090D", fontWeight: "700" }}>{label}</Text>
-    </Pressable>
-  );
-}
 
 type SharedChatPanelProps = {
   variant: "coach" | "estimator";
@@ -367,21 +343,9 @@ export const SharedChatPanel = memo(function SharedChatPanel({
 
       {isEstimator ? (
         <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
-          <TextInput
+          <TextField
             testID={disclosureSurface ? `${disclosureSurface}-input` : undefined}
-            style={{
-              flex: 1,
-              minHeight: 44,
-              maxHeight: 120,
-              borderRadius: mobileTheme.radius.md,
-              borderWidth: 1,
-              borderColor: mobileTheme.color.borderSubtle,
-              backgroundColor: mobileTheme.color.bgApp,
-              color: mobileTheme.color.textPrimary,
-              paddingHorizontal: 12,
-              paddingTop: 10,
-              paddingBottom: 10,
-            }}
+            style={{ flex: 1, minHeight: 44, maxHeight: 120, paddingTop: 10, paddingBottom: 10}}
             value={inputValue}
             onChangeText={onInputChange}
             placeholder={inputPlaceholder}
@@ -389,40 +353,12 @@ export const SharedChatPanel = memo(function SharedChatPanel({
             placeholderTextColor={mobileTheme.color.textSecondary}
             multiline
           />
-          <Pressable
-            testID={disclosureSurface ? `${disclosureSurface}-send` : undefined}
-            onPress={onSend}
-            disabled={sendDisabled}
-            accessibilityLabel={sendLabel}
-            accessibilityRole="button"
-            style={{
-              minWidth: 92,
-              height: 44,
-              borderRadius: mobileTheme.radius.md,
-              backgroundColor: mobileTheme.color.brandPrimary,
-              alignItems: "center",
-              justifyContent: "center",
-              opacity: sendDisabled ? 0.7 : 1,
-            }}
-          >
-            <Text style={{ color: "#06090D", fontWeight: "800" }}>{sendLabel}</Text>
-          </Pressable>
+          <Button testID={disclosureSurface ? `${disclosureSurface}-send` : undefined} onPress={onSend} disabled={sendDisabled} accessibilityLabel={sendLabel} accessibilityRole="button" label={sendLabel} style={{ minWidth: 92, height: 44, borderRadius: mobileTheme.radius.md, opacity: sendDisabled ? 0.7 : 1, gap: 0 }} textStyle={{ color: "#06090D", fontWeight: "800" }} />
         </View>
       ) : (
         <>
-          <TextInput
-            style={{
-              minHeight: 44,
-              maxHeight: 120,
-              borderRadius: mobileTheme.radius.md,
-              borderWidth: 1,
-              borderColor: mobileTheme.color.borderSubtle,
-              backgroundColor: mobileTheme.color.bgSurface,
-              color: mobileTheme.color.textPrimary,
-              paddingHorizontal: 12,
-              paddingVertical: 10,
-              textAlignVertical: "top",
-            }}
+          <TextField
+            style={{ minHeight: 44, maxHeight: 120, backgroundColor: mobileTheme.color.bgSurface, paddingVertical: 10, textAlignVertical: "top"}}
             value={inputValue}
             onChangeText={onInputChange}
             placeholder={inputPlaceholder}

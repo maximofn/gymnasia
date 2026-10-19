@@ -1,14 +1,15 @@
-import { memo, useState } from "react";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { Animated, Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { memo } from "react";
+import { Animated, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Button } from "../components/Button";
+import { DietItemThumbnail, FoodThumbnail } from "../components/FoodThumbnail";
+import { TextField } from "../components/TextField";
 
 import { CatalogStatusNotice } from "../catalogs/CatalogStatusNotice";
-import { foodCatalogImageUri } from "../catalogs/sources";
-import type { FoodCatalogEntry } from "../catalogs/types";
 import type { DietScreenActions, DietScreenModel } from "../controllers/dietController";
-import type { DietMealCategory } from "../diet/nutritionContract";
 import { dateFromISO, formatNutritionNumber } from "../diet/model";
+import type { DietMealCategory } from "../diet/nutritionContract";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import { mobileTheme } from "../theme";
 
@@ -51,13 +52,13 @@ export const DietHeader = memo(function DietHeader({
           </View>
           {model.datePickerOpen ? (
             model.isWeb ? (
-              <TextInput
+              <TextField
                 testID={shellSurfaceTestId("diet-date-picker")}
                 value={model.selectedDate}
                 onChangeText={actions.changeWebDate}
                 placeholder="AAAA-MM-DD"
                 placeholderTextColor={mobileTheme.color.textSecondary}
-                style={{ minHeight: 44, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: 12, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, fontSize: 14 }}
+                style={{ minHeight: 44, borderRadius: 12, fontSize: 14}}
               />
             ) : (
               <View testID={shellSurfaceTestId("diet-date-picker")} style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgSurface, padding: 8, gap: 8 }}>
@@ -185,27 +186,6 @@ const DIET_MEAL_META: Record<
   Cena: { icon: "moon", accent: "#7D6DFF", dot: "#7D6DFF" },
 };
 
-function DietItemThumbnail({ uri, dotColor }: { uri?: string | null; dotColor: string }) {
-  const [failed, setFailed] = useState(false);
-  if (uri && !failed) {
-    return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
-  }
-  return <View style={{ width: 7, height: 7, borderRadius: 999, backgroundColor: dotColor, marginTop: 8 }} />;
-}
-
-function FoodThumbnail({ food }: { food: FoodCatalogEntry }) {
-  const [failed, setFailed] = useState(false);
-  const uri = foodCatalogImageUri(food);
-  if (uri && !failed) {
-    return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
-  }
-  return (
-    <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}>
-      <Feather name="coffee" size={15} color={mobileTheme.color.brandPrimary} />
-    </View>
-  );
-}
-
 export const DietMealsScreen = memo(function DietMealsScreen({
   model,
   actions,
@@ -312,7 +292,7 @@ export const DietMealsScreen = memo(function DietMealsScreen({
                     <ScrollView style={{ maxHeight: 240 }}>
                       {model.foodSearchResults.map((food) => (
                         <Pressable key={`${food.sourceId}/${food.id}`} onPress={() => actions.selectFood(category, food)} style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle }}>
-                          <FoodThumbnail food={food} />
+                          <FoodThumbnail food={food} fallback="icon" />
                           <View style={{ flex: 1 }}>
                             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>{food.name}</Text>
                             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>{food.calories_per_100g} kcal/100g · {food.serving_description || `${food.serving_size_g}g`}</Text>
@@ -330,13 +310,13 @@ export const DietMealsScreen = memo(function DietMealsScreen({
                     <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 16 }}>{model.selectedFood.name}</Text>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>Cantidad (g):</Text>
-                      <TextInput
+                      <TextField
                         testID="selected-food-grams-input"
                         value={model.selectedGrams}
                         onChangeText={actions.changeSelectedGrams}
                         keyboardType="decimal-pad"
                         autoFocus
-                        style={{ flex: 1, minHeight: 42, borderWidth: 1, borderColor: model.nutritionIssues.has("grams") ? "#FF5A5F" : mobileTheme.color.brandPrimary, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, fontSize: 16, fontWeight: "700" }}
+                        style={{ flex: 1, borderColor: model.nutritionIssues.has("grams") ? "#FF5A5F" : mobileTheme.color.brandPrimary, fontSize: 16, fontWeight: "700"}}
                       />
                     </View>
                     {model.nutritionIssues.get("grams") ? <Text style={{ color: "#FF7B7B", fontSize: 12 }}>{model.nutritionIssues.get("grams")?.message}</Text> : null}
@@ -354,9 +334,7 @@ export const DietMealsScreen = memo(function DietMealsScreen({
                       ))}
                     </View>
                     <View style={{ flexDirection: "row", gap: 8 }}>
-                      <Pressable onPress={actions.saveSelectedFood} style={{ flex: 1, minHeight: 42, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center" }}>
-                        <Text style={{ color: "#000", fontWeight: "700" }}>Guardar</Text>
-                      </Pressable>
+                      <Button onPress={actions.saveSelectedFood} label="Guardar" style={{ flex: 1, minHeight: 42, borderRadius: mobileTheme.radius.md, gap: 0 }} textStyle={{ color: "#000", fontWeight: "700" }} />
                       <Pressable onPress={actions.returnToFoodSearch} style={{ flex: 1, minHeight: 42, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, alignItems: "center", justifyContent: "center" }}>
                         <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>Volver</Text>
                       </Pressable>
@@ -376,14 +354,14 @@ export const DietMealsScreen = memo(function DietMealsScreen({
                       <View key={field.field} style={{ gap: 4 }}>
                         <View style={{ flexDirection: field.width ? "row" : "column", alignItems: field.width ? "center" : undefined, gap: 8 }}>
                           {field.width ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, width: field.width }}>{field.label}</Text> : null}
-                          <TextInput
+                          <TextField
                             testID={field.test}
                             value={model.manualFields[field.field]}
                             onChangeText={(value) => actions.changeManualField(field.field, value)}
                             placeholder={field.label}
                             placeholderTextColor={mobileTheme.color.textSecondary}
                             keyboardType={field.keyboard}
-                            style={{ flex: field.width ? 1 : undefined, minHeight: 42, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: model.nutritionIssues.has(field.field) ? "#FF5A5F" : mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }}
+                            style={{ flex: field.width ? 1 : undefined, borderColor: model.nutritionIssues.has(field.field) ? "#FF5A5F" : mobileTheme.color.borderSubtle}}
                           />
                         </View>
                         {model.nutritionIssues.get(field.field) ? (
@@ -392,9 +370,7 @@ export const DietMealsScreen = memo(function DietMealsScreen({
                       </View>
                     ))}
                     <View style={{ flexDirection: "row", gap: 8 }}>
-                      <Pressable testID="save-manual-food" onPress={actions.saveManualFood} style={{ flex: 1, minHeight: 42, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center" }}>
-                        <Text style={{ color: "#06090D", fontWeight: "700" }}>{editingExisting ? "Guardar cambios" : "Guardar alimento"}</Text>
-                      </Pressable>
+                      <Button testID="save-manual-food" onPress={actions.saveManualFood} label={editingExisting ? "Guardar cambios" : "Guardar alimento"} style={{ flex: 1, minHeight: 42, borderRadius: mobileTheme.radius.md, gap: 0 }} textStyle={{ color: "#06090D", fontWeight: "700" }} />
                       <Pressable onPress={actions.cancelMealEditor} style={{ flex: 1, minHeight: 42, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, alignItems: "center", justifyContent: "center" }}>
                         <Text style={{ color: mobileTheme.color.textSecondary, fontWeight: "700" }}>Cancelar</Text>
                       </Pressable>

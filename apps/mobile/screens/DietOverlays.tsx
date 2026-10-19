@@ -1,15 +1,17 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { memo, useState } from "react";
-import { Image, KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { memo } from "react";
+import { Image, KeyboardAvoidingView, Pressable, ScrollView, Text, View } from "react-native";
+import { Button } from "../components/Button";
+import { DialogCard, DialogLayer } from "../components/Dialog";
+import { DietItemThumbnail, FoodThumbnail } from "../components/FoodThumbnail";
+import { TextField } from "../components/TextField";
 
-import type { AiReportSurface } from "../agent/feedbackIssues";
 import type { ChatMessage } from "../agent/chatModel";
-import { foodCatalogImageUri } from "../catalogs/sources";
-import type { FoodCatalogEntry } from "../catalogs/types";
+import type { AiReportSurface } from "../agent/feedbackIssues";
+import type { DietResolutionActions, DietResolutionModel } from "../controllers/dietController";
 import { formatDietDayHeader, formatNutritionNumber, isoDateFromDate } from "../diet/model";
 import type { DietMealCategory } from "../diet/nutritionContract";
-import type { DietResolutionActions, DietResolutionModel } from "../controllers/dietController";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import { mobileTheme } from "../theme";
 import { SharedChatPanel } from "./SharedChatPanel";
@@ -36,42 +38,37 @@ export const DietResolutionOverlays = memo(function DietResolutionOverlays({
         model.isAndroid ? (
           <DateTimePicker testID={shellSurfaceTestId("diet-copy-date-picker")} value={model.copyDate} mode="date" display="default" onChange={(event, date) => actions.changeCopyDate(event.type, date)} />
         ) : (
-          <View testID={shellSurfaceTestId("diet-copy-date-picker")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,0.78)", paddingHorizontal: 24, alignItems: "center", justifyContent: "center", zIndex: 620, elevation: 62 }}>
-            <View style={{ width: "100%", maxWidth: 360, borderRadius: 24, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: "#12151C", paddingHorizontal: 18, paddingTop: 18, paddingBottom: 16, gap: 12 }}>
+          <DialogLayer testID={shellSurfaceTestId("diet-copy-date-picker")} style={{ backgroundColor: "rgba(0,0,0,0.78)", paddingHorizontal: 24, zIndex: 620, elevation: 62 }}>
+            <DialogCard>
               <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800", textAlign: "center" }}>Repetir {category}</Text>
               <Text style={{ color: "#A1AAB8", fontSize: 13, lineHeight: 19, textAlign: "center" }}>Elige el día del que quieres copiar los alimentos.</Text>
               {model.isWeb ? (
-                <TextInput
+                <TextField
                   value={model.copyDateText}
                   onChangeText={actions.changeCopyDateText}
                   placeholder="AAAA-MM-DD"
                   placeholderTextColor={mobileTheme.color.textSecondary}
-                  style={{ minHeight: 44, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: 12, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, fontSize: 14 }}
+                  style={{ minHeight: 44, borderRadius: 12, fontSize: 14}}
                 />
               ) : (
                 <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, padding: 8 }}>
                   <DateTimePicker value={model.copyDate} mode="date" display="inline" onChange={(event, date) => actions.changeCopyDate(event.type, date)} />
                 </View>
               )}
-              <Pressable
-                onPress={() => actions.continueCopyDate(
+              <Button onPress={() => actions.continueCopyDate(
                   category,
                   model.isWeb && /^\d{4}-\d{2}-\d{2}$/.test(model.copyDateText.trim())
                     ? model.copyDateText.trim()
                     : isoDateFromDate(model.copyDate),
-                )}
-                style={{ width: "100%", minHeight: 46, borderRadius: 14, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center" }}
-              >
-                <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 15 }}>Continuar</Text>
-              </Pressable>
+                )} label="Continuar" style={{ width: "100%", minHeight: 46, borderRadius: 14, gap: 0 }} textStyle={{ color: "#06090D", fontWeight: "800", fontSize: 15 }} />
               <SecondaryButton label="Cancelar" onPress={actions.closeCopyDate} />
-            </View>
-          </View>
+            </DialogCard>
+          </DialogLayer>
         )
       ) : null}
 
       {model.ambiguityCandidates ? (
-        <View testID={shellSurfaceTestId("food-catalog-ambiguity")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,0.8)", paddingHorizontal: 22, alignItems: "center", justifyContent: "center", zIndex: 740, elevation: 74 }}>
+        <DialogLayer testID={shellSurfaceTestId("food-catalog-ambiguity")} style={{ backgroundColor: "rgba(0,0,0,0.8)", paddingHorizontal: 22, zIndex: 740, elevation: 74 }}>
           <View style={{ width: "100%", maxWidth: 390, maxHeight: "80%", borderRadius: 22, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, padding: 16, gap: 12 }}>
             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800" }}>Elige el alimento correcto</Text>
             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, lineHeight: 19 }}>Necesitamos que confirmes a qué entrada te refieres. No guardaremos nada hasta que elijas una opción.</Text>
@@ -87,14 +84,12 @@ export const DietResolutionOverlays = memo(function DietResolutionOverlays({
                 </Pressable>
               ))}
             </ScrollView>
-            <Pressable testID="food-catalog-keep-manual" onPress={() => actions.chooseFood(null)} style={{ minHeight: 44, alignItems: "center", justifyContent: "center", borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: "#1B1F27" }}>
-              <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }}>Conservar como manual</Text>
-            </Pressable>
+            <Button testID="food-catalog-keep-manual" onPress={() => actions.chooseFood(null)} label="Conservar como manual" style={{ minHeight: 44, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: "#1B1F27", gap: 0 }} textStyle={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }} />
             <Pressable onPress={actions.closeAmbiguity} style={{ alignItems: "center", paddingVertical: 6 }}>
               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>Cancelar</Text>
             </Pressable>
           </View>
-        </View>
+        </DialogLayer>
       ) : null}
 
       {model.copyConfirmation ? (
@@ -117,8 +112,8 @@ function DietCopyConfirmation({ confirmation, selectedDate, onConfirm, onCancel 
 }) {
   const meta = DIET_COPY_META[confirmation.category];
   return (
-    <View testID={shellSurfaceTestId("diet-copy-confirmation")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "rgba(0,0,0,0.78)", paddingHorizontal: 24, alignItems: "center", justifyContent: "center", zIndex: 625, elevation: 63 }}>
-      <View style={{ width: "100%", maxWidth: 360, borderRadius: 24, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: "#12151C", paddingHorizontal: 18, paddingTop: 18, paddingBottom: 16, gap: 12 }}>
+    <DialogLayer testID={shellSurfaceTestId("diet-copy-confirmation")} style={{ backgroundColor: "rgba(0,0,0,0.78)", paddingHorizontal: 24, zIndex: 625, elevation: 63 }}>
+      <DialogCard>
         <View style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: `${meta.accent}22`, alignItems: "center", justifyContent: "center", alignSelf: "center" }}>
           <Feather name="copy" size={22} color={meta.accent} />
         </View>
@@ -136,38 +131,16 @@ function DietCopyConfirmation({ confirmation, selectedDate, onConfirm, onCancel 
           ))}
         </ScrollView>
         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, textAlign: "center" }}>{confirmation.items.length} {confirmation.items.length === 1 ? "alimento" : "alimentos"} · {formatNutritionNumber(confirmation.items.reduce((total, item) => total + item.calories_kcal, 0))} kcal</Text>
-        <Pressable onPress={onConfirm} style={{ width: "100%", minHeight: 46, borderRadius: 14, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8 }}>
-          <Feather name="check" size={15} color="#06090D" />
-          <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 15 }}>Confirmar</Text>
-        </Pressable>
+        <Button onPress={onConfirm} label="Confirmar" icon={<Feather name="check" size={15} color="#06090D" />} style={{ width: "100%", minHeight: 46, borderRadius: 14, gap: 8 }} textStyle={{ color: "#06090D", fontWeight: "800", fontSize: 15 }} />
         <SecondaryButton label="Cancelar" onPress={onCancel} />
-      </View>
-    </View>
+      </DialogCard>
+    </DialogLayer>
   );
 }
 
 function SecondaryButton({ label, onPress }: { label: string; onPress(): void }) {
   return (
-    <Pressable onPress={onPress} style={{ width: "100%", minHeight: 44, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: "#1B1F27", alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }}>{label}</Text>
-    </Pressable>
-  );
-}
-
-function DietItemThumbnail({ uri, dotColor, size = 36 }: { uri?: string | null; dotColor: string; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  if (uri && !failed) return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: size, height: size, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
-  return <View style={{ width: 7, height: 7, borderRadius: 999, backgroundColor: dotColor, marginTop: 8 }} />;
-}
-
-function FoodThumbnail({ food, size = 36 }: { food: FoodCatalogEntry; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  const uri = foodCatalogImageUri(food);
-  if (uri && !failed) return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: size, height: size, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
-  return (
-    <View style={{ width: size, height: size, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontSize: size * 0.44 }}>{food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️"}</Text>
-    </View>
+    <Button onPress={onPress} label={label} style={{ width: "100%", minHeight: 44, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: "#1B1F27", gap: 0 }} textStyle={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }} />
   );
 }
 
@@ -287,9 +260,7 @@ export const FoodEstimatorOverlay = memo(function FoodEstimatorOverlay({
       </View>
 
       <View style={{ paddingHorizontal: mobileTheme.spacing[4], paddingVertical: 10, borderTopWidth: 1, borderTopColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, gap: 6 }}>
-        <Pressable onPress={onAddFood} disabled={!canAddFood || sending} style={{ minHeight: 46, borderRadius: mobileTheme.radius.md, backgroundColor: canAddFood ? mobileTheme.color.brandPrimary : mobileTheme.color.bgSurface, alignItems: "center", justifyContent: "center", opacity: !canAddFood || sending ? 0.5 : 1 }}>
-          <Text style={{ color: canAddFood ? "#06090D" : mobileTheme.color.textSecondary, fontWeight: "700", fontSize: 15 }}>Añadir alimento</Text>
-        </Pressable>
+        <Button onPress={onAddFood} disabled={!canAddFood || sending} label="Añadir alimento" style={{ minHeight: 46, borderRadius: mobileTheme.radius.md, backgroundColor: canAddFood ? mobileTheme.color.brandPrimary : mobileTheme.color.bgSurface, opacity: !canAddFood || sending ? 0.5 : 1, gap: 0 }} textStyle={{ color: canAddFood ? "#06090D" : mobileTheme.color.textSecondary, fontWeight: "700", fontSize: 15 }} />
         {!hasMealTarget ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, textAlign: "center" }}>Abre primero "Añadir alimento" en una comida.</Text> : null}
       </View>
     </KeyboardAvoidingView>
