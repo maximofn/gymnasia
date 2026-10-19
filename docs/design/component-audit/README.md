@@ -1,8 +1,12 @@
 # Inventario visual y componentes de Gymnasia
 
 Trabajo de GYM-8 (ticket para unificar componentes repetidos de la interfaz).
-La [galería](index.html) permite buscar pantallas y familias, filtrar por área y
-ampliar las capturas originales. [inventory.json](inventory.json) conserva el
+La [galería](index.html) muestra cada captura original a la izquierda y la misma
+imagen con los componentes elegidos señalados a la derecha. Permite buscar
+pantallas o componentes, filtrar por área y ampliar la pareja. Las marcas
+numeradas y su leyenda se destacan al pulsarlas; cada componente enlaza con su
+fichero de implementación. «Extraído» identifica la biblioteca creada y
+«Existente», las piezas que se conservan. [inventory.json](inventory.json) conserva el
 inventario y su procedencia; las hojas `contact-*.jpg` sirven para una revisión
 rápida sin abrir la galería.
 
@@ -28,8 +32,13 @@ leyeron claves ni se enviaron denuncias. No se alteraron los datos de un móvil.
 
 Los datos pueden generar combinaciones ilimitadas: el alcance es compartir las
 familias visuales repetidas y sus variantes, no generar una imagen de cada posible
-valor. La etiqueta «Familias del área» de la galería es un mapa del área completa,
-no una afirmación de que cada pieza aparezca en cada captura.
+valor. Las anotaciones señalan ejemplos visibles, no todos los usos de cada
+componente. Las coordenadas se revisaron sobre las capturas conservadas y se
+guardan como `[x, y, ancho, alto]` en píxeles del original. La imagen de la derecha
+usa una copia del original con marcas HTML superpuestas; no modifica la captura.
+Los nombres y enlaces se contrastan con el código actual. Algunas capturas
+conservan un estado intermedio de una transición; solo se marca lo que aparece
+visible, aunque el nombre de la vista aluda al flujo que se estaba recorriendo.
 
 ## Biblioteca implementada
 
@@ -72,6 +81,11 @@ Para regenerar la galería a partir de las capturas conservadas:
 ```sh
 node scripts/design-component-audit/generate.mjs
 ```
+
+El generador usa `scripts/design-component-audit/gallery.html` como plantilla
+autónoma, incrusta el inventario y comprueba que las zonas caben en la captura y
+que cada componente tiene un fichero de implementación. No requiere servidor ni
+conexión para consultar las parejas desde `index.html`.
 
 La comprobación de la extracción usa el type-check móvil, `npm test` y las E2E
 existentes del shell, dieta, entrenamiento y proveedor falso. El resultado

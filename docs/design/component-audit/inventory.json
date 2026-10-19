@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "capturedAt": "2026-10-19",
   "source": "https://gymnasia.maximofn.com/",
   "publishedVersion": "1.52.1",
@@ -17,6 +17,38 @@
       "components": [
         "Button",
         "StatCard"
+      ],
+      "regions": [
+        {
+          "component": "Button",
+          "rect": [
+            31,
+            352,
+            328,
+            46
+          ],
+          "note": "Acción principal de Inicio"
+        },
+        {
+          "component": "StatCard",
+          "rect": [
+            16,
+            429,
+            113,
+            94
+          ],
+          "note": "Tarjeta reutilizable de calorías"
+        },
+        {
+          "component": "StatCard",
+          "rect": [
+            139,
+            429,
+            112,
+            94
+          ],
+          "note": "La misma tarjeta con peso y variación"
+        }
       ]
     },
     {
@@ -25,14 +57,30 @@
       "area": "Rutinas",
       "image": "screens/02-rutinas-lista.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "AppHeader",
+        "TrainingListScreen"
+      ],
+      "regions": [
+        {
+          "component": "AppHeader",
+          "rect": [
+            16,
+            63,
+            358,
+            54
+          ],
+          "note": "Navegación conservada"
+        },
+        {
+          "component": "TrainingListScreen",
+          "rect": [
+            16,
+            285,
+            358,
+            325
+          ],
+          "note": "Lista de rutinas; componente de pantalla existente"
+        }
       ]
     },
     {
@@ -41,14 +89,29 @@
       "area": "Rutinas",
       "image": "screens/03-rutina-nueva.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "Button",
+          "rect": [
+            249,
+            80,
+            125,
+            46
+          ],
+          "note": "Guardar borrador"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            16,
+            516,
+            358,
+            46
+          ],
+          "note": "Inicio desactivado hasta guardar"
+        }
       ]
     },
     {
@@ -57,14 +120,19 @@
       "area": "Rutinas",
       "image": "screens/04-catalogo-ejercicios.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "ExerciseCatalogBrowser"
+      ],
+      "regions": [
+        {
+          "component": "ExerciseCatalogBrowser",
+          "rect": [
+            0,
+            0,
+            390,
+            844
+          ],
+          "note": "Catálogo existente: búsqueda, filtros y resultados"
+        }
       ]
     },
     {
@@ -73,14 +141,51 @@
       "area": "Rutinas",
       "image": "screens/05-ejercicio-personalizado.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
         "TextField",
-        "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "OptionChips",
+        "ChoiceChip"
+      ],
+      "regions": [
+        {
+          "component": "TextField",
+          "rect": [
+            14,
+            82,
+            347,
+            48
+          ],
+          "note": "Nombre del ejercicio"
+        },
+        {
+          "component": "OptionChips",
+          "rect": [
+            14,
+            150,
+            347,
+            220
+          ],
+          "note": "Grupo muscular principal"
+        },
+        {
+          "component": "OptionChips",
+          "rect": [
+            14,
+            392,
+            347,
+            218
+          ],
+          "note": "Mismos chips para músculos secundarios"
+        },
+        {
+          "component": "ChoiceChip",
+          "rect": [
+            14,
+            173,
+            71,
+            33
+          ],
+          "note": "Unidad reutilizable dentro de OptionChips"
+        }
       ]
     },
     {
@@ -89,14 +194,40 @@
       "area": "Rutinas",
       "image": "screens/06-confirmar-descartar.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
         "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "DialogLayer",
+          "rect": [
+            20,
+            296,
+            350,
+            252
+          ],
+          "note": "Contenido de la capa de confirmación; conserva el manejo de Atrás"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            41,
+            415,
+            308,
+            50
+          ],
+          "note": "Continuar editando"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            41,
+            479,
+            308,
+            49
+          ],
+          "note": "Descartar el borrador"
+        }
       ]
     },
     {
@@ -106,13 +237,29 @@
       "image": "screens/07-rutina-detalle.jpg",
       "components": [
         "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "ChartCard"
+      ],
+      "regions": [
+        {
+          "component": "Button",
+          "rect": [
+            16,
+            472,
+            358,
+            46
+          ],
+          "note": "Empezar la rutina"
+        },
+        {
+          "component": "ChartCard",
+          "rect": [
+            16,
+            534,
+            358,
+            274
+          ],
+          "note": "Gráfica, título y selector de periodo compartidos"
+        }
       ]
     },
     {
@@ -122,13 +269,39 @@
       "image": "screens/08-rutina-editor.jpg",
       "components": [
         "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "TrainingEditorScreen"
+      ],
+      "regions": [
+        {
+          "component": "Button",
+          "rect": [
+            249,
+            80,
+            125,
+            46
+          ],
+          "note": "Guardar rutina"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            16,
+            452,
+            358,
+            46
+          ],
+          "note": "Empezar rutina desde el editor"
+        },
+        {
+          "component": "TrainingEditorScreen",
+          "rect": [
+            16,
+            569,
+            358,
+            275
+          ],
+          "note": "Referencia visual de series; mantiene su implementación especializada"
+        }
       ]
     },
     {
@@ -137,14 +310,19 @@
       "area": "Rutinas",
       "image": "screens/09-selector-serie.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "TrainingCatalogOverlays"
+      ],
+      "regions": [
+        {
+          "component": "TrainingCatalogOverlays",
+          "rect": [
+            40,
+            175,
+            310,
+            550
+          ],
+          "note": "Selector de tipos de serie existente; no se extrajo como ChoiceChip"
+        }
       ]
     },
     {
@@ -153,14 +331,30 @@
       "area": "Rutinas",
       "image": "screens/10-sesion-activa.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "ProgressBar",
+        "TrainingSessionScreen"
+      ],
+      "regions": [
+        {
+          "component": "ProgressBar",
+          "rect": [
+            16,
+            231,
+            358,
+            8
+          ],
+          "note": "Progreso global de la sesión"
+        },
+        {
+          "component": "TrainingSessionScreen",
+          "rect": [
+            16,
+            272,
+            358,
+            367
+          ],
+          "note": "Tabla de esfuerzos y campos de series existentes"
+        }
       ]
     },
     {
@@ -169,14 +363,40 @@
       "area": "Rutinas",
       "image": "screens/11-sesion-descanso.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "ProgressBar",
+        "TrainingSessionScreen"
+      ],
+      "regions": [
+        {
+          "component": "ProgressBar",
+          "rect": [
+            16,
+            231,
+            358,
+            8
+          ],
+          "note": "Misma barra para el progreso del entrenamiento"
+        },
+        {
+          "component": "ProgressBar",
+          "rect": [
+            41,
+            684,
+            308,
+            4
+          ],
+          "note": "Variante azul para el descanso"
+        },
+        {
+          "component": "TrainingSessionScreen",
+          "rect": [
+            16,
+            272,
+            358,
+            437
+          ],
+          "note": "Datos y controles especializados de la sesión"
+        }
       ]
     },
     {
@@ -185,14 +405,40 @@
       "area": "Rutinas",
       "image": "screens/12-sesion-confirmar-parcial.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
         "DialogCard",
-        "ProgressBar"
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "DialogCard",
+          "rect": [
+            20,
+            224,
+            350,
+            396
+          ],
+          "note": "Confirmación de sesión parcial"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            41,
+            485,
+            308,
+            52
+          ],
+          "note": "Seguir entrenando"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            41,
+            551,
+            308,
+            50
+          ],
+          "note": "Guardar lo realizado como parcial"
+        }
       ]
     },
     {
@@ -201,14 +447,30 @@
       "area": "Rutinas",
       "image": "screens/13-sesion-resumen.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
         "DialogCard",
-        "ProgressBar"
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "DialogCard",
+          "rect": [
+            20,
+            205,
+            350,
+            434
+          ],
+          "note": "Resumen del entrenamiento"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            41,
+            570,
+            308,
+            52
+          ],
+          "note": "Cerrar el resumen"
+        }
       ]
     },
     {
@@ -217,14 +479,19 @@
       "area": "Rutinas",
       "image": "screens/14-historial.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "WorkoutHistoryEntryCard"
+      ],
+      "regions": [
+        {
+          "component": "WorkoutHistoryEntryCard",
+          "rect": [
+            16,
+            145,
+            358,
+            93
+          ],
+          "note": "Tarjeta histórica existente, conservada"
+        }
       ]
     },
     {
@@ -233,14 +500,19 @@
       "area": "Rutinas",
       "image": "screens/15-historial-detalle.jpg",
       "components": [
-        "Button",
-        "ChartCard",
-        "OptionChips",
-        "ChoiceChip",
-        "TextField",
-        "DialogLayer",
-        "DialogCard",
-        "ProgressBar"
+        "WorkoutHistoryDetail"
+      ],
+      "regions": [
+        {
+          "component": "WorkoutHistoryDetail",
+          "rect": [
+            16,
+            139,
+            358,
+            324
+          ],
+          "note": "Totales y comprobación de la sesión existente"
+        }
       ]
     },
     {
@@ -249,12 +521,30 @@
       "area": "Dieta",
       "image": "screens/16-dieta-vacia.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "FoodThumbnail",
-        "DietItemThumbnail",
-        "DialogLayer",
-        "DialogCard"
+        "DietHeader",
+        "DietMealsScreen"
+      ],
+      "regions": [
+        {
+          "component": "DietHeader",
+          "rect": [
+            16,
+            125,
+            358,
+            198
+          ],
+          "note": "Resumen nutricional existente"
+        },
+        {
+          "component": "DietMealsScreen",
+          "rect": [
+            16,
+            340,
+            358,
+            335
+          ],
+          "note": "Comida vacía y acciones locales existentes"
+        }
       ]
     },
     {
@@ -263,12 +553,40 @@
       "area": "Dieta",
       "image": "screens/17-dieta-alimento-manual.jpg",
       "components": [
-        "Button",
         "TextField",
-        "FoodThumbnail",
-        "DietItemThumbnail",
-        "DialogLayer",
-        "DialogCard"
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "TextField",
+          "rect": [
+            149,
+            516,
+            210,
+            42
+          ],
+          "note": "Cantidad en gramos del alimento manual"
+        },
+        {
+          "component": "TextField",
+          "rect": [
+            149,
+            566,
+            210,
+            42
+          ],
+          "note": "Valor nutricional: misma entrada reutilizable"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            31,
+            766,
+            159,
+            42
+          ],
+          "note": "Guardar alimento manual"
+        }
       ]
     },
     {
@@ -277,12 +595,41 @@
       "area": "Dieta",
       "image": "screens/18-estimador-alimentos.jpg",
       "components": [
-        "Button",
+        "SharedChatPanel",
         "TextField",
-        "FoodThumbnail",
-        "DietItemThumbnail",
-        "DialogLayer",
-        "DialogCard"
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "SharedChatPanel",
+          "rect": [
+            16,
+            114,
+            358,
+            664
+          ],
+          "note": "Panel de conversación compartido del estimador"
+        },
+        {
+          "component": "TextField",
+          "rect": [
+            16,
+            698,
+            258,
+            56
+          ],
+          "note": "Entrada del estimador"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            282,
+            710,
+            92,
+            44
+          ],
+          "note": "Enviar mensaje al estimador"
+        }
       ]
     },
     {
@@ -291,12 +638,30 @@
       "area": "Dieta",
       "image": "screens/19-dieta-fecha.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "FoodThumbnail",
-        "DietItemThumbnail",
-        "DialogLayer",
-        "DialogCard"
+        "DietHeader",
+        "DietMealsScreen"
+      ],
+      "regions": [
+        {
+          "component": "DietHeader",
+          "rect": [
+            16,
+            131,
+            358,
+            88
+          ],
+          "note": "Resumen nutricional visible en esta captura"
+        },
+        {
+          "component": "DietMealsScreen",
+          "rect": [
+            16,
+            265,
+            358,
+            202
+          ],
+          "note": "Contexto de la comida; el campo de fecha no aparece en esta captura"
+        }
       ]
     },
     {
@@ -305,11 +670,40 @@
       "area": "Medidas",
       "image": "screens/20-medidas.jpg",
       "components": [
-        "Button",
         "StatCard",
-        "ChartCard",
-        "TextField",
-        "DialogLayer"
+        "ChartCard"
+      ],
+      "regions": [
+        {
+          "component": "StatCard",
+          "rect": [
+            16,
+            214,
+            113,
+            108
+          ],
+          "note": "Métrica corporal: cintura, sin datos"
+        },
+        {
+          "component": "StatCard",
+          "rect": [
+            139,
+            214,
+            112,
+            108
+          ],
+          "note": "Misma tarjeta para la medida de cadera"
+        },
+        {
+          "component": "ChartCard",
+          "rect": [
+            16,
+            458,
+            358,
+            295
+          ],
+          "note": "Tarjeta de gráfica compartida con Rutinas"
+        }
       ]
     },
     {
@@ -318,11 +712,30 @@
       "area": "Medidas",
       "image": "screens/21-medidas-selector.jpg",
       "components": [
-        "Button",
-        "StatCard",
         "ChartCard",
-        "TextField",
-        "DialogLayer"
+        "MeasurementsScreen"
+      ],
+      "regions": [
+        {
+          "component": "ChartCard",
+          "rect": [
+            16,
+            460,
+            358,
+            295
+          ],
+          "note": "Gráfica con selector abierto"
+        },
+        {
+          "component": "MeasurementsScreen",
+          "rect": [
+            31,
+            517,
+            150,
+            327
+          ],
+          "note": "Opciones de métrica existentes; no son ChoiceChip"
+        }
       ]
     },
     {
@@ -331,11 +744,39 @@
       "area": "Medidas",
       "image": "screens/22-medidas-formulario.jpg",
       "components": [
-        "Button",
-        "StatCard",
-        "ChartCard",
-        "TextField",
-        "DialogLayer"
+        "TextField"
+      ],
+      "regions": [
+        {
+          "component": "TextField",
+          "rect": [
+            29,
+            509,
+            332,
+            42
+          ],
+          "note": "Peso de la medición"
+        },
+        {
+          "component": "TextField",
+          "rect": [
+            29,
+            577,
+            332,
+            42
+          ],
+          "note": "Porcentaje de grasa"
+        },
+        {
+          "component": "TextField",
+          "rect": [
+            29,
+            645,
+            332,
+            43
+          ],
+          "note": "Contorno corporal: misma entrada reutilizable"
+        }
       ]
     },
     {
@@ -344,11 +785,29 @@
       "area": "Medidas",
       "image": "screens/23-medidas-fecha.jpg",
       "components": [
-        "Button",
-        "StatCard",
-        "ChartCard",
-        "TextField",
-        "DialogLayer"
+        "TextField"
+      ],
+      "regions": [
+        {
+          "component": "TextField",
+          "rect": [
+            29,
+            317,
+            332,
+            42
+          ],
+          "note": "Fecha de la medición"
+        },
+        {
+          "component": "TextField",
+          "rect": [
+            29,
+            565,
+            332,
+            42
+          ],
+          "note": "Campo corporal tras desplegar la fecha"
+        }
       ]
     },
     {
@@ -357,8 +816,41 @@
       "area": "Coach",
       "image": "screens/24-coach-inicial.jpg",
       "components": [
-        "Button",
-        "TextField"
+        "AiIdentityDisclosure",
+        "TextField",
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "AiIdentityDisclosure",
+          "rect": [
+            16,
+            127,
+            358,
+            93
+          ],
+          "note": "Aviso de identidad IA existente"
+        },
+        {
+          "component": "TextField",
+          "rect": [
+            16,
+            695,
+            358,
+            56
+          ],
+          "note": "Enviar mensaje"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            16,
+            759,
+            358,
+            46
+          ],
+          "note": "Parte visible del botón Enviar"
+        }
       ]
     },
     {
@@ -367,18 +859,51 @@
       "area": "Configuración",
       "image": "screens/25-config-dieta.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
         "ChoiceRow",
-        "ChoiceChip",
         "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "ChoiceRow",
+          "rect": [
+            29,
+            244,
+            332,
+            36
+          ],
+          "note": "Selección de sexo"
+        },
+        {
+          "component": "ChoiceRow",
+          "rect": [
+            29,
+            379,
+            292,
+            36
+          ],
+          "note": "Objetivo de dieta: misma familia de selección"
+        },
+        {
+          "component": "NumberStepper",
+          "rect": [
+            29,
+            689,
+            161,
+            52
+          ],
+          "note": "Control numérico de macronutrientes"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            286,
+            554,
+            75,
+            42
+          ],
+          "note": "Calcular calorías"
+        }
       ]
     },
     {
@@ -387,18 +912,30 @@
       "area": "Configuración",
       "image": "screens/26-config-entreno.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "TrainingSettingsPanel",
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "TrainingSettingsPanel",
+          "rect": [
+            16,
+            174,
+            358,
+            386
+          ],
+          "note": "Resumen de rutinas existente"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            29,
+            685,
+            332,
+            48
+          ],
+          "note": "Consultar catálogo de ejercicios"
+        }
       ]
     },
     {
@@ -407,18 +944,41 @@
       "area": "Configuración",
       "image": "screens/27-config-alimentos.jpg",
       "components": [
-        "Button",
-        "TextField",
         "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
         "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "FoodThumbnail"
+      ],
+      "regions": [
+        {
+          "component": "SearchField",
+          "rect": [
+            16,
+            211,
+            358,
+            40
+          ],
+          "note": "Búsqueda de alimentos"
+        },
+        {
+          "component": "FoodCatalogRow",
+          "rect": [
+            29,
+            391,
+            332,
+            43
+          ],
+          "note": "Fila reutilizable del catálogo"
+        },
+        {
+          "component": "FoodThumbnail",
+          "rect": [
+            29,
+            396,
+            36,
+            36
+          ],
+          "note": "Miniatura de la fila con imagen o alternativa"
+        }
       ]
     },
     {
@@ -427,18 +987,30 @@
       "area": "Configuración",
       "image": "screens/28-config-productos.jpg",
       "components": [
-        "Button",
-        "TextField",
         "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "FoodCatalogRow"
+      ],
+      "regions": [
+        {
+          "component": "SearchField",
+          "rect": [
+            16,
+            211,
+            358,
+            40
+          ],
+          "note": "Misma búsqueda para productos comerciales"
+        },
+        {
+          "component": "FoodCatalogRow",
+          "rect": [
+            29,
+            313,
+            332,
+            43
+          ],
+          "note": "Fila de producto con el mismo componente"
+        }
       ]
     },
     {
@@ -447,18 +1019,19 @@
       "area": "Configuración",
       "image": "screens/29-config-alimentos-personales.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "SearchField"
+      ],
+      "regions": [
+        {
+          "component": "SearchField",
+          "rect": [
+            16,
+            223,
+            358,
+            40
+          ],
+          "note": "Misma búsqueda para alimentos personales"
+        }
       ]
     },
     {
@@ -467,18 +1040,19 @@
       "area": "Configuración",
       "image": "screens/30-config-medidas.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "MeasurementsSettingsPanel"
+      ],
+      "regions": [
+        {
+          "component": "MeasurementsSettingsPanel",
+          "rect": [
+            16,
+            210,
+            358,
+            390
+          ],
+          "note": "Lista de mediciones existente; no es StatCard"
+        }
       ]
     },
     {
@@ -487,18 +1061,19 @@
       "area": "Configuración",
       "image": "screens/31-config-preferencias.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "PreferencesSettingsPanel"
+      ],
+      "regions": [
+        {
+          "component": "PreferencesSettingsPanel",
+          "rect": [
+            16,
+            176,
+            358,
+            184
+          ],
+          "note": "Presentación de preferencias existente"
+        }
       ]
     },
     {
@@ -507,18 +1082,39 @@
       "area": "Configuración",
       "image": "screens/32-config-notificaciones.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "ToggleField"
+      ],
+      "regions": [
+        {
+          "component": "ToggleField",
+          "rect": [
+            16,
+            339,
+            358,
+            64
+          ],
+          "note": "Notificaciones: etiqueta, descripción e interruptor"
+        },
+        {
+          "component": "ToggleField",
+          "rect": [
+            16,
+            415,
+            358,
+            64
+          ],
+          "note": "Sonido: mismo componente"
+        },
+        {
+          "component": "ToggleField",
+          "rect": [
+            16,
+            491,
+            358,
+            64
+          ],
+          "note": "Vibración: mismo componente"
+        }
       ]
     },
     {
@@ -527,18 +1123,39 @@
       "area": "Configuración",
       "image": "screens/33-config-datos.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "Button",
+          "rect": [
+            16,
+            353,
+            358,
+            49
+          ],
+          "note": "Exportar copia"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            16,
+            413,
+            358,
+            49
+          ],
+          "note": "Restaurar copia"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            31,
+            775,
+            328,
+            44
+          ],
+          "note": "Acción destructiva del bloque de borrado"
+        }
       ]
     },
     {
@@ -547,18 +1164,30 @@
       "area": "Configuración",
       "image": "screens/34-config-trazas.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "PolicyStatusCard",
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "PolicyStatusCard",
+          "rect": [
+            16,
+            278,
+            358,
+            312
+          ],
+          "note": "Tarjeta de estado de política existente"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            16,
+            602,
+            147,
+            44
+          ],
+          "note": "Acción para copiar trazas"
+        }
       ]
     },
     {
@@ -567,18 +1196,40 @@
       "area": "Configuración",
       "image": "screens/35-config-memoria.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "MemoryInput",
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "MemoryInput",
+          "rect": [
+            29,
+            363,
+            332,
+            41
+          ],
+          "note": "Entrada de memoria existente"
+        },
+        {
+          "component": "MemoryInput",
+          "rect": [
+            29,
+            411,
+            332,
+            41
+          ],
+          "note": "Variante del mismo campo para descripción"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            29,
+            507,
+            332,
+            44
+          ],
+          "note": "Añadir campo de memoria"
+        }
       ]
     },
     {
@@ -587,18 +1238,19 @@
       "area": "Configuración",
       "image": "screens/36-config-proveedor.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "ProviderSettingsPanel"
+      ],
+      "regions": [
+        {
+          "component": "ProviderSettingsPanel",
+          "rect": [
+            16,
+            195,
+            358,
+            445
+          ],
+          "note": "Configuración de IA existente; los campos de claves permanecen ocultos en la captura"
+        }
       ]
     },
     {
@@ -607,18 +1259,19 @@
       "area": "Configuración",
       "image": "screens/37-copia-contrasena.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "PortablePasswordModal"
+      ],
+      "regions": [
+        {
+          "component": "PortablePasswordModal",
+          "rect": [
+            20,
+            162,
+            350,
+            520
+          ],
+          "note": "Diálogo cifrado existente, conservado"
+        }
       ]
     },
     {
@@ -627,18 +1280,40 @@
       "area": "Configuración",
       "image": "screens/38-confirmar-borrado.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "DialogCard",
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "DialogCard",
+          "rect": [
+            20,
+            185,
+            350,
+            476
+          ],
+          "note": "Confirmación de borrado con variante destructiva"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            39,
+            539,
+            312,
+            49
+          ],
+          "note": "Confirmar borrado"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            39,
+            601,
+            312,
+            44
+          ],
+          "note": "Cancelar sin borrar"
+        }
       ]
     },
     {
@@ -647,18 +1322,19 @@
       "area": "Configuración",
       "image": "screens/39-alimento-personal-formulario.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "SearchField",
-        "ChoiceRow",
-        "ChoiceChip",
-        "NumberStepper",
-        "ToggleField",
-        "FoodThumbnail",
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "DialogLayer",
-        "DialogCard"
+        "PersonalFoodsSettingsPanel"
+      ],
+      "regions": [
+        {
+          "component": "PersonalFoodsSettingsPanel",
+          "rect": [
+            16,
+            226,
+            358,
+            618
+          ],
+          "note": "Formulario de alimento personal existente"
+        }
       ]
     },
     {
@@ -668,6 +1344,18 @@
       "image": "screens/40-rutinas-sin-resultados.jpg",
       "components": [
         "Button"
+      ],
+      "regions": [
+        {
+          "component": "Button",
+          "rect": [
+            88,
+            595,
+            214,
+            59
+          ],
+          "note": "Crear primera rutina en el estado sin resultados"
+        }
       ]
     },
     {
@@ -676,12 +1364,30 @@
       "area": "Dieta · detalle",
       "image": "screens/41-dieta-busqueda.jpg",
       "components": [
-        "Button",
-        "TextField",
         "FoodThumbnail",
-        "DietItemThumbnail",
-        "DialogLayer",
-        "DialogCard"
+        "DietMealsScreen"
+      ],
+      "regions": [
+        {
+          "component": "FoodThumbnail",
+          "rect": [
+            39,
+            527,
+            36,
+            36
+          ],
+          "note": "Imagen del resultado de búsqueda"
+        },
+        {
+          "component": "DietMealsScreen",
+          "rect": [
+            16,
+            345,
+            358,
+            238
+          ],
+          "note": "Buscador y selección de alimento existentes"
+        }
       ]
     },
     {
@@ -690,12 +1396,30 @@
       "area": "Dieta · detalle",
       "image": "screens/42-dieta-porcion.jpg",
       "components": [
-        "Button",
         "TextField",
-        "FoodThumbnail",
-        "DietItemThumbnail",
-        "DialogLayer",
-        "DialogCard"
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "TextField",
+          "rect": [
+            119,
+            495,
+            240,
+            42
+          ],
+          "note": "Cantidad del alimento seleccionado"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            31,
+            587,
+            159,
+            42
+          ],
+          "note": "Guardar cantidad y valores nutricionales"
+        }
       ]
     },
     {
@@ -704,12 +1428,19 @@
       "area": "Dieta · detalle",
       "image": "screens/43-dieta-con-alimentos.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "FoodThumbnail",
-        "DietItemThumbnail",
-        "DialogLayer",
-        "DialogCard"
+        "DietItemThumbnail"
+      ],
+      "regions": [
+        {
+          "component": "DietItemThumbnail",
+          "rect": [
+            31,
+            287,
+            36,
+            36
+          ],
+          "note": "Miniatura del alimento ya registrado"
+        }
       ]
     },
     {
@@ -718,12 +1449,30 @@
       "area": "Dieta · detalle",
       "image": "screens/44-dieta-menu-alimento.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "FoodThumbnail",
         "DietItemThumbnail",
-        "DialogLayer",
-        "DialogCard"
+        "DietMealsScreen"
+      ],
+      "regions": [
+        {
+          "component": "DietItemThumbnail",
+          "rect": [
+            31,
+            287,
+            36,
+            36
+          ],
+          "note": "Misma miniatura en la fila con menú abierto"
+        },
+        {
+          "component": "DietMealsScreen",
+          "rect": [
+            221,
+            316,
+            138,
+            116
+          ],
+          "note": "Menú contextual existente de la comida"
+        }
       ]
     },
     {
@@ -732,12 +1481,41 @@
       "area": "Dieta · detalle",
       "image": "screens/45-dieta-repetir-fecha.jpg",
       "components": [
-        "Button",
+        "DialogCard",
         "TextField",
-        "FoodThumbnail",
-        "DietItemThumbnail",
-        "DialogLayer",
-        "DialogCard"
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "DialogCard",
+          "rect": [
+            24,
+            293,
+            342,
+            258
+          ],
+          "note": "Selector de fecha para repetir la comida"
+        },
+        {
+          "component": "TextField",
+          "rect": [
+            43,
+            376,
+            304,
+            44
+          ],
+          "note": "Fecha de origen de la copia"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            43,
+            432,
+            304,
+            46
+          ],
+          "note": "Continuar a la revisión"
+        }
       ]
     },
     {
@@ -746,12 +1524,19 @@
       "area": "Dieta · detalle",
       "image": "screens/46-dieta-error-fecha.jpg",
       "components": [
-        "Button",
-        "TextField",
-        "FoodThumbnail",
-        "DietItemThumbnail",
-        "DialogLayer",
-        "DialogCard"
+        "DietItemThumbnail"
+      ],
+      "regions": [
+        {
+          "component": "DietItemThumbnail",
+          "rect": [
+            31,
+            287,
+            36,
+            36
+          ],
+          "note": "El alimento registrado se conserva tras validar la fecha"
+        }
       ]
     },
     {
@@ -762,8 +1547,39 @@
       "components": [
         "FoodCatalogRow",
         "FoodCatalogDetail",
-        "FoodThumbnail",
-        "DialogLayer"
+        "FoodThumbnail"
+      ],
+      "regions": [
+        {
+          "component": "FoodCatalogRow",
+          "rect": [
+            29,
+            488,
+            332,
+            52
+          ],
+          "note": "Fila de Manzana seleccionada"
+        },
+        {
+          "component": "FoodCatalogDetail",
+          "rect": [
+            29,
+            546,
+            332,
+            232
+          ],
+          "note": "Detalle nutricional reutilizable"
+        },
+        {
+          "component": "FoodThumbnail",
+          "rect": [
+            29,
+            498,
+            36,
+            36
+          ],
+          "note": "Miniatura con alternativa por categoría"
+        }
       ]
     },
     {
@@ -772,10 +1588,19 @@
       "area": "Catálogos",
       "image": "screens/48-catalogo-consulta.jpg",
       "components": [
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "FoodThumbnail",
-        "DialogLayer"
+        "ExerciseCatalogBrowser"
+      ],
+      "regions": [
+        {
+          "component": "ExerciseCatalogBrowser",
+          "rect": [
+            0,
+            0,
+            390,
+            844
+          ],
+          "note": "Mismo catálogo existente, en modo consulta"
+        }
       ]
     },
     {
@@ -784,10 +1609,19 @@
       "area": "Catálogos",
       "image": "screens/49-ejercicio-ficha.jpg",
       "components": [
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "FoodThumbnail",
         "DialogLayer"
+      ],
+      "regions": [
+        {
+          "component": "DialogLayer",
+          "rect": [
+            16,
+            168,
+            358,
+            509
+          ],
+          "note": "Capa de detalle del catálogo; mantiene su propietario y orden de capas"
+        }
       ]
     },
     {
@@ -796,8 +1630,30 @@
       "area": "Alimentos personales · IA",
       "image": "screens/50-alimento-personal-ia.jpg",
       "components": [
-        "Button",
-        "TextField"
+        "PersonalFoodAssistantScreen",
+        "AiIdentityDisclosure"
+      ],
+      "regions": [
+        {
+          "component": "PersonalFoodAssistantScreen",
+          "rect": [
+            16,
+            252,
+            358,
+            454
+          ],
+          "note": "Asistente de alimentos personales existente"
+        },
+        {
+          "component": "AiIdentityDisclosure",
+          "rect": [
+            29,
+            324,
+            332,
+            111
+          ],
+          "note": "Mismo aviso reutilizable de identidad IA"
+        }
       ]
     },
     {
@@ -806,8 +1662,30 @@
       "area": "Coach · conversación",
       "image": "screens/51-coach-procesando.jpg",
       "components": [
-        "Button",
-        "TextField"
+        "TextField",
+        "Button"
+      ],
+      "regions": [
+        {
+          "component": "TextField",
+          "rect": [
+            16,
+            695,
+            358,
+            56
+          ],
+          "note": "Entrada durante el envío"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            16,
+            759,
+            358,
+            46
+          ],
+          "note": "Enviar mensaje (desactivado durante el envío)"
+        }
       ]
     },
     {
@@ -816,8 +1694,41 @@
       "area": "Coach · conversación",
       "image": "screens/52-coach-respuesta.jpg",
       "components": [
+        "TextField",
         "Button",
-        "TextField"
+        "ChatScreen"
+      ],
+      "regions": [
+        {
+          "component": "TextField",
+          "rect": [
+            16,
+            695,
+            358,
+            56
+          ],
+          "note": "Entrada después de recibir la respuesta"
+        },
+        {
+          "component": "Button",
+          "rect": [
+            16,
+            759,
+            358,
+            46
+          ],
+          "note": "Enviar mensaje"
+        },
+        {
+          "component": "ChatScreen",
+          "rect": [
+            16,
+            479,
+            358,
+            75
+          ],
+          "note": "Mensajes y respuesta del Coach existentes"
+        }
       ]
     },
     {
@@ -826,8 +1737,19 @@
       "area": "Coach · conversación",
       "image": "screens/53-denunciar-respuesta.jpg",
       "components": [
-        "Button",
-        "TextField"
+        "AiResponseReportModal"
+      ],
+      "regions": [
+        {
+          "component": "AiResponseReportModal",
+          "rect": [
+            20,
+            0,
+            350,
+            844
+          ],
+          "note": "Diálogo de denuncia existente, sin enviar ninguna incidencia"
+        }
       ]
     },
     {
@@ -836,8 +1758,186 @@
       "area": "Configuración · selector",
       "image": "screens/54-proveedor-selector.jpg",
       "components": [
-        "Button"
+        "ProviderSettingsPanel"
+      ],
+      "regions": [
+        {
+          "component": "ProviderSettingsPanel",
+          "rect": [
+            16,
+            489,
+            358,
+            238
+          ],
+          "note": "Selector de proveedor existente; no se convirtió en ChoiceChip"
+        }
       ]
     }
-  ]
+  ],
+  "componentCatalog": {
+    "Button": {
+      "source": "apps/mobile/components/Button.tsx",
+      "status": "extracted"
+    },
+    "StatCard": {
+      "source": "apps/mobile/components/StatCard.tsx",
+      "status": "extracted"
+    },
+    "ChartCard": {
+      "source": "apps/mobile/components/ChartCard.tsx",
+      "status": "extracted"
+    },
+    "ChoiceChip": {
+      "source": "apps/mobile/components/ChoiceChip.tsx",
+      "status": "extracted"
+    },
+    "ChoiceRow": {
+      "source": "apps/mobile/components/ChoiceRow.tsx",
+      "status": "extracted"
+    },
+    "OptionChips": {
+      "source": "apps/mobile/components/OptionChips.tsx",
+      "status": "extracted"
+    },
+    "TextField": {
+      "source": "apps/mobile/components/TextField.tsx",
+      "status": "extracted"
+    },
+    "SearchField": {
+      "source": "apps/mobile/components/SearchField.tsx",
+      "status": "extracted"
+    },
+    "DialogLayer": {
+      "source": "apps/mobile/components/Dialog.tsx",
+      "status": "extracted"
+    },
+    "DialogCard": {
+      "source": "apps/mobile/components/Dialog.tsx",
+      "status": "extracted"
+    },
+    "ProgressBar": {
+      "source": "apps/mobile/components/ProgressBar.tsx",
+      "status": "extracted"
+    },
+    "FoodThumbnail": {
+      "source": "apps/mobile/components/FoodThumbnail.tsx",
+      "status": "extracted"
+    },
+    "DietItemThumbnail": {
+      "source": "apps/mobile/components/FoodThumbnail.tsx",
+      "status": "extracted"
+    },
+    "FoodCatalogRow": {
+      "source": "apps/mobile/components/FoodCatalog.tsx",
+      "status": "extracted"
+    },
+    "FoodCatalogDetail": {
+      "source": "apps/mobile/components/FoodCatalog.tsx",
+      "status": "extracted"
+    },
+    "NumberStepper": {
+      "source": "apps/mobile/components/NumberStepper.tsx",
+      "status": "extracted"
+    },
+    "ToggleField": {
+      "source": "apps/mobile/components/ToggleField.tsx",
+      "status": "extracted"
+    },
+    "TrainingListScreen": {
+      "source": "apps/mobile/screens/TrainingScreen.tsx",
+      "status": "existing"
+    },
+    "ExerciseCatalogBrowser": {
+      "source": "apps/mobile/catalogs/ExerciseCatalogBrowser.tsx",
+      "status": "existing"
+    },
+    "TrainingCatalogOverlays": {
+      "source": "apps/mobile/screens/TrainingOverlays.tsx",
+      "status": "existing"
+    },
+    "TrainingSessionScreen": {
+      "source": "apps/mobile/screens/TrainingScreen.tsx",
+      "status": "existing"
+    },
+    "WorkoutHistoryEntryCard": {
+      "source": "apps/mobile/screens/TrainingScreen.tsx",
+      "status": "existing"
+    },
+    "WorkoutHistoryDetail": {
+      "source": "apps/mobile/screens/TrainingScreen.tsx",
+      "status": "existing"
+    },
+    "DietHeader": {
+      "source": "apps/mobile/screens/DietScreen.tsx",
+      "status": "existing"
+    },
+    "DietMealsScreen": {
+      "source": "apps/mobile/screens/DietScreen.tsx",
+      "status": "existing"
+    },
+    "MeasurementsScreen": {
+      "source": "apps/mobile/screens/MeasurementsScreen.tsx",
+      "status": "existing"
+    },
+    "AiIdentityDisclosure": {
+      "source": "apps/mobile/AiIdentityDisclosure.tsx",
+      "status": "existing"
+    },
+    "SharedChatPanel": {
+      "source": "apps/mobile/screens/SharedChatPanel.tsx",
+      "status": "existing"
+    },
+    "TrainingSettingsPanel": {
+      "source": "apps/mobile/screens/SettingsScreen.tsx",
+      "status": "existing"
+    },
+    "MeasurementsSettingsPanel": {
+      "source": "apps/mobile/screens/SettingsScreen.tsx",
+      "status": "existing"
+    },
+    "PreferencesSettingsPanel": {
+      "source": "apps/mobile/screens/SettingsScreen.tsx",
+      "status": "existing"
+    },
+    "PolicyStatusCard": {
+      "source": "apps/mobile/screens/SettingsScreen.tsx",
+      "status": "existing"
+    },
+    "MemoryInput": {
+      "source": "apps/mobile/screens/SettingsScreen.tsx",
+      "status": "existing"
+    },
+    "ProviderSettingsPanel": {
+      "source": "apps/mobile/screens/SettingsScreen.tsx",
+      "status": "existing"
+    },
+    "PortablePasswordModal": {
+      "source": "apps/mobile/backup/PortablePasswordModal.tsx",
+      "status": "existing"
+    },
+    "PersonalFoodsSettingsPanel": {
+      "source": "apps/mobile/screens/SettingsScreen.tsx",
+      "status": "existing"
+    },
+    "PersonalFoodAssistantScreen": {
+      "source": "apps/mobile/screens/PersonalFoodAssistantScreen.tsx",
+      "status": "existing"
+    },
+    "ChatScreen": {
+      "source": "apps/mobile/screens/ChatScreen.tsx",
+      "status": "existing"
+    },
+    "AiResponseReportModal": {
+      "source": "apps/mobile/AiResponseReportModal.tsx",
+      "status": "existing"
+    },
+    "TrainingEditorScreen": {
+      "source": "apps/mobile/screens/TrainingScreen.tsx",
+      "status": "existing"
+    },
+    "AppHeader": {
+      "source": "apps/mobile/screens/AppShell.tsx",
+      "status": "existing"
+    }
+  }
 }

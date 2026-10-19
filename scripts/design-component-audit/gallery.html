@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gymnasia · Inventario visual de componentes</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#07090d;color:#f4f7fb;font:15px/1.5 system-ui,sans-serif}header{padding:40px 28px 24px;border-bottom:1px solid #252b35}h1{font-size:clamp(26px,4vw,40px);margin:0 0 10px}p{max-width:85ch;color:#a6afbc}a{color:#cbff1a}main{padding:24px 28px}.controls{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px}input,select{background:#141820;color:#f4f7fb;border:1px solid #252b35;border-radius:12px;padding:12px;font:inherit}input{flex:1;min-width:200px}:focus-visible{outline:2px solid #cbff1a;outline-offset:3px}#grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,580px),1fr));gap:28px;align-items:start}.screen{margin:0;padding:18px;background:#101318;border:1px solid #252b35;border-radius:18px;min-width:0}.screen h2{font-size:19px;margin:0 0 4px}.meta{font-size:12px;color:#a6afbc}.screen-head{display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:16px}button{font:inherit;cursor:pointer;color:#cbff1a;background:#1c2410;border:1px solid #52651b;border-radius:10px;padding:9px 12px}.enlarge{font-size:12px;white-space:nowrap}.comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.image-label{font-size:12px;font-weight:700;margin:0 0 8px;color:#a6afbc}.annotated-label{color:#cbff1a}.phone{position:relative;isolation:isolate;aspect-ratio:390/844}.phone img{display:block;width:100%;height:auto;border-radius:10px;background:#07090d}.region{position:absolute;border:2px solid var(--mark);background:color-mix(in srgb,var(--mark) 10%,transparent);padding:0;border-radius:5px;min-width:0;min-height:0;z-index:var(--layer)}.region:hover,.region:focus-visible,.region.active{background:color-mix(in srgb,var(--mark) 28%,transparent);z-index:1001;box-shadow:0 0 0 2px #07090d}.number{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:7px;background:var(--mark);color:#07090d;font-size:12px;font-weight:800;flex-shrink:0}.region .number{position:absolute;left:-2px;top:-2px;width:21px;height:21px;border-radius:3px}.legend{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:8px}.legend li{padding:9px;border:1px solid #252b35;border-radius:10px;display:flex;gap:10px;align-items:start}.legend li.active{border-color:var(--mark);background:#1a2028}.legend-select{display:flex;gap:10px;align-items:start;text-align:left;flex:1;color:inherit;background:none;border:none;padding:0;border-radius:4px;min-width:0}.component-name{display:block;font:600 13px/1.5 ui-monospace,monospace;overflow-wrap:anywhere}.note{display:block;color:#a6afbc;font-size:12px}.status{font-size:10px;font-weight:600;border-radius:4px;padding:2px 5px;background:#253014;color:#cbff1a;margin-left:6px;white-space:nowrap}.existing{background:#182a34;color:#91d9ff}.source{font-size:11px;white-space:nowrap}#count{margin-bottom:20px;color:#cbff1a}dialog{background:#07090d;color:#f4f7fb;border:1px solid #465321;border-radius:18px;width:min(1000px,96vw);max-height:94vh;padding:18px}dialog::backdrop{background:#000d}dialog .screen{border:0;padding:0}dialog .phone{max-width:390px;margin:auto}dialog .image-label{text-align:center}#close{display:block;margin:0 0 16px auto}.guide{font-size:13px}footer{padding:28px;border-top:1px solid #252b35;color:#a6afbc}@media(max-width:600px){header,main{padding:20px 12px}.screen{padding:12px}.comparison{gap:8px}.screen-head{flex-wrap:wrap}.legend li{flex-wrap:wrap}.source{margin-left:34px}.status{display:inline-block;margin-left:0}.component-name{font-size:12px}}@media print{.controls,.enlarge,dialog{display:none}#grid{display:block}.screen{break-inside:avoid;margin-bottom:20px}.source{color:inherit}}
+</style>
+<header>
+<h1>Gymnasia · Inventario visual</h1>
+<p id="intro"></p>
+<p class="guide">En cada pareja, la captura original está a la izquierda y la misma imagen con los componentes señalados a la derecha. Pulsa una marca o su leyenda para destacar la zona. «Extraído» identifica la biblioteca creada; «Existente», los componentes que se conservan.</p>
+<a href="README.md">Alcance, componentes y límites de la revisión</a>
+</header>
+<main><div class="controls"><input id="search" aria-label="Buscar pantalla o componente" placeholder="Buscar pantalla o componente…"><select id="area" aria-label="Área"><option value="">Todas las áreas</option></select></div><div id="count" role="status" aria-live="polite"></div><div id="grid"></div></main>
+<dialog id="preview" aria-label="Comparación ampliada"><button id="close">Cerrar</button><div id="detail"></div></dialog>
+<footer>Las marcas identifican ejemplos visibles de cada componente; no enumeran todos sus usos. Las capturas contienen datos desechables de QA. Los estados nativos y de recuperación se detallan en el documento de alcance.</footer>
+<script type="application/json" id="inventory">{{INVENTORY}}</script>
+<script>
+const inventory=JSON.parse(document.getElementById('inventory').textContent);
+const search=document.getElementById('search'),area=document.getElementById('area'),grid=document.getElementById('grid'),preview=document.getElementById('preview');
+const colors=['#cbff1a','#65d9ff','#ffba70','#d3a0ff'];
+document.getElementById('intro').textContent=inventory.screens.length+' pantallas de la app publicada el 19 de octubre de 2026, versión '+inventory.publishedVersion+', a '+inventory.viewport.width+' × '+inventory.viewport.height+' píxeles. Cada selección enlaza con su implementación.';
+for(const name of new Set(inventory.screens.map(s=>s.area))){const option=document.createElement('option');option.textContent=name;option.value=name;area.append(option)}
+function element(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node}
+function comparison(screen,expanded=false){
+ const figure=element('figure','screen'),head=element('figcaption','screen-head'),heading=element('div');
+ heading.append(element('h2','',screen.title),element('div','meta',screen.area+' · '+screen.id.slice(0,2)));head.append(heading);
+ if(!expanded){const open=element('button','enlarge','Ampliar pareja');open.onclick=()=>{document.getElementById('detail').replaceChildren(comparison(screen,true));preview.showModal()};head.append(open)}
+ figure.append(head);const pair=element('div','comparison'),legend=element('ol','legend'),marks=[];
+ for(const annotated of [false,true]){
+  const column=element('div'),label=element('p','image-label'+(annotated?' annotated-label':''),annotated?'Componentes elegidos':'Original'),phone=element('div','phone'),img=element('img');
+  img.src=screen.image;img.width=inventory.viewport.width;img.height=inventory.viewport.height;img.alt=screen.title+(annotated?' con zonas de componentes señaladas':' · captura original');img.loading=expanded?'eager':'lazy';phone.append(img);
+  if(annotated)screen.regions.forEach((region,index)=>{
+   const mark=element('button','region'),[x,y,w,h]=region.rect;mark.style.cssText='left:'+x/inventory.viewport.width*100+'%;top:'+y/inventory.viewport.height*100+'%;width:'+w/inventory.viewport.width*100+'%;height:'+h/inventory.viewport.height*100+'%;--layer:'+Math.round(1000-w*h/(inventory.viewport.width*inventory.viewport.height)*100)+';--mark:'+colors[index%colors.length];
+   mark.append(element('span','number',String(index+1)));mark.title=(index+1)+'. '+region.component+' · '+region.note;mark.setAttribute('aria-label',mark.title);mark.setAttribute('aria-pressed','false');mark.onclick=()=>highlight(index);phone.append(mark);marks.push(mark);
+  });column.append(label,phone);pair.append(column);
+ }
+ const rows=[],selectors=[];
+ function highlight(index){marks.forEach((mark,i)=>{mark.classList.toggle('active',i===index);mark.setAttribute('aria-pressed',String(i===index));rows[i].classList.toggle('active',i===index);selectors[i].setAttribute('aria-pressed',String(i===index))})}
+ screen.regions.forEach((region,index)=>{
+  const component=inventory.componentCatalog[region.component],row=element('li'),select=element('button','legend-select'),copy=element('span'),name=element('span','component-name',region.component),status=element('span','status'+(component.status==='existing'?' existing':''),component.status==='existing'?'Existente':'Extraído'),source=element('a','source','Ver código ↗');
+  row.style.setProperty('--mark',colors[index%colors.length]);select.append(element('span','number',String(index+1)));name.append(document.createTextNode(' '),status);copy.append(name,element('span','note',region.note));select.append(copy);select.setAttribute('aria-pressed','false');select.onclick=()=>highlight(index);
+  source.href='../../../'+component.source;source.title=component.source;source.target='_blank';source.rel='noopener';row.append(select,source);legend.append(row);rows.push(row);selectors.push(select);
+ });figure.append(pair,legend);return figure;
+}
+function render(){const query=search.value.toLocaleLowerCase('es');const filtered=inventory.screens.filter(s=>(!area.value||s.area===area.value)&&[s.title,s.area,...s.components].join(' ').toLocaleLowerCase('es').includes(query));grid.replaceChildren(...filtered.map(screen=>comparison(screen)));document.getElementById('count').textContent=filtered.length+' de '+inventory.screens.length+' pantallas · original y componentes';}
+search.oninput=render;area.onchange=render;document.getElementById('close').onclick=()=>preview.close();render();
+</script>
+</html>
