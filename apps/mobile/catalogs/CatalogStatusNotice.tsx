@@ -1,3 +1,4 @@
+import { NoticeFrame } from "../components/NoticeFrame";
 import { Feather } from "@expo/vector-icons";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 
@@ -76,16 +77,9 @@ export function CatalogStatusNotice({ metadata, onRetry, testID }: CatalogStatus
     .sort()
     .at(-1) ?? null;
   return (
-    <View
+    <NoticeFrame
       testID={testID}
-      style={{
-        gap: 8,
-        borderWidth: 1,
-        borderColor: metadata.availability === "unavailable" ? "rgba(255,107,107,0.45)" : "rgba(255,184,77,0.45)",
-        backgroundColor: metadata.availability === "unavailable" ? "rgba(255,107,107,0.08)" : "rgba(255,184,77,0.08)",
-        borderRadius: mobileTheme.radius.md,
-        padding: 11,
-      }}
+      style={{ gap: 8, borderColor: metadata.availability === "unavailable" ? "rgba(255,107,107,0.45)" : "rgba(255,184,77,0.45)", backgroundColor: metadata.availability === "unavailable" ? "rgba(255,107,107,0.08)" : "rgba(255,184,77,0.08)", padding: 11 }}
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
         <Feather
@@ -116,6 +110,6 @@ export function CatalogStatusNotice({ metadata, onRetry, testID }: CatalogStatus
           Reintentar
         </Text>
       </Pressable>
-    </View>
+    </NoticeFrame>
   );
 }

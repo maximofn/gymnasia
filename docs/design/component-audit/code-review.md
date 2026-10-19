@@ -2,7 +2,9 @@
 
 Trabajo de GYM-8 (ticket para unificar componentes repetidos de la interfaz).
 
-Revisión de lectura del 2026-10-19, sobre el código de `3df545e4f3839a67e83e3688e923e4b34ead83e9`. **No se ha modificado la app ni implementado ninguna extracción.**
+Revisión de lectura del 2026-10-19, sobre el código de `3df545e4f3839a67e83e3688e923e4b34ead83e9`. **Esta revisión fue de solo lectura.**
+
+La implementación posterior de las 12 familias adaptables se documenta por separado en [implementation.md](implementation.md). Las referencias de este informe siguen apuntando al código original revisado, no a las líneas después de la extracción.
 
 La propuesta visual se conserva. Esta segunda fase contrasta sus 29 candidatos con los componentes y el JSX actuales; el parecido visual no obliga a unificar contratos de negocio.
 
@@ -286,7 +288,7 @@ LegalFooter ya centraliza enlace de privacidad, descargo generado y fallback par
 2. Composiciones con contratos que acordar: filas, tarjetas de rutina, selectores, opciones, mensajes, compositor, nutrición, estados vacíos, menús y metadatos.
 3. Evaluar el beneficio antes de extraer: marcos de registros, formularios y secciones, filas etiqueta/valor y filas de series. Mantener navegación, pie legal y avisos semánticos existentes.
 
-Este orden no autoriza la implementación. Las adaptaciones de avisos, formularios y diálogos deben preservar reglas sanitarias, permisos, validación, cifrado y comportamiento nativo/web en sus propietarios. SwipeableSetRow es un contenedor de gesto, no una fila de serie completa; SharedChatPanel incluye conversación y entrada, no un compositor aislado.
+Este orden describe la recomendación original; la fase posterior autorizada abarca solo las 12 familias adaptables. Las adaptaciones de avisos, formularios y diálogos deben preservar reglas sanitarias, permisos, validación, cifrado y comportamiento nativo/web en sus propietarios. SwipeableSetRow es un contenedor de gesto, no una fila de serie completa; SharedChatPanel incluye conversación y entrada, no un compositor aislado.
 
 El menú contextual conserva un único ejemplo fotográfico. El código demuestra una segunda implementación en Rutinas; todavía conviene capturar esa variante para comparar su presentación antes de unificarlos.
 
@@ -294,7 +296,7 @@ El menú contextual conserva un único ejemplo fotográfico. El código demuestr
 
 - Las 29 decisiones tienen referencias con fichero, símbolo o región JSX, línea y ancla comprobadas por el generador.
 - Los 54 originales y las 208 zonas de evidencia visual permanecen intactos.
-- No cambia ningún archivo de apps/mobile ni la política de límites arquitectónicos.
+- La revisión original no cambió apps/mobile. La implementación posterior tiene su propio alcance y validación en implementation.md.
 - Esta revisión no ejecuta una migración ni demuestra todavía equivalencia visual o funcional de una futura extracción.
 
 Documento generado desde inventory.json por scripts/design-component-audit/generate.mjs.

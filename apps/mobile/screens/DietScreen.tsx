@@ -1,7 +1,10 @@
-import { memo, useState } from "react";
+import { SearchField } from "../components/SearchField";
+import { Thumbnail } from "../components/Thumbnail";
+import { ItemRow } from "../components/ItemRow";
+import { memo } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { Animated, Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Animated, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import { CatalogStatusNotice } from "../catalogs/CatalogStatusNotice";
 import { foodCatalogImageUri } from "../catalogs/sources";
@@ -186,24 +189,15 @@ const DIET_MEAL_META: Record<
 };
 
 function DietItemThumbnail({ uri, dotColor }: { uri?: string | null; dotColor: string }) {
-  const [failed, setFailed] = useState(false);
-  if (uri && !failed) {
-    return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
-  }
-  return <View style={{ width: 7, height: 7, borderRadius: 999, backgroundColor: dotColor, marginTop: 8 }} />;
+
+  return <Thumbnail uri={uri} size={36} fallback={<View style={{ width: 7, height: 7, borderRadius: 999, backgroundColor: dotColor, marginTop: 8 }} />} />;
 }
 
 function FoodThumbnail({ food }: { food: FoodCatalogEntry }) {
-  const [failed, setFailed] = useState(false);
-  const uri = foodCatalogImageUri(food);
-  if (uri && !failed) {
-    return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
-  }
-  return (
-    <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}>
+
+  return <Thumbnail uri={foodCatalogImageUri(food)} size={36} fallback={<View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}>
       <Feather name="coffee" size={15} color={mobileTheme.color.brandPrimary} />
-    </View>
-  );
+    </View>} />;
 }
 
 export const DietMealsScreen = memo(function DietMealsScreen({
@@ -294,30 +288,17 @@ export const DietMealsScreen = memo(function DietMealsScreen({
                 })}
                 <View style={{ gap: 8 }}>
                   <CatalogStatusNotice metadata={model.catalogAvailability} onRetry={actions.retryCatalog} testID={`diet-food-catalog-status-${category.toLowerCase()}`} />
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, paddingHorizontal: 10 }}>
-                    <Feather name="search" size={14} color={mobileTheme.color.textSecondary} />
-                    <TextInput
-                      value={model.editorCategory === category ? model.foodSearch : ""}
-                      onChangeText={(value) => actions.changeFoodSearch(category, value)}
-                      onFocus={actions.focusFoodSearch}
-                      placeholder="Buscar alimento..."
-                      placeholderTextColor={mobileTheme.color.textSecondary}
-                      style={{ flex: 1, minHeight: 42, color: mobileTheme.color.textPrimary, fontSize: 14 }}
-                    />
-                    {model.editorCategory === category && model.foodSearch ? (
-                      <Pressable onPress={actions.clearFoodSearch}><Feather name="x" size={16} color={mobileTheme.color.textSecondary} /></Pressable>
-                    ) : null}
-                  </View>
+                  <SearchField size="content" value={model.editorCategory === category ? model.foodSearch : ""} onChange={(value) => actions.changeFoodSearch(category, value)} onClear={actions.clearFoodSearch} placeholder="Buscar alimento..." iconSize={14} clearStyle={{ padding: 0 }} style={{ height: undefined, backgroundColor: mobileTheme.color.bgApp, gap: 8 }} inputProps={{ onFocus: actions.focusFoodSearch, style: { minHeight: 42, marginLeft: 0 } }} />
                   {model.editorCategory === category && model.foodSearch.trim() ? (
                     <ScrollView style={{ maxHeight: 240 }}>
                       {model.foodSearchResults.map((food) => (
-                        <Pressable key={`${food.sourceId}/${food.id}`} onPress={() => actions.selectFood(category, food)} style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle }}>
+                        <ItemRow key={`${food.sourceId}/${food.id}`} onPress={() => actions.selectFood(category, food)} style={{ paddingVertical: 10, paddingHorizontal: 8, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle }}>
                           <FoodThumbnail food={food} />
                           <View style={{ flex: 1 }}>
                             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>{food.name}</Text>
                             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>{food.calories_per_100g} kcal/100g · {food.serving_description || `${food.serving_size_g}g`}</Text>
                           </View>
-                        </Pressable>
+                        </ItemRow>
                       ))}
                       {model.foodSearchResults.length === 0 ? (
                         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, padding: 10, fontStyle: "italic" }}>No se encontraron alimentos.</Text>

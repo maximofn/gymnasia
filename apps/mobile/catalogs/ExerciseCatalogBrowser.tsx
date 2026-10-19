@@ -1,14 +1,7 @@
+import { SearchField } from "../components/SearchField";
+import { ItemRow } from "../components/ItemRow";
 import { Feather } from "@expo/vector-icons";
-import {
-  FlatList,
-  Image,
-  PixelRatio,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { FlatList, Image, PixelRatio, Pressable, ScrollView, Text, View } from "react-native";
 
 import { mobileTheme } from "../theme";
 import { exerciseCatalogImageUri } from "./sources";
@@ -102,34 +95,7 @@ export function ExerciseCatalogBrowser({
         </View>
 
         <View style={{ paddingHorizontal: 14, marginBottom: 8 }}>
-          <View style={{
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: "#171B23",
-            borderRadius: 14,
-            borderWidth: 1,
-            borderColor: mobileTheme.color.borderSubtle,
-            paddingHorizontal: 12,
-            minHeight: 44,
-            gap: 8,
-          }}>
-            <Feather name="search" size={16} color="#778091" />
-            <TextInput
-              testID="exercise-catalog-search"
-              accessibilityLabel="Buscar ejercicios"
-              style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 16 }}
-              placeholder="Buscar por nombre o músculo..."
-              placeholderTextColor="#5A6270"
-              value={query}
-              onChangeText={onQueryChange}
-              autoCapitalize="none"
-            />
-            {query ? (
-              <Pressable accessibilityLabel="Limpiar búsqueda" onPress={() => onQueryChange("")}>
-                <Feather name="x" size={16} color="#778091" />
-              </Pressable>
-            ) : null}
-          </View>
+          <SearchField size="content" value={query} onChange={onQueryChange} placeholder="Buscar por nombre o músculo..." iconColor="#778091" clearStyle={{ padding: 0 }} style={{ height: undefined, minHeight: 44, borderRadius: 14, paddingHorizontal: 12, gap: 8, backgroundColor: "transparent" }} inputProps={{ testID: "exercise-catalog-search", accessibilityLabel: "Buscar ejercicios", placeholderTextColor: "#5A6270", autoCapitalize: "none", style: { fontSize: 16, marginLeft: 0 } }} />
         </View>
 
         <ScrollView
@@ -212,20 +178,10 @@ export function ExerciseCatalogBrowser({
               </Text>
             ) : <ResultNotice result={result} hasItems={items.length > 0} />}
             renderItem={({ item }) => (
-              <Pressable
+              <ItemRow
                 testID={`exercise-catalog-row-${item.id}`}
                 onPress={() => onChoose(item)}
-                style={{
-                  height: ROW_HEIGHT - 8,
-                  marginBottom: 8,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  backgroundColor: "#171B23",
-                  borderRadius: 16,
-                  borderWidth: 1,
-                  borderColor: "rgba(255,255,255,0.06)",
-                  overflow: "hidden",
-                }}
+                style={{ height: ROW_HEIGHT - 8, gap: 0, marginBottom: 8, backgroundColor: "#171B23", borderRadius: 16, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", overflow: "hidden" }}
               >
                 <Image
                   source={{ uri: exerciseCatalogImageUri(item, "male") }}
@@ -241,7 +197,7 @@ export function ExerciseCatalogBrowser({
                   </Text>
                 </View>
                 <Feather name={mode === "select" ? "plus" : "chevron-right"} size={20} color={mobileTheme.color.brandPrimary} style={{ marginRight: 14 }} />
-              </Pressable>
+              </ItemRow>
             )}
           />
         )}

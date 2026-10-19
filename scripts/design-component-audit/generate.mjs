@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { readFile, readdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
@@ -13,6 +14,8 @@ for (const screen of inventory.screens) {
   assert.equal(meta.height, inventory.viewport.height, screen.id);
 }
 
+// Code review is a historical snapshot; later implementation must not invalidate its sources.
+const reviewedSources = new Map();
 for (const [id, proposal] of Object.entries(inventory.proposals)) {
   assert.ok(["Base", "Composición", "Por validar"].includes(proposal.level), id);
   for (const key of ["name", "common", "variants", "boundary"]) assert.ok(proposal[key]?.trim(), `${id}: ${key}`);
@@ -23,9 +26,20 @@ for (const [id, proposal] of Object.entries(inventory.proposals)) {
   assert.ok(review.references.length > 0, `Sin referencias: ${id}`);
   for (const reference of review.references) {
     assert.ok(reference.path.startsWith("apps/mobile/") && reference.path.endsWith(".tsx"), id);
-    const source = await readFile(new URL(`../../${reference.path}`, import.meta.url), "utf8");
+    if (!reviewedSources.has(reference.path)) {
+      reviewedSources.set(reference.path, execFileSync("git", ["show", `${inventory.codeAudit.sourceCommit}:${reference.path}`], { cwd: fileURLToPath(new URL("../../", import.meta.url)), encoding: "utf8" }));
+    }
+    const source = reviewedSources.get(reference.path);
     assert.ok(Number.isInteger(reference.line) && reference.line > 0, id);
     assert.ok(source.split("\n")[reference.line - 1]?.includes(reference.anchor), `Referencia desactualizada: ${id} → ${reference.path}:${reference.line}`);
+  }
+  if (proposal.implementation) {
+    assert.equal(review.decision, "Adaptar", id);
+    assert.equal(proposal.implementation.status, "Unificado", id);
+    for (const path of [...proposal.implementation.components, ...proposal.implementation.uses]) {
+      assert.ok(path.startsWith("apps/mobile/"), id);
+      await readFile(new URL(`../../${path}`, import.meta.url), "utf8");
+    }
   }
   assert.ok(!("source" in proposal) && !("status" in proposal), `Las referencias de implementación deben estar en codeReview: ${id}`);
   const evidence = inventory.screens.flatMap((screen) => screen.regions.filter((region) => region.proposal === id));
@@ -56,7 +70,9 @@ const report = [
   "",
   "Trabajo de GYM-8 (ticket para unificar componentes repetidos de la interfaz).",
   "",
-  `Revisión de lectura del ${inventory.codeAudit.reviewedAt}, sobre el código de \`${inventory.codeAudit.sourceCommit}\`. **No se ha modificado la app ni implementado ninguna extracción.**`,
+  `Revisión de lectura del ${inventory.codeAudit.reviewedAt}, sobre el código de \`${inventory.codeAudit.sourceCommit}\`. **Esta revisión fue de solo lectura.**`,
+  "",
+  "La implementación posterior de las 12 familias adaptables se documenta por separado en [implementation.md](implementation.md). Las referencias de este informe siguen apuntando al código original revisado, no a las líneas después de la extracción.",
   "",
   "La propuesta visual se conserva. Esta segunda fase contrasta sus 29 candidatos con los componentes y el JSX actuales; el parecido visual no obliga a unificar contratos de negocio.",
   "",
@@ -88,7 +104,7 @@ const report = [
   "2. Composiciones con contratos que acordar: filas, tarjetas de rutina, selectores, opciones, mensajes, compositor, nutrición, estados vacíos, menús y metadatos.",
   "3. Evaluar el beneficio antes de extraer: marcos de registros, formularios y secciones, filas etiqueta/valor y filas de series. Mantener navegación, pie legal y avisos semánticos existentes.",
   "",
-  "Este orden no autoriza la implementación. Las adaptaciones de avisos, formularios y diálogos deben preservar reglas sanitarias, permisos, validación, cifrado y comportamiento nativo/web en sus propietarios. SwipeableSetRow es un contenedor de gesto, no una fila de serie completa; SharedChatPanel incluye conversación y entrada, no un compositor aislado.",
+  "Este orden describe la recomendación original; la fase posterior autorizada abarca solo las 12 familias adaptables. Las adaptaciones de avisos, formularios y diálogos deben preservar reglas sanitarias, permisos, validación, cifrado y comportamiento nativo/web en sus propietarios. SwipeableSetRow es un contenedor de gesto, no una fila de serie completa; SharedChatPanel incluye conversación y entrada, no un compositor aislado.",
   "",
   "El menú contextual conserva un único ejemplo fotográfico. El código demuestra una segunda implementación en Rutinas; todavía conviene capturar esa variante para comparar su presentación antes de unificarlos.",
   "",
@@ -96,7 +112,7 @@ const report = [
   "",
   "- Las 29 decisiones tienen referencias con fichero, símbolo o región JSX, línea y ancla comprobadas por el generador.",
   "- Los 54 originales y las 208 zonas de evidencia visual permanecen intactos.",
-  "- No cambia ningún archivo de apps/mobile ni la política de límites arquitectónicos.",
+  "- La revisión original no cambió apps/mobile. La implementación posterior tiene su propio alcance y validación en implementation.md.",
   "- Esta revisión no ejecuta una migración ni demuestra todavía equivalencia visual o funcional de una futura extracción.",
   "",
   "Documento generado desde inventory.json por scripts/design-component-audit/generate.mjs.",

@@ -1,0 +1,80 @@
+{
+  "coach": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "diet": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "diet-settings": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "estimator": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "foods": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "home": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "measurement-form": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "measurement-records": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "measures": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "memory": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "notifications": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "personal-food-assistant": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  },
+  "provider": {
+    "changedPixels": 0,
+    "significantContentPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 329160
+  }
+}

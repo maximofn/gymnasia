@@ -2796,7 +2796,7 @@
   ],
   "analysis": {
     "basis": "Solo capturas: patrones visuales y repeticiones observables; sin inspección del código para seleccionar candidatos.",
-    "implementationReview": "Revisión de código completada: Reutilizar, Adaptar o Crear. No se ha implementado ninguna propuesta.",
+    "implementationReview": "La revisión histórica clasifica 2 reutilizar, 12 adaptar y 15 crear. En esta fase se han unificado solo las 12 familias adaptables; las otras propuestas siguen fuera del alcance.",
     "annotationScope": "Ejemplos representativos visibles, no censo exhaustivo de todas las apariciones.",
     "proposalMeaning": "Nombre orientativo de una posible abstracción, no componente implementado ni decisión técnica final."
   },
@@ -2837,6 +2837,18 @@
             "anchor": "function SecondaryButton({",
             "symbol": "SecondaryButton"
           }
+        ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/Button.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/HomeScreen.tsx",
+          "apps/mobile/screens/SharedChatPanel.tsx",
+          "apps/mobile/screens/TrainingScreen.tsx",
+          "apps/mobile/screens/DietOverlays.tsx"
         ]
       }
     },
@@ -2898,6 +2910,20 @@
             "symbol": "MacroNumberInput"
           }
         ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/TextField.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/SettingsScreen.tsx",
+          "apps/mobile/screens/MeasurementsScreen.tsx",
+          "apps/mobile/screens/DietOverlays.tsx",
+          "apps/mobile/screens/ChatScreen.tsx",
+          "apps/mobile/screens/SharedChatPanel.tsx",
+          "apps/mobile/screens/PersonalFoodAssistantScreen.tsx"
+        ]
       }
     },
     "search-field": {
@@ -2931,6 +2957,17 @@
             "symbol": "JSX: búsqueda de comida"
           }
         ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/SearchField.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/SettingsScreen.tsx",
+          "apps/mobile/screens/DietScreen.tsx",
+          "apps/mobile/catalogs/ExerciseCatalogBrowser.tsx"
+        ]
       }
     },
     "choice-chip": {
@@ -2963,6 +3000,18 @@
             "anchor": "export function AiResponseReportModal",
             "symbol": "AiResponseReportModal"
           }
+        ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/ChoiceChip.tsx",
+          "apps/mobile/components/ChoiceRow.tsx",
+          "apps/mobile/components/OptionChips.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/SettingsScreen.tsx",
+          "apps/mobile/screens/TrainingOverlays.tsx"
         ]
       }
     },
@@ -3090,6 +3139,16 @@
             "symbol": "StatCard de Medidas"
           }
         ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/StatCard.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/HomeScreen.tsx",
+          "apps/mobile/screens/MeasurementsScreen.tsx"
+        ]
       }
     },
     "chart-panel": {
@@ -3122,6 +3181,16 @@
             "anchor": "function MeasurementsChartPlot({",
             "symbol": "MeasurementsChartPlot"
           }
+        ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/ChartCard.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/MeasurementsScreen.tsx",
+          "apps/mobile/screens/TrainingScreen.tsx"
         ]
       }
     },
@@ -3195,6 +3264,17 @@
             "symbol": "DietItemThumbnail"
           }
         ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/Thumbnail.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/DietScreen.tsx",
+          "apps/mobile/screens/DietOverlays.tsx",
+          "apps/mobile/screens/SettingsScreen.tsx"
+        ]
       }
     },
     "item-row": {
@@ -3227,6 +3307,17 @@
             "anchor": "const menuOpen = model.itemMenu",
             "symbol": "JSX: fila de alimento registrado"
           }
+        ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/ItemRow.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/DietScreen.tsx",
+          "apps/mobile/screens/SettingsScreen.tsx",
+          "apps/mobile/catalogs/ExerciseCatalogBrowser.tsx"
         ]
       }
     },
@@ -3281,6 +3372,16 @@
             "anchor": "model.measurements.map((measurement, index)",
             "symbol": "JSX: registros de medidas"
           }
+        ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/RecordCard.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/TrainingScreen.tsx",
+          "apps/mobile/screens/SettingsScreen.tsx"
         ]
       }
     },
@@ -3381,6 +3482,18 @@
             "symbol": "PolicyStatusCard"
           }
         ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/NoticeFrame.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/SettingsScreen.tsx",
+          "apps/mobile/AiIdentityDisclosure.tsx",
+          "apps/mobile/HealthSafetyNotice.tsx",
+          "apps/mobile/catalogs/CatalogStatusNotice.tsx"
+        ]
       }
     },
     "message": {
@@ -3453,6 +3566,17 @@
             "symbol": "JSX: compositor del asistente personal"
           }
         ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/ChatComposer.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/ChatScreen.tsx",
+          "apps/mobile/screens/SharedChatPanel.tsx",
+          "apps/mobile/screens/PersonalFoodAssistantScreen.tsx"
+        ]
       }
     },
     "toggle-row": {
@@ -3485,6 +3609,15 @@
             "anchor": "testID=\"health-safety-consent-switch\"",
             "symbol": "JSX: interruptor sanitario"
           }
+        ]
+      },
+      "implementation": {
+        "status": "Unificado",
+        "components": [
+          "apps/mobile/components/ToggleField.tsx"
+        ],
+        "uses": [
+          "apps/mobile/screens/SettingsScreen.tsx"
         ]
       }
     },
@@ -3744,5 +3877,11 @@
       "Adaptar": 12,
       "Crear": 15
     }
+  },
+  "implementation": {
+    "scope": "12 familias clasificadas como Adaptar",
+    "report": "implementation.md",
+    "status": "Validado en web: 13 comparaciones visuales y E2E de shell, Dieta, catálogos, Entreno, Coach, preferencias y consentimiento sanitario",
+    "nativeValidation": "Teclado y foco nativos de Android/iOS pendientes; no se ha generado una build."
   }
 }

@@ -5,6 +5,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 ## Estructura
 
 - `apps/mobile`: App Expo React Native y web (unica aplicacion)
+- `apps/mobile/components`: Bases visuales de las 12 familias adaptables; alcance y QA en [`docs/design/component-audit/implementation.md`](docs/design/component-audit/implementation.md)
 - `apps/mobile/controllers`: Estado y acciones memorizadas por flujo; adaptan los dominios a las pantallas
 - `apps/mobile/screens`: Pantallas y superposiciones React Native sin acceso directo a servicios Expo
 - `apps/mobile/platform`: Puertos tipados e implementaciones Expo de almacenamiento, red, multimedia y APIs nativas
@@ -26,7 +27,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `scripts/policy-promotion/`: Firma Ed25519, contratos, promoción y preparación de snapshots por canal
 - `scripts/store-listing/`: Generación y validación de la ficha y los recursos para Google Play
 - `docs/`: Documentacion del proyecto (arquitectura, diseno, specs, roadmap)
-- [`docs/design/component-audit/`](docs/design/component-audit/README.md): Analisis de 54 capturas y 29 propuestas de componentes clasificadas en el codigo, sin modificar la app
+- [`docs/design/component-audit/`](docs/design/component-audit/README.md): Analisis de 54 capturas y 29 propuestas de componentes clasificadas en el codigo, con unificacion de las 12 familias adaptables
 
 ## Arranque rapido
 

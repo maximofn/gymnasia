@@ -5,7 +5,8 @@ Esta entrega conserva el **análisis visual previo a la implementación** y aña
 una revisión del código de sus 29 candidatos: **2 para reutilizar, 12 para adaptar
 y 15 abstracciones por crear**. Las decisiones, su justificación y sus referencias
 están en [code-review.md](code-review.md) y en la galería. No se ha modificado la
-app. «Crear» significa extraer una abstracción desde JSX existente, no añadir un
+app durante esa revisión. La fase posterior unifica las 12 familias adaptables;
+ver [implementation.md](implementation.md). «Crear» significa extraer una abstracción desde JSX existente, no añadir un
 comportamiento nuevo. La repetición visual por sí sola no demuestra código duplicado.
 
 ## Cómo revisar la galería
@@ -88,7 +89,10 @@ lo visible: por ejemplo, la captura denominada `46-dieta-error-fecha` no contien
 un mensaje de error, y no se usa como evidencia de ese estado. La captura de macros
 contiene campos numéricos, no un control de incremento/decremento.
 
-## Qué queda para la fase de implementación
+## Pasos para futuras extracciones
+
+Las doce adaptaciones autorizadas se documentan en `implementation.md`. Para el
+resto de propuestas:
 
 1. Revisar las decisiones y los límites de [code-review.md](code-review.md). La
    revisión de lectura ya está completa; acordar cuáles llevar a implementación.
@@ -97,9 +101,9 @@ contiene campos numéricos, no un control de incremento/decremento.
 3. Implementar solo las extracciones acordadas y verificar cada sustitución con
    las pruebas y la QA visual apropiadas.
 
-La refactorización que se había adelantado durante esta tarea se ha retirado de
-la propuesta. El diff final respecto al punto de partida conserva el inventario,
-las imágenes, la revisión del código y las herramientas del análisis; no cambia la implementación móvil.
+El análisis y la revisión originales se conservan como evidencia. La fase posterior
+implementa solo las 12 familias adaptables; su alcance y pruebas figuran en
+[implementation.md](implementation.md).
 
 La web permite revisar la composición visible. No demuestra teclado nativo,
 permisos, notificaciones, segundo plano ni almacenamiento seguro. Recuperación,
@@ -118,7 +122,8 @@ incrusta el inventario y verifica dimensiones, cobertura de imágenes, referenci
 entre propuestas y zonas, límites geométricos y evidencia de repetición. La
 selección visual de candidatos se conserva independiente del código. Para esta
 segunda fase comprueba que cada referencia de código coincide con la línea y
-el ancla documentadas, y genera también `code-review.md` desde el inventario.
+el ancla del snapshot revisado, y genera también `code-review.md` desde el
+inventario. Las nuevas bases compartidas se comprueban en el árbol actual.
 
 La comprobación del DOM verifica las parejas, las marcas, las leyendas, los
 filtros, las tres decisiones, los enlaces de fuentes, la vista de patrones,

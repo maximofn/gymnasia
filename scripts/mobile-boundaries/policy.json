@@ -17,7 +17,7 @@
     { "id": "screens", "paths": ["screens/"] },
     { "id": "platform", "paths": ["platform/"] },
     { "id": "shell", "paths": ["shell/"] },
-    { "id": "ui", "paths": ["AiIdentityDisclosure.tsx", "AiResponseReportModal.tsx", "FeedbackProposalBanner.tsx", "HealthSafetyNotice.tsx", "LegalFooter.tsx", "LocalStoreRecoveryScreen.tsx"] },
+    { "id": "ui", "paths": ["components/", "AiIdentityDisclosure.tsx", "AiResponseReportModal.tsx", "FeedbackProposalBanner.tsx", "HealthSafetyNotice.tsx", "LegalFooter.tsx", "LocalStoreRecoveryScreen.tsx"] },
     { "id": "agent", "paths": ["agent/"] },
     { "id": "training", "paths": ["training/"] },
     { "id": "diet", "paths": ["diet/"] },
@@ -39,7 +39,7 @@
     "diet": ["catalogs", "shared"],
     "measurements": ["shared"],
     "persistence": ["agent", "catalogs", "diet", "measurements", "shared", "training"],
-    "catalogs": ["shared"],
+    "catalogs": ["shared", "ui"],
     "shared": ["agent"]
   },
   "publicEntries": {

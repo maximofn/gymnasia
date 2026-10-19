@@ -1,3 +1,4 @@
+import { NoticeFrame } from "./components/NoticeFrame";
 import { Feather } from "@expo/vector-icons";
 import { useEffect } from "react";
 import { AccessibilityInfo, Platform, Text, View } from "react-native";
@@ -24,25 +25,14 @@ export function AiIdentityDisclosure({ surface }: AiIdentityDisclosureProps) {
   }, [copy.disclosureAccessibilityLabel]);
 
   return (
-    <View
+    <NoticeFrame
       accessible
       accessibilityLabel={copy.disclosureAccessibilityLabel}
       accessibilityLiveRegion="polite"
       accessibilityRole="text"
       importantForAccessibility="yes"
       testID={`ai-identity-disclosure-${surface}`}
-      style={{
-        width: "100%",
-        flexDirection: "row",
-        alignItems: "flex-start",
-        gap: 10,
-        borderWidth: 1,
-        borderColor: "rgba(203,255,26,0.36)",
-        borderRadius: mobileTheme.radius.md,
-        backgroundColor: "rgba(203,255,26,0.07)",
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-      }}
+      style={{ width: "100%", flexDirection: "row", alignItems: "flex-start", gap: 10, borderColor: "rgba(203,255,26,0.36)", backgroundColor: "rgba(203,255,26,0.07)", paddingHorizontal: 12, paddingVertical: 10 }}
     >
       <View
         style={{
@@ -78,7 +68,7 @@ export function AiIdentityDisclosure({ surface }: AiIdentityDisclosureProps) {
           {copy.disclosureBody}
         </Text>
       </View>
-    </View>
+    </NoticeFrame>
   );
 }
 
