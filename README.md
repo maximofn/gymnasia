@@ -26,7 +26,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `scripts/policy-promotion/`: Firma Ed25519, contratos, promoción y preparación de snapshots por canal
 - `scripts/store-listing/`: Generación y validación de la ficha y los recursos para Google Play
 - `docs/`: Documentacion del proyecto (arquitectura, diseno, specs, roadmap)
-- [`docs/design/component-audit/`](docs/design/component-audit/README.md): Analisis de 54 capturas y propuestas visuales de componentes, pendientes de revisar en el codigo
+- [`docs/design/component-audit/`](docs/design/component-audit/README.md): Analisis de 54 capturas y 29 propuestas de componentes clasificadas en el codigo, sin modificar la app
 
 ## Arranque rapido
 

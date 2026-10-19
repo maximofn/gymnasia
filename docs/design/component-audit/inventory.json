@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "capturedAt": "2026-10-19",
   "source": "https://gymnasia.maximofn.com/",
   "publishedVersion": "1.52.1",
@@ -2796,7 +2796,7 @@
   ],
   "analysis": {
     "basis": "Solo capturas: patrones visuales y repeticiones observables; sin inspección del código para seleccionar candidatos.",
-    "implementationReview": "Pendiente: comprobar después si existe cada abstracción, si se adapta o si hay que crearla.",
+    "implementationReview": "Revisión de código completada: Reutilizar, Adaptar o Crear. No se ha implementado ninguna propuesta.",
     "annotationScope": "Ejemplos representativos visibles, no censo exhaustivo de todas las apariciones.",
     "proposalMeaning": "Nombre orientativo de una posible abstracción, no componente implementado ni decisión técnica final."
   },
@@ -2807,7 +2807,38 @@
       "common": "Texto, icono opcional, superficie, borde y estados de interacción.",
       "variants": "Principal lima; secundario oscuro; contorno; discreto; destructivo; desactivado; ancho completo o ajustado.",
       "boundary": "La acción, las confirmaciones y los permisos pertenecen a cada flujo.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "Hay PrimaryButton locales en Inicio y SharedChatPanel, TrainingPrimaryButton en Entreno y SecondaryButton en Dieta. Sus contratos y tamaños difieren; no hay un botón de aplicación con todas las variantes propuestas.",
+        "nextStep": "Consolidar estos helpers en una base con variante, tamaño, icono, estado desactivado, identificador y estilo; conservar las acciones fuera.",
+        "priority": 1,
+        "references": [
+          {
+            "path": "apps/mobile/screens/HomeScreen.tsx",
+            "line": 8,
+            "anchor": "function PrimaryButton({",
+            "symbol": "PrimaryButton"
+          },
+          {
+            "path": "apps/mobile/screens/SharedChatPanel.tsx",
+            "line": 25,
+            "anchor": "function PrimaryButton({",
+            "symbol": "PrimaryButton"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 1008,
+            "anchor": "function TrainingPrimaryButton({",
+            "symbol": "TrainingPrimaryButton"
+          },
+          {
+            "path": "apps/mobile/screens/DietOverlays.tsx",
+            "line": 149,
+            "anchor": "function SecondaryButton({",
+            "symbol": "SecondaryButton"
+          }
+        ]
+      }
     },
     "icon-button": {
       "name": "Botón de icono",
@@ -2815,7 +2846,26 @@
       "common": "Área pulsable compacta con un icono y nombre accesible.",
       "variants": "Circular o cuadrado; añadir; cerrar; volver; ejecutar; acción destructiva.",
       "boundary": "La forma visual se comparte; el significado y la etiqueta accesible cambian.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "Volver, cerrar, menú y ejecutar se dibujan con Pressable e iconos dentro de cada pantalla. No hay un IconButton de aplicación.",
+        "nextStep": "Extraer una unidad visual con etiqueta accesible, tamaño táctil, icono y tono; no trasladar handlers de dominio.",
+        "priority": 1,
+        "references": [
+          {
+            "path": "apps/mobile/screens/CatalogOverlays.tsx",
+            "line": 26,
+            "anchor": "testID=\"exercise-detail-close\"",
+            "symbol": "JSX: cerrar ficha"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 34,
+            "anchor": "testID=\"training-global-history-back\"",
+            "symbol": "JSX: volver al historial"
+          }
+        ]
+      }
     },
     "text-field": {
       "name": "Campo de formulario",
@@ -2823,7 +2873,32 @@
       "common": "Entrada con borde, valor o placeholder y etiqueta opcional.",
       "variants": "Texto; número; fecha; contraseña; multilínea; etiqueta encima o al lado.",
       "boundary": "No unir validaciones de peso, alimentos, contraseñas y denuncias. El ejemplo de macros es un campo numérico, no un stepper.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "MemoryInput es un campo local ya parametrizado. Los formularios de medidas y alimentos repiten TextInput con variantes adicionales que ese helper aún no admite.",
+        "nextStep": "Usar MemoryInput como base visual, ampliar props nativas y referencia, y separar etiqueta/ayuda de validación. MacroNumberInput conserva aparte su incremento numérico.",
+        "priority": 1,
+        "references": [
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 1559,
+            "anchor": "function MemoryInput({",
+            "symbol": "MemoryInput"
+          },
+          {
+            "path": "apps/mobile/screens/MeasurementsScreen.tsx",
+            "line": 624,
+            "anchor": "testID=\"measurement-weight-input\"",
+            "symbol": "JSX: peso"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 1754,
+            "anchor": "function MacroNumberInput({",
+            "symbol": "MacroNumberInput"
+          }
+        ]
+      }
     },
     "search-field": {
       "name": "Buscador",
@@ -2831,7 +2906,32 @@
       "common": "Entrada de búsqueda con lupa y acción opcional de limpiar.",
       "variants": "Rutinas; ejercicios; alimentos; productos; alimentos personales.",
       "boundary": "El filtrado y las fuentes de resultados son responsabilidad de cada pantalla.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "CatalogSearch ya recibe valor, callback y placeholder y se reutiliza en alimentos y productos de Ajustes. Rutinas, ejercicios y Dieta tienen otros buscadores en JSX.",
+        "nextStep": "Promover CatalogSearch a pieza compartida con variantes de altura y fondo, acción de limpiar y props de foco/accesibilidad.",
+        "priority": 1,
+        "references": [
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 2000,
+            "anchor": "function CatalogSearch({",
+            "symbol": "CatalogSearch"
+          },
+          {
+            "path": "apps/mobile/catalogs/ExerciseCatalogBrowser.tsx",
+            "line": 121,
+            "anchor": "placeholder=\"Buscar por nombre o músculo...\"",
+            "symbol": "JSX: búsqueda del catálogo"
+          },
+          {
+            "path": "apps/mobile/screens/DietScreen.tsx",
+            "line": 303,
+            "anchor": "placeholder=\"Buscar alimento...\"",
+            "symbol": "JSX: búsqueda de comida"
+          }
+        ]
+      }
     },
     "choice-chip": {
       "name": "Opción seleccionable",
@@ -2839,7 +2939,32 @@
       "common": "Opción compacta con texto o icono y estado seleccionado.",
       "variants": "Filtro; selección única; selección múltiple; motivo de denuncia; icono sin texto.",
       "boundary": "Mantener distintas las reglas de selección única, múltiple y navegación.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "OptionChips y ChoiceRow ya encapsulan grupos de opciones. Dibujan cada chip internamente y usan contratos distintos para selección múltiple y única.",
+        "nextStep": "Extraer su unidad visual común y conservar adaptadores separados para selección única y múltiple, filtros y motivos de denuncia.",
+        "priority": 1,
+        "references": [
+          {
+            "path": "apps/mobile/screens/TrainingOverlays.tsx",
+            "line": 231,
+            "anchor": "function OptionChips({",
+            "symbol": "OptionChips"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 1741,
+            "anchor": "function ChoiceRow<",
+            "symbol": "ChoiceRow"
+          },
+          {
+            "path": "apps/mobile/AiResponseReportModal.tsx",
+            "line": 91,
+            "anchor": "export function AiResponseReportModal",
+            "symbol": "AiResponseReportModal"
+          }
+        ]
+      }
     },
     "tab-bar": {
       "name": "Navegación por pestañas",
@@ -2847,7 +2972,38 @@
       "common": "Grupo de destinos con una pestaña activa destacada.",
       "variants": "Navegación principal con icono de ajustes; secciones de Configuración desplazables.",
       "boundary": "Compartir presentación y accesibilidad; cada nivel conserva sus destinos y navegación.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Reutilizar",
+        "summary": "La navegación principal está centralizada en AppHeader y DesktopSidebar; las secciones de Ajustes en SettingsTabs. Ya se consumen desde la composición de App.",
+        "nextStep": "Conservar esos componentes y sus dos niveles de navegación; no crear una barra universal para sustituirlos solo por su parecido.",
+        "priority": 3,
+        "references": [
+          {
+            "path": "apps/mobile/screens/AppShell.tsx",
+            "line": 71,
+            "anchor": "export const AppHeader",
+            "symbol": "AppHeader"
+          },
+          {
+            "path": "apps/mobile/screens/AppShell.tsx",
+            "line": 16,
+            "anchor": "export const DesktopSidebar",
+            "symbol": "DesktopSidebar"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 58,
+            "anchor": "export const SettingsTabs",
+            "symbol": "SettingsTabs"
+          },
+          {
+            "path": "apps/mobile/App.tsx",
+            "line": 8910,
+            "anchor": "<SettingsTabs model=",
+            "symbol": "Uso de SettingsTabs"
+          }
+        ]
+      }
     },
     "select-field": {
       "name": "Selector desplegable",
@@ -2855,7 +3011,26 @@
       "common": "Valor seleccionado y flecha que abre una lista.",
       "variants": "Métrica; periodo; proveedor IA; fecha que despliega una entrada.",
       "boundary": "No convertir todos los selectores en el mismo flujo: fecha, proveedor y gráfica tienen contratos distintos.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "Los selectores de métrica/periodo y de proveedor son Pressable con flecha y listas definidos en sus pantallas. No hay un disparador visual compartido.",
+        "nextStep": "Crear solo la presentación del valor y la flecha; mantener la apertura, las fechas, los proveedores y el orden de capas en sus propietarios.",
+        "priority": 2,
+        "references": [
+          {
+            "path": "apps/mobile/screens/MeasurementsScreen.tsx",
+            "line": 336,
+            "anchor": "testID=\"measures-chart-metric-current\"",
+            "symbol": "JSX: selector de métrica"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 2250,
+            "anchor": "{selectedLabel}",
+            "symbol": "JSX: valor del selector de proveedor"
+          }
+        ]
+      }
     },
     "option-row": {
       "name": "Fila de opción",
@@ -2863,7 +3038,32 @@
       "common": "Texto de opción, icono opcional y marca de selección.",
       "variants": "Tipos de serie; proveedores; tonos de notificación; métricas.",
       "boundary": "La lista puede desplazarse o vivir en un menú; el valor y los efectos siguen fuera de la fila.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "Las opciones de métrica, tipo de serie y proveedor se construyen con map y Pressable en lugares distintos. No hay una fila seleccionable común.",
+        "nextStep": "Crear una fila controlada con etiqueta, icono opcional, seleccionado/desactivado y acción; sin asumir cómo se guarda el valor.",
+        "priority": 2,
+        "references": [
+          {
+            "path": "apps/mobile/screens/MeasurementsScreen.tsx",
+            "line": 369,
+            "anchor": "testID={`measures-chart-metric-option-",
+            "symbol": "JSX: opción de métrica"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingOverlays.tsx",
+            "line": 212,
+            "anchor": "testID={`training-series-type-option-",
+            "symbol": "JSX: opción de tipo de serie"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 2268,
+            "anchor": "const isSelected = dropdown.value === provider",
+            "symbol": "JSX: opción de proveedor"
+          }
+        ]
+      }
     },
     "stat-card": {
       "name": "Tarjeta de métrica",
@@ -2871,7 +3071,26 @@
       "common": "Etiqueta, valor destacado y texto auxiliar o variación.",
       "variants": "Calorías; peso; racha; contornos; sin datos.",
       "boundary": "La tarjeta presenta valores: unidades, tendencias y cálculos no se mezclan.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "Hay dos funciones locales llamadas StatCard: una en Inicio y otra en Medidas. Comparten contenedor y tipografía; difieren en icono de cabecera y subtítulo.",
+        "nextStep": "Unificar las dos bases con icono principal y auxiliar opcionales, valor, subtítulo y variación; no mover cálculos al componente.",
+        "priority": 1,
+        "references": [
+          {
+            "path": "apps/mobile/screens/HomeScreen.tsx",
+            "line": 41,
+            "anchor": "function StatCard({",
+            "symbol": "StatCard de Inicio"
+          },
+          {
+            "path": "apps/mobile/screens/MeasurementsScreen.tsx",
+            "line": 17,
+            "anchor": "function StatCard({",
+            "symbol": "StatCard de Medidas"
+          }
+        ]
+      }
     },
     "chart-panel": {
       "name": "Panel de gráfica",
@@ -2879,7 +3098,32 @@
       "common": "Contenedor con título, selectores y espacio para una gráfica.",
       "variants": "Estadísticas de rutina y medidas corporales.",
       "boundary": "Compartir el marco y los controles; el trazado y las series de datos pueden ser distintos.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "ChartCard de Medidas y TrainingChartCard ya reciben título, selector, children y zIndex. Sus estructuras son prácticamente equivalentes.",
+        "nextStep": "Compartir el marco y los slots de cabecera/cuerpo. Mantener MeasurementsChartPlot y el gráfico de entrenamiento independientes.",
+        "priority": 1,
+        "references": [
+          {
+            "path": "apps/mobile/screens/MeasurementsScreen.tsx",
+            "line": 60,
+            "anchor": "function ChartCard({",
+            "symbol": "ChartCard"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 986,
+            "anchor": "function TrainingChartCard({",
+            "symbol": "TrainingChartCard"
+          },
+          {
+            "path": "apps/mobile/screens/MeasurementsScreen.tsx",
+            "line": 112,
+            "anchor": "function MeasurementsChartPlot({",
+            "symbol": "MeasurementsChartPlot"
+          }
+        ]
+      }
     },
     "progress-bar": {
       "name": "Barra de progreso",
@@ -2887,7 +3131,32 @@
       "common": "Pista y relleno que representan un avance.",
       "variants": "Progreso del entrenamiento; cuenta de descanso; colores lima y azul.",
       "boundary": "El temporizador y la reconciliación en segundo plano quedan fuera del elemento visual.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "Las barras son pares de View con ancho porcentual dentro de la sesión y la minibarra. No se encontró un componente de barra separado.",
+        "nextStep": "Crear una pieza de presentación con progreso, alto, tono y accesibilidad; conservar reloj y sincronización de descanso en el dominio.",
+        "priority": 1,
+        "references": [
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 2715,
+            "anchor": "width: `${activeSessionProgressPercent}%`",
+            "symbol": "JSX: avance global"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 3521,
+            "anchor": "width: `${Math.round(activeSessionRestProgressRatio * 100)}%`",
+            "symbol": "JSX: descanso"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingOverlays.tsx",
+            "line": 60,
+            "anchor": "width: `${model.progressPercent}%`",
+            "symbol": "JSX: minibarra"
+          }
+        ]
+      }
     },
     "thumbnail": {
       "name": "Miniatura",
@@ -2895,7 +3164,38 @@
       "common": "Imagen o alternativa visual dentro de un marco compacto.",
       "variants": "Ejercicio; alimento; icono alternativo; tamaños compactos o grandes.",
       "boundary": "Las imágenes, las proporciones y la política de carga se deciden por uso.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "FoodThumbnail y DietItemThumbnail se repiten en DietScreen y DietOverlays. SettingsFoodThumbnail resuelve otro fallback; las imágenes de ejercicios están inline.",
+        "nextStep": "Consolidar el soporte de imagen/tamaño/error y dejar wrappers por dominio para URI, emoji, punto o icono alternativo.",
+        "priority": 1,
+        "references": [
+          {
+            "path": "apps/mobile/screens/DietScreen.tsx",
+            "line": 196,
+            "anchor": "function FoodThumbnail({",
+            "symbol": "FoodThumbnail de Dieta"
+          },
+          {
+            "path": "apps/mobile/screens/DietOverlays.tsx",
+            "line": 163,
+            "anchor": "function FoodThumbnail({",
+            "symbol": "FoodThumbnail de superposiciones"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 2023,
+            "anchor": "function SettingsFoodThumbnail({",
+            "symbol": "SettingsFoodThumbnail"
+          },
+          {
+            "path": "apps/mobile/screens/DietScreen.tsx",
+            "line": 188,
+            "anchor": "function DietItemThumbnail({",
+            "symbol": "DietItemThumbnail"
+          }
+        ]
+      }
     },
     "item-row": {
       "name": "Fila con imagen y metadatos",
@@ -2903,7 +3203,32 @@
       "common": "Miniatura a la izquierda, título y texto secundario; acción al final.",
       "variants": "Ejercicios de Inicio; catálogo de ejercicios; alimentos; alimento registrado.",
       "boundary": "Variantes con añadir, abrir o menú. No unificar los modelos de ejercicio y alimento.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "FoodCatalogRow ya se reutiliza en alimentos y productos de Ajustes, pero depende de FoodCatalogSettingsModel y del resumen nutricional. Ejercicios y comidas dibujan sus propias filas.",
+        "nextStep": "Extraer de FoodCatalogRow una disposición con zonas de imagen, título, subtítulo y acción; mantener wrappers para ejercicio y alimento y la virtualización del catálogo.",
+        "priority": 2,
+        "references": [
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 2010,
+            "anchor": "function FoodCatalogRow({",
+            "symbol": "FoodCatalogRow"
+          },
+          {
+            "path": "apps/mobile/catalogs/ExerciseCatalogBrowser.tsx",
+            "line": 214,
+            "anchor": "renderItem={({ item })",
+            "symbol": "JSX: fila virtualizada de ejercicio"
+          },
+          {
+            "path": "apps/mobile/screens/DietScreen.tsx",
+            "line": 258,
+            "anchor": "const menuOpen = model.itemMenu",
+            "symbol": "JSX: fila de alimento registrado"
+          }
+        ]
+      }
     },
     "workout-card": {
       "name": "Tarjeta de rutina",
@@ -2911,7 +3236,26 @@
       "common": "Identidad de la rutina, metadatos y acción principal.",
       "variants": "Destacada con imagen en Inicio; compacta y repetida en la lista de rutinas.",
       "boundary": "Componer miniatura, insignias y botón; imagen de cabecera y reordenación son opcionales.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "La tarjeta destacada vive dentro de HomeScreen y las tarjetas de lista en un map de TrainingListScreen. No hay una función WorkoutCard con variantes.",
+        "nextStep": "Crear una composición de identidad, metadatos y acción; distinguir destacada/lista y mantener menú y reordenación fuera de la base.",
+        "priority": 2,
+        "references": [
+          {
+            "path": "apps/mobile/screens/HomeScreen.tsx",
+            "line": 122,
+            "anchor": "model.featuredHeroImageUri ?",
+            "symbol": "JSX: rutina destacada"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 2291,
+            "anchor": "model.templates.map((tpl, tplIndex)",
+            "symbol": "JSX: tarjetas de rutinas"
+          }
+        ]
+      }
     },
     "record-card": {
       "name": "Tarjeta de registro",
@@ -2919,7 +3263,26 @@
       "common": "Fecha o título, resumen del registro y acciones opcionales.",
       "variants": "Historial de sesiones; mediciones guardadas; registro con o sin valores.",
       "boundary": "Los datos del historial son inmutables o editables según el flujo: no compartir esa lógica por el parecido.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "WorkoutHistoryEntryCard ya se comparte entre historial global y detalle de rutina. Las tarjetas de mediciones se generan aparte y no encajan en su contrato WorkoutSessionSummary.",
+        "nextStep": "Reutilizar la tarjeta actual para sesiones. Si compensa compartir el marco con medidas, extraer cabecera/resumen/acciones mediante composición sin convertir una medida en WorkoutSessionSummary.",
+        "priority": 3,
+        "references": [
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 53,
+            "anchor": "export function WorkoutHistoryEntryCard",
+            "symbol": "WorkoutHistoryEntryCard"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 1797,
+            "anchor": "model.measurements.map((measurement, index)",
+            "symbol": "JSX: registros de medidas"
+          }
+        ]
+      }
     },
     "key-value-row": {
       "name": "Fila de etiqueta y valor",
@@ -2927,7 +3290,26 @@
       "common": "Etiqueta secundaria y valor destacado alineados.",
       "variants": "Resumen de sesión; preferencias; fecha de última copia.",
       "boundary": "Solo presentación: cada dominio decide el formato y la unidad.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "Preferencias y resumen de sesión alinean etiqueta/valor dentro de bucles locales; no hay un helper para la fila.",
+        "nextStep": "Crear una fila ligera con etiqueta, valor y estilo opcional; considerar si el pequeño ahorro justifica la extracción.",
+        "priority": 3,
+        "references": [
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 958,
+            "anchor": "testID={`settings-preference-",
+            "symbol": "JSX: preferencia"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 85,
+            "anchor": "[[\"Duración\", formatClock",
+            "symbol": "JSX: resumen de sesión"
+          }
+        ]
+      }
     },
     "modal": {
       "name": "Diálogo",
@@ -2935,7 +3317,32 @@
       "common": "Superficie superpuesta con título, contenido y acciones.",
       "variants": "Confirmación; resumen; formulario de contraseña; ficha; selección de fecha; denuncia.",
       "boundary": "Compartir estructura, espaciado y accesibilidad. Borrado, cifrado, denuncia y manejo de Atrás conservan reglas propias.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "Existen diálogos completos de contraseña, denuncia y confirmaciones, pero no un contenedor común. PortablePasswordModal usa Modal nativo/SafeAreaView; otras capas usan View absoluto.",
+        "nextStep": "Crear un marco visual opcional y adaptadores por host. Mantener gestión nativa/web, foco, teclado, Atrás, capas y confirmaciones en sus propietarios; no sustituir todos los hosts por uno.",
+        "priority": 2,
+        "references": [
+          {
+            "path": "apps/mobile/backup/PortablePasswordModal.tsx",
+            "line": 29,
+            "anchor": "export function PortablePasswordModal",
+            "symbol": "PortablePasswordModal"
+          },
+          {
+            "path": "apps/mobile/AiResponseReportModal.tsx",
+            "line": 91,
+            "anchor": "export function AiResponseReportModal",
+            "symbol": "AiResponseReportModal"
+          },
+          {
+            "path": "apps/mobile/screens/DietOverlays.tsx",
+            "line": 112,
+            "anchor": "function DietCopyConfirmation({",
+            "symbol": "DietCopyConfirmation"
+          }
+        ]
+      }
     },
     "notice": {
       "name": "Aviso informativo",
@@ -2943,7 +3350,38 @@
       "common": "Icono o título, mensaje y tono visual identificable.",
       "variants": "Identidad IA; información; advertencia; error; cambios sin guardar; estado de política.",
       "boundary": "El contenido legal y sanitario mantiene su fuente y reglas; la propuesta solo afecta a su presentación.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "AiIdentityDisclosure, HealthSafetyNotice y CatalogStatusNotice ya son componentes compartidos. PolicyStatusCard y otros avisos aportan variantes locales; no hay un aviso genérico con todos los tonos.",
+        "nextStep": "Conservar wrappers semánticos y su texto/accesibilidad. Solo adaptar su soporte visual mediante un contenedor opcional si elimina repetición demostrada; no fundir sus contratos.",
+        "priority": 3,
+        "references": [
+          {
+            "path": "apps/mobile/AiIdentityDisclosure.tsx",
+            "line": 15,
+            "anchor": "export function AiIdentityDisclosure",
+            "symbol": "AiIdentityDisclosure"
+          },
+          {
+            "path": "apps/mobile/HealthSafetyNotice.tsx",
+            "line": 13,
+            "anchor": "export function HealthSafetyNotice",
+            "symbol": "HealthSafetyNotice"
+          },
+          {
+            "path": "apps/mobile/catalogs/CatalogStatusNotice.tsx",
+            "line": 25,
+            "anchor": "export function CatalogStatusNotice",
+            "symbol": "CatalogStatusNotice"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 504,
+            "anchor": "function PolicyStatusCard({",
+            "symbol": "PolicyStatusCard"
+          }
+        ]
+      }
     },
     "message": {
       "name": "Burbuja de conversación",
@@ -2951,7 +3389,32 @@
       "common": "Texto de mensaje con atribución y estilo según emisor.",
       "variants": "Asistente; usuario; bienvenida; respuesta; acción secundaria para denunciar.",
       "boundary": "Las propuestas de tools y confirmaciones requieren contenido especializado dentro de la burbuja.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "SharedChatPanel reutiliza una conversación completa, pero sus burbujas son JSX dentro de dos ramas. ChatScreen y PersonalFoodAssistantScreen también renderizan mensajes por su cuenta.",
+        "nextStep": "Extraer solo la burbuja de presentación con atribución, contenido y acciones opcionales. Mantener streaming, denuncias y mensajes sanitarios en wrappers específicos.",
+        "priority": 2,
+        "references": [
+          {
+            "path": "apps/mobile/screens/SharedChatPanel.tsx",
+            "line": 111,
+            "anchor": "{messages.map((msg)",
+            "symbol": "JSX: mensajes del panel"
+          },
+          {
+            "path": "apps/mobile/screens/ChatScreen.tsx",
+            "line": 47,
+            "anchor": "{model.messages.map((message)",
+            "symbol": "JSX: mensajes de Coach"
+          },
+          {
+            "path": "apps/mobile/screens/PersonalFoodAssistantScreen.tsx",
+            "line": 60,
+            "anchor": "{model.messages.map((message)",
+            "symbol": "JSX: mensajes del asistente personal"
+          }
+        ]
+      }
     },
     "composer": {
       "name": "Entrada de conversación",
@@ -2959,7 +3422,38 @@
       "common": "Campo de mensaje y acción de envío con estado ocupado.",
       "variants": "Coach en vertical; estimador en horizontal; asistente de alimentos con botón de icono.",
       "boundary": "Compartir composición y estados visibles; proveedor, adjuntos y streaming permanecen en su flujo.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "SharedChatPanel ya contiene las variantes de campo/envío horizontal y vertical, con callbacks controlados. El compositor no está separado y Coach y el asistente personal mantienen versiones propias.",
+        "nextStep": "Separar esa subpieza del panel y admitir distribución, etiqueta/icono y estado de envío; conservar selección de proveedor, adjuntos y envío real fuera.",
+        "priority": 2,
+        "references": [
+          {
+            "path": "apps/mobile/screens/SharedChatPanel.tsx",
+            "line": 50,
+            "anchor": "type SharedChatPanelProps",
+            "symbol": "Contrato del panel"
+          },
+          {
+            "path": "apps/mobile/screens/SharedChatPanel.tsx",
+            "line": 369,
+            "anchor": "flexDirection: \"row\", gap: 8, alignItems: \"flex-end\"",
+            "symbol": "JSX: compositor horizontal del panel"
+          },
+          {
+            "path": "apps/mobile/screens/ChatScreen.tsx",
+            "line": 140,
+            "anchor": "testID=\"chat-input\"",
+            "symbol": "JSX: compositor de Coach"
+          },
+          {
+            "path": "apps/mobile/screens/PersonalFoodAssistantScreen.tsx",
+            "line": 82,
+            "anchor": "testID=\"personal-food-assistant-input\"",
+            "symbol": "JSX: compositor del asistente personal"
+          }
+        ]
+      }
     },
     "toggle-row": {
       "name": "Fila con interruptor",
@@ -2967,7 +3461,32 @@
       "common": "Etiqueta, descripción opcional e interruptor con estado.",
       "variants": "Notificaciones; sonido; vibración; segunda opinión IA.",
       "boundary": "Los permisos del sistema y el consentimiento sanitario son independientes del control visual.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Adaptar",
+        "summary": "NotificationToggle ya tiene etiqueta, descripción, checked, disabled y onPress y se usa tres veces. El interruptor sanitario tiene otro layout y muestra estado textual.",
+        "nextStep": "Promover NotificationToggle con descripción opcional y variante de disposición; no incluir permisos ni consentimiento en el componente.",
+        "priority": 1,
+        "references": [
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 987,
+            "anchor": "function NotificationToggle({",
+            "symbol": "NotificationToggle"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 1182,
+            "anchor": "<NotificationToggle",
+            "symbol": "Usos del interruptor"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 2164,
+            "anchor": "testID=\"health-safety-consent-switch\"",
+            "symbol": "JSX: interruptor sanitario"
+          }
+        ]
+      }
     },
     "nutrient-values": {
       "name": "Grupo de valores nutricionales",
@@ -2975,7 +3494,32 @@
       "common": "Cantidad destacada, unidad y nombre de cada nutriente en una fila o rejilla.",
       "variants": "Resumen diario; porción; detalle por 100 g; fila de alimento registrado.",
       "boundary": "Los colores y la estructura pueden compartirse; cantidades, conversiones y objetivos se calculan fuera.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "FoodCatalogDetail ya es una ficha reutilizada en Ajustes, pero las celdas nutricionales son JSX de un map. DietHeader y la porción repiten otra presentación sin un grupo común.",
+        "nextStep": "Crear celdas/grupo para valores ya calculados, con variantes compacto/rejilla y unidad/base explícita; no extraer los cálculos de 100 g o ración desde la ficha.",
+        "priority": 2,
+        "references": [
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 2031,
+            "anchor": "function FoodCatalogDetail({",
+            "symbol": "FoodCatalogDetail: ficha, no grupo genérico"
+          },
+          {
+            "path": "apps/mobile/screens/DietScreen.tsx",
+            "line": 15,
+            "anchor": "export const DietHeader",
+            "symbol": "DietHeader"
+          },
+          {
+            "path": "apps/mobile/screens/DietScreen.tsx",
+            "line": 345,
+            "anchor": "model.selectedFoodPreview.calories",
+            "symbol": "JSX: valores de la porción"
+          }
+        ]
+      }
     },
     "form-panel": {
       "name": "Panel de formulario",
@@ -2983,7 +3527,32 @@
       "common": "Título, conjunto de campos, ayuda y acciones.",
       "variants": "Medidas; alimento personal; alimento manual; memoria.",
       "boundary": "Es una composición de campos y botones. No crear un formulario universal con todas las reglas de negocio.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "MemorySettingsPanel, el registro de medidas y el formulario personal son componentes de flujo. El marco con título, campos y acciones sigue integrado en ellos; no existe un panel de formulario vacío.",
+        "nextStep": "Crear como mucho un contenedor con slots de cabecera, cuerpo y acciones. Mantener formularios y validación específicos; no crear un schema universal de formulario.",
+        "priority": 3,
+        "references": [
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 1488,
+            "anchor": "export const MemorySettingsPanel",
+            "symbol": "MemorySettingsPanel"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 219,
+            "anchor": "shellSurfaceTestId(\"personal-food-form\")",
+            "symbol": "JSX: marco del alimento personal"
+          },
+          {
+            "path": "apps/mobile/screens/MeasurementsScreen.tsx",
+            "line": 529,
+            "anchor": "shellSurfaceTestId(\"measurement-entry\")",
+            "symbol": "JSX: registro de medidas"
+          }
+        ]
+      }
     },
     "set-row": {
       "name": "Fila de serie de ejercicio",
@@ -2991,7 +3560,32 @@
       "common": "Número, tipo, repeticiones, peso y dato de descanso o fin de bloque.",
       "variants": "Editor de rutina; sesión activa; serie pendiente o completada.",
       "boundary": "Candidato del dominio Entreno: contrastar columnas y accesibilidad antes de compartir. Edición de plantilla y ejecución son flujos distintos.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "SwipeableSetRow existe, pero solo aporta gesto de borrado y children. Las columnas, inputs, subseries y estado de ejecución están embebidos en editor y sesión.",
+        "nextStep": "Crear una fila de presentación del dominio Entreno por composición, preservando el wrapper de gesto y las diferencias plantilla/sesión. Validar series avanzadas antes de compartir columnas.",
+        "priority": 3,
+        "references": [
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 2016,
+            "anchor": "function SwipeableSetRow({",
+            "symbol": "SwipeableSetRow: solo gesto"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 1514,
+            "anchor": "<SwipeableSetRow",
+            "symbol": "JSX: fila del editor"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 3007,
+            "anchor": "testID={`training-session-series-type-",
+            "symbol": "JSX: tipo de serie en sesión"
+          }
+        ]
+      }
     },
     "section-panel": {
       "name": "Sección con cabecera",
@@ -2999,7 +3593,26 @@
       "common": "Superficie con título, resumen, contenido y acciones opcionales.",
       "variants": "Comidas repetidas; ejercicios de una sesión; sección de ajustes.",
       "boundary": "La expansión, el estado y el contenido son de cada sección; no agrupar una pantalla completa como componente.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "DietMealsScreen renderiza cada comida en un map y TrainingSessionScreen compone los ejercicios inline. No hay un contenedor compartido de sección/cabecera.",
+        "nextStep": "Crear solo el marco y slots de título, resumen, acciones y contenido; expansión opcional y controlada por el propietario.",
+        "priority": 3,
+        "references": [
+          {
+            "path": "apps/mobile/screens/DietScreen.tsx",
+            "line": 230,
+            "anchor": "key={meal.id}",
+            "symbol": "JSX: sección de comida"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 2594,
+            "anchor": "export const TrainingSessionScreen",
+            "symbol": "JSX: secciones de ejercicios"
+          }
+        ]
+      }
     },
     "empty-state": {
       "name": "Estado vacío",
@@ -3007,7 +3620,26 @@
       "common": "Título o explicación breve con acción opcional.",
       "variants": "Rutina sin ejercicios; búsqueda sin resultados; lista sin alimentos personales.",
       "boundary": "Los mensajes y acciones varían. El icono es opcional y el bloque puede integrarse en una tarjeta.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "Los vacíos de rutinas y medidas son ramas JSX con icono/texto/acción. No existe una pieza EmptyState separada.",
+        "nextStep": "Crear una presentación con icono, título, descripción y acción opcionales, conservando los textos y decisiones de cada flujo.",
+        "priority": 2,
+        "references": [
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 2250,
+            "anchor": "\"Sin rutinas aún\" : \"Sin resultados\"",
+            "symbol": "JSX: vacío de rutinas"
+          },
+          {
+            "path": "apps/mobile/screens/SettingsScreen.tsx",
+            "line": 1794,
+            "anchor": "No hay medidas guardadas.",
+            "symbol": "JSX: vacío de medidas"
+          }
+        ]
+      }
     },
     "context-menu": {
       "name": "Menú contextual",
@@ -3015,7 +3647,26 @@
       "common": "Lista flotante de acciones sobre un elemento.",
       "variants": "Editar a mano; editar con IA; eliminar, en la comida registrada.",
       "boundary": "Solo hay una apertura de este patrón en las capturas. Validar su repetición antes de extraerlo.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "La revisión confirma dos menús separados: diet-item-menu y training-template-menu. Ambos son View flotante y acciones Pressable, sin componente compartido.",
+        "nextStep": "Crear base y filas de acciones si se confirma el encaje. Aunque solo se fotografió el menú de Dieta, el código ya demuestra otro uso en Rutinas; falta comparar visualmente esa variante.",
+        "priority": 2,
+        "references": [
+          {
+            "path": "apps/mobile/screens/DietScreen.tsx",
+            "line": 278,
+            "anchor": "shellSurfaceTestId(\"diet-item-menu\")",
+            "symbol": "JSX: menú del alimento"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 2465,
+            "anchor": "shellSurfaceTestId(\"training-template-menu\")",
+            "symbol": "JSX: menú de rutina"
+          }
+        ]
+      }
     },
     "badge": {
       "name": "Insignia de metadatos",
@@ -3023,7 +3674,32 @@
       "common": "Texto breve o icono con un tono o fondo de categoría.",
       "variants": "Fuerza; duración; sesión parcial; músculos y equipo.",
       "boundary": "Separar las insignias informativas de los chips que cambian una selección.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Crear",
+        "summary": "Categoría, estado de historial y músculos usan View/Text inline. No se encontró una insignia informativa común, y los chips existentes son interactivos.",
+        "nextStep": "Crear una insignia pasiva con texto/icono y tono; mantenerla separada de las opciones seleccionables.",
+        "priority": 2,
+        "references": [
+          {
+            "path": "apps/mobile/screens/HomeScreen.tsx",
+            "line": 184,
+            "anchor": "{model.featuredCategoryMeta ?",
+            "symbol": "JSX: categoría destacada"
+          },
+          {
+            "path": "apps/mobile/screens/TrainingScreen.tsx",
+            "line": 63,
+            "anchor": "testID={`training-history-status-",
+            "symbol": "JSX: estado del historial"
+          },
+          {
+            "path": "apps/mobile/screens/CatalogOverlays.tsx",
+            "line": 47,
+            "anchor": "exercise.secondary_muscles || []",
+            "symbol": "JSX: músculos"
+          }
+        ]
+      }
     },
     "legal-footer": {
       "name": "Pie informativo",
@@ -3031,7 +3707,42 @@
       "common": "Enlace de privacidad y texto auxiliar al final del contenido.",
       "variants": "Preferencias; memoria; alimentos personales.",
       "boundary": "Propuesta de composición visual. No duplicar ni reescribir los textos legales.",
-      "codeReview": "Pendiente"
+      "codeReview": {
+        "decision": "Reutilizar",
+        "summary": "LegalFooter ya centraliza enlace de privacidad, descargo generado y fallback para abrir/copiar la URL. App lo pasa a Ajustes como legalFooter.",
+        "nextStep": "Reutilizarlo tal cual. No crear otro pie ni mover sus textos legales a componentes nuevos.",
+        "priority": 3,
+        "references": [
+          {
+            "path": "apps/mobile/LegalFooter.tsx",
+            "line": 19,
+            "anchor": "export function LegalFooter",
+            "symbol": "LegalFooter"
+          },
+          {
+            "path": "apps/mobile/App.tsx",
+            "line": 9026,
+            "anchor": "legalFooter={<LegalFooter",
+            "symbol": "Uso único compartido por Ajustes"
+          }
+        ]
+      }
+    }
+  },
+  "codeAudit": {
+    "reviewedAt": "2026-10-19",
+    "sourceCommit": "3df545e4f3839a67e83e3688e923e4b34ead83e9",
+    "scope": "Lectura de los TSX de apps/mobile: pantallas, shell, catálogos, avisos, pie legal y diálogos. Referencias comprobadas contra el código de esta rama.",
+    "criteria": {
+      "Reutilizar": "Ya hay componentes que cubren el patrón en sus usos actuales; mantener sus especializaciones, sin nueva abstracción.",
+      "Adaptar": "Hay un componente o helper nombrado que sirve de base, pero necesita ampliar, separar o consolidar su contrato para cubrir la familia visual.",
+      "Crear": "No hay una abstracción de aplicación para el patrón. Hay JSX y primitivas existentes que pueden extraerse; no significa implementar un comportamiento nuevo."
+    },
+    "implementationChanged": false,
+    "counts": {
+      "Reutilizar": 2,
+      "Adaptar": 12,
+      "Crear": 15
     }
   }
 }

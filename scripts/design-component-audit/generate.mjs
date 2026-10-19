@@ -16,8 +16,18 @@ for (const screen of inventory.screens) {
 for (const [id, proposal] of Object.entries(inventory.proposals)) {
   assert.ok(["Base", "Composición", "Por validar"].includes(proposal.level), id);
   for (const key of ["name", "common", "variants", "boundary"]) assert.ok(proposal[key]?.trim(), `${id}: ${key}`);
-  assert.equal(proposal.codeReview, "Pendiente", id);
-  assert.ok(!("source" in proposal) && !("status" in proposal), `No vincular la propuesta visual al código: ${id}`);
+  const review = proposal.codeReview;
+  assert.ok(["Reutilizar", "Adaptar", "Crear"].includes(review.decision), id);
+  for (const key of ["summary", "nextStep"]) assert.ok(review[key]?.trim(), `${id}: ${key}`);
+  assert.ok([1, 2, 3].includes(review.priority), id);
+  assert.ok(review.references.length > 0, `Sin referencias: ${id}`);
+  for (const reference of review.references) {
+    assert.ok(reference.path.startsWith("apps/mobile/") && reference.path.endsWith(".tsx"), id);
+    const source = await readFile(new URL(`../../${reference.path}`, import.meta.url), "utf8");
+    assert.ok(Number.isInteger(reference.line) && reference.line > 0, id);
+    assert.ok(source.split("\n")[reference.line - 1]?.includes(reference.anchor), `Referencia desactualizada: ${id} → ${reference.path}:${reference.line}`);
+  }
+  assert.ok(!("source" in proposal) && !("status" in proposal), `Las referencias de implementación deben estar en codeReview: ${id}`);
   const evidence = inventory.screens.flatMap((screen) => screen.regions.filter((region) => region.proposal === id));
   assert.ok(evidence.length > 0, `Propuesta sin evidencia: ${id}`);
   assert.ok(evidence.length >= 2 || proposal.level === "Por validar", `Repetición sin demostrar: ${id}`);
@@ -34,6 +44,66 @@ for (const screen of inventory.screens) {
     assert.ok(region.note.trim(), screen.id);
   }
 }
+assert.match(inventory.codeAudit.sourceCommit, /^[a-f0-9]{40}$/);
+assert.equal(inventory.codeAudit.implementationChanged, false);
+for (const [decision, count] of Object.entries(inventory.codeAudit.counts)) {
+  assert.equal(Object.values(inventory.proposals).filter((proposal) => proposal.codeReview.decision === decision).length, count, decision);
+}
+const sourceLink = (reference) => `[${reference.symbol} (${reference.path.split("/").at(-1)}:${reference.line})](../../../${reference.path}#L${reference.line})`;
+const sourceFile = (reference) => `[${reference.symbol} (${reference.path}:${reference.line})](../../../${reference.path}#L${reference.line})`;
+const report = [
+  "# Revisión de los 29 patrones en el código",
+  "",
+  "Trabajo de GYM-8 (ticket para unificar componentes repetidos de la interfaz).",
+  "",
+  `Revisión de lectura del ${inventory.codeAudit.reviewedAt}, sobre el código de \`${inventory.codeAudit.sourceCommit}\`. **No se ha modificado la app ni implementado ninguna extracción.**`,
+  "",
+  "La propuesta visual se conserva. Esta segunda fase contrasta sus 29 candidatos con los componentes y el JSX actuales; el parecido visual no obliga a unificar contratos de negocio.",
+  "",
+  ...Object.entries(inventory.codeAudit.criteria).map(([key, value]) => `- **${key}**: ${value}`),
+  "",
+  `Resultado: **${inventory.codeAudit.counts.Reutilizar} reutilizar · ${inventory.codeAudit.counts.Adaptar} adaptar · ${inventory.codeAudit.counts.Crear} crear**. «Crear» se refiere a la abstracción de aplicación, aunque ya existan primitivas de React Native y JSX aprovechable.`,
+  "",
+  "## Matriz completa",
+  "",
+  "| Patrón | Decisión | Evidencia principal |",
+  "| --- | --- | --- |",
+  ...Object.values(inventory.proposals).map((proposal) => `| ${proposal.name} | ${proposal.codeReview.decision} | ${proposal.codeReview.references.slice(0, 2).map(sourceLink).join("; ")} |`),
+  "",
+  "## Justificación y siguiente paso por patrón",
+  "",
+  ...Object.values(inventory.proposals).flatMap((proposal) => [
+    `### ${proposal.name} — ${proposal.codeReview.decision}`,
+    "",
+    proposal.codeReview.summary,
+    "",
+    `**Siguiente paso propuesto:** ${proposal.codeReview.nextStep}`,
+    "",
+    `**Fuentes:** ${proposal.codeReview.references.map(sourceFile).join("; ")}.`,
+    "",
+  ]),
+  "## Orden sugerido para una fase posterior",
+  "",
+  "1. Unidades pequeñas y duplicación más directa: botones, campos, buscadores, chips, métricas, marco de gráficas, miniaturas, interruptores y barras de progreso.",
+  "2. Composiciones con contratos que acordar: filas, tarjetas de rutina, selectores, opciones, mensajes, compositor, nutrición, estados vacíos, menús y metadatos.",
+  "3. Evaluar el beneficio antes de extraer: marcos de registros, formularios y secciones, filas etiqueta/valor y filas de series. Mantener navegación, pie legal y avisos semánticos existentes.",
+  "",
+  "Este orden no autoriza la implementación. Las adaptaciones de avisos, formularios y diálogos deben preservar reglas sanitarias, permisos, validación, cifrado y comportamiento nativo/web en sus propietarios. SwipeableSetRow es un contenedor de gesto, no una fila de serie completa; SharedChatPanel incluye conversación y entrada, no un compositor aislado.",
+  "",
+  "El menú contextual conserva un único ejemplo fotográfico. El código demuestra una segunda implementación en Rutinas; todavía conviene capturar esa variante para comparar su presentación antes de unificarlos.",
+  "",
+  "## Comprobaciones de esta revisión",
+  "",
+  "- Las 29 decisiones tienen referencias con fichero, símbolo o región JSX, línea y ancla comprobadas por el generador.",
+  "- Los 54 originales y las 208 zonas de evidencia visual permanecen intactos.",
+  "- No cambia ningún archivo de apps/mobile ni la política de límites arquitectónicos.",
+  "- Esta revisión no ejecuta una migración ni demuestra todavía equivalencia visual o funcional de una futura extracción.",
+  "",
+  "Documento generado desde inventory.json por scripts/design-component-audit/generate.mjs.",
+  "",
+].join("\n");
+await writeFile(new URL("code-review.md", root), report);
+
 const data = JSON.stringify(inventory).replaceAll("<", "\\u003c");
 const template = await readFile(new URL("gallery.html", import.meta.url), "utf8");
 await writeFile(new URL("index.html", root), template.replace("{{INVENTORY}}", () => data));

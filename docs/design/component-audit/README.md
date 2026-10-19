@@ -1,11 +1,12 @@
 # Propuestas de componentes a partir de las pantallas
 
 Trabajo de GYM-8 (ticket para unificar componentes repetidos de la interfaz).
-Esta entrega es un **análisis visual previo a la implementación**. Identifica
-patrones comunes en las capturas y propone qué piezas podrían convertirse en
-componentes genéricos. Todos los candidatos tienen pendiente la revisión del
-código: después se decidirá si ya existe una abstracción adecuada, si se adapta
-o si hay que crearla. La repetición visual no demuestra duplicación de código.
+Esta entrega conserva el **análisis visual previo a la implementación** y añade
+una revisión del código de sus 29 candidatos: **2 para reutilizar, 12 para adaptar
+y 15 abstracciones por crear**. Las decisiones, su justificación y sus referencias
+están en [code-review.md](code-review.md) y en la galería. No se ha modificado la
+app. «Crear» significa extraer una abstracción desde JSX existente, no añadir un
+comportamiento nuevo. La repetición visual por sí sola no demuestra código duplicado.
 
 ## Cómo revisar la galería
 
@@ -15,9 +16,10 @@ Abre [index.html](index.html). No necesita servidor ni conexión.
   señalados a la derecha. Las marcas y su leyenda destacan la zona seleccionada.
 - **Patrones propuestos**: 29 candidatos con recortes reales de distintas capturas,
   variantes observadas y límites de lo que convendría compartir. «Ver evidencia»
-  amplía los ejemplos; «Ver pantalla» vuelve a su contexto.
-- La búsqueda y el filtro por área funcionan en ambas vistas. «Ver patrón» en la
-  leyenda de una pantalla abre la propuesta correspondiente.
+  amplía los ejemplos; «Ver pantalla» vuelve a su contexto. Cada ficha incluye
+  decisión de código, motivo, siguiente paso propuesto y enlaces a las fuentes.
+- La búsqueda y los filtros por área y decisión de código funcionan en ambas
+  vistas. «Ver patrón» en la leyenda abre la propuesta correspondiente.
 
 [inventory.json](inventory.json) conserva procedencia, propuestas y 208 zonas de
 evidencia. Los recuentos representan capturas y zonas anotadas, **no flujos únicos
@@ -35,7 +37,7 @@ misma vista. Las hojas `contact-*.jpg` permiten un repaso rápido de los origina
 | Listas y tarjetas | Miniatura; fila con imagen y metadatos; tarjeta de rutina; tarjeta de registro; sección con cabecera |
 | Flujos y mensajes | Diálogo; aviso informativo; burbuja de conversación; entrada de conversación; panel de formulario; estado vacío |
 | Dominio Entreno | Fila de serie de ejercicio, contrastando editor y sesión |
-| Evidencia insuficiente | Menú contextual: solo se capturó una apertura; validar repetición antes de extraerlo |
+| Evidencia insuficiente | Menú contextual: una apertura capturada; el código confirma otro uso en Rutinas, pendiente de comparación visual |
 
 Ejemplos que motivan el análisis:
 
@@ -88,8 +90,8 @@ contiene campos numéricos, no un control de incremento/decremento.
 
 ## Qué queda para la fase de implementación
 
-1. Revisar cada candidato en el código y decidir reutilizar, adaptar, crear o
-   descartar. Documentar la decisión y los usos concretos.
+1. Revisar las decisiones y los límites de [code-review.md](code-review.md). La
+   revisión de lectura ya está completa; acordar cuáles llevar a implementación.
 2. Acordar límites, variantes y contrato; comenzar por las unidades pequeñas con
    repeticiones demostradas y después evaluar las composiciones.
 3. Implementar solo las extracciones acordadas y verificar cada sustitución con
@@ -97,7 +99,7 @@ contiene campos numéricos, no un control de incremento/decremento.
 
 La refactorización que se había adelantado durante esta tarea se ha retirado de
 la propuesta. El diff final respecto al punto de partida conserva el inventario,
-las imágenes y las herramientas del análisis; no cambia la implementación móvil.
+las imágenes, la revisión del código y las herramientas del análisis; no cambia la implementación móvil.
 
 La web permite revisar la composición visible. No demuestra teclado nativo,
 permisos, notificaciones, segundo plano ni almacenamiento seguro. Recuperación,
@@ -113,10 +115,13 @@ node scripts/design-component-audit/generate.mjs
 
 El generador usa `scripts/design-component-audit/gallery.html` como plantilla,
 incrusta el inventario y verifica dimensiones, cobertura de imágenes, referencias
-entre propuestas y zonas, límites geométricos y evidencia de repetición. No lee
-ficheros de implementación para seleccionar ni validar candidatos.
+entre propuestas y zonas, límites geométricos y evidencia de repetición. La
+selección visual de candidatos se conserva independiente del código. Para esta
+segunda fase comprueba que cada referencia de código coincide con la línea y
+el ancla documentadas, y genera también `code-review.md` desde el inventario.
 
 La comprobación del DOM verifica las parejas, las marcas, las leyendas, los
-filtros, la vista de patrones, los recortes y la navegación al contexto. La
+filtros, las tres decisiones, los enlaces de fuentes, la vista de patrones,
+los recortes y la navegación al contexto. La
 herramienta del navegador bloquea el protocolo `file://`: esta versión de la
 galería no se presenta como verificada visualmente en esa URL.
