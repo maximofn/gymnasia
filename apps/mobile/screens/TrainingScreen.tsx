@@ -1,31 +1,28 @@
-import { ProgressBar } from "../components/ProgressBar";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { memo, useRef } from "react";
 import { Animated, Image, PanResponder, Pressable, ScrollView, Text, TextInput, View } from "react-native";
-import { Button, Button as TrainingPrimaryButton } from "../components/Button";
-import { ChartCard as TrainingChartCard } from "../components/ChartCard";
 
 import type {
   TrainingDetailActions,
   TrainingDetailModel,
   TrainingEditorActions,
   TrainingEditorModel,
-  TrainingFilter,
   TrainingHistoryActions,
   TrainingHistoryModel,
   TrainingListActions,
   TrainingListModel,
+  TrainingFilter,
   TrainingSessionActions,
   TrainingSessionModel,
 } from "../controllers/trainingController";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
-import { mobileTheme } from "../theme";
-import { ROUTINE_ICON_OPTIONS, formatClock, formatPrescriptionNumber, formatTrainingHistoryDate, formatWorkoutHistoryVolume, inferExerciseMuscle, inferTemplateDurationMinutes, normalizeExerciseImageUri, normalizeTemplateIcon, parseRestSecondsInput, resolveExercisePreviewMeta, trainingCategoryMeta, workoutPrescriptionSeriesDetail, type TrainingStatsMetricKey, type TrainingStatsPeriodKey } from "../training/presentationModel";
 import { isCompoundSeriesType, type ExerciseSeries } from "../training/seriesContract";
 import { SERIES_TYPE_META } from "../training/seriesPresentation";
 import { isCompletedWorkoutSummary, type WorkoutSessionSummary, type WorkoutSummaryRecalculation } from "../training/workoutHistory";
+import { ROUTINE_ICON_OPTIONS, formatClock, formatPrescriptionNumber, formatTrainingHistoryDate, formatWorkoutHistoryVolume, inferExerciseMuscle, inferTemplateDurationMinutes, normalizeExerciseImageUri, normalizeTemplateIcon, parseRestSecondsInput, resolveExercisePreviewMeta, trainingCategoryMeta, workoutPrescriptionSeriesDetail, type TrainingStatsMetricKey, type TrainingStatsPeriodKey } from "../training/presentationModel";
 import { resolveTrainingCategory, templateHasRunnableSeries } from "../training/workoutSessionModel";
 import type { TrainingCategory } from "../training/workoutTemplateOperations";
+import { mobileTheme } from "../theme";
 
 export const TrainingHistoryScreen = memo(function TrainingHistoryScreen({ model, actions }: { model: Readonly<TrainingHistoryModel>; actions: Readonly<TrainingHistoryActions> }) {
   if (model.selectedSummary) {
@@ -986,6 +983,49 @@ const TRAINING_STATS_METRIC_OPTIONS: Array<{
   { key: "duration", label: "Duración", shortLabel: "min" },
 ];
 
+function TrainingChartCard({
+  title,
+  periodSelector,
+  children,
+  zIndex,
+}: {
+  title: React.ReactNode;
+  periodSelector: React.ReactNode;
+  children: React.ReactNode;
+  zIndex?: number;
+}) {
+  return (
+    <View style={{ borderRadius: 22, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: mobileTheme.color.bgSurface, position: "relative", overflow: "visible", zIndex: zIndex ?? 1, padding: 14, gap: 14 }}>
+      <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 12, zIndex: 2 }}>
+        <View style={{ flex: 1, gap: 4 }}>{title}</View>
+        {periodSelector}
+      </View>
+      {children}
+    </View>
+  );
+}
+
+function TrainingPrimaryButton({
+  label,
+  onPress,
+  disabled,
+  icon,
+  testID,
+}: {
+  label: string;
+  onPress(): void;
+  disabled?: boolean;
+  icon?: React.ReactNode;
+  testID?: string;
+}) {
+  return (
+    <Pressable onPress={onPress} disabled={disabled} testID={testID} accessibilityLabel={label} accessibilityRole="button" style={{ height: 46, borderRadius: 12, backgroundColor: mobileTheme.color.brandPrimary, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: icon ? 10 : 0, opacity: disabled ? 0.6 : 1 }}>
+      {icon}
+      <Text style={{ color: "#06090D", fontWeight: "700" }}>{label}</Text>
+    </Pressable>
+  );
+}
+
 export const TrainingEditorScreen = memo(function TrainingEditorScreen({
   model,
   actions,
@@ -1024,9 +1064,29 @@ export const TrainingEditorScreen = memo(function TrainingEditorScreen({
                         Cancelar
                       </Text>
                     </Pressable>
-                    <Button onPress={actions.save} disabled={trainingTemplateSaveBusy} label={trainingTemplateSaveBusy ? "Guardando…" : "Guardar"} icon={<Feather name="check" size={14} color={trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3"} />} style={{ minHeight: 46, borderRadius: 14, borderWidth: 1, borderColor: "rgba(203,255,26,0.75)", backgroundColor: trainingTemplateDraftValidation?.valid
+                    <Pressable
+                      onPress={actions.save}
+                      disabled={trainingTemplateSaveBusy}
+                      style={{
+                        minHeight: 46,
+                        borderRadius: 14,
+                        borderWidth: 1,
+                        borderColor: "rgba(203,255,26,0.75)",
+                        backgroundColor: trainingTemplateDraftValidation?.valid
                           ? mobileTheme.color.brandPrimary
-                          : "#303641", paddingHorizontal: 18, gap: 8, opacity: 1 }} textStyle={{ color: trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3", fontSize: 16, fontWeight: "800" }} />
+                          : "#303641",
+                        paddingHorizontal: 18,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 8,
+                      }}
+                    >
+                      <Feather name="check" size={14} color={trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3"} />
+                      <Text style={{ color: trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3", fontSize: 16, fontWeight: "800" }}>
+                        {trainingTemplateSaveBusy ? "Guardando…" : "Guardar"}
+                      </Text>
+                    </Pressable>
                   </View>
   
                   {trainingTemplateDraftDirty ? (
@@ -1917,9 +1977,30 @@ export const TrainingEditorScreen = memo(function TrainingEditorScreen({
                     </Text>
                   </Pressable>
   
-                  <Button onPress={actions.save} disabled={trainingTemplateSaveBusy} testID="training-editor-save" label={trainingTemplateSaveBusy ? "Guardando…" : "Guardar cambios"} icon={<Feather name="check" size={14} color={trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3"} />} style={{ marginTop: 6, minHeight: 46, borderRadius: 14, borderWidth: 1, borderColor: "rgba(203,255,26,0.75)", backgroundColor: trainingTemplateDraftValidation?.valid
+                  <Pressable
+                    onPress={actions.save}
+                    disabled={trainingTemplateSaveBusy}
+                    testID="training-editor-save"
+                    style={{
+                      marginTop: 6,
+                      minHeight: 46,
+                      borderRadius: 14,
+                      borderWidth: 1,
+                      borderColor: "rgba(203,255,26,0.75)",
+                      backgroundColor: trainingTemplateDraftValidation?.valid
                         ? mobileTheme.color.brandPrimary
-                        : "#303641", gap: 8, opacity: 1 }} textStyle={{ color: trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3", fontSize: 16, fontWeight: "800" }} />
+                        : "#303641",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
+                    }}
+                  >
+                    <Feather name="check" size={14} color={trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3"} />
+                    <Text style={{ color: trainingTemplateDraftValidation?.valid ? "#06090D" : "#8B94A3", fontSize: 16, fontWeight: "800" }}>
+                      {trainingTemplateSaveBusy ? "Guardando…" : "Guardar cambios"}
+                    </Text>
+                  </Pressable>
                 </View>
   
   );
@@ -2182,9 +2263,28 @@ export const TrainingListScreen = memo(function TrainingListScreen({
                           : "Prueba con otro texto de búsqueda\no cambia los filtros"}
                       </Text>
   
-                      <Button onPress={actions.createTemplate} testID="training-create-first" label="CREAR RUTINA" icon={<Text style={{ color: "#06090D", fontSize: 22, fontWeight: "700", lineHeight: 24 }}>
+                      <Pressable
+                        onPress={actions.createTemplate}
+                        testID="training-create-first"
+                        style={{
+                          marginTop: 30,
+                          minHeight: 58,
+                          borderRadius: 16,
+                          backgroundColor: mobileTheme.color.brandPrimary,
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 10,
+                          paddingHorizontal: 24,
+                        }}
+                      >
+                        <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "700", lineHeight: 24 }}>
                           +
-                        </Text>} style={{ marginTop: 30, minHeight: 58, borderRadius: 16, gap: 10, paddingHorizontal: 24 }} textStyle={{ color: "#06090D", fontSize: 19, fontWeight: "800" }} />
+                        </Text>
+                        <Text style={{ color: "#06090D", fontSize: 19, fontWeight: "800" }}>
+                          CREAR RUTINA
+                        </Text>
+                      </Pressable>
                     </View>
                   ) : (
                     <View style={{ gap: 10, paddingBottom: 110 }}>
@@ -2602,7 +2702,22 @@ export const TrainingSessionScreen = memo(function TrainingSessionScreen({
   	                </View>
   
                   <View style={{ gap: 6 }}>
-                    <ProgressBar percent={activeSessionProgressPercent} style={{ height: 8 }} fillStyle={{ borderRadius: 0 }} />
+                    <View
+                      style={{
+                        height: 8,
+                        borderRadius: 999,
+                        backgroundColor: "rgba(255,255,255,0.08)",
+                        overflow: "hidden",
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: `${activeSessionProgressPercent}%`,
+                          height: "100%",
+                          backgroundColor: mobileTheme.color.brandPrimary,
+                        }}
+                      />
+                    </View>
                     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                       <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>
                         {activeWorkoutSession.completed_effort_count}/{activeWorkoutSession.total_effort_count} esfuerzos
@@ -3021,18 +3136,36 @@ export const TrainingSessionScreen = memo(function TrainingSessionScreen({
                                       }}
                                     />
                                   </>
-                                  <Button onPress={(event) => {
+                                  <Pressable
+                                    onPress={(event) => {
                                       event.stopPropagation();
                                       if (seriesState.isCompleted) {
                                         actions.markUnitNotDone(seriesState.key);
                                         return;
                                       }
                                       actions.markUnitDone(seriesState.key);
-                                    }} disabled={false} label="✓" style={{ width: 30, height: 30, borderRadius: 999, backgroundColor: seriesState.isCompleted ? mobileTheme.color.brandPrimary : "#202630", marginLeft: 10, gap: 0, opacity: 1 }} textStyle={{
+                                    }}
+                                    disabled={false}
+                                    style={{
+                                      width: 30,
+                                      height: 30,
+                                      borderRadius: 999,
+                                      backgroundColor: seriesState.isCompleted ? mobileTheme.color.brandPrimary : "#202630",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      marginLeft: 10,
+                                    }}
+                                  >
+                                    <Text
+                                      style={{
                                         color: seriesState.isCompleted ? "#06090D" : "#C7CED9",
                                         fontSize: 15,
                                         fontWeight: "800",
-                                      }} />
+                                      }}
+                                    >
+                                      ✓
+                                    </Text>
+                                  </Pressable>
                                   <Pressable
                                     onPress={(event) => {
                                       event.stopPropagation();
@@ -3375,7 +3508,22 @@ export const TrainingSessionScreen = memo(function TrainingSessionScreen({
                                       </Pressable>
                                     </View>
                                   </View>
-                                  <ProgressBar percent={Math.round(activeSessionRestProgressRatio * 100)} color="#4A90FF" style={{ height: 4, backgroundColor: "rgba(118,169,255,0.28)" }} fillStyle={{ borderRadius: 0 }} />
+                                  <View
+                                    style={{
+                                      height: 4,
+                                      borderRadius: 999,
+                                      backgroundColor: "rgba(118,169,255,0.28)",
+                                      overflow: "hidden",
+                                    }}
+                                  >
+                                    <View
+                                      style={{
+                                        width: `${Math.round(activeSessionRestProgressRatio * 100)}%`,
+                                        height: "100%",
+                                        backgroundColor: "#4A90FF",
+                                      }}
+                                    />
+                                  </View>
                                 </View>
                               ) : null}
   

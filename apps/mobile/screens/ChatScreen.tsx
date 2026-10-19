@@ -1,14 +1,13 @@
-import { Feather, Ionicons } from "@expo/vector-icons";
 import { memo, useRef } from "react";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import {
   ActivityIndicator,
   Pressable,
   ScrollView,
   Text,
-  View
+  TextInput,
+  View,
 } from "react-native";
-import { Button } from "../components/Button";
-import { TextField } from "../components/TextField";
 
 import {
   AI_DISCLOSURE_MESSAGE_KIND,
@@ -137,9 +136,20 @@ export const ChatScreen = memo(function ChatScreen({
             })}
           </ScrollView>
           <View style={{ paddingBottom: model.inputBottomPadding, gap: 8 }}>
-            <TextField
+            <TextInput
               testID="chat-input"
-              style={{ minHeight: 44, maxHeight: 120, backgroundColor: mobileTheme.color.bgSurface, paddingVertical: 10, textAlignVertical: "top"}}
+              style={{
+                minHeight: 44,
+                maxHeight: 120,
+                borderRadius: mobileTheme.radius.md,
+                borderWidth: 1,
+                borderColor: mobileTheme.color.borderSubtle,
+                backgroundColor: mobileTheme.color.bgSurface,
+                color: mobileTheme.color.textPrimary,
+                paddingHorizontal: 12,
+                paddingVertical: 10,
+                textAlignVertical: "top",
+              }}
               value={model.input}
               onChangeText={actions.changeInput}
               placeholder="Pregunta a Gymnasia Coach"
@@ -148,7 +158,25 @@ export const ChatScreen = memo(function ChatScreen({
               multiline
               blurOnSubmit={false}
             />
-            <Button onPress={actions.send} disabled={model.isSending} testID="chat-send" accessibilityLabel={model.isSending ? "Enviando..." : "Enviar"} accessibilityRole="button" label={model.isSending ? "Enviando..." : "Enviar"} style={{ opacity: model.isSending ? 0.6 : 1, gap: 0 }} textStyle={{ color: "#06090D", fontWeight: "700" }} />
+            <Pressable
+              onPress={actions.send}
+              disabled={model.isSending}
+              testID="chat-send"
+              accessibilityLabel={model.isSending ? "Enviando..." : "Enviar"}
+              accessibilityRole="button"
+              style={{
+                height: 46,
+                borderRadius: 12,
+                backgroundColor: mobileTheme.color.brandPrimary,
+                alignItems: "center",
+                justifyContent: "center",
+                opacity: model.isSending ? 0.6 : 1,
+              }}
+            >
+              <Text style={{ color: "#06090D", fontWeight: "700" }}>
+                {model.isSending ? "Enviando..." : "Enviar"}
+              </Text>
+            </Pressable>
             <AiIdentityPersistentDisclosure surface="main-chat" />
           </View>
         </View>
@@ -198,7 +226,15 @@ export const ChatScreen = memo(function ChatScreen({
               Gymnasia guarda tus API keys solo en tu dispositivo, no las guarda en ningún otro lugar.
             </Text>
           </View>
-          <Button onPress={actions.openProviderSettings} label="Ir a Ajustes BYOK" icon={<Ionicons name="settings-sharp" size={18} color="#06090D" />} style={{ gap: 8, height: 52, borderRadius: mobileTheme.radius.md, width: "100%", marginTop: 4 }} textStyle={{ color: "#06090D", fontWeight: "800", fontSize: 16 }} />
+          <Pressable
+            onPress={actions.openProviderSettings}
+            style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 52, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, width: "100%", marginTop: 4 }}
+          >
+            <Ionicons name="settings-sharp" size={18} color="#06090D" />
+            <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 16 }}>
+              Ir a Ajustes BYOK
+            </Text>
+          </Pressable>
           <Pressable onPress={actions.toggleByokExplanation}>
             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, textAlign: "center" }}>
               {model.showByokExplanation ? "Ocultar" : "¿Qué es BYOK?"}

@@ -1,13 +1,8 @@
+import { memo, useState, type ReactNode } from "react";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { memo, useState } from "react";
-import { ActivityIndicator, Image, KeyboardAvoidingView, Pressable, ScrollView, Text, View } from "react-native";
 import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop, Text as SvgText } from "react-native-svg";
-import { Button } from "../components/Button";
-import { ChartCard } from "../components/ChartCard";
-import { DialogLayer } from "../components/Dialog";
-import { StatCard } from "../components/StatCard";
-import { TextField } from "../components/TextField";
+import { ActivityIndicator, Image, KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import type {
   MeasurementsScreenActions,
@@ -18,6 +13,83 @@ import { localDateKey } from "../measurements/measurementContract";
 import { BODY_FAT_ZONES_FEMALE, BODY_FAT_ZONES_MALE, formatMeasurementDate, formatMeasurementHistoryDate, formatMeasurementNumber } from "../measurements/presentationModel";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import { mobileTheme } from "../theme";
+
+function StatCard({
+  label,
+  value,
+  subtitle,
+  subtitleColor,
+  subtitleIcon,
+  testID,
+}: {
+  label: string;
+  value: string;
+  subtitle: string;
+  subtitleColor: string;
+  subtitleIcon: ReactNode;
+  testID: string;
+}) {
+  return (
+    <View
+      testID={testID}
+      style={{
+        flex: 1,
+        minHeight: 94,
+        borderWidth: 1,
+        borderColor: mobileTheme.color.borderSubtle,
+        backgroundColor: mobileTheme.color.bgSurface,
+        borderRadius: 18,
+        padding: 12,
+        gap: 4,
+      }}
+    >
+      <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>{label}</Text>
+      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 17, fontWeight: "700" }}>
+        {value}
+      </Text>
+      <View style={{ flexDirection: "row", alignItems: "flex-start", gap: 5, marginTop: "auto" }}>
+        {subtitleIcon}
+        <Text style={{ color: subtitleColor, fontSize: 11, fontWeight: "700", flex: 1 }}>
+          {subtitle}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function ChartCard({
+  title,
+  periodSelector,
+  zIndex,
+  children,
+}: {
+  title: ReactNode;
+  periodSelector: ReactNode;
+  zIndex: number;
+  children: ReactNode;
+}) {
+  return (
+    <View
+      style={{
+        borderRadius: 22,
+        borderWidth: 1,
+        borderColor: "rgba(255,255,255,0.06)",
+        backgroundColor: mobileTheme.color.bgSurface,
+        position: "relative",
+        overflow: "visible",
+        zIndex,
+        padding: 14,
+        gap: 14,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 12, zIndex: 2 }}>
+        <View style={{ flex: 1, gap: 4 }}>{title}</View>
+        {periodSelector}
+      </View>
+      {children}
+    </View>
+  );
+}
 
 function buildSmoothPath(points: Array<{ x: number; y: number }>): string {
   if (points.length === 1) return `M${points[0].x},${points[0].y}L${points[0].x},${points[0].y}`;
@@ -238,7 +310,10 @@ export const MeasurementsScreen = memo(function MeasurementsScreen({
         </View>
       ) : null}
       <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-        <Button testID="measurement-add" onPress={actions.openEntry} label="Registrar" icon={<Ionicons name="add-circle-outline" size={18} color="#06090D" />} style={{ minHeight: 44, borderRadius: 14, paddingHorizontal: 16, gap: 8 }} textStyle={{ color: "#06090D", fontWeight: "800", fontSize: 14 }} />
+        <Pressable testID="measurement-add" onPress={actions.openEntry} style={{ minHeight: 44, borderRadius: 14, backgroundColor: mobileTheme.color.brandPrimary, paddingHorizontal: 16, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <Ionicons name="add-circle-outline" size={18} color="#06090D" />
+          <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 14 }}>Registrar</Text>
+        </Pressable>
       </View>
       {model.statCardRows.map((row, rowIndex) => (
         <View key={`measures-row-${rowIndex}`} style={{ flexDirection: "row", gap: 10 }}>
@@ -506,7 +581,7 @@ export const MeasurementsOverlays = memo(function MeasurementsOverlays({
               </Pressable>
 
               {entry.datePickerOpen ? entry.isWeb ? (
-                <TextField testID={shellSurfaceTestId("measurement-date-picker")} value={entry.dateTextInput} onChangeText={actions.changeDateText} placeholder="AAAA-MM-DD" placeholderTextColor={mobileTheme.color.textSecondary} style={{ minHeight: 44, borderRadius: 12, fontSize: 14 }} />
+                <TextInput testID={shellSurfaceTestId("measurement-date-picker")} value={entry.dateTextInput} onChangeText={actions.changeDateText} placeholder="AAAA-MM-DD" placeholderTextColor={mobileTheme.color.textSecondary} style={{ minHeight: 44, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: 12, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12, fontSize: 14 }} />
               ) : (
                 <View testID={shellSurfaceTestId("measurement-date-picker")} style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, padding: 8, gap: 8 }}>
                   <DateTimePicker value={entry.date} mode="date" maximumDate={new Date()} display={entry.isIos ? "inline" : "default"} onChange={(event, date) => actions.changeNativeDate(event.type, date)} />
@@ -546,16 +621,16 @@ export const MeasurementsOverlays = memo(function MeasurementsOverlays({
 
               <View style={{ gap: 2 }}>
                 <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>Peso (kg)</Text>
-                <TextField testID="measurement-weight-input" value={entry.fields.weight} onChangeText={(value) => actions.changeEntryField("weight", value)} placeholder="—" placeholderTextColor={mobileTheme.color.textSecondary} keyboardType="decimal-pad" />
+                <TextInput testID="measurement-weight-input" style={{ minHeight: 42, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }} value={entry.fields.weight} onChangeText={(value) => actions.changeEntryField("weight", value)} placeholder="—" placeholderTextColor={mobileTheme.color.textSecondary} keyboardType="decimal-pad" />
               </View>
               <View style={{ gap: 2 }}>
                 <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>% Grasa corporal</Text>
-                <TextField testID="measurement-body-fat-input" value={entry.fields.bodyFat} onChangeText={(value) => actions.changeEntryField("bodyFat", value)} placeholder="—" placeholderTextColor={mobileTheme.color.textSecondary} keyboardType="decimal-pad" />
+                <TextInput testID="measurement-body-fat-input" style={{ minHeight: 42, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }} value={entry.fields.bodyFat} onChangeText={(value) => actions.changeEntryField("bodyFat", value)} placeholder="—" placeholderTextColor={mobileTheme.color.textSecondary} keyboardType="decimal-pad" />
               </View>
               {MEASUREMENT_ENTRY_FIELDS.map((field) => (
                 <View key={field.key} style={{ gap: 2 }}>
                   <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>{field.label}</Text>
-                  <TextField testID={`measurement-${field.key}-input`} value={entry.fields[field.key]} onChangeText={(value) => actions.changeEntryField(field.key, value)} placeholder="—" placeholderTextColor={mobileTheme.color.textSecondary} keyboardType="decimal-pad" />
+                  <TextInput testID={`measurement-${field.key}-input`} style={{ minHeight: 42, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }} value={entry.fields[field.key]} onChangeText={(value) => actions.changeEntryField(field.key, value)} placeholder="—" placeholderTextColor={mobileTheme.color.textSecondary} keyboardType="decimal-pad" />
                 </View>
               ))}
 
@@ -575,7 +650,7 @@ export const MeasurementsOverlays = memo(function MeasurementsOverlays({
       ) : null}
 
       {overlays.bodyFatInfoOpen ? (
-        <DialogLayer testID={shellSurfaceTestId("body-fat-info")} style={{ backgroundColor: "rgba(0,0,0,0.7)", zIndex: 9999, padding: 20 }}>
+        <View testID={shellSurfaceTestId("body-fat-info")} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.7)", justifyContent: "center", alignItems: "center", zIndex: 9999, padding: 20 }}>
           <View style={{ backgroundColor: "#141820", borderRadius: 22, borderWidth: 1, borderColor: "rgba(255,255,255,0.08)", padding: 20, width: "100%", maxHeight: "85%" }}>
             <ScrollView>
               <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
@@ -591,7 +666,7 @@ export const MeasurementsOverlays = memo(function MeasurementsOverlays({
               </Text>
             </ScrollView>
           </View>
-        </DialogLayer>
+        </View>
       ) : null}
     </>
   );

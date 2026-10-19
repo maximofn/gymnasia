@@ -1,93 +1,122 @@
-# Inventario visual y componentes de Gymnasia
+# Propuestas de componentes a partir de las pantallas
 
 Trabajo de GYM-8 (ticket para unificar componentes repetidos de la interfaz).
-La [galería](index.html) muestra cada captura original a la izquierda y la misma
-imagen con los componentes elegidos señalados a la derecha. Permite buscar
-pantallas o componentes, filtrar por área y ampliar la pareja. Las marcas
-numeradas y su leyenda se destacan al pulsarlas; cada componente enlaza con su
-fichero de implementación. «Extraído» identifica la biblioteca creada y
-«Existente», las piezas que se conservan. [inventory.json](inventory.json) conserva el
-inventario y su procedencia; las hojas `contact-*.jpg` sirven para una revisión
-rápida sin abrir la galería.
+Esta entrega es un **análisis visual previo a la implementación**. Identifica
+patrones comunes en las capturas y propone qué piezas podrían convertirse en
+componentes genéricos. Todos los candidatos tienen pendiente la revisión del
+código: después se decidirá si ya existe una abstracción adecuada, si se adapta
+o si hay que crearla. La repetición visual no demuestra duplicación de código.
 
-## Recorrido y alcance
+## Cómo revisar la galería
+
+Abre [index.html](index.html). No necesita servidor ni conexión.
+
+- **Pantallas**: original a la izquierda y la misma imagen con patrones candidatos
+  señalados a la derecha. Las marcas y su leyenda destacan la zona seleccionada.
+- **Patrones propuestos**: 29 candidatos con recortes reales de distintas capturas,
+  variantes observadas y límites de lo que convendría compartir. «Ver evidencia»
+  amplía los ejemplos; «Ver pantalla» vuelve a su contexto.
+- La búsqueda y el filtro por área funcionan en ambas vistas. «Ver patrón» en la
+  leyenda de una pantalla abre la propuesta correspondiente.
+
+[inventory.json](inventory.json) conserva procedencia, propuestas y 208 zonas de
+evidencia. Los recuentos representan capturas y zonas anotadas, **no flujos únicos
+ni número de repeticiones en el código**. Varias capturas muestran estados de la
+misma vista. Las hojas `contact-*.jpg` permiten un repaso rápido de los originales.
+
+## Qué se propone compartir
+
+| Grupo | Patrones visuales candidatos |
+| --- | --- |
+| Acciones | Botón de acción; botón de icono |
+| Entradas y selección | Campo de formulario; buscador; opción seleccionable; selector desplegable; fila de opción; fila con interruptor |
+| Navegación y metadatos | Navegación por pestañas; insignia de metadatos; pie informativo |
+| Presentación de datos | Tarjeta de métrica; panel de gráfica; barra de progreso; fila de etiqueta y valor; grupo de valores nutricionales |
+| Listas y tarjetas | Miniatura; fila con imagen y metadatos; tarjeta de rutina; tarjeta de registro; sección con cabecera |
+| Flujos y mensajes | Diálogo; aviso informativo; burbuja de conversación; entrada de conversación; panel de formulario; estado vacío |
+| Dominio Entreno | Fila de serie de ejercicio, contrastando editor y sesión |
+| Evidencia insuficiente | Menú contextual: solo se capturó una apertura; validar repetición antes de extraerlo |
+
+Ejemplos que motivan el análisis:
+
+- El buscador se repite en Rutinas, ejercicios, alimentos y productos, con una
+  lupa y una acción opcional para limpiar. El filtrado de cada dominio queda fuera.
+- La fila con miniatura, título, resumen y acción aparece en ejercicios de Inicio,
+  catálogo de ejercicios y alimentos. Puede compartir su disposición sin unir
+  los modelos de alimento y ejercicio.
+- La tarjeta de métrica se repite en Inicio y Medidas. Etiqueta, valor y variación
+  son presentación; cálculos, unidades y tendencias siguen perteneciendo al dominio.
+- Los diálogos comparten superficie, jerarquía y disposición de acciones. Cifrado,
+  borrado, denuncia y confirmación de una sesión mantienen sus reglas particulares.
+- Las entradas de conversación combinan campo y envío en Coach y en los dos
+  asistentes de alimentos, con disposición vertical u horizontal.
+
+Los patrones «Base» son unidades visuales pequeñas. Los de «Composición» combinan
+varias unidades. «Por validar» señala evidencia insuficiente para justificar una
+extracción. Son nombres de análisis, no nombres de componentes ya implementados.
+No se propone convertir pantallas completas en una única abstracción genérica.
+
+## Método y alcance
 
 Se navegó por <https://gymnasia.maximofn.com/> el 19 de octubre de 2026, versión
-publicada 1.52.1, con emulación móvil de DevTools a 390 × 844 píxeles. Son capturas
-del producto real, no recreaciones. El generador verifica las dimensiones de cada
-imagen y que todas estén incluidas exactamente una vez en el inventario.
+publicada 1.52.1, con emulación móvil de DevTools a 390 × 844 píxeles. Las 54 imágenes
+son capturas del producto real, no recreaciones. Se revisaron visualmente y se
+contrastó el estilo de las propuestas con `../Gimnasia Design System.png`.
 
 El recorrido cubre Inicio, Rutinas (lista, detalle, editor, catálogo, formulario
 personalizado, selector de series, sesión, descanso, confirmación, resumen e
 historial), Dieta (vacío, búsqueda, cantidad, registro manual, comida con datos,
 menú, fechas y estimador), Medidas (estadísticas, gráfica, selector, formulario y
-fecha), Coach (inicio, envío, respuesta real y denuncia), las doce secciones de
-Configuración, copia cifrada, confirmación de borrado, fichas de catálogo y el
-asistente de alimentos personales.
+fecha), Coach (inicio, envío, respuesta y denuncia), las secciones de Configuración,
+copia cifrada, confirmación de borrado, fichas y asistente de alimentos personales.
 
 La sesión web contenía datos desechables de QA. Se guardaron dos sesiones parciales
-y una manzana de 180 g para observar estados con contenido y su persistencia. En
-Coach se pidió proponer un peso de prueba; no se confirmó su escritura. No se
-leyeron claves ni se enviaron denuncias. No se alteraron los datos de un móvil.
+y una manzana de 180 g para observar contenido y persistencia. En Coach se pidió
+proponer un peso de prueba; no se confirmó su escritura. No se leyeron claves ni
+se enviaron denuncias. No se alteraron datos de un móvil.
 
-Los datos pueden generar combinaciones ilimitadas: el alcance es compartir las
-familias visuales repetidas y sus variantes, no generar una imagen de cada posible
-valor. Las anotaciones señalan ejemplos visibles, no todos los usos de cada
-componente. Las coordenadas se revisaron sobre las capturas conservadas y se
-guardan como `[x, y, ancho, alto]` en píxeles del original. La imagen de la derecha
-usa una copia del original con marcas HTML superpuestas; no modifica la captura.
-Los nombres y enlaces se contrastan con el código actual. Algunas capturas
-conservan un estado intermedio de una transición; solo se marca lo que aparece
-visible, aunque el nombre de la vista aluda al flujo que se estaba recorriendo.
+Las anotaciones señalan ejemplos representativos, no todas las apariciones de
+cada patrón. Cada zona conserva `[x, y, ancho, alto]` en píxeles del original. Las
+marcas son HTML y los recortes usan una ventana SVG sobre la captura; los archivos
+originales permanecen intactos. Los recortes son evidencia del patrón propuesto,
+no renders de un nuevo componente ni diseños alternativos.
 
-## Biblioteca implementada
+Algunas imágenes conservan un estado intermedio de una transición. Solo se marca
+lo visible: por ejemplo, la captura denominada `46-dieta-error-fecha` no contiene
+un mensaje de error, y no se usa como evidencia de ese estado. La captura de macros
+contiene campos numéricos, no un control de incremento/decremento.
 
-Los componentes viven en `apps/mobile/components/`, clasificados en la capa de
-presentación `ui`. Las pantallas conservan sus modelos y controladores.
+## Qué queda para la fase de implementación
 
-| Familia | Componentes | Usos |
-| --- | --- | --- |
-| Acciones | `Button` | Inicio, Coach, estimador, formularios, confirmaciones y entrenamiento; variantes primaria, secundaria, contorno, discreta y destructiva |
-| Formularios | `TextField`, `SearchField`, `NumberStepper` | Medidas, fechas, chats, catálogos y planificación de macros |
-| Selección | `ChoiceChip`, `ChoiceRow`, `OptionChips`, `ToggleField` | Opciones de dieta, músculos, equipo, dificultad y notificaciones |
-| Estadísticas | `StatCard`, `ChartCard`, `ProgressBar` | Inicio y Medidas; gráficas de Medidas/Rutinas; sesión, descanso y minibarra |
-| Diálogos | `DialogLayer`, `DialogCard` | Confirmaciones y superposiciones de Rutinas, Dieta, Medidas, Configuración y catálogo |
-| Alimentos | `FoodThumbnail`, `DietItemThumbnail`, `FoodCatalogRow`, `FoodCatalogDetail` | Dieta, copia de comidas, ambigüedad y catálogos de ajustes |
+1. Revisar cada candidato en el código y decidir reutilizar, adaptar, crear o
+   descartar. Documentar la decisión y los usos concretos.
+2. Acordar límites, variantes y contrato; comenzar por las unidades pequeñas con
+   repeticiones demostradas y después evaluar las composiciones.
+3. Implementar solo las extracciones acordadas y verificar cada sustitución con
+   las pruebas y la QA visual apropiadas.
 
-Los tamaños, colores, bordes y variantes existentes se conservan mediante props
-tipadas y estilos de cada uso. Se contrastan con `../Gimnasia Design System.png`.
-`TextField` reenvía la referencia y las props nativas; `Button` conserva handlers,
-identificadores, etiquetas y desactivación; los diálogos conservan el orden de
-capas, la política de Atrás y las confirmaciones de sus propietarios.
+La refactorización que se había adelantado durante esta tarea se ha retirado de
+la propuesta. El diff final respecto al punto de partida conserva el inventario,
+las imágenes y las herramientas del análisis; no cambia la implementación móvil.
 
-Ya eran reutilizables `AppShell`, `SharedChatPanel`, `ExerciseCatalogBrowser`, los
-avisos de identidad IA/salud, el pie legal y las tarjetas de historial. Se
-reutilizan; las tablas de series, gráficas y flujos de seguridad conservan sus
-componentes especializados. La extracción no cambia cálculos, almacenamiento,
-proveedores, prompts ni reglas sanitarias.
+La web permite revisar la composición visible. No demuestra teclado nativo,
+permisos, notificaciones, segundo plano ni almacenamiento seguro. Recuperación,
+conflictos, restauración y errores de proveedor necesitarán fixtures controladas.
+Esos estados no se presentan como capturados. Tampoco se afirma que 54 imágenes
+agoten todas las combinaciones de datos y estados de la app.
 
-## Límites y validación
-
-La web permite revisar composición, controles, navegación, formularios y datos
-locales. No demuestra teclado nativo, selector del sistema, cámara, permisos,
-notificaciones, segundo plano o almacenamiento seguro. Los estados de recuperación
-al arrancar, conflicto concurrente, restauración y errores de proveedor requieren
-fixtures controladas; no se provocaron corrompiendo la sesión publicada. No se
-presentan como capturados. Las variantes de error/carga siguen perteneciendo a
-los componentes y controladores existentes.
-
-Para regenerar la galería a partir de las capturas conservadas:
+## Regeneración y validación
 
 ```sh
 node scripts/design-component-audit/generate.mjs
 ```
 
-El generador usa `scripts/design-component-audit/gallery.html` como plantilla
-autónoma, incrusta el inventario y comprueba que las zonas caben en la captura y
-que cada componente tiene un fichero de implementación. No requiere servidor ni
-conexión para consultar las parejas desde `index.html`.
+El generador usa `scripts/design-component-audit/gallery.html` como plantilla,
+incrusta el inventario y verifica dimensiones, cobertura de imágenes, referencias
+entre propuestas y zonas, límites geométricos y evidencia de repetición. No lee
+ficheros de implementación para seleccionar ni validar candidatos.
 
-La comprobación de la extracción usa el type-check móvil, `npm test` y las E2E
-existentes del shell, dieta, entrenamiento y proveedor falso. El resultado
-concreto de cada ejecución queda en la descripción de la PR. La QA nativa sigue
-siendo necesaria para comprobar el comportamiento del teclado en Android/iOS.
+La comprobación del DOM verifica las parejas, las marcas, las leyendas, los
+filtros, la vista de patrones, los recortes y la navegación al contexto. La
+herramienta del navegador bloquea el protocolo `file://`: esta versión de la
+galería no se presenta como verificada visualmente en esa URL.

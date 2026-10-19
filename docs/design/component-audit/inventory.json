@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "capturedAt": "2026-10-19",
   "source": "https://gymnasia.maximofn.com/",
   "publishedVersion": "1.52.1",
@@ -14,13 +14,9 @@
       "title": "Home",
       "area": "Inicio",
       "image": "screens/01-home.jpg",
-      "components": [
-        "Button",
-        "StatCard"
-      ],
       "regions": [
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             31,
             352,
@@ -30,17 +26,17 @@
           "note": "Acción principal de Inicio"
         },
         {
-          "component": "StatCard",
+          "proposal": "stat-card",
           "rect": [
             16,
             429,
             113,
             94
           ],
-          "note": "Tarjeta reutilizable de calorías"
+          "note": "Tarjeta visual de calorías"
         },
         {
-          "component": "StatCard",
+          "proposal": "stat-card",
           "rect": [
             139,
             429,
@@ -48,7 +44,55 @@
             94
           ],
           "note": "La misma tarjeta con peso y variación"
+        },
+        {
+          "proposal": "workout-card",
+          "rect": [
+            16,
+            127,
+            358,
+            286
+          ],
+          "note": "Variante destacada de la tarjeta de rutina"
+        },
+        {
+          "proposal": "item-row",
+          "rect": [
+            16,
+            733,
+            358,
+            84
+          ],
+          "note": "Ejercicio de hoy: miniatura, título, resumen y acción"
+        },
+        {
+          "proposal": "icon-button",
+          "rect": [
+            320,
+            755,
+            41,
+            41
+          ],
+          "note": "Acción circular para iniciar el ejercicio"
+        },
+        {
+          "proposal": "badge",
+          "rect": [
+            48,
+            161,
+            79,
+            29
+          ],
+          "note": "Categoría de la rutina como dato informativo"
         }
+      ],
+      "proposals": [
+        "button",
+        "stat-card",
+        "workout-card",
+        "item-row",
+        "icon-button",
+        "badge"
       ]
     },
     {
@@ -56,31 +100,85 @@
       "title": "Rutinas lista",
       "area": "Rutinas",
       "image": "screens/02-rutinas-lista.jpg",
-      "components": [
-        "AppHeader",
-        "TrainingListScreen"
-      ],
       "regions": [
         {
-          "component": "AppHeader",
+          "proposal": "tab-bar",
           "rect": [
             16,
             63,
             358,
             54
           ],
-          "note": "Navegación conservada"
+          "note": "Destinos principales y pestaña activa"
         },
         {
-          "component": "TrainingListScreen",
+          "proposal": "search-field",
           "rect": [
             16,
-            285,
+            127,
             358,
-            325
+            48
           ],
-          "note": "Lista de rutinas; componente de pantalla existente"
+          "note": "Buscador con lupa"
+        },
+        {
+          "proposal": "choice-chip",
+          "rect": [
+            16,
+            188,
+            74,
+            40
+          ],
+          "note": "Filtro seleccionado"
+        },
+        {
+          "proposal": "workout-card",
+          "rect": [
+            16,
+            287,
+            358,
+            164
+          ],
+          "note": "Primera tarjeta de rutina"
+        },
+        {
+          "proposal": "workout-card",
+          "rect": [
+            16,
+            461,
+            358,
+            165
+          ],
+          "note": "Misma estructura para otra rutina"
+        },
+        {
+          "proposal": "button",
+          "rect": [
+            31,
+            392,
+            328,
+            45
+          ],
+          "note": "Acción de contorno dentro de la tarjeta"
+        },
+        {
+          "proposal": "badge",
+          "rect": [
+            111,
+            344,
+            62,
+            18
+          ],
+          "note": "Categoría informativa de la rutina"
         }
+      ],
+      "proposals": [
+        "tab-bar",
+        "search-field",
+        "choice-chip",
+        "workout-card",
+        "button",
+        "badge"
       ]
     },
     {
@@ -88,12 +186,9 @@
       "title": "Rutina nueva",
       "area": "Rutinas",
       "image": "screens/03-rutina-nueva.jpg",
-      "components": [
-        "Button"
-      ],
       "regions": [
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             249,
             80,
@@ -103,7 +198,7 @@
           "note": "Guardar borrador"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             16,
             516,
@@ -111,7 +206,53 @@
             46
           ],
           "note": "Inicio desactivado hasta guardar"
+        },
+        {
+          "proposal": "empty-state",
+          "rect": [
+            16,
+            633,
+            358,
+            139
+          ],
+          "note": "Explicación de rutina sin ejercicios"
+        },
+        {
+          "proposal": "notice",
+          "rect": [
+            16,
+            138,
+            358,
+            52
+          ],
+          "note": "Aviso de cambios sin guardar"
+        },
+        {
+          "proposal": "choice-chip",
+          "rect": [
+            16,
+            342,
+            76,
+            39
+          ],
+          "note": "Tipo de entrenamiento seleccionado"
+        },
+        {
+          "proposal": "choice-chip",
+          "rect": [
+            16,
+            462,
+            43,
+            43
+          ],
+          "note": "Variante de selección mediante icono"
         }
+      ],
+      "proposals": [
+        "button",
+        "empty-state",
+        "notice",
+        "choice-chip"
       ]
     },
     {
@@ -119,20 +260,64 @@
       "title": "Catalogo ejercicios",
       "area": "Rutinas",
       "image": "screens/04-catalogo-ejercicios.jpg",
-      "components": [
-        "ExerciseCatalogBrowser"
-      ],
       "regions": [
         {
-          "component": "ExerciseCatalogBrowser",
+          "proposal": "search-field",
           "rect": [
-            0,
-            0,
-            390,
-            844
+            14,
+            60,
+            362,
+            44
           ],
-          "note": "Catálogo existente: búsqueda, filtros y resultados"
+          "note": "Buscador del catálogo de ejercicios"
+        },
+        {
+          "proposal": "choice-chip",
+          "rect": [
+            14,
+            120,
+            70,
+            34
+          ],
+          "note": "Filtro de grupo muscular"
+        },
+        {
+          "proposal": "item-row",
+          "rect": [
+            14,
+            168,
+            348,
+            84
+          ],
+          "note": "Miniatura, título, metadatos y acción"
+        },
+        {
+          "proposal": "thumbnail",
+          "rect": [
+            24,
+            170,
+            89,
+            80
+          ],
+          "note": "Imagen compacta del elemento, con marco y alternativa visual"
+        },
+        {
+          "proposal": "icon-button",
+          "rect": [
+            322,
+            195,
+            29,
+            30
+          ],
+          "note": "Acción sobre una fila del catálogo"
         }
+      ],
+      "proposals": [
+        "search-field",
+        "choice-chip",
+        "item-row",
+        "thumbnail",
+        "icon-button"
       ]
     },
     {
@@ -140,14 +325,9 @@
       "title": "Ejercicio personalizado",
       "area": "Rutinas",
       "image": "screens/05-ejercicio-personalizado.jpg",
-      "components": [
-        "TextField",
-        "OptionChips",
-        "ChoiceChip"
-      ],
       "regions": [
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             14,
             82,
@@ -157,7 +337,7 @@
           "note": "Nombre del ejercicio"
         },
         {
-          "component": "OptionChips",
+          "proposal": "choice-chip",
           "rect": [
             14,
             150,
@@ -167,7 +347,7 @@
           "note": "Grupo muscular principal"
         },
         {
-          "component": "OptionChips",
+          "proposal": "choice-chip",
           "rect": [
             14,
             392,
@@ -177,15 +357,19 @@
           "note": "Mismos chips para músculos secundarios"
         },
         {
-          "component": "ChoiceChip",
+          "proposal": "choice-chip",
           "rect": [
             14,
             173,
             71,
             33
           ],
-          "note": "Unidad reutilizable dentro de OptionChips"
+          "note": "Unidad visual dentro de OptionChips"
         }
+      ],
+      "proposals": [
+        "text-field",
+        "choice-chip"
       ]
     },
     {
@@ -193,23 +377,19 @@
       "title": "Confirmar descartar",
       "area": "Rutinas",
       "image": "screens/06-confirmar-descartar.jpg",
-      "components": [
-        "DialogLayer",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "DialogLayer",
+          "proposal": "modal",
           "rect": [
             20,
             296,
             350,
             252
           ],
-          "note": "Contenido de la capa de confirmación; conserva el manejo de Atrás"
+          "note": "Título, contenido y acciones en una superficie superpuesta"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             41,
             415,
@@ -219,7 +399,7 @@
           "note": "Continuar editando"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             41,
             479,
@@ -228,6 +408,10 @@
           ],
           "note": "Descartar el borrador"
         }
+      ],
+      "proposals": [
+        "modal",
+        "button"
       ]
     },
     {
@@ -235,13 +419,9 @@
       "title": "Rutina detalle",
       "area": "Rutinas",
       "image": "screens/07-rutina-detalle.jpg",
-      "components": [
-        "Button",
-        "ChartCard"
-      ],
       "regions": [
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             16,
             472,
@@ -251,15 +431,19 @@
           "note": "Empezar la rutina"
         },
         {
-          "component": "ChartCard",
+          "proposal": "chart-panel",
           "rect": [
             16,
             534,
             358,
             274
           ],
-          "note": "Gráfica, título y selector de periodo compartidos"
+          "note": "Gráfica, título y selector de periodo similars"
         }
+      ],
+      "proposals": [
+        "button",
+        "chart-panel"
       ]
     },
     {
@@ -267,13 +451,9 @@
       "title": "Rutina editor",
       "area": "Rutinas",
       "image": "screens/08-rutina-editor.jpg",
-      "components": [
-        "Button",
-        "TrainingEditorScreen"
-      ],
       "regions": [
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             249,
             80,
@@ -283,7 +463,7 @@
           "note": "Guardar rutina"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             16,
             452,
@@ -293,15 +473,30 @@
           "note": "Empezar rutina desde el editor"
         },
         {
-          "component": "TrainingEditorScreen",
+          "proposal": "set-row",
           "rect": [
-            16,
-            569,
-            358,
-            275
+            29,
+            682,
+            332,
+            32
           ],
-          "note": "Referencia visual de series; mantiene su implementación especializada"
+          "note": "Fila de serie en el editor de rutina"
+        },
+        {
+          "proposal": "item-row",
+          "rect": [
+            29,
+            584,
+            332,
+            63
+          ],
+          "note": "Cabecera de ejercicio con miniatura y metadatos"
         }
+      ],
+      "proposals": [
+        "button",
+        "set-row",
+        "item-row"
       ]
     },
     {
@@ -309,20 +504,41 @@
       "title": "Selector serie",
       "area": "Rutinas",
       "image": "screens/09-selector-serie.jpg",
-      "components": [
-        "TrainingCatalogOverlays"
-      ],
       "regions": [
         {
-          "component": "TrainingCatalogOverlays",
+          "proposal": "modal",
           "rect": [
-            40,
-            175,
-            310,
-            550
+            29,
+            184,
+            332,
+            478
           ],
-          "note": "Selector de tipos de serie existente; no se extrajo como ChoiceChip"
+          "note": "Panel superpuesto con título y lista desplazable"
+        },
+        {
+          "proposal": "option-row",
+          "rect": [
+            39,
+            228,
+            298,
+            45
+          ],
+          "note": "Opción de serie seleccionada"
+        },
+        {
+          "proposal": "option-row",
+          "rect": [
+            39,
+            274,
+            298,
+            42
+          ],
+          "note": "Opción no seleccionada con icono"
         }
+      ],
+      "proposals": [
+        "modal",
+        "option-row"
       ]
     },
     {
@@ -330,13 +546,9 @@
       "title": "Sesion activa",
       "area": "Rutinas",
       "image": "screens/10-sesion-activa.jpg",
-      "components": [
-        "ProgressBar",
-        "TrainingSessionScreen"
-      ],
       "regions": [
         {
-          "component": "ProgressBar",
+          "proposal": "progress-bar",
           "rect": [
             16,
             231,
@@ -346,15 +558,30 @@
           "note": "Progreso global de la sesión"
         },
         {
-          "component": "TrainingSessionScreen",
+          "proposal": "set-row",
+          "rect": [
+            29,
+            391,
+            332,
+            43
+          ],
+          "note": "Fila de serie durante la sesión"
+        },
+        {
+          "proposal": "section-panel",
           "rect": [
             16,
             272,
             358,
             367
           ],
-          "note": "Tabla de esfuerzos y campos de series existentes"
+          "note": "Sección de un ejercicio con cabecera y contenido"
         }
+      ],
+      "proposals": [
+        "progress-bar",
+        "set-row",
+        "section-panel"
       ]
     },
     {
@@ -362,13 +589,9 @@
       "title": "Sesion descanso",
       "area": "Rutinas",
       "image": "screens/11-sesion-descanso.jpg",
-      "components": [
-        "ProgressBar",
-        "TrainingSessionScreen"
-      ],
       "regions": [
         {
-          "component": "ProgressBar",
+          "proposal": "progress-bar",
           "rect": [
             16,
             231,
@@ -378,7 +601,7 @@
           "note": "Misma barra para el progreso del entrenamiento"
         },
         {
-          "component": "ProgressBar",
+          "proposal": "progress-bar",
           "rect": [
             41,
             684,
@@ -388,15 +611,30 @@
           "note": "Variante azul para el descanso"
         },
         {
-          "component": "TrainingSessionScreen",
+          "proposal": "set-row",
+          "rect": [
+            29,
+            391,
+            332,
+            43
+          ],
+          "note": "Fila de serie durante la sesión"
+        },
+        {
+          "proposal": "section-panel",
           "rect": [
             16,
             272,
             358,
             437
           ],
-          "note": "Datos y controles especializados de la sesión"
+          "note": "Sección de un ejercicio con cabecera y contenido"
         }
+      ],
+      "proposals": [
+        "progress-bar",
+        "set-row",
+        "section-panel"
       ]
     },
     {
@@ -404,23 +642,19 @@
       "title": "Sesion confirmar parcial",
       "area": "Rutinas",
       "image": "screens/12-sesion-confirmar-parcial.jpg",
-      "components": [
-        "DialogCard",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "DialogCard",
+          "proposal": "modal",
           "rect": [
             20,
             224,
             350,
             396
           ],
-          "note": "Confirmación de sesión parcial"
+          "note": "Título, contenido y acciones en una superficie superpuesta"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             41,
             485,
@@ -430,7 +664,7 @@
           "note": "Seguir entrenando"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             41,
             551,
@@ -439,6 +673,10 @@
           ],
           "note": "Guardar lo realizado como parcial"
         }
+      ],
+      "proposals": [
+        "modal",
+        "button"
       ]
     },
     {
@@ -446,23 +684,19 @@
       "title": "Sesion resumen",
       "area": "Rutinas",
       "image": "screens/13-sesion-resumen.jpg",
-      "components": [
-        "DialogCard",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "DialogCard",
+          "proposal": "modal",
           "rect": [
             20,
             205,
             350,
             434
           ],
-          "note": "Resumen del entrenamiento"
+          "note": "Título, contenido y acciones en una superficie superpuesta"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             41,
             570,
@@ -471,6 +705,10 @@
           ],
           "note": "Cerrar el resumen"
         }
+      ],
+      "proposals": [
+        "modal",
+        "button"
       ]
     },
     {
@@ -478,20 +716,31 @@
       "title": "Historial",
       "area": "Rutinas",
       "image": "screens/14-historial.jpg",
-      "components": [
-        "WorkoutHistoryEntryCard"
-      ],
       "regions": [
         {
-          "component": "WorkoutHistoryEntryCard",
+          "proposal": "record-card",
           "rect": [
             16,
             145,
             358,
             93
           ],
-          "note": "Tarjeta histórica existente, conservada"
+          "note": "Fecha, resumen de sesión y acceso al detalle"
+        },
+        {
+          "proposal": "badge",
+          "rect": [
+            268,
+            163,
+            64,
+            28
+          ],
+          "note": "Estado Parcial de la sesión guardada"
         }
+      ],
+      "proposals": [
+        "record-card",
+        "badge"
       ]
     },
     {
@@ -499,20 +748,41 @@
       "title": "Historial detalle",
       "area": "Rutinas",
       "image": "screens/15-historial-detalle.jpg",
-      "components": [
-        "WorkoutHistoryDetail"
-      ],
       "regions": [
         {
-          "component": "WorkoutHistoryDetail",
+          "proposal": "key-value-row",
+          "rect": [
+            31,
+            151,
+            328,
+            33
+          ],
+          "note": "Duración: etiqueta y valor alineados"
+        },
+        {
+          "proposal": "key-value-row",
+          "rect": [
+            31,
+            197,
+            328,
+            33
+          ],
+          "note": "Esfuerzos: misma estructura"
+        },
+        {
+          "proposal": "notice",
           "rect": [
             16,
-            139,
+            384,
             358,
-            324
+            79
           ],
-          "note": "Totales y comprobación de la sesión existente"
+          "note": "Aviso con icono y explicación de verificación"
         }
+      ],
+      "proposals": [
+        "key-value-row",
+        "notice"
       ]
     },
     {
@@ -520,31 +790,52 @@
       "title": "Dieta vacia",
       "area": "Dieta",
       "image": "screens/16-dieta-vacia.jpg",
-      "components": [
-        "DietHeader",
-        "DietMealsScreen"
-      ],
       "regions": [
         {
-          "component": "DietHeader",
+          "proposal": "section-panel",
           "rect": [
             16,
-            125,
             358,
-            198
+            358,
+            299
           ],
-          "note": "Resumen nutricional existente"
+          "note": "Comida con cabecera, resumen y contenido"
         },
         {
-          "component": "DietMealsScreen",
+          "proposal": "search-field",
+          "rect": [
+            31,
+            505,
+            328,
+            45
+          ],
+          "note": "Buscador dentro de una comida"
+        },
+        {
+          "proposal": "button",
+          "rect": [
+            31,
+            559,
+            160,
+            38
+          ],
+          "note": "Acción de contorno y ancho ajustado"
+        },
+        {
+          "proposal": "section-panel",
           "rect": [
             16,
-            340,
+            669,
             358,
-            335
+            175
           ],
-          "note": "Comida vacía y acciones locales existentes"
+          "note": "Segunda comida: misma composición, parcialmente visible"
         }
+      ],
+      "proposals": [
+        "section-panel",
+        "search-field",
+        "button"
       ]
     },
     {
@@ -552,13 +843,9 @@
       "title": "Dieta alimento manual",
       "area": "Dieta",
       "image": "screens/17-dieta-alimento-manual.jpg",
-      "components": [
-        "TextField",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             149,
             516,
@@ -568,17 +855,17 @@
           "note": "Cantidad en gramos del alimento manual"
         },
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             149,
             566,
             210,
             42
           ],
-          "note": "Valor nutricional: misma entrada reutilizable"
+          "note": "Valor nutricional: misma entrada visual"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             31,
             766,
@@ -586,7 +873,32 @@
             42
           ],
           "note": "Guardar alimento manual"
+        },
+        {
+          "proposal": "text-field",
+          "rect": [
+            31,
+            467,
+            328,
+            40
+          ],
+          "note": "Nombre del alimento como entrada de texto"
+        },
+        {
+          "proposal": "form-panel",
+          "rect": [
+            31,
+            467,
+            328,
+            341
+          ],
+          "note": "Grupo de campos y acciones para registrar un alimento"
         }
+      ],
+      "proposals": [
+        "text-field",
+        "button",
+        "form-panel"
       ]
     },
     {
@@ -594,42 +906,74 @@
       "title": "Estimador alimentos",
       "area": "Dieta",
       "image": "screens/18-estimador-alimentos.jpg",
-      "components": [
-        "SharedChatPanel",
-        "TextField",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "SharedChatPanel",
+          "proposal": "notice",
           "rect": [
-            16,
-            114,
-            358,
-            664
+            25,
+            122,
+            340,
+            112
           ],
-          "note": "Panel de conversación compartido del estimador"
+          "note": "Aviso de identidad IA con icono y descripción"
         },
         {
-          "component": "TextField",
+          "proposal": "message",
+          "rect": [
+            25,
+            242,
+            313,
+            151
+          ],
+          "note": "Mensaje inicial del asistente"
+        },
+        {
+          "proposal": "message",
+          "rect": [
+            25,
+            402,
+            301,
+            55
+          ],
+          "note": "Otro mensaje con el mismo tratamiento"
+        },
+        {
+          "proposal": "composer",
+          "rect": [
+            16,
+            698,
+            358,
+            56
+          ],
+          "note": "Campo y botón de envío en horizontal"
+        },
+        {
+          "proposal": "text-field",
           "rect": [
             16,
             698,
             258,
             56
           ],
-          "note": "Entrada del estimador"
+          "note": "Entrada de texto de varias líneas"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             282,
             710,
             92,
             44
           ],
-          "note": "Enviar mensaje al estimador"
+          "note": "Enviar con ancho ajustado"
         }
+      ],
+      "proposals": [
+        "notice",
+        "message",
+        "composer",
+        "text-field",
+        "button"
       ]
     },
     {
@@ -637,31 +981,31 @@
       "title": "Dieta fecha",
       "area": "Dieta",
       "image": "screens/19-dieta-fecha.jpg",
-      "components": [
-        "DietHeader",
-        "DietMealsScreen"
-      ],
       "regions": [
         {
-          "component": "DietHeader",
-          "rect": [
-            16,
-            131,
-            358,
-            88
-          ],
-          "note": "Resumen nutricional visible en esta captura"
-        },
-        {
-          "component": "DietMealsScreen",
+          "proposal": "section-panel",
           "rect": [
             16,
             265,
             358,
             202
           ],
-          "note": "Contexto de la comida; el campo de fecha no aparece en esta captura"
+          "note": "Contenido visible de una comida; la fecha no aparece desplegada"
+        },
+        {
+          "proposal": "search-field",
+          "rect": [
+            31,
+            413,
+            328,
+            43
+          ],
+          "note": "Buscador de alimentos de la comida"
         }
+      ],
+      "proposals": [
+        "section-panel",
+        "search-field"
       ]
     },
     {
@@ -669,13 +1013,9 @@
       "title": "Medidas",
       "area": "Medidas",
       "image": "screens/20-medidas.jpg",
-      "components": [
-        "StatCard",
-        "ChartCard"
-      ],
       "regions": [
         {
-          "component": "StatCard",
+          "proposal": "stat-card",
           "rect": [
             16,
             214,
@@ -685,7 +1025,7 @@
           "note": "Métrica corporal: cintura, sin datos"
         },
         {
-          "component": "StatCard",
+          "proposal": "stat-card",
           "rect": [
             139,
             214,
@@ -695,15 +1035,30 @@
           "note": "Misma tarjeta para la medida de cadera"
         },
         {
-          "component": "ChartCard",
+          "proposal": "chart-panel",
           "rect": [
             16,
             458,
             358,
             295
           ],
-          "note": "Tarjeta de gráfica compartida con Rutinas"
+          "note": "Tarjeta de gráfica similar con Rutinas"
+        },
+        {
+          "proposal": "select-field",
+          "rect": [
+            263,
+            473,
+            96,
+            35
+          ],
+          "note": "Periodo de la gráfica"
         }
+      ],
+      "proposals": [
+        "stat-card",
+        "chart-panel",
+        "select-field"
       ]
     },
     {
@@ -711,31 +1066,42 @@
       "title": "Medidas selector",
       "area": "Medidas",
       "image": "screens/21-medidas-selector.jpg",
-      "components": [
-        "ChartCard",
-        "MeasurementsScreen"
-      ],
       "regions": [
         {
-          "component": "ChartCard",
+          "proposal": "chart-panel",
           "rect": [
             16,
             460,
             358,
             295
           ],
-          "note": "Gráfica con selector abierto"
+          "note": "Marco de gráfica con selector desplegado"
         },
         {
-          "component": "MeasurementsScreen",
+          "proposal": "select-field",
+          "rect": [
+            31,
+            472,
+            86,
+            30
+          ],
+          "note": "Métrica actual y flecha de apertura"
+        },
+        {
+          "proposal": "option-row",
           "rect": [
             31,
             517,
             150,
-            327
+            39
           ],
-          "note": "Opciones de métrica existentes; no son ChoiceChip"
+          "note": "Opción visible en el selector de métrica"
         }
+      ],
+      "proposals": [
+        "chart-panel",
+        "select-field",
+        "option-row"
       ]
     },
     {
@@ -743,12 +1109,9 @@
       "title": "Medidas formulario",
       "area": "Medidas",
       "image": "screens/22-medidas-formulario.jpg",
-      "components": [
-        "TextField"
-      ],
       "regions": [
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             29,
             509,
@@ -758,7 +1121,7 @@
           "note": "Peso de la medición"
         },
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             29,
             577,
@@ -768,15 +1131,40 @@
           "note": "Porcentaje de grasa"
         },
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             29,
             645,
             332,
             43
           ],
-          "note": "Contorno corporal: misma entrada reutilizable"
+          "note": "Contorno corporal: misma entrada visual"
+        },
+        {
+          "proposal": "form-panel",
+          "rect": [
+            16,
+            165,
+            358,
+            679
+          ],
+          "note": "Panel de registro de medidas, parcialmente visible"
+        },
+        {
+          "proposal": "select-field",
+          "rect": [
+            29,
+            260,
+            332,
+            44
+          ],
+          "note": "Fecha actual y acción de desplegar el campo"
         }
+      ],
+      "proposals": [
+        "text-field",
+        "form-panel",
+        "select-field"
       ]
     },
     {
@@ -784,12 +1172,9 @@
       "title": "Medidas fecha",
       "area": "Medidas",
       "image": "screens/23-medidas-fecha.jpg",
-      "components": [
-        "TextField"
-      ],
       "regions": [
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             29,
             317,
@@ -799,7 +1184,7 @@
           "note": "Fecha de la medición"
         },
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             29,
             565,
@@ -808,6 +1193,9 @@
           ],
           "note": "Campo corporal tras desplegar la fecha"
         }
+      ],
+      "proposals": [
+        "text-field"
       ]
     },
     {
@@ -815,24 +1203,19 @@
       "title": "Coach inicial",
       "area": "Coach",
       "image": "screens/24-coach-inicial.jpg",
-      "components": [
-        "AiIdentityDisclosure",
-        "TextField",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "AiIdentityDisclosure",
+          "proposal": "notice",
           "rect": [
             16,
             127,
             358,
             93
           ],
-          "note": "Aviso de identidad IA existente"
+          "note": "Aviso de identidad IA con icono y texto de ayuda"
         },
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             16,
             695,
@@ -842,7 +1225,7 @@
           "note": "Enviar mensaje"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             16,
             759,
@@ -850,7 +1233,34 @@
             46
           ],
           "note": "Parte visible del botón Enviar"
+        },
+        {
+          "proposal": "message",
+          "rect": [
+            16,
+            228,
+            358,
+            143
+          ],
+          "note": "Mensaje de bienvenida del Coach"
+        },
+        {
+          "proposal": "composer",
+          "rect": [
+            16,
+            695,
+            358,
+            110
+          ],
+          "note": "Campo y botón de envío apilados"
         }
+      ],
+      "proposals": [
+        "notice",
+        "text-field",
+        "button",
+        "message",
+        "composer"
       ]
     },
     {
@@ -858,14 +1268,9 @@
       "title": "Config dieta",
       "area": "Configuración",
       "image": "screens/25-config-dieta.jpg",
-      "components": [
-        "ChoiceRow",
-        "NumberStepper",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "ChoiceRow",
+          "proposal": "choice-chip",
           "rect": [
             29,
             244,
@@ -875,7 +1280,7 @@
           "note": "Selección de sexo"
         },
         {
-          "component": "ChoiceRow",
+          "proposal": "choice-chip",
           "rect": [
             29,
             379,
@@ -885,17 +1290,17 @@
           "note": "Objetivo de dieta: misma familia de selección"
         },
         {
-          "component": "NumberStepper",
+          "proposal": "text-field",
           "rect": [
             29,
             689,
             161,
             52
           ],
-          "note": "Control numérico de macronutrientes"
+          "note": "Campo numérico de macros; no hay botones de incremento en la captura"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             286,
             554,
@@ -903,7 +1308,53 @@
             42
           ],
           "note": "Calcular calorías"
+        },
+        {
+          "proposal": "choice-chip",
+          "rect": [
+            29,
+            450,
+            83,
+            36
+          ],
+          "note": "Selección del nivel de actividad"
+        },
+        {
+          "proposal": "text-field",
+          "rect": [
+            29,
+            554,
+            249,
+            42
+          ],
+          "note": "Objetivo numérico de calorías"
+        },
+        {
+          "proposal": "tab-bar",
+          "rect": [
+            16,
+            63,
+            358,
+            54
+          ],
+          "note": "Navegación principal con destino activo"
+        },
+        {
+          "proposal": "tab-bar",
+          "rect": [
+            16,
+            127,
+            358,
+            34
+          ],
+          "note": "Segundo nivel de navegación por secciones"
         }
+      ],
+      "proposals": [
+        "choice-chip",
+        "text-field",
+        "button",
+        "tab-bar"
       ]
     },
     {
@@ -911,31 +1362,42 @@
       "title": "Config entreno",
       "area": "Configuración",
       "image": "screens/26-config-entreno.jpg",
-      "components": [
-        "TrainingSettingsPanel",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "TrainingSettingsPanel",
+          "proposal": "workout-card",
           "rect": [
-            16,
-            174,
-            358,
-            386
+            29,
+            217,
+            332,
+            160
           ],
-          "note": "Resumen de rutinas existente"
+          "note": "Resumen de rutina dentro de ajustes"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             29,
             685,
             332,
             48
           ],
-          "note": "Consultar catálogo de ejercicios"
+          "note": "Acción para consultar el catálogo"
+        },
+        {
+          "proposal": "section-panel",
+          "rect": [
+            16,
+            574,
+            358,
+            177
+          ],
+          "note": "Sección con título, descripción y acción"
         }
+      ],
+      "proposals": [
+        "workout-card",
+        "button",
+        "section-panel"
       ]
     },
     {
@@ -943,14 +1405,9 @@
       "title": "Config alimentos",
       "area": "Configuración",
       "image": "screens/27-config-alimentos.jpg",
-      "components": [
-        "SearchField",
-        "FoodCatalogRow",
-        "FoodThumbnail"
-      ],
       "regions": [
         {
-          "component": "SearchField",
+          "proposal": "search-field",
           "rect": [
             16,
             211,
@@ -960,25 +1417,30 @@
           "note": "Búsqueda de alimentos"
         },
         {
-          "component": "FoodCatalogRow",
+          "proposal": "item-row",
           "rect": [
             29,
             391,
             332,
             43
           ],
-          "note": "Fila reutilizable del catálogo"
+          "note": "Fila visual del catálogo"
         },
         {
-          "component": "FoodThumbnail",
+          "proposal": "thumbnail",
           "rect": [
             29,
             396,
             36,
             36
           ],
-          "note": "Miniatura de la fila con imagen o alternativa"
+          "note": "Imagen compacta del elemento, con marco y alternativa visual"
         }
+      ],
+      "proposals": [
+        "search-field",
+        "item-row",
+        "thumbnail"
       ]
     },
     {
@@ -986,13 +1448,9 @@
       "title": "Config productos",
       "area": "Configuración",
       "image": "screens/28-config-productos.jpg",
-      "components": [
-        "SearchField",
-        "FoodCatalogRow"
-      ],
       "regions": [
         {
-          "component": "SearchField",
+          "proposal": "search-field",
           "rect": [
             16,
             211,
@@ -1002,7 +1460,7 @@
           "note": "Misma búsqueda para productos comerciales"
         },
         {
-          "component": "FoodCatalogRow",
+          "proposal": "item-row",
           "rect": [
             29,
             313,
@@ -1011,6 +1469,10 @@
           ],
           "note": "Fila de producto con el mismo componente"
         }
+      ],
+      "proposals": [
+        "search-field",
+        "item-row"
       ]
     },
     {
@@ -1018,12 +1480,9 @@
       "title": "Config alimentos personales",
       "area": "Configuración",
       "image": "screens/29-config-alimentos-personales.jpg",
-      "components": [
-        "SearchField"
-      ],
       "regions": [
         {
-          "component": "SearchField",
+          "proposal": "search-field",
           "rect": [
             16,
             223,
@@ -1031,7 +1490,53 @@
             40
           ],
           "note": "Misma búsqueda para alimentos personales"
+        },
+        {
+          "proposal": "empty-state",
+          "rect": [
+            16,
+            275,
+            358,
+            73
+          ],
+          "note": "Lista de alimentos personales sin contenido"
+        },
+        {
+          "proposal": "legal-footer",
+          "rect": [
+            49,
+            452,
+            292,
+            49
+          ],
+          "note": "Pie de privacidad y texto informativo"
+        },
+        {
+          "proposal": "tab-bar",
+          "rect": [
+            16,
+            63,
+            358,
+            54
+          ],
+          "note": "Navegación principal con destino activo"
+        },
+        {
+          "proposal": "tab-bar",
+          "rect": [
+            16,
+            127,
+            358,
+            34
+          ],
+          "note": "Segundo nivel de navegación por secciones"
         }
+      ],
+      "proposals": [
+        "search-field",
+        "empty-state",
+        "legal-footer",
+        "tab-bar"
       ]
     },
     {
@@ -1039,20 +1544,51 @@
       "title": "Config medidas",
       "area": "Configuración",
       "image": "screens/30-config-medidas.jpg",
-      "components": [
-        "MeasurementsSettingsPanel"
-      ],
       "regions": [
         {
-          "component": "MeasurementsSettingsPanel",
+          "proposal": "record-card",
           "rect": [
             16,
-            210,
+            214,
             358,
-            390
+            133
           ],
-          "note": "Lista de mediciones existente; no es StatCard"
+          "note": "Registro de medida con fecha, valor y acciones"
+        },
+        {
+          "proposal": "record-card",
+          "rect": [
+            16,
+            359,
+            358,
+            133
+          ],
+          "note": "Otro registro con la misma disposición"
+        },
+        {
+          "proposal": "button",
+          "rect": [
+            29,
+            301,
+            162,
+            34
+          ],
+          "note": "Acción secundaria de editar"
+        },
+        {
+          "proposal": "button",
+          "rect": [
+            199,
+            301,
+            162,
+            34
+          ],
+          "note": "Acción destructiva de contorno"
         }
+      ],
+      "proposals": [
+        "record-card",
+        "button"
       ]
     },
     {
@@ -1060,20 +1596,62 @@
       "title": "Config preferencias",
       "area": "Configuración",
       "image": "screens/31-config-preferencias.jpg",
-      "components": [
-        "PreferencesSettingsPanel"
-      ],
       "regions": [
         {
-          "component": "PreferencesSettingsPanel",
+          "proposal": "key-value-row",
           "rect": [
             16,
-            176,
+            203,
             358,
-            184
+            46
           ],
-          "note": "Presentación de preferencias existente"
+          "note": "Preferencia: etiqueta a la izquierda y valor a la derecha"
+        },
+        {
+          "proposal": "key-value-row",
+          "rect": [
+            16,
+            261,
+            358,
+            46
+          ],
+          "note": "Otra preferencia con el mismo formato"
+        },
+        {
+          "proposal": "legal-footer",
+          "rect": [
+            49,
+            442,
+            292,
+            69
+          ],
+          "note": "Enlace de privacidad y texto informativo"
+        },
+        {
+          "proposal": "tab-bar",
+          "rect": [
+            16,
+            63,
+            358,
+            54
+          ],
+          "note": "Navegación principal con destino activo"
+        },
+        {
+          "proposal": "tab-bar",
+          "rect": [
+            16,
+            127,
+            358,
+            34
+          ],
+          "note": "Segundo nivel de navegación por secciones"
         }
+      ],
+      "proposals": [
+        "key-value-row",
+        "legal-footer",
+        "tab-bar"
       ]
     },
     {
@@ -1081,12 +1659,9 @@
       "title": "Config notificaciones",
       "area": "Configuración",
       "image": "screens/32-config-notificaciones.jpg",
-      "components": [
-        "ToggleField"
-      ],
       "regions": [
         {
-          "component": "ToggleField",
+          "proposal": "toggle-row",
           "rect": [
             16,
             339,
@@ -1096,7 +1671,7 @@
           "note": "Notificaciones: etiqueta, descripción e interruptor"
         },
         {
-          "component": "ToggleField",
+          "proposal": "toggle-row",
           "rect": [
             16,
             415,
@@ -1106,7 +1681,7 @@
           "note": "Sonido: mismo componente"
         },
         {
-          "component": "ToggleField",
+          "proposal": "toggle-row",
           "rect": [
             16,
             491,
@@ -1114,7 +1689,42 @@
             64
           ],
           "note": "Vibración: mismo componente"
+        },
+        {
+          "proposal": "notice",
+          "rect": [
+            16,
+            246,
+            358,
+            81
+          ],
+          "note": "Aviso de notificaciones bloqueadas"
+        },
+        {
+          "proposal": "option-row",
+          "rect": [
+            31,
+            628,
+            328,
+            39
+          ],
+          "note": "Tono de notificación seleccionado"
+        },
+        {
+          "proposal": "option-row",
+          "rect": [
+            31,
+            673,
+            328,
+            39
+          ],
+          "note": "Tono alternativo sin seleccionar"
         }
+      ],
+      "proposals": [
+        "toggle-row",
+        "notice",
+        "option-row"
       ]
     },
     {
@@ -1122,12 +1732,9 @@
       "title": "Config datos",
       "area": "Configuración",
       "image": "screens/33-config-datos.jpg",
-      "components": [
-        "Button"
-      ],
       "regions": [
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             16,
             353,
@@ -1137,7 +1744,7 @@
           "note": "Exportar copia"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             16,
             413,
@@ -1147,7 +1754,7 @@
           "note": "Restaurar copia"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             31,
             775,
@@ -1155,7 +1762,21 @@
             44
           ],
           "note": "Acción destructiva del bloque de borrado"
+        },
+        {
+          "proposal": "key-value-row",
+          "rect": [
+            16,
+            295,
+            358,
+            46
+          ],
+          "note": "Última copia: etiqueta y fecha"
         }
+      ],
+      "proposals": [
+        "button",
+        "key-value-row"
       ]
     },
     {
@@ -1163,31 +1784,31 @@
       "title": "Config trazas",
       "area": "Configuración",
       "image": "screens/34-config-trazas.jpg",
-      "components": [
-        "PolicyStatusCard",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "PolicyStatusCard",
+          "proposal": "notice",
           "rect": [
             16,
             278,
             358,
             312
           ],
-          "note": "Tarjeta de estado de política existente"
+          "note": "Estado de política, metadatos y acción de comprobación"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             16,
             602,
             147,
             44
           ],
-          "note": "Acción para copiar trazas"
+          "note": "Acción secundaria para copiar trazas"
         }
+      ],
+      "proposals": [
+        "notice",
+        "button"
       ]
     },
     {
@@ -1195,23 +1816,19 @@
       "title": "Config memoria",
       "area": "Configuración",
       "image": "screens/35-config-memoria.jpg",
-      "components": [
-        "MemoryInput",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "MemoryInput",
+          "proposal": "text-field",
           "rect": [
             29,
             363,
             332,
             41
           ],
-          "note": "Entrada de memoria existente"
+          "note": "Campo de nombre de un dato de memoria"
         },
         {
-          "component": "MemoryInput",
+          "proposal": "text-field",
           "rect": [
             29,
             411,
@@ -1221,7 +1838,7 @@
           "note": "Variante del mismo campo para descripción"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             29,
             507,
@@ -1229,7 +1846,33 @@
             44
           ],
           "note": "Añadir campo de memoria"
+        },
+        {
+          "proposal": "form-panel",
+          "rect": [
+            16,
+            173,
+            358,
+            392
+          ],
+          "note": "Formulario de memoria con título, ayuda, campos y acción"
+        },
+        {
+          "proposal": "legal-footer",
+          "rect": [
+            49,
+            668,
+            292,
+            50
+          ],
+          "note": "Pie de privacidad repetido en otra sección"
         }
+      ],
+      "proposals": [
+        "text-field",
+        "button",
+        "form-panel",
+        "legal-footer"
       ]
     },
     {
@@ -1237,20 +1880,62 @@
       "title": "Config proveedor",
       "area": "Configuración",
       "image": "screens/36-config-proveedor.jpg",
-      "components": [
-        "ProviderSettingsPanel"
-      ],
       "regions": [
         {
-          "component": "ProviderSettingsPanel",
+          "proposal": "notice",
           "rect": [
             16,
-            195,
+            173,
             358,
-            445
+            82
           ],
-          "note": "Configuración de IA existente; los campos de claves permanecen ocultos en la captura"
+          "note": "Aviso informativo en azul"
+        },
+        {
+          "proposal": "notice",
+          "rect": [
+            16,
+            268,
+            358,
+            309
+          ],
+          "note": "Advertencia sanitaria con interruptor dentro"
+        },
+        {
+          "proposal": "toggle-row",
+          "rect": [
+            29,
+            526,
+            332,
+            40
+          ],
+          "note": "Segunda opinión IA: etiqueta e interruptor"
+        },
+        {
+          "proposal": "select-field",
+          "rect": [
+            16,
+            607,
+            358,
+            39
+          ],
+          "note": "Proveedor del Coach"
+        },
+        {
+          "proposal": "select-field",
+          "rect": [
+            16,
+            674,
+            358,
+            39
+          ],
+          "note": "Proveedor del estimador: mismo aspecto"
         }
+      ],
+      "proposals": [
+        "notice",
+        "toggle-row",
+        "select-field"
       ]
     },
     {
@@ -1258,20 +1943,52 @@
       "title": "Copia contrasena",
       "area": "Configuración",
       "image": "screens/37-copia-contrasena.jpg",
-      "components": [
-        "PortablePasswordModal"
-      ],
       "regions": [
         {
-          "component": "PortablePasswordModal",
+          "proposal": "modal",
           "rect": [
             20,
             162,
             350,
             520
           ],
-          "note": "Diálogo cifrado existente, conservado"
+          "note": "Título, ayuda, contraseña y acciones en un panel superpuesto"
+        },
+        {
+          "proposal": "text-field",
+          "rect": [
+            41,
+            362,
+            308,
+            49
+          ],
+          "note": "Contraseña con acción de mostrar u ocultar"
+        },
+        {
+          "proposal": "text-field",
+          "rect": [
+            41,
+            446,
+            308,
+            48
+          ],
+          "note": "Repetición de contraseña"
+        },
+        {
+          "proposal": "button",
+          "rect": [
+            41,
+            555,
+            308,
+            49
+          ],
+          "note": "Acción principal desactivada"
         }
+      ],
+      "proposals": [
+        "modal",
+        "text-field",
+        "button"
       ]
     },
     {
@@ -1279,13 +1996,9 @@
       "title": "Confirmar borrado",
       "area": "Configuración",
       "image": "screens/38-confirmar-borrado.jpg",
-      "components": [
-        "DialogCard",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "DialogCard",
+          "proposal": "modal",
           "rect": [
             20,
             185,
@@ -1295,7 +2008,7 @@
           "note": "Confirmación de borrado con variante destructiva"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             39,
             539,
@@ -1305,7 +2018,7 @@
           "note": "Confirmar borrado"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             39,
             601,
@@ -1314,6 +2027,10 @@
           ],
           "note": "Cancelar sin borrar"
         }
+      ],
+      "proposals": [
+        "modal",
+        "button"
       ]
     },
     {
@@ -1321,20 +2038,52 @@
       "title": "Alimento personal formulario",
       "area": "Configuración",
       "image": "screens/39-alimento-personal-formulario.jpg",
-      "components": [
-        "PersonalFoodsSettingsPanel"
-      ],
       "regions": [
         {
-          "component": "PersonalFoodsSettingsPanel",
+          "proposal": "form-panel",
           "rect": [
             16,
-            226,
+            223,
             358,
-            618
+            621
           ],
-          "note": "Formulario de alimento personal existente"
+          "note": "Formulario de alimento personal, parcialmente visible"
+        },
+        {
+          "proposal": "text-field",
+          "rect": [
+            29,
+            289,
+            332,
+            35
+          ],
+          "note": "Nombre: campo de texto con etiqueta"
+        },
+        {
+          "proposal": "text-field",
+          "rect": [
+            29,
+            469,
+            332,
+            36
+          ],
+          "note": "Proteína: misma superficie para una cantidad"
+        },
+        {
+          "proposal": "icon-button",
+          "rect": [
+            333,
+            235,
+            29,
+            29
+          ],
+          "note": "Cerrar el formulario"
         }
+      ],
+      "proposals": [
+        "form-panel",
+        "text-field",
+        "icon-button"
       ]
     },
     {
@@ -1342,12 +2091,9 @@
       "title": "Rutinas sin resultados",
       "area": "Rutinas · vacío",
       "image": "screens/40-rutinas-sin-resultados.jpg",
-      "components": [
-        "Button"
-      ],
       "regions": [
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             88,
             595,
@@ -1355,7 +2101,21 @@
             59
           ],
           "note": "Crear primera rutina en el estado sin resultados"
+        },
+        {
+          "proposal": "empty-state",
+          "rect": [
+            40,
+            367,
+            310,
+            287
+          ],
+          "note": "Búsqueda sin resultados con explicación y acción"
         }
+      ],
+      "proposals": [
+        "button",
+        "empty-state"
       ]
     },
     {
@@ -1363,31 +2123,53 @@
       "title": "Dieta busqueda",
       "area": "Dieta · detalle",
       "image": "screens/41-dieta-busqueda.jpg",
-      "components": [
-        "FoodThumbnail",
-        "DietMealsScreen"
-      ],
       "regions": [
         {
-          "component": "FoodThumbnail",
+          "proposal": "search-field",
+          "rect": [
+            31,
+            463,
+            328,
+            44
+          ],
+          "note": "Búsqueda de alimento con acción de limpiar"
+        },
+        {
+          "proposal": "item-row",
+          "rect": [
+            31,
+            519,
+            328,
+            53
+          ],
+          "note": "Resultado con miniatura, título y datos secundarios"
+        },
+        {
+          "proposal": "thumbnail",
           "rect": [
             39,
             527,
             36,
             36
           ],
-          "note": "Imagen del resultado de búsqueda"
+          "note": "Imagen compacta del elemento, con marco y alternativa visual"
         },
         {
-          "component": "DietMealsScreen",
+          "proposal": "nutrient-values",
           "rect": [
-            16,
-            345,
-            358,
-            238
+            31,
+            281,
+            328,
+            39
           ],
-          "note": "Buscador y selección de alimento existentes"
+          "note": "Resumen de macronutrientes del día"
         }
+      ],
+      "proposals": [
+        "search-field",
+        "item-row",
+        "thumbnail",
+        "nutrient-values"
       ]
     },
     {
@@ -1395,13 +2177,9 @@
       "title": "Dieta porcion",
       "area": "Dieta · detalle",
       "image": "screens/42-dieta-porcion.jpg",
-      "components": [
-        "TextField",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             119,
             495,
@@ -1411,7 +2189,7 @@
           "note": "Cantidad del alimento seleccionado"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             31,
             587,
@@ -1419,7 +2197,22 @@
             42
           ],
           "note": "Guardar cantidad y valores nutricionales"
+        },
+        {
+          "proposal": "nutrient-values",
+          "rect": [
+            31,
+            548,
+            300,
+            30
+          ],
+          "note": "Valores nutricionales de la porción"
         }
+      ],
+      "proposals": [
+        "text-field",
+        "button",
+        "nutrient-values"
       ]
     },
     {
@@ -1427,20 +2220,31 @@
       "title": "Dieta con alimentos",
       "area": "Dieta · detalle",
       "image": "screens/43-dieta-con-alimentos.jpg",
-      "components": [
-        "DietItemThumbnail"
-      ],
       "regions": [
         {
-          "component": "DietItemThumbnail",
+          "proposal": "thumbnail",
           "rect": [
             31,
             287,
             36,
             36
           ],
-          "note": "Miniatura del alimento ya registrado"
+          "note": "Imagen compacta del elemento, con marco y alternativa visual"
+        },
+        {
+          "proposal": "item-row",
+          "rect": [
+            31,
+            285,
+            328,
+            38
+          ],
+          "note": "Alimento ya registrado: imagen, nombre, resumen y energía"
         }
+      ],
+      "proposals": [
+        "thumbnail",
+        "item-row"
       ]
     },
     {
@@ -1448,31 +2252,42 @@
       "title": "Dieta menu alimento",
       "area": "Dieta · detalle",
       "image": "screens/44-dieta-menu-alimento.jpg",
-      "components": [
-        "DietItemThumbnail",
-        "DietMealsScreen"
-      ],
       "regions": [
         {
-          "component": "DietItemThumbnail",
+          "proposal": "thumbnail",
           "rect": [
             31,
             287,
             36,
             36
           ],
-          "note": "Misma miniatura en la fila con menú abierto"
+          "note": "Imagen compacta del elemento, con marco y alternativa visual"
         },
         {
-          "component": "DietMealsScreen",
+          "proposal": "context-menu",
           "rect": [
             221,
             316,
             138,
             116
           ],
-          "note": "Menú contextual existente de la comida"
+          "note": "Menú flotante de acciones sobre el alimento"
+        },
+        {
+          "proposal": "button",
+          "rect": [
+            31,
+            579,
+            160,
+            39
+          ],
+          "note": "Acción de contorno para repetir la comida"
         }
+      ],
+      "proposals": [
+        "thumbnail",
+        "context-menu",
+        "button"
       ]
     },
     {
@@ -1480,14 +2295,9 @@
       "title": "Dieta repetir fecha",
       "area": "Dieta · detalle",
       "image": "screens/45-dieta-repetir-fecha.jpg",
-      "components": [
-        "DialogCard",
-        "TextField",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "DialogCard",
+          "proposal": "modal",
           "rect": [
             24,
             293,
@@ -1497,7 +2307,7 @@
           "note": "Selector de fecha para repetir la comida"
         },
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             43,
             376,
@@ -1507,7 +2317,7 @@
           "note": "Fecha de origen de la copia"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             43,
             432,
@@ -1515,7 +2325,22 @@
             46
           ],
           "note": "Continuar a la revisión"
+        },
+        {
+          "proposal": "button",
+          "rect": [
+            43,
+            490,
+            304,
+            44
+          ],
+          "note": "Acción secundaria para cancelar"
         }
+      ],
+      "proposals": [
+        "modal",
+        "text-field",
+        "button"
       ]
     },
     {
@@ -1523,20 +2348,31 @@
       "title": "Dieta error fecha",
       "area": "Dieta · detalle",
       "image": "screens/46-dieta-error-fecha.jpg",
-      "components": [
-        "DietItemThumbnail"
-      ],
       "regions": [
         {
-          "component": "DietItemThumbnail",
+          "proposal": "item-row",
           "rect": [
             31,
-            287,
-            36,
-            36
+            285,
+            328,
+            38
           ],
-          "note": "El alimento registrado se conserva tras validar la fecha"
+          "note": "Fila del alimento que sigue visible; no se ve un mensaje de error"
+        },
+        {
+          "proposal": "search-field",
+          "rect": [
+            31,
+            366,
+            328,
+            44
+          ],
+          "note": "Buscador de la comida"
         }
+      ],
+      "proposals": [
+        "item-row",
+        "search-field"
       ]
     },
     {
@@ -1544,42 +2380,42 @@
       "title": "Alimento ficha",
       "area": "Catálogos",
       "image": "screens/47-alimento-ficha.jpg",
-      "components": [
-        "FoodCatalogRow",
-        "FoodCatalogDetail",
-        "FoodThumbnail"
-      ],
       "regions": [
         {
-          "component": "FoodCatalogRow",
+          "proposal": "item-row",
           "rect": [
             29,
             488,
             332,
             52
           ],
-          "note": "Fila de Manzana seleccionada"
+          "note": "Fila compacta de alimento seleccionado"
         },
         {
-          "component": "FoodCatalogDetail",
-          "rect": [
-            29,
-            546,
-            332,
-            232
-          ],
-          "note": "Detalle nutricional reutilizable"
-        },
-        {
-          "component": "FoodThumbnail",
+          "proposal": "thumbnail",
           "rect": [
             29,
             498,
             36,
             36
           ],
-          "note": "Miniatura con alternativa por categoría"
+          "note": "Imagen compacta del elemento, con marco y alternativa visual"
+        },
+        {
+          "proposal": "nutrient-values",
+          "rect": [
+            42,
+            589,
+            304,
+            63
+          ],
+          "note": "Valores por 100 g en celdas de color"
         }
+      ],
+      "proposals": [
+        "item-row",
+        "thumbnail",
+        "nutrient-values"
       ]
     },
     {
@@ -1587,20 +2423,64 @@
       "title": "Catalogo consulta",
       "area": "Catálogos",
       "image": "screens/48-catalogo-consulta.jpg",
-      "components": [
-        "ExerciseCatalogBrowser"
-      ],
       "regions": [
         {
-          "component": "ExerciseCatalogBrowser",
+          "proposal": "search-field",
           "rect": [
-            0,
-            0,
-            390,
-            844
+            14,
+            60,
+            362,
+            44
           ],
-          "note": "Mismo catálogo existente, en modo consulta"
+          "note": "Buscador del catálogo de ejercicios"
+        },
+        {
+          "proposal": "choice-chip",
+          "rect": [
+            14,
+            120,
+            70,
+            34
+          ],
+          "note": "Filtro de grupo muscular"
+        },
+        {
+          "proposal": "item-row",
+          "rect": [
+            14,
+            168,
+            348,
+            84
+          ],
+          "note": "Miniatura, título, metadatos y acción"
+        },
+        {
+          "proposal": "thumbnail",
+          "rect": [
+            24,
+            170,
+            89,
+            80
+          ],
+          "note": "Imagen compacta del elemento, con marco y alternativa visual"
+        },
+        {
+          "proposal": "icon-button",
+          "rect": [
+            322,
+            195,
+            29,
+            30
+          ],
+          "note": "Acción sobre una fila del catálogo"
         }
+      ],
+      "proposals": [
+        "search-field",
+        "choice-chip",
+        "item-row",
+        "thumbnail",
+        "icon-button"
       ]
     },
     {
@@ -1608,12 +2488,9 @@
       "title": "Ejercicio ficha",
       "area": "Catálogos",
       "image": "screens/49-ejercicio-ficha.jpg",
-      "components": [
-        "DialogLayer"
-      ],
       "regions": [
         {
-          "component": "DialogLayer",
+          "proposal": "modal",
           "rect": [
             16,
             168,
@@ -1621,7 +2498,32 @@
             509
           ],
           "note": "Capa de detalle del catálogo; mantiene su propietario y orden de capas"
+        },
+        {
+          "proposal": "badge",
+          "rect": [
+            39,
+            479,
+            57,
+            21
+          ],
+          "note": "Etiqueta informativa de músculo"
+        },
+        {
+          "proposal": "icon-button",
+          "rect": [
+            324,
+            196,
+            28,
+            28
+          ],
+          "note": "Cerrar la ficha superpuesta"
         }
+      ],
+      "proposals": [
+        "modal",
+        "badge",
+        "icon-button"
       ]
     },
     {
@@ -1629,31 +2531,53 @@
       "title": "Alimento personal ia",
       "area": "Alimentos personales · IA",
       "image": "screens/50-alimento-personal-ia.jpg",
-      "components": [
-        "PersonalFoodAssistantScreen",
-        "AiIdentityDisclosure"
-      ],
       "regions": [
         {
-          "component": "PersonalFoodAssistantScreen",
-          "rect": [
-            16,
-            252,
-            358,
-            454
-          ],
-          "note": "Asistente de alimentos personales existente"
-        },
-        {
-          "component": "AiIdentityDisclosure",
+          "proposal": "notice",
           "rect": [
             29,
             324,
             332,
             111
           ],
-          "note": "Mismo aviso reutilizable de identidad IA"
+          "note": "Aviso de identidad IA"
+        },
+        {
+          "proposal": "message",
+          "rect": [
+            29,
+            443,
+            281,
+            156
+          ],
+          "note": "Mensaje del asistente de alimentos"
+        },
+        {
+          "proposal": "composer",
+          "rect": [
+            29,
+            616,
+            332,
+            53
+          ],
+          "note": "Entrada y botón de envío de icono"
+        },
+        {
+          "proposal": "text-field",
+          "rect": [
+            29,
+            616,
+            280,
+            52
+          ],
+          "note": "Campo de mensaje con varias líneas"
         }
+      ],
+      "proposals": [
+        "notice",
+        "message",
+        "composer",
+        "text-field"
       ]
     },
     {
@@ -1661,13 +2585,9 @@
       "title": "Coach procesando",
       "area": "Coach · conversación",
       "image": "screens/51-coach-procesando.jpg",
-      "components": [
-        "TextField",
-        "Button"
-      ],
       "regions": [
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             16,
             695,
@@ -1677,7 +2597,7 @@
           "note": "Entrada durante el envío"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             16,
             759,
@@ -1685,7 +2605,22 @@
             46
           ],
           "note": "Enviar mensaje (desactivado durante el envío)"
+        },
+        {
+          "proposal": "composer",
+          "rect": [
+            16,
+            695,
+            358,
+            110
+          ],
+          "note": "Entrada de conversación durante el envío"
         }
+      ],
+      "proposals": [
+        "text-field",
+        "button",
+        "composer"
       ]
     },
     {
@@ -1693,14 +2628,9 @@
       "title": "Coach respuesta",
       "area": "Coach · conversación",
       "image": "screens/52-coach-respuesta.jpg",
-      "components": [
-        "TextField",
-        "Button",
-        "ChatScreen"
-      ],
       "regions": [
         {
-          "component": "TextField",
+          "proposal": "text-field",
           "rect": [
             16,
             695,
@@ -1710,7 +2640,7 @@
           "note": "Entrada después de recibir la respuesta"
         },
         {
-          "component": "Button",
+          "proposal": "button",
           "rect": [
             16,
             759,
@@ -1720,15 +2650,41 @@
           "note": "Enviar mensaje"
         },
         {
-          "component": "ChatScreen",
+          "proposal": "message",
           "rect": [
             16,
             479,
             358,
             75
           ],
-          "note": "Mensajes y respuesta del Coach existentes"
+          "note": "Respuesta del asistente con atribución"
+        },
+        {
+          "proposal": "message",
+          "rect": [
+            16,
+            379,
+            358,
+            92
+          ],
+          "note": "Mensaje de usuario con atribución"
+        },
+        {
+          "proposal": "composer",
+          "rect": [
+            16,
+            695,
+            358,
+            110
+          ],
+          "note": "Entrada de conversación después de una respuesta"
         }
+      ],
+      "proposals": [
+        "text-field",
+        "button",
+        "message",
+        "composer"
       ]
     },
     {
@@ -1736,20 +2692,63 @@
       "title": "Denunciar respuesta",
       "area": "Coach · conversación",
       "image": "screens/53-denunciar-respuesta.jpg",
-      "components": [
-        "AiResponseReportModal"
-      ],
       "regions": [
         {
-          "component": "AiResponseReportModal",
+          "proposal": "modal",
           "rect": [
-            20,
-            0,
-            350,
-            844
+            16,
+            49,
+            358,
+            747
           ],
-          "note": "Diálogo de denuncia existente, sin enviar ninguna incidencia"
+          "note": "Diálogo con título, formulario y acciones"
+        },
+        {
+          "proposal": "choice-chip",
+          "rect": [
+            33,
+            232,
+            163,
+            39
+          ],
+          "note": "Motivo de denuncia como opción seleccionable"
+        },
+        {
+          "proposal": "text-field",
+          "rect": [
+            33,
+            452,
+            324,
+            92
+          ],
+          "note": "Detalles opcionales en un campo multilínea"
+        },
+        {
+          "proposal": "button",
+          "rect": [
+            33,
+            733,
+            138,
+            47
+          ],
+          "note": "Cancelar en la barra inferior"
+        },
+        {
+          "proposal": "button",
+          "rect": [
+            179,
+            733,
+            178,
+            47
+          ],
+          "note": "Envío desactivado"
         }
+      ],
+      "proposals": [
+        "modal",
+        "choice-chip",
+        "text-field",
+        "button"
       ]
     },
     {
@@ -1757,187 +2756,282 @@
       "title": "Proveedor selector",
       "area": "Configuración · selector",
       "image": "screens/54-proveedor-selector.jpg",
-      "components": [
-        "ProviderSettingsPanel"
-      ],
       "regions": [
         {
-          "component": "ProviderSettingsPanel",
+          "proposal": "select-field",
           "rect": [
             16,
             489,
             358,
-            238
+            40
           ],
-          "note": "Selector de proveedor existente; no se convirtió en ChoiceChip"
+          "note": "Valor actual y flecha del selector de proveedor"
+        },
+        {
+          "proposal": "option-row",
+          "rect": [
+            17,
+            533,
+            356,
+            49
+          ],
+          "note": "Proveedor no seleccionado"
+        },
+        {
+          "proposal": "option-row",
+          "rect": [
+            17,
+            582,
+            356,
+            48
+          ],
+          "note": "Proveedor seleccionado con marca de confirmación"
         }
+      ],
+      "proposals": [
+        "select-field",
+        "option-row"
       ]
     }
   ],
-  "componentCatalog": {
-    "Button": {
-      "source": "apps/mobile/components/Button.tsx",
-      "status": "extracted"
+  "analysis": {
+    "basis": "Solo capturas: patrones visuales y repeticiones observables; sin inspección del código para seleccionar candidatos.",
+    "implementationReview": "Pendiente: comprobar después si existe cada abstracción, si se adapta o si hay que crearla.",
+    "annotationScope": "Ejemplos representativos visibles, no censo exhaustivo de todas las apariciones.",
+    "proposalMeaning": "Nombre orientativo de una posible abstracción, no componente implementado ni decisión técnica final."
+  },
+  "proposals": {
+    "button": {
+      "name": "Botón de acción",
+      "level": "Base",
+      "common": "Texto, icono opcional, superficie, borde y estados de interacción.",
+      "variants": "Principal lima; secundario oscuro; contorno; discreto; destructivo; desactivado; ancho completo o ajustado.",
+      "boundary": "La acción, las confirmaciones y los permisos pertenecen a cada flujo.",
+      "codeReview": "Pendiente"
     },
-    "StatCard": {
-      "source": "apps/mobile/components/StatCard.tsx",
-      "status": "extracted"
+    "icon-button": {
+      "name": "Botón de icono",
+      "level": "Base",
+      "common": "Área pulsable compacta con un icono y nombre accesible.",
+      "variants": "Circular o cuadrado; añadir; cerrar; volver; ejecutar; acción destructiva.",
+      "boundary": "La forma visual se comparte; el significado y la etiqueta accesible cambian.",
+      "codeReview": "Pendiente"
     },
-    "ChartCard": {
-      "source": "apps/mobile/components/ChartCard.tsx",
-      "status": "extracted"
+    "text-field": {
+      "name": "Campo de formulario",
+      "level": "Base",
+      "common": "Entrada con borde, valor o placeholder y etiqueta opcional.",
+      "variants": "Texto; número; fecha; contraseña; multilínea; etiqueta encima o al lado.",
+      "boundary": "No unir validaciones de peso, alimentos, contraseñas y denuncias. El ejemplo de macros es un campo numérico, no un stepper.",
+      "codeReview": "Pendiente"
     },
-    "ChoiceChip": {
-      "source": "apps/mobile/components/ChoiceChip.tsx",
-      "status": "extracted"
+    "search-field": {
+      "name": "Buscador",
+      "level": "Base",
+      "common": "Entrada de búsqueda con lupa y acción opcional de limpiar.",
+      "variants": "Rutinas; ejercicios; alimentos; productos; alimentos personales.",
+      "boundary": "El filtrado y las fuentes de resultados son responsabilidad de cada pantalla.",
+      "codeReview": "Pendiente"
     },
-    "ChoiceRow": {
-      "source": "apps/mobile/components/ChoiceRow.tsx",
-      "status": "extracted"
+    "choice-chip": {
+      "name": "Opción seleccionable",
+      "level": "Base",
+      "common": "Opción compacta con texto o icono y estado seleccionado.",
+      "variants": "Filtro; selección única; selección múltiple; motivo de denuncia; icono sin texto.",
+      "boundary": "Mantener distintas las reglas de selección única, múltiple y navegación.",
+      "codeReview": "Pendiente"
     },
-    "OptionChips": {
-      "source": "apps/mobile/components/OptionChips.tsx",
-      "status": "extracted"
+    "tab-bar": {
+      "name": "Navegación por pestañas",
+      "level": "Composición",
+      "common": "Grupo de destinos con una pestaña activa destacada.",
+      "variants": "Navegación principal con icono de ajustes; secciones de Configuración desplazables.",
+      "boundary": "Compartir presentación y accesibilidad; cada nivel conserva sus destinos y navegación.",
+      "codeReview": "Pendiente"
     },
-    "TextField": {
-      "source": "apps/mobile/components/TextField.tsx",
-      "status": "extracted"
+    "select-field": {
+      "name": "Selector desplegable",
+      "level": "Base",
+      "common": "Valor seleccionado y flecha que abre una lista.",
+      "variants": "Métrica; periodo; proveedor IA; fecha que despliega una entrada.",
+      "boundary": "No convertir todos los selectores en el mismo flujo: fecha, proveedor y gráfica tienen contratos distintos.",
+      "codeReview": "Pendiente"
     },
-    "SearchField": {
-      "source": "apps/mobile/components/SearchField.tsx",
-      "status": "extracted"
+    "option-row": {
+      "name": "Fila de opción",
+      "level": "Base",
+      "common": "Texto de opción, icono opcional y marca de selección.",
+      "variants": "Tipos de serie; proveedores; tonos de notificación; métricas.",
+      "boundary": "La lista puede desplazarse o vivir en un menú; el valor y los efectos siguen fuera de la fila.",
+      "codeReview": "Pendiente"
     },
-    "DialogLayer": {
-      "source": "apps/mobile/components/Dialog.tsx",
-      "status": "extracted"
+    "stat-card": {
+      "name": "Tarjeta de métrica",
+      "level": "Composición",
+      "common": "Etiqueta, valor destacado y texto auxiliar o variación.",
+      "variants": "Calorías; peso; racha; contornos; sin datos.",
+      "boundary": "La tarjeta presenta valores: unidades, tendencias y cálculos no se mezclan.",
+      "codeReview": "Pendiente"
     },
-    "DialogCard": {
-      "source": "apps/mobile/components/Dialog.tsx",
-      "status": "extracted"
+    "chart-panel": {
+      "name": "Panel de gráfica",
+      "level": "Composición",
+      "common": "Contenedor con título, selectores y espacio para una gráfica.",
+      "variants": "Estadísticas de rutina y medidas corporales.",
+      "boundary": "Compartir el marco y los controles; el trazado y las series de datos pueden ser distintos.",
+      "codeReview": "Pendiente"
     },
-    "ProgressBar": {
-      "source": "apps/mobile/components/ProgressBar.tsx",
-      "status": "extracted"
+    "progress-bar": {
+      "name": "Barra de progreso",
+      "level": "Base",
+      "common": "Pista y relleno que representan un avance.",
+      "variants": "Progreso del entrenamiento; cuenta de descanso; colores lima y azul.",
+      "boundary": "El temporizador y la reconciliación en segundo plano quedan fuera del elemento visual.",
+      "codeReview": "Pendiente"
     },
-    "FoodThumbnail": {
-      "source": "apps/mobile/components/FoodThumbnail.tsx",
-      "status": "extracted"
+    "thumbnail": {
+      "name": "Miniatura",
+      "level": "Base",
+      "common": "Imagen o alternativa visual dentro de un marco compacto.",
+      "variants": "Ejercicio; alimento; icono alternativo; tamaños compactos o grandes.",
+      "boundary": "Las imágenes, las proporciones y la política de carga se deciden por uso.",
+      "codeReview": "Pendiente"
     },
-    "DietItemThumbnail": {
-      "source": "apps/mobile/components/FoodThumbnail.tsx",
-      "status": "extracted"
+    "item-row": {
+      "name": "Fila con imagen y metadatos",
+      "level": "Composición",
+      "common": "Miniatura a la izquierda, título y texto secundario; acción al final.",
+      "variants": "Ejercicios de Inicio; catálogo de ejercicios; alimentos; alimento registrado.",
+      "boundary": "Variantes con añadir, abrir o menú. No unificar los modelos de ejercicio y alimento.",
+      "codeReview": "Pendiente"
     },
-    "FoodCatalogRow": {
-      "source": "apps/mobile/components/FoodCatalog.tsx",
-      "status": "extracted"
+    "workout-card": {
+      "name": "Tarjeta de rutina",
+      "level": "Composición",
+      "common": "Identidad de la rutina, metadatos y acción principal.",
+      "variants": "Destacada con imagen en Inicio; compacta y repetida en la lista de rutinas.",
+      "boundary": "Componer miniatura, insignias y botón; imagen de cabecera y reordenación son opcionales.",
+      "codeReview": "Pendiente"
     },
-    "FoodCatalogDetail": {
-      "source": "apps/mobile/components/FoodCatalog.tsx",
-      "status": "extracted"
+    "record-card": {
+      "name": "Tarjeta de registro",
+      "level": "Composición",
+      "common": "Fecha o título, resumen del registro y acciones opcionales.",
+      "variants": "Historial de sesiones; mediciones guardadas; registro con o sin valores.",
+      "boundary": "Los datos del historial son inmutables o editables según el flujo: no compartir esa lógica por el parecido.",
+      "codeReview": "Pendiente"
     },
-    "NumberStepper": {
-      "source": "apps/mobile/components/NumberStepper.tsx",
-      "status": "extracted"
+    "key-value-row": {
+      "name": "Fila de etiqueta y valor",
+      "level": "Base",
+      "common": "Etiqueta secundaria y valor destacado alineados.",
+      "variants": "Resumen de sesión; preferencias; fecha de última copia.",
+      "boundary": "Solo presentación: cada dominio decide el formato y la unidad.",
+      "codeReview": "Pendiente"
     },
-    "ToggleField": {
-      "source": "apps/mobile/components/ToggleField.tsx",
-      "status": "extracted"
+    "modal": {
+      "name": "Diálogo",
+      "level": "Composición",
+      "common": "Superficie superpuesta con título, contenido y acciones.",
+      "variants": "Confirmación; resumen; formulario de contraseña; ficha; selección de fecha; denuncia.",
+      "boundary": "Compartir estructura, espaciado y accesibilidad. Borrado, cifrado, denuncia y manejo de Atrás conservan reglas propias.",
+      "codeReview": "Pendiente"
     },
-    "TrainingListScreen": {
-      "source": "apps/mobile/screens/TrainingScreen.tsx",
-      "status": "existing"
+    "notice": {
+      "name": "Aviso informativo",
+      "level": "Composición",
+      "common": "Icono o título, mensaje y tono visual identificable.",
+      "variants": "Identidad IA; información; advertencia; error; cambios sin guardar; estado de política.",
+      "boundary": "El contenido legal y sanitario mantiene su fuente y reglas; la propuesta solo afecta a su presentación.",
+      "codeReview": "Pendiente"
     },
-    "ExerciseCatalogBrowser": {
-      "source": "apps/mobile/catalogs/ExerciseCatalogBrowser.tsx",
-      "status": "existing"
+    "message": {
+      "name": "Burbuja de conversación",
+      "level": "Composición",
+      "common": "Texto de mensaje con atribución y estilo según emisor.",
+      "variants": "Asistente; usuario; bienvenida; respuesta; acción secundaria para denunciar.",
+      "boundary": "Las propuestas de tools y confirmaciones requieren contenido especializado dentro de la burbuja.",
+      "codeReview": "Pendiente"
     },
-    "TrainingCatalogOverlays": {
-      "source": "apps/mobile/screens/TrainingOverlays.tsx",
-      "status": "existing"
+    "composer": {
+      "name": "Entrada de conversación",
+      "level": "Composición",
+      "common": "Campo de mensaje y acción de envío con estado ocupado.",
+      "variants": "Coach en vertical; estimador en horizontal; asistente de alimentos con botón de icono.",
+      "boundary": "Compartir composición y estados visibles; proveedor, adjuntos y streaming permanecen en su flujo.",
+      "codeReview": "Pendiente"
     },
-    "TrainingSessionScreen": {
-      "source": "apps/mobile/screens/TrainingScreen.tsx",
-      "status": "existing"
+    "toggle-row": {
+      "name": "Fila con interruptor",
+      "level": "Base",
+      "common": "Etiqueta, descripción opcional e interruptor con estado.",
+      "variants": "Notificaciones; sonido; vibración; segunda opinión IA.",
+      "boundary": "Los permisos del sistema y el consentimiento sanitario son independientes del control visual.",
+      "codeReview": "Pendiente"
     },
-    "WorkoutHistoryEntryCard": {
-      "source": "apps/mobile/screens/TrainingScreen.tsx",
-      "status": "existing"
+    "nutrient-values": {
+      "name": "Grupo de valores nutricionales",
+      "level": "Composición",
+      "common": "Cantidad destacada, unidad y nombre de cada nutriente en una fila o rejilla.",
+      "variants": "Resumen diario; porción; detalle por 100 g; fila de alimento registrado.",
+      "boundary": "Los colores y la estructura pueden compartirse; cantidades, conversiones y objetivos se calculan fuera.",
+      "codeReview": "Pendiente"
     },
-    "WorkoutHistoryDetail": {
-      "source": "apps/mobile/screens/TrainingScreen.tsx",
-      "status": "existing"
+    "form-panel": {
+      "name": "Panel de formulario",
+      "level": "Composición",
+      "common": "Título, conjunto de campos, ayuda y acciones.",
+      "variants": "Medidas; alimento personal; alimento manual; memoria.",
+      "boundary": "Es una composición de campos y botones. No crear un formulario universal con todas las reglas de negocio.",
+      "codeReview": "Pendiente"
     },
-    "DietHeader": {
-      "source": "apps/mobile/screens/DietScreen.tsx",
-      "status": "existing"
+    "set-row": {
+      "name": "Fila de serie de ejercicio",
+      "level": "Composición",
+      "common": "Número, tipo, repeticiones, peso y dato de descanso o fin de bloque.",
+      "variants": "Editor de rutina; sesión activa; serie pendiente o completada.",
+      "boundary": "Candidato del dominio Entreno: contrastar columnas y accesibilidad antes de compartir. Edición de plantilla y ejecución son flujos distintos.",
+      "codeReview": "Pendiente"
     },
-    "DietMealsScreen": {
-      "source": "apps/mobile/screens/DietScreen.tsx",
-      "status": "existing"
+    "section-panel": {
+      "name": "Sección con cabecera",
+      "level": "Composición",
+      "common": "Superficie con título, resumen, contenido y acciones opcionales.",
+      "variants": "Comidas repetidas; ejercicios de una sesión; sección de ajustes.",
+      "boundary": "La expansión, el estado y el contenido son de cada sección; no agrupar una pantalla completa como componente.",
+      "codeReview": "Pendiente"
     },
-    "MeasurementsScreen": {
-      "source": "apps/mobile/screens/MeasurementsScreen.tsx",
-      "status": "existing"
+    "empty-state": {
+      "name": "Estado vacío",
+      "level": "Composición",
+      "common": "Título o explicación breve con acción opcional.",
+      "variants": "Rutina sin ejercicios; búsqueda sin resultados; lista sin alimentos personales.",
+      "boundary": "Los mensajes y acciones varían. El icono es opcional y el bloque puede integrarse en una tarjeta.",
+      "codeReview": "Pendiente"
     },
-    "AiIdentityDisclosure": {
-      "source": "apps/mobile/AiIdentityDisclosure.tsx",
-      "status": "existing"
+    "context-menu": {
+      "name": "Menú contextual",
+      "level": "Por validar",
+      "common": "Lista flotante de acciones sobre un elemento.",
+      "variants": "Editar a mano; editar con IA; eliminar, en la comida registrada.",
+      "boundary": "Solo hay una apertura de este patrón en las capturas. Validar su repetición antes de extraerlo.",
+      "codeReview": "Pendiente"
     },
-    "SharedChatPanel": {
-      "source": "apps/mobile/screens/SharedChatPanel.tsx",
-      "status": "existing"
+    "badge": {
+      "name": "Insignia de metadatos",
+      "level": "Base",
+      "common": "Texto breve o icono con un tono o fondo de categoría.",
+      "variants": "Fuerza; duración; sesión parcial; músculos y equipo.",
+      "boundary": "Separar las insignias informativas de los chips que cambian una selección.",
+      "codeReview": "Pendiente"
     },
-    "TrainingSettingsPanel": {
-      "source": "apps/mobile/screens/SettingsScreen.tsx",
-      "status": "existing"
-    },
-    "MeasurementsSettingsPanel": {
-      "source": "apps/mobile/screens/SettingsScreen.tsx",
-      "status": "existing"
-    },
-    "PreferencesSettingsPanel": {
-      "source": "apps/mobile/screens/SettingsScreen.tsx",
-      "status": "existing"
-    },
-    "PolicyStatusCard": {
-      "source": "apps/mobile/screens/SettingsScreen.tsx",
-      "status": "existing"
-    },
-    "MemoryInput": {
-      "source": "apps/mobile/screens/SettingsScreen.tsx",
-      "status": "existing"
-    },
-    "ProviderSettingsPanel": {
-      "source": "apps/mobile/screens/SettingsScreen.tsx",
-      "status": "existing"
-    },
-    "PortablePasswordModal": {
-      "source": "apps/mobile/backup/PortablePasswordModal.tsx",
-      "status": "existing"
-    },
-    "PersonalFoodsSettingsPanel": {
-      "source": "apps/mobile/screens/SettingsScreen.tsx",
-      "status": "existing"
-    },
-    "PersonalFoodAssistantScreen": {
-      "source": "apps/mobile/screens/PersonalFoodAssistantScreen.tsx",
-      "status": "existing"
-    },
-    "ChatScreen": {
-      "source": "apps/mobile/screens/ChatScreen.tsx",
-      "status": "existing"
-    },
-    "AiResponseReportModal": {
-      "source": "apps/mobile/AiResponseReportModal.tsx",
-      "status": "existing"
-    },
-    "TrainingEditorScreen": {
-      "source": "apps/mobile/screens/TrainingScreen.tsx",
-      "status": "existing"
-    },
-    "AppHeader": {
-      "source": "apps/mobile/screens/AppShell.tsx",
-      "status": "existing"
+    "legal-footer": {
+      "name": "Pie informativo",
+      "level": "Composición",
+      "common": "Enlace de privacidad y texto auxiliar al final del contenido.",
+      "variants": "Preferencias; memoria; alimentos personales.",
+      "boundary": "Propuesta de composición visual. No duplicar ni reescribir los textos legales.",
+      "codeReview": "Pendiente"
     }
   }
 }

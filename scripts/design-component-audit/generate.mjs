@@ -13,17 +13,20 @@ for (const screen of inventory.screens) {
   assert.equal(meta.height, inventory.viewport.height, screen.id);
 }
 
-const repoRoot = new URL("../../", import.meta.url);
-for (const [name, component] of Object.entries(inventory.componentCatalog)) {
-  assert.ok(["extracted", "existing"].includes(component.status), name);
-  const source = await readFile(new URL(component.source, repoRoot), "utf8");
-  assert.ok(source.includes(name), `Componente ausente: ${name}`);
+for (const [id, proposal] of Object.entries(inventory.proposals)) {
+  assert.ok(["Base", "Composición", "Por validar"].includes(proposal.level), id);
+  for (const key of ["name", "common", "variants", "boundary"]) assert.ok(proposal[key]?.trim(), `${id}: ${key}`);
+  assert.equal(proposal.codeReview, "Pendiente", id);
+  assert.ok(!("source" in proposal) && !("status" in proposal), `No vincular la propuesta visual al código: ${id}`);
+  const evidence = inventory.screens.flatMap((screen) => screen.regions.filter((region) => region.proposal === id));
+  assert.ok(evidence.length > 0, `Propuesta sin evidencia: ${id}`);
+  assert.ok(evidence.length >= 2 || proposal.level === "Por validar", `Repetición sin demostrar: ${id}`);
 }
 for (const screen of inventory.screens) {
   assert.ok(screen.regions.length > 0, `Sin anotaciones: ${screen.id}`);
-  assert.deepEqual(screen.components, [...new Set(screen.regions.map((region) => region.component))], screen.id);
+  assert.deepEqual(screen.proposals, [...new Set(screen.regions.map((region) => region.proposal))], screen.id);
   for (const region of screen.regions) {
-    assert.ok(inventory.componentCatalog[region.component], region.component);
+    assert.ok(inventory.proposals[region.proposal], region.proposal);
     assert.equal(region.rect.length, 4, screen.id);
     assert.ok(region.rect.every(Number.isFinite), screen.id);
     const [x, y, width, height] = region.rect;

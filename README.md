@@ -6,7 +6,6 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 
 - `apps/mobile`: App Expo React Native y web (unica aplicacion)
 - `apps/mobile/controllers`: Estado y acciones memorizadas por flujo; adaptan los dominios a las pantallas
-- `apps/mobile/components`: Componentes visuales reutilizables; inventario y capturas en [`docs/design/component-audit/`](docs/design/component-audit/README.md)
 - `apps/mobile/screens`: Pantallas y superposiciones React Native sin acceso directo a servicios Expo
 - `apps/mobile/platform`: Puertos tipados e implementaciones Expo de almacenamiento, red, multimedia y APIs nativas
 - `apps/mobile/persistence`: Modelo del almacén local, runtime React y recuperación antes de sobrescritura
@@ -27,6 +26,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `scripts/policy-promotion/`: Firma Ed25519, contratos, promoción y preparación de snapshots por canal
 - `scripts/store-listing/`: Generación y validación de la ficha y los recursos para Google Play
 - `docs/`: Documentacion del proyecto (arquitectura, diseno, specs, roadmap)
+- [`docs/design/component-audit/`](docs/design/component-audit/README.md): Analisis de 54 capturas y propuestas visuales de componentes, pendientes de revisar en el codigo
 
 ## Arranque rapido
 

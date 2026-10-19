@@ -1,7 +1,6 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { memo } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
-import { Button } from "../components/Button";
 
 import { TAB_DESTINATIONS, type TabKey } from "../shell/shellRegistry";
 import { mobileTheme } from "../theme";
@@ -186,7 +185,10 @@ export const NewRoutineButton = memo(function NewRoutineButton({ visible, onPres
   if (!visible) return null;
   return (
     <View style={{ position: "absolute", right: mobileTheme.spacing[4], bottom: 74 }}>
-      <Button onPress={onPress} testID="training-create" label="Nueva rutina" icon={<Text style={{ color: "#06090D", fontSize: 24, fontWeight: "700", lineHeight: 26 }}>+</Text>} style={{ minHeight: 56, borderRadius: mobileTheme.radius.pill, paddingHorizontal: 24, gap: 8, shadowColor: mobileTheme.color.brandPrimary, shadowOpacity: 0.35, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 8 }} textStyle={{ color: "#06090D", fontSize: 22, fontWeight: "800" }} />
+      <Pressable onPress={onPress} testID="training-create" style={{ minHeight: 56, borderRadius: mobileTheme.radius.pill, backgroundColor: mobileTheme.color.brandPrimary, flexDirection: "row", alignItems: "center", justifyContent: "center", paddingHorizontal: 24, gap: 8, shadowColor: mobileTheme.color.brandPrimary, shadowOpacity: 0.35, shadowRadius: 10, shadowOffset: { width: 0, height: 4 }, elevation: 8 }}>
+        <Text style={{ color: "#06090D", fontSize: 24, fontWeight: "700", lineHeight: 26 }}>+</Text>
+        <Text style={{ color: "#06090D", fontSize: 22, fontWeight: "800" }}>Nueva rutina</Text>
+      </Pressable>
     </View>
   );
 });

@@ -152,8 +152,6 @@ async function exerciseLayers(page, layout) {
 
   log(`${layout}: conservando el filtro de medidas al cerrar una vista anidada`);
   await openTab(page, "measures", layout);
-  const registerBounds = await page.getByTestId("measurement-add").boundingBox();
-  assert.equal(registerBounds?.height, 44, "El botón compartido debe respetar los 44 px de Registrar sin imponer su altura por defecto");
   await page.getByTestId("measures-chart-metric-current").click({ timeout: stepTimeoutMs });
   const metricLayer = page.getByTestId("shell-layer-measures-metric-dropdown");
   await metricLayer.waitFor({ state: "visible", timeout: stepTimeoutMs });
