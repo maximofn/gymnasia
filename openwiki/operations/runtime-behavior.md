@@ -6,23 +6,28 @@ tags: [runtime, observability, langsmith, mobile, agent, tools]
 sources:
   - id: openwiki-source-0c30fc96b9e7c8b57c35473c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
+  - id: openwiki-source-7d451400787483c2f7879ac3
+    resource: repo://apps/mobile/agent/coachContext.ts
   - id: openwiki-source-dc42304b20e8518ef65b4b63
     resource: repo://apps/mobile/agent/googleContextBudget.ts
-  - id: openwiki-source-63dae4a27346d91c6139697b
-    resource: repo://apps/mobile/agent/googleInteractions.test.ts
   - id: openwiki-source-f310c5fb576ae69a7753918c
     resource: repo://apps/mobile/agent/googleStreamTransport.ts
   - id: openwiki-source-b14a4ecd65e83b5561f88e2a
     resource: repo://apps/mobile/agent/providerToolLoop.ts
+  - id: openwiki-source-31ab0914f32f6c759ba493a0
+    resource: repo://apps/mobile/agent/streamDraftFlusher.ts
+  - id: openwiki-source-1ad5b6a5e6488611c8796fe1
+    resource: repo://apps/mobile/agent/toolBatch.ts
   - id: openwiki-source-d3be928c369037f29888bc0b
     resource: repo://apps/mobile/agent/toolExecutor.ts
-  - id: openwiki-source-d8ad30beb46f5e7dc1ced4cf
-    resource: repo://apps/mobile/agent/toolOperationLedger.test.ts
   - id: openwiki-source-9e7ddd51c09caf628a81acad
     resource: repo://apps/mobile/agent/toolOperationLedger.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-20T13:07:24.686Z
 ---
 
 # Comportamiento en ejecución y oportunidades
@@ -48,10 +53,27 @@ Estos mecanismos no son mediciones de producción; son puntos concretos contra l
 - **Política congelada por turno — `acquireAgentPolicyLease`.** `sendMessage` adquiere el lease antes de clasificar el input y de construir el prompt. El lease se congela profundamente e incluye prompt, política sanitaria, contexto y estado. En canal firmado, una política sanitaria que no puede fusionarse con el contrato móvil aborta antes de ser usada. No combine datos de leases distintos al cambiar el envío o la telemetría de un turno.
 - **Bloqueo antes de red y antes de efectos — `callProviderChatAPIWithTools`.** Un riesgo sanitario bloqueante evita la llamada al proveedor. Para cada solicitud de tool, la función reclasifica nombre y argumentos, rechaza tools desconocidas o incompatibles y devuelve un resultado bloqueado en vez de delegar al ejecutor. Esto separa un eventual error de proveedor de un bloqueo local al analizar un bucket `error`.
 - **Reintento visible no equivale a efecto repetido — `sendMessage`.** La ruta conversacional hace hasta tres intentos únicamente ante firmas de transporte/sobrecarga reconocidas, con esperas de 2 y 4 segundos; reinicia el borrador entre intentos y agrupa su actualización visible a 40 ms. Una muestra con más de una llamada por mensaje debe separar estos intentos de las continuaciones de tools y de una mutación local.
-- **Rondas de tools — `runOpenAIToolLoop`, `runAnthropicToolLoop` y `runGoogleToolLoop`.** Las calls de una ronda se esperan secuencialmente y el valor predeterminado es diez rondas. Si quedan calls, los tres loops las responden como no ejecutadas y solicitan un turno final con tools prohibidas; si ese cierre falla, se corta o vuelve a pedir tools, lanzan `ToolRoundLimitError`. OpenAI exige `responseId` para continuar; Google también rechaza un `function_call` ID reutilizado entre rondas. Mida continuaciones y cierres antes de atribuir una latencia alta a un handler individual.
-- **Presupuesto efectivo de contexto Google — `prepareGoogleInteractionRequest`.** Aunque `App` entrega a Google el historial reconstruido completo, el preparador conserva como máximo los diez intercambios más recientes, elimina bytes de imágenes antiguas y descarta intercambios completos adicionales hasta respetar 512 KiB no-imagen y 19 MB de petición. Si incluso el último intercambio excede el presupuesto, rechaza antes de abrir la red; el reporte agregado contiene contadores y razones, no contenido. `requestGoogleInteraction` emite ese reporte sin dejar que la instrumentación bloquee la petición.
+- **Rondas y lotes de tools — `runOpenAIToolLoop`, `runAnthropicToolLoop`, `runGoogleToolLoop` y `executeToolBatch`.** El valor predeterminado es diez rondas. Dentro de una ronda, las lecturas conocidas consecutivas pueden solaparse hasta cuatro; las escrituras y las tools desconocidas son barreras y se esperan en orden. Si quedan calls, los tres loops las responden como no ejecutadas y solicitan un turno final con tools prohibidas; si ese cierre falla, se corta o vuelve a pedir tools, lanzan `ToolRoundLimitError`. OpenAI rechaza IDs de tool repetidos y Google también rechaza un `function_call` ID reutilizado entre rondas. Mida el lote, las continuaciones y el cierre antes de atribuir una latencia alta a un handler individual.
+- **Presupuesto efectivo de contexto Google — `selectCoachContext` y `prepareGoogleInteractionRequest`.** `App` selecciona los últimos 20 mensajes antes de adaptar el historial a cualquier proveedor. Para Google, el preparador conserva como máximo los diez intercambios más recientes de ese historial, elimina imágenes antiguas y descarta intercambios completos adicionales hasta respetar 512 KiB no-imagen y 19 MB de petición. Si incluso el último intercambio excede el presupuesto, rechaza antes de abrir la red; el reporte agregado contiene contadores y razones, no contenido. `requestGoogleInteraction` emite ese reporte sin dejar que la instrumentación bloquee la petición.
 - **Semántica de commit — `createDetailedAgentToolExecutor`.** Un handler solo produce `committed` si llama a `markEffectCommitted`; una excepción se transforma en resultado para el loop y conserva `committed` solo si ya se marcó. Los estados `no_effect` y `failed_before_commit` no se memorizan como escritura.
 - **Idempotencia y recuperación — `ToolOperationCoordinator`.** Para una tool con efecto, su identidad incluye versión, `executionId`, proveedor, nombre, argumentos JSON canónicos y ocurrencia, pero no `providerCallId`. El coordinador une trabajo simultáneo, reproduce commits desde memoria o ledger y prepara el ledger antes de ejecutar. Tras un fallo de escritura del commit intenta reconciliar el recibo de dominio; si no puede establecer el resultado, persiste o devuelve `indeterminate` para evitar una repetición insegura. Al hidratar la aplicación también reconcilia entradas no resueltas. El ledger conserva commits siete días y acota el conjunto a 256 entradas, sin descartar entradas no resueltas para cumplir el límite.
+
+```mermaid
+flowchart TD
+  Send["sendMessage"] --> Risk{"riesgo bloqueante"}
+  Risk -->|sí| Local["respuesta local sin proveedor"]
+  Risk -->|no| Provider["proveedor y tool loop"]
+  Provider --> Batch["lote de tools"]
+  Batch --> Read["lecturas hasta cuatro concurrentes"]
+  Batch --> Write["escritura como barrera"]
+  Write --> Ledger["preparar y ejecutar operación"]
+  Ledger --> Commit{"commit persistido"}
+  Commit -->|sí| Done["resultado o replay"]
+  Commit -->|no| Reconcile["reconciliar recibo"]
+  Reconcile --> Safe["committed o indeterminate"]
+```
+
+Flujo durable de un turno con tools: el límite de concurrencia solo aplica a lecturas consecutivas y la incertidumbre de una escritura no habilita una repetición ciega.
 
 ### Hipótesis de diagnóstico
 
@@ -64,7 +86,7 @@ Estos mecanismos no son mediciones de producción; son puntos concretos contra l
 
 1. **Prioridad alta — instrumentar y revisar los límites de contexto Google antes de elevar presupuestos.** **Observado:** no hay muestra que indique cuántas peticiones se recortan o rechazan. **Correlacionado:** `prepareGoogleInteractionRequest` ya produce `GoogleContextReport` con contadores y razones y `recordGoogleContextReport` lo traza sin contenido. **Hipótesis:** una futura concentración de `exchange_limit`, `non_image_bytes` o `request_bytes` señalará pérdida de contexto o fricción con imágenes, no necesariamente lentitud del proveedor. **Consecuencia operativa:** al cambiar historial, tools o adjuntos, preserve esos agregados y pruebe rechazo previo a red; no aumente 19 MB o 512 KiB basándose solo en una traza lenta.
 
-2. **Prioridad media — no tratar una repetición remota como permiso para repetir un efecto.** **Observado:** no hay repetición medida en esta extracción. **Correlacionado:** `ToolOperationCoordinator.execute` deduplica efectos, prepara persistentemente y reconcilia incertidumbre; `sendMessage` puede reintentar transporte. **Hipótesis:** una repetición de llamada remota con igual identidad debería acabar como unión, replay o resultado indeterminado. **Consecuencia operativa:** al añadir una tool de escritura, implemente su reconciliador/recibo de dominio y marque el commit inmediatamente tras el efecto irreversible; no use `providerCallId` como identidad.
+2. **Prioridad media — no tratar una repetición remota como permiso para repetir un efecto.** **Observado:** no hay repetición medida en esta extracción. **Correlacionado:** `ToolOperationCoordinator.execute` deduplica efectos, prepara persistentemente y reconcilia incertidumbre; `sendMessage` puede reintentar transporte. **Hipótesis:** una repetición de llamada remota con igual identidad debería acabar como unión, replay o resultado indeterminado. **Consecuencia operativa:** al añadir una tool de escritura, implemente su reconciliador/recibo de dominio y marque el commit inmediatamente tras el efecto irreversible; no use `providerCallId` como identidad. No atribuya la duración de un lote a una serialización general: `executeToolBatch` solapa solo lecturas consecutivas, hasta cuatro.
 
 ## Cambios seguros y validación focalizada
 

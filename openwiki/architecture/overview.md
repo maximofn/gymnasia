@@ -1,7 +1,7 @@
 ---
 type: arquitectura de producto
-title: Arquitectura local-first
-description: Gymnasia es un cliente Expo local-first para móvil y web cuyo estado de producto reside en el dispositivo. Esta página delimita los catálogos, la política de IA, los proveedores BYOK y el servicio opcional de feedback.
+title: Arquitectura y límites de Gymnasia
+description: Gymnasia es un cliente Expo local-first para móvil y web cuyo estado de producto reside en el dispositivo. Esta página delimita aplicaciones, paquetes, superficies de arranque, flujos de IA, catálogos y el servicio opcional de feedback.
 tags: [local-first, mobile, web, byok, privacy]
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
@@ -52,10 +52,13 @@ sources:
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-20T13:07:24.686Z
 ---
 
-# Arquitectura local-first
+# Arquitectura y límites de Gymnasia
 
 Gymnasia tiene una única superficie de producto: `apps/mobile`. `index.js` registra el mismo `App` de Expo para Android, iOS y web con `react-native-web`. Entrenamientos, dieta, medidas, conversaciones y preferencias se crean y conservan en el dispositivo: no dependen de una cuenta ni de una API de producto de Gymnasia. La red puede enriquecer una función concreta, pero no confirma ni autoriza las mutaciones de esos dominios.
 

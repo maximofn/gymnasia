@@ -1,7 +1,7 @@
 ---
 type: guía operativa
-title: Generación y validación de imágenes de catálogo
-description: Flujo operativo para generar imágenes de alimentos y ejercicios con Hugging Face, conservar las referencias de catálogo y validar WebP, proporción y artefactos derivados antes de publicar.
+title: Generación de imágenes de contenido
+description: Flujo manual para generar imágenes de alimentos y ejercicios, validar su contrato de catálogo y publicar con seguridad los artefactos derivados que consume la aplicación móvil.
 tags: [content, images, generation, catalogs, validation]
 sources:
   - id: openwiki-source-bd210931c947e300164b7a63
@@ -18,59 +18,60 @@ sources:
     resource: repo://scripts/catalogs/catalogs.mjs
   - id: openwiki-source-869bed5ee1bbd205948cf49e
     resource: repo://scripts/catalogs/catalogs.test.mjs
-  - id: openwiki-source-87ef8bdaf847493a7f3a10e0
-    resource: repo://scripts/catalogs/exercise-pagination.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-20T13:07:24.686Z
 ---
 
-# Generación y validación de imágenes de catálogo
+# Generación de imágenes de contenido
 
-La generación de imágenes es una operación manual, externa y no determinista para los catálogos versionados; no forma parte de la ejecución de la aplicación móvil. El script Python `image-generation/generate_images.py` produce recursos para **alimentos** y **ejercicios**, y después delega la validación y la regeneración de agregados en el generador común `scripts/catalogs/generate.mjs`. Los clientes consumen los agregados versionados y validados, no el resultado directo de un backend de IA.
+La generación es una operación manual, externa y no determinista sobre catálogos versionados; no se ejecuta dentro de la app móvil. `image-generation/generate_images.py` solicita imágenes a Spaces de Gradio para **alimentos** y **ejercicios**, copia el resultado a los directorios de contenido y llama al generador común de catálogos. La app consume los JSON y artefactos ya versionados y validados, no un resultado directo de IA.
 
-Este es el flujo generador actual. Los archivos `alimentos/prompts.md` y `ejercicios/prompts.md` y los ejemplos históricos del docstring pueden servir de orientación, pero las asignaciones y plantillas ejecutables en `generate_images.py` son las que controlan la operación.
+El código y las pruebas son la fuente de verdad. Los Markdown de prompts y los ejemplos del docstring son apoyo editorial: las asignaciones `FOOD_PROMPTS` y `EXERCISE_PROMPTS`, las plantillas y el validador común son el comportamiento ejecutable.
 
-## Límites y contratos que no se deben romper
+## Contrato de contenido
 
-| Dominio | Ficha editable | Referencia en ficha | Recurso requerido | Proporción exacta |
-| --- | --- | --- | --- | --- |
-| Alimentos | `alimentos/<id>.json` | `image: "<archivo>.webp"` | `alimentos/images/<archivo>.webp` | 1:1 |
-| Ejercicios | `ejercicios/<id>.json` | `image_male` e `image_female` | `ejercicios/images/<id>-male.webp` y `...-female.webp` | 16:9 |
-| Productos comerciales | `productos_comerciales/<id>.json` | `image` opcional | `productos_comerciales/images/<archivo>.webp` | 1:1 |
-| Recetas | `recetas/<id>.json` | `image` opcional | `recetas/images/<archivo>.webp` | 1:1 |
+| Dominio | Ficha editable | Referencia | Recurso y proporción exigidos |
+| --- | --- | --- | --- |
+| Alimentos | `alimentos/<id>.json` | `image: "<archivo>.webp"` | `alimentos/images/<archivo>.webp`, 1:1 |
+| Ejercicios | `ejercicios/<id>.json` | `image_male`, `image_female` | `ejercicios/images/<id>-male.webp` y `...-female.webp`, 16:9 |
+| Productos comerciales | `productos_comerciales/<id>.json` | `image` opcional | `productos_comerciales/images/<archivo>.webp`, 1:1 |
+| Recetas | `recetas/<id>.json` | `image` opcional | `recetas/images/<archivo>.webp`, 1:1 |
 
-El generador de IA solo automatiza las dos primeras filas. Productos y recetas no tienen subcomando ni mapas de prompts; si se les añade una imagen por otro medio, deben respetar el mismo contrato y pasar la sincronización general. Una imagen nutricional puede ser compartida por varias fichas, pero cada imagen de ejercicio debe usar exactamente el ID y género declarados.
+El script de IA automatiza únicamente alimentos y ejercicios. Productos y recetas pueden recibir imágenes por otro procedimiento, pero siguen el contrato y la inspección de todos los dominios. Las imágenes nutricionales pueden ser compartidas por fichas; las de ejercicio deben tener exactamente el nombre derivado de su ID y género.
 
-La puerta de publicación rechaza JSON o schema inválidos, IDs duplicados o distintos del nombre de la ficha, rutas inseguras, diferencias de mayúsculas, imágenes ausentes o huérfanas, bytes que no sean WebP decodificable y proporciones distintas de las exigidas. La extensión `.webp` no es evidencia suficiente: el validador decodifica los bytes y exige `width === height` para nutrición o `width * 9 === height * 16` para ejercicios.
+La puerta de publicación valida JSON y schema, nombre de ficha frente a ID, duplicados —también entre dominios nutricionales—, referencias seguras y con mayúsculas exactas. Además rechaza recursos ausentes o huérfanos, extensiones incorrectas, bytes que no sean WebP decodificable y dimensiones no válidas. En particular, se exige `width === height` para nutrición y `width * 9 === height * 16` para ejercicios: ni la extensión `.webp` ni una instrucción en el prompt prueban el contrato.
 
-## Flujo actual
+## Flujo y límites de la operación
 
 ```mermaid
 flowchart TD
     A["Editar ficha y referencia de imagen"] --> B["Añadir prompt ejecutable para alimento o ejercicio"]
     B --> C["Ejecutar generador con HF_TOKEN"]
-    C --> D{"Existe el archivo destino"}
+    C --> D{"Existe el destino"}
     D -->|"Sí"| E["Omitir la generación"]
-    D -->|"No"| F["Solicitar imagen al backend de Gradio"]
+    D -->|"No"| F["Solicitar imagen al Space de Gradio"]
     F --> G["Copiar resultado al destino webp"]
-    E --> H["Validar todos los catálogos"]
+    E --> H["Inspeccionar los cuatro catálogos"]
     G --> H
-    H --> I{"Contratos e imágenes válidos"}
-    I -->|"No"| J["No escribir agregados y corregir"]
-    I -->|"Sí"| K["Publicar artefactos del dominio"]
-    K --> L["Comprobar deriva, pruebas y consumidor móvil"]
+    H --> I{"Contratos válidos"}
+    I -->|"No"| J["No publicar artefactos"]
+    I -->|"Sí"| K["Escribir artefactos del dominio"]
+    K --> L["Comprobar deriva y consumidores"]
 ```
 
-*El script no transforma la imagen recibida: la validación común posterior es el control que impide publicar codificación, referencias o dimensiones incorrectas.*
+*El flujo de una ejecución de imágenes: la generación no convierte ni redimensiona el archivo; el generador de catálogos es la barrera de publicación.*
 
-Para cada ficha seleccionada, el script recorre los JSON de hoja ordenados y omite `all.json`, `index.json` y `package.json`. Un alimento con ID incluido en `FOOD_PROMPTS` genera `images/<id>.webp`; un ejercicio incluido en `EXERCISE_PROMPTS` genera dos solicitudes, `man`/`male` y `woman`/`female`. Una ficha sin prompt se registra y se omite. `--id` solamente filtra: un ID inexistente no produce un diagnóstico específico y aun así puede llegar a la sincronización del catálogo.
+Para cada dominio el script ordena los JSON de ficha y excluye `all.json`, `index.json` y `package.json`. Una ficha sin entrada en su mapa de prompts se registra y se salta. `--id` solo filtra; no diagnostica especialmente un ID inexistente y aun así el recorrido acaba en la sincronización si había fichas. Alimentos producen `images/<id>.webp`; ejercicios producen una solicitud para `man`/`male` y otra para `woman`/`female`.
 
-Los destinos existentes nunca se sobrescriben. Por tanto, cambiar un prompt no regenera una imagen confirmada y un archivo existente corrupto tampoco se repara con una ejecución normal. No hay `--force`: para regenerar, conserve una copia para comparación, mueva o elimine deliberadamente el destino y ejecute de nuevo el ID.
+Un destino existente **nunca se sobrescribe**. Cambiar un prompt no regenera una imagen y un archivo corrupto existente tampoco se repara automáticamente. No hay `--force`: para regenerar, conservar una copia para comparación y mover o borrar deliberadamente el destino antes de repetir el ID. La operación completa tampoco es transaccional: una predicción, copia o sincronización posterior puede fallar después de haber creado recursos.
 
-## Preparación y CLI
+## Preparación, CLI y proveedores
 
-El proyecto de generación requiere Python 3.12 o posterior y se ejecuta con `uv`. Carga `HF_TOKEN` desde el entorno o desde el archivo `.env` de la raíz del repositorio; el mensaje de error que menciona `image-generation/.env` es histórico e impreciso respecto a la implementación. El token es obligatorio incluso si se acaba usando un backend cuyo `Client` se crea sin token. Nunca se confirma en Git.
+El proyecto requiere Python 3.12 o posterior y usa `uv`. Carga `HF_TOKEN` del entorno o del `.env` de la raíz; el texto de error que menciona `image-generation/.env` no refleja esa carga. El token es obligatorio antes de conectar, incluso para los clientes que se construyen sin él. No debe confirmarse en Git.
 
 ```bash
 cd image-generation
@@ -79,37 +80,42 @@ uv run generate_images.py exercises --id press-banca
 uv run generate_images.py --backend z-image-turbo foods --id arroz-blanco
 ```
 
-`--backend` pertenece al analizador superior y debe situarse antes del subcomando. Los valores permitidos son `nano-banana`, `z-image-turbo` y `flux2-dev`; si se omite, se prueba esa secuencia. El modo automático cambia al siguiente backend únicamente si falla la **conexión**; una excepción durante `predict` no activa una alternativa. Con backend explícito, una conexión fallida termina el proceso.
+`--backend` es una opción del parser superior y debe ir antes del subcomando. Si se omite, el script intenta `nano-banana`, `z-image-turbo` y `flux2-dev`, en ese orden; solo cambia al siguiente si la **conexión** falla. Una excepción de `predict` no activa un respaldo y un backend elegido explícitamente falla el proceso si no conecta.
 
-| Backend | Espacio de Gradio y llamada | Relación solicitada | Riesgo operativo |
+| Backend | Llamada remota | Relación solicitada | Consecuencia práctica |
 | --- | --- | --- | --- |
-| `nano-banana` | `multimodalart/nano-banana`; `Nano Banana 2`, `1K`, endpoint interno `fn_index=2` | Recibe 16:9 para ejercicio y 1:1 para alimento | Depende del orden y firma del endpoint remoto; además pasa el token al cliente y a la predicción. |
-| `z-image-turbo` | `mrfakename/Z-Image-Turbo`; `/generate_image`, 1024×1024, 9 pasos | Siempre cuadrada | Puede fallar el contrato 16:9 de ejercicio. |
-| `flux2-dev` | `black-forest-labs/FLUX.2-dev`; `/infer`, 1024×1024, 30 pasos | Siempre cuadrada | Puede fallar el contrato 16:9 de ejercicio. |
+| `nano-banana` | `multimodalart/nano-banana`, `Nano Banana 2`, `fn_index=2` | La del dominio | Es el único que recibe 16:9 para ejercicios y 1:1 para alimentos. Depende de la firma del endpoint remoto. |
+| `z-image-turbo` | `mrfakename/Z-Image-Turbo`, `/generate_image` | 1024×1024 | Normalmente no superará la validación 16:9 de ejercicios. |
+| `flux2-dev` | `black-forest-labs/FLUX.2-dev`, `/infer` | 1024×1024 | Normalmente no superará la validación 16:9 de ejercicios. |
 
-Los dos últimos declaran una semilla pero también solicitan `randomize_seed=True`; Nano Banana no fija semilla aquí. A ello se suman modelos y Spaces remotos no versionados. No trate una regeneración como reproducible; revise visualmente el resultado y conserve la imagen anterior hasta aceptar el cambio.
+Los dos respaldos pasan una semilla pero solicitan `randomize_seed=True`; Nano Banana tampoco fija una semilla en este script. Junto con Spaces y modelos remotos no versionados, esto impide asumir reproducibilidad. Revise visualmente el resultado y conserve el recurso anterior hasta aceptarlo.
 
 ## Prompts, procedencia y revisión humana
 
-Los diccionarios `FOOD_PROMPTS` y `EXERCISE_PROMPTS` se indexan por el campo `id` de la ficha. Las plantillas añaden el estilo común: fotografía gastronómica de estudio y composición cuadrada para alimentos; ilustración de fitness, género, vista, sin texto ni marca de agua y composición 16:9 para ejercicios. El texto del prompt es una instrucción, no una garantía del archivo que devuelve el proveedor.
+Las claves de `FOOD_PROMPTS` y `EXERCISE_PROMPTS` son IDs de fichas. Las plantillas añaden el estilo común: fotografía de estudio cuadrada para alimentos e ilustración fitness 16:9, género y vista para ejercicios, sin texto ni marca de agua. El proveedor puede ignorar esas instrucciones, así que el prompt no sustituye ni la revisión humana ni el validador.
 
-Al añadir una ficha, primero haga coincidir nombre de archivo, `id`, referencia de recurso y clave del mapa de prompts. Para ejercicios, describa equipo, postura y vista con precisión y revise ambas variantes por corrección biomecánica, extremidades extra, equipo erróneo, texto, marcas de agua y seguridad de la representación. Para alimentos, compruebe sujeto, legibilidad de miniatura y ausencia de texto o alegaciones nutricionales engañosas.
+Al incorporar contenido, haga coincidir nombre de archivo, campo `id`, referencia de imagen y clave del mapa. Para ejercicios, revise ambas variantes por postura y biomecánica, extremidades, equipo, texto, marca de agua y representación segura. Para alimentos, confirme sujeto, legibilidad como miniatura y ausencia de texto o alegaciones nutricionales engañosas.
 
-La procedencia de metadatos e instrucciones de ejercicios se conserva en `ejercicios/SOURCES.md`. La licencia allí documentada permite adaptar texto y estructura del dataset indicado, pero excluye copiar, redistribuir o usar como referencia sus imágenes y GIF de Gym Visual. Las ilustraciones del catálogo deben generarse desde cero con el sistema visual propio.
+`ejercicios/SOURCES.md` conserva la procedencia de metadatos e instrucciones. La licencia documentada permite adaptar texto y estructura del dataset indicado, pero excluye copiar, redistribuir o usar como referencia las imágenes y GIF de Gym Visual: las ilustraciones del catálogo se generan desde cero con el estilo propio.
 
-## Sincronización y validación posterior
+## Sincronización de artefactos
 
-Al terminar el recorrido, `generate_exercises` o `generate_foods` invoca:
+Al finalizar el recorrido, el script ejecuta uno de estos comandos desde la raíz:
 
 ```bash
 node scripts/catalogs/generate.mjs --write --domain ejercicios
-# o
 node scripts/catalogs/generate.mjs --write --domain alimentos
 ```
 
-Antes de escribir, ese comando inspecciona **los cuatro dominios**. Si cualquiera viola el contrato, falla y no publica los artefactos seleccionados. Si pasa, `--domain` limita la escritura al dominio solicitado: alimentos genera `all.json` e `index.json`; productos comerciales y recetas solo `all.json`; y ejercicios genera además de `all.json` e `index.json` el catálogo paginado `catalog-v1/`. Sin `--domain`, también se actualiza el schema TypeScript generado para el cliente móvil. El escritor prepara temporales, publica primero el contenido y deja el manifiesto de ejercicios para el final; elimina las páginas paginadas obsoletas y revierte sustituciones o borrados si falla la operación. Esto reemplaza el mecanismo histórico que reconstruía agregados directamente desde Python: no hay un segundo formato de agregados.
+Antes de escribir, `generate.mjs` inspecciona los cuatro dominios. Cualquier infracción impide publicar incluso si se seleccionó uno solo. Si pasa, `--domain` limita los artefactos escritos: alimentos actualiza `all.json`, `index.json` y `apps/mobile/catalogs/generated/foodBaseline.generated.json`; productos comerciales y recetas actualizan su `all.json`; ejercicios actualiza `all.json`, `index.json` y `ejercicios/catalog-v1/`. Sin `--domain`, también se escribe el schema TypeScript generado para el runtime móvil.
 
-Después de una operación de imágenes —incluida una ejecución de un único ID— ejecute la comprobación completa, que además detecta artefactos derivados ausentes, con deriva o páginas de ejercicio obsoletas:
+La escritura prepara archivos temporales, publica primero el contenido, elimina páginas paginadas obsoletas y deja el manifiesto de `catalog-v1` al final. Si falla un reemplazo o limpieza, intenta restaurar tanto artefactos sustituidos como borrados. No sustituya este mecanismo con un escritor Python ni edite agregados a mano.
+
+`--check` siempre valida todo y compara los artefactos presentes contra el contenido esperado; no admite `--domain`. Es la comprobación que detecta faltantes, deriva y JSON paginado que ya no pertenece al manifiesto.
+
+## Verificaciones focalizadas
+
+Después de cambiar imágenes, fichas o prompts, ejecute:
 
 ```bash
 npm run check:catalogs
@@ -117,17 +123,15 @@ npm run test:catalogs
 npm run test:catalogs:e2e
 ```
 
-`check:catalogs` no acepta limitar el dominio porque su propósito es bloquear una publicación inconsistente entre catálogos y schemas generados. `test:catalogs` usa fixtures y cubre, entre otros casos, generación estable de agregados, páginas paginadas obsoletas, schema e IDs, rutas seguras, mayúsculas, MIME falso, corrupción, proporción, huérfanos y rollback de escritura. El E2E exporta el cliente web de desarrollo y sustituye las respuestas remotas por fixtures controladas para comprobar el consumo de alimentos y del catálogo paginado de ejercicios, caché y disponibilidad sin red; no sustituye la inspección en cliente nativo.
+Los unitarios cubren generación estable, limpieza de páginas obsoletas, schema e identidad, imágenes con caso/MIME/corrupción/proporción incorrectos y huérfanos, rutas inseguras y rollback. El E2E exporta la app web de desarrollo, sirve el bundle local y sustituye GitHub y el proveedor por fixtures controladas. Comprueba el consumo de alimentos y del catálogo paginado de ejercicios, búsqueda y scroll, vínculos conservados por ID tras un renombre, caché offline y migración heredada, carga tardía durante una consulta del agente, disponibilidad parcial, arranque sin red y rechazo de una caché manipulada. No sustituye la verificación visual o nativa cuando el cambio la requiera.
 
 ## Procedimiento seguro de cambio
 
-1. Cree o corrija la ficha JSON y su referencia antes de generar. Para ejercicio, las rutas deben ser exactamente `images/<id>-male.webp` e `images/<id>-female.webp`; para nutrición, `image` solo contiene el nombre WebP, sin `images/`.
-2. Añada la clave del ID al mapa de prompts ejecutable si el dominio es alimento o ejercicio. Actualice la documentación auxiliar solo como acompañamiento, no como sustitución.
-3. Ejecute un único ID primero y use Nano Banana cuando necesite que la solicitud remota respete la relación de ejercicio; los respaldos cuadrados solo son aceptables si el validador posterior pasa, lo que normalmente no sucederá para ejercicios.
-4. Inspeccione visualmente el archivo y compruebe sus bytes, dimensiones, ruta y mayúsculas. Si el resultado no es aceptable, restaure o retire el archivo antes de seguir.
-5. Ejecute `npm run check:catalogs` y las pruebas focalizadas. Revise `git diff`: deben aparecer solo fichas, prompts, recursos y agregados derivados esperados.
-6. Confirme todos esos cambios juntos y verifique la carga de miniaturas y detalle en los consumidores móviles correspondientes: alimentos en dieta y ejercicios en entrenamiento.
+1. Cree o corrija primero la ficha JSON y su referencia. En ejercicio las rutas han de ser exactamente `images/<id>-male.webp` e `images/<id>-female.webp`; en alimentos, `image` contiene solo el nombre del WebP, sin `images/`.
+2. Añada el ID al mapa de prompts ejecutable si es alimento o ejercicio. Actualice documentación auxiliar únicamente como acompañamiento.
+3. Genere un solo ID. Para ejercicios, prefiera Nano Banana cuando necesite que la solicitud sea 16:9; un respaldo cuadrado solo es aceptable si el validador posterior pasa.
+4. Inspeccione el archivo y confirme bytes, dimensiones, ruta y mayúsculas. Restaure o retire el recurso si no es aceptable.
+5. Ejecute las tres verificaciones anteriores y revise `git diff`. Deben cambiar solo fichas, prompts, recursos y artefactos derivados esperados.
+6. Confirme esos cambios juntos y compruebe las superficies móviles afectadas: alimentos en dieta y ejercicios en entrenamiento.
 
-La llamada de generación no es transaccional: puede haber creado algunos recursos antes de que falle una predicción, una copia o la sincronización. La copia de bytes tampoco convierte ni redimensiona. La recuperación segura consiste en restaurar los recursos previos o completar las referencias requeridas, ejecutar la validación común y no confirmar un árbol que falle.
-
-Para el contrato de catálogos y su consumo local-first, véase [Catálogos locales y artefactos generados](repositories.md). Para las superficies de usuario que muestran estos recursos, véanse [Dieta y estimación de alimentos](../mobile/diet-and-food-estimation.md) y [Plantillas de entrenamiento](../mobile/training.md); la matriz general de comprobaciones está en [Compilación, publicación y validación](../operations/build-release-and-testing.md).
+Para el contrato de catálogos y el consumo local-first, véase [Catálogos locales y artefactos generados](repositories.md). Para las superficies de usuario, véanse [Dieta y estimación de alimentos](../mobile/diet-and-food-estimation.md) y [Plantillas de entrenamiento](../mobile/training.md); la matriz general está en [Compilación, publicación y validación](../operations/build-release-and-testing.md).

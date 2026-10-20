@@ -12,7 +12,7 @@ related:
   - ../services/feedback-worker.md
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-29T12:03:05.365Z
+    at: 2026-10-20T13:07:24.686Z
 sources:
   - id: openwiki-source-192849a5973afd8b6e55db2c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
@@ -38,6 +38,10 @@ sources:
     resource: repo://apps/mobile/agent/providerToolLoop.ts
   - id: openwiki-source-31ab0914f32f6c759ba493a0
     resource: repo://apps/mobile/agent/streamDraftFlusher.ts
+  - id: openwiki-source-02dfa58fcd62b6df088569fc
+    resource: repo://apps/mobile/agent/toolBatch.test.ts
+  - id: openwiki-source-1ad5b6a5e6488611c8796fe1
+    resource: repo://apps/mobile/agent/toolBatch.ts
   - id: openwiki-source-ce025f2f0f394ccba9235558
     resource: repo://apps/mobile/agent/toolDefinitions.ts
   - id: openwiki-source-d3be928c369037f29888bc0b
@@ -52,7 +56,7 @@ sources:
     resource: repo://apps/mobile/agent/toolOperationReceipts.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.6.0", at: "2026-09-29T12:03:05.365Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
 ---
 
 # Runtime del agente y herramientas
@@ -84,7 +88,7 @@ Los hechos siguientes proceden del código actual y son el marco para contrastar
 - **Ventana común — `selectCoachContext`.** Coach selecciona los **20 mensajes más recientes para todos los proveedores** después de excluir divulgaciones locales. Google no recibe el hilo completo: adapta esos 20 mensajes a pasos enriquecidos y aplica después sus límites de transporte (`apps/mobile/App.tsx`, `sendMessage`; `apps/mobile/agent/coachContext.ts`, `selectCoachContext`; `apps/mobile/agent/providerToolClient.ts`, `requestProviderToolChat`).
 - **Presupuesto Google efectivo en Coach — `requestProviderToolChat`.** El presupuesto genérico de Google tiene `maxExchanges: 10`, 512 KiB sin datos de imagen y 19 000 000 bytes de petición. Coach sobrescribe únicamente `maxExchanges` a `COACH_CONTEXT_MESSAGE_LIMIT`, es decir, **20 intercambios**. Como la ventana previa contiene como máximo 20 mensajes, el límite de bytes suele ser la segunda frontera efectiva. Se eliminan imágenes de intercambios anteriores y luego intercambios completos antiguos; si el intercambio activo no cabe, se rechaza antes de red. No describa este recorrido como “Google recibe todo el historial” (`apps/mobile/agent/googleContextBudget.ts`, `DEFAULT_GOOGLE_CONTEXT_BUDGET` y `prepareGoogleInteractionRequest`; `apps/mobile/agent/providerToolClient.ts`, rama Google).
 - **Tres intentos del turno — `sendMessage`.** La llamada principal tiene como máximo tres intentos. Solo repite firmas reconocidas de red, timeout, sobrecarga o HTTP 429/503/529, espera 2 s y 4 s, y reinicia el borrador y su gate sanitario. Un resultado vacío también hace avanzar el bucle sin espera; al agotar los intentos termina como `technical_error`. El mismo `userMessage.id` se conserva como `executionId` (`apps/mobile/App.tsx`, `sendMessage`).
-- **Rondas — `runOpenAIToolLoop`, `runAnthropicToolLoop`, `runGoogleToolLoop`.** Dentro de un intento, las calls de cada ronda se esperan secuencialmente y las ocurrencias se cuentan por nombre y argumentos canónicos. Se ejecutan como máximo diez rondas de tools. Si el proveedor aún solicita otra, esa call pendiente no se ejecuta: recibe un resultado sintético y se hace una llamada final con tools prohibidas. Si el cierre falla, queda truncado o vuelve a pedir tools, se lanza `ToolRoundLimitError` (`apps/mobile/agent/providerToolLoop.ts`; `apps/mobile/agent/providerToolClient.roundLimit.test.ts`).
+- **Rondas y lote — `runOpenAIToolLoop`, `runAnthropicToolLoop`, `runGoogleToolLoop`, `executeToolBatch`.** Cada ronda asigna las ocurrencias en el orden del proveedor usando nombre y argumentos canónicos antes de ejecutar. Las escrituras y las tools desconocidas son barreras secuenciales; una racha contigua de lecturas conocidas puede solaparse, con un máximo de cuatro, y el lote conserva el orden de los resultados. Se ejecutan como máximo diez rondas de tools. Si el proveedor aún solicita otra, esa call pendiente no se ejecuta: recibe un resultado sintético y se hace una llamada final con tools prohibidas. Si el cierre falla, queda truncado o vuelve a pedir tools, se lanza `ToolRoundLimitError` (`apps/mobile/agent/providerToolLoop.ts`; `apps/mobile/agent/toolBatch.ts`; `apps/mobile/agent/providerToolClient.roundLimit.test.ts`).
 - **Autorización — `executeGuardedTool`.** El catálogo asigna `read`, `local_write` o `external_write` y genera los esquemas para cada proveedor. Antes del ejecutor, el guard clasifica la entrada original y `nombre + argumentos`; una tool desconocida o no permitida devuelve un error controlado. Riesgo `elevated` admite solo lecturas, y `high` o `critical` impide proveedor y tools (`apps/mobile/agent/toolDefinitions.ts`, `AGENT_TOOL_DEFINITIONS`; `apps/mobile/App.tsx`, `callProviderChatAPIWithTools`; `apps/mobile/agent/healthSafety.ts`, `healthSafetyToolAllowed`).
 - **Commit y duda — `createDetailedAgentToolExecutor`, `ToolOperationCoordinator`.** El handler debe marcar explícitamente `committed` después de su persistencia. También puede marcar `indeterminate`; una excepción se convierte en resultado controlado y no implica rollback. El coordinador prepara el journal antes del efecto y, si el registro final falla, consulta el recibo del dominio. La incapacidad de confirmar no autoriza una segunda mutación (`apps/mobile/agent/toolExecutor.ts`; `apps/mobile/agent/toolOperationLedger.ts`).
 
@@ -142,7 +146,7 @@ Estas tres formas de “repetición” no son equivalentes:
 | Mecanismo | Cuándo ocurre | Identidad y efecto |
 |---|---|---|
 | **Reintento remoto del turno** | `sendMessage` vuelve a invocar la ruta completa tras un error reintentable o resultado vacío | Conserva `executionId`; el proveedor puede asignar nuevos call IDs. Las ocurrencias vuelven a calcularse desde cero, por lo que una escritura equivalente puede encontrar el mismo `operationId` y hacer replay local. |
-| **Continuación de tools** | El proveedor pidió una o más tools y necesita otra respuesta con sus resultados | Ocurre dentro del mismo intento. Las calls son secuenciales; la ocurrencia avanza, de modo que dos calls iguales e intencionales del mismo loop son operaciones distintas. |
+| **Continuación de tools** | El proveedor pidió una o más tools y necesita otra respuesta con sus resultados | Ocurre dentro del mismo intento. La ocurrencia se asigna en orden y avanza, de modo que dos calls iguales e intencionales del mismo loop son operaciones distintas. Las escrituras forman barreras; solo rachas contiguas de lecturas conocidas pueden ejecutarse en paralelo. |
 | **Replay local** | El coordinador encuentra un commit en memoria o ledger, o se une a una operación simultánea | No repite el handler. Devuelve la salida comprometida al protocolo del proveedor. No depende de que `providerCallId` sea estable. |
 
 Google añade una protección de protocolo: un replay de una interacción con ID no vacío y contenido idéntico reutiliza sus resultados sin crear nuevas ocurrencias; una identidad contradictoria o un call ID reutilizado entre rondas se rechaza. Esto no reemplaza el replay persistente del coordinador.
@@ -213,7 +217,7 @@ Al hidratar la app, `reconcileUnresolved` recorre secuencialmente entradas pendi
 3. Al añadir una tool, declare esquema y efecto, registre su handler y decida cómo reconciliarla. Una escritura sin recibo verificable quedará necesariamente más expuesta a `indeterminate`.
 4. Valide antes de mutar y llame a `markEffectCommitted` inmediatamente después de la persistencia irreversible. Use `markEffectIndeterminate` si el resultado pudo ocurrir pero no puede confirmarse.
 5. Preserve `executionId`, canonicalización y `occurrence`. No añada `providerCallId` a la identidad durable.
-6. No trate los tres intentos del turno como tres rondas, ni una continuación como una repetición. Instrumente intento, ronda, cierre, tool y estado de commit por separado.
+6. No trate los tres intentos del turno como tres rondas, ni una continuación como una repetición. Instrumente intento, ronda, cierre, tool y estado de commit por separado; no introduzca paralelismo para escrituras ni asuma orden de finalización entre lecturas.
 7. No registre contenido sensible. Las trazas de idempotencia actuales contienen fase, estado, origen y nombre de tool, no identidad, argumentos ni salida.
 
 ## Pruebas focalizadas
@@ -221,12 +225,12 @@ Al hidratar la app, `reconcileUnresolved` recorre secuencialmente entradas pendi
 Desde la raíz:
 
 ```bash
-npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/coachContext.test.ts apps/mobile/agent/personalData.contract.test.ts apps/mobile/agent/providerPipeline.test.ts apps/mobile/agent/providerToolClient.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/toolDefinitions.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts apps/mobile/agent/toolOperationReceipts.test.ts apps/mobile/agent/googleInteractions.test.ts
+npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/coachContext.test.ts apps/mobile/agent/personalData.contract.test.ts apps/mobile/agent/providerPipeline.test.ts apps/mobile/agent/providerToolClient.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/toolBatch.test.ts apps/mobile/agent/toolDefinitions.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts apps/mobile/agent/toolOperationReceipts.test.ts apps/mobile/agent/googleInteractions.test.ts
 ```
 
 - `agentPolicyRuntime.test.ts` fija la inmutabilidad y coherencia del lease.
 - `coachContext.test.ts` fija la ventana común de 20 mensajes y el presupuesto efectivo de Google en Coach.
-- `providerPipeline.test.ts`, `providerToolLoop.test.ts` y `providerToolClient.roundLimit.test.ts` cubren secuencialidad, correlación nativa, ocurrencias, truncamiento y cierre al agotar rondas.
+- `providerPipeline.test.ts`, `providerToolLoop.test.ts`, `toolBatch.test.ts` y `providerToolClient.roundLimit.test.ts` cubren orden de ocurrencias, barreras de escritura, concurrencia limitada de lecturas, correlación nativa, truncamiento y cierre al agotar rondas.
 - `toolExecutor.test.ts` protege validación, despacho y punto de commit.
 - `toolOperationLedger.test.ts` cubre identidad, write-ahead, replay, unión concurrente, colisiones, capacidad, reinicio, incertidumbre y borrado concurrente.
 - `toolOperationReceipts.test.ts` cubre retención y cuándo una ausencia todavía es demostrable.

@@ -3,6 +3,9 @@ type: concepto
 title: Dieta y estimación de alimentos
 description: Modelo local de comidas y objetivos nutricionales, vinculación explícita con catálogos y alimentos personales, y flujo opcional de estimación asistida por IA. Distingue la nutrición validada que se persiste de datos externos o estimados que requieren confirmación y validación.
 tags: [mobile, diet, nutrition, food-estimation, catalogs, agent]
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-20T13:07:24.686Z
 sources:
   - id: openwiki-source-ece1e91de1b7e96cadcc5bc8
     resource: repo://apps/mobile/agent/foodEstimatorClient.ts
@@ -38,10 +41,7 @@ sources:
     resource: repo://apps/mobile/scripts/diet-validation.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
 ---
 
 # Dieta y estimación de alimentos
@@ -128,8 +128,8 @@ flowchart TD
     Estimate --> Extract["Extraer JSON nutricional"]
     Extract --> EstimateValid{"Estructura válida"}
     EstimateValid -->|"no"| Correct["No persistir y pedir corrección"]
-    EstimateValid -->|"sí"| Match
-    Catalog --> Match["Buscar en catálogos y personales"]
+    EstimateValid -->|"sí"| Match["Buscar en catálogos y personales"]
+    Catalog --> Match
     Manual --> FormValid{"Formulario válido"}
     FormValid -->|"no"| Correct
     FormValid -->|"sí"| Match
@@ -161,11 +161,44 @@ Al editar cantidad de un elemento existente, `mealPerGramRef` guarda temporalmen
 
 El modal del estimador es una conversación distinta del agente general. Requiere una API key utilizable: prioriza `store.foodAIProvider` si está configurado, después el proveedor ya elegido por el modal y, finalmente, la prioridad del estimador. Si no existe proveedor, muestra un error y no intenta la red. Las credenciales BYOK y las particularidades de transporte se documentan en [Configuración BYOK de proveedores](../agent/provider-configuration.md).
 
-Se pueden adjuntar hasta seis imágenes desde biblioteca o cámara; se solicita el permiso correspondiente y se necesita base64 para adjuntarlas. Las imágenes se mandan solo con el último mensaje de usuario y dejan de reenviarse después de una respuesta válida del modelo. OpenAI, Anthropic y Google transmiten texto y razonamiento y pueden ejecutar hasta cinco rondas de la tool `scan_barcode`. En web, Anthropic rechaza explícitamente imágenes en este flujo; la estimación solo textual sigue sus reglas de transporte normales. Las solicitudes de estimación se reintentan hasta tres veces únicamente ante fallos transitorios identificados.
+Se pueden adjuntar hasta seis imágenes desde biblioteca o cámara; la aplicación solicita el permiso correspondiente y necesita base64 para adjuntarlas. Cada petición usa solo las imágenes aún no enviadas y estas se marcan como enviadas únicamente después de una respuesta válida. El cliente incluye el último mensaje de usuario con las imágenes para los proveedores que las admiten. Si el proveedor rechaza explícitamente imágenes, el borrador de mensaje se retira, el texto se conserva y el modal dirige a elegir un modelo compatible; el error no se oculta ni se convierte en una comida.
 
-`scan_barcode` elimina espacios del código y consulta `https://world.openfoodfacts.org/api/v2/product/{barcode}.json`. Devuelve al modelo un JSON con identidad, porción, nutrientes por 100 g y por porción, ingredientes y Nutri-Score. Un HTTP fallido o producto inexistente se devuelve como resultado textual controlado para que el modelo pueda continuar o estimar visualmente; no escribe esos datos directamente en la dieta. La sesión recuerda si se usó la herramienta para clasificar una propuesta no encontrada como producto comercial, pero ese indicador no es procedencia persistida.
+Antes de enviar la estimación, se adquiere la política de seguridad de salud y se clasifica la entrada. Una evaluación adicional con el proveedor solo se solicita si existe consentimiento para ella; si el riesgo es bloqueante, el modal añade una intervención de seguridad local y no inicia la llamada de estimación. Las respuestas se someten también al filtro de streaming. Este límite de consentimiento es independiente del permiso del sistema para cámara o galería.
 
-Al pulsar guardar, `requestStructuredNutritionJSON` hace una segunda solicitud no transmitida para obtener `dish_name`, gramos, kcal, los tres macros y `food_type`. OpenAI usa un esquema JSON estricto, Anthropic fuerza la tool `extract_nutrition` y Google solicita JSON con el mismo schema sin `additionalProperties`. El resultado pasa por `validateStructuredNutrition`; ante un tipo, nombre o número inválido se informa el error, no se persiste nada y la persona puede corregir la conversación. Después se aplica la misma resolución explícita de catálogo que al usar el formulario.
+```mermaid
+sequenceDiagram
+    participant User as Persona usuaria
+    participant Modal as Modal estimador
+    participant Policy as Política de salud
+    participant Provider as Proveedor BYOK
+    participant Barcode as OpenFoodFacts
+    participant Store as Dieta local
+
+    User->>Modal: texto y fotos autorizadas
+    Modal->>Policy: clasificar entrada
+    alt riesgo bloqueante
+        Policy-->>Modal: intervención local
+        Modal-->>User: aviso visible
+    else estimación permitida
+        Modal->>Provider: conversación e imágenes nuevas
+        opt scan_barcode solicitado
+            Provider->>Barcode: consultar código
+            Barcode-->>Provider: producto o texto de fallo
+        end
+        Provider-->>Modal: respuesta de estimación
+        User->>Modal: guardar
+        Modal->>Provider: extracción estructurada
+        Modal->>Store: validar, resolver catálogo y persistir
+    end
+```
+
+*El proveedor y OpenFoodFacts reciben datos solo dentro de una estimación permitida; ninguna de sus respuestas escribe directamente en la dieta.*
+
+OpenAI, Anthropic y Google pueden ejecutar hasta cinco rondas de `scan_barcode`; el proveedor `custom_openai` intenta usar tools y, si su servidor no las admite, continúa sin lectura de códigos y muestra un aviso. `scan_barcode` elimina espacios del código y consulta `https://world.openfoodfacts.org/api/v2/product/{barcode}.json`. Devuelve al modelo un JSON con identidad, porción, nutrientes por 100 g y por porción, ingredientes y Nutri-Score. Un HTTP fallido, un producto inexistente o una llamada sin código se devuelven como texto controlado para que el modelo pueda continuar o estimar visualmente; no escriben esos datos directamente en la dieta. La sesión recuerda si se usó la herramienta para clasificar una propuesta no encontrada como producto comercial, pero ese indicador no es procedencia persistida.
+
+Las solicitudes de conversación se reintentan hasta tres veces únicamente ante fallos transitorios identificados. Un fallo definitivo se representa como mensaje `technical_error` visible en la conversación. Esto preserva el borrador y evita presentar una respuesta incompleta como estimación apta para guardar.
+
+Al pulsar guardar, `requestStructuredNutritionJSON` hace una segunda solicitud para obtener `dish_name`, gramos, kcal, los tres macros y `food_type`. OpenAI usa un esquema JSON estricto, Anthropic fuerza la tool `extract_nutrition` y Google solicita JSON con el mismo schema sin `additionalProperties`. El resultado pasa por `validateStructuredNutrition`; ante un tipo, nombre o número inválido se informa el error, no se persiste nada y la persona puede corregir la conversación. Después se aplica la misma resolución explícita de catálogo que al usar el formulario.
 
 La salida final tiene dos posibilidades claramente distintas:
 
@@ -178,7 +211,7 @@ Si no se encuentra un producto comercial o receta estimado, se crea una propuest
 
 El runtime del agente expone `search_foods`, `read_meal_foods` y `add_meal_food`. `search_foods` filtra el repositorio combinado por nombre, categoría, origen o rango nutricional, ordena opcionalmente y limita los resultados a 15; devuelve además disponibilidad, avisos y las referencias `source_id`/`item_id`. Así el modelo puede pedir una selección explícita en vez de inferir qué duplicado elegir.
 
-`add_meal_food` acepta una forma `kind: "catalog"` con referencia e `grams`: busca exactamente esa referencia, calcula una instantánea por 100 g y escribe un vínculo `linked` con `linkedBy: "tool"`. La forma manual valida los totales antes de mutar y crea un vínculo no resuelto. La forma heredada basada en nombre se vincula solo ante coincidencia exacta o alias única; si es ambigua devuelve candidatas y `written: false`, sin escribir. La tool usa `commitStore` cuando está disponible y marca su efecto comprometido tras esa persistencia, de acuerdo con la idempotencia y las guardas del runtime.
+`add_meal_food` acepta una forma `kind: "catalog"` con referencia e `grams`: busca exactamente esa referencia disponible, calcula una instantánea por 100 g y prepara un vínculo `linked` con `linkedBy: "tool"`. La forma manual prepara un vínculo no resuelto. La forma heredada basada en nombre se vincula solo ante coincidencia exacta o alias única; si es ambigua devuelve candidatas y `written: false`, sin escribir. **Todas** las formas pasan por `validateNutritionItem` antes de crear o modificar el día. La mutación exige `commitStore`; si este falla, se informa un resultado indeterminado en lugar de afirmar que se guardó. Solo después del `commit` se marca el efecto comprometido y se registra el recibo de operación para mantener la idempotencia del runtime.
 
 ## Persistencia, procedencia y cambios seguros
 
@@ -190,7 +223,7 @@ Para añadir un nutriente, actualice conjuntamente el contrato nutricional, `Die
 
 ## Pruebas focalizadas
 
-`apps/mobile/diet/nutritionContract.test.ts` cubre categorías, conversión de formulario, validación de valores no negativos y finitos, salida estructurada, presupuestos de macros y una propiedad de 1.000 ejecuciones. `apps/mobile/catalogs/matching.test.ts` verifica normalización, estabilidad de ambiguos y alias. `apps/mobile/agent/toolExecutor.test.ts` cubre búsqueda con metadatos de disponibilidad, escritura por referencia, rechazo de ambigüedad, categorías inválidas y nutrientes inválidos.
+`apps/mobile/diet/nutritionContract.test.ts` cubre categorías, conversión de formulario, validación de valores no negativos y finitos, salida estructurada, presupuestos de macros y una propiedad de 1.000 ejecuciones. `apps/mobile/catalogs/matching.test.ts` verifica normalización, estabilidad de ambiguos y alias. `apps/mobile/agent/toolExecutor.test.ts` cubre búsqueda con metadatos de disponibilidad, escritura por referencia, rechazo de ambigüedad, categorías inválidas y nutrientes inválidos. `apps/mobile/agent/foodEstimatorClient.test.ts` cubre el modo determinista sin red, la tool sin código y la validación de la extracción estructurada.
 
 La prueba de navegador `apps/mobile/scripts/diet-validation.e2e.mjs` exporta la app web, siembra un almacenamiento de desarrollo y comprueba el ciclo del plan: el aviso de cálculo sin datos se descarta al navegar, un peso inválido no se guarda, peso y altura válidos completan la medición existente del día y sobreviven a una recarga. También verifica que un objetivo diario cero no se persiste, que un exceso de macros se representa sin remanente negativo, que una caloría manual negativa no escribe y que una entrada válida a cero sí se guarda. Desde la raíz se ejecuta con:
 

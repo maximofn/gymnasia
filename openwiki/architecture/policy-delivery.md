@@ -1,11 +1,8 @@
 ---
 type: arquitectura de entrega de políticas
-title: Entrega y selección de políticas
-description: Explica cómo se generan, firman, promocionan y conservan los snapshots de política, y cómo el cliente móvil verifica, selecciona y congela una política por turno. Cubre la resolución por canal, la caché anti-rollback y la degradación segura.
+title: Entrega y activación de políticas
+description: Explica cómo se generan, firman, promocionan y capturan los snapshots de política, y cómo el cliente móvil los verifica y activa de forma segura. Cubre la resolución por canal, la caché anti-rollback y la degradación segura.
 tags: [agent-policy, signed-policy, mobile, security, deployment, health-safety]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-29T12:03:05.365Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -43,10 +40,15 @@ sources:
     resource: repo://scripts/policy-promotion/prepare-policy-snapshot.mjs
   - id: openwiki-source-d89cdda8746df6dbfedfcf69
     resource: repo://scripts/policy-promotion/sign-policy.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-29T12:03:05.365Z" }
+  - id: openwiki-source-cf7c9acb7f23cfca2b8f4fcd
+    resource: repo://scripts/prompt-policy/policy.mjs
+generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-20T13:07:24.686Z
 ---
 
-# Entrega y selección de políticas
+# Entrega y activación de políticas
 
 La política ejecutable no es un prompt remoto arbitrario: es un **bundle canónico firmado** que reúne el prompt, el runtime de salud-seguridad, las herramientas requeridas y metadatos de compatibilidad. Una activación firmada lo asocia con un canal (`Staging` o `Production`) y una secuencia. La aplicación solo puede usar un paquete cuya cadena verifique contra raíces públicas integradas en la build.
 
@@ -183,6 +185,10 @@ El contexto contiene candidato, digest del bundle, versión, secuencia, origen e
 Los comandos, workflows y artefactos descritos arriba son el mecanismo ejecutable actual. Los bundles de releases anteriores solo se consultan como candidatos históricos para un rollback firmado: no son una fuente alternativa de política ni se copian directamente al cliente.
 
 Los comentarios de incidentes y de transacciones anteriores que aparecen en workflows de build son contexto histórico de mantenimiento. No sustituyen las comprobaciones actuales ni deben convertirse en una receta operativa. Para un cambio presente en `prompts/` o `policy/health-safety/`, describe primero en lenguaje natural qué tools, acciones o recomendaciones se permiten, prohíben o restringen, y obtén la aprobación requerida antes de firmar o promocionar.
+
+### Puerta de promoción del commit
+
+El check `gymnasia/policy-promotion` conecta el cambio de contenido con su entrega: si una modificación toca una ruta configurada para promoción, permanece en `pending` hasta que exista un deployment `Production` exitoso de `gymnasia-policy` cuyo payload v3 tenga `sourceCommit` igual al SHA evaluado. Si no hay cambios en esas rutas, el check termina correctamente sin exigir una promoción. Por tanto, una promoción de otro commit o un deployment con otro esquema no satisface la puerta del commit actual.
 
 La comprobación local mínima antes de promover es:
 
