@@ -286,6 +286,11 @@ try {
   log("Comprobando el formulario manual y la ausencia de escrituras parciales");
   await page.getByTestId("nav-tab-diet").click();
   await page.getByTestId("diet-saved-plan-budget-warning").waitFor({ state: "visible" });
+  const mealSearch = page.getByPlaceholder("Buscar alimento...", { exact: true }).first();
+  const searchBox = await mealSearch.boundingBox();
+  const searchContainer = await mealSearch.locator("..").boundingBox();
+  assert.ok(searchBox && searchBox.height >= 42, "El buscador de comida conserva su altura táctil");
+  assert.ok(searchContainer && searchContainer.height >= searchBox.height + 2, "El contenedor no recorta el campo al compartir SearchField");
   const openManual = page.getByTestId("open-manual-food-desayuno");
   await openManual.scrollIntoViewIfNeeded();
   await openManual.click();

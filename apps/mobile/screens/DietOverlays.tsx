@@ -1,7 +1,10 @@
+import { Thumbnail } from "../components/Thumbnail";
+import { TextField } from "../components/TextField";
+import { Button } from "../components/Button";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { memo, useState } from "react";
-import { Image, KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { memo } from "react";
+import { Image, KeyboardAvoidingView, Pressable, ScrollView, Text, View } from "react-native";
 
 import type { AiReportSurface } from "../agent/feedbackIssues";
 import type { ChatMessage } from "../agent/chatModel";
@@ -41,7 +44,7 @@ export const DietResolutionOverlays = memo(function DietResolutionOverlays({
               <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800", textAlign: "center" }}>Repetir {category}</Text>
               <Text style={{ color: "#A1AAB8", fontSize: 13, lineHeight: 19, textAlign: "center" }}>Elige el día del que quieres copiar los alimentos.</Text>
               {model.isWeb ? (
-                <TextInput
+                <TextField
                   value={model.copyDateText}
                   onChangeText={actions.changeCopyDateText}
                   placeholder="AAAA-MM-DD"
@@ -64,7 +67,7 @@ export const DietResolutionOverlays = memo(function DietResolutionOverlays({
               >
                 <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 15 }}>Continuar</Text>
               </Pressable>
-              <SecondaryButton label="Cancelar" onPress={actions.closeCopyDate} />
+              <Button variant="secondary" style={{ width: "100%", minHeight: 44, borderRadius: 14 }} textStyle={{ fontSize: 15 }} label="Cancelar" onPress={actions.closeCopyDate} />
             </View>
           </View>
         )
@@ -140,35 +143,23 @@ function DietCopyConfirmation({ confirmation, selectedDate, onConfirm, onCancel 
           <Feather name="check" size={15} color="#06090D" />
           <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 15 }}>Confirmar</Text>
         </Pressable>
-        <SecondaryButton label="Cancelar" onPress={onCancel} />
+        <Button variant="secondary" style={{ width: "100%", minHeight: 44, borderRadius: 14 }} textStyle={{ fontSize: 15 }} label="Cancelar" onPress={onCancel} />
       </View>
     </View>
   );
 }
 
-function SecondaryButton({ label, onPress }: { label: string; onPress(): void }) {
-  return (
-    <Pressable onPress={onPress} style={{ width: "100%", minHeight: 44, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: "#1B1F27", alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }}>{label}</Text>
-    </Pressable>
-  );
-}
 
 function DietItemThumbnail({ uri, dotColor, size = 36 }: { uri?: string | null; dotColor: string; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  if (uri && !failed) return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: size, height: size, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
-  return <View style={{ width: 7, height: 7, borderRadius: 999, backgroundColor: dotColor, marginTop: 8 }} />;
+
+  return <Thumbnail uri={uri} size={size} fallback={<View style={{ width: 7, height: 7, borderRadius: 999, backgroundColor: dotColor, marginTop: 8 }} />} />;
 }
 
 function FoodThumbnail({ food, size = 36 }: { food: FoodCatalogEntry; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  const uri = foodCatalogImageUri(food);
-  if (uri && !failed) return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: size, height: size, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
-  return (
-    <View style={{ width: size, height: size, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}>
+
+  return <Thumbnail uri={foodCatalogImageUri(food)} size={size} fallback={<View style={{ width: size, height: size, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}>
       <Text style={{ fontSize: size * 0.44 }}>{food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️"}</Text>
-    </View>
-  );
+    </View>} />;
 }
 
 type FoodEstimatorOverlayProps = {

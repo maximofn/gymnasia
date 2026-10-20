@@ -1,3 +1,4 @@
+import { NoticeFrame } from "./components/NoticeFrame";
 import { Feather } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 
@@ -17,19 +18,11 @@ export function HealthSafetyNotice({ content, metadata, compact = false }: Healt
       ? "Resposta limitada por segurança"
       : "Respuesta limitada por seguridad";
   return (
-    <View
+    <NoticeFrame
       accessibilityRole="alert"
       accessibilityLiveRegion="polite"
       testID="health-safety-intervention"
-      style={{
-        width: "100%",
-        borderWidth: 1,
-        borderColor: "rgba(255,205,77,0.65)",
-        borderRadius: mobileTheme.radius.md,
-        backgroundColor: "rgba(255,205,77,0.09)",
-        padding: compact ? 10 : 12,
-        gap: 8,
-      }}
+      style={{ width: "100%", borderColor: "rgba(255,205,77,0.65)", backgroundColor: "rgba(255,205,77,0.09)", padding: compact ? 10 : 12, gap: 8 }}
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
         <Feather name="shield" size={16} color="#FFCD4D" />
@@ -45,6 +38,6 @@ export function HealthSafetyNotice({ content, metadata, compact = false }: Healt
           Política {metadata.policyVersion} · {metadata.reasonCode}
         </Text>
       ) : null}
-    </View>
+    </NoticeFrame>
   );
 }

@@ -1,13 +1,8 @@
+import { ChatComposer } from "../components/ChatComposer";
+import { TextField } from "../components/TextField";
 import { memo, useRef } from "react";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 
 import {
   AI_DISCLOSURE_MESSAGE_KIND,
@@ -135,50 +130,58 @@ export const ChatScreen = memo(function ChatScreen({
               );
             })}
           </ScrollView>
-          <View style={{ paddingBottom: model.inputBottomPadding, gap: 8 }}>
-            <TextInput
-              testID="chat-input"
-              style={{
-                minHeight: 44,
-                maxHeight: 120,
-                borderRadius: mobileTheme.radius.md,
-                borderWidth: 1,
-                borderColor: mobileTheme.color.borderSubtle,
-                backgroundColor: mobileTheme.color.bgSurface,
-                color: mobileTheme.color.textPrimary,
-                paddingHorizontal: 12,
-                paddingVertical: 10,
-                textAlignVertical: "top",
-              }}
-              value={model.input}
-              onChangeText={actions.changeInput}
-              placeholder="Pregunta a Gymnasia Coach"
-              accessibilityLabel="Pregunta a Gymnasia Coach"
-              placeholderTextColor={mobileTheme.color.textSecondary}
-              multiline
-              blurOnSubmit={false}
-            />
-            <Pressable
-              onPress={actions.send}
-              disabled={model.isSending}
-              testID="chat-send"
-              accessibilityLabel={model.isSending ? "Enviando..." : "Enviar"}
-              accessibilityRole="button"
-              style={{
-                height: 46,
-                borderRadius: 12,
-                backgroundColor: mobileTheme.color.brandPrimary,
-                alignItems: "center",
-                justifyContent: "center",
-                opacity: model.isSending ? 0.6 : 1,
-              }}
-            >
-              <Text style={{ color: "#06090D", fontWeight: "700" }}>
-                {model.isSending ? "Enviando..." : "Enviar"}
-              </Text>
-            </Pressable>
-            <AiIdentityPersistentDisclosure surface="main-chat" />
-          </View>
+          <ChatComposer
+            layout="column"
+            style={{ paddingBottom: model.inputBottomPadding, gap: 8 }}
+            input={
+              <TextField
+                testID="chat-input"
+                style={{
+                  minHeight: 44,
+                  maxHeight: 120,
+                  borderRadius: mobileTheme.radius.md,
+                  borderWidth: 1,
+                  borderColor: mobileTheme.color.borderSubtle,
+                  backgroundColor: mobileTheme.color.bgSurface,
+                  color: mobileTheme.color.textPrimary,
+                  paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  textAlignVertical: "top",
+                }}
+                value={model.input}
+                onChangeText={actions.changeInput}
+                placeholder="Pregunta a Gymnasia Coach"
+                accessibilityLabel="Pregunta a Gymnasia Coach"
+                placeholderTextColor={mobileTheme.color.textSecondary}
+                multiline
+                blurOnSubmit={false}
+              />
+            }
+            action={
+              <Pressable
+                onPress={actions.send}
+                disabled={model.isSending}
+                testID="chat-send"
+                accessibilityLabel={model.isSending ? "Enviando..." : "Enviar"}
+                accessibilityRole="button"
+                style={{
+                  height: 46,
+                  borderRadius: 12,
+                  backgroundColor: mobileTheme.color.brandPrimary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  opacity: model.isSending ? 0.6 : 1,
+                }}
+              >
+                <Text style={{ color: "#06090D", fontWeight: "700" }}>
+                  {model.isSending ? "Enviando..." : "Enviar"}
+                </Text>
+              </Pressable>
+            }
+            footer={
+              <AiIdentityPersistentDisclosure surface="main-chat" />
+            }
+          />
         </View>
       ) : (
         <ScrollView

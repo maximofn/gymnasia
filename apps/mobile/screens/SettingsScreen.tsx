@@ -1,3 +1,11 @@
+import { RecordCard } from "../components/RecordCard";
+import { NoticeFrame } from "../components/NoticeFrame";
+import { Thumbnail } from "../components/Thumbnail";
+import { ItemRow } from "../components/ItemRow";
+import { TextField } from "../components/TextField";
+import { ChoiceRow } from "../components/ChoiceRow";
+import { ToggleField, ToggleField as NotificationToggle } from "../components/ToggleField";
+import { SearchField as CatalogSearch } from "../components/SearchField";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
@@ -512,17 +520,10 @@ function PolicyStatusCard({
   const isHealthy = presentation?.tone === "healthy";
   const accent = isHealthy ? mobileTheme.color.brandPrimary : "#F3B95F";
   return (
-    <View
+    <NoticeFrame
       testID="policy-status-card"
       accessibilityLiveRegion="polite"
-      style={{
-        borderWidth: 1,
-        borderColor: status ? `${accent}66` : mobileTheme.color.borderSubtle,
-        backgroundColor: status ? `${accent}0F` : mobileTheme.color.bgSurface,
-        borderRadius: mobileTheme.radius.lg,
-        padding: 16,
-        gap: 14,
-      }}
+      style={{ borderColor: status ? `${accent}66` : mobileTheme.color.borderSubtle, backgroundColor: status ? `${accent}0F` : mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 16, gap: 14 }}
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
         <View
@@ -628,7 +629,7 @@ function PolicyStatusCard({
           {model.policyResult}
         </Text>
       ) : null}
-    </View>
+    </NoticeFrame>
   );
 }
 
@@ -984,74 +985,6 @@ export const PreferencesSettingsPanel = memo(function PreferencesSettingsPanel({
   );
 });
 
-function NotificationToggle({
-  testID,
-  label,
-  description,
-  checked,
-  disabled = false,
-  onPress,
-}: {
-  testID: string;
-  label: string;
-  description: string;
-  checked: boolean;
-  disabled?: boolean;
-  onPress(): void;
-}) {
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        backgroundColor: mobileTheme.color.bgSurface,
-        borderRadius: 12,
-        padding: 14,
-        borderWidth: 1,
-        borderColor: mobileTheme.color.borderSubtle,
-        opacity: disabled ? 0.4 : 1,
-      }}
-    >
-      <View style={{ flex: 1, gap: 2 }}>
-        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
-          {label}
-        </Text>
-        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-          {description}
-        </Text>
-      </View>
-      <Pressable
-        testID={testID}
-        accessibilityRole="switch"
-        accessibilityLabel={`${label}: ${checked ? "sí" : "no"}`}
-        accessibilityState={{ checked, disabled }}
-        onPress={onPress}
-        disabled={disabled}
-        style={{
-          width: 52,
-          height: 30,
-          borderRadius: 15,
-          backgroundColor: checked ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-        }}
-      >
-        <View
-          style={{
-            position: "absolute",
-            left: checked ? 26 : 4,
-            width: 22,
-            height: 22,
-            borderRadius: 11,
-            backgroundColor: "#fff",
-          }}
-        />
-      </Pressable>
-    </View>
-  );
-}
 
 export const NotificationSettingsPanel = memo(function NotificationSettingsPanel({
   model,
@@ -1570,7 +1503,7 @@ function MemoryInput({
   secondary?: boolean;
 }) {
   return (
-    <TextInput
+    <TextField
       style={{ minHeight: 40, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: secondary ? mobileTheme.color.textSecondary : mobileTheme.color.textPrimary, paddingHorizontal: 10, fontSize: secondary ? 12 : 13, fontWeight: bold ? "700" : undefined }}
       value={value}
       onChangeText={onChangeText}
@@ -1738,9 +1671,6 @@ function LabeledDietValue({ label, flex, children }: { label: string; flex: numb
   return <View style={{ flex, gap: 2 }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>{label}</Text>{children}</View>;
 }
 
-function ChoiceRow<T extends string>({ label, options, selected, onSelect }: { label: string; options: ReadonlyArray<{ key: T; label: string }>; selected: T | undefined; onSelect(value: T): void }) {
-  return <><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>{label}</Text><View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>{options.map((option) => { const active = selected === option.key; return <Pressable key={option.key} onPress={() => onSelect(option.key)} style={{ borderWidth: 1, borderColor: active ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.pill, paddingHorizontal: 12, minHeight: 34, alignItems: "center", justifyContent: "center", backgroundColor: active ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp }}><Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>{option.label}</Text></Pressable>; })}</View></>;
-}
 
 function MacroSettingsRow({ row, first, model, actions }: { row: { macro: "protein" | "carbs" | "fat"; kcalLabel: string; gkgLabel: string; hint: number | null; value: string }; first: boolean; model: Readonly<DietSettingsModel>; actions: Readonly<DietSettingsActions> }) {
   const calorieIssue = model.issues.get(`manual_macro_calories.${row.macro}`);
@@ -1797,7 +1727,7 @@ export const MeasurementsSettingsPanel = memo(function MeasurementsSettingsPanel
       ) : model.measurements.map((measurement, index) => {
         const fields = measurementSettingsFields(measurement);
         return (
-          <View key={measurement.id} style={{ backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, padding: 12, gap: 8 }}>
+          <RecordCard key={measurement.id} variant="outline">
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
               <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "700" }}>{formatMeasurementHistoryDate(measurement.measured_on)}</Text>
               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>#{model.measurements.length - index}</Text>
@@ -1822,7 +1752,7 @@ export const MeasurementsSettingsPanel = memo(function MeasurementsSettingsPanel
                 <Text style={{ color: "#FF6B6B", fontSize: 12, fontWeight: "600" }}>Eliminar</Text>
               </Pressable>
             </View>
-          </View>
+          </RecordCard>
         );
       })}
     </View>
@@ -1997,35 +1927,23 @@ export const ProductsSettingsPanel = memo(function ProductsSettingsPanel({
   );
 });
 
-function CatalogSearch({ value, onChange, placeholder }: { value: string; onChange(value: string): void; placeholder: string }) {
-  return (
-    <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgSurface, paddingHorizontal: 10, height: 40 }}>
-      <Feather name="search" size={16} color={mobileTheme.color.textSecondary} />
-      <TextInput value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={mobileTheme.color.textSecondary} style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 14, marginLeft: 8 }} />
-      {value ? <Pressable onPress={() => onChange("")} style={{ padding: 4 }}><Feather name="x" size={16} color={mobileTheme.color.textSecondary} /></Pressable> : null}
-    </View>
-  );
-}
 
 function FoodCatalogRow({ food, onPress, showCategory = false }: { food: FoodCatalogSettingsModel["foods"][number]; onPress(): void; showCategory?: boolean }) {
   return (
-    <Pressable onPress={onPress} style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle }}>
+    <ItemRow onPress={onPress} style={{ paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle }}>
       <SettingsFoodThumbnail food={food} />
       <View style={{ flex: 1 }}>
         <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>{food.name}</Text>
         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{food.calories_per_100g} kcal · P:{food.protein_per_100g}g · C:{food.carbs_per_100g}g · G:{food.fat_per_100g}g</Text>
       </View>
       {showCategory ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>{food.category}</Text> : null}
-    </Pressable>
+    </ItemRow>
   );
 }
 
 function SettingsFoodThumbnail({ food }: { food: FoodCatalogSettingsModel["foods"][number] }) {
-  const [failed, setFailed] = useState(false);
-  const uri = foodCatalogImageUri(food);
-  if (uri && !failed) return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
   const emoji = food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️";
-  return <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}><Text style={{ fontSize: 16 }}>{emoji}</Text></View>;
+  return <Thumbnail uri={foodCatalogImageUri(food)} size={36} fallback={<View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}><Text style={{ fontSize: 16 }}>{emoji}</Text></View>} />;
 }
 
 function FoodCatalogDetail({ food, testID, onClose, showTitle = false }: { food: FoodCatalogSettingsModel["foods"][number]; testID: string; onClose?: () => void; showTitle?: boolean }) {
@@ -2160,38 +2078,18 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                       <Text style={{ color: mobileTheme.color.textSecondary, lineHeight: 18, fontSize: 12 }}>
                         A veces una consulta queda en duda. Con este interruptor activado, la app envía solo el texto de esa consulta al proveedor de IA que estés usando en ese momento (el del Coach o el del Estimador) para que dé una segunda opinión antes de responder. No envía historial, fotos ni memoria local. Desactivado, esa duda se resuelve solo con la revisión local.
                       </Text>
-                      <Pressable
+                      <ToggleField
+                        variant="inline"
                         testID="health-safety-consent-switch"
-                        accessibilityRole="switch"
-                        accessibilityState={{ checked: healthSafetyConsent.enabled, disabled: !healthSafetyConsent.available }}
+                        checked={healthSafetyConsent.enabled}
+                        disabled={!healthSafetyConsent.available}
                         accessibilityLabel="Pedir una segunda opinión a la IA en consultas dudosas"
                         accessibilityHint={healthSafetyConsent.available ? undefined : "Guarda la API key de un proveedor para poder activarla"}
-                        disabled={!healthSafetyConsent.available}
                         onPress={() => updateHealthSafetyConsent(!healthSafetyConsent.enabled)}
-                        style={{ flexDirection: "row", alignItems: "center", gap: 10, minHeight: 38, opacity: healthSafetyConsent.available ? 1 : 0.55 }}
-                      >
-                        <View
-                          style={{
-                            width: 38,
-                            height: 22,
-                            borderRadius: 999,
-                            padding: 2,
-                            alignItems: healthSafetyConsent.enabled ? "flex-end" : "flex-start",
-                            backgroundColor: healthSafetyConsent.enabled ? mobileTheme.color.brandPrimary : "#3A414C",
-                          }}
-                        >
-                          <View style={{ width: 18, height: 18, borderRadius: 999, backgroundColor: healthSafetyConsent.enabled ? "#06090D" : "#A2AAB5" }} />
-                        </View>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600", flex: 1 }}>
-                          Segunda opinión de la IA en consultas dudosas
-                        </Text>
-                        <Text
-                          testID="health-safety-consent-status"
-                          style={{ color: healthSafetyConsent.enabled ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontSize: 11 }}
-                        >
-                          {healthSafetyConsent.status}
-                        </Text>
-                      </Pressable>
+                        label="Segunda opinión de la IA en consultas dudosas"
+                        status={healthSafetyConsent.status}
+                        statusTestID="health-safety-consent-status"
+                      />
                       {!healthSafetyConsent.available ? (
                         <Text testID="health-safety-consent-hint" style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
                           Para activarla, guarda antes la API key de un proveedor más abajo. Sin clave no hay a quién enviar la consulta.
