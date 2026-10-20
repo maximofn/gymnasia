@@ -25,4 +25,3 @@ export function ChoiceRow<T extends string>({ label, options, selected, onSelect
     </>
   );
 }
-
