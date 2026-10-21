@@ -184,6 +184,13 @@ reintentan tres veces los errores transitorios de GitHub antes de fallar. Esto
 evita que un HTTP 503 aislado se diagnostique erróneamente como un artefacto
 cifrado corrupto o una contraseña incorrecta.
 
+Antes de leer el diff o habilitar el auto-merge, el runner exige que los SHA de
+cabeza y base que expone la PR coincidan con el commit que acaba de publicar y
+con `origin/main`. GitHub puede conservar durante unos instantes los SHA
+anteriores después de un force-push; en ese caso el runner vuelve a declarar la
+misma base para pedir su recálculo, espera de forma acotada y falla sin
+auto-merge si la PR continúa desfasada.
+
 ## Sembrar OAuth sin pegarlo en el chat
 
 Primero debe existir un login válido en `~/.openwiki/.env`, generado localmente

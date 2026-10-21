@@ -654,8 +654,36 @@ jobs:
                 --body "Actualización diaria generada por el runner privado de OpenWiki. Resultado: $OPENWIKI_RESULT."
             )"
           fi
+
+          expected_head="$(git rev-parse HEAD)"
+          expected_base="$(git rev-parse origin/main)"
+          pr_number="$(gh pr view "$pr_url" --json number --jq '.number')"
+          for attempt in 1 2 3 4 5; do
+            pr_refs="$(
+              gh api "repos/maximofn/gymnasia/pulls/$pr_number" \
+                --jq '[.head.sha, .base.sha] | @tsv'
+            )"
+            IFS=$'\t' read -r actual_head actual_base <<< "$pr_refs"
+            if [ "$actual_head" = "$expected_head" ] && \
+              [ "$actual_base" = "$expected_base" ]; then
+              break
+            fi
+            if [ "$attempt" -eq 1 ]; then
+              # A force-push can briefly leave the PR API on its previous head.
+              # Reasserting the same base asks GitHub to recalculate both refs.
+              gh api --method PATCH \
+                "repos/maximofn/gymnasia/pulls/$pr_number" \
+                -f base=main > /dev/null
+            fi
+            if [ "$attempt" -eq 5 ]; then
+              echo "::error title=Stale OpenWiki PR::GitHub did not associate the pull request with the pushed head and current base."
+              exit 1
+            fi
+            sleep "$((attempt * 2))"
+          done
           gh pr edit "$pr_url" \
             --body "Actualización diaria generada por el runner privado de OpenWiki. Resultado: $OPENWIKI_RESULT. Una ejecución fallida puede conservar páginas terminadas para reanudarlas después de fusionar esta PR."
+          echo "number=$pr_number" >> "$GITHUB_OUTPUT"
           echo "url=$pr_url" >> "$GITHUB_OUTPUT"
           echo "OpenWiki PR: $pr_url"
 
@@ -678,9 +706,22 @@ jobs:
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GYMNASIA_REPO_TOKEN }}
+          PR_NUMBER: ${{ steps.pull_request.outputs.number }}
           PR_URL: ${{ steps.pull_request.outputs.url }}
         run: |
           set -euo pipefail
+          expected_head="$(git rev-parse HEAD)"
+          expected_base="$(git rev-parse origin/main)"
+          pr_refs="$(
+            gh api "repos/maximofn/gymnasia/pulls/$PR_NUMBER" \
+              --jq '[.head.sha, .base.sha] | @tsv'
+          )"
+          IFS=$'\t' read -r actual_head actual_base <<< "$pr_refs"
+          if [ "$actual_head" != "$expected_head" ] || \
+            [ "$actual_base" != "$expected_base" ]; then
+            echo "::error title=Stale OpenWiki PR::Automatic merge refused because the pull request refs do not match the reviewed checkout."
+            exit 1
+          fi
           unexpected_paths="$(
             gh pr diff "$PR_URL" --name-only |
               while IFS= read -r path; do
