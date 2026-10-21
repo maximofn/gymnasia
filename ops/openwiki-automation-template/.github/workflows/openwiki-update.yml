@@ -601,6 +601,8 @@ jobs:
         run: |
           set -euo pipefail
           gh auth setup-git
+          git fetch --no-tags origin main
+          git rebase origin/main
           if [ -n "$PREVIOUS_SHA" ]; then
             git push origin HEAD:refs/heads/openwiki/update \
               --force-with-lease="refs/heads/openwiki/update:$PREVIOUS_SHA"
@@ -623,6 +625,32 @@ jobs:
             --body "Actualización diaria generada por el runner privado de OpenWiki. Resultado: $OPENWIKI_RESULT. Una ejecución fallida puede conservar páginas terminadas para reanudarlas después de fusionar esta PR."
           echo "url=$pr_url" >> "$GITHUB_OUTPUT"
           echo "OpenWiki PR: $pr_url"
+
+      - name: Enable automatic merge for complete documentation
+        if: >-
+          steps.pull_request.outputs.url != '' &&
+          steps.commit.outputs.result == 'success'
+        working-directory: target
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GYMNASIA_REPO_TOKEN }}
+          PR_URL: ${{ steps.pull_request.outputs.url }}
+        run: |
+          set -euo pipefail
+          unexpected_paths="$(
+            gh pr diff "$PR_URL" --name-only |
+              while IFS= read -r path; do
+                case "$path" in
+                  .openwikiignore|openwiki/*|ops/openwiki-runtime-telemetry.json) ;;
+                  *) printf '%s\n' "$path" ;;
+                esac
+              done
+          )"
+          if [ -n "$unexpected_paths" ]; then
+            echo "::error title=Unsafe OpenWiki PR::Automatic merge refused because the PR contains paths outside the publication allowlist."
+            exit 1
+          fi
+          gh pr merge "$PR_URL" --auto --merge
 
       - name: Fail unsuccessful update
         if: >-

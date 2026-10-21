@@ -31,7 +31,10 @@ ni fusionar PR.
 - No tomes el código de salida `0` como prueba de cobertura completa: OpenWiki 0.6.0 puede terminar así mientras `openwiki/.last-update.json` conserva `status: interrupted` y algunas páginas se han omitido. Comprueba ese estado, la procedencia por página en `openwiki/.page-manifest.json` y que `openwiki/.run.json` haya desaparecido. Publica páginas completas como progreso parcial solo si el diff pasa revisión, y declara expresamente lo pendiente.
 - Un HTTP 400 tras renovar ChatGPT no demuestra que el OAuth haya caducado: comprueba primero el error saneado. Upstream documenta un [fallo intermitente al verificar contenido cifrado](https://github.com/langchain-ai/openwiki/issues/921) y [workers que omiten páginas sin entregar el resultado](https://github.com/langchain-ai/openwiki/issues/850); ambos pueden dejar la actualización interrumpida. No repitas el login ni reintentes sin límite ante estos síntomas.
 - La actualización recurrente pertenece al workflow privado, no a un cron del repositorio público.
-- La rama remota es siempre `openwiki/update`; el runner crea o actualiza una única PR y la fusión sigue siendo manual.
+- La rama remota es siempre `openwiki/update`; el runner crea o actualiza una
+  única PR. Una ejecución completa solicita auto-merge solo después de comprobar
+  la lista cerrada de rutas publicables y deja que GitHub exija los checks de
+  `main`. El progreso parcial de una ejecución fallida nunca se fusiona solo.
 
 ### Operar Personal Brain
 
@@ -72,7 +75,9 @@ node .claude/skills/openwiki/scripts/check-agent-instructions.mjs
 4. Comprueba que ningún secreto, `.env`, log, semilla, OAuth descifrado o estado de Personal Brain entra en el diff.
 5. Sincroniza los mismos archivos en el repositorio privado y ejecuta manualmente los workflows afectados.
 6. Verifica los pasos mediante metadatos, el nuevo artefacto cifrado y los paths de la PR pública. No leas logs privados salvo diagnóstico necesario y autorizado.
-7. Deja la PR pública para revisión y fusión manual.
+7. Verifica que una ejecución completa solicite auto-merge únicamente para la
+   PR `openwiki/update`, que una ejecución parcial quede abierta y que GitHub no
+   pueda fusionar hasta completar los checks obligatorios.
 
 ## Finalización
 

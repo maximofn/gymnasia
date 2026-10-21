@@ -134,6 +134,28 @@ test("publishes durable page progress before propagating OpenWiki failures", asy
   );
 });
 
+test("auto-merges only complete OpenWiki documentation from allowed paths", async () => {
+  const workflow = await readFile(workflowUrl, "utf8");
+
+  assert.match(workflow, /git fetch --no-tags origin main/u);
+  assert.match(workflow, /git rebase origin\/main/u);
+  assert.match(
+    workflow,
+    /name: Enable automatic merge for complete documentation/u,
+  );
+  assert.match(
+    workflow,
+    /steps\.commit\.outputs\.result == 'success'/u,
+  );
+  assert.match(
+    workflow,
+    /\.openwikiignore\|openwiki\/\*\|ops\/openwiki-runtime-telemetry\.json/u,
+  );
+  assert.match(workflow, /gh pr diff "\$PR_URL" --name-only/u);
+  assert.match(workflow, /gh pr merge "\$PR_URL" --auto --merge/u);
+  assert.doesNotMatch(workflow, /gh pr review/u);
+});
+
 test("builds the Telegram report from sanitized metadata", async () => {
   const workflow = await readFile(reportWorkflowUrl, "utf8");
 
