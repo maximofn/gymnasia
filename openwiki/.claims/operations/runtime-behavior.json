@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:42ba726baaf72526745cf4f3c40c820ac2a8981b828cfeda06ef595f6c9f8a9e",
+  "pageVersion": "sha256:a59c8cd80f88e748f5104259cc446ee1fdcc943a71a501e8ebe7cc0bb4f7669e",
   "claims": [
     {
       "id": "claim_ba30cd1761e84be4b9024a08a918264b",
@@ -153,10 +153,20 @@
           "version": "repo-lines-v1:sha256:b5ebb6fe8f85364361442abcb3fe1574360a020fe974e735b298ade7ad304917:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlYmNmZTM4NzUyOGMzZjFkZDY4MTk1ZDNjNzQ5YzExNTkxMzk3MzBlNWYyZTNkYmE0N2Q2ZDMwMWNjZmVhMDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxZjQ4Mjk3Y2QyMTRmYzc4MmIzYTkyM2ZjNjA4NmMwMzk5MzAyMjk2YmM3ZmEwZDBjMzMwNzU2OTI2YzZmODciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkxNzUyOWMzYzUwOWIzNzhlNzkxODQ1M2M2MzU5OTA5NDNmYWZlNjQwMjBjZDJlM2U3N2JhZTNiZDc0N2JhNzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU0N2NkY2RmMzRiNjU1YjQwYTM0MTA3NTQ3Y2IxZGRmMDMyYjA0MDIzNzJhN2U1YzQyMWNiOWY0ZTNjNDI1OTEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_54ba4c03a8184750bae66625481fb6ac",
+      "statement": "La extracción de telemetría de runtime disponible no contiene una muestra: el último intento figura como `unavailable` con categoría `network` y `sample: null`, por lo que no permite publicar llamadas, latencias, tokens ni costes observados.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L1-L10",
+          "version": "repo-lines-v1:sha256:090cc05e76bf6664e6500067b612853af39514bce31c6adedf69b447ed3e0b57:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-20T13:07:24.686Z"
+    "at": "2026-10-21T13:25:19.535Z"
   }
 }

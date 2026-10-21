@@ -10,9 +10,6 @@ related:
   - ../mobile/local-state-and-backup.md
   - ../operations/runtime-behavior.md
   - ../services/feedback-worker.md
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-20T13:07:24.686Z
 sources:
   - id: openwiki-source-192849a5973afd8b6e55db2c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
@@ -56,7 +53,10 @@ sources:
     resource: repo://apps/mobile/agent/toolOperationReceipts.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-21T13:25:19.535Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-21T13:25:19.535Z
 ---
 
 # Runtime del agente y herramientas
@@ -67,18 +67,9 @@ Esta página documenta el chat de `apps/mobile`: desde `sendMessage` hasta el pr
 
 ### Observado
 
-El conector visible está configurado para `gymnasia-app-agent`, `gymnasia-food-agent` y `openwiki` en `https://eu.api.smith.langchain.com`. Aunque el contexto de esta actualización indica que la extracción ya se realizó, la interfaz disponible para este trabajo no expuso los raw items ni materializó el dump en el árbol. Por ello **no se publican cifras inventadas**.
+**Observado:** la instantánea no aporta runs legibles ni agregados publicables en este árbol; por tanto, esta página no atribuye a proveedor, tool o símbolo ninguna llamada, repetición, latencia, token, coste, error u outlier. El alcance, la configuración del conector y el inventario de métricas no disponibles están centralizados en [Comportamiento en ejecución y oportunidades](../operations/runtime-behavior.md); no se duplican aquí.
 
-| Agregado solicitado | Resultado publicable en esta actualización |
-|---|---|
-| Roots y llamadas remotas | No disponible |
-| Llamadas repetidas | No disponible |
-| Uso y latencia por tool | No disponible |
-| Rondas por turno | No disponible |
-| Tokens de entrada y salida | No disponible |
-| Composición `error` / `outlier` / `baseline` | No disponible |
-
-Cuando los raw items sean legibles, agréguense únicamente conteos, secuencias, firmas de error, rondas, latencias, tokens y URLs de traza autorizadas. Nunca se deben copiar entradas, salidas, argumentos, prompts, resultados de tools ni razonamiento. Los buckets `error` y `outlier` se seleccionan por anomalía, y `baseline` por normalidad reciente: su composición es una muestra deliberadamente sesgada, no una tasa de errores o latencia de la flota. Solo las medianas de `baseline` sirven como referencia normal **de esa muestra**.
+Cuando una extracción autorizada sea legible, incorpórese en el informe consolidado solo como agregado: conteos, secuencias, firmas de error, rondas, latencias, tokens y URLs de traza autorizadas. Nunca copie entradas, salidas, argumentos, prompts, resultados de tools ni razonamiento. Los buckets `error` y `outlier` se seleccionan por anomalía, y `baseline` por normalidad reciente: su composición es una muestra deliberadamente sesgada, no una tasa de errores o latencia de la flota. Solo las medianas de `baseline` sirven como referencia normal **de esa muestra**.
 
 ### Correlacionado con archivo y símbolo
 
