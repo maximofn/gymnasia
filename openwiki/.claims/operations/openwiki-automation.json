@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:e3d4954d393dcf0c7994b2914bf19b22dc42f1ce07d426bd23be351ceb7909e2",
+  "pageVersion": "sha256:35816fae7f7ae2ee0d0bfcfcda2ad988d83fcdd4f6addaf6853a0adc6fb45ba7",
   "claims": [
     {
       "id": "claim_b78ae34fdf464ce1aa6860aa6eeef8e6",
@@ -18,19 +18,19 @@
     },
     {
       "id": "claim_c4f48c9e1f894c8ab1ccec35940baa77",
-      "statement": "El workflow clona Gymnasia, fuerza `openwiki/update` desde `origin/main`, restaura `AGENTS.md` y `CLAUDE.md` desde la rama base, elimina `openwiki/.run.json` e indexa `openwiki`, `.openwikiignore` y el JSON saneado de telemetría cuando se renueva; si la rama remota ya existía, el push usa `--force-with-lease` contra su SHA observado y, si no, usa un push normal antes de crear o actualizar la PR.",
+      "statement": "El workflow clona Gymnasia, crea `openwiki/update` desde `origin/main`, restaura `AGENTS.md` y `CLAUDE.md` desde la rama base, elimina `openwiki/.run.json` e indexa `openwiki`, `.openwikiignore` y el JSON saneado de telemetría cuando se renueva. Si la rama remota ya existía, el push usa `--force-with-lease` contra su SHA observado; si no, usa un push normal antes de crear o actualizar la PR.",
       "evidence": [
         {
           "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L116-L129",
           "version": "repo-lines-v1:sha256:147d5c20731ba1fed9bfd39c792b65c9086863f0bd6be58f11928ddb0ee30517:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzMGI4ZTc4MTg1MWI4NjRhNDkyYmIxMjM4ZDQ5NjJiOWM3ZjNjMDE2NTY0YjZhYjQ4NDhjZDZjNDJlOGVkMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhMjMyNTUxMGYwYWZlMjA1YTljN2YyZjcwNjUzNDc0NWY3N2EyMjE3MTZhZWVjMmZmMTY1NjFlNzA5YmM4MWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiN2JlNDE0NTQyMzZkNTBkZjM1YTJmZDIxZTllMGM5OTU4NWQ0ZGE4NjE5OGMzMGNjMzQ0ODNjMTkwZjgzMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3OGViYjIwYTM2YjUyMDgwYWUyYjFjOTRkNDkyNWZkOWJjMGIyOWY5NmU5NzBjMjQzY2NkZjY2YTZlOWEyODUifQ"
         },
         {
-          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L591-L659",
-          "version": "repo-lines-v1:sha256:161f5b09ca4877e0184947da863c5a3f05525fe15a1a6483cbe93eccd5a9a873:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzYjEwNzE2NzU4MmIxODA5N2E5ODlkMmNjYWQ1YWI4Mjc0M2YyOGE2M2NjNDEyMDI3YWQwZDhmMDcwNTA3NjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwYTQwZGVmYjcyNDdjYTQwMGU1YWE5OWUyM2UwMGY1ODE0YTZkNzQwYmY2MTA3ZGRmNWQwNGEwMTIzMDRiMmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYTBmZWRhNzQ2MTdlMjExNTk3MDY1OTJhMjUyYmYzMWYzNjJiMjcwMThmOGVkMjVlMzBkZWYxYzcxNWVkOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1NDQ1ZTA5YmI1YjZhMmVhNTI2ZjdjZGIxOGVhZjgyNjIwNzIwYmM2MTAwNTQzZGNkODlhYjI4MTU3NWNiMDAifQ"
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L591-L644",
+          "version": "repo-lines-v1:sha256:78e05eed4247563414d55dda79f28186b11d5a09f1c428ef74166771def2bb36:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzYjEwNzE2NzU4MmIxODA5N2E5ODlkMmNjYWQ1YWI4Mjc0M2YyOGE2M2NjNDEyMDI3YWQwZDhmMDcwNTA3NjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmNTU5NzljZTczMDIwMzNlNmIyZmQ3ZDg4ZjUzN2EzYjhlMDkxZWEzMDVjODExZmZhMTI3NGJmNTc2NGVhNWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkYTBmZWRhNzQ2MTdlMjExNTk3MDY1OTJhMjUyYmYzMWYzNjJiMjcwMThmOGVkMjVlMzBkZWYxYzcxNWVkOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4Y2Q5NmY5Y2U1YmVlYzMyMGVhNzk5NzY2MzkyNWNlM2E3YjQwYTYwODRjNDUxZTY5NjhiMmRmN2NlYjhkZTYifQ"
         },
         {
-          "resource": "repo://ops/openwiki-automation-template/tests/workflow.test.mjs#L75-L135",
-          "version": "repo-lines-v1:sha256:eb90aa023ac33e78a84a1a81bc848719711450a9e8b41b24dc43de63c5fb3d47:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3NTQ2OTJkZmEzMmFiMDQ2NTZhNzlhOTdhYWM4ZmY4YTkyM2EwZWI3MTE2MDhmN2NlMDg0ZGU0NDFkZWViNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhYjU2MzI5YjBkNDY1NTUwZWUwNjRjOTkxZDk3YzA3ODNhMTJhODUyMTkzYjdiZWQ0NzY2NjYxOTUwYzQwNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyY2EwMTBjMTQwMGY0YWJhYmRmYjZhODU0NjBhOGEyMmZhY2IwM2IzNzA5M2MzNTBiZDY1YjBmMzc5NTZkNDYifQ"
+          "resource": "repo://ops/openwiki-automation-template/tests/workflow.test.mjs#L75-L102",
+          "version": "repo-lines-v1:sha256:85d4528ebb2352f8ff9f891ca94ebaca118a5cfe6289b67d2ab0adf0f79bbfce:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3NTQ2OTJkZmEzMmFiMDQ2NTZhNzlhOTdhYWM4ZmY4YTkyM2EwZWI3MTE2MDhmN2NlMDg0ZGU0NDFkZWViNjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhYjU2MzI5YjBkNDY1NTUwZWUwNjRjOTkxZDk3YzA3ODNhMTJhODUyMTkzYjdiZWQ0NzY2NjYxOTUwYzQwNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVjZThiYTQxZmJmOGYzYzQ2NWViZTRhZDhmNzFjNjk3ODJkOWEwMTM4ZDQ1MWI0M2NiMTQzY2RlNDZiOGI0YmUifQ"
         }
       ]
     },
@@ -244,7 +244,7 @@
         },
         {
           "resource": "repo://ops/openwiki-automation-template/tests/workflow.test.mjs#L14-L175",
-          "version": "repo-lines-v1:sha256:55540016d8cb90baacc382a6303ee760bd4d6167887f7f78c366652c02a27865:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2OGE4MDZlNDMxMzc3YWI3MDMzNmEzNTk5MDRkY2I1MjM5YWFlOGRjMzUwMGVhYjNiYzdlNmRhYjBkY2ViZGNkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxOWIwMjc4ZTc4NTc4OTkyMmEyMWI0ZmZkZDhhMWE5M2U5ZjM1YWJmODkyMmJiMGJkNDc5M2FiMjk1YWU4NWE0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3NzMwMGY2YjdkMmU1YzVlNGMzMjZhODJhZGE4NGEwNzc1ZTg2MGUyZDc1MTAyY2Q1ZTc4NmI5YzgzNmMxMGRjIn0"
+          "version": "repo-lines-v1:sha256:f5bdcf59719924cd32f5d5dc8c3f80488378787b6b03a74ee6fe042e99459318:eyJzZWxlY3RlZExpbmVDb3VudCI6MjI5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2OGE4MDZlNDMxMzc3YWI3MDMzNmEzNTk5MDRkY2I1MjM5YWFlOGRjMzUwMGVhYjNiYzdlNmRhYjBkY2ViZGNkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxOWIwMjc4ZTc4NTc4OTkyMmEyMWI0ZmZkZDhhMWE5M2U5ZjM1YWJmODkyMmJiMGJkNDc5M2FiMjk1YWU4NWE0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3NzMwMGY2YjdkMmU1YzVlNGMzMjZhODJhZGE4NGEwNzc1ZTg2MGUyZDc1MTAyY2Q1ZTc4NmI5YzgzNmMxMGRjIn0"
         }
       ]
     },
@@ -265,10 +265,24 @@
           "version": "repo-lines-v1:sha256:2192ff87f605e2b715cfeeabc19eaf7a0d8a5f54accef6491da768ead1f2be32:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRiZDA0OTkwOWMyMmU1YTZjYjA5ZmI5OWZhOGQ2ZTcxOTNjNDExNDJhZjIwYmNjNDllOWQ0ZmQ0YjMxYmY5MTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3ZjgwYzM1MzFlZmVkMWNjODlmNDc5YWI3YTdjN2M5ZTBmZTRjOGM3MDg4YzgwOGUwYTkxMzYzNmMxZDhmZDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3MzAwZjZiN2QyZTVjNWU0YzMyNmE4MmFkYTg0YTA3NzVlODYwZTJkNzUxMDJjZDVlNzg2YjljODM2YzEwZGMifQ"
         }
       ]
+    },
+    {
+      "id": "claim_755c2dc7bf5f48969c894e7021bc6763",
+      "statement": "La fusión automática solo se solicita para una PR de actualización completa sin fallos en los controles de preflight, OAuth ni Personal Brain; antes de solicitarla el workflow comprueba que sus referencias coinciden con el checkout y rechaza rutas fuera de la lista de publicación permitida, por lo que el progreso parcial queda para revisión en la PR.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-automation-template/.github/workflows/openwiki-update.yml#L690-L738",
+          "version": "repo-lines-v1:sha256:137582de03ba33f48f1efeccfa3a08d3a57761a036e12788aa823cfd6ca5f54b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFjMDNhMWUyZTAzN2FkOGI4MmNhOTIzZTJjOTMyOGViNzM4NjE0ZTAyZDEyY2VkNDg3ZWExOWRhZDM0OGZlNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4MDM5OWFiYTUwZjI2ZTgyMmJhZGZlYzc0NjJjNWRiZTA0NGE4MzE3NDAzNDczYTg3NTQ4NjMwNmM4YWYyN2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4MTc0NjYwMWFiNTA2MzAyNWIxYjllZDAyMTkwODZjZGMyM2U5MjYyY2E1MTBmZTJmN2JlNzJmNzZjZjE4MWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJjODczMGVjMzUwMzhlZWY0YzllMjYzNTJjMjEyYmI0NWZhZGRkNzMwOGNjNDczMDc2YzhlMWZkMjBlZjlmZWYifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-automation-template/tests/workflow.test.mjs#L137-L179",
+          "version": "repo-lines-v1:sha256:25cd670b332d40330968a5cf34e3e1e11efe3d809d340e36de8f69916f14f0ae:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyNjA3NThjNmYxYTI1OGE0NWZmNzNjMDNmMTk0YzRjZTE4OWJhOWExNjVhMDFhM2QxZmJiZWQxZmIzY2UzMDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY4MGQyZGQ0ZjI4OWQyNmRjNzU3YzJiNjVhMDZjMzkyMjdhNjcxN2M0YjQ4YjVhMzk3OTJjOWYxMWU0MWFlYTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2MTIzYTQ1MWVmYzg0YjU1NGMzNTA5NjBlMzZmOWFjNWVhNjAzNGU3NDczNzk3YzUxZDVjYTYxYzdjMzQ0MjIifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-21T13:25:19.535Z"
+    "at": "2026-10-21T13:49:23.153Z"
   }
 }
