@@ -168,6 +168,14 @@ test("auto-merges only complete OpenWiki documentation from allowed paths", asyn
   assert.match(workflow, /gh pr diff "\$PR_URL" --name-only/u);
   assert.match(workflow, /gh pr merge "\$PR_URL" --auto --merge/u);
   assert.doesNotMatch(workflow, /gh pr review/u);
+  assert.match(workflow, /expected_head="\$\(git rev-parse HEAD\)"/u);
+  assert.match(workflow, /expected_base="\$\(git rev-parse origin\/main\)"/u);
+  assert.match(workflow, /\[\.head\.sha, \.base\.sha\] \| @tsv/u);
+  assert.match(
+    workflow,
+    /gh api --method PATCH[\s\S]*-f base=main > \/dev\/null/u,
+  );
+  assert.match(workflow, /title=Stale OpenWiki PR/u);
 });
 
 test("retries transient GitHub artifact download failures", async () => {
@@ -177,9 +185,8 @@ test("retries transient GitHub artifact download failures", async () => {
     workflow.match(/for attempt in 1 2 3; do/gu)?.length,
     3,
   );
-  assert.equal(
-    workflow.match(/sleep "\$\(\(attempt \* 2\)\)"/gu)?.length,
-    3,
+  assert.ok(
+    (workflow.match(/sleep "\$\(\(attempt \* 2\)\)"/gu)?.length ?? 0) >= 3,
   );
   for (const artifact of [
     "openwiki-runtime-telemetry.zip",

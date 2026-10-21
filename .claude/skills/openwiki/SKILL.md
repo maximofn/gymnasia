@@ -82,6 +82,11 @@ node .claude/skills/openwiki/scripts/check-agent-instructions.mjs
 8. Las descargas de los artefactos cifrados y de telemetría deben reintentar los
    fallos transitorios de GitHub. Un HTTP 5xx aislado no debe invalidar el estado
    privado ni convertir una actualización sana en un fallo de restauración.
+9. Antes de inspeccionar rutas o solicitar auto-merge, comprueba que los SHA de
+   cabeza y base de la PR coincidan con el checkout publicado y `origin/main`.
+   Si GitHub conserva los SHA anteriores tras el force-push, vuelve a declarar
+   la misma base para forzar su recálculo, espera de forma acotada y falla sin
+   auto-merge si los SHA siguen sin coincidir.
 
 ## Finalización
 
