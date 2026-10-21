@@ -36,9 +36,20 @@ sources:
     resource: repo://apps/mobile/agent/feedbackIssues.ts
   - id: openwiki-source-7c7e6958947eb5cdbed74d47
     resource: repo://apps/mobile/agent/feedbackPipeline.test.ts
+  - id: openwiki-source-6334b10ddf3403df3f250cb0
+    resource: repo://apps/mobile/agent/feedbackProposals.test.ts
+  - id: openwiki-source-22e60e7c3fc6cfa255e86222
+    resource: repo://apps/mobile/agent/feedbackProposals.ts
   - id: openwiki-source-a6ba9053969a3e00cd971742
     resource: repo://apps/mobile/app.config.ts
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+  - id: openwiki-source-929e8e1df23628a3f3848ff8
+    resource: repo://apps/mobile/App.tsx
+  - id: openwiki-source-8516e91de5d9c6c503e3a291
+    resource: repo://apps/mobile/FeedbackProposalBanner.tsx
+generated: { by: "openwiki/0.6.0", at: "2026-10-21T13:25:19.535Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-21T13:25:19.535Z
 ---
 
 # Worker de feedback e incidencias verificables
@@ -71,7 +82,10 @@ Las claves de 16 hexadecimales identifican borradores derivados de su contenido.
 
 ```mermaid
 flowchart TD
-    App["Aplicación móvil"] --> Draft["Sanea borrador y deriva clave"]
+    App["Aplicación móvil"] --> Store["Propuesta local en memoria"]
+    Store --> Consent{"¿Usuario pulsa Enviar?"}
+    Consent -->|"No"| LocalEnd["Descarta o expira sin red"]
+    Consent -->|"Sí"| Draft["Sanea borrador y deriva clave"]
     Draft --> Operation{"¿Clave de operación?"}
     Operation -->|"Sí"| Status["GET de estado"]
     Operation -->|"No"| Post["POST con cinco claves"]
@@ -93,7 +107,11 @@ flowchart TD
     Complete --> Created["201 con referencia"]
 ```
 
-*Flujo cliente–Worker–GitHub: la escritura privilegiada ocurre solo después de validación y una reserva durable.*
+*Flujo de propuesta local y entrega: para alimento y ejercicio, la escritura privilegiada solo puede empezar tras la interacción explícita de la UI, y después de la validación y reserva durable del Worker.*
+
+### Propuesta local, consentimiento y entrega
+
+Para alimentos y ejercicios, `createFeedbackProposalStore` primero sanea el borrador y lo mantiene solo en memoria como `pending`; crear una propuesta no llama a la red. Deduplica el mismo contenido por su clave derivada, conserva como máximo tres propuestas pendientes y elimina las pendientes con más de 30 minutos. No persiste esos borradores. `GymnasiaApp` se suscribe al store: la pulsación de **Enviar** cambia la propuesta a `submitting`, llama a `submitFeedbackIssue` con el borrador y la deja `settled` con el resultado; **Ahora no** la elimina. `FeedbackProposalBanner` no se muestra para `feature` ni `report`: las mejoras se confirman en el chat y las denuncias usan su propio diálogo de previsualización. Así, una propuesta local, el consentimiento de UI y la entrega externa son etapas distintas; cancelar, expirar o fallar no implica que se haya enviado feedback.
 
 La app normaliza y redacta el borrador antes de enviarlo; el Worker vuelve a hacerlo y calcula el hash de contenido saneado. D1 reserva la clave antes de llamar a GitHub. Una repetición de una reserva completada devuelve la misma referencia sin crear otra issue; una repetición mientras está pendiente recibe `429`. Ante un fallo upstream, el Worker elimina la reserva pendiente para que un reintento explícito sea posible. También devuelve una creación existente cuando encuentra el mismo hash de contenido creado durante las últimas 24 horas, aunque la clave sea diferente.
 
@@ -149,4 +167,4 @@ La suite Vitest no usa red ni credenciales: emplea un doble de D1 y `fetch` simu
 npm --workspace apps/feedback-worker run test
 ```
 
-Al modificar la frontera móvil, ejecute también la prueba de contrato indicada en el frontmatter anterior del repositorio y las pruebas `feedbackClient` y `feedbackPipeline`; estas verifican que proveedor, tool, ejecutor y cliente HTTP nunca confirmen una incidencia después de un error remoto o una referencia malformada.
+Al modificar la frontera móvil, ejecute también `feedbackContract.contract.test.ts`, `feedbackClient.test.ts`, `feedbackIssues.test.ts`, `feedbackProposals.test.ts` y `feedbackPipeline.test.ts`. En particular, la última recorre un SSE de proveedor falso hasta el ejecutor y el cliente HTTP: comprueba que el cuerpo tiene únicamente las cinco claves del contrato, que solo una referencia verificable confirma la creación y que un transporte fallido no aborta el turno del chat.

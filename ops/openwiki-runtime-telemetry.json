@@ -2,9 +2,88 @@
   "schemaVersion": 1,
   "project": "openwiki",
   "latestAttempt": {
-    "status": "unavailable",
-    "at": "2026-09-27T18:08:09.020Z",
-    "failureCategory": "network"
+    "status": "available",
+    "at": "2026-10-21T13:34:58.550Z",
+    "failureCategory": null
   },
-  "sample": null
+  "sample": {
+    "collectedAt": "2026-10-21T13:34:58.550Z",
+    "windowStartAt": "2026-10-14T13:34:58.550Z",
+    "windowEndAt": "2026-10-21T13:34:58.550Z",
+    "truncated": true,
+    "roots": {
+      "total": 8,
+      "succeeded": 7,
+      "failed": 0,
+      "unknown": 1
+    },
+    "failures": {
+      "oauth": 0,
+      "managed-markers": 0,
+      "langsmith": 0,
+      "rate-limit": 0,
+      "model": 0,
+      "context-limit": 0,
+      "network": 0,
+      "unknown": 0
+    },
+    "durationMs": {
+      "roots": {
+        "count": 7,
+        "unknown": 1,
+        "p50": 136039,
+        "p95": 488676,
+        "max": 488676
+      },
+      "models": {
+        "count": 144,
+        "unknown": 1,
+        "p50": 3576,
+        "p95": 22797,
+        "max": 430381
+      },
+      "tools": {
+        "count": 139,
+        "unknown": 0,
+        "p50": 2,
+        "p95": 167,
+        "max": 870
+      }
+    },
+    "llm": {
+      "calls": 145,
+      "callsPerRoot": {
+        "count": 8,
+        "unknown": 0,
+        "p50": 17,
+        "p95": 23,
+        "max": 23
+      },
+      "tokens": {
+        "state": "unavailable",
+        "coverage": "partial",
+        "observedCalls": 0,
+        "prompt": 0,
+        "completion": 0,
+        "total": 0
+      },
+      "cost": {
+        "state": "unavailable",
+        "coverage": "partial",
+        "observedCalls": 0,
+        "totalUsd": 0
+      }
+    },
+    "tools": {
+      "total": 139,
+      "categories": {
+        "search": 0,
+        "read": 79,
+        "write": 11,
+        "command": 0,
+        "other": 49
+      },
+      "unknownNames": 49
+    }
+  }
 }
