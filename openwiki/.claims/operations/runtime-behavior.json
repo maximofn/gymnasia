@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:a59c8cd80f88e748f5104259cc446ee1fdcc943a71a501e8ebe7cc0bb4f7669e",
+  "pageVersion": "sha256:0dbe371c641fd1e229c1bf16e895c39d7fc1d9a118547d42351e3a3ebddfd5ac",
   "claims": [
     {
       "id": "claim_ba30cd1761e84be4b9024a08a918264b",
@@ -156,17 +156,61 @@
     },
     {
       "id": "claim_54ba4c03a8184750bae66625481fb6ac",
-      "statement": "La extracción de telemetría de runtime disponible no contiene una muestra: el último intento figura como `unavailable` con categoría `network` y `sample: null`, por lo que no permite publicar llamadas, latencias, tokens ni costes observados.",
+      "statement": "La extracción de telemetría de runtime está disponible para una ventana de siete días, pero la muestra está marcada como `truncated`: informa 8 roots (7 exitosos, 0 fallidos y 1 desconocido), 145 llamadas LLM y 139 tools, mientras que tokens y coste figuran como `unavailable` con cobertura parcial y ninguna llamada observada.",
       "evidence": [
         {
-          "resource": "repo://ops/openwiki-runtime-telemetry.json#L1-L10",
-          "version": "repo-lines-v1:sha256:090cc05e76bf6664e6500067b612853af39514bce31c6adedf69b447ed3e0b57:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L1-L88",
+          "version": "repo-lines-v1:sha256:2c84ebf8e5f19912d322c72cdfef5ebb5dcec97c627c9bf51a9234640d89c20f:eyJzZWxlY3RlZExpbmVDb3VudCI6ODgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_26767efa66054a2098b360e1b80d5c57",
+      "statement": "Los agregados de duración de la muestra son parciales: hay 7 duraciones de root conocidas y 1 desconocida, 144 de modelo conocidas y 1 desconocida, y 139 de tools; por ello los percentiles de duración no permiten atribuir latencia a un proveedor o handler individual.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L30-L51",
+          "version": "repo-lines-v1:sha256:a1d7a5054ac0b0f68ea962ace0dcf2a26c24677d7aa85dec444d45131dfb9dd9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZjI3NWQ3YjdmYzllZmI0ZDY4ODZlODFhOGNjZWIxOTI5NTg3ZDc2ZmQzZjNmZjY3MGUxODhjNGQwOTUzNTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyMzUyZjg2NmQyNzM0YmYzODVjM2Q5YjMzNWNiOGRlMjdiNzk1ZTBiZjgyOGFmYjg0MGFkNGYxOTY3NzQ3ZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwMDU5MmY1YjJmOTk1ZjQ4ZDA0YjIxZjYwYzRjN2QxYzIxODFlYTAzNjRlNzE0NTVlNGExODJkZTdjZmQxZjIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2ccafcfdcae9438f963df91dd79520d1",
+      "statement": "El manifiesto clasifica 79 de las 139 tools como `read`, 11 como `write` y 49 como `other`, y reporta 49 nombres desconocidos; esa categoría no permite concluir que una tool haya sido una lectura o una escritura.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L77-L87",
+          "version": "repo-lines-v1:sha256:01861dc593dd20709bd4789c9f672ebf431cf80b1715b6655a002037d1c3e5c3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExNWRkNTMwYjc3OWE0ZmJkYWM1NjA1NzAxZWIyYjA1OWQ3ZGJkZGNkMWY0MWFiYWYwMTM1N2NmMGNhYTQ4ZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MGMxMmM5MTkzOTgxYmYxOGNjMTVlMDAwNjQ3MjI0OGFmNDBhZjk3YzYxYzlkMmU3NGE1YWMzNWE0M2U1MWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmNzM5YTA2YzFjYmIxMjQ0ZTMzNjNkMzhiY2Y5ZmE1MGNlODRmZWQzOTljMjE5M2EzYzdmMDhkNTk5MThiMmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e111fabbc164ec2902d64764550f343",
+      "statement": "Para evitar que un turno finalice mientras persiste trabajo previo, `executeToolBatch` deja de iniciar lecturas tras un fallo, espera las ya iniciadas y luego propaga el error de menor índice; las escrituras y tools no clasificadas como lectura se ejecutan como barreras ordenadas.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/toolBatch.ts#L4-L64",
+          "version": "repo-lines-v1:sha256:4d1746a0816dfa0f21b0bc32951c9ab6dd32f1c13953e4542c5d296503e003ac:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzYjRhNTY3Y2NiMTQ0MmU2MGY3NmUyYjRlNTQ1MjU1YWU2YzRmMDdmMDEzMmMwMjQwYmM0YTU2YzZhM2I4NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhMzRmZmEzNjY1NzZlYzZlOTVlOGZhOTc3ZTBmMzI0OWUxY2E2NjFkZTI4Nzk5Y2E3NWI4OTI4Yzg3YWQ3MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d2f83ac9416042faa43d060a80599211",
+      "statement": "En Google nativo, si el streaming XHR falla antes de emitir contenido visible por un error de conexión, el transporte reintenta la misma generación por XHR buffered; no aplica ese fallback tras un delta visible, y en web usa `fetch` con cancelación a los 120 segundos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L246-L305",
+          "version": "repo-lines-v1:sha256:97d9f3d6c5ba7b87d9d54c1fe772ebfdb30b0136e90928cc2f033d0c538cfd52:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NzgxYmVjYWU3NDc4ZjlkOTdkODJlZjYxZWZlMWQ4MDNlM2JkMDhhYmQ2ODJkMDBhNzlmMDBhNDAxYTE3MjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L51-L80",
+          "version": "repo-lines-v1:sha256:5c97d18c50ef764e679d7e6bddf2c77a702d9249306883ce6c25b75b6cf15737:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5YmUyODc2ODMyNWY0ODQ5MzdlNjIyMmYxODZiNWU3MDgxZTczNGMwZjEwZWM0MjlhMTY0Njk5OWMxZTdlNmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzY2NjY2Y1YTAzNzMwMGUzMmQ1YjljMTMzMmViYzFiNTc4OWY0YmM0MzZkZmFhMGJlODUzNzQ2ODgwNTkwYTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzZWMxMjU3N2RmZDdkNmQzMjVkMmMwMzFhYmZmNGM5M2FiYzc5NGJiZGU0MGU4NDM1MWYwZWM5NmQ3ZWVjOTkifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-21T13:25:19.535Z"
+    "at": "2026-10-21T13:49:23.153Z"
   }
 }

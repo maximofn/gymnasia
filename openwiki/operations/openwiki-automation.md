@@ -5,7 +5,7 @@ description: Runner privado de GitHub Actions que actualiza la documentación de
 tags: [openwiki, github-actions, langsmith, oauth, automation]
 verified:
   - by: openwiki/0.6.0
-    at: 2026-10-21T13:25:19.535Z
+    at: 2026-10-21T13:49:23.153Z
 sources:
   - id: openwiki-source-d63b46e4983cf20d445e960a
     resource: repo://ops/openwiki-automation-template/.github/workflows/openwiki-report.yml
@@ -37,7 +37,7 @@ sources:
     resource: repo://ops/openwiki-automation-template/tests/private-state.test.mjs
   - id: openwiki-source-e204cf07a21df797f3596f66
     resource: repo://ops/openwiki-automation-template/tests/workflow.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-10-21T13:25:19.535Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-21T13:49:23.153Z" }
 ---
 
 # Automatización de OpenWiki
@@ -61,17 +61,20 @@ flowchart TD
     Telemetry --> Encrypt["Cifra estados y limpia datos en claro"]
     Personal --> Encrypt
     Encrypt --> Publish{"OAuth cifrado y cambios preparados"}
-    Publish -->|"Sí"| PR["Rama y PR openwiki update"]
-    Publish -->|"No"| Failure["Fallo con diagnóstico saneado"]
-    PR --> Result{"Resultado de OpenWiki"}
-    Result -->|"Fallo"| Failure
+    Publish -->|"Sin cambios"| Finish["Finaliza"]
+    Publish -->|"Con cambios"| PR["Rama y PR openwiki update"]
+    PR --> Complete{"Actualización completa y PR segura"}
+    Complete -->|"Sí"| Merge["Solicita fusión automática"]
+    Complete -->|"No"| Partial["Conserva la PR para revisión"]
     Report["Informe diario separado"] --> Metadata["Metadatos y artefacto saneado"]
     Metadata --> Telegram["Telegram saneado"]
 ```
 
-*El diagrama muestra el control de publicación y las fronteras de datos: el informe consume metadatos y el artefacto saneado, no logs ni trazas.*
+*El diagrama muestra el ciclo de actualización, incluida la publicación de progreso parcial y la fusión automática exclusivamente para una actualización completa; el informe consume metadatos y el artefacto saneado, no logs ni trazas.*
 
 El workflow valida que `AGENTS.md` sea un enlace a `CLAUDE.md`. Al publicar, restaura ambos archivos desde `origin/main`, elimina el checkpoint transitorio `openwiki/.run.json` e indexa `openwiki`, `.openwikiignore` y, cuando se renueva, el JSON saneado de telemetría. Si ya existía `openwiki/update`, la rama se empuja con `--force-with-lease` contra el SHA observado; si no existía, se hace un push normal. Después crea o actualiza una PR contra `main` solo si hay cambios preparados. El commit requiere que el paso de OpenWiki haya concluido y que OAuth se haya cifrado; puede preservar páginas duraderas terminadas aunque el comando haya devuelto un fallo, y el workflow propaga ese fallo después. Esto evita publicar archivos ajenos a la wiki o cambios de política de agente y permite reanudar el trabajo mediante la PR.
+
+La fusión automática no es el mecanismo para publicar progreso parcial. Solo se solicita para una PR cuya actualización de Code Brain fue satisfactoria y cuyos preflight, restauración y cifrado de OAuth, y etapas configuradas del Personal Brain no fallaron. Antes de solicitarla, el workflow verifica que la cabeza y la base de la PR correspondan al checkout revisado y rechaza cualquier ruta fuera de `.openwikiignore`, `openwiki/*` y `ops/openwiki-runtime-telemetry.json`. Una PR parcial o con una etapa fallida queda disponible para revisión, pero no satisface esas condiciones.
 
 La plantilla configura Node 22.22.0 en el workflow; su manifiesto y lockfile v3 fijan la plantilla en la versión 1.0.0, Node `>=22.22.0 <23` y las dependencias directas `openwiki` 0.6.0, `langsmith` 0.7.17, `jsdom` 29.1.1 y `mermaid` 11.16.1. `npm ci` instala ese grafo bloqueado cuando se ejecuta la plantilla.
 
@@ -102,17 +105,17 @@ La categoría `oauth` cambia el estado abstracto de autenticación y las demás 
 <!-- OPENWIKI_RUNTIME_TELEMETRY:START -->
 ## Telemetría agregada de los últimos 7 días
 
-Muestra recogida el **21 oct 2026, 15:34**, desde el 14 oct 2026, 15:34 hasta el 21 oct 2026, 15:34. La consulta alcanzó el límite de 900 spans; los conteos son una cota inferior.
+Muestra recogida el **21 oct 2026, 15:53**, desde el 14 oct 2026, 15:53 hasta el 21 oct 2026, 15:53. La consulta alcanzó el límite de 900 spans; los conteos son una cota inferior.
 
 | Señal | Resultado |
 | --- | --- |
-| Ejecuciones raíz | 8 totales · 7 correctas · 0 fallidas · 1 sin resultado |
+| Ejecuciones raíz | 8 totales · 8 correctas · 0 fallidas · 0 sin resultado |
 | Fallos por categoría | ninguno |
-| Duración de ejecución | p50 2 min 16 s · p95 8 min 9 s · máximo 8 min 9 s |
-| Duración de modelo | p50 4 s · p95 23 s |
-| Duración de herramientas | p50 2 ms · p95 167 ms |
-| Llamadas de modelo | 145 · p50 17 por ejecución |
-| Herramientas | búsqueda 0 · lectura 79 · escritura 11 · comandos 0 · otras 49 |
+| Duración de ejecución | p50 1 min 53 s · p95 8 min 9 s · máximo 8 min 9 s |
+| Duración de modelo | p50 4 s · p95 21 s |
+| Duración de herramientas | p50 2 ms · p95 83 ms |
+| Llamadas de modelo | 142 · p50 16 por ejecución |
+| Herramientas | búsqueda 0 · lectura 77 · escritura 11 · comandos 0 · otras 53 |
 | Tokens | no disponibles |
 | Coste | no disponible |
 
