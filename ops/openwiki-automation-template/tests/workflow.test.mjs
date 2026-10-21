@@ -147,6 +147,20 @@ test("auto-merges only complete OpenWiki documentation from allowed paths", asyn
     workflow,
     /steps\.commit\.outputs\.result == 'success'/u,
   );
+  for (const guard of [
+    "preflight.outcome == 'success'",
+    "oauth.outcome == 'success'",
+    "openwiki.outputs.result == 'success'",
+    "encrypt_oauth.outcome == 'success'",
+    "personal_sources.outcome != 'failure'",
+    "personal_restore.outcome != 'failure'",
+    "personal_config.outcome != 'failure'",
+    "personal.outcome != 'failure'",
+    "personal.outputs.result != 'failure'",
+    "encrypt_personal.outcome != 'failure'",
+  ]) {
+    assert.ok(workflow.includes(`steps.${guard}`), guard);
+  }
   assert.match(
     workflow,
     /\.openwikiignore\|openwiki\/\*\|ops\/openwiki-runtime-telemetry\.json/u,
@@ -154,6 +168,30 @@ test("auto-merges only complete OpenWiki documentation from allowed paths", asyn
   assert.match(workflow, /gh pr diff "\$PR_URL" --name-only/u);
   assert.match(workflow, /gh pr merge "\$PR_URL" --auto --merge/u);
   assert.doesNotMatch(workflow, /gh pr review/u);
+});
+
+test("retries transient GitHub artifact download failures", async () => {
+  const workflow = await readFile(workflowUrl, "utf8");
+
+  assert.equal(
+    workflow.match(/for attempt in 1 2 3; do/gu)?.length,
+    3,
+  );
+  assert.equal(
+    workflow.match(/sleep "\$\(\(attempt \* 2\)\)"/gu)?.length,
+    3,
+  );
+  for (const artifact of [
+    "openwiki-runtime-telemetry.zip",
+    "openwiki-oauth-state.zip",
+    "openwiki-personal-state.zip",
+  ]) {
+    assert.ok(workflow.includes(`artifact_zip="$RUNNER_TEMP/${artifact}"`));
+  }
+  assert.equal(
+    workflow.match(/> "\$artifact_zip\.tmp"/gu)?.length,
+    3,
+  );
 });
 
 test("builds the Telegram report from sanitized metadata", async () => {

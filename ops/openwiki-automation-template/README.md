@@ -22,7 +22,8 @@ repositorio no tiene visibilidad privada.
   ChatGPT, procesa hasta dos páginas de Code Brain a la vez, actualiza
   `openwiki/update`, mantiene una única PR y solicita su auto-merge solo cuando
   la ejecución es completa, el diff contiene exclusivamente rutas publicables
-  y pasan los checks obligatorios. Cifra el estado y conserva un agregado
+  y pasan los checks obligatorios. Los artefactos se descargan con reintentos
+  acotados ante fallos 5xx transitorios de GitHub. Cifra el estado y conserva un agregado
   saneado de los últimos 7 días de LangSmith. Los lunes y en
   ejecuciones manuales renueva la evidencia pública.
 - `OpenWiki Daily Report`: 12:00 UTC y ejecución manual. Envía duración, estado

@@ -96,8 +96,19 @@ jobs:
           if [ -z "$artifact_id" ]; then
             exit 0
           fi
-          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" \
-            > "$RUNNER_TEMP/openwiki-runtime-telemetry.zip"
+          artifact_zip="$RUNNER_TEMP/openwiki-runtime-telemetry.zip"
+          for attempt in 1 2 3; do
+            if gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" \
+              > "$artifact_zip.tmp"; then
+              mv "$artifact_zip.tmp" "$artifact_zip"
+              break
+            fi
+            rm -f "$artifact_zip.tmp"
+            if [ "$attempt" -eq 3 ]; then
+              exit 1
+            fi
+            sleep "$((attempt * 2))"
+          done
           unzip -p "$RUNNER_TEMP/openwiki-runtime-telemetry.zip" \
             openwiki-runtime-telemetry.json \
             > "$RUNNER_TEMP/openwiki-runtime-telemetry.previous.json"
@@ -148,7 +159,18 @@ jobs:
           )"
 
           if [ -n "$artifact_id" ]; then
-            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" > "$artifact_zip"
+            for attempt in 1 2 3; do
+              if gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" \
+                > "$artifact_zip.tmp"; then
+                mv "$artifact_zip.tmp" "$artifact_zip"
+                break
+              fi
+              rm -f "$artifact_zip.tmp"
+              if [ "$attempt" -eq 3 ]; then
+                exit 1
+              fi
+              sleep "$((attempt * 2))"
+            done
             unzip -p "$artifact_zip" openwiki-oauth-state.enc > "$state_file"
             install -d -m 700 "$OPENWIKI_CODE_USER_HOME/.openwiki"
             if node scripts/oauth-state.mjs decrypt \
@@ -407,9 +429,20 @@ jobs:
             exit 0
           fi
 
-          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" \
-            > "$RUNNER_TEMP/openwiki-personal-state.zip"
-          unzip -p "$RUNNER_TEMP/openwiki-personal-state.zip" openwiki-personal-state.enc \
+          artifact_zip="$RUNNER_TEMP/openwiki-personal-state.zip"
+          for attempt in 1 2 3; do
+            if gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" \
+              > "$artifact_zip.tmp"; then
+              mv "$artifact_zip.tmp" "$artifact_zip"
+              break
+            fi
+            rm -f "$artifact_zip.tmp"
+            if [ "$attempt" -eq 3 ]; then
+              exit 1
+            fi
+            sleep "$((attempt * 2))"
+          done
+          unzip -p "$artifact_zip" openwiki-personal-state.enc \
             > "$RUNNER_TEMP/openwiki-personal-state.enc"
           node scripts/private-state.mjs decrypt \
             "$RUNNER_TEMP/openwiki-personal-state.enc" \
@@ -629,7 +662,18 @@ jobs:
       - name: Enable automatic merge for complete documentation
         if: >-
           steps.pull_request.outputs.url != '' &&
-          steps.commit.outputs.result == 'success'
+          steps.commit.outputs.result == 'success' &&
+          steps.preflight.outcome == 'success' &&
+          steps.oauth.outcome == 'success' &&
+          steps.openwiki.outcome == 'success' &&
+          steps.openwiki.outputs.result == 'success' &&
+          steps.encrypt_oauth.outcome == 'success' &&
+          steps.personal_sources.outcome != 'failure' &&
+          steps.personal_restore.outcome != 'failure' &&
+          steps.personal_config.outcome != 'failure' &&
+          steps.personal.outcome != 'failure' &&
+          steps.personal.outputs.result != 'failure' &&
+          steps.encrypt_personal.outcome != 'failure'
         working-directory: target
         shell: bash
         env:
