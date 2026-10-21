@@ -34,7 +34,8 @@ ni fusionar PR.
 - La rama remota es siempre `openwiki/update`; el runner crea o actualiza una
   única PR. Una ejecución completa solicita auto-merge solo después de comprobar
   la lista cerrada de rutas publicables y deja que GitHub exija los checks de
-  `main`. El progreso parcial de una ejecución fallida nunca se fusiona solo.
+  `main`. Cualquier fallo que vuelva roja la ejecución, incluido Personal Brain,
+  impide solicitar el auto-merge; el progreso parcial nunca se fusiona solo.
 
 ### Operar Personal Brain
 
@@ -78,6 +79,9 @@ node .claude/skills/openwiki/scripts/check-agent-instructions.mjs
 7. Verifica que una ejecución completa solicite auto-merge únicamente para la
    PR `openwiki/update`, que una ejecución parcial quede abierta y que GitHub no
    pueda fusionar hasta completar los checks obligatorios.
+8. Las descargas de los artefactos cifrados y de telemetría deben reintentar los
+   fallos transitorios de GitHub. Un HTTP 5xx aislado no debe invalidar el estado
+   privado ni convertir una actualización sana en un fallo de restauración.
 
 ## Finalización
 

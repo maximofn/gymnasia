@@ -175,7 +175,14 @@ exige revisiones aprobatorias, pero sí que la rama esté actualizada y que pase
 que solo cambien `.openwikiignore`, `openwiki/**` o
 `ops/openwiki-runtime-telemetry.json` y solicita un merge commit automático. Si
 OpenWiki conserva progreso parcial tras un fallo, publica o actualiza la PR pero
-no solicita auto-merge.
+no solicita auto-merge. Tampoco lo solicita si falla la configuración,
+restauración, actualización o persistencia de Personal Brain: la condición de
+auto-merge refleja todos los estados que harían roja la ejecución privada.
+
+Las descargas de los últimos artefactos OAuth, Personal Brain y telemetría
+reintentan tres veces los errores transitorios de GitHub antes de fallar. Esto
+evita que un HTTP 503 aislado se diagnostique erróneamente como un artefacto
+cifrado corrupto o una contraseña incorrecta.
 
 ## Sembrar OAuth sin pegarlo en el chat
 
