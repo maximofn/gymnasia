@@ -99,6 +99,13 @@ endpoint para verificar fallos y reintentos de las denuncias. El comando normal
 `node apps/mobile/scripts/agent-chat.e2e.mjs` ya prepara esa configuración. Un
 bundle genérico de Development deja el endpoint vacío de forma intencionada.
 
-La validación funcional se hace en web. Quedan por comprobar el teclado y el foco
-nativos de Android/iOS; las capturas web no los demuestran. La fusión de esta PR
-inicia una build Android y requiere confirmación expresa del mantenedor.
+La validación funcional automatizada se hizo en web. La PR #350 está fusionada y
+la versión 1.52.4 se publicó con AAB y APK verificados y envío a Prueba cerrada de
+Google Play. El 21 de octubre de 2026 el mantenedor confirmó que la probó en el
+móvil y funciona bien. Esa confirmación resuelve la validación móvil general del
+alcance entregado; no documenta un recorrido exhaustivo de teclado y foco en
+Android e iOS ni especifica el dispositivo usado.
+
+GYM-8 (ticket para unificar componentes repetidos de la interfaz) se cerró con
+las doce familias adaptables entregadas. Las quince propuestas de abstracción
+nueva siguen fuera de esta entrega.
