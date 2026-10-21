@@ -33,7 +33,9 @@ que no puede generar cargos accidentales al agotar la cuota gratuita.
   - consulta una ventana de 7 días del proyecto LangSmith `openwiki`, la reduce
     a conteos y percentiles permitidos y conserva el último agregado válido en
     un artefacto de 30 días;
-  - reutiliza siempre la rama `openwiki/update` y crea o actualiza una única PR;
+  - reutiliza siempre la rama `openwiki/update`, crea o actualiza una única PR y
+    solicita su auto-merge cuando la ejecución es completa, el diff respeta la
+    lista cerrada de rutas publicables y pasan los checks obligatorios;
   - si OpenWiki falla después de completar páginas, publica ese progreso
     durable sin `.run.json` y después marca la ejecución como fallida;
   - actualiza opcionalmente Personal Brain desde Linear, maximofn.com y Tavily;
@@ -146,9 +148,12 @@ Versión `0.6.0` verificada el 27 de septiembre de 2026:
   único bloque administrado y ninguna autorreferencia. El runner ya no
   materializa una copia regular, aunque sigue restaurando las instrucciones
   revisadas de `main` antes de publicar documentación;
-- el recolector saneado de LangSmith sufrió un fallo transitorio de red y dejó
-  `latestAttempt.status=unavailable` sin muestra. Code Brain y su configuración
-  de trazas ocultas continuaron; no fue un error de clave ni de OAuth;
+- el recolector saneado de LangSmith dejó
+  `latestAttempt.status=unavailable` sin muestra. El 21 de octubre se comprobó
+  que no era un fallo de red: enviaba `limit: 900` a una API cuyo máximo por
+  petición es 100 y el texto `Failed to fetch` del HTTP 400 confundía al
+  clasificador. Code Brain y su configuración de trazas ocultas continuaron; no
+  fue un error de clave ni de OAuth;
 - la plantilla pública y el repositorio privado quedaron sincronizados en el
   merge privado `d9e8ae8`; los [tests remotos](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/36337765763)
   y el [informe manual de Telegram](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/36339828257)
@@ -162,6 +167,15 @@ automatización privada usa `GYMNASIA_REPO_TOKEN`. El recordatorio correcto es
 crear ese token fine-grained con acceso exclusivo a Gymnasia y los dos permisos
 anteriores. Si en el futuro se vuelve a trasladar la creación de PR al workflow
 público, entonces sí habrá que activar dicha opción.
+
+Gymnasia tiene habilitado el auto-merge del repositorio. La regla de `main` no
+exige revisiones aprobatorias, pero sí que la rama esté actualizada y que pasen
+`prompt-policy`, `gymnasia/owner-authorization` y
+`gymnasia/policy-promotion`. El runner no intenta aprobar su propia PR: valida
+que solo cambien `.openwikiignore`, `openwiki/**` o
+`ops/openwiki-runtime-telemetry.json` y solicita un merge commit automático. Si
+OpenWiki conserva progreso parcial tras un fallo, publica o actualiza la PR pero
+no solicita auto-merge.
 
 ## Sembrar OAuth sin pegarlo en el chat
 
@@ -257,7 +271,15 @@ Si la consulta a LangSmith falla, la actualización documental continúa. El
 artefacto vuelve a guardar la última muestra válida, marca el intento como no
 disponible y Telegram muestra esa antigüedad. La evidencia pública se actualiza
 semanalmente los lunes y también en cada ejecución manual; su JSON fuente es
-`ops/openwiki-runtime-telemetry.json` y la PR sigue requiriendo fusión manual.
+`ops/openwiki-runtime-telemetry.json` y se somete a los mismos checks y la misma
+lista cerrada antes del auto-merge.
+
+El recolector no envía `limit: 900` a `/runs/query`: LangSmith limita cada
+petición a 100 spans. Deja que el SDK pagine con el límite admitido y corta la
+muestra agregada al alcanzar 900 spans. Los errores HTTP de LangSmith se
+clasifican como `langsmith` antes de interpretar el texto del mensaje, para que
+un HTTP 400 cuyo texto empiece por `Failed to fetch` no aparezca falsamente como
+un fallo de red.
 
 ## Validación
 
