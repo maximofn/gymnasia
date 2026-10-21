@@ -1,11 +1,8 @@
 ---
-type: límites de integración y distribución
-title: Integraciones retirables y actualizaciones
-description: Delimita la ausencia verificable de VivaGym y de un actualizador dentro del cliente, la eliminación de datos heredados y la distribución Android externa por GitHub Releases y Play Internal.
+type: integración y entrega móvil
+title: VivaGym, actualizaciones y entrega móvil
+description: Delimita la retirada de VivaGym y del actualizador interno, y documenta la transacción durable que compila, verifica y entrega los binarios Android fuera del cliente.
 tags: [integrations, vivagym, updates, android, releases]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-29T12:03:05.365Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -43,36 +40,43 @@ sources:
     resource: repo://scripts/production-release/eas-submit.mjs
   - id: openwiki-source-5bb7a7442c09c2e571325b53
     resource: repo://scripts/production-release/local-controller.mjs
+  - id: openwiki-source-7718d8047e7c1e0a6137f6de
+    resource: repo://scripts/production-release/policy.json
   - id: openwiki-source-eca432bcfe70b04e1d09e3d3
     resource: repo://scripts/production-release/release-transaction.mjs
+  - id: openwiki-source-a403a8897dea191dee6aa309
+    resource: repo://scripts/production-release/release-transaction.test.mjs
   - id: openwiki-source-71e03e0099e7b28d5a243456
     resource: repo://scripts/production-release/run-local-build.mjs
   - id: openwiki-source-a43fcdd54439cd4258ab69e4
     resource: repo://scripts/production-release/verify-artifact.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-29T12:03:05.365Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-20T13:07:24.686Z
+generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
 ---
 
-# Integraciones retirables y actualizaciones
+# VivaGym, actualizaciones y entrega móvil
 
-Gymnasia mantiene tres contratos separados que no deben confundirse:
+Gymnasia separa deliberadamente tres contratos:
 
-1. **VivaGym no forma parte del runtime.** No hay autenticación, red, QR ni interfaz activa para esa integración.
-2. **Dos claves históricas de VivaGym se conservan solo para poder borrarlas.** Su presencia en el manifiesto de eliminación no reactiva la integración.
-3. **El cliente no contiene un actualizador de APK.** La compilación, verificación, entrega a Play Internal y publicación de binarios en GitHub ocurren fuera de la aplicación.
+1. **VivaGym no pertenece al runtime actual.** No hay autenticación, red, QR ni interfaz activa para MyVitale/VivaGym.
+2. **Dos claves históricas solo se conservan para poder eliminarlas.** Su inventario de borrado no reactiva la integración.
+3. **La aplicación no actualiza APK.** La compilación, validación y distribución Android ocurren fuera del cliente mediante una transacción de release.
 
-Esta separación evita interpretar residuos de migración o infraestructura de distribución como capacidades del cliente. Para el estado local general, véase [Estado local, persistencia y copias](../mobile/local-state-and-backup.md); para permisos y controles de release, [Permisos Android](../operations/android-permissions.md) y [Build, release y pruebas](../operations/build-release-and-testing.md).
+La distinción evita confundir residuos de migración o infraestructura de entrega con capacidades de la app. Para el estado local general, véase [Estado local, persistencia y copias](../mobile/local-state-and-backup.md); para los permisos y la operación de releases, [Permisos Android](../operations/android-permissions.md) y [Build, release y pruebas](../operations/build-release-and-testing.md).
 
 ## VivaGym: retirada, no integración latente
 
-El contrato `vivagymRemoval.contract.test.ts` recorre las fuentes TypeScript y TSX del runtime, omitiendo pruebas, scripts, `public`, `dist` y `node_modules`. Rechaza los símbolos del antiguo protocolo, el host `vivagym.myvitale.com`, las rutas OAuth y QR, el texto de interfaz y `react-native-qrcode-svg`; también exige que esa dependencia no aparezca en `package.json`. Por tanto, no hay pestaña, autenticación, solicitud de QR ni tráfico MyVitale en la aplicación actual.
+`vivagymRemoval.contract.test.ts` recorre las fuentes TypeScript y TSX del runtime, excluyendo pruebas, scripts, `public`, `dist` y dependencias. Rechaza símbolos del protocolo retirado, el host `vivagym.myvitale.com`, rutas OAuth y QR, textos de interfaz y `react-native-qrcode-svg`; además exige que esa dependencia no esté en `package.json`. En consecuencia, la app no tiene pestaña, autenticación, captura de QR ni tráfico MyVitale.
 
-Los documentos o investigaciones anteriores sobre MyVitale y QR son contexto histórico, no una especificación de producción. Reintroducir VivaGym sería una integración nueva: requeriría autorización y revisión de términos y privacidad, límites explícitos de red y almacenamiento, borrado, controles de QR y pruebas positivas. Quitar el contrato de ausencia, por sí solo, no satisface esos requisitos.
+Documentos previos sobre MyVitale o QR son contexto histórico, no una especificación ejecutable. Reintroducir VivaGym sería una integración nueva: necesitaría autorización, términos y privacidad revisados, límites explícitos de red y almacenamiento, borrado, controles de QR y pruebas positivas. Eliminar el contrato de ausencia no aporta esos elementos.
 
-### Claves heredadas y borrado explícito
+### Credenciales heredadas y borrado
 
-`RETAINED_LEGACY_SECURE_STORE_KEYS` es una lista cerrada con `vivagym.email` y `vivagym.password`. El runtime retirado no las consulta ni las actualiza. `LOCAL_SECURE_DATA_MANIFEST` las clasifica como `activity: "preserve"` y `full: "delete"`: borrar actividad no las toca, mientras que el borrado `all-personal` crea destinos de SecureStore que eliminan y después comprueban cada clave.
+`RETAINED_LEGACY_SECURE_STORE_KEYS` es una lista cerrada: `vivagym.email` y `vivagym.password`. El runtime retirado no las lee ni las escribe. `LOCAL_SECURE_DATA_MANIFEST` las clasifica como `activity: "preserve"` y `full: "delete"`: borrar actividad no las toca; `all-personal` genera destinos de SecureStore que borran y verifican cada clave.
 
 ```mermaid
 flowchart TD
@@ -85,100 +89,120 @@ flowchart TD
     DeleteVerify --> Report["Informe complete o incomplete"]
 ```
 
-*Las claves históricas permanecen pasivas hasta un borrado total explícito y verificable.*
+*Las credenciales históricas permanecen pasivas hasta un borrado total explícito y verificable.*
 
-El ejecutor de borrado lanza los destinos en paralelo. Para cada uno aplica timeout independiente a la eliminación y a la verificación, omite la verificación si falló la eliminación y clasifica el resultado como `delete`, `verify` o `timeout`. El informe solo es `complete` cuando todos los destinos concluyen y verifican; en otro caso conserva los fallos y los destinos completados para informar o reintentar sin afirmar un borrado que no pudo comprobarse.
+El ejecutor procesa los destinos en paralelo y aplica timeouts independientes al borrado y a su comprobación. Si el borrado falla, omite la comprobación; clasifica incidencias como `delete`, `verify` o `timeout`. Solo informa `complete` si todos los destinos se eliminaron y verificaron, y conserva fallos y destinos completados para recuperación o reintento sin declarar un borrado no comprobado.
 
-Las claves seguras se delimitan además por variante: Production usa la clave base y Development o Staging aplican su namespace. Esto separa ámbitos de almacenamiento; no migra ni comparte las credenciales entre identificadores de aplicación.
+Las claves seguras también se separan por variante: Production usa la clave base y Development/Staging le añaden un namespace. Esto delimita ámbitos de almacenamiento; no migra ni comparte credenciales entre identificadores de aplicación.
 
-## Ausencia del actualizador dentro del cliente
+## Sin actualizador dentro del cliente
 
-`updateRemoval.contract.test.ts` impide que `App.tsx` recupere el servicio, estado, acciones, textos, navegación o endpoint `/releases/latest` del antiguo actualizador. La marca `gymnasia.mobile.lastUpdateCheck` subsiste únicamente en inventarios de datos heredados: al arrancar, `clearLegacyStorageData` la pasa a `AsyncStorage.multiRemove`, y el borrado total también la clasifica como eliminable. No provoca una comprobación de versión.
+`updateRemoval.contract.test.ts` prohíbe que `App.tsx` conserve servicio, estado, acciones, textos, navegación o el endpoint `/releases/latest` del antiguo actualizador. La clave `gymnasia.mobile.lastUpdateCheck` persiste únicamente como dato heredado: al arrancar, `clearLegacyStorageData` la elimina con `AsyncStorage.multiRemove`, y el borrado total también la incluye. No desencadena una consulta de versión.
 
-Android tampoco declara `REQUEST_INSTALL_PACKAGES`: `app.json` lo incluye en `blockedPermissions`, y la política de permisos y sus pruebas evitan que configuración o dependencias lo reintroduzcan. El verificador de artefactos vuelve a inspeccionar los permisos del manifest fusionado. El límite es preciso: una persona puede obtener e instalar externamente `gymnasia.apk`, pero Gymnasia no solicita permiso para descargar o instalar otros paquetes.
+Android no declara `REQUEST_INSTALL_PACKAGES`: `app.json` lo bloquea, y la política y sus pruebas impiden que configuración o dependencias lo reintroduzcan. La verificación del artefacto inspecciona de nuevo el manifest fusionado. La consecuencia precisa es que una persona puede obtener e instalar externamente `gymnasia.apk`, pero Gymnasia no pide capacidad para descargar o instalar paquetes.
 
-## Distribución Android externa vigente
+Las E2E complementan estos contratos estáticos: la variante web Production falla si Inicio o Ajustes exponen el actualizador o solicitan la URL histórica de GitHub Releases; Development comprueba además la ausencia de la pestaña VivaGym y de peticiones a MyVitale. No sustituyen la inspección del manifest ni una instalación en un dispositivo.
 
-El workflow `.github/workflows/build-apk.yml` produce **dos artefactos de la misma versión**:
+## Entrega Android externa
 
-- `gymnasia.aab`, perfil `production`, se envía por path mediante EAS Submit a Google Play, track `internal`, con `releaseStatus: completed`.
+El workflow `.github/workflows/build-apk.yml` genera dos artefactos del mismo candidato y `versionCode`:
+
+- `gymnasia.aab`, perfil `production`, se presenta por path mediante EAS Submit a Google Play en el track **`alpha`**, con `releaseStatus: completed`.
 - `gymnasia.apk`, perfil `production-apk`, se adjunta a la misma GitHub Release para instalación directa externa.
 
-Esto no crea un canal de actualización en runtime: la app no consulta GitHub Releases ni descarga o instala el APK.
+`Play Internal` es el nombre del GitHub Environment que protege el job de envío; no debe interpretarse como el track configurado. La política de release y `eas.json` establecen actualmente `alpha`; el código admite `internal` para poder verificar transacciones históricas. Ninguna de estas rutas crea un canal de actualización en runtime.
 
 ```mermaid
 flowchart TD
-    Trigger["Push elegible o workflow_dispatch"] --> Select["Selecciona la transacción durable más antigua"]
-    Select --> Source["Valida commit, controles remotos y gates Production"]
+    Trigger["Push elegible o workflow dispatch"] --> Select["Selecciona la transacción durable más antigua"]
+    Select --> Source["Valida commit y gates Production"]
     Source --> Draft["Crea o recupera draft e inputs inmutables"]
     Draft --> Approval["Aprobación del environment Production"]
     Approval --> BuildAAB["Build local AAB en wallabot"]
     BuildAAB --> BuildAPK["Build local APK con el mismo versionCode"]
     BuildAPK --> Quarantine["Cuarentena y verificación independiente"]
-    Quarantine --> PlayIntent["Persiste intención y envía AAB a Play Internal"]
-    PlayIntent --> PlayDone["Submission FINISHED y evidencia Play"]
+    Quarantine --> PlayIntent["Persiste intención y envía AAB a Play alpha"]
+    PlayIntent --> PlayDone["Submission FINISHED y evidencia Google Play"]
     PlayDone --> Publish["Publica GitHub Release con AAB y APK"]
     Publish --> External["Instalación o distribución fuera del cliente"]
 ```
 
-*La release permanece como borrador hasta validar ambos binarios y completar Play Internal.*
+*El borrador solo se publica tras validar ambos binarios, el submission y el receipt del track configurado de Google Play.*
 
 ### Triggers, cola y operaciones manuales
 
-El workflow se activa con `workflow_dispatch` o con cambios elegibles de `apps/mobile/**` en `main`; excluye scripts, Markdown, recursos públicos y pruebas TypeScript. Solo opera en `maximofn/gymnasia` y `refs/heads/main`. El grupo `android-production-release`, con `cancel-in-progress: false`, serializa las ejecuciones y evita cancelar una transacción en curso.
+El workflow se activa con `workflow_dispatch` o con cambios elegibles de `apps/mobile/**` en `main`; excluye scripts, Markdown, recursos públicos y pruebas TypeScript. Solo opera en `maximofn/gymnasia` y `refs/heads/main`. El grupo `android-production-release`, con `cancel-in-progress: false`, serializa las ejecuciones.
 
-La selección siempre atiende primero la transacción pendiente de menor versión semántica. Las operaciones manuales son:
+La selección atiende primero la transacción pendiente de menor versión semántica. Las operaciones manuales son:
 
 - `reconcile`: crea una transacción para la versión actual, reanuda la más antigua o verifica una release ya publicada;
-- `retry-failed`: reabre solo una transacción `failed` y exige un motivo;
+- `retry-failed`: reabre solo una transacción `failed` y exige motivo;
 - `supersede-failed`: marca como sustituida una transacción fallida, exige motivo y que `main` declare una versión posterior;
-- `adopt-submission`: enlaza manualmente un `submission_id` cuando Play pudo aceptar una petición pero EAS no devolvió su identidad.
+- `adopt-submission`: enlaza manualmente un `submission_id` cuando Play pudo aceptar la petición pero EAS no devolvió su identidad.
 
-`target_version` puede identificar la transacción que se pretende operar, pero, si se proporciona, debe coincidir con la más antigua; no permite saltarse la cola. Tras una publicación o sustitución, `enqueue-next` dispara otra reconciliación si `main` ya contiene una versión posterior.
+`target_version` puede identificar la transacción objetivo, pero debe coincidir con la más antigua y no permite saltar la cola. Tras publicar o sustituir, `enqueue-next` puede reconciliar una versión posterior que ya exista en `main`.
 
-### Fuente, borrador e inputs inmutables
+### Fuente, draft e inputs inmutables
 
-`validate-production` hace checkout del commit de la transacción y genera una única `ProductionSourceEvidenceV2` para los targets `production` AAB y `production-apk` APK. Verifica repositorio, rama, ascendencia desde `main`, limpieza, versión, ruleset, environments, PR y checks requeridos; después ejecuta los gates Production y falla si estos modifican el checkout.
+`validate-production` hace checkout del commit de la transacción y crea una `ProductionSourceEvidenceV2` común para los targets AAB y APK. Comprueba identidad, limpieza y versión del checkout, controles remotos y gates Production; falla si un gate falla o modifica el checkout.
 
-Antes de compilar, el workflow crea o recupera un draft durable. En una transacción nueva fija el snapshot y bundle de política, la evidencia de fuente y una referencia de `versionCode` basada en `PLAY_VERSION_CODE_FLOOR` y la última evidencia APK publicada. En una reanudación restaura esos inputs en vez de recalcularlos. `local-controller.mjs` guarda su SHA-256 en cada intento, impide duplicar un intento aún activo y hace que el runner vuelva a comprobar todos los hashes.
+En una transacción nueva, el workflow crea un draft durable antes de compilar y fija evidencia de fuente, snapshot y bundle de política, y la referencia de `versionCode` basada en `PLAY_VERSION_CODE_FLOOR` y evidencia anterior. Al reanudar, restaura esos inputs en vez de recalcularlos. `local-controller.mjs` guarda hashes SHA-256 de los inputs por intento y el runner los vuelve a comprobar antes de construir.
 
-### Build local AAB y APK
+### Builds locales y límites de confianza
 
-`compile-android` es el único job autoalojado y el único asociado al environment `Production`; la aprobación desbloquea `EXPO_TOKEN`. Se ejecuta en el runner Linux x64 `wallabot` dentro de una VM desechable, sin permisos de escritura sobre contenidos. `run-local-build.mjs` exige commit, versión, inputs, herramienta y aislamiento exactos, y ejecuta `eas build --local --non-interactive --freeze-credentials` para cada pata reservada.
+`compile-android` es el único job autoalojado y el único protegido por el environment `Production`; su aprobación permite usar `EXPO_TOKEN`. Corre en el runner Linux x64 `wallabot`, en una VM desechable, con checkout del SHA ya validado y sin credenciales persistentes de GitHub.
 
-El orden es deliberado: primero `production` genera el AAB y reserva por `autoIncrement` el siguiente `versionCode` remoto; después `production-apk`, con `autoIncrement: false`, genera el APK reutilizando ese código. No se crea una build EAS cloud. Cada resultado lleva metadatos `wallabot-local` con intento, commit, perfil, versión, toolchain, SHA-256 y tamaño. Los binarios se transfieren como no confiables al job de verificación y checkout, logs privados y material temporal se eliminan al terminar.
+La transacción reserva intentos separados para AAB y APK. `run-local-build.mjs` exige commit, versión, inputs, toolchain y condiciones de aislamiento esperadas, y ejecuta `eas build --local --non-interactive --freeze-credentials` para cada pata. Primero `production` crea el AAB y reserva por `autoIncrement` el siguiente `versionCode` remoto; luego `production-apk`, con `autoIncrement: false`, produce el APK con ese código. No se crea una build EAS cloud.
 
-### Cuarentena y verificación de artefactos
+Cada resultado `wallabot-local` conserva intento, commit, perfil, versión, toolchain, SHA-256 y tamaño. Los binarios se transfieren como no confiables a un job independiente; checkout, logs privados y material temporal se eliminan al terminar.
 
-El job `verify-artifacts` recupera los resultados en `/tmp/quarantine`, los enlaza con sus intentos terminados y verifica AAB y APK por separado. `verify-artifact.mjs` inspecciona configuración embebida, manifest, identidad de paquete, versión y SDK, certificado, permisos, sonidos, tamaño, SHA-256 y MIME contra política, evidencia de fuente y snapshot. Para el AAB valida además la firma y estructura con un `bundletool` cuyo binario y versión están fijados; para el APK usa `apkanalyzer`, `apksigner` y `aapt2`.
+### Cuarentena, evidencia y publicación
 
-Cada `ProductionArtifactEvidenceV2` incluye resultado, commit y hash de evidencia de fuente, perfil, identidad del intento local y toolchain, metadatos del binario, snapshot de política, herramientas y violaciones. La evidencia se escribe incluso cuando hay violaciones y después el comando falla. Solo artefactos aprobados pasan a `validated`; ambos deben tener el mismo `versionCode`, y el del AAB debe superar el máximo entre el suelo declarado de Play y la última publicación conocida.
+`verify-artifacts` descarga los resultados a `/tmp/quarantine`, los vincula a los intentos terminados y verifica AAB y APK por separado. `verify-artifact.mjs` contrasta configuración embebida, manifest, paquete, versión y SDK, certificado, permisos, recursos, tamaño, SHA-256 y MIME con política, fuente y snapshot. Para AAB además valida firma y estructura con `bundletool` fijado; para APK usa `apkanalyzer`, `apksigner` y `aapt2`.
 
-El draft debe seguir apuntando al commit fuente y contener los digests esperados de `gymnasia.aab`, `gymnasia.apk` y sus evidencias antes de contactar Play.
+La evidencia `ProductionArtifactEvidenceV2` se escribe incluso si detecta violaciones y después el comando falla. Ambos artefactos deben validar con el mismo `versionCode`; el AAB debe superar el máximo entre el suelo de Play y la última publicación conocida. El draft conserva el commit, binarios, evidencias y sus digests antes de contactar Play.
 
-### Envío a Play y publicación final
+La publicación final vuelve a comprobar que el draft sigue siendo tal, apunta al commit fuente y contiene ambos binarios, MIME y tamaños admitidos, digests de binarios y evidencias, evidencia de fuente compartida, evidencia Play y receipt de Google. Solo entonces deja de ser draft; publica `gymnasia.aab` y `gymnasia.apk`, aunque solo el APK es instalable directamente.
 
-Después de validar ambos binarios, el workflow cambia al environment `Play Internal` y registra durablemente una intención ligada al SHA-256 del AAB y al `versionCode` **antes** de ejecutar EAS Submit. Solo sube el AAB local validado mediante `--path`; no adopta una build cloud. Persiste el submission ID, espera su estado terminal y únicamente acepta `FINISHED`. Un submission fallido conocido se reintenta por su ID sin volver a subir el AAB.
+### Submission a Play y recuperación segura
 
-Si la petición pudo llegar a EAS pero no devolvió ID, la pata Play queda `uncertain`: el workflow se niega a repetir automáticamente la subida. Una persona debe reconciliarla y usar `adopt-submission` con el ID exacto. Esta regla evita duplicar envíos a Play.
+La pata `play` se prepara únicamente tras validar AAB y APK. Antes de contactar EAS persiste una intención ligada al SHA-256 del AAB validado y al `versionCode`; después usa solo ese AAB local por `--path`, no una build cloud. El flujo conserva el submission ID, espera estado terminal `FINISHED`, verifica en Google Play el bundle y track configurados, crea evidencia Play y recién entonces valida la transacción global.
 
-La transacción V2 mantiene patas independientes `aab`, `apk` y `play`. Los binarios recorren `prepared`, `building`, `built` y `validated`; Play recorre intención, submission observado y validación. Cualquier pata fallida lleva la transacción global a `failed`; reintentar o sustituir requiere una operación manual motivada. El historial de transiciones y el draft se conservan para reanudar sin cambiar commit ni inputs.
+Si EAS puede haber aceptado la petición pero no entrega un ID, la pata queda `uncertain` y se prohíbe repetir la carga automáticamente. Una persona debe reconciliar y ejecutar `adopt-submission` con el ID exacto. Si el submission conocido termina en `ERRORED` o `CANCELED`, un reintento motivado pasa por su ID y no vuelve a cargar el AAB.
 
-La GitHub Release solo deja de ser draft cuando la transacción global es `validated`, Play tiene evidencia `FINISHED` para `internal / completed`, y la release conserva commit, MIME, tamaños y cadena de hashes de AAB, APK, fuente, Play y evidencias. La publicación final incluye ambos binarios, aunque el artefacto instalable directamente es `gymnasia.apk` y el AAB es exactamente el enviado a Play Internal.
+```mermaid
+stateDiagram-v2
+    [*] --> prepared
+    prepared --> building: start local
+    building --> built: finish local
+    building --> failed: fail local
+    built --> validated: validate artifact
+    validated --> submitting: record Play intent
+    submitting --> submitted: adopt submission
+    submitted --> submitting: observe active
+    submitted --> failed: observe failed
+    submitted --> validated: validate FINISHED
+    failed --> prepared: authorized retry
+    failed --> superseded: authorized supersede
+```
 
-### Contradicción de política que sigue vigente
+*Resumen del estado global: los dos artefactos deben estar validados antes de preparar Play, y el estado `validated` requiere la evidencia del submission `FINISHED`.*
 
-La justificación de `REQUEST_INSTALL_PACKAGES` en `scripts/android-permissions/policy.json` afirma que Production se actualiza exclusivamente mediante Google Play. La ruta ejecutable publica también `gymnasia.apk` en GitHub para instalación directa. Esa frase de política es, por tanto, más restrictiva que la distribución vigente y debería corregirse al modificar la política. No cambia el contrato de runtime: ni Play Internal ni GitHub Releases habilitan al cliente para comprobar, descargar o instalar APK automáticamente.
+La implementación conserva tres patas (`aab`, `apk`, `play`). Las binarias recorren `prepared`, `building`, `built`, `validated` o `failed`; Play usa además `submitting`, `submitted`, `retry-pending` y `uncertain`. Un fallo o incertidumbre lleva la transacción global a `failed`; solo una transacción fallida puede reintentarse o sustituirse con motivo. El historial y el draft permiten reanudar sin cambiar commit ni inputs.
 
-## Contratos y validación focalizada
+### Nota sobre la política de permisos
+
+La justificación de `REQUEST_INSTALL_PACKAGES` afirma que Production se actualiza exclusivamente mediante Google Play, pero la ruta ejecutable también publica `gymnasia.apk` en GitHub para instalación directa. Es una contradicción documental que conviene corregir al cambiar la política. No altera el límite de runtime: ni el track `alpha` ni GitHub Releases permiten a la aplicación comprobar, descargar o instalar APK automáticamente.
+
+## Comprobaciones focalizadas
 
 | Cambio o riesgo | Comprobación | Qué acredita |
 | --- | --- | --- |
 | Reaparición de VivaGym, MyVitale, QR o dependencia QR | `npm run test:deterministic` | Ausencia de protocolo e interfaz, lista cerrada de claves y consumo limitado al borrado total. |
 | Reaparición del actualizador | `npm run test:deterministic` | Ausencia de servicio, UI y endpoint, y limpieza de la marca heredada. |
 | Superficies o peticiones retiradas en web | `npm run test:agent:e2e` y `npm run test:update-removal:e2e` | Development y Production no muestran controles retirados ni contactan MyVitale o GitHub Releases. |
-| Permisos o plugins Android | `npm run check:android-permissions && npm run test:android-permissions` | Coherencia entre configuración y política y detección de permisos aportados por dependencias; no sustituye la inspección del binario. |
+| Permisos o plugins Android | `npm run check:android-permissions && npm run test:android-permissions` | Coherencia entre configuración y política y detección de permisos de dependencias; no sustituye la inspección del binario. |
 | Fuente y artefactos Production | `npm run verify:production-source` y `npm run verify:production-artifact` | Correspondencia del candidato exacto y de cada binario con identidad, política, snapshot, toolchain y evidencia. |
-| Controlador y workflow de release | `npm run test:production-release` | Cola, estados V2, intentos locales, `versionCode` común, envío por path, manejo de incertidumbre y publicación posterior a Play. |
+| Máquina de estados y publicación | `npm run test:production-release` | Cola, estados V2, intentos locales, `versionCode` común, envío por path, incertidumbre y publicación posterior a la verificación de Play. |
 
-Las E2E demuestran ausencia observable de interfaz y red, pero no prueban permisos del manifest ni instalación en dispositivo. Del mismo modo, los contratos del workflow prueban estructura y orden del proceso; una release real debe superar tanto la validación de fuente como la inspección de los dos binarios y la reconciliación de Play.
+Los tests de `release-transaction.mjs` son especialmente relevantes para cambios de recuperación: cubren el único submission por intención, el bloqueo de reintento ante incertidumbre, el reintento de un submission conocido sin reconstruir binarios, la sustitución solo por una versión posterior, la prioridad semver de la cola y la compatibilidad de lectura con releases históricas de Play Internal.
