@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:0dbe371c641fd1e229c1bf16e895c39d7fc1d9a118547d42351e3a3ebddfd5ac",
+  "pageVersion": "sha256:910c1c6a4b450cb5b6519f795648a6c42ea1e8cbb4166fc7c0e1a04052fd98b5",
   "claims": [
     {
       "id": "claim_ba30cd1761e84be4b9024a08a918264b",
@@ -156,31 +156,31 @@
     },
     {
       "id": "claim_54ba4c03a8184750bae66625481fb6ac",
-      "statement": "La extracción de telemetría de runtime está disponible para una ventana de siete días, pero la muestra está marcada como `truncated`: informa 8 roots (7 exitosos, 0 fallidos y 1 desconocido), 145 llamadas LLM y 139 tools, mientras que tokens y coste figuran como `unavailable` con cobertura parcial y ninguna llamada observada.",
+      "statement": "La extracción de telemetría de runtime está disponible para una ventana de siete días, pero la muestra está marcada como `truncated`: informa 8 roots exitosos, 0 fallidos y 0 desconocidos, 142 llamadas LLM y 141 tools. Tokens y coste figuran como `unavailable`, con cobertura `partial` y ninguna llamada observada, por lo que sus ceros no son valores medidos.",
       "evidence": [
         {
-          "resource": "repo://ops/openwiki-runtime-telemetry.json#L1-L88",
-          "version": "repo-lines-v1:sha256:2c84ebf8e5f19912d322c72cdfef5ebb5dcec97c627c9bf51a9234640d89c20f:eyJzZWxlY3RlZExpbmVDb3VudCI6ODgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+          "resource": "repo://ops/openwiki-runtime-telemetry.json",
+          "version": "repo-file-v1:sha256:eb3f1c92fb263096936a0a10f1ff4756133b1ba017af217973e977979f0e5866"
         }
       ]
     },
     {
       "id": "claim_26767efa66054a2098b360e1b80d5c57",
-      "statement": "Los agregados de duración de la muestra son parciales: hay 7 duraciones de root conocidas y 1 desconocida, 144 de modelo conocidas y 1 desconocida, y 139 de tools; por ello los percentiles de duración no permiten atribuir latencia a un proveedor o handler individual.",
+      "statement": "En la muestra truncada, el manifiesto reporta 8 duraciones de root, 142 de modelo y 141 de tools, todas con `unknown: 0`.",
       "evidence": [
         {
-          "resource": "repo://ops/openwiki-runtime-telemetry.json#L30-L51",
-          "version": "repo-lines-v1:sha256:a1d7a5054ac0b0f68ea962ace0dcf2a26c24677d7aa85dec444d45131dfb9dd9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZjI3NWQ3YjdmYzllZmI0ZDY4ODZlODFhOGNjZWIxOTI5NTg3ZDc2ZmQzZjNmZjY3MGUxODhjNGQwOTUzNTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyMzUyZjg2NmQyNzM0YmYzODVjM2Q5YjMzNWNiOGRlMjdiNzk1ZTBiZjgyOGFmYjg0MGFkNGYxOTY3NzQ3ZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEwMDU5MmY1YjJmOTk1ZjQ4ZDA0YjIxZjYwYzRjN2QxYzIxODFlYTAzNjRlNzE0NTVlNGExODJkZTdjZmQxZjIifQ"
+          "resource": "repo://ops/openwiki-runtime-telemetry.json",
+          "version": "repo-file-v1:sha256:eb3f1c92fb263096936a0a10f1ff4756133b1ba017af217973e977979f0e5866"
         }
       ]
     },
     {
       "id": "claim_2ccafcfdcae9438f963df91dd79520d1",
-      "statement": "El manifiesto clasifica 79 de las 139 tools como `read`, 11 como `write` y 49 como `other`, y reporta 49 nombres desconocidos; esa categoría no permite concluir que una tool haya sido una lectura o una escritura.",
+      "statement": "El manifiesto clasifica 77 de las 141 tools como `read`, 11 como `write` y 53 como `other`, y reporta 53 nombres desconocidos; esa categoría no permite concluir que una tool haya sido una lectura o una escritura.",
       "evidence": [
         {
-          "resource": "repo://ops/openwiki-runtime-telemetry.json#L77-L87",
-          "version": "repo-lines-v1:sha256:01861dc593dd20709bd4789c9f672ebf431cf80b1715b6655a002037d1c3e5c3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExNWRkNTMwYjc3OWE0ZmJkYWM1NjA1NzAxZWIyYjA1OWQ3ZGJkZGNkMWY0MWFiYWYwMTM1N2NmMGNhYTQ4ZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MGMxMmM5MTkzOTgxYmYxOGNjMTVlMDAwNjQ3MjI0OGFmNDBhZjk3YzYxYzlkMmU3NGE1YWMzNWE0M2U1MWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmNzM5YTA2YzFjYmIxMjQ0ZTMzNjNkMzhiY2Y5ZmE1MGNlODRmZWQzOTljMjE5M2EzYzdmMDhkNTk5MThiMmEifQ"
+          "resource": "repo://ops/openwiki-runtime-telemetry.json",
+          "version": "repo-file-v1:sha256:eb3f1c92fb263096936a0a10f1ff4756133b1ba017af217973e977979f0e5866"
         }
       ]
     },
@@ -211,6 +211,6 @@
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-21T13:49:23.153Z"
+    "at": "2026-10-22T13:15:35.009Z"
   }
 }
