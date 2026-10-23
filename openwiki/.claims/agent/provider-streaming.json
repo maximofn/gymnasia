@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8d81ab0b2deba7f1ee9408705857e141b96c41ef91b05ab951339e09ddc4dbf2",
+  "pageVersion": "sha256:e596d3ea392920afa4c68fb6ccf7654cf4edb33df516276cf418bbecd5d71d98",
   "claims": [
     {
       "id": "claim_b549c7104ecd4a7d85357931e153c001",
@@ -12,7 +12,7 @@
         },
         {
           "resource": "repo://apps/mobile/agent/providerStreamParsers.ts#L70-L240",
-          "version": "repo-lines-v1:sha256:dcff73edbf3f7facbe0c264af6c43b877d89435e69f7ea124b39dfef8feb0032:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NjQyOWVmNDhjZjMwMzE4Mjg1ZmMxNjBhY2Q4ODgzYjZhNWY0ZThjNzIzMjljNTMzMTFiMzQ3ODBkZjgwYjExIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjU4MGU5NjRmODNhNDczZjQzZDQ0Mzg0NjI5NDlkNjhiNTYwMGZkYTc4N2YxNjM3NDVkMDBkZTg5Y2JmMzZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3NmYxYzEzOThmZGNiMTY4MDBmNGQzMjBkZDhlODZhYTRlNjE3ODZlZGFhMmU3ZmExODM2M2Y0YzMxZWExYjhkIn0"
+          "version": "repo-lines-v1:sha256:f576320d42bba62122ac20afd2e1f7eb06a193ed367871a6fb7429df91e8d0ce:eyJzZWxlY3RlZExpbmVDb3VudCI6MTc2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NjQyOWVmNDhjZjMwMzE4Mjg1ZmMxNjBhY2Q4ODgzYjZhNWY0ZThjNzIzMjljNTMzMTFiMzQ3ODBkZjgwYjExIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjU4MGU5NjRmODNhNDczZjQzZDQ0Mzg0NjI5NDlkNjhiNTYwMGZkYTc4N2YxNjM3NDVkMDBkZTg5Y2JmMzZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3NmYxYzEzOThmZGNiMTY4MDBmNGQzMjBkZDhlODZhYTRlNjE3ODZlZGFhMmU3ZmExODM2M2Y0YzMxZWExYjhkIn0"
         },
         {
           "resource": "repo://apps/mobile/agent/providerToolClient.ts#L244-L371",
@@ -144,29 +144,25 @@
     },
     {
       "id": "claim_9645c255954cdf85e17342b59651866d",
-      "statement": "Google rechaza secuencias inválidas y truncado antes de ejecutar herramientas; Fetch y XHR comparten el parser.",
+      "statement": "Google rechaza secuencias inválidas, pasos sin cerrar y streams truncados antes de que el bucle ejecute herramientas; los transportes Fetch y XHR incremental comparten `createGoogleStreamParser`.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/agent/googleInteractions.test.ts#L213-L292",
-          "version": "repo-lines-v1:sha256:49832b7c0f106d56428806811332dcd6d76461e543fe5268e7b08c1c88d5afbd:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5ZjM0NWU3NTBiY2I2MmZhZDA2ZGFhYjlhMGNiZjNhOGJiNGRmYzM1MTJiZTkzMzhlZjg0MGUwOGVkZmM2ZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+          "resource": "repo://apps/mobile/agent/googleInteractions.test.ts#L95-L141",
+          "version": "repo-lines-v1:sha256:929a2485fba5c08f0e22c5c7e4152c041761c1f5fa65a8dceb0683e8f1618e88:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiNmZlYThmNGMzYWNmMWM3MDlmNDVkNTBhY2Y5YjhkYWI1MmY2OTBlNGVkMTNkNDk0Y2I3NTVhZjNiYmFmMDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiZjFiYjlmNGZmZmY5NDBhMzQwZmQ4Njc4OWQ5MDE2MjhiYjNlMWUyZjc2ODI2MzhiOGQ1MDFiNWUwMGE5NDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM5N2NiYTZmM2I2ODcxNDRkZDAxNWQ3OTE3NTBlOTUyMTg3MTFlNjdhZTMwNDcwYmZmN2U0ZWI3MDI2NjRiODgifQ"
         },
         {
-          "resource": "repo://apps/mobile/agent/googleInteractions.test.ts#L72-L119",
-          "version": "repo-lines-v1:sha256:b6b2935f7ef54adc47fadc0a31a75b704d572342cce9e9df49687bc655c17629:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiNmZlYThmNGMzYWNmMWM3MDlmNDVkNTBhY2Y5YjhkYWI1MmY2OTBlNGVkMTNkNDk0Y2I3NTVhZjNiYmFmMDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiZjFiYjlmNGZmZmY5NDBhMzQwZmQ4Njc4OWQ5MDE2MjhiYjNlMWUyZjc2ODI2MzhiOGQ1MDFiNWUwMGE5NDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3NjNhNjg4ZTVlOTMzMzk2M2NmYTVhZDBjYmE0NTNlMjUxZjJiMjE5NWU3ZmUxOGJmZWE4NDA4NmVlZWU2YjYifQ"
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L144-L305",
+          "version": "repo-lines-v1:sha256:17241f2a070bda5974372802dd04c3eb28531c1cceb727475dc39e6cc5689cd7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2MjJmNWVmZDhlZWNmNjljYTlmN2I5NjZjNDY3MTBiYTUwYWQzYjE2NmY2YTQ5ZDEzMzZkOTNkZTdkOWE0Yzc2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiZDBmMmQzYTNhYWRhMjc1ODY0NTc4ZDBhNDM5MTU2MzhkNTQzZmVjYTJjOTQ4NThkYjk0MTIxMWU4NmNlZjJiIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIn0"
         },
         {
-          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L125-L285",
-          "version": "repo-lines-v1:sha256:3d63693ae14252d7ae9bdb1b22997871940dac0460ab95daf0119c58515838f3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2MjJmNWVmZDhlZWNmNjljYTlmN2I5NjZjNDY3MTBiYTUwYWQzYjE2NmY2YTQ5ZDEzMzZkOTNkZTdkOWE0Yzc2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI1NzViYTQ1ODY2ZGNiODVlNTJhYTdjODEzNGI1YzAyYjM5ZTgwZDAyYmU4MDVhOWYxNmQ3OGQxYjY4ZGU3MGRiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiZDBmMmQzYTNhYWRhMjc1ODY0NTc4ZDBhNDM5MTU2MzhkNTQzZmVjYTJjOTQ4NThkYjk0MTIxMWU4NmNlZjJiIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MiwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkZjczOWEwNmMxY2JiMTI0NGUzMzYzZDM4YmNmOWZhNTBjZTg0ZmVkMzk5YzIxOTNhM2M3ZjA4ZDU5OTE4YjJhIn0"
-        },
-        {
-          "resource": "repo://apps/mobile/agent/providerStreamParsers.ts#L69-L238",
-          "version": "repo-lines-v1:sha256:51096bfbcdd350337e1f0e8662bd52b65ba4994d041feed83a607a4beadf4389:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NjQyOWVmNDhjZjMwMzE4Mjg1ZmMxNjBhY2Q4ODgzYjZhNWY0ZThjNzIzMjljNTMzMTFiMzQ3ODBkZjgwYjExIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjU4MGU5NjRmODNhNDczZjQzZDQ0Mzg0NjI5NDlkNjhiNTYwMGZkYTc4N2YxNjM3NDVkMDBkZTg5Y2JmMzZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI5ODZlNjc2ODAzZDMxYjJiNWYwMjIxOTQyOWExMDQ4NDEwYzU1NWYyZjlhZWY5OTM0OTIzZmI2OWMwOGY0NGQ0In0"
+          "resource": "repo://apps/mobile/agent/providerStreamParsers.ts#L73-L247",
+          "version": "repo-lines-v1:sha256:b2cfbaae15e53e46115796a28300b927c7229134bce36d32920fdfb019d3c14c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTc1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NjQyOWVmNDhjZjMwMzE4Mjg1ZmMxNjBhY2Q4ODgzYjZhNWY0ZThjNzIzMjljNTMzMTFiMzQ3ODBkZjgwYjExIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjU4MGU5NjRmODNhNDczZjQzZDQ0Mzg0NjI5NDlkNjhiNTYwMGZkYTc4N2YxNjM3NDVkMDBkZTg5Y2JmMzZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI5ODZlNjc2ODAzZDMxYjJiNWYwMjIxOTQyOWExMDQ4NDEwYzU1NWYyZjlhZWY5OTM0OTIzZmI2OWMwOGY0NGQ0In0"
         }
       ]
     },
     {
       "id": "claim_e241bf085c584c788a25b574434db0d5",
-      "statement": "El parser de Google Interactions valida la secuencia y el cierre de pasos antes de devolver un turno, y tanto Fetch como XHR lo alimentan; en nativo, solo se reintenta con XHR bufferizado si falla la ruta incremental antes de emitir un delta visible.",
+      "statement": "El parser de Google Interactions valida la secuencia y el cierre de pasos antes de devolver un turno, y Fetch, XHR incremental y XHR bufferizado lo alimentan; en nativo, el único reintento usa XHR bufferizado cuando la ruta incremental falla con el error de conexión previsto antes de emitir un delta visible.",
       "evidence": [
         {
           "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L144-L305",
@@ -177,8 +173,12 @@
           "version": "repo-lines-v1:sha256:5c97d18c50ef764e679d7e6bddf2c77a702d9249306883ce6c25b75b6cf15737:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5YmUyODc2ODMyNWY0ODQ5MzdlNjIyMmYxODZiNWU3MDgxZTczNGMwZjEwZWM0MjlhMTY0Njk5OWMxZTdlNmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEzY2NjY2Y1YTAzNzMwMGUzMmQ1YjljMTMzMmViYzFiNTc4OWY0YmM0MzZkZmFhMGJlODUzNzQ2ODgwNTkwYTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzZWMxMjU3N2RmZDdkNmQzMjVkMmMwMzFhYmZmNGM5M2FiYzc5NGJiZGU0MGU4NDM1MWYwZWM5NmQ3ZWVjOTkifQ"
         },
         {
-          "resource": "repo://apps/mobile/agent/providerStreamParsers.ts#L70-L238",
-          "version": "repo-lines-v1:sha256:7ea74d6a0c13475fa638ca0fb1b7c4ff1216a58fd86dacd80a413ff7c3cd4a88:eyJzZWxlY3RlZExpbmVDb3VudCI6MTY5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NjQyOWVmNDhjZjMwMzE4Mjg1ZmMxNjBhY2Q4ODgzYjZhNWY0ZThjNzIzMjljNTMzMTFiMzQ3ODBkZjgwYjExIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxZjBjZGI5NzJhN2JmYjdlZDI0NmY5ZmY2NzIzODVlNTVmNDk2OGZjMTEwNDNkYzViNjg0ZDUxZGZhMzFkYmNiIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjU4MGU5NjRmODNhNDczZjQzZDQ0Mzg0NjI5NDlkNjhiNTYwMGZkYTc4N2YxNjM3NDVkMDBkZTg5Y2JmMzZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI5MjA0MGUwOTVhOTRlMmFkYTc0ZTQyMWYzNzE4NzUxYTkxYTgxMGJmZDY2ZjQ4ZjRlOTM5YzdiNzQ4MGViNjcwIn0"
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L83-L141",
+          "version": "repo-lines-v1:sha256:4633a92c6e0ac74361f65a113676fe5ed2f877f7b88f948aa3f05f3c8983aae4:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4YjRkZDNkNDFkNWJlNmE0ZmEzMjBkMTYxN2IyYjRhYWRkMzI3YjIyZDM5OWNhZTk5YTMwNTU0NmFiNzJmYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0NmM0NTViMjQ2NGMyZDM2ZmRjMDc3NTcwMTZjZmJlODRmZGU2NTUxODNlMjM0OWY1ODM1MDNmMzA1YjliMDEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerStreamParsers.ts#L73-L247",
+          "version": "repo-lines-v1:sha256:b2cfbaae15e53e46115796a28300b927c7229134bce36d32920fdfb019d3c14c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTc1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NjQyOWVmNDhjZjMwMzE4Mjg1ZmMxNjBhY2Q4ODgzYjZhNWY0ZThjNzIzMjljNTMzMTFiMzQ3ODBkZjgwYjExIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmYjU4MGU5NjRmODNhNDczZjQzZDQ0Mzg0NjI5NDlkNjhiNTYwMGZkYTc4N2YxNjM3NDVkMDBkZTg5Y2JmMzZhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI5ODZlNjc2ODAzZDMxYjJiNWYwMjIxOTQyOWExMDQ4NDEwYzU1NWYyZjlhZWY5OTM0OTIzZmI2OWMwOGY0NGQ0In0"
         }
       ]
     },
@@ -209,10 +209,32 @@
           "version": "repo-file-v1:sha256:8fc19da4b1f329ebef5e5203f3f82bffdd0143726773d88c45089f457ff14103"
         }
       ]
+    },
+    {
+      "id": "claim_15af98accb9f4b2eb1a907e5a06a5b56",
+      "statement": "Con `store: false`, el parser de Google acepta que se omitan de forma consistente ID y metadatos de ciclo de vida, representa el ID local como cadena vacía y mantiene las validaciones de terminal y pasos; el bucle puede continuar y restaurar rondas con IDs vacíos, pero rechaza creaciones repetidas, identidades contradictorias y llamadas reutilizadas entre rondas.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/googleInteractions.test.ts#L125-L141",
+          "version": "repo-lines-v1:sha256:793299d2c5375f6af5aeec53bf59ba40543667d861180c0e994add213eecb25d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1MjhlOGMyYzIxZmM5ZWUxNTY0NTM0MTRmZjJjZjc2YzUyN2FmYjZjZTVhM2IxNGFlYzg2ODc3MjdjNmJjYmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0NmY1YmI5M2I5NzZlYjA1ZDMyMjgyZWRjNzcyMWI2OTg1MTU5MzkwZjUyODBkMzU0OWRlYTk5MjNiMzI4YmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM5N2NiYTZmM2I2ODcxNDRkZDAxNWQ3OTE3NTBlOTUyMTg3MTFlNjdhZTMwNDcwYmZmN2U0ZWI3MDI2NjRiODgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/googleInteractions.test.ts#L203-L228",
+          "version": "repo-lines-v1:sha256:d8a7137b4d13ec61ea5218865f8935c64e65167e3218c45087d21b86b9a0b56b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3YTI1ZWJkYmE1OGQ4MDFlYzI3YWI0YjFkYTI1YjJmNjVlYjZiY2VkMzA1YTQxOWE1MmQ3NjM2NmYzMTAxNTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyNGViZDM0NTNmODNhNGRmMWEzODljMGNmOTY1YjIxZGE3Nzk2NjI3NGQ1MTBhYjBlZTMxNDhkNDAyMDE0OTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdhM2RlOTFhNDY0YjZlYzE3OGFlNDZmM2VhNjRjOTc4MjI4MjUwMTdhY2Q3NjMwYTJiYWRjYjU4ODUxMjFhNTkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerStreamParsers.ts#L116-L155",
+          "version": "repo-lines-v1:sha256:f580ef760aabce275b77acbc6aa9015b60a2c7d90d4a50d8c24ed9e2369507f3:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDA4NzMwOGQwOTk3MTdhMGI0MjkzMzdlOTRkODQ5MjU1YzU2ZmQxYzY5M2UyNjIzODQzMzIxMTRlYjlkODAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3OTJmODQ3YmIyMWNiMjkyZGQwOWY3ZmE2ZTdjYWM0YThjMTRkOTdkMzg5NjMzYjNkMTUyMGVhMTRiNWIxZGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZjM2IyMmM1NTFjMjQ4ZGRkOWVhMTcxZTAxOWUwM2EzNmI5OTU5ZTliMDI2YTRmMGUwNzU3NzFlNmZmOWFhODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzMTE1NGVjZDVjYTc0NzA1MzY2MmZjODI0ODMyNTMzYjNiNTg5Mzg3NjNlNWFhNzNlNTIzZDA3YmJkMWRkNzgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolLoop.ts#L76-L145",
+          "version": "repo-lines-v1:sha256:a38e4f0f17b3c963c99215ba5acd306091ae9ae36f0032d3c39b5118ee241fcc:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2YjgxMTkwNzk0MTI3MzcwMTYyODJiYmMzMTI4YjhiMDdmODA0MTQ1MTBjZTBkNGQ2ZmU2NzJiMzFjMzZjNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmM2Y1MDMwZGVhMTVkMjE0M2YxZTZlMmZmZTYzNzFiZjRmMmVlOTA5MjJlZWEzMTcwMzllYzhlM2E2Y2NlMjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwZWFjMWE2YjVhNmJlZjc2MmNiYjU1MWU0YzQyN2I4NWY3N2FmZjI1OGZhODQ0ZTVkNzY5ZDA1NWJhNTNiZDQifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-20T13:07:24.686Z"
+    "at": "2026-10-23T12:54:40.994Z"
   }
 }
