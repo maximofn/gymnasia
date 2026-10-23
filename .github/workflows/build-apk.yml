@@ -100,7 +100,8 @@ jobs:
   validate-production:
     needs: select-transaction
     if: needs.select-transaction.outputs.action == 'build'
-    runs-on: ubuntu-latest
+    # Playwright 1.58.2 supports Ubuntu 24.04, not the moving latest image.
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
       contents: read
