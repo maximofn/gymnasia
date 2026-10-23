@@ -1,8 +1,11 @@
 ---
 type: integración y entrega móvil
-title: VivaGym, actualizaciones y entrega móvil
-description: Delimita la retirada de VivaGym y del actualizador interno, y documenta la transacción durable que compila, verifica y entrega los binarios Android fuera del cliente.
+title: VivaGym, distribución y actualizaciones
+description: Delimita la retirada ejecutable de VivaGym y del actualizador interno, y explica la transacción externa que compila, valida y distribuye binarios Android.
 tags: [integrations, vivagym, updates, android, releases]
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-23T12:54:40.994Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -52,13 +55,10 @@ sources:
     resource: repo://scripts/production-release/verify-artifact.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-20T13:07:24.686Z
-generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-23T12:54:40.994Z" }
 ---
 
-# VivaGym, actualizaciones y entrega móvil
+# VivaGym, distribución y actualizaciones
 
 Gymnasia separa deliberadamente tres contratos:
 

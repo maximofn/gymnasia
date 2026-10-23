@@ -1,6 +1,6 @@
 ---
 type: guía operativa
-title: Build, publicación y pruebas
+title: Build, release y validación
 description: Orienta cambios y lanzamientos reproducibles con comandos locales, gates de CI, una transacción Android durable y verificación de artefactos. Distingue las pruebas deterministas y web de la evidencia del binario y de un dispositivo nativo.
 tags: [operations, ci, testing, release, android, backup, recovery, board]
 sources:
@@ -76,8 +76,6 @@ sources:
     resource: repo://scripts/production-release/production-release.mjs
   - id: openwiki-source-eca432bcfe70b04e1d09e3d3
     resource: repo://scripts/production-release/release-transaction.mjs
-  - id: openwiki-source-a403a8897dea191dee6aa309
-    resource: repo://scripts/production-release/release-transaction.test.mjs
   - id: openwiki-source-71e03e0099e7b28d5a243456
     resource: repo://scripts/production-release/run-local-build.mjs
   - id: openwiki-source-a43fcdd54439cd4258ab69e4
@@ -88,13 +86,13 @@ sources:
     resource: repo://scripts/production-release/vm-contract.test.mjs
   - id: openwiki-source-b368a0060923f31656ab90b3
     resource: repo://scripts/production-release/workflow.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-23T12:54:40.994Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-10-20T13:07:24.686Z
+    at: 2026-10-23T12:54:40.994Z
 ---
 
-# Build, publicación y pruebas
+# Build, release y validación
 
 ## Principio operativo
 
@@ -275,7 +273,7 @@ La promoción de política es una operación manual protegida, distinta del merg
 
 El perfil EAS `production` fija `APP_ENV=production`, conserva `appVersionSource: remote`, incrementa el `versionCode` y produce el AAB. `production-apk` lo extiende, desactiva el incremento y fuerza `android.buildType: apk`, de modo que reutiliza el contador reservado por el AAB. La compilación local siempre ordena AAB antes de APK y exige que ambos manifiestos terminen con el mismo `versionCode`, superior al máximo entre la última evidencia publicada y `PLAY_VERSION_CODE_FLOOR`.
 
-No confunda las operaciones: `eas build --local` se ejecuta dos veces dentro del guest y **no** envía builds a la infraestructura remota de EAS. Después, otro job usa el perfil de submit `production` para subir por ruta únicamente el AAB ya verificado al canal cerrado Alpha de Google Play (`track: alpha`, `releaseStatus: completed`). El job usa el environment de GitHub llamado `Play Internal`, pero ese nombre no cambia el destino configurado en EAS. El APK se adjunta a la release de GitHub para instalación directa; no se envía a Play.
+No confunda las operaciones: `eas build --local` se ejecuta dos veces dentro del guest y **no** envía builds a la infraestructura remota de EAS. Después, otro job usa el perfil de submit `production` para subir por ruta únicamente el AAB ya verificado al canal cerrado Alpha de Google Play (`track: alpha`, `releaseStatus: completed`). El job usa el environment de GitHub llamado `Play Internal`, pero ese nombre no cambia el destino configurado en EAS ni introduce una segunda aprobación: la aprobación única de `Production` precede a la compilación. Antes de cualquier submit exige `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` y comprueba la credencial; tras el resultado de EAS consulta con ella que el AAB exacto y el track completed constan en Google Play. El APK se adjunta a la release de GitHub para instalación directa; no se envía a Play.
 
 ### Fronteras de confianza y flujo
 
@@ -298,8 +296,10 @@ sequenceDiagram
     VJ->>VJ: Vincula intentos y verifica ambos artefactos
     VJ->>GH: Adjunta bytes y evidencias al draft
     GH->>PI: Envía solo el AAB validado
-    PI-->>GH: Devuelve estado FINISHED
-    GH->>GH: Verifica digests y publica la release
+    PI-->>GH: EAS devuelve estado FINISHED
+    GH->>PI: Consulta recibo del AAB y track completed
+    PI-->>GH: Devuelve recibo de Google Play
+    GH->>GH: Liga evidencias y verifica digests antes de publicar
     HC->>VM: Apaga y elimina overlay y seed
     HC->>GH: Retira el runner efímero
 ```
@@ -345,12 +345,12 @@ Dentro de la VM, `run-local-build.mjs` vuelve a comprobar repositorio, ref, even
 
 El job `verify-artifacts` no confía en esa salida. Tras descargarla en cuarentena, aplica `finish-local`, persiste la transacción y ejecuta `verify:production-artifact` para cada pata. El AAB exige `bundletool` fijado por versión y SHA, validación de bundle y firma JAR; el APK usa `apkanalyzer`, `apksigner` y `aapt2`. Ambos se contrastan con la evidencia de fuente, snapshot de política, intento local, package, versión, SDK, certificado, permisos, sonidos, configuración, tamaño, MIME y nombre. Solo los bytes que pasan se renombran, reciben evidencia, se ligan por SHA-256/tamaño/`versionCode` y se adjuntan al draft. Los dos `versionCode` deben coincidir.
 
-A continuación, `submit-play-and-release` registra durablemente la intención **antes** de contactar EAS Submit. Sube por `--path` el AAB validado al canal Alpha, liga el ID de submission y espera un estado terminal. Un submit conocido que falla puede usar `eas submit:retry` sin volver a cargar el AAB; si la petición pudo aceptarse pero se perdió el ID, queda `uncertain` y el flujo prohíbe otra subida hasta adoptar manualmente el ID exacto. La release sigue como draft hasta que Play esté `FINISHED`, exista su evidencia y una comprobación final confirme target SHA, estado `validated`, presencia, MIME, tamaño y cadena de digests de AAB, APK, fuente, Play y transacción. Solo entonces se publica como latest.
+A continuación, `submit-play-and-release` registra durablemente la intención **antes** de contactar EAS Submit. Sube por `--path` el AAB validado al canal Alpha, liga el ID de submission y espera un estado terminal. Un submit conocido que falla puede usar `eas submit:retry` sobre ese ID, sin reconstruir ni volver a cargar AAB/APK; si la petición pudo aceptarse pero se perdió el ID, queda `uncertain` y el flujo prohíbe otra subida hasta adoptar manualmente el ID exacto. `FINISHED` no basta por sí solo: con la cuenta de servicio configurada, `google-play-receipt.mjs` comprueba en Google Play el AAB exacto y el track completed, y `create-play-evidence.mjs` liga ese recibo a la evidencia Play. La release sigue como draft hasta que esa evidencia exista y la comprobación final confirme target SHA, estado `validated`, presencia, MIME, tamaño y cadena de digests de AAB, APK, fuente, recibo de Google, Play y transacción. Solo entonces se publica como latest.
 
 ### Reanudación y fallos seguros
 
 - Un run de reconciliación puede reutilizar el artifact de Actions de un intento `built`; no recompila por comodidad.
-- Si solo APK o AAB falló, el reintento conserva la otra pata validada. Si falló Play, conserva ambos binarios.
+- Si solo APK o AAB falló, el reintento conserva la otra pata validada. Si falló Play, conserva ambos binarios; un fallo terminal conocido reintenta el `submissionId` registrado, mientras que uno incierto exige la adopción manual de ese ID antes de reconciliarlo.
 - Solo una transacción global `failed` acepta `retry` o `supersede`, siempre con motivo saneado y auditable; sustituir exige que `main` declare una versión posterior.
 - El controlador del host no reintenta una VM tras reinicio, respuesta perdida o interrupción: reconcilia y retira la misma identidad, limpia overlay/seed y cierra el diario como interrumpido. La transacción de GitHub decide el reintento de compilación.
 - No use el botón genérico de reejecución de jobs, no borre el draft y no convierta un intento local en un build ID remoto. Para parar admisiones nuevas, deshabilite `gymnasia-android-controller.timer`; conserve el diario e identidad para reconciliar la limpieza.
