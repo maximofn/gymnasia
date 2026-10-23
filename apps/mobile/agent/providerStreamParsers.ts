@@ -115,9 +115,13 @@ export function createGoogleStreamParser(handlers?: StreamingHandlers) {
     }
     if (type === "interaction.created") {
       if (interactionId !== null || !isGoogleRecord(data.interaction)
-        || typeof data.interaction.id !== "string"
-        || data.interaction.status !== "in_progress") fail("invalid_created", "apertura de interacción no válida");
-      interactionId = (data.interaction as { id: string }).id;
+        || (data.interaction.id !== undefined && typeof data.interaction.id !== "string")
+        || (data.interaction.status !== undefined && data.interaction.status !== "in_progress")) {
+        return fail("invalid_created", "apertura de interacción no válida");
+      }
+      // With store:false Google can omit both fields instead of sending an empty ID.
+      // Keep null exclusively for an unopened stream; the local stateless ID stays "".
+      interactionId = (data.interaction.id as string | undefined) ?? "";
       return;
     }
     if (interactionId === null) fail("missing_created", "evento recibido antes de abrir la interacción");
@@ -131,7 +135,8 @@ export function createGoogleStreamParser(handlers?: StreamingHandlers) {
       return;
     }
     if (type === "interaction.completed") {
-      if (!isGoogleRecord(data.interaction) || data.interaction.id !== interactionId) {
+      if (!isGoogleRecord(data.interaction)
+        || (data.interaction.id === undefined ? "" : data.interaction.id) !== interactionId) {
         return fail("interaction_mismatch", "cierre de otra interacción");
       }
       const status = data.interaction.status;
