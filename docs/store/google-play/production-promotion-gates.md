@@ -110,6 +110,17 @@ Antes de enviar se exige que ambos binarios tengan el mismo `versionName` y
 Un código repetido o decreciente aborta. Un intento que ya consumió un código
 puede dejar un hueco; nunca se reutiliza ni se reduce el contador.
 
+## Imagen del runner de validación
+
+`validate-production` usa `ubuntu-24.04`, compatible con el Playwright 1.58.2
+fijado en el lockfile. El alias `ubuntu-latest` puede cambiar de distribución
+sin que cambie el repositorio: el 23 de octubre de 2026 resolvió a Ubuntu 26.04
+y la instalación de Chromium abortó antes de ejecutar los gates
+([ejecución](https://github.com/maximofn/gymnasia/actions/runs/39898919262)).
+Antes de actualizar esta imagen, comprobar que la versión fijada de Playwright
+soporta la distribución y ejecutar de nuevo los E2E. No omitir la instalación
+ni las pruebas para recuperar la compilación.
+
 ## Aislamiento de wallabot
 
 `compile-android` es el único job self-hosted. Corre en una VM KVM desechable con
