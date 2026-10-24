@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "kind": "GooglePlayConsoleSubmissionObservationV1",
+  "source": "Play Console browser UI",
+  "observedAt": "2026-10-18T12:48:58.157434+00:00",
+  "submissionId": "11",
+  "submissionUrl": "https://play.google.com/console/u/0/developers/8108994737998375347/app/4972645631625321604/publishing/submission-activity/11/details",
+  "submittedDate": "2026-10-18",
+  "submittedTime": "14:47",
+  "timeZone": "Europe/Madrid",
+  "timePrecision": "minute",
+  "statusLabel": "En revisión",
+  "packageName": "com.maximofn.gymnasia",
+  "versionName": "1.52.2",
+  "versionCode": "89",
+  "sourceCommit": "1a5eae4a502cff72e70025d93e764dcdd95aef1c",
+  "aabSha256": "dcd2c433509897498f634cb6055fa305b5eb07b61e8a2de7da3c09cf1d893044",
+  "artifactIdentitySource": "production-spain-candidate-1.52.2.json y recibo histórico de Alpha; la pantalla de envío identifica el versionCode, no muestra el hash.",
+  "changes": [
+    {
+      "track": "production",
+      "action": "Iniciar lanzamiento completo",
+      "versionCode": "89"
+    },
+    {
+      "action": "Añadir 1 país/región",
+      "country": "ES",
+      "countryLabel": "España"
+    }
+  ],
+  "managedPublishing": false,
+  "ownerApproval": {
+    "source": "Confirmación explícita del mantenedor en esta conversación",
+    "date": "2026-10-18",
+    "response": "Autorizo",
+    "scope": "Enviar 1.52.2 (89) a revisión para publicarla en España al aprobar Google, manteniendo pendiente el fallo visual del temporizador."
+  },
+  "screenshot": "production-spain-submission-11-2026-10-18.png",
+  "publicationVerified": false,
+  "limits": [
+    "La recepción del envío no acredita la aprobación de Google ni la disponibilidad pública.",
+    "Siguen pendientes instalación y actualización desde producción, seguimiento y decisión de ampliación.",
+    "La propuesta de siete días de observación no se convierte en un plazo de revisión de Google ni en una ampliación automática."
+  ]
+}
