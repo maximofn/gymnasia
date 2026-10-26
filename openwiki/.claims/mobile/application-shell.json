@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:d5bd484affc6fb5ef9204bcb31a8af756cc77883d4e48f6abe6b518d58ba78f4",
+  "pageVersion": "sha256:8057e8a3747db349347893a037a8de261d1102ba9643dde4a92eeab9f4236eb7",
   "claims": [
     {
       "id": "claim_aca396b7cc1e477696babb6c28b70e97",
@@ -249,10 +249,82 @@
           "version": "repo-lines-v1:sha256:2c01ad1723e53f5431b32b6d35f1ec8c922d1e4e88be1d097e36510f010abc27:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyOTA1ZTI1MjVkYTJmNTFhNjc1N2NlYTQyMzZhY2Y4YTRiMDIyNWI0ZmE3YWQ1Nzc0MjkyNTE5MGM5MDQ5OTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU1NzkxMGVlY2MxOWNlNjQ2MTk2MjliZWUyODZjYmY3MTg5OGZiOWJjYzhkODllMWQwNzAwOGZkYjJkMTRjYjcifQ"
         }
       ]
+    },
+    {
+      "id": "claim_2bbf6bb4f2ce4a8e867e9edc35ea0463",
+      "statement": "El export web usa `public/index.html` como landing pública previa a JavaScript: el documento incluye metadatos SEO, Open Graph/Twitter, JSON-LD `SoftwareApplication`, un bloque `noscript` y contenido indexable dentro de `#root`; el comentario de la plantilla establece que React sustituye ese contenido al montar.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L9193-L9211",
+          "version": "repo-lines-v1:sha256:241b917609d6c75db14141d43a1a6c3466e2eea00abfd50fa0578d70ea14ead3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NTcxMjhiMjU2NzBhMDE1OTY1NDliYzRkNmM2YmI2Y2QyMmNhM2I4Mjk1NjZiMTRlZWJjZmUyMWQwNDY4ZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NGZjMGMxNzNkMWVjM2ZjNTAxZDdkZmE5Mjg1NTAxYzUyN2NmYjQ3MTI1ODNkYTNjYzM2MTgwNTY2YjRiZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/index.js#L1-L5",
+          "version": "repo-lines-v1:sha256:3c87f11c5dfcdcf20361d011834a570d10c3142549ad1eba90053f9c9430d65f:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM0NTk1MGY2OGRiOTY5MmM2MTMxMjgyZDliOGU2YjBhZWYzZjg4YTdjYmE4MTU3ZDYxNTRhZjg2MjVlMjRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTUwMTVhNmY5ZjE5NWExMmJkZmZiZDQyY2VhMjYyMzFmN2UxZDZlMWNlNWIxNGYwYWNkMmNiMWRmYWQwMWU4YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/public/index.html#L1-L57",
+          "version": "repo-lines-v1:sha256:3e587d79f550b369daa5c74a7948415ac123b64a52a218565ab0839ccf59960b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkMGI2ZjVlMzA5ZGY4ZmNlODgxNWY5MDhkZDY4MjFiMDQ5NmNmNDNjZDlmYjRmZjdlYTljMGNlNzQ3NzA4MjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2YmY4MWM5ZmVlYzg4YjgwMTFjMTg4MzdjNWViNWM0Yjc4MjE0NjllNTI1M2ZkNDg4NzI4MmE5MGU3MWIzYjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0NDA0NWUwYWU2OGZhOWMxNmY5NDljMDMwMTUzYmM4YWI0NDQwYjRhMWJlZTc5MjE2YjM1YTg0ZWFlMTI3MTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/public/index.html#L98-L126",
+          "version": "repo-lines-v1:sha256:b9a6fbd23441da118789fbbcfa3d39490ee1310e958b04d753b9330b802478f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiYmNlYjNjYjY3NTVhZDY0OGU2MTUzOTc4YTE3ZjJhZmExOTM1YzViODBmMmJiYmNlNzg0YWZiMmM2YjdiZGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg1NzdiYmQwZjNlOWZmYTM3YTE0YmZlZjgwY2NlMWFmZTI2MWYzNTljMzFlNjM2ODQ2N2VhMTNlY2UyM2M1ZWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxNzAyNTI2MjlmZGM5YzJjYmNmOWMyODk3ODViNTJlNTBlOWFhOWY0OGU2MDQwOTUwNDJiMDM2Y2NhODA2MWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQzZWQ4MWNkMTZkZjg4ZDY5MjE2NjQ2ZDhkYWRhNzYzNGIzM2E2OTg2ZTljMjNhNzI2MzFkMTkzM2I2MzVhNTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6d53e5b8c614444fbc33e8fe9cefe2e5",
+      "statement": "La landing HTML pública no participa en el estado local-first: el punto de entrada registra `App`, y `GymnasiaApp` inicializa el estado de hidratación y el runtime de almacenamiento desde React después del montaje.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L2035-L2108",
+          "version": "repo-lines-v1:sha256:28ed3713a9f8af146ff2162e1c1987159301a7123a986c8e28dc5b92b071674c:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZWZhOTc0MjE3ZDg5NmYzNzEyYmVlMmRiNzUwNmM0YWRlMWU2OTg4NmIxMmIzOGQzN2VmNjU1YzliYjcyOGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0N2EwNDdlYThjZjgwNjRiYTNlM2E4Nzc1NGYzYzlmNDgzNThmY2Q1OWUxNDA5N2FiNWQxYTUyYzNlYmE0OGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjMDFkNTgzMGUwMmNmNDQyNDUxOGQ1ZDUzNzkxYzdmMTAwOWQxMTI5MzNmMzUzMGRjZWVlOWEzZTgyYTY2MjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYwMWVhNzMyOWQyZDY2ZmRlMmU2ZDIxN2Q5MzBmZTM0M2E5OTc5OTIwMGVmMGZhYTQ4Y2ZjZGY2ZmY3MmY4OWUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/index.js#L1-L5",
+          "version": "repo-lines-v1:sha256:3c87f11c5dfcdcf20361d011834a570d10c3142549ad1eba90053f9c9430d65f:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTM0NTk1MGY2OGRiOTY5MmM2MTMxMjgyZDliOGU2YjBhZWYzZjg4YTdjYmE4MTU3ZDYxNTRhZjg2MjVlMjRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTUwMTVhNmY5ZjE5NWExMmJkZmZiZDQyY2VhMjYyMzFmN2UxZDZlMWNlNWIxNGYwYWNkMmNiMWRmYWQwMWU4YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/public/index.html#L103-L125",
+          "version": "repo-lines-v1:sha256:fb3296b55c74ff23deb4ad818c079bccf4132f3a594caf60c8d7114cea6f599e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5ZmJhMDk2MmJmZmRiNTRlZWY2NTBhZWI5ZDk4ZGY5ZjM5ZmEwZjk5NGQ4ODc1NWNkNGQ3ZTQ0MjcyZjIzZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwNTYzMDRiMGVlYWJkODhhZDRjYmRkNjBiZGY0NjY1MWFkODU3YWQxZTAxMDRlNDJhYmZmNmIwNDNhZThlYTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyMjIzNGE4NmJkNGRiYzMwZDk3NjhmZGVmZmU1MTcyNTI3ZDI0ODQwOTc3YWZhOTY1ZmRiZmNhMDk4MGE4NTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0YmJlMWFlYjMwMTg5YTk1Y2U0NDM0MDZlZjU3Mzg3YmU4MmI0ZDhiMzEyYjFkYTQyMWExN2Q4Mjg5OTU3MmUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_75409acb42b84c7db5f315437adac0e9",
+      "statement": "El comando `build:web` exporta Expo para web con `APP_ENV=development` como valor por defecto; Vercel prepara el snapshot de política de producción, fuerza `APP_ENV=production`, ejecuta ese build y publica `dist`.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/package.json#L5-L22",
+          "version": "repo-lines-v1:sha256:653a7bfa6944721c551a2a64682cc2252bcd9ed45c6ca75cf7b0400904eadc29:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0ODMzZDU5NDljMDNhNDBjYTk1MjQ5MTYxMGE2NjU5NjQ0YjNhYTQ2NjM2MmY3OTkwMjBkYmYxOTgxNTQ3ZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4NzMyYjg2MzkzODYzMjA5NGEzZjZlYmM1NTNjZDI1NWNlMTdhN2E5MzVlYmYzYzVlZmEzMGY4ZWYyMTgwNzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjNmFkN2E3NWZmNzc4YTc0N2M4M2E0MjljNTc0YjFmMTgyMmZlZTFiNmUyYWUyMjNkYzZiNTk0MTc4ZjJhZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBjMGMxZmVkZGViOTg2YjhkZTYyYmZjNzNiYjY0OTI5NmNhOWRkZDEzMjk5NmU5MGMxMDBkYjc5YmY3ODlhMjMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/vercel.json#L1-L6",
+          "version": "repo-lines-v1:sha256:96e58c5dc08581d4f0b0756a151bc100b2fc9dbdd8c5d90b9ad689279130fa05:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTZmYjA4ZmRhMWFjYjk1N2I2MTE2YmQzNzgxMWExZmU0MWEwMTYxMWMwNjMxZWRiZjc4NmQ2ODg5YTI3YTU1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_00f5bd8d4b414e5a8a93217ffbd074c0",
+      "statement": "La E2E de navegación exporta y sirve `dist`, inyecta una fixture de almacenamiento de desarrollo, espera al shell React y prueba los seis destinos y capas en 390 px y 960 px; por tanto cubre la navegación montada, no la indexación o los metadatos del fallback estático.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L114-L190",
+          "version": "repo-lines-v1:sha256:1916fdf5018761a39d14893b5c7c23135bfa38f1f163144cd6d86ea39cb4d974:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0ZDYxZmEyM2JkZDZhZjIyOTZkMDUzZDk2MWM5NWJjNzhlMjA4ZjQyNTY4YzkwMWUxYWNiYjIzNWRhYzg1MjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0MzgxZjJlMmY1MDhmNzUxMjIyN2I2NzhhNmRkNWYzYTQxNzlkNWI1NTBmZDVjOGMyMDIxOWYxZDQ1ZWUwNTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4ZDE5MzdkYWVlNjdmNjllZTczYjMyNjhjMmM3NTk3NGNhMDljYmQ5MThiMzUxMDI0Y2ZmZWRmM2ZmY2VhZDAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L192-L239",
+          "version": "repo-lines-v1:sha256:31318ca42ab414f3e566b72ce5b973cc8fe11299972a498dc48c707b534d5cef:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2ODY4ZmI0YzUyZmI5NmZkMWFjOWQxZGQ3ZmU1YTdhZTg4NDU0NTMyZWI3NzExZjFiZGRkMWM4NmMwYWMwZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1MzIwNzNiYWEyNDg0OGU5YWI5OGNmYWU1OWUxMzllN2U1ZDIzNmQ4NjFmM2ZiZjgzNmEyOTNlZDcwOWZiNTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0ZWMxZDNmYjY2MTI2ODNiZGYxM2Q5NmUxZWJjYTJkOThjNzhlYjczYzYzNDg5OGFmNjRiZmQ5M2RjZWQ0NGMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L37-L85",
+          "version": "repo-lines-v1:sha256:89aee25c445212df5551c244ee405b822bc90c190668397a57eedb68f511713a:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjMjg5MzVlZWZlMTNjZWIyZTMzNDg5NDYzMTE4ZDFiYzA0MzJkODdmMzZkZGMwZmFmNGI0NTZiZmMwY2U2YTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhmMWZhMzkzZDMyNWI3NTI2NDZlODQzODg0MjdhZDZhODk5NjNlYzZlNzliYWU0YWJlYjkxNjU1MWZlMGEyZGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE3N2NjODY0ZGM3YTU2MmU1YTU0OTNmZjI2ODM2MjUxNjM5ZmE1ODk3Y2M4ZDNkZTQyNTE2ZGU3MTJlMzU1MDkifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-10-26T14:37:42.688Z"
   }
 }

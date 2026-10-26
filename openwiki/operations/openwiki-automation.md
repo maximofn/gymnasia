@@ -105,17 +105,17 @@ La categoría `oauth` cambia el estado abstracto de autenticación y las demás 
 <!-- OPENWIKI_RUNTIME_TELEMETRY:START -->
 ## Telemetría agregada de los últimos 7 días
 
-Muestra recogida el **21 oct 2026, 15:53**, desde el 14 oct 2026, 15:53 hasta el 21 oct 2026, 15:53. La consulta alcanzó el límite de 900 spans; los conteos son una cota inferior.
+Muestra recogida el **26 oct 2026, 15:42**, desde el 19 oct 2026, 16:42 hasta el 26 oct 2026, 15:42. La consulta alcanzó el límite de 900 spans; los conteos son una cota inferior.
 
 | Señal | Resultado |
 | --- | --- |
 | Ejecuciones raíz | 8 totales · 8 correctas · 0 fallidas · 0 sin resultado |
 | Fallos por categoría | ninguno |
-| Duración de ejecución | p50 1 min 53 s · p95 8 min 9 s · máximo 8 min 9 s |
-| Duración de modelo | p50 4 s · p95 21 s |
-| Duración de herramientas | p50 2 ms · p95 83 ms |
-| Llamadas de modelo | 142 · p50 16 por ejecución |
-| Herramientas | búsqueda 0 · lectura 77 · escritura 11 · comandos 0 · otras 53 |
+| Duración de ejecución | p50 1 min 43 s · p95 3 min 32 s · máximo 3 min 32 s |
+| Duración de modelo | p50 3 s · p95 19 s |
+| Duración de herramientas | p50 2 ms · p95 145 ms |
+| Llamadas de modelo | 150 · p50 17 por ejecución |
+| Herramientas | búsqueda 0 · lectura 83 · escritura 15 · comandos 0 · otras 61 |
 | Tokens | no disponibles |
 | Coste | no disponible |
 
