@@ -58,11 +58,11 @@
       "completedRunId": "3c1512e2-e84e-4ea1-802b-6be3062ad6e5"
     },
     "/openwiki/mobile/application-shell.md": {
+      "gitHead": "1a231ab02a2a169b8006577a4ea9fd41858efdd7",
+      "sourceFingerprint": "sha256:e58c43c16451796a58ba648613650256397bd974659f9aac1457255a75d24c8d",
       "pageVersion": "sha256:8057e8a3747db349347893a037a8de261d1102ba9643dde4a92eeab9f4236eb7",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "a8d58c95-7d86-4615-8a44-33bbaa74fadc",
-      "gitHead": "1a231ab02a2a169b8006577a4ea9fd41858efdd7",
-      "sourceFingerprint": "sha256:e58c43c16451796a58ba648613650256397bd974659f9aac1457255a75d24c8d"
+      "completedRunId": "a8d58c95-7d86-4615-8a44-33bbaa74fadc"
     },
     "/openwiki/mobile/diet-and-food-estimation.md": {
       "gitHead": "fa79e8e4c34574f0bf8595b915cb716eb8f674fd",
@@ -128,11 +128,11 @@
       "completedRunId": "906078f9-5440-46cc-abab-4ae3371fb310"
     },
     "/openwiki/operations/runtime-behavior.md": {
-      "gitHead": "fa79e8e4c34574f0bf8595b915cb716eb8f674fd",
-      "sourceFingerprint": "sha256:6c25fd6c5ec49abdb7caef10399b847fe2bfd2530c935ef37182ccc35c03624f",
-      "pageVersion": "sha256:910c1c6a4b450cb5b6519f795648a6c42ea1e8cbb4166fc7c0e1a04052fd98b5",
+      "pageVersion": "sha256:c2dbf61276d77675530d1d47edc12ff5ff064ccfa576df8f34a24d8c00d2eae2",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "f0237947-4078-446c-b135-7983a5cf2384"
+      "completedRunId": "a12c3ac5-a000-4a9c-beb0-1fe2dedc0f6a",
+      "gitHead": "0e3195a987b1aed7aebd76c2244444f71a4e932b",
+      "sourceFingerprint": "sha256:8709a55054891156d879bedbbf22c65afb90fdd3442557cc1afef98d2047c842"
     },
     "/openwiki/quickstart.md": {
       "gitHead": "fa79e8e4c34574f0bf8595b915cb716eb8f674fd",

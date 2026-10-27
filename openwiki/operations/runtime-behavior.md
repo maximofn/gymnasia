@@ -5,7 +5,7 @@ description: Lectura operativa del runtime del agente móvil que separa los agre
 tags: [runtime, observability, mobile, agent, tools]
 verified:
   - by: openwiki/0.6.0
-    at: 2026-10-22T13:15:35.009Z
+    at: 2026-10-27T13:41:37.716Z
 sources:
   - id: openwiki-source-0c30fc96b9e7c8b57c35473c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
@@ -29,7 +29,7 @@ sources:
     resource: repo://apps/mobile/App.tsx
   - id: openwiki-source-ea083ff1c1afd80c588dedd8
     resource: repo://ops/openwiki-runtime-telemetry.json
-generated: { by: "openwiki/0.6.0", at: "2026-10-22T13:15:35.009Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-27T13:41:37.716Z" }
 ---
 
 # Comportamiento en ejecución y oportunidades
@@ -42,11 +42,11 @@ Esta página interpreta el manifiesto operativo vigente junto con los límites q
 
 | Señal agregada | Valor observado | Cómo leerla |
 | --- | ---: | --- |
-| Duración de roots | p50 112667 ms; p95 y máximo 488676 ms | 8 duraciones conocidas; no atribuye el tiempo a un proveedor ni a una tool. |
-| Duración de modelos | p50 3766 ms; p95 21020 ms; máximo 430381 ms | 142 duraciones conocidas. |
-| Duración de tools | p50 2 ms; p95 83 ms; máximo 472 ms | 141 mediciones; el agregado no identifica handlers ni argumentos. |
-| Llamadas LLM | 142; p50 16 y p95 23 por root | Una root puede incluir reintentos, rondas de tools y cierre; no equivale a mensajes de usuario. |
-| Tools | 141: 77 `read`, 11 `write`, 53 `other` | Hay 53 nombres no clasificados; `other` no demuestra que sean efectos ni permite asignarlos a una implementación. |
+| Duración de roots | p50 103329 ms; p95 y máximo 212020 ms | 8 duraciones conocidas; no atribuye el tiempo a un proveedor ni a una tool. |
+| Duración de modelos | p50 3210 ms; p95 19264 ms; máximo 134046 ms | 150 duraciones conocidas. |
+| Duración de tools | p50 2 ms; p95 145 ms; máximo 757 ms | 159 mediciones; el agregado no identifica handlers ni argumentos. |
+| Llamadas LLM | 150; p50 17 y p95 30 por root | Una root puede incluir reintentos, rondas de tools y cierre; no equivale a mensajes de usuario. |
+| Tools | 159: 83 `read`, 15 `write`, 61 `other` | Hay 61 nombres no clasificados; `other` no demuestra que sean efectos ni permite asignarlos a una implementación. |
 | Tokens y coste | `unavailable`, cobertura `partial` | Los ceros del manifiesto no son valores medidos: no hay llamadas observadas con tokens o coste. |
 
 Los percentiles y máximos son agregados de la muestra truncada, no objetivos ni SLO. Las duraciones declaradas no tienen valores desconocidos, pero siguen sin desglosar proveedor, handler, argumentos ni contenido; no permiten atribuir causalmente la latencia. No se publican contenido de runs, prompts, argumentos, resultados, URLs ni identificadores de traza.
@@ -96,8 +96,8 @@ Para una tool con efecto, `ToolOperationCoordinator` deriva la identidad de vers
 ## Oportunidades operativas priorizadas
 
 1. **Alta — tratar tokens y coste como señal ausente, no como cero.** La muestra declara ambos `unavailable` con cobertura parcial y cero llamadas observadas. Antes de optimizar precios o contexto, recupere cobertura de uso y coste con agregados por proveedor y ventana; no copie inputs, outputs ni razonamiento.
-2. **Alta — separar la presión de rondas del coste por solicitud.** La mediana de 16 llamadas LLM por root y el total de 142 son compatibles con el flujo de reintentos, tools y cierre. Instrumentar contadores agregados de intento remoto, ronda, cierre y estado del límite permitirá distinguirlos sin revelar contenido.
-3. **Media — investigar clasificación incompleta de tools.** Las 53 tools `other` coinciden con 53 nombres desconocidos en el manifiesto. Complete el mapeo de categorías en el productor de telemetría usando metadatos seguros de tipo o efecto, pero no nombres, argumentos o resultados de calls; mientras tanto no interprete ese grupo como lectura o escritura.
+2. **Alta — separar la presión de rondas del coste por solicitud.** La mediana de 17 llamadas LLM por root y el total de 150 son compatibles con el flujo de reintentos, tools y cierre. Instrumentar contadores agregados de intento remoto, ronda, cierre y estado del límite permitirá distinguirlos sin revelar contenido.
+3. **Media — investigar clasificación incompleta de tools.** Las 61 tools `other` coinciden con 61 nombres desconocidos en el manifiesto. Complete el mapeo de categorías en el productor de telemetría usando metadatos seguros de tipo o efecto, pero no nombres, argumentos o resultados de calls; mientras tanto no interprete ese grupo como lectura o escritura.
 4. **Media — medir lote además de handler.** Las duraciones de tools no indican si una lectura compartió lote ni si una barrera serializó el turno. Añada agregados de duración de lote, concurrencia máxima y número de barreras, preservando el orden de los efectos y sin identificar operaciones.
 5. **Media — operar incertidumbre de escrituras explícitamente.** Una repetición observable puede ser unión `inFlight`, replay de memoria, replay de ledger o reconciliación. Toda nueva escritura necesita recibo y reconciliador; `indeterminate` requiere revisión del estado de dominio, no un reintento automático.
 

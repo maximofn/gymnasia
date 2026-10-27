@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:910c1c6a4b450cb5b6519f795648a6c42ea1e8cbb4166fc7c0e1a04052fd98b5",
+  "pageVersion": "sha256:c2dbf61276d77675530d1d47edc12ff5ff064ccfa576df8f34a24d8c00d2eae2",
   "claims": [
     {
       "id": "claim_ba30cd1761e84be4b9024a08a918264b",
@@ -156,31 +156,35 @@
     },
     {
       "id": "claim_54ba4c03a8184750bae66625481fb6ac",
-      "statement": "La extracción de telemetría de runtime está disponible para una ventana de siete días, pero la muestra está marcada como `truncated`: informa 8 roots exitosos, 0 fallidos y 0 desconocidos, 142 llamadas LLM y 141 tools. Tokens y coste figuran como `unavailable`, con cobertura `partial` y ninguna llamada observada, por lo que sus ceros no son valores medidos.",
+      "statement": "La extracción de telemetría de runtime está disponible para una ventana de siete días, pero la muestra está marcada como `truncated`: informa 8 roots exitosos, 0 fallidos y 0 desconocidos, 150 llamadas LLM y 159 tools. Tokens y coste figuran como `unavailable`, con cobertura `partial` y ninguna llamada observada, por lo que sus ceros no son valores medidos.",
       "evidence": [
         {
-          "resource": "repo://ops/openwiki-runtime-telemetry.json",
-          "version": "repo-file-v1:sha256:eb3f1c92fb263096936a0a10f1ff4756133b1ba017af217973e977979f0e5866"
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L4-L18",
+          "version": "repo-lines-v1:sha256:3cc3803815c6ff8e8121d4d9ff37407b7080ab007ace515e6b1057a2a27fe72b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhMDEzNzc1NzE2YmU0NWU5ZDhjMGExMDgxMTM4NDgwOTNiYTY1NDMzNTJiZGM2YTZlMTE0ODE1ZmYwNGY5ZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzZDA3NzhmZDQ1ZGNmZDM5ZTQwYmMxYTA0YjVkYzdhNjAzYjNiZTM0ZDVkNDRhNzNiYjFjYWU2ZmM3MmI2N2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxMzczYTc4NTA3MjY3NDM4ZmI1ODk3ZDYxNzU4ZmNlNDdiNGNmNDEwYWJiYzE4NDkxMDQ4MGI0Mzg5NTVhNWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhZTI3OGQyNjM1ZGM3ZmNiNDNjZDE4NDI2ZDY4ODhkMGJmMDgzYjgwNWUyYTA3NDJiYmMyNjMzZmE5ZTljYjcifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L53-L87",
+          "version": "repo-lines-v1:sha256:b07cfccb928cfe918403fa80d410f3b90264326d8e4df09ef37f5ea74349bdb5:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDhjMDA4NmRmMjYwZDlkZTQ5NDQ2NTFjMDEzZDE5MTdiYmE5ZGJlZTc3YjIxMGI2NjA0NjQxMTFmMTU4MTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNhOGQ2ZWRmNzhhMTUzYWM0MWU0OGRhNmJkMWUwYzM4YTdhMTI4ZDllNGMxMDE0MGMzNWI2MWUyZTI3ZmVlZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmNzM5YTA2YzFjYmIxMjQ0ZTMzNjNkMzhiY2Y5ZmE1MGNlODRmZWQzOTljMjE5M2EzYzdmMDhkNTk5MThiMmEifQ"
         }
       ]
     },
     {
       "id": "claim_26767efa66054a2098b360e1b80d5c57",
-      "statement": "En la muestra truncada, el manifiesto reporta 8 duraciones de root, 142 de modelo y 141 de tools, todas con `unknown: 0`.",
+      "statement": "En la muestra truncada, el manifiesto reporta 8 duraciones de root (p50 103329 ms, p95 y máximo 212020 ms), 150 de modelo (p50 3210 ms, p95 19264 ms y máximo 134046 ms) y 159 de tools (p50 2 ms, p95 145 ms y máximo 757 ms), todas con `unknown: 0`.",
       "evidence": [
         {
-          "resource": "repo://ops/openwiki-runtime-telemetry.json",
-          "version": "repo-file-v1:sha256:eb3f1c92fb263096936a0a10f1ff4756133b1ba017af217973e977979f0e5866"
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L30-L51",
+          "version": "repo-lines-v1:sha256:3e82f14f3ccb614b035283631f942926dd649a0027a3b6683910081e5a3adb7e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZjI3NWQ3YjdmYzllZmI0ZDY4ODZlODFhOGNjZWIxOTI5NTg3ZDc2ZmQzZjNmZjY3MGUxODhjNGQwOTUzNTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyMzUyZjg2NmQyNzM0YmYzODVjM2Q5YjMzNWNiOGRlMjdiNzk1ZTBiZjgyOGFmYjg0MGFkNGYxOTY3NzQ3ZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE4YTNiNjEwMDE4NWM3M2QyZGE1ZTU5YmIwYTY5NjI0YTg3MGEzZDBhZGEwNTAyZWNlYjI5OTFkOTAzOTY5MzAifQ"
         }
       ]
     },
     {
       "id": "claim_2ccafcfdcae9438f963df91dd79520d1",
-      "statement": "El manifiesto clasifica 77 de las 141 tools como `read`, 11 como `write` y 53 como `other`, y reporta 53 nombres desconocidos; esa categoría no permite concluir que una tool haya sido una lectura o una escritura.",
+      "statement": "El manifiesto clasifica 83 de las 159 tools como `read`, 15 como `write` y 61 como `other`, y reporta 61 nombres desconocidos; esa categoría no permite concluir que una tool haya sido una lectura o una escritura.",
       "evidence": [
         {
-          "resource": "repo://ops/openwiki-runtime-telemetry.json",
-          "version": "repo-file-v1:sha256:eb3f1c92fb263096936a0a10f1ff4756133b1ba017af217973e977979f0e5866"
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L77-L87",
+          "version": "repo-lines-v1:sha256:f3256f697b2ef33fd45c5edd32ef70134ea348b5e973feddd99dc9e5deff4517:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExNWRkNTMwYjc3OWE0ZmJkYWM1NjA1NzAxZWIyYjA1OWQ3ZGJkZGNkMWY0MWFiYWYwMTM1N2NmMGNhYTQ4ZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MGMxMmM5MTkzOTgxYmYxOGNjMTVlMDAwNjQ3MjI0OGFmNDBhZjk3YzYxYzlkMmU3NGE1YWMzNWE0M2U1MWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmNzM5YTA2YzFjYmIxMjQ0ZTMzNjNkMzhiY2Y5ZmE1MGNlODRmZWQzOTljMjE5M2EzYzdmMDhkNTk5MThiMmEifQ"
         }
       ]
     },
@@ -211,6 +215,6 @@
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-22T13:15:35.009Z"
+    "at": "2026-10-27T13:41:37.716Z"
   }
 }
