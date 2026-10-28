@@ -3,6 +3,12 @@ name: Build Android APK + AAB on wallabot & Publish Play Closed Alpha
 on:
   workflow_dispatch:
     inputs:
+      publication_target:
+        description: Publish to Google Play and GitHub, or only the APK to GitHub
+        type: choice
+        options: [play, github-apk]
+        default: play
+        required: true
       operation:
         description: Reconcile, retry or supersede the oldest failed version
         type: choice
@@ -50,6 +56,7 @@ jobs:
       tag: ${{ steps.select.outputs.tag }}
       source_commit: ${{ steps.select.outputs.source_commit }}
       release_id: ${{ steps.select.outputs.release_id }}
+      publication_target: ${{ steps.select.outputs.publication_target }}
 
     steps:
       - name: Require protected main
@@ -71,6 +78,7 @@ jobs:
           REASON: ${{ inputs.reason || '' }}
           SUBMISSION_ID: ${{ inputs.submission_id || '' }}
           PLAY_VERSION_CODE_FLOOR: ${{ vars.PLAY_VERSION_CODE_FLOOR }}
+          PUBLICATION_TARGET: ${{ inputs.publication_target || 'play' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -86,6 +94,7 @@ jobs:
             --target-version "$TARGET_VERSION" \
             --reason "$REASON" \
             --submission-id "$SUBMISSION_ID" \
+            --publication-target "$PUBLICATION_TARGET" \
             --output /tmp/production-release-selection.json \
             --github-output "$GITHUB_OUTPUT"
 
@@ -134,12 +143,14 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           SOURCE_COMMIT: ${{ needs.select-transaction.outputs.source_commit }}
           EXPECTED_VERSION: ${{ needs.select-transaction.outputs.version }}
+          PUBLICATION_TARGET: ${{ needs.select-transaction.outputs.publication_target }}
         shell: bash
         run: |
           set -euo pipefail
           npm run verify:production-source -- \
             --expected-commit "$SOURCE_COMMIT" \
             --expected-version "$EXPECTED_VERSION" \
+            --publication-target "$PUBLICATION_TARGET" \
             --output /tmp/production-source-evidence.json
           echo "commit=$SOURCE_COMMIT" >> "$GITHUB_OUTPUT"
 
@@ -579,7 +590,9 @@ jobs:
               /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
           done
           STATE="$(jq -r '.state' /tmp/android-release-transaction.json)"
-          test "$STATE" = artifacts-validated || test "$STATE" = submitting
+          test "$STATE" = artifacts-validated || test "$STATE" = submitting || {
+            test "$STATE" = validated && test "$(jq -r '.publicationTarget' /tmp/android-release-transaction.json)" = github-apk;
+          }
 
       - name: Verify durable draft contains both validated artifacts
         env:
@@ -592,7 +605,10 @@ jobs:
           gh api "/repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" > /tmp/github-release.json
           test "$(jq -r '.draft' /tmp/github-release.json)" = true
           test "$(jq -r '.target_commitish' /tmp/github-release.json)" = "$SOURCE_COMMIT"
-          for LEG in aab apk; do
+          LEGS="aab apk"
+          if [ "$(jq -r '.publicationTarget' /tmp/android-release-transaction.json)" = github-apk ] && \
+             [ "$(jq -r '.state' /tmp/android-release-transaction.json)" = validated ]; then LEGS=apk; fi
+          for LEG in $LEGS; do
             ASSET_SHA="$(jq -r --arg name "gymnasia.${LEG}" '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json)"
             test "$ASSET_SHA" = "sha256:$(jq -r ".legs.${LEG}.artifact.sha256" /tmp/android-release-transaction.json)"
             EVIDENCE_SHA="$(jq -r --arg name "production-${LEG}-evidence.json" '.assets[] | select(.name == $name) | .digest' /tmp/github-release.json)"
@@ -625,7 +641,7 @@ jobs:
     needs: [select-transaction, prepare-production, verify-artifacts]
     # Explicit always() is required: on a resume compile-android is skipped,
     # and GitHub otherwise skips this job through the indirect needs chain.
-    if: always() && needs.verify-artifacts.result == 'success'
+    if: always() && needs.verify-artifacts.result == 'success' && needs.select-transaction.outputs.publication_target == 'play'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -896,6 +912,33 @@ jobs:
             fi
             gh release upload "$TAG" /tmp/android-release-transaction.json --repo "$GITHUB_REPOSITORY" --clobber
           fi
+
+  publish-github-apk:
+    needs: [select-transaction, prepare-production, verify-artifacts]
+    if: always() && needs.verify-artifacts.result == 'success' && needs.select-transaction.outputs.publication_target == 'github-apk'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout trusted release controller
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      - name: Verify and publish only the APK without contacting Google Play
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ needs.prepare-production.outputs.release_id }}
+          SOURCE_COMMIT: ${{ needs.select-transaction.outputs.source_commit }}
+        run: node scripts/production-release/publish-github-apk.mjs
 
   enqueue-next:
     needs: [select-transaction, prepare-production, submit-play-and-release]

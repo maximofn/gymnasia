@@ -19,6 +19,18 @@ test("mantiene filtros, cola y aprobación humana de Production", () => {
   assert.ok(compile.indexOf("environment: Production") < compile.indexOf("Build AAB first and APK second"));
 });
 
+test("la opción manual GitHub APK no utiliza Play ni sus credenciales ni encadena publicaciones", () => {
+  assert.match(workflow, /publication_target:\n[\s\S]*options: \[play, github-apk\]\n\s+default: play/);
+  const playJob = workflow.slice(workflow.indexOf("  submit-play-and-release:"), workflow.indexOf("  publish-github-apk:"));
+  assert.match(playJob, /outputs.publication_target == 'play'/);
+  const githubJob = workflow.slice(workflow.indexOf("  publish-github-apk:"), workflow.indexOf("  enqueue-next:"));
+  assert.match(githubJob, /outputs.publication_target == 'github-apk'/);
+  assert.doesNotMatch(githubJob, /environment:|EXPO_TOKEN|GOOGLE_PLAY|eas-submit|submit-artifact/);
+  assert.match(githubJob, /contents: write/);
+  assert.match(githubJob, /publish-github-apk.mjs/);
+  assert.doesNotMatch(workflow.slice(workflow.indexOf("  enqueue-next:")), /publish-github-apk/);
+});
+
 test("ejecuta una sola evidencia de fuente V2 para AAB y APK", () => {
   assert.equal((workflow.match(/npm run verify:production-source/g) ?? []).length, 1);
   assert.doesNotMatch(workflow, /--profile production-apk\s+--artifact-type apk/);
