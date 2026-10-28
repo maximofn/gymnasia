@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-10-18",
+    "updated": "2026-10-28",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -351,14 +351,28 @@
         },
         {
           "id": "GYM-201",
-          "title": "Publicar en producción en España y ampliar después al resto del mundo",
-          "state": "in_progress",
-          "summary": "Solicitar producción con la evidencia de la prueba cerrada, desplegar por etapas en España y ampliar luego a los demás territorios elegibles tras revisar estabilidad y cumplimiento.",
+          "title": "Publicar Gymnasia en producción en España",
+          "state": "done",
+          "summary": "Gymnasia 1.52.5 (92) publicada en producción solo en España el 27 de octubre de 2026; aprobación y ficha pública verificadas. La estabilidad posterior y la decisión de ampliar países continúan en una tarea independiente.",
           "dependsOn": [
             "GYM-200"
           ],
           "related": [
             "GYM-199",
+            "GYM-225"
+          ]
+        },
+        {
+          "id": "GYM-257",
+          "title": "Verificar estabilidad en España y decidir la ampliación a otros países",
+          "state": "todo",
+          "summary": "Comprobar instalación y actualización reales desde Play Store, observar la estabilidad tras el lanzamiento español y decidir si ampliar países con autorización expresa; conservar la revisión de los envíos automáticos pendientes.",
+          "dependsOn": [
+            "GYM-201"
+          ],
+          "related": [
+            "GYM-244",
+            "GYM-256",
             "GYM-225"
           ]
         },
@@ -2664,7 +2678,7 @@
         {
           "id": "GYM-8",
           "title": "Crear componentes",
-          "state": "todo",
+          "state": "done",
           "summary": "Unificar los muchos componentes repetidos de la interfaz en uno solo.",
           "dependsOn": [],
           "related": []
@@ -3327,7 +3341,7 @@
     {
       "id": "publicar-google-play",
       "title": "Publicar Gymnasia en Google Play",
-      "why": "La publicación desbloquea el contenido sobre una app que el público puede instalar. Primero se crea la suite sanitaria y se formalizan los entornos para que toda promoción reutilice su puerta determinista; después se completa la barrera sanitaria y se limpian el build, el cumplimiento, la marca y la cuenta. Finalmente se importa la clave actual de EAS, se prepara ficha y acceso, se genera un único AAB trazable y se promociona por tracks hasta España y el resto de territorios elegibles.",
+      "why": "La publicación desbloquea el contenido sobre una app que el público puede instalar. Primero se crea la suite sanitaria y se formalizan los entornos para que toda promoción reutilice su puerta determinista; después se completa la barrera sanitaria y se limpian el build, el cumplimiento, la marca y la cuenta. Finalmente se importa la clave actual de EAS, se prepara ficha y acceso, se genera un único AAB trazable y se promociona por tracks hasta España y el resto de territorios elegibles. El lanzamiento español de 1.52.5 ya está publicado; GYM-257 (ticket para verificar estabilidad en España y decidir la ampliación a otros países) conserva las comprobaciones posteriores y exige autorización expresa antes de ampliar.",
       "tickets": [
         "GYM-150",
         "GYM-137",
@@ -3351,7 +3365,8 @@
         "GYM-199",
         "GYM-226",
         "GYM-200",
-        "GYM-201"
+        "GYM-201",
+        "GYM-257"
       ]
     },
     {
