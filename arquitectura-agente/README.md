@@ -129,6 +129,13 @@ El test del JSON es el que importa en el día a día: caza estados inválidos,
 dependencias a tickets que no existen, ciclos, y un ticket cerrado que sigue
 bloqueado por uno abierto (señal de que el estado se copió mal).
 
+Los jobs de CI, conciliación y despliegue fijan `ubuntu-24.04`: el alias
+`ubuntu-latest` pasó a Ubuntu 26.04 y Playwright 1.58.2, fijado en el lockfile,
+rechaza instalar allí las dependencias de Chromium. El fallo ocurre antes del
+E2E aunque el tablero funcione correctamente. Antes de cambiar esa imagen,
+comprobar la compatibilidad real de la versión de Playwright y ejecutar el
+workflow completo.
+
 ## Desarrollo local
 
 Cualquier servidor estático sirve; con `fetch` de por medio, abrir el `index.html`
