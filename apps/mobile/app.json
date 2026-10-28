@@ -51,6 +51,7 @@
       }
     },
     "plugins": [
+      "./plugins/withAsyncStorageCapacity.cjs",
       "expo-secure-store",
       [
         "expo-av",
