@@ -218,6 +218,12 @@ actualización; no modifica ni borra los datos existentes.
 
 En Ajustes → Trazas → Uso del almacenamiento, «Medir ocupación» muestra los
 bytes de los valores guardados, un desglose por categorías y las fotos aparte.
+Incluye las claves dinámicas de páginas e índices del catálogo de ejercicios,
+con recuentos y tamaños separados. En Android muestra además el tamaño físico
+de `RKStorage` y sus archivos auxiliares mediante metadatos: no abre ni copia
+su contenido. Esos tamaños incluyen estructura y espacio reutilizable, no
+representan cuota restante y no se suman a los valores ni a las fotos. El dato
+figura no disponible en web, iOS o si no se reconoce la ruta de la base Android.
 «Copiar informe» copia solo tamaños y etiquetas fijas, sin contenido personal.
 La medición es parcial: excluye credenciales y almacenes potencialmente sensibles,
 y no equivale al tamaño físico de SQLite. El diagnóstico no modifica datos ni

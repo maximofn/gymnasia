@@ -12,8 +12,12 @@ export type MeasurementMediaUsage = {
 };
 
 export type StorageUsageRow = { id: string; label: string; bytes: number; entries: number };
+export type StorageDatabaseUsage = {
+  databaseBytes: number | null;
+  auxiliaryBytes: number | null;
+};
 export type StorageUsageReport = {
-  version: 1;
+  version: 2;
   measuredAt: string;
   valueBytes: number;
   measuredEntries: number;
@@ -22,9 +26,11 @@ export type StorageUsageReport = {
   unknownEntries: number;
   largestEntryBytes: number;
   groups: StorageUsageRow[];
+  catalogSections: StorageUsageRow[];
   primaryStatus: "measured" | "missing" | "invalid" | "unreadable";
   primarySections: StorageUsageRow[];
   photos: MeasurementMediaUsage;
+  database: StorageDatabaseUsage;
 };
 
 // Never inspect provider journals, legacy stores or quarantines that may still
@@ -37,6 +43,7 @@ const EXCLUDED_KEYS = new Set<string>([
 ]);
 const PRIMARY_KEY = "gymnasia.mobile.local.v3";
 const MEDIA_KEY = "gymnasia_measurement_media_v1";
+const EXERCISE_CATALOG_KEY = "gymnasia.mobile.exercise_catalog.v4";
 const READ_TIMEOUT_MS = 5_000;
 
 async function readWithTimeout<T>(read: Promise<T>): Promise<T> {
@@ -74,6 +81,32 @@ const SECTIONS: Record<string, string> = {
   foodAIProvider: "Selección de proveedor de alimentos",
   toolOperationReceipts: "Recibos de operaciones",
 };
+
+const CATALOG_SECTIONS = {
+  pages: "Páginas de ejercicios",
+  search: "Índices de búsqueda de ejercicios",
+  directory: "Índices por identificador de ejercicios",
+  artifacts: "Otros archivos del catálogo de ejercicios",
+  metadata: "Metadatos del catálogo de ejercicios",
+  legacyExercises: "Catálogos de ejercicios anteriores",
+  foods: "Catálogo de alimentos",
+  products: "Catálogo de productos comerciales",
+  recipes: "Catálogo de recetas",
+} as const;
+
+function catalogSection(key: string, artifact: boolean): keyof typeof CATALOG_SECTIONS {
+  if (artifact) {
+    if (/:pages\/\d+\.json$/.test(key)) return "pages";
+    if (/:search\/[a-f0-9]{2}\.json$/.test(key)) return "search";
+    if (/:by-id\/[a-f0-9]{2}\.json$/.test(key)) return "directory";
+    return "artifacts";
+  }
+  if (key === EXERCISE_CATALOG_KEY) return "metadata";
+  if (key.includes(".foods_repo.")) return "foods";
+  if (key.includes(".products_repo.")) return "products";
+  if (key.includes(".recipes_repo.")) return "recipes";
+  return "legacyExercises";
+}
 
 /** Matches UTF-8 encoding, including replacement characters for lone surrogates. */
 export function utf8ByteLength(value: string): number {
@@ -127,24 +160,31 @@ export async function measureStorageUsage(input: {
   scopedKey(key: string): string;
   belongsToActiveNamespace(key: string): boolean;
   measurePhotos(): Promise<MeasurementMediaUsage>;
+  measureDatabase?(): Promise<StorageDatabaseUsage>;
   now?: () => Date;
 }): Promise<StorageUsageReport> {
   const report: StorageUsageReport = {
-    version: 1, measuredAt: (input.now?.() ?? new Date()).toISOString(),
+    version: 2, measuredAt: (input.now?.() ?? new Date()).toISOString(),
     valueBytes: 0, measuredEntries: 0, unreadableEntries: 0, excludedEntries: 0,
-    unknownEntries: 0, largestEntryBytes: 0, groups: [],
+    unknownEntries: 0, largestEntryBytes: 0, groups: [], catalogSections: [],
     primaryStatus: "missing", primarySections: [],
     photos: { bytes: null, fileCount: null, availableDiskBytes: null },
+    database: { databaseBytes: null, auxiliaryBytes: null },
   };
   const knownKeys = new Map(LOCAL_DATA_MANIFEST.filter(({ key }) => key !== MEDIA_KEY)
     .map(({ key }) => [input.scopedKey(key), key]));
   const groups = new Map<keyof typeof GROUPS, StorageUsageRow>();
+  const catalogGroups = new Map<keyof typeof CATALOG_SECTIONS, StorageUsageRow>();
+  // This exact dynamic prefix is written only by the public exercise catalog
+  // runtime. Do not broaden it to arbitrary application keys.
+  const artifactPrefix = `${input.scopedKey(EXERCISE_CATALOG_KEY)}:artifact:`;
   // Sequential reads avoid duplicating every stored value in memory at once.
   for (const storageKey of new Set(await readWithTimeout(input.storage.getAllKeys()))) {
     if (!input.belongsToActiveNamespace(storageKey)) continue;
     const key = knownKeys.get(storageKey);
-    if (!key) { report.unknownEntries += 1; continue; }
-    if (EXCLUDED_KEYS.has(key)) { report.excludedEntries += 1; continue; }
+    const artifact = storageKey.startsWith(artifactPrefix) && storageKey.length > artifactPrefix.length;
+    if (!key && !artifact) { report.unknownEntries += 1; continue; }
+    if (key && EXCLUDED_KEYS.has(key)) { report.excludedEntries += 1; continue; }
     try {
       const raw = await readWithTimeout(input.storage.getItem(storageKey));
       if (raw === null) continue;
@@ -152,11 +192,19 @@ export async function measureStorageUsage(input: {
       report.valueBytes += bytes;
       report.largestEntryBytes = Math.max(report.largestEntryBytes, bytes);
       report.measuredEntries += 1;
-      const id = groupForKey(key);
+      const id = artifact ? "catalogs" : groupForKey(key!);
       const group = groups.get(id) ?? { id, label: GROUPS[id], bytes: 0, entries: 0 };
       group.bytes += bytes;
       group.entries += 1;
       groups.set(id, group);
+      if (id === "catalogs") {
+        const sectionId = catalogSection(key ?? storageKey, artifact);
+        const section = catalogGroups.get(sectionId)
+          ?? { id: sectionId, label: CATALOG_SECTIONS[sectionId], bytes: 0, entries: 0 };
+        section.bytes += bytes;
+        section.entries += 1;
+        catalogGroups.set(sectionId, section);
+      }
       if (key === PRIMARY_KEY) {
         const sections = sectionRows(raw);
         report.primaryStatus = sections ? "measured" : "invalid";
@@ -169,7 +217,11 @@ export async function measureStorageUsage(input: {
     await new Promise<void>((resolve) => setTimeout(resolve, 0));
   }
   report.groups = [...groups.values()].sort((left, right) => right.bytes - left.bytes);
+  report.catalogSections = [...catalogGroups.values()].sort((left, right) => right.bytes - left.bytes);
   try { report.photos = await readWithTimeout(input.measurePhotos()); } catch { /* Keep unavailable separate from zero. */ }
+  try {
+    if (input.measureDatabase) report.database = await readWithTimeout(input.measureDatabase());
+  } catch { /* File metadata is optional; never expose paths or native errors. */ }
   return report;
 }
 
@@ -194,6 +246,10 @@ export function formatStorageUsageReport(report: StorageUsageReport): string {
     `Lecturas fallidas: ${report.unreadableEntries}`,
     "",
     ...report.groups.map((row) => `${row.label}: ${row.bytes} bytes (${row.entries} entradas)`),
+    "", "Desglose de catálogos (incluido en el total):",
+    ...report.catalogSections.map((row) => `${row.label}: ${row.bytes} bytes (${row.entries} entradas)`),
+    "", `Archivo SQLite: ${report.database.databaseBytes ?? "no disponible"} bytes`,
+    `Archivos auxiliares SQLite: ${report.database.auxiliaryBytes ?? "no disponible"} bytes`,
     "", `Desglose del registro principal: ${report.primaryStatus}`,
     ...report.primarySections.map((row) => `${row.label}: ${row.bytes} bytes`),
     "", `Archivos de fotos: ${report.photos.bytes ?? "no disponible"} bytes`,
@@ -201,6 +257,6 @@ export function formatStorageUsageReport(report: StorageUsageReport): string {
     `Espacio libre del dispositivo: ${report.photos.availableDiskBytes ?? "no disponible"} bytes`,
     "",
     "Medición parcial de valores, no del archivo SQLite ni de su cuota: excluye credenciales, almacenes heredados, cuarentena y claves desconocidas.",
-    "El desglose serializa cada campo por separado; no se suma al total. Las fotos se miden aparte. Las lecturas no son una instantánea atómica.",
+    "Los desgloses de catálogos y del registro principal no se suman al total. El principal serializa cada campo por separado. Las fotos y los archivos SQLite se miden aparte. Las lecturas no son una instantánea atómica.",
   ].join("\n");
 }
