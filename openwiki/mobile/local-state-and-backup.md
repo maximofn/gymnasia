@@ -1,10 +1,12 @@
 ---
-type: "Referencia"
-title: "Estado local, borrado y recuperación"
+type: referencia de persistencia
+title: Estado local, persistencia y copias
+description: Contrato local-first para hidratar, confirmar, recuperar, exportar y borrar el estado persistido de Gymnasia Mobile sin sobrescribir datos no verificables.
+tags: [local-first, persistence, backup, recovery, mobile]
 openwiki_generated: true
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-10-28T14:36:27.740Z
 sources:
   - id: openwiki-source-98e300a08b181f278443549a
     resource: repo://apps/mobile/agent/providerConfigurationPersistence.ts
@@ -38,11 +40,11 @@ sources:
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-28T14:36:27.740Z" }
 ---
 
 
-# Estado local, borrado y recuperación
+# Estado local, persistencia y copias
 
 Gymnasia Mobile es **local-first**: el estado de uso se mantiene en React y se persiste en el dispositivo. No se debe interpretar una exportación como una copia gestionada por la aplicación: contiene datos de salud, actividad y conversaciones, y quien la exporta debe custodiarla como información sensible.
 
@@ -97,6 +99,8 @@ flowchart TD
 Un snapshot contiene versión, fecha, payload y SHA-256. Solo se acepta cuando versión, hash, JSON y forma son válidos. La cuarentena conserva el payload exacto cuando está disponible, su hash y causas saneadas; la creación de cuarentena que no se pueda persistir sigue bloqueando la instancia en memoria.
 
 Antes de un commit normal, el repositorio relee el primario y rechaza escribir sobre una cuarentena, un primario inválido o un primario desaparecido si hay snapshot. Tras escribir, relee y compara el texto exacto y su forma antes de actualizar el snapshot. Si esa comprobación falla, crea cuarentena y lanza un error de commit ambiguo. Si solo falla el snapshot, el primario puede haber quedado guardado, pero se informa que la protección de recuperación no se actualizó.
+
+Un rechazo de escritura por falta de capacidad, como `SQLITE_FULL`, no se reinterpreta como almacenamiento vacío ni desencadena un descarte. El `commit()` propaga el error antes de la verificación cuando no puede escribir el primario: el runtime no publica esa mutación, y el primario y el snapshot previos permanecen disponibles para un nuevo intento cuando se recupere capacidad. Esto es distinto de una escritura que sí se intentó pero no se pudo verificar, que se pone en cuarentena como ambigua.
 
 Las salidas de la pantalla son deliberadamente explícitas:
 
@@ -154,7 +158,7 @@ El borrado local no puede revocar copias ya exportadas, archivos fuera del direc
 
 Las pruebas relevantes son:
 
-- `persistence/localStoreRecovery.test.ts`: migración idempotente, diagnósticos sin secretos, cuarentena byte a byte, snapshot con hash, bloqueo durable, commits ambiguos, restauración y descarte selectivo.
+- `persistence/localStoreRecovery.test.ts`: migración idempotente, diagnósticos sin secretos, cuarentena byte a byte, snapshot con hash, bloqueo durable, commits ambiguos, restauración y descarte selectivo; también simula `SQLITE_FULL` para comprobar que no borra ni sustituye el primario o el snapshot y que el commit puede reintentarse al volver a haber capacidad.
 - `storage/localDataDeletion.test.ts`: éxito solo tras borrar y verificar, continuidad ante fallos, timeout reintentable, propiedades con órdenes arbitrarios y correspondencia entre manifiesto e inventario de privacidad.
 - `backup/backupFormat.test.ts` y `backup/portableEncryption.test.ts`: ZIP v3, entrada v2/v1, hashes y límites de medios, JPEG, manipulación del sobre y autenticación.
 - `scripts/storage-recovery.e2e.mjs`: en web verifica que recuperación no sobrescriba JSON roto, no contacte proveedores, exporte cuarentena cifrada y permita reintentar o restaurar un snapshot.

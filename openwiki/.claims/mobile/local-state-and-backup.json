@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:e9cf6e0b2896774abc8140a0f227ac6ba68bfc916ff2a979825a88d7e5a9414e",
+  "pageVersion": "sha256:33ebfafc1924ab672176fedf527be89a0059ccbeddc7fb067ded57b5f73e1b8b",
   "claims": [
     {
       "id": "claim_428a8313744146638faca998dc695bce",
@@ -168,7 +168,7 @@
     },
     {
       "id": "claim_726ff2c6106b4b83b4933358620036ed",
-      "statement": "Las pruebas cubren recuperación, cuarentena y snapshots verificables; borrado verificable y reintentable; formato ZIP v3 y entradas v2/v1, medios y el sobre cifrado portable. El E2E de recuperación verifica en web que no se sobrescriba JSON roto, no se contacte a proveedores y que la exportación de cuarentena esté cifrada.",
+      "statement": "Las pruebas cubren recuperación, cuarentena y snapshots verificables; borrado verificable y reintentable; formato ZIP v3 y entradas v2/v1, medios y el sobre cifrado portable. `localStoreRecovery.test.ts` además simula `SQLITE_FULL` para verificar que se conservan el primario y el snapshot y que se puede volver a guardar al recuperar capacidad. El E2E de recuperación verifica en web que no se sobrescriba JSON roto, no se contacte a proveedores y que la exportación de cuarentena esté cifrada.",
       "evidence": [
         {
           "resource": "repo://apps/mobile/backup/backupFormat.test.ts#L95-L245",
@@ -179,12 +179,12 @@
           "version": "repo-lines-v1:sha256:5f4e42c713e1d5ea8ab23de259f6b60ade3264bedc8abe9dd6ad7e27ccd12568:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZWZmYmMyOTdhYzcxZjMyN2YwYjhiY2M2ODEyNjQ4MjVkMDA3NGNkNGQ4NTYxMWRlZGIzMWQwY2ZlMjUwZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmYzM5ZGU3YWU0NDI4MGFkOTVjNmNlZjNiNzBjYjhjMzQwOWFiYWI2MTFiYjYxYTU4NWQ3NGVkZmYzN2ZmZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
         },
         {
-          "resource": "repo://apps/mobile/persistence/localStoreRecovery.test.ts#L154-L385",
-          "version": "repo-lines-v1:sha256:c80fc3639f0a12a54e53886b00d94b652b5dbd570d4504bf64233b443760f43a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyYTdhMDY0MWY3YTQ2MGMwYWUwMzFlYTRlZjI0N2IzMTYxYTcxNDM3NjU2MmYwMGY2NmM5MDIzZmI0MzZkNDFlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNzc5ZDExOGQ2ZTNjYmY0NTA1Mzk3NDhkZWU3YTQzMDdhY2JlNjQ0NmNiYTI5N2YyNzYwZmE1ZDBiYmExYmMyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIn0"
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.test.ts#L154-L415",
+          "version": "repo-lines-v1:sha256:254d4de006ea1df1b61b8cbba5e265dd1d229eef9c5bbdf6593868062b6106dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIyYTdhMDY0MWY3YTQ2MGMwYWUwMzFlYTRlZjI0N2IzMTYxYTcxNDM3NjU2MmYwMGY2NmM5MDIzZmI0MzZkNDFlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNzc5ZDExOGQ2ZTNjYmY0NTA1Mzk3NDhkZWU3YTQzMDdhY2JlNjQ0NmNiYTI5N2YyNzYwZmE1ZDBiYmExYmMyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
         },
         {
-          "resource": "repo://apps/mobile/persistence/localStoreRecovery.test.ts#L86-L151",
-          "version": "repo-lines-v1:sha256:01d65dbac9367a4e9c8a4ef0bfaf1a8c701188d8f63b18c7c2131ed01ffd0a52:eyJzZWxlY3RlZExpbmVDb3VudCI6NjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyYzcwYWM0NzIyNGE5ODBjYTMxYmQ0NzQyYmM2NTY5NmM5YzFlNjA0OTYwN2U4NmUxYmQ2M2I5OTk1NmMxYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdhNTQ5YmRiNWM4ZWYyMmQ2YzIxZTAyNzI3NjQ4NzdmMzQxMjJiZTAwNzAzMTIzN2JmYmNkMWQzYjM0OTFiZmQifQ"
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.test.ts#L295-L322",
+          "version": "repo-lines-v1:sha256:bcf4db1e3385d6d7c2ab45a50d038a8571b928caa8c06d04beba25e0bbf24516:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3ZmIyNzVlNWVmZTM5NTE1YzU4Njc5NzdiMWY4MDFkNTg3ODNhNTZlYWEyZWRhNDQwOGI1YTRjNDdkY2VkZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBlZTQ2NDA5Njk3ODBjMzczNzNkMzRkZTA4MTJiZjRhZjgwOTRmMzM3NjNiZmM5YTUxZWUyZjc1Y2IyZDllMGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5ZGIxNjQ5OWE5ZWJhMWNkYjk1MDA0YjM2YTM4ODk3N2ZmZmM4ZGEwYzc1YTMzODFlYjUyMThjZWE2NmYxMTUifQ"
         },
         {
           "resource": "repo://apps/mobile/scripts/storage-recovery.e2e.mjs#L176-L313",
@@ -271,10 +271,28 @@
           "version": "repo-lines-v1:sha256:fef31233e44f1e05bc495d620c306bc2bc03dc95e15f86d77da0cfc61e9d47a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDQ4ODA5NTM4ZjI0NmZiOWI0ZmQ4M2ZmNGYzY2MxYTM2NTE3NDZmZDMyNzI0NDg4MmU1OTZjNDNhMDBkZjdjNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDkyMDRmODZiYWVhY2Y5NDMzYWNhODUzNzJkZGM5NDNlZDFjNGM5ZWMwOTYwYTU1YzU4NDZmOTc3MTk0MjIwYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWI1MjczODA0ZTM0YjRmYTg5YTE0MmI3ZmI4MDI5ODU3ZjFlY2U0ODI2YjVhOTk3YTFlMTdmNzliODdmNmQxMSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_e1f4d1f3f34d4cb4845077729f83faeb",
+      "statement": "Un fallo de escritura del primario, incluido el caso de capacidad `SQLITE_FULL` probado, se propaga sin publicar la mutación en `useLocalStoreRuntime`; no se crea cuarentena por ese rechazo previo a la escritura y los registros primario y snapshot existentes quedan disponibles para reintentar el commit cuando vuelve a haber capacidad.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.test.ts#L295-L322",
+          "version": "repo-lines-v1:sha256:bcf4db1e3385d6d7c2ab45a50d038a8571b928caa8c06d04beba25e0bbf24516:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3ZmIyNzVlNWVmZTM5NTE1YzU4Njc5NzdiMWY4MDFkNTg3ODNhNTZlYWEyZWRhNDQwOGI1YTRjNDdkY2VkZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBlZTQ2NDA5Njk3ODBjMzczNzNkMzRkZTA4MTJiZjRhZjgwOTRmMzM3NjNiZmM5YTUxZWUyZjc1Y2IyZDllMGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ5ZGIxNjQ5OWE5ZWJhMWNkYjk1MDA0YjM2YTM4ODk3N2ZmZmM4ZGEwYzc1YTMzODFlYjUyMThjZWE2NmYxMTUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRecovery.ts#L715-L751",
+          "version": "repo-lines-v1:sha256:eb419c36070a341b0196fded3c8782af2dbb3f134aac121b1390333a5695c06f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxZDZhYTcwMTg3ZWI4OGRmYWFhYTRhMzdlMjI3ZGMwOGEzNTczNjJmZWU2YjIwYmU0ZTUwN2I0NzY1MmRmNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmMjM2OGQ5ZTExYWQ5YzkxZDgzOTNiNmFhMzQzMDVlYzgyYzY5YTcxYWNmODRjOTA5YzQxNDYyZDMyMmYxNzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBjMjlhOTgyMmQ0YzIxZmY0ZjlhOWJlNGNhZjNiMmJjMjY5ODM1YjJiZWFhNzQyOTljMjRkODc4ZmE4MjVkMjcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRuntime.ts#L44-L63",
+          "version": "repo-lines-v1:sha256:863d443b2f5d4529fec0daf4f05edd955aa21abbb0083c29ed3b2dddca3bf719:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwMjA1NjQzNjE1YjVjMDdjYzc2MDc3YTQ5YjE3Yjc0MDhmOTRiODY0MWFiMmQ0YzMyNDliOTEzZGJlZWQ4NzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNiMjRmZjM0NWI1YzliOGEzYTVjY2RlMjUzNzBjZDYxYjFhY2I5NDZlNGYzMDhmZjI2NWEzYWNhN2JmNmZlZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmMjJjM2VlZjg3NGE0ZjNiNDU4MGU4ZDYzMzAwODA3ZGUwZjM0ZGQxM2FmNWRiMGEzNzg5NDljZTU5ZmZmMTgifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-10-28T14:36:27.740Z"
   }
 }

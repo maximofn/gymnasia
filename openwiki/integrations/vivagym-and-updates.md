@@ -3,9 +3,6 @@ type: integración y entrega móvil
 title: VivaGym, distribución y actualizaciones
 description: Delimita la retirada ejecutable de VivaGym y del actualizador interno, y explica la transacción externa que compila, valida y distribuye binarios Android.
 tags: [integrations, vivagym, updates, android, releases]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-23T12:54:40.994Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -55,7 +52,10 @@ sources:
     resource: repo://scripts/production-release/verify-artifact.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-10-23T12:54:40.994Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-28T14:36:27.740Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-28T14:36:27.740Z
 ---
 
 # VivaGym, distribución y actualizaciones
@@ -105,12 +105,12 @@ Las E2E complementan estos contratos estáticos: la variante web Production fall
 
 ## Entrega Android externa
 
-El workflow `.github/workflows/build-apk.yml` genera dos artefactos del mismo candidato y `versionCode`:
+El workflow `.github/workflows/build-apk.yml` construye y valida siempre un AAB (`production`) y un APK (`production-apk`) del mismo candidato y `versionCode`. La opción manual `publication_target` decide **después** de esa validación qué se publica:
 
-- `gymnasia.aab`, perfil `production`, se presenta por path mediante EAS Submit a Google Play en el track **`alpha`**, con `releaseStatus: completed`.
-- `gymnasia.apk`, perfil `production-apk`, se adjunta a la misma GitHub Release para instalación directa externa.
+- **`play`** (predeterminado): envía el AAB validado por path con EAS Submit al track **`alpha`**, con `releaseStatus: completed`, y publica una GitHub Release con `gymnasia.aab` y el APK instalable `gymnasia.apk`.
+- **`github-apk`**: no usa Play, EAS Submit ni credenciales de Google; publica solo `gymnasia.apk` y su evidencia. El AAB sigue siendo un resultado obligatorio de compilación y verificación, pero no se adjunta a esa release.
 
-`Play Internal` es el nombre del GitHub Environment que protege el job de envío; no debe interpretarse como el track configurado. La política de release y `eas.json` establecen actualmente `alpha`; el código admite `internal` para poder verificar transacciones históricas. Ninguna de estas rutas crea un canal de actualización en runtime.
+`Play Internal` es el nombre del GitHub Environment que protege el job de envío; no debe interpretarse como el track configurado. La política de release y `eas.json` establecen actualmente `alpha`; el validador admite `internal` para leer transacciones históricas. Ninguna ruta crea un canal de actualización en runtime.
 
 ```mermaid
 flowchart TD
@@ -121,30 +121,33 @@ flowchart TD
     Approval --> BuildAAB["Build local AAB en wallabot"]
     BuildAAB --> BuildAPK["Build local APK con el mismo versionCode"]
     BuildAPK --> Quarantine["Cuarentena y verificación independiente"]
-    Quarantine --> PlayIntent["Persiste intención y envía AAB a Play alpha"]
+    Quarantine --> Target{"Destino de publicación"}
+    Target --> PlayIntent["Persiste intención y envía AAB a Play alpha"]
     PlayIntent --> PlayDone["Submission FINISHED y evidencia Google Play"]
-    PlayDone --> Publish["Publica GitHub Release con AAB y APK"]
-    Publish --> External["Instalación o distribución fuera del cliente"]
+    PlayDone --> PlayRelease["Publica release con AAB y APK"]
+    Target --> ApkRelease["Publica release con solo APK"]
+    PlayRelease --> External["Distribución externa al cliente"]
+    ApkRelease --> External
 ```
 
-*El borrador solo se publica tras validar ambos binarios, el submission y el receipt del track configurado de Google Play.*
+*Ambos destinos exigen los dos binarios validados. Solo `play` exige además el submission terminado y el recibo de Google antes de publicar.*
 
 ### Triggers, cola y operaciones manuales
 
 El workflow se activa con `workflow_dispatch` o con cambios elegibles de `apps/mobile/**` en `main`; excluye scripts, Markdown, recursos públicos y pruebas TypeScript. Solo opera en `maximofn/gymnasia` y `refs/heads/main`. El grupo `android-production-release`, con `cancel-in-progress: false`, serializa las ejecuciones.
 
-La selección atiende primero la transacción pendiente de menor versión semántica. Las operaciones manuales son:
+La selección atiende primero la transacción pendiente de menor versión semántica. Una transacción ya existente conserva su `publicationTarget`: una ejecución no puede cambiarlo. Las operaciones manuales son:
 
 - `reconcile`: crea una transacción para la versión actual, reanuda la más antigua o verifica una release ya publicada;
 - `retry-failed`: reabre solo una transacción `failed` y exige motivo;
 - `supersede-failed`: marca como sustituida una transacción fallida, exige motivo y que `main` declare una versión posterior;
-- `adopt-submission`: enlaza manualmente un `submission_id` cuando Play pudo aceptar la petición pero EAS no devolvió su identidad.
+- `adopt-submission`: enlaza manualmente un `submission_id` cuando una petición de **Play** pudo aceptarse sin que EAS devolviera su identidad.
 
-`target_version` puede identificar la transacción objetivo, pero debe coincidir con la más antigua y no permite saltar la cola. Tras publicar o sustituir, `enqueue-next` puede reconciliar una versión posterior que ya exista en `main`.
+`target_version` puede identificar la transacción objetivo, pero debe coincidir con la más antigua y no permite saltar la cola. Tras publicar una ruta Play o sustituir, `enqueue-next` puede reconciliar una versión posterior que ya exista en `main`; la ruta `github-apk` no encadena publicaciones.
 
 ### Fuente, draft e inputs inmutables
 
-`validate-production` hace checkout del commit de la transacción y crea una `ProductionSourceEvidenceV2` común para los targets AAB y APK. Comprueba identidad, limpieza y versión del checkout, controles remotos y gates Production; falla si un gate falla o modifica el checkout.
+`validate-production` hace checkout del commit de la transacción y crea una `ProductionSourceEvidenceV2` común para los targets AAB y APK. Comprueba identidad, limpieza y versión del checkout, controles remotos y gates Production; falla si un gate falla o modifica el checkout. La evidencia también fija el destino de publicación, que debe coincidir con la transacción.
 
 En una transacción nueva, el workflow crea un draft durable antes de compilar y fija evidencia de fuente, snapshot y bundle de política, y la referencia de `versionCode` basada en `PLAY_VERSION_CODE_FLOOR` y evidencia anterior. Al reanudar, restaura esos inputs en vez de recalcularlos. `local-controller.mjs` guarda hashes SHA-256 de los inputs por intento y el runner los vuelve a comprobar antes de construir.
 
@@ -160,35 +163,33 @@ Cada resultado `wallabot-local` conserva intento, commit, perfil, versión, tool
 
 `verify-artifacts` descarga los resultados a `/tmp/quarantine`, los vincula a los intentos terminados y verifica AAB y APK por separado. `verify-artifact.mjs` contrasta configuración embebida, manifest, paquete, versión y SDK, certificado, permisos, recursos, tamaño, SHA-256 y MIME con política, fuente y snapshot. Para AAB además valida firma y estructura con `bundletool` fijado; para APK usa `apkanalyzer`, `apksigner` y `aapt2`.
 
-La evidencia `ProductionArtifactEvidenceV2` se escribe incluso si detecta violaciones y después el comando falla. Ambos artefactos deben validar con el mismo `versionCode`; el AAB debe superar el máximo entre el suelo de Play y la última publicación conocida. El draft conserva el commit, binarios, evidencias y sus digests antes de contactar Play.
+La evidencia `ProductionArtifactEvidenceV2` se escribe incluso si detecta violaciones y después el comando falla. Ambos artefactos deben validar con el mismo `versionCode`; el AAB debe superar el máximo entre el suelo de Play y la última publicación conocida. El draft conserva el commit, resultados, evidencias y sus digests.
 
-La publicación final vuelve a comprobar que el draft sigue siendo tal, apunta al commit fuente y contiene ambos binarios, MIME y tamaños admitidos, digests de binarios y evidencias, evidencia de fuente compartida, evidencia Play y receipt de Google. Solo entonces deja de ser draft; publica `gymnasia.aab` y `gymnasia.apk`, aunque solo el APK es instalable directamente.
+La comprobación final es específica del destino. Para `play`, el draft debe contener AAB, APK, evidencias, evidencia fuente compartida, evidencia Play y receipt de Google; vuelve a comprobar commit, MIME, tamaños y toda la cadena de hashes antes de dejar de ser draft. Para `github-apk`, la release validada contiene únicamente el APK, transacción y evidencias fuente/AAB/APK: rechaza tanto AAB como evidencia Play como assets publicados. En ambos casos, solo el APK es instalable directamente.
 
 ### Submission a Play y recuperación segura
 
-La pata `play` se prepara únicamente tras validar AAB y APK. Antes de contactar EAS persiste una intención ligada al SHA-256 del AAB validado y al `versionCode`; después usa solo ese AAB local por `--path`, no una build cloud. El flujo conserva el submission ID, espera estado terminal `FINISHED`, verifica en Google Play el bundle y track configurados, crea evidencia Play y recién entonces valida la transacción global.
+Esta sección aplica solo a `publication_target: play`. La pata `play` se prepara únicamente tras validar AAB y APK. Antes de contactar EAS persiste una intención ligada al SHA-256 del AAB validado y al `versionCode`; después usa solo ese AAB local por `--path`, no una build cloud. El flujo conserva el submission ID, espera estado terminal `FINISHED`, verifica en Google Play el bundle y track configurados, crea evidencia Play y recién entonces valida la transacción global.
 
-Si EAS puede haber aceptado la petición pero no entrega un ID, la pata queda `uncertain` y se prohíbe repetir la carga automáticamente. Una persona debe reconciliar y ejecutar `adopt-submission` con el ID exacto. Si el submission conocido termina en `ERRORED` o `CANCELED`, un reintento motivado pasa por su ID y no vuelve a cargar el AAB.
+Si EAS puede haber aceptado la petición pero no entrega un ID, la pata queda `uncertain` y se prohíbe repetir la carga automáticamente. Una persona debe reconciliar y ejecutar `adopt-submission` con el ID exacto. Si el submission conocido termina en `ERRORED` o `CANCELED`, un reintento motivado pasa por su ID y no vuelve a cargar el AAB. Una transacción `github-apk` no admite transiciones de Play.
 
 ```mermaid
 stateDiagram-v2
     [*] --> prepared
-    prepared --> building: start local
-    building --> built: finish local
-    building --> failed: fail local
-    built --> validated: validate artifact
-    validated --> submitting: record Play intent
-    submitting --> submitted: adopt submission
-    submitted --> submitting: observe active
-    submitted --> failed: observe failed
-    submitted --> validated: validate FINISHED
+    prepared --> building: reserve local attempts
+    building --> artifactsValidated: validate AAB and APK
+    building --> failed: local build or validation fails
+    artifactsValidated --> submitting: play intent
+    submitting --> validated: Play finished and verified
+    artifactsValidated --> validated: github APK publication
+    submitting --> failed: failed or uncertain Play state
     failed --> prepared: authorized retry
     failed --> superseded: authorized supersede
 ```
 
-*Resumen del estado global: los dos artefactos deben estar validados antes de preparar Play, y el estado `validated` requiere la evidencia del submission `FINISHED`.*
+*Estados globales de una transacción V2: el destino Play solo llega a `validated` tras su evidencia; el destino GitHub valida tras los dos artefactos y no puede iniciar Play.*
 
-La implementación conserva tres patas (`aab`, `apk`, `play`). Las binarias recorren `prepared`, `building`, `built`, `validated` o `failed`; Play usa además `submitting`, `submitted`, `retry-pending` y `uncertain`. Un fallo o incertidumbre lleva la transacción global a `failed`; solo una transacción fallida puede reintentarse o sustituirse con motivo. El historial y el draft permiten reanudar sin cambiar commit ni inputs.
+La implementación conserva tres patas (`aab`, `apk`, `play`) incluso para `github-apk`, pero su pata Play debe permanecer `prepared`, sin intentos ni submission. Las binarias recorren `prepared`, `building`, `built`, `validated` o `failed`; Play usa además `submitting`, `submitted`, `retry-pending` y `uncertain`. Un fallo o incertidumbre lleva la transacción global a `failed`; solo una transacción fallida puede reintentarse o sustituirse con motivo. El historial y el draft permiten reanudar sin cambiar commit ni inputs.
 
 ### Nota sobre la política de permisos
 
@@ -203,6 +204,6 @@ La justificación de `REQUEST_INSTALL_PACKAGES` afirma que Production se actuali
 | Superficies o peticiones retiradas en web | `npm run test:agent:e2e` y `npm run test:update-removal:e2e` | Development y Production no muestran controles retirados ni contactan MyVitale o GitHub Releases. |
 | Permisos o plugins Android | `npm run check:android-permissions && npm run test:android-permissions` | Coherencia entre configuración y política y detección de permisos de dependencias; no sustituye la inspección del binario. |
 | Fuente y artefactos Production | `npm run verify:production-source` y `npm run verify:production-artifact` | Correspondencia del candidato exacto y de cada binario con identidad, política, snapshot, toolchain y evidencia. |
-| Máquina de estados y publicación | `npm run test:production-release` | Cola, estados V2, intentos locales, `versionCode` común, envío por path, incertidumbre y publicación posterior a la verificación de Play. |
+| Máquina de estados y publicación | `npm run test:production-release` | Cola, estados V2, intentos locales, `versionCode` común, envío por path e incertidumbre para Play, y la ruta aislada `github-apk` sin Play. |
 
-Los tests de `release-transaction.mjs` son especialmente relevantes para cambios de recuperación: cubren el único submission por intención, el bloqueo de reintento ante incertidumbre, el reintento de un submission conocido sin reconstruir binarios, la sustitución solo por una versión posterior, la prioridad semver de la cola y la compatibilidad de lectura con releases históricas de Play Internal.
+Los tests de `release-transaction.mjs` son especialmente relevantes para cambios de recuperación: cubren el único submission por intención, el bloqueo de reintento ante incertidumbre, el reintento de un submission conocido sin reconstruir binarios, la sustitución solo por una versión posterior, la prioridad semver de la cola, el destino inmutable y la compatibilidad de lectura con releases históricas de Play Internal. `workflow.test.mjs` comprueba además que la ruta manual `github-apk` no referencia environment, credenciales ni herramientas de Play y no encadena otra publicación.
