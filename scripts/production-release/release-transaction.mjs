@@ -52,13 +52,15 @@ function publicError(reason) {
   return value.slice(0, 500);
 }
 
-export function createReleaseTransaction({ version, sourceCommit, now = new Date().toISOString() }) {
+export function createReleaseTransaction({ version, sourceCommit, publicationTarget = "play", now = new Date().toISOString() }) {
   parseSemver(version);
+  if (!["play", "github-apk"].includes(publicationTarget)) throw new Error("Destino de publicación desconocido.");
   if (!COMMIT_PATTERN.test(sourceCommit)) throw new Error("El commit fuente de la transacción no es válido.");
   const at = timestamp(now);
   return {
     schemaVersion: 2,
     kind: "AndroidReleaseTransactionV2",
+    publicationTarget,
     id: `android-v${version}`,
     version,
     versionCode: null,
@@ -107,6 +109,9 @@ export function assertReleaseTransaction(transaction) {
     throw new Error("El asset no cumple AndroidReleaseTransactionV2.");
   }
   parseSemver(transaction.version);
+  if (!["play", "github-apk"].includes(transaction.publicationTarget ?? "play")) {
+    throw new Error("Destino de publicación desconocido.");
+  }
   if (transaction.id !== `android-v${transaction.version}` || transaction.tag !== `v${transaction.version}`
     || !COMMIT_PATTERN.test(transaction.sourceCommit) || !Array.isArray(transaction.transitions)) {
     throw new Error("La identidad o el historial de la transacción V2 no son válidos.");
@@ -149,7 +154,14 @@ export function assertReleaseTransaction(transaction) {
   if (![
     "prepared", "building", "artifacts-validated", "submitting", "validated", "failed", "superseded",
   ].includes(transaction.state)) throw new Error(`Estado de transacción inválido: ${transaction.state}.`);
-  if (transaction.state === "validated" && (play.state !== "validated" || !play.submission?.id
+  if (transaction.publicationTarget === "github-apk" && (play.state !== "prepared" || play.attempts.length > 0 || play.submission)) {
+    throw new Error("Una publicación de APK en GitHub no autoriza operaciones de Play.");
+  }
+  if (transaction.state === "validated" && transaction.publicationTarget === "github-apk"
+    && (transaction.legs.aab.state !== "validated" || transaction.legs.apk.state !== "validated")) {
+    throw new Error("El APK de GitHub exige verificar los dos resultados de compilación.");
+  }
+  if (transaction.state === "validated" && transaction.publicationTarget !== "github-apk" && (play.state !== "validated" || !play.submission?.id
     || !SHA256_PATTERN.test(play.evidenceSha256 ?? ""))) {
     throw new Error("La transacción validada no conserva el envío de Play y su evidencia.");
   }
@@ -191,6 +203,19 @@ export function transitionReleaseTransaction(transaction, event, payload = {}) {
   }
   const next = clone(transaction);
   const now = timestamp(payload.now ?? new Date().toISOString());
+
+  if (next.publicationTarget === "github-apk" && [
+    "prepare-play", "adopt-submission", "observe-play", "validate-play", "fail-play", "start-play-retry",
+  ].includes(event)) throw new Error("Esta transacción solo autoriza publicar el APK en GitHub.");
+
+  if (event === "validate-github-apk") {
+    if (next.publicationTarget !== "github-apk" || next.state !== "artifacts-validated") {
+      throw new Error("La publicación del APK exige destino GitHub y artefactos validados.");
+    }
+    next.state = "validated";
+    record(next, "github-apk-validated", now);
+    return next;
+  }
 
   if (event === "start-local") {
     const leg = requireLeg(next, payload.leg);
@@ -476,6 +501,42 @@ function assertEvidence(evidence, { leg, transaction, currentCommit }) {
   }
 }
 
+export function assertGithubApkRelease({
+  release, transaction, sourceEvidence, aabEvidence, apkEvidence, currentCommit,
+  policy = loadReleasePolicy(), allowDraft = false,
+}) {
+  assertReleaseTransaction(transaction);
+  if (transaction.publicationTarget !== "github-apk" || transaction.state !== "validated"
+    || release.draft !== allowDraft || (!allowDraft && release.immutable !== true)
+    || release.tag_name !== transaction.tag
+    || release.target_commitish !== currentCommit || transaction.sourceCommit !== currentCommit) {
+    throw new Error("La release del APK no conserva su destino, fuente y estado verificados.");
+  }
+  const apk = releaseAsset(release, "gymnasia.apk");
+  const artifact = transaction.legs.apk.artifact;
+  const expected = policy.artifacts.apk;
+  if (apk.digest !== expectedDigest(artifact.sha256) || apk.size !== artifact.size
+    || apk.size < expected.minBytes || apk.size > expected.maxBytes
+    || apk.content_type !== expected.githubMimeType
+    || release.assets.some((asset) => ["gymnasia.aab", EVIDENCE_ASSETS.play].includes(asset.name))) {
+    throw new Error("La release debe publicar únicamente el APK íntegro y su evidencia, sin AAB ni envío a Play.");
+  }
+  assertEvidence(aabEvidence, { leg: "aab", transaction, currentCommit });
+  assertEvidence(apkEvidence, { leg: "apk", transaction, currentCommit });
+  releaseAsset(release, allowDraft && !release.assets.some((asset) => asset.name === TRANSACTION_ASSET)
+    ? "android-release-transaction.github-apk.json" : TRANSACTION_ASSET);
+  if (sourceEvidence?.schemaVersion !== 2 || sourceEvidence?.kind !== "ProductionSourceEvidenceV2"
+    || sourceEvidence?.result !== "passed" || sourceEvidence?.publicationTarget !== "github-apk"
+    || sourceEvidence?.commit !== currentCommit || sourceEvidence?.appVersion !== transaction.version
+    || releaseAsset(release, EVIDENCE_ASSETS.source).digest !== expectedDigest(apkEvidence.source.evidenceSha256)
+    || aabEvidence.source.evidenceSha256 !== apkEvidence.source.evidenceSha256
+    || releaseAsset(release, EVIDENCE_ASSETS.apk).digest !== expectedDigest(artifact.evidenceSha256)
+    || releaseAsset(release, EVIDENCE_ASSETS.aab).digest !== expectedDigest(transaction.legs.aab.artifact.evidenceSha256)) {
+    throw new Error("La evidencia del APK de GitHub no corresponde a su fuente y transacción.");
+  }
+  return true;
+}
+
 export function assertPublishedRelease({
   release,
   transaction,
@@ -488,6 +549,9 @@ export function assertPublishedRelease({
   policy = loadReleasePolicy(),
 }) {
   assertReleaseTransaction(transaction);
+  if (transaction.publicationTarget === "github-apk") {
+    return assertGithubApkRelease({ release, transaction, sourceEvidence, aabEvidence, apkEvidence, currentCommit, policy });
+  }
   if (transaction.schemaVersion === 1) {
     // Historical APK-only releases remain readable; no new V1 release can be created.
     const apk = releaseAsset(release, "gymnasia.apk");
@@ -544,6 +608,7 @@ export function selectReleaseAction({
   targetVersion = "",
   reason = "",
   submissionId = "",
+  publicationTarget = "play",
 }) {
   parseSemver(currentVersion);
   const published = new Set(publishedVersions);
@@ -558,6 +623,9 @@ export function selectReleaseAction({
   }
   const oldest = pending[0];
   if (oldest) {
+    if ((oldest.publicationTarget ?? "play") !== publicationTarget) {
+      throw new Error("El destino no puede cambiar al reintentar una transacción existente.");
+    }
     if (targetVersion && targetVersion !== oldest.version) {
       throw new Error(`La transacción más antigua es ${oldest.version}; no se puede operar ${targetVersion}.`);
     }
@@ -597,7 +665,7 @@ export function selectReleaseAction({
   if (latestPublished && compareSemver(currentVersion, latestPublished) <= 0) {
     throw new Error(`La versión fuente ${currentVersion} no es posterior a ${latestPublished}.`);
   }
-  return { action: "build", mode: "new", transaction: createReleaseTransaction({ version: currentVersion, sourceCommit: currentCommit }) };
+  return { action: "build", mode: "new", transaction: createReleaseTransaction({ version: currentVersion, sourceCommit: currentCommit, publicationTarget }) };
 }
 
 function parseArguments(argv) {
@@ -658,7 +726,8 @@ async function selectRemote(options) {
   const transactions = [];
   const releasesByVersion = new Map();
   for (const release of draftReleases) {
-    const asset = release.assets?.find((candidate) => candidate.name === TRANSACTION_ASSET);
+    const asset = release.assets?.find((candidate) => candidate.name === TRANSACTION_ASSET)
+      ?? release.assets?.find((candidate) => candidate.name === "android-release-transaction.github-apk.json");
     const bodyFallback = String(release.body ?? "").match(/<!-- android-release-transaction:([A-Za-z0-9+/=]+) -->/)?.[1];
     if (!asset && !bodyFallback) throw new Error(`El draft ${release.tag_name} no conserva ${TRANSACTION_ASSET}.`);
     const transaction = asset ? await downloadJsonAsset(policy.repository, asset) : JSON.parse(Buffer.from(bodyFallback, "base64").toString("utf8"));
@@ -677,6 +746,7 @@ async function selectRemote(options) {
     targetVersion: options["target-version"] ?? "",
     reason: options.reason ?? "",
     submissionId: options["submission-id"] ?? "",
+    publicationTarget: options["publication-target"] || "play",
   });
   if (selection.action === "verify-published") {
     const release = publishedReleases.find((candidate) => releaseVersion(candidate) === options["current-version"]);
@@ -692,7 +762,7 @@ async function selectRemote(options) {
         downloadJsonAsset(policy.repository, releaseAsset(release, EVIDENCE_ASSETS.source)),
         downloadJsonAsset(policy.repository, releaseAsset(release, EVIDENCE_ASSETS.aab)),
         downloadJsonAsset(policy.repository, releaseAsset(release, EVIDENCE_ASSETS.apk)),
-        downloadJsonAsset(policy.repository, releaseAsset(release, EVIDENCE_ASSETS.play)),
+        transaction.publicationTarget === "github-apk" ? null : downloadJsonAsset(policy.repository, releaseAsset(release, EVIDENCE_ASSETS.play)),
       ]);
       assertPublishedRelease({ release, transaction, sourceEvidence, aabEvidence, apkEvidence, playEvidence, currentCommit: options["current-commit"], policy });
     }
@@ -709,6 +779,7 @@ async function selectRemote(options) {
       `tag=${selection.transaction?.tag ?? `v${options["current-version"]}`}`,
       `source_commit=${selection.transaction?.sourceCommit ?? options["current-commit"]}`,
       `release_id=${selection.releaseId ?? ""}`,
+      `publication_target=${selection.transaction?.publicationTarget ?? "play"}`,
     ];
     writeFileSync(resolve(options["github-output"]), `${lines.join("\n")}\n`, { flag: "a" });
   }

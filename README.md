@@ -216,6 +216,13 @@ los datos locales y su recuperación. El contrato nativo verifica que un prebuil
 limpio la conserva. El ajuste requiere una nueva build Android instalada como
 actualización; no modifica ni borra los datos existentes.
 
+Para una publicación manual del APK únicamente en GitHub, sin envío a Google
+Play, ejecuta `build-apk.yml` con `publication_target=github-apk`. Conserva la
+aprobación de Production y todas las verificaciones. El flujo genera AAB y APK
+con el mismo versionCode, pero solo publica el APK; no cambia las protecciones
+de Google Play. El destino queda fijado en la transacción y debe repetirse al
+reintentar. El modo habitual sigue siendo `play`.
+
 La generación con Google usa Interactions sin almacenamiento remoto de conversaciones.
 Contrato, pruebas y validación de XHR en Android: [Google Interactions](docs/testing/google-interactions.md).
 

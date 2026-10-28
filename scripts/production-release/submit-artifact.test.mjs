@@ -42,6 +42,17 @@ test("regresión: la CLI sin evidencia no contacta EAS aunque exista un token", 
   } finally { rmSync(directory, { recursive: true }); }
 });
 
+test("una fuente o transacción para GitHub APK nunca autoriza subir a Play", () => {
+  const input = fixture();
+  assert.throws(() => verifySubmissionArtifact({ ...input, artifact: "/not-read.aab",
+    transaction: { ...input.transaction, publicationTarget: "github-apk" },
+  }), /no autoriza Google Play/);
+  const source = { ...JSON.parse(input.sourceBytes), publicationTarget: "github-apk" };
+  assert.throws(() => verifySubmissionArtifact({ ...input, artifact: "/not-read.aab",
+    sourceBytes: Buffer.from(JSON.stringify(source)),
+  }), /no autoriza Google Play/);
+});
+
 test("propiedad: cualquier sustitución de bytes de igual tamaño se rechaza", () => {
   const directory = mkdtempSync(join(tmpdir(), "submit-property-"));
   try {
