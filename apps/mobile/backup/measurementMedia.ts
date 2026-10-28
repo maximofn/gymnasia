@@ -4,6 +4,7 @@ import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import { Image, Platform } from "react-native";
 
 import { MAX_BACKUP_PHOTO_BYTES, stripJpegMetadata } from "./backupFormat";
+import type { MeasurementMediaUsage } from "../storage/storageUsage";
 
 export const MEASUREMENT_MEDIA_DIRECTORY_NAME = "gymnasia_measurement_media_v1";
 export const MAX_MEASUREMENT_PHOTO_EDGE = 2048;
@@ -18,6 +19,19 @@ export type PortableMeasurementPhoto = {
 
 function measurementMediaDirectory(): Directory {
   return new Directory(Paths.document, MEASUREMENT_MEDIA_DIRECTORY_NAME);
+}
+
+export async function measureMeasurementMediaUsage(): Promise<MeasurementMediaUsage> {
+  const result: MeasurementMediaUsage = { bytes: null, fileCount: null, availableDiskBytes: null };
+  if (Platform.OS === "web") return result;
+  try { result.availableDiskBytes = Paths.availableDiskSpace; } catch { /* Native metadata unavailable. */ }
+  try {
+    const directory = measurementMediaDirectory();
+    if (!directory.exists) return { ...result, bytes: 0, fileCount: 0 };
+    result.bytes = directory.size;
+    result.fileCount = directory.list().filter((entry) => entry instanceof File).length;
+  } catch { /* Do not expose native paths or error details. */ }
+  return result;
 }
 
 function ensureMeasurementMediaDirectory(): Directory {

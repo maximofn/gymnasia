@@ -220,6 +220,55 @@ async function runViewport(browser, width) {
   }
 
   await exerciseLayers(page, layout);
+  log(`${layout}: midiendo ocupación sin leer credenciales ni copiar contenido personal`);
+  const marker = "PRIVATE_STORAGE_CANARY_MUST_NOT_LEAK";
+  const catalogKey = "gymnasia.development:gymnasia.mobile.products_repo.v1";
+  const credentialKey = "gymnasia.development:gymnasia.mobile.provider_configuration.v1";
+  const unknownKey = `gymnasia.development:${marker}`;
+  await page.evaluate(({ marker, catalogKey, credentialKey, unknownKey }) => {
+    localStorage.setItem(catalogKey, JSON.stringify([marker]));
+    localStorage.setItem(credentialKey, JSON.stringify({ api_key: marker }));
+    localStorage.setItem(unknownKey, marker);
+    const originalRead = Storage.prototype.getItem;
+    window.__storageDiagnosticReads = [];
+    Storage.prototype.getItem = function (key) {
+      window.__storageDiagnosticReads.push(key);
+      return originalRead.call(this, key);
+    };
+    Object.defineProperty(navigator.clipboard, "writeText", { configurable: true,
+      value: async (text) => { window.__storageDiagnosticClipboard = text; } });
+  }, { marker, catalogKey, credentialKey, unknownKey });
+  await page.getByTestId("settings-tab-traces").scrollIntoViewIfNeeded();
+  await page.getByTestId("settings-tab-traces").click();
+  const diagnostic = page.getByTestId("storage-usage-card");
+  await diagnostic.scrollIntoViewIfNeeded();
+  assert.equal(await page.getByTestId("storage-usage-report").count(), 0, "no debe medir automáticamente");
+  await page.getByTestId("storage-usage-measure").click();
+  await page.getByTestId("storage-usage-report").waitFor({ state: "visible", timeout: stepTimeoutMs });
+  assert.match(await diagnostic.innerText(), /Catálogos descargados/);
+  assert.match(await diagnostic.innerText(), /Suma parcial/);
+  assert.equal((await diagnostic.innerText()).includes(marker), false);
+  await page.getByTestId("storage-usage-copy").click();
+  await page.waitForFunction(() => Boolean(window.__storageDiagnosticClipboard));
+  const safeReport = await page.evaluate(() => window.__storageDiagnosticClipboard);
+  assert.match(safeReport, /Gymnasia — diagnóstico de almacenamiento/);
+  assert.equal(safeReport.includes(marker), false);
+  assert.equal(safeReport.includes("gymnasia.mobile"), false);
+  assert.match(safeReport, /Archivos de fotos: no disponible/);
+  const reads = await page.evaluate(() => window.__storageDiagnosticReads);
+  assert.equal(reads.includes(credentialKey), false);
+  assert.equal(reads.includes(unknownKey), false);
+  const retained = await page.evaluate(({ catalogKey, credentialKey, unknownKey }) => [
+    localStorage.getItem(catalogKey), localStorage.getItem(credentialKey), localStorage.getItem(unknownKey),
+  ], { catalogKey, credentialKey, unknownKey });
+  assert.deepEqual(retained, [JSON.stringify([marker]), JSON.stringify({ api_key: marker }), marker]);
+  if (process.env.STORAGE_USAGE_SCREENSHOT_DIR) {
+    // Keep the tested width and give the scroll container enough height to show
+    // the whole diagnostic card, including the partial-measurement explanation.
+    await page.setViewportSize({ width, height: 1800 });
+    await diagnostic.scrollIntoViewIfNeeded();
+    await diagnostic.screenshot({ path: join(process.env.STORAGE_USAGE_SCREENSHOT_DIR, `storage-usage-${width}.png`) });
+  }
   assert.deepEqual(pageErrors, [], `${width}px: errores de página: ${pageErrors.join(" | ")}`);
   await context.close();
 }

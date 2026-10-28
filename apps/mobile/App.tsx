@@ -24,6 +24,7 @@ import {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { mobileTheme } from "./theme";
+import { measureStorageUsage } from "./storage/storageUsage";
 import { DesktopSidebar, ExerciseCatalogDetailOverlay } from "./screens";
 import {
   APP_PLATFORM_SERVICES,
@@ -542,6 +543,7 @@ import {
   clearMeasurementMedia,
   isMeasurementMediaEmpty,
   measurementPhotoSha256,
+  measureMeasurementMediaUsage,
   normalizeAndStoreMeasurementPhoto,
   readMeasurementPhotoForBackup,
   storeImportedMeasurementPhoto,
@@ -2723,6 +2725,12 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     createFoodId: () => uid("food"),
   });
   const traceSettingsController = useTraceSettingsController({
+    measureStorage: () => measureStorageUsage({
+      storage: AsyncStorage,
+      scopedKey: scopedStorageKey,
+      belongsToActiveNamespace: belongsToActiveStorageNamespace,
+      measurePhotos: measureMeasurementMediaUsage,
+    }),
     active: tab === "settings" && settingsTab === "traces",
     policyBusy: policyRefreshBusy,
     policyResult: policyRefreshResult,

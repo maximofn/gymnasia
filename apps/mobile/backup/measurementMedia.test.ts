@@ -3,17 +3,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const cryptoMock = vi.hoisted(() => ({
   digest: vi.fn(),
 }));
+const mediaState = vi.hoisted(() => ({ exists: true, bytes: 12345, files: 2, fail: false, platform: "android" }));
 
 vi.mock("expo-crypto", () => ({
   CryptoDigestAlgorithm: { SHA256: "SHA-256" },
   digest: cryptoMock.digest,
 }));
 
-vi.mock("expo-file-system", () => ({
-  Directory: class MockDirectory {},
-  File: class MockFile {},
-  Paths: { document: "file:///documents" },
-}));
+vi.mock("expo-file-system", () => {
+  class MockFile {}
+  return {
+    Directory: class MockDirectory {
+      get exists() { return mediaState.exists; }
+      get size() { if (mediaState.fail) throw new Error("PRIVATE_PHOTO_PATH"); return mediaState.bytes; }
+      list() { return Array.from({ length: mediaState.files }, () => new MockFile()); }
+    },
+    File: MockFile,
+    Paths: { document: "file:///documents", availableDiskSpace: 1024 * 1024 * 1024 },
+  };
+});
 
 vi.mock("expo-image-manipulator", () => ({
   ImageManipulator: { manipulate: vi.fn() },
@@ -22,10 +30,30 @@ vi.mock("expo-image-manipulator", () => ({
 
 vi.mock("react-native", () => ({
   Image: { getSize: vi.fn() },
-  Platform: { OS: "android" },
+  Platform: { get OS() { return mediaState.platform; } },
 }));
 
-import { measurementPhotoSha256 } from "./measurementMedia";
+import { measurementPhotoSha256, measureMeasurementMediaUsage } from "./measurementMedia";
+
+describe("measurement photo storage metadata", () => {
+  beforeEach(() => { Object.assign(mediaState, { exists: true, bytes: 12345, files: 2, fail: false, platform: "android" }); });
+  it("measures file metadata independently from AsyncStorage without reading or creating photos", async () => {
+    await expect(measureMeasurementMediaUsage()).resolves.toEqual({ bytes: 12345, fileCount: 2, availableDiskBytes: 2 ** 30 });
+  });
+  it("distinguishes a missing directory from unavailable metadata", async () => {
+    mediaState.exists = false;
+    await expect(measureMeasurementMediaUsage()).resolves.toEqual({ bytes: 0, fileCount: 0, availableDiskBytes: 2 ** 30 });
+    mediaState.exists = true;
+    mediaState.fail = true;
+    const result = await measureMeasurementMediaUsage();
+    expect(result).toEqual({ bytes: null, fileCount: null, availableDiskBytes: 2 ** 30 });
+    expect(JSON.stringify(result)).not.toContain("PRIVATE");
+  });
+  it("does not pretend to measure the native photo directory from web", async () => {
+    mediaState.platform = "web";
+    await expect(measureMeasurementMediaUsage()).resolves.toEqual({ bytes: null, fileCount: null, availableDiskBytes: null });
+  });
+});
 
 describe("measurementPhotoSha256", () => {
   beforeEach(() => {
