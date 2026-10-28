@@ -500,6 +500,7 @@
     }
   ],
   "notes": [
+    "En Android, el plugin Expo withAsyncStorageCapacity configura una cuota compartida de AsyncStorage de 64 MiB en lugar de los 6 MiB predeterminados. Es un máximo, no una reserva de espacio: conserva la misma base SQLite, claves, datos, snapshots y reglas de borrado. No cambia los datos tratados ni añade destinos o permisos; sigue dependiendo del espacio libre del dispositivo y del límite de lectura por entrada de Android.",
     "El escaneo de claves reconoce literales que empiezan por 'gymnasia.' o 'gymnasia_'. BACKUP_APP_ID vale exactamente 'gymnasia' y no es una clave de almacenamiento, por eso no aparece.",
     "El estado principal nunca contiene claves BYOK. La configuración de proveedores se escribe mediante un diario committed/pending dedicado: en móvil la copia canónica completa vive en SecureStore y AsyncStorage solo conserva un espejo sin claves; en web el diario completo vive en el almacenamiento del navegador y la app ya advierte de su menor protección en Ajustes.",
     "El espejo opcional de desarrollo web apps/mobile/.dev-store.json solo se activa explícitamente en loopback. Conserva una copia del estado principal con datos personales para recuperar la sesión de desarrollo, pero censura recursivamente claves BYOK, identificadores de workspace y campos de credencial antes de escribir; /dev-store valida origen, tamaño y esquema y el archivo nunca debe versionarse.",

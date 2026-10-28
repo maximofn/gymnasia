@@ -23,6 +23,7 @@ El resultado se compara semánticamente con
 - atributos de entrada, orientación y navegación de `MainActivity`;
 - marcadores de la implementación estándar de back de React Native y Expo;
 - conjunto exacto de sonidos `.wav` generado en `res/raw`;
+- cuota compartida de AsyncStorage de 64 MiB en `gradle.properties`;
 - ausencia de advertencias de prebuild no aprobadas.
 
 No se compara el árbol Android entero. Así, un cambio cosmético del generador no
@@ -40,6 +41,34 @@ La política de permisos publicables vive en
 `scripts/android-permissions/policy.json`. `FOREGROUND_SERVICE` no está permitido:
 Gymnasia no implementa ningún servicio en primer plano. Los permisos bloqueados
 siguen generando directivas de retirada en el manifest fuente.
+
+La cuota de AsyncStorage se aplica desde
+`apps/mobile/plugins/withAsyncStorageCapacity.cjs`. AsyncStorage 2.2.0 limita por
+defecto toda su base Android a 6 MiB: el estado principal, su snapshot de
+recuperación, las conversaciones y las demás particiones comparten ese espacio.
+Al alcanzar la cuota lanza `SQLITE_FULL` aunque el teléfono tenga espacio libre.
+El plugin eleva el máximo a 64 MiB sin reservarlo, cambiar la base de datos ni
+borrar registros. Editar el `android/gradle.properties` ignorado no basta: el
+siguiente prebuild limpio perdería el ajuste.
+
+La nueva cuota requiere actualizar el binario Android conservando el mismo
+paquete. No se aplica a Expo Go ni se puede comprobar en web. No elimina una
+falta real de espacio ni el límite de lectura por entrada de `CursorWindow`
+(aproximadamente 2 MiB); una entrada que crezca hasta ese límite necesitará
+particionarse o cambiar de almacenamiento. Referencias oficiales:
+[cuota total](https://react-native-async-storage.github.io/2.0/advanced/IncreaseDbSize/)
+y [límites por entrada](https://react-native-async-storage.github.io/2.0/advanced/Limits/).
+
+Para verificar una actualización en Android, conservar los datos de una
+instalación que haya alcanzado la cuota, instalar encima la nueva versión,
+guardar una medición o sesión y comprobar que persiste al reiniciar. Nunca
+desinstalar ni borrar datos para esta prueba. Si el dispositivo está realmente
+lleno, liberar espacio fuera de los datos de Gymnasia antes de reintentar.
+
+Revisión de privacidad: solo cambia la capacidad máxima del mismo almacén.
+El inventario recoge esa capacidad; las categorías, terceros, protección de
+copias, permisos y acciones de borrado permanecen iguales, por lo que no se
+modifican la política legal ni las declaraciones de Play.
 
 ## Qué se comprueba después de compilar
 

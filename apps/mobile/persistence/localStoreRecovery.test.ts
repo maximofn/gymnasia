@@ -292,6 +292,35 @@ describe("LocalStore recovery repository", () => {
     expect(storage.values.get(KEYS.snapshot)).toBe(JSON.stringify(previous));
   });
 
+  it("preserves saved data on SQLITE_FULL and can save again after capacity is increased", async () => {
+    const { storage, repository: repo } = repository();
+    const previousRaw = validRaw({ measurements: [{ id: "before" }] });
+    await repo.commit(previousRaw);
+    const previousSnapshot = storage.values.get(KEYS.snapshot);
+    const write = storage.setItem.bind(storage);
+    let full = true;
+    storage.setItem = async (key, value) => {
+      if (full) throw new Error("database or disk is full (Sqlite code 13 SQLITE_FULL)");
+      await write(key, value);
+    };
+    const nextRaw = validRaw({ measurements: [{ id: "before" }, { id: "after" }] });
+
+    await expect(repo.commit(nextRaw)).rejects.toThrow("SQLITE_FULL");
+    expect(storage.values.get(KEYS.primary)).toBe(previousRaw);
+    expect(storage.values.get(KEYS.snapshot)).toBe(previousSnapshot);
+    expect(storage.values.has(KEYS.quarantine)).toBe(false);
+    expect(storage.calls.some((call) => call.startsWith("remove:"))).toBe(false);
+
+    // A new repository models reopening the same database after an app update.
+    // The native quota itself is checked separately through a clean prebuild.
+    full = false;
+    const { repository: reopened } = repository(storage);
+    await expect(reopened.inspect()).resolves.toMatchObject({ status: "valid" });
+    await reopened.commit(nextRaw);
+    expect(storage.values.get(KEYS.primary)).toBe(nextRaw);
+    expect(JSON.parse(storage.values.get(KEYS.snapshot) ?? "null").payload).toBe(nextRaw);
+  });
+
   it("restores a snapshot and clears quarantine only after a verified commit", async () => {
     const { storage, repository: repo } = repository();
     const snapshotRaw = validRaw({ measurements: [{ id: "measurement" }] });

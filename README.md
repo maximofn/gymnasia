@@ -211,6 +211,11 @@ npm run decrypt:recovery -- --input copia.gymnasia --output recuperacion.json
 - Referencia de diseno: `docs/design/README.md`
 - Automatizacion de OpenWiki: `docs/openwiki-automation.md`
 
+Android genera mediante un plugin Expo una cuota de AsyncStorage de 64 MiB para
+los datos locales y su recuperación. El contrato nativo verifica que un prebuild
+limpio la conserva. El ajuste requiere una nueva build Android instalada como
+actualización; no modifica ni borra los datos existentes.
+
 La generación con Google usa Interactions sin almacenamiento remoto de conversaciones.
 Contrato, pruebas y validación de XHR en Android: [Google Interactions](docs/testing/google-interactions.md).
 

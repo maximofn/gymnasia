@@ -97,9 +97,23 @@ export function evaluateNativeConfig({
   manifest,
   mainActivity,
   notificationSounds,
+  gradleProperties = "",
   warnings = [],
 }) {
   const violations = [];
+  for (const [key, expected] of Object.entries(policy.expectedGradleProperties ?? {})) {
+    const values = gradleProperties.split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line.startsWith(`${key}=`))
+      .map((line) => line.slice(key.length + 1).trim());
+    if (values.length !== 1 || values[0] !== expected) {
+      violations.push({
+        code: "gradle-property",
+        message: `gradle.properties debe definir una sola vez ${key}=${expected}; se encontró ${JSON.stringify(values)}.`,
+        property: key,
+      });
+    }
+  }
   compareExactSet({
     actual: sortedUnique(manifest.declaredPermissions),
     expected: sortedUnique(policy.expectedSourcePermissions),
@@ -243,12 +257,14 @@ export function runProductionPrebuild({ keepTemporary = false } = {}) {
         .sort()
       : [];
     const manifest = parseSourceManifest(manifestXml);
+    const gradleProperties = readFileSync(join(androidRoot, "gradle.properties"), "utf8");
     const warnings = extractPrebuildWarnings(output);
     const violations = evaluateNativeConfig({
       policy,
       manifest,
       mainActivity,
       notificationSounds,
+      gradleProperties,
       warnings,
     });
 
@@ -258,6 +274,7 @@ export function runProductionPrebuild({ keepTemporary = false } = {}) {
       output,
       manifest,
       notificationSounds,
+      gradleProperties,
       warnings,
       violations,
     };
