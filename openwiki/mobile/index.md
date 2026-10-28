@@ -1,6 +1,6 @@
 # Archivos
 
-- [Shell y navegación de la aplicación móvil](application-shell.md) - El shell Expo de Gymnasia coordina el arranque protegido, los destinos React, las superficies de pantalla y el retorno de Atrás. Esta página fija las barreras de hidratación, los insets seguros y los contratos mínimos para modificar esa integración.
+- [Shell y navegación de la aplicación móvil](application-shell.md) - El shell Expo de Gymnasia coordina la landing HTML pública del export web y, tras JavaScript, el arranque local-first, los destinos React y el retorno de Atrás. Esta página separa el contrato indexable previo a React de los datos y controles privados del runtime.
 - [Dieta y estimación de alimentos](diet-and-food-estimation.md) - Modelo local de comidas y objetivos nutricionales, vinculación explícita con catálogos y alimentos personales, y flujo opcional de estimación asistida por IA. Distingue la nutrición validada que se persiste de datos externos o estimados que requieren confirmación y validación.
 - [Estado local, borrado y recuperación](local-state-and-backup.md)
 - [Mediciones y métricas corporales](measurements.md) - Contrato, edición y persistencia local de las mediciones corporales móviles. Describe el recorrido desde la pantalla y el borrador de dieta hasta las herramientas del agente y sus pruebas de contrato.
