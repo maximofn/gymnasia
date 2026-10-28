@@ -69,6 +69,37 @@ describe("storage usage diagnostics", () => {
     expect(formatStorageUsageReport(report)).not.toContain("SECRET");
   });
 
+  it("counts 41 public catalog artifacts without widening the allowlist to other dynamic keys", async () => {
+    const prefix = `${scope("gymnasia.mobile.exercise_catalog.v4")}:artifact:`;
+    const marker = "CATALOG_CONTENT_MUST_NOT_BE_COPIED";
+    const values = new Map(Array.from({ length: 41 }, (_, index): [string, string] => [
+      `${prefix}sha256:${"a".repeat(64)}:search/${index.toString(16).padStart(2, "0")}.json`,
+      JSON.stringify({ documents: [marker] }),
+    ]));
+    values.set(`${prefix}sha256:${"a".repeat(64)}:pages/0000.json`, "[]");
+    values.set(`${prefix}sha256:${"a".repeat(64)}:by-id/61.json`, "{}");
+    const excluded = [prefix, `${scope("gymnasia.mobile.exercise_catalog.v4")}:artifact-other:secret`,
+      "gymnasia.staging:gymnasia.mobile.exercise_catalog.v4:artifact:secret"];
+    for (const key of excluded) values.set(key, "PRIVATE_CREDENTIAL");
+    const config = input(values);
+    const report = await measureStorageUsage({ ...config,
+      measureDatabase: async () => ({ databaseBytes: 6_291_456, auxiliaryBytes: 32_768 }) });
+    expect(report.unknownEntries).toBe(2);
+    expect(report.measuredEntries).toBe(43);
+    expect(report.catalogSections.find((row) => row.id === "search")?.entries).toBe(41);
+    expect(report.catalogSections.map((row) => row.id)).toEqual(expect.arrayContaining(["pages", "directory"]));
+    expect(report.catalogSections.reduce((sum, row) => sum + row.bytes, 0)).toBe(report.valueBytes);
+    expect(report.database).toEqual({ databaseBytes: 6_291_456, auxiliaryBytes: 32_768 });
+    for (const key of excluded) expect(config.storage.getItem).not.toHaveBeenCalledWith(key);
+    const exported = formatStorageUsageReport(report);
+    expect(exported).toContain("Archivo SQLite: 6291456 bytes");
+    expect(exported).not.toContain(marker);
+    expect(exported).not.toContain("sha256:");
+    expect(exported).not.toContain("PRIVATE");
+    expect(config.storage.setItem).not.toHaveBeenCalled();
+    expect(config.storage.removeItem).not.toHaveBeenCalled();
+  });
+
   it("reports failed reads, invalid JSON and unavailable files without exposing exceptions or treating them as measured zero", async () => {
     const config = input(new Map([[scope("gymnasia.mobile.local.v3"), "{PRIVATE_INVALID_JSON"],
       [scope("gymnasia_debug_traces"), "[]"]]));

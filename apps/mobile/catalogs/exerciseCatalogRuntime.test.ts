@@ -11,6 +11,7 @@ import {
   type ExerciseCatalogManifest,
 } from "./exerciseCatalogRuntime";
 import type { RawExerciseCatalogEntry } from "./types";
+import { measureStorageUsage, utf8ByteLength } from "../storage/storageUsage";
 
 function rawExercise(index: number, name = `Ejercicio ${index}`): RawExerciseCatalogEntry {
   const id = `e-${String(index).padStart(3, "0")}`;
@@ -295,5 +296,30 @@ describe("catálogo paginado de ejercicios", () => {
     expect(artifactKeys.some((key) => key.includes(versions[0]))).toBe(false);
     expect(artifactKeys.some((key) => key.includes(versions[1]))).toBe(true);
     expect(artifactKeys.some((key) => key.includes(versions[2]))).toBe(true);
+  });
+
+  it("incluye en el diagnóstico las páginas e índices que realmente escribe el catálogo", async () => {
+    const data = fixture();
+    const storage = memoryStorage();
+    const service = createExerciseCatalogService({
+      storage, fetcher: catalogFetcher(data.artifacts, []), baseUrl: "https://catalog.test",
+    });
+    await service.open();
+    await service.search({ query: "curl", queryFields: ["name"] });
+    await service.resolveByIds(["e-030"]);
+    const before = new Map(storage.values);
+    storage.setItem.mockClear();
+    storage.removeItem.mockClear();
+    const report = await measureStorageUsage({ storage,
+      scopedKey: (key) => `test:${key}`, belongsToActiveNamespace: (key) => key.startsWith("test:"),
+      measurePhotos: async () => ({ bytes: null, fileCount: null, availableDiskBytes: null }),
+    });
+    expect(report.unknownEntries).toBe(0);
+    expect(report.measuredEntries).toBe(before.size);
+    expect(report.valueBytes).toBe([...before.values()].reduce((sum, value) => sum + utf8ByteLength(value), 0));
+    expect(report.catalogSections.map((row) => row.id)).toEqual(expect.arrayContaining(["pages", "search", "directory", "metadata"]));
+    expect(storage.values).toEqual(before);
+    expect(storage.setItem).not.toHaveBeenCalled();
+    expect(storage.removeItem).not.toHaveBeenCalled();
   });
 });

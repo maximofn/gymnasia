@@ -25,6 +25,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { mobileTheme } from "./theme";
 import { measureStorageUsage } from "./storage/storageUsage";
+import { measureStorageDatabaseUsage } from "./storage/storageFileUsage";
 import { DesktopSidebar, ExerciseCatalogDetailOverlay } from "./screens";
 import {
   APP_PLATFORM_SERVICES,
@@ -2730,6 +2731,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       scopedKey: scopedStorageKey,
       belongsToActiveNamespace: belongsToActiveStorageNamespace,
       measurePhotos: measureMeasurementMediaUsage,
+      measureDatabase: measureStorageDatabaseUsage,
     }),
     active: tab === "settings" && settingsTab === "traces",
     policyBusy: policyRefreshBusy,

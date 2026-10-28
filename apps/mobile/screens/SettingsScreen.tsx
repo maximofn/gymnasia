@@ -686,6 +686,18 @@ function StorageUsageCard({ model, actions }: {
         {report.groups.map((group) => row(group.label, group.bytes, group.id))}
         {row("Entrada individual más grande", report.largestEntryBytes, "largest")}
         <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700", marginTop: 4 }}>
+          Dentro de los catálogos
+        </Text>
+        {report.catalogSections.map((section) => row(`${section.label} · ${section.entries}`, section.bytes, section.id))}
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700", marginTop: 4 }}>
+          Archivos SQLite en Android
+        </Text>
+        {row("Archivo de la base de datos", report.database.databaseBytes, "database")}
+        {row("Archivos auxiliares", report.database.auxiliaryBytes, "database-auxiliary")}
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          Tamaños de archivo, sin abrir su contenido. Incluyen estructura y espacio reutilizable; no indican cuánto queda de cuota. No se suman a los valores medidos.
+        </Text>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700", marginTop: 4 }}>
           Dentro de los datos principales
         </Text>
         {report.primaryStatus === "measured" ? report.primarySections.map((section) => row(section.label, section.bytes, section.id))
@@ -704,7 +716,7 @@ function StorageUsageCard({ model, actions }: {
           Suma parcial de valores, no del archivo SQLite ni de su cuota. Entradas excluidas por privacidad: {report.excludedEntries}; desconocidas sin leer: {report.unknownEntries}; lecturas fallidas: {report.unreadableEntries}.
         </Text>
         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-          El desglose serializa cada campo por separado y no se suma al total. Las fotos se miden aparte. La ocupación puede cambiar mientras se mide.
+          Los desgloses de catálogos y datos principales ya están incluidos en el total. El principal serializa cada campo por separado. Las fotos se miden aparte. La ocupación puede cambiar mientras se mide.
         </Text>
       </View> : null}
     </RecordCard>

@@ -225,6 +225,7 @@ async function runViewport(browser, width) {
   const catalogKey = "gymnasia.development:gymnasia.mobile.products_repo.v1";
   const credentialKey = "gymnasia.development:gymnasia.mobile.provider_configuration.v1";
   const unknownKey = `gymnasia.development:${marker}`;
+  const artifactPrefix = "gymnasia.development:gymnasia.mobile.exercise_catalog.v4:artifact:";
   await page.evaluate(({ marker, catalogKey, credentialKey, unknownKey }) => {
     localStorage.setItem(catalogKey, JSON.stringify([marker]));
     localStorage.setItem(credentialKey, JSON.stringify({ api_key: marker }));
@@ -238,6 +239,12 @@ async function runViewport(browser, width) {
     Object.defineProperty(navigator.clipboard, "writeText", { configurable: true,
       value: async (text) => { window.__storageDiagnosticClipboard = text; } });
   }, { marker, catalogKey, credentialKey, unknownKey });
+  await page.evaluate(({ artifactPrefix, marker }) => {
+    for (let index = 0; index < 41; index += 1) {
+      localStorage.setItem(`${artifactPrefix}sha256:${"a".repeat(64)}:search/${index.toString(16).padStart(2, "0")}.json`,
+        JSON.stringify({ documents: [marker] }));
+    }
+  }, { artifactPrefix, marker });
   await page.getByTestId("settings-tab-traces").scrollIntoViewIfNeeded();
   await page.getByTestId("settings-tab-traces").click();
   const diagnostic = page.getByTestId("storage-usage-card");
@@ -246,6 +253,8 @@ async function runViewport(browser, width) {
   await page.getByTestId("storage-usage-measure").click();
   await page.getByTestId("storage-usage-report").waitFor({ state: "visible", timeout: stepTimeoutMs });
   assert.match(await diagnostic.innerText(), /Catálogos descargados/);
+  assert.match(await diagnostic.innerText(), /Índices de búsqueda de ejercicios · 41/);
+  assert.match(await diagnostic.innerText(), /Archivo de la base de datos/);
   assert.match(await diagnostic.innerText(), /Suma parcial/);
   assert.equal((await diagnostic.innerText()).includes(marker), false);
   await page.getByTestId("storage-usage-copy").click();
@@ -255,6 +264,9 @@ async function runViewport(browser, width) {
   assert.equal(safeReport.includes(marker), false);
   assert.equal(safeReport.includes("gymnasia.mobile"), false);
   assert.match(safeReport, /Archivos de fotos: no disponible/);
+  assert.match(safeReport, /Índices de búsqueda de ejercicios: \d+ bytes \(41 entradas\)/);
+  assert.match(safeReport, /Archivo SQLite: no disponible/);
+  assert.match(safeReport, /Entradas desconocidas sin leer: 1\n/);
   const reads = await page.evaluate(() => window.__storageDiagnosticReads);
   assert.equal(reads.includes(credentialKey), false);
   assert.equal(reads.includes(unknownKey), false);
@@ -262,6 +274,10 @@ async function runViewport(browser, width) {
     localStorage.getItem(catalogKey), localStorage.getItem(credentialKey), localStorage.getItem(unknownKey),
   ], { catalogKey, credentialKey, unknownKey });
   assert.deepEqual(retained, [JSON.stringify([marker]), JSON.stringify({ api_key: marker }), marker]);
+  const retainedArtifacts = await page.evaluate(({ artifactPrefix, marker }) => Array.from({ length: 41 }, (_, index) =>
+    localStorage.getItem(`${artifactPrefix}sha256:${"a".repeat(64)}:search/${index.toString(16).padStart(2, "0")}.json`)
+      === JSON.stringify({ documents: [marker] })).every(Boolean), { artifactPrefix, marker });
+  assert.equal(retainedArtifacts, true, "medir no debe modificar los artefactos del catálogo");
   if (process.env.STORAGE_USAGE_SCREENSHOT_DIR) {
     // Keep the tested width and give the scroll container enough height to show
     // the whole diagnostic card, including the partial-measurement explanation.
