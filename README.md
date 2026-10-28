@@ -216,6 +216,13 @@ los datos locales y su recuperación. El contrato nativo verifica que un prebuil
 limpio la conserva. El ajuste requiere una nueva build Android instalada como
 actualización; no modifica ni borra los datos existentes.
 
+En Ajustes → Trazas → Uso del almacenamiento, «Medir ocupación» muestra los
+bytes de los valores guardados, un desglose por categorías y las fotos aparte.
+«Copiar informe» copia solo tamaños y etiquetas fijas, sin contenido personal.
+La medición es parcial: excluye credenciales y almacenes potencialmente sensibles,
+y no equivale al tamaño físico de SQLite. El diagnóstico no modifica datos ni
+contacta servicios. En web no puede medir las fotos ni el espacio libre del móvil.
+
 Para una publicación manual del APK únicamente en GitHub, sin envío a Google
 Play, ejecuta `build-apk.yml` con `publication_target=github-apk`. Conserva la
 aprobación de Production y todas las verificaciones. El flujo genera AAB y APK

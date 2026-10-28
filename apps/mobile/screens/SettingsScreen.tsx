@@ -56,6 +56,7 @@ import { CatalogStatusNotice } from "../catalogs/CatalogStatusNotice";
 import { foodCatalogImageUri } from "../catalogs/sources";
 import type { UserPreferences } from "../storage/userPreferences";
 import { buildUserPreferencesPanelModel } from "../storage/userPreferencesPresentation";
+import { formatStorageBytes } from "../storage/storageUsage";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import {
   formatMeasurementHistoryDate,
@@ -633,6 +634,83 @@ function PolicyStatusCard({
   );
 }
 
+function StorageUsageCard({ model, actions }: {
+  model: Readonly<TraceSettingsModel>;
+  actions: Readonly<TraceSettingsActions>;
+}) {
+  const report = model.storageReport;
+  const row = (label: string, bytes: number | null, id: string) => (
+    <View key={id} style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, flex: 1 }}>{label}</Text>
+      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{formatStorageBytes(bytes)}</Text>
+    </View>
+  );
+  return (
+    <RecordCard variant="outline" testID="storage-usage-card">
+      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+        Uso del almacenamiento
+      </Text>
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+        Mide los datos guardados sin modificarlos. El informe contiene solo tamaños y categorías, sin claves, mensajes ni fotos.
+      </Text>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+        <Pressable testID="storage-usage-measure" accessibilityRole="button"
+          disabled={model.storageLoading} onPress={actions.measureStorage}
+          style={{ flex: 1, minWidth: 130, minHeight: 44, borderRadius: mobileTheme.radius.md,
+            backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center",
+            opacity: model.storageLoading ? 0.5 : 1 }}>
+          <Text style={{ color: mobileTheme.color.bgApp, fontWeight: "700" }}>
+            {model.storageLoading ? "Midiendo…" : "Medir ocupación"}
+          </Text>
+        </Pressable>
+        <Pressable testID="storage-usage-copy" accessibilityRole="button"
+          disabled={!report || model.storageLoading} onPress={actions.copyStorageReport}
+          style={{ flex: 1, minWidth: 130, minHeight: 44, borderRadius: mobileTheme.radius.md,
+            borderWidth: 1, borderColor: mobileTheme.color.borderSubtle,
+            alignItems: "center", justifyContent: "center", opacity: !report || model.storageLoading ? 0.5 : 1 }}>
+          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+            {model.storageCopied ? "Informe copiado ✓" : "Copiar informe"}
+          </Text>
+        </Pressable>
+      </View>
+      {model.storageError ? <Text accessibilityRole="alert" style={{ color: "#FF8585", fontSize: 13 }}>
+        {model.storageError}
+      </Text> : null}
+      {report ? <View testID="storage-usage-report" style={{ gap: 10 }}>
+        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 24, fontWeight: "700" }}>
+          {formatStorageBytes(report.valueBytes)}
+        </Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          Valores medidos en UTF-8 · {report.measuredEntries} entradas · {new Date(report.measuredAt).toLocaleTimeString("es-ES")}
+        </Text>
+        {report.groups.map((group) => row(group.label, group.bytes, group.id))}
+        {row("Entrada individual más grande", report.largestEntryBytes, "largest")}
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700", marginTop: 4 }}>
+          Dentro de los datos principales
+        </Text>
+        {report.primaryStatus === "measured" ? report.primarySections.map((section) => row(section.label, section.bytes, section.id))
+          : <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+            {report.primaryStatus === "missing" ? "No hay un registro principal guardado." : "No se pudo desglosar el registro principal."}
+          </Text>}
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700", marginTop: 4 }}>
+          Fuera de este almacén
+        </Text>
+        {row("Archivos de fotos", report.photos.bytes, "photos")}
+        {row("Espacio libre del dispositivo", report.photos.availableDiskBytes, "free-space")}
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          Archivos de fotos: {report.photos.fileCount ?? "no disponible"}. En web no se puede medir el directorio privado del móvil.
+        </Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          Suma parcial de valores, no del archivo SQLite ni de su cuota. Entradas excluidas por privacidad: {report.excludedEntries}; desconocidas sin leer: {report.unknownEntries}; lecturas fallidas: {report.unreadableEntries}.
+        </Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          El desglose serializa cada campo por separado y no se suma al total. Las fotos se miden aparte. La ocupación puede cambiar mientras se mide.
+        </Text>
+      </View> : null}
+    </RecordCard>
+  );
+}
+
 export const TraceSettingsPanel = memo(function TraceSettingsPanel({
   model,
   actions,
@@ -642,6 +720,7 @@ export const TraceSettingsPanel = memo(function TraceSettingsPanel({
 }) {
   return (
     <View style={{ gap: 12 }}>
+      <StorageUsageCard model={model} actions={actions} />
       <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
         Trazas de depuración
       </Text>
