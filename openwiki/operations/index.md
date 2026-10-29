@@ -1,7 +1,7 @@
 # Archivos
 
 - [Permisos y configuración nativa Android](android-permissions.md) - Contrato verificable que transforma la configuración Expo y sus plugins en configuración Android generada, permisos controlados y un artefacto de release validado. Incluye el prebuild limpio, la cuota nativa de AsyncStorage y los límites entre configuración nativa y runtime web.
-- [Build, release y pruebas](build-release-and-testing.md) - Guía los gates de CI de catálogos y tablero, y la transacción durable de release Android desde el candidato hasta la publicación o la reconciliación. Distingue las pruebas locales y web de la evidencia verificable de un binario y de un dispositivo nativo.
+- [Build, release y pruebas](build-release-and-testing.md)
 - [Automatización de OpenWiki](openwiki-automation.md) - Runner privado de GitHub Actions que actualiza la documentación de Gymnasia, conserva estados sensibles cifrados y genera un informe diario saneado. Describe sus límites operativos, ciclo de vida y pruebas de contrato.
 - [Gobernanza de prompts y política](prompt-policy-governance.md) - Explica cómo se generan, validan, firman y promocionan las instrucciones del agente y la política sanitaria, incluida la coherencia con copias integradas y las puertas técnicas que evitan la deriva.
 - [Comportamiento en ejecución y oportunidades](runtime-behavior.md) - Lectura operativa del runtime del agente móvil que separa los agregados disponibles y truncados de telemetría de los invariantes verificables de control de herramientas, efectos y privacidad.

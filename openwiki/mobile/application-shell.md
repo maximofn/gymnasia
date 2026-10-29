@@ -42,10 +42,10 @@ sources:
     resource: repo://apps/mobile/shell/shellRegistry.ts
   - id: openwiki-source-f5a826b1adfe83cfcc01ce9c
     resource: repo://apps/mobile/vercel.json
+generated: { by: "openwiki/0.6.0", at: "2026-10-29T14:43:04.676Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-10-26T14:37:42.688Z
-generated: { by: "openwiki/0.6.0", at: "2026-10-26T14:37:42.688Z" }
+    at: 2026-10-29T14:43:04.676Z
 ---
 
 # Shell y navegación de la aplicación móvil
@@ -184,4 +184,4 @@ npm --workspace apps/mobile run test:storage-recovery:e2e
 
 Después de `build:web`, inspeccione `apps/mobile/dist/index.html` sin ejecutar JavaScript: debe conservar los metadatos, JSON-LD, `noscript`, `#root` y la landing esperados. Compruebe las URLs de canónica, imagen y enlaces como recursos de producción; la exportación solo demuestra que se emitieron, no que un host externo responda ni que un buscador indexe la página.
 
-`shell-navigation.e2e.mjs` exporta un bundle web de desarrollo en modo BYOK, sirve `dist` localmente y precarga una fixture en el namespace de `localStorage` de desarrollo. En Chromium espera a que React muestre Inicio, ejercita los seis destinos y varias capas, y comprueba los selectores de formato compacto a 390 px y escritorio a 960 px, sin errores de página. Esto valida la sustitución funcional y que las capas preservan estado bajo el shell React; no es una prueba del fallback para rastreadores. `shellRegistry.test.ts` cubre destinos, prioridad determinista y los fallbacks plantilla/sesión/pestaña/sistema, incluso mediante propiedades sobre combinaciones de capas. `shellRegistry.contract.test.ts` exige una suscripción estable, estados y handlers exhaustivos y `testID` para cada superficie. `safeArea.contract.test.ts` es estática: cubre todos los fuentes de la app y protege los insets de Android. Para cambios en permisos, canales, audio o alarmas, la exportación web no basta: valide una compilación nativa con permisos concedidos y denegados y una transición real a segundo plano/primer plano.
+`shell-navigation.e2e.mjs` exporta un bundle web de desarrollo en modo BYOK, sirve `dist` localmente y precarga una fixture en el namespace de `localStorage` de desarrollo. En Chromium espera a que React muestre Inicio, ejercita los seis destinos y varias capas, y comprueba los selectores de formato compacto a 390 px y escritorio a 960 px, sin errores de página. En ambos anchos también abre el diagnóstico de almacenamiento: inserta un canario en catálogos, configuración de credenciales y una clave desconocida, crea 41 artefactos de índice y verifica que la medición y el informe copiado no lean ni filtren los datos privados, ni modifiquen los artefactos. Esto valida el shell React montado —incluido ese recorrido de diagnóstico—, no la indexación, los metadatos ni el fallback estático para rastreadores. `shellRegistry.test.ts` cubre destinos, prioridad determinista y los fallbacks plantilla/sesión/pestaña/sistema, incluso mediante propiedades sobre combinaciones de capas. `shellRegistry.contract.test.ts` exige una suscripción estable, estados y handlers exhaustivos y `testID` para cada superficie. `safeArea.contract.test.ts` es estática: cubre todos los fuentes de la app y protege los insets de Android. Para cambios en permisos, canales, audio o alarmas, la exportación web no basta: valide una compilación nativa con permisos concedidos y denegados y una transición real a segundo plano/primer plano.

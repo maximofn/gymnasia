@@ -1,9 +1,13 @@
 ---
 type: guía operativa
-title: Generación de imágenes de contenido
-description: Flujo manual para generar imágenes de alimentos y ejercicios, validar su contrato de catálogo y publicar con seguridad los artefactos derivados que consume la aplicación móvil.
+title: Generación y uso de imágenes de catálogo
+description: Flujo manual para generar imágenes de alimentos y ejercicios, validar sus recursos y referencias de catálogo, y publicar de forma segura los artefactos que consume la aplicación móvil.
 tags: [content, images, generation, catalogs, validation]
 sources:
+  - id: openwiki-source-fba881b48b95c05eebc3f1a3
+    resource: repo://apps/mobile/catalogs/imageUris.ts
+  - id: openwiki-source-36ac1d1b6a1d97f5db056148
+    resource: repo://apps/mobile/catalogs/types.ts
   - id: openwiki-source-bd210931c947e300164b7a63
     resource: repo://apps/mobile/scripts/catalogs.e2e.mjs
   - id: openwiki-source-d54ece17be93a2b0fabf9d35
@@ -20,13 +24,13 @@ sources:
     resource: repo://scripts/catalogs/catalogs.test.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-29T14:43:04.676Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-10-20T13:07:24.686Z
+    at: 2026-10-29T14:43:04.676Z
 ---
 
-# Generación de imágenes de contenido
+# Generación y uso de imágenes de catálogo
 
 La generación es una operación manual, externa y no determinista sobre catálogos versionados; no se ejecuta dentro de la app móvil. `image-generation/generate_images.py` solicita imágenes a Spaces de Gradio para **alimentos** y **ejercicios**, copia el resultado a los directorios de contenido y llama al generador común de catálogos. La app consume los JSON y artefactos ya versionados y validados, no un resultado directo de IA.
 
@@ -44,6 +48,12 @@ El código y las pruebas son la fuente de verdad. Los Markdown de prompts y los 
 El script de IA automatiza únicamente alimentos y ejercicios. Productos y recetas pueden recibir imágenes por otro procedimiento, pero siguen el contrato y la inspección de todos los dominios. Las imágenes nutricionales pueden ser compartidas por fichas; las de ejercicio deben tener exactamente el nombre derivado de su ID y género.
 
 La puerta de publicación valida JSON y schema, nombre de ficha frente a ID, duplicados —también entre dominios nutricionales—, referencias seguras y con mayúsculas exactas. Además rechaza recursos ausentes o huérfanos, extensiones incorrectas, bytes que no sean WebP decodificable y dimensiones no válidas. En particular, se exige `width === height` para nutrición y `width * 9 === height * 16` para ejercicios: ni la extensión `.webp` ni una instrucción en el prompt prueban el contrato.
+
+### Resolución en el cliente móvil
+
+El catálogo transporta nombres o rutas relativas, no una URL absoluta de imagen. `foodCatalogImageUri` construye la URL de `raw.githubusercontent.com/maximofn/gymnasia/main` con el directorio que corresponde a `sourceId`: alimentos por defecto, `productos_comerciales` o `recetas`; devuelve `null` para alimentos personales y CIQUAL aunque tengan un campo `image`. `exerciseCatalogImageUri` conserva `image_male` o `image_female` del catálogo y lo antepone a `ejercicios`. Por ello, cambiar la raíz, el directorio o el formato de una referencia exige cambiar a la vez el contrato de contenido y este resolvedor; no se debe guardar una URL remota en la ficha.
+
+Los tipos hacen obligatorio `image_male` e `image_female` en una entrada de ejercicio, pero `image` es opcional en una entrada nutricional. La obligatoriedad efectiva de los archivos de ejercicio procede además del schema y del validador de nombres; para nutrición solo se valida un recurso cuando la ficha declara `image`.
 
 ## Flujo y límites de la operación
 
@@ -123,7 +133,7 @@ npm run test:catalogs
 npm run test:catalogs:e2e
 ```
 
-Los unitarios cubren generación estable, limpieza de páginas obsoletas, schema e identidad, imágenes con caso/MIME/corrupción/proporción incorrectos y huérfanos, rutas inseguras y rollback. El E2E exporta la app web de desarrollo, sirve el bundle local y sustituye GitHub y el proveedor por fixtures controladas. Comprueba el consumo de alimentos y del catálogo paginado de ejercicios, búsqueda y scroll, vínculos conservados por ID tras un renombre, caché offline y migración heredada, carga tardía durante una consulta del agente, disponibilidad parcial, arranque sin red y rechazo de una caché manipulada. No sustituye la verificación visual o nativa cuando el cambio la requiera.
+Los unitarios cubren generación estable, limpieza de páginas obsoletas, schema e identidad, imágenes con caso/MIME/corrupción/proporción incorrectos y huérfanos, rutas inseguras y rollback. El E2E exporta la app web de desarrollo, sirve el bundle local y sustituye GitHub y el proveedor por fixtures controladas; sus rutas también devuelven un fixture WebP para solicitudes de imagen. Comprueba el consumo de alimentos y del catálogo paginado de ejercicios, búsqueda y scroll, vínculos conservados por ID tras un renombre, caché offline y migración heredada, carga tardía durante una consulta del agente, disponibilidad parcial, arranque sin red y rechazo de una caché manipulada. No hay en este script una aserción de que un componente de UI haya renderizado una imagen concreta ni de su aspecto: el enrutamiento WebP evita que esas peticiones fallen durante los escenarios de catálogo, pero no sustituye la verificación visual o nativa cuando el cambio la requiera.
 
 ## Procedimiento seguro de cambio
 

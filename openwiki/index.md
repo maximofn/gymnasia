@@ -4,7 +4,7 @@ okf_version: "0.2"
 
 # Archivos
 
-- [Inicio rápido para cambiar Gymnasia](quickstart.md) - Mapa breve para iniciar el cliente móvil, identificar qué página de dominio posee un cambio y seleccionar su validación. Distingue las superficies ejecutables actuales de los planes históricos.
+- [Guía de inicio para cambios seguros](quickstart.md) - Ruta breve para localizar el dominio responsable de un cambio en Gymnasia y escoger la validación mínima que corresponde. Distingue arquitectura local-first, privacidad, contenido, agente, operación y pruebas.
 
 # Directorios
 

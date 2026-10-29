@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8057e8a3747db349347893a037a8de261d1102ba9643dde4a92eeab9f4236eb7",
+  "pageVersion": "sha256:0a62187d78be15071ec6e747fb94997b68577d5855920f9279bd41ea60fdb6d1",
   "claims": [
     {
       "id": "claim_aca396b7cc1e477696babb6c28b70e97",
@@ -306,15 +306,15 @@
     },
     {
       "id": "claim_00f5bd8d4b414e5a8a93217ffbd074c0",
-      "statement": "La E2E de navegación exporta y sirve `dist`, inyecta una fixture de almacenamiento de desarrollo, espera al shell React y prueba los seis destinos y capas en 390 px y 960 px; por tanto cubre la navegación montada, no la indexación o los metadatos del fallback estático.",
+      "statement": "La E2E de navegación exporta `dist` en desarrollo con BYOK, sirve ese directorio e inyecta una fixture de `localStorage`; en 390 px y 960 px espera al shell React, recorre los seis destinos y capas, y además verifica que el diagnóstico de almacenamiento no lea ni filtre credenciales o claves desconocidas ni modifique 41 artefactos de índice. Por tanto cubre el shell montado y ese diagnóstico, no la indexación, los metadatos ni el fallback estático.",
       "evidence": [
         {
           "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L114-L190",
           "version": "repo-lines-v1:sha256:1916fdf5018761a39d14893b5c7c23135bfa38f1f163144cd6d86ea39cb4d974:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA0ZDYxZmEyM2JkZDZhZjIyOTZkMDUzZDk2MWM5NWJjNzhlMjA4ZjQyNTY4YzkwMWUxYWNiYjIzNWRhYzg1MjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk0MzgxZjJlMmY1MDhmNzUxMjIyN2I2NzhhNmRkNWYzYTQxNzlkNWI1NTBmZDVjOGMyMDIxOWYxZDQ1ZWUwNTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4ZDE5MzdkYWVlNjdmNjllZTczYjMyNjhjMmM3NTk3NGNhMDljYmQ5MThiMzUxMDI0Y2ZmZWRmM2ZmY2VhZDAifQ"
         },
         {
-          "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L192-L239",
-          "version": "repo-lines-v1:sha256:31318ca42ab414f3e566b72ce5b973cc8fe11299972a498dc48c707b534d5cef:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2ODY4ZmI0YzUyZmI5NmZkMWFjOWQxZGQ3ZmU1YTdhZTg4NDU0NTMyZWI3NzExZjFiZGRkMWM4NmMwYWMwZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1MzIwNzNiYWEyNDg0OGU5YWI5OGNmYWU1OWUxMzllN2U1ZDIzNmQ4NjFmM2ZiZjgzNmEyOTNlZDcwOWZiNTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0ZWMxZDNmYjY2MTI2ODNiZGYxM2Q5NmUxZWJjYTJkOThjNzhlYjczYzYzNDg5OGFmNjRiZmQ5M2RjZWQ0NGMifQ"
+          "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L192-L290",
+          "version": "repo-lines-v1:sha256:2bfa89b6f176e9bbba9b716dd458dae1ee66d53bb9acdc777ac4af7e40ee43be:eyJzZWxlY3RlZExpbmVDb3VudCI6OTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ2ODY4ZmI0YzUyZmI5NmZkMWFjOWQxZGQ3ZmU1YTdhZTg4NDU0NTMyZWI3NzExZjFiZGRkMWM4NmMwYWMwZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlZDJhYWUzZWVlMWUyZjFmM2RjZDZlZWUzNGMwZmY2MjRlMGQzY2E4OWYwNTQ4YjYyNThlYzZiZDg1NGNiYTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1MzIwNzNiYWEyNDg0OGU5YWI5OGNmYWU1OWUxMzllN2U1ZDIzNmQ4NjFmM2ZiZjgzNmEyOTNlZDcwOWZiNTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE0ZDI2ZjhkNmI0MjUxZjFkZDg5NmZiZGJiNjI1YjkwZDU3MDFmYWM0NTZhODk1NzRiYzc2MGI1OTBlM2JkNTIifQ"
         },
         {
           "resource": "repo://apps/mobile/scripts/shell-navigation.e2e.mjs#L37-L85",
@@ -325,6 +325,6 @@
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-26T14:37:42.688Z"
+    "at": "2026-10-29T14:43:04.676Z"
   }
 }
