@@ -5,7 +5,7 @@ const RAW_BASE_URL = "https://raw.githubusercontent.com/maximofn/gymnasia/main";
 export const EXERCISE_CATALOG_IMAGE_BASE_URL = `${RAW_BASE_URL}/ejercicios`;
 
 export function foodCatalogImageUri(entry: FoodCatalogEntry | null | undefined): string | null {
-  if (!entry?.image || entry.sourceId === "user_personal_foods") return null;
+  if (!entry?.image || entry.sourceId === "user_personal_foods" || entry.sourceId === "anses_ciqual_2025") return null;
   const path = entry.sourceId === "gymnasia_products"
     ? "productos_comerciales"
     : entry.sourceId === "gymnasia_recipes"

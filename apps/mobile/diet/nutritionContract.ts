@@ -201,6 +201,14 @@ export function validateNutritionItem(
   });
 }
 
+// El formulario histórico admite vacíos como cero, pero completar una ficha
+// incompleta de catálogo exige introducir cada valor explícitamente.
+export function missingCatalogNutritionIssues(fields: Record<string, string>): NutritionValidationIssue[] {
+  return ["grams", "calories_kcal", "protein_g", "carbs_g", "fat_g"].flatMap((field) => fields[field]?.trim()
+    ? []
+    : [{ field, code: "required" as const, message: "Introduce un valor explícito. Un dato ausente en CIQUAL no equivale a cero." }]);
+}
+
 function parseFormNumber(
   field: string,
   label: string,

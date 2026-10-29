@@ -15,6 +15,7 @@ import {
 } from "./toolOperationLedger";
 import { appendToolOperationReceipt, type ToolOperationReceipt } from "./toolOperationReceipts";
 import { findByCatalogRef, matchFoodCatalog } from "../catalogs/matching";
+import { hasCompleteFoodNutrition } from "../catalogs/foodNutrition";
 import {
   catalogRef,
   linkedCatalog,
@@ -363,6 +364,9 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
     if (!candidate) {
       return toolFailure("not_found", "No se añadió el alimento: la referencia no existe en el catálogo disponible. Busca una referencia válida o pregunta al usuario.", "choose_alternative", { status: "not_found", source_id: sourceId, item_id: itemId, written: false });
     }
+    if (!hasCompleteFoodNutrition(candidate)) {
+      return toolFailure("incomplete_nutrition", "No se añadió el alimento: faltan calorías o macronutrientes exactos. Los valores desconocidos, las trazas y los límites no son ceros. Pide datos al usuario o elige otra ficha; no los inventes.", "choose_alternative", { source_id: sourceId, item_id: itemId, written: false });
+    }
     const ratio = grams / 100;
     nutritionInput = {
       name: candidate.name,
@@ -377,7 +381,7 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
     catalogLink = unresolvedCatalog("manual");
   } else {
     const foodName = typeof data.name === "string" ? data.name : "";
-    const match = matchFoodCatalog(repository, foodName);
+    const match = matchFoodCatalog(repository.filter(hasCompleteFoodNutrition), foodName);
     if (match.kind === "ambiguous") {
       return toolFailure("ambiguous_food", "No se añadió el alimento: hay varias coincidencias. Pide al usuario que elija antes de guardar.", "choose_alternative", {
         status: "ambiguous",
@@ -506,14 +510,14 @@ const searchFoods: ToolHandler = async (args, context) => {
       normalizeSearchText(food.source) === needle || normalizeSearchText(food.sourceId) === needle
     ));
   }
-  if (minCalories != null) results = results.filter((food) => food.calories_per_100g >= minCalories);
-  if (maxCalories != null && maxCalories > 0) results = results.filter((food) => food.calories_per_100g <= maxCalories);
-  if (minProtein != null) results = results.filter((food) => food.protein_per_100g >= minProtein);
-  if (maxProtein != null && maxProtein > 0) results = results.filter((food) => food.protein_per_100g <= maxProtein);
-  if (minCarbs != null) results = results.filter((food) => food.carbs_per_100g >= minCarbs);
-  if (maxCarbs != null && maxCarbs > 0) results = results.filter((food) => food.carbs_per_100g <= maxCarbs);
-  if (minFat != null) results = results.filter((food) => food.fat_per_100g >= minFat);
-  if (maxFat != null && maxFat > 0) results = results.filter((food) => food.fat_per_100g <= maxFat);
+  if (minCalories != null) results = results.filter((food) => food.calories_per_100g !== null && food.calories_per_100g >= minCalories);
+  if (maxCalories != null && maxCalories > 0) results = results.filter((food) => food.calories_per_100g !== null && food.calories_per_100g <= maxCalories);
+  if (minProtein != null) results = results.filter((food) => food.protein_per_100g !== null && food.protein_per_100g >= minProtein);
+  if (maxProtein != null && maxProtein > 0) results = results.filter((food) => food.protein_per_100g !== null && food.protein_per_100g <= maxProtein);
+  if (minCarbs != null) results = results.filter((food) => food.carbs_per_100g !== null && food.carbs_per_100g >= minCarbs);
+  if (maxCarbs != null && maxCarbs > 0) results = results.filter((food) => food.carbs_per_100g !== null && food.carbs_per_100g <= maxCarbs);
+  if (minFat != null) results = results.filter((food) => food.fat_per_100g !== null && food.fat_per_100g >= minFat);
+  if (maxFat != null && maxFat > 0) results = results.filter((food) => food.fat_per_100g !== null && food.fat_per_100g <= maxFat);
 
   if (sortBy) {
     const [field, direction] = sortBy.split("_");
@@ -527,9 +531,12 @@ const searchFoods: ToolHandler = async (args, context) => {
           : field === "fat"
             ? food.fat_per_100g
             : 0;
-    results.sort((left, right) => ascending
-      ? getValue(left) - getValue(right)
-      : getValue(right) - getValue(left));
+    results.sort((left, right) => {
+      const a = getValue(left), b = getValue(right);
+      if (a === null) return b === null ? 0 : 1;
+      if (b === null) return -1;
+      return ascending ? a - b : b - a;
+    });
   }
 
   results = results.slice(0, 15);
@@ -546,6 +553,7 @@ const searchFoods: ToolHandler = async (args, context) => {
     fibra_por_100g: food.fiber_per_100g,
     racion_g: food.serving_size_g,
     descripcion_racion: food.serving_description,
+    ...(food.ciqual ? { fuente: "ANSES-CIQUAL 2025", calificadores: food.ciqual.qualifiers, nutricion_completa: hasCompleteFoodNutrition(food) } : {}),
   })));
 };
 

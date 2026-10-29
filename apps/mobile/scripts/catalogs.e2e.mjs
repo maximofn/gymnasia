@@ -24,6 +24,9 @@ const legacyRecipesCacheKey = "gymnasia.development:gymnasia.mobile.recipes_repo
 const fixtureFoodName = "Pera Catálogo E2E";
 const fixtureExerciseName = "Sentadilla Catálogo E2E";
 const screenshotDir = process.env.CATALOG_E2E_SCREENSHOT_DIR || "";
+const ciqualFoods = JSON.parse(readFileSync(join(repositoryRoot, "apps/mobile/catalogs/generated/ciqualBaseline.generated.json"), "utf8")).foods;
+const ciqualRice = ciqualFoods.find((food) => food.id === "ciqual-9100");
+const ciqualIncomplete = ciqualFoods.find((food) => food.calories_per_100g !== null && food.ciqual.qualifiers.fat_per_100g.qualifier === "missing");
 
 if (screenshotDir) mkdirSync(screenshotDir, { recursive: true });
 
@@ -324,11 +327,11 @@ function openAIToolCallSse(responseId, callId, name, argumentsJson = "{}") {
   ].join("\n\n");
 }
 
-function openAIFinalSse() {
+function openAIFinalSse(text = "Catálogos consultados.") {
   return [
     `event: response.created\ndata: ${JSON.stringify({ type: "response.created", response: { id: "resp_catalog_final" } })}`,
-    `event: response.output_text.delta\ndata: ${JSON.stringify({ type: "response.output_text.delta", item_id: "msg_catalog_final", output_index: 0, content_index: 0, delta: "Catálogos consultados." })}`,
-    `event: response.completed\ndata: ${JSON.stringify({ type: "response.completed", response: { id: "resp_catalog_final", output: [{ type: "message", id: "msg_catalog_final", content: [{ type: "output_text", text: "Catálogos consultados." }] }] } })}`,
+    `event: response.output_text.delta\ndata: ${JSON.stringify({ type: "response.output_text.delta", item_id: "msg_catalog_final", output_index: 0, content_index: 0, delta: text })}`,
+    `event: response.completed\ndata: ${JSON.stringify({ type: "response.completed", response: { id: "resp_catalog_final", output: [{ type: "message", id: "msg_catalog_final", content: [{ type: "output_text", text }] }] } })}`,
     "data: [DONE]",
     "",
   ].join("\n\n");
@@ -400,11 +403,83 @@ async function expectProviderCatalogTools(page, expectedFoodAvailability, expect
   await page.unroute("**/v1/responses*");
 }
 
+async function expectCiqualOffline(page) {
+  log("Verificando CIQUAL en Ajustes y Dieta sin red ni caché previa");
+  await page.getByTestId("nav-tab-settings").click();
+  await page.getByTestId("settings-tab-foods").click();
+  await page.getByTestId("ciqual-attribution").waitFor({ state: "visible" });
+  await page.getByTestId("food-catalog-load-more").waitFor({ state: "visible" });
+  assert.equal(await page.getByTestId(/^food-catalog-row-/).count(), 30);
+  await page.getByTestId("food-catalog-load-more").click();
+  assert.equal(await page.getByTestId(/^food-catalog-row-/).count(), 60);
+  // La búsqueda se aplica al catálogo completo, no solo a las 30 filas visibles.
+  await page.locator('input[placeholder="Buscar alimento..."]').fill(ciqualIncomplete.name.normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+  await page.getByText(ciqualIncomplete.name, { exact: true }).click();
+  const detail = page.getByTestId("shell-layer-settings-food-detail");
+  await detail.getByText("No disponible", { exact: true }).first().waitFor({ state: "visible" });
+  assert.equal(await detail.getByText("Ración típica", { exact: true }).count(), 0);
+  await detail.getByText(/Original francés:/).waitFor({ state: "visible" });
+  if (screenshotDir) {
+    await page.screenshot({ path: join(screenshotDir, "ciqual-detail-390.png"), fullPage: true });
+    await page.setViewportSize({ width: 960, height: 900 });
+    await page.screenshot({ path: join(screenshotDir, "ciqual-detail-960.png"), fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+  }
+  await page.getByTestId("nav-tab-diet").click();
+  const search = page.locator('input[placeholder="Buscar alimento..."]').first();
+  await search.fill(ciqualRice.name);
+  await page.getByText(ciqualRice.name, { exact: true }).click();
+  await page.getByTestId("selected-food-grams-input").fill("150");
+  await page.getByTestId("save-selected-food").click();
+  await page.waitForFunction((key) => Object.values(JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate ?? {}).some((day) => day.meals.some((meal) => meal.items.some((item) => item.catalog_link?.ref?.sourceId === "anses_ciqual_2025" && item.catalog_link.ref.itemId === "ciqual-9100" && item.calories_kcal === 525))), storageKey);
+  await search.fill(ciqualIncomplete.name);
+  await page.getByText(ciqualIncomplete.name, { exact: true }).click();
+  assert.equal(await page.getByTestId("manual-food-fat_g-input").inputValue(), "");
+  await page.getByTestId("save-manual-food").click();
+  await page.getByTestId("manual-food-fat_g-error").waitFor({ state: "visible" });
+  const items = await page.evaluate((key) => Object.values(JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate ?? {}).flatMap((day) => day.meals.flatMap((meal) => meal.items)), storageKey);
+  assert.equal(items.some((item) => item.title === ciqualIncomplete.name), false);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.getByTestId("nav-tab-diet").click();
+  await page.getByText(ciqualRice.name, { exact: true }).waitFor({ state: "visible" });
+
+  log("Verificando tools CIQUAL con proveedor falso, selección por ID y rechazo de desconocidos");
+  const requests = [];
+  await page.route("**/v1/responses*", async (route) => {
+    requests.push(route.request().postDataJSON());
+    const number = requests.length;
+    const body = number === 1
+      ? openAIToolCallSse("resp_ciqual_search", "call_ciqual_search", "search_foods", JSON.stringify({ query: ciqualRice.name, source: "anses_ciqual_2025" }))
+      : number === 2 || number === 3
+        ? openAIToolCallSse(`resp_ciqual_add_${number}`, `call_ciqual_add_${number}`, "add_meal_food", JSON.stringify({ date: "2026-10-29", meal: "Comida", data: JSON.stringify({ kind: "catalog", source_id: "anses_ciqual_2025", item_id: number === 2 ? ciqualRice.id : ciqualIncomplete.id, grams: 150 }) }))
+        : openAIFinalSse("CIQUAL consultado.");
+    await route.fulfill({ status: 200, headers: { "content-type": "text/event-stream; charset=utf-8" }, body });
+  });
+  await page.getByTestId("nav-tab-chat").click();
+  await page.getByTestId("chat-input").fill("Consulta CIQUAL y registra arroz con la referencia indicada");
+  await page.getByTestId("chat-send").click();
+  await page.getByText("CIQUAL consultado.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+  assert.equal(requests.length, 4);
+  const output = (index, callId) => JSON.parse(requests[index].input.find((item) => item.type === "function_call_output" && item.call_id === callId).output);
+  assert.equal(output(1, "call_ciqual_search").results[0].source_id, "anses_ciqual_2025");
+  assert.equal(output(3, "call_ciqual_add_3").error, "incomplete_nutrition");
+  await page.waitForFunction((key) => JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate?.["2026-10-29"]?.meals.some((meal) => meal.items.some((item) => item.catalog_link?.ref?.sourceId === "anses_ciqual_2025" && item.calories_kcal === 525)), storageKey);
+  await page.unroute("**/v1/responses*");
+}
+
 exportDevelopmentBundle();
 const server = await startServer();
 const browser = await chromium.launch({ headless: process.env.CATALOG_E2E_HEADLESS !== "0" });
 
 try {
+  if (process.env.CATALOG_E2E_CIQUAL_ONLY === "1") {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const page = await preparePage(context, { offline: true }, {}, true);
+    await openApp(page);
+    await expectFoodConsumer(page, false);
+    await expectCiqualOffline(page);
+    await context.close();
+  } else {
   const networkState = { offline: false, exerciseName: fixtureExerciseName };
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await preparePage(context, networkState, {}, true);
@@ -604,6 +679,7 @@ try {
   assert.equal(unexpectedProviderCall, false);
   if (screenshotDir) await coldPage.screenshot({ path: join(screenshotDir, "coach-catalog-rice.png") });
   await coldPage.unroute("**/v1/responses*");
+  await expectCiqualOffline(coldPage);
   await expectProviderCatalogTools(coldPage, "partial", "unavailable");
   await expectExerciseConsumer(coldPage, "Rutina Offline E2E", false);
   await coldPage.getByText("No se pudo cargar esta parte del catálogo.", { exact: true }).waitFor({ state: "visible" });
@@ -656,6 +732,7 @@ try {
   await ambiguousContext.close();
 
   log("Runtime local-first, identidad y estados degradados verificados");
+  }
 } finally {
   await browser.close();
   await new Promise((resolve) => server.close(resolve));

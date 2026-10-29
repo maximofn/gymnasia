@@ -84,7 +84,7 @@ export const DietResolutionOverlays = memo(function DietResolutionOverlays({
                   <FoodThumbnail food={candidate} size={42} />
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }}>{candidate.name}</Text>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>{candidate.sourceId} · {candidate.id} · {candidate.calories_per_100g} kcal/100g</Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>{candidate.sourceId} · {candidate.id} · {candidate.calories_per_100g ?? "No disponible"} kcal/100g</Text>
                   </View>
                   <Feather name="chevron-right" size={17} color={mobileTheme.color.brandPrimary} />
                 </Pressable>

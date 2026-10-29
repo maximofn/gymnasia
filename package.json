@@ -61,6 +61,8 @@
     "test:catalogs": "node --test scripts/catalogs/*.test.mjs",
     "import:ciqual": "node scripts/catalogs/import-ciqual.mjs --write",
     "check:ciqual": "node scripts/catalogs/import-ciqual.mjs --check",
+    "sync:ciqual:mobile": "node scripts/catalogs/ciqual-mobile.mjs --write",
+    "check:ciqual:mobile": "node scripts/catalogs/ciqual-mobile.mjs --check",
     "test:catalogs:e2e": "node apps/mobile/scripts/catalogs.e2e.mjs",
     "generate:store-listing": "node scripts/store-listing/generate-assets.mjs",
     "check:store-listing": "node scripts/store-listing/check.mjs",

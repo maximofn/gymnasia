@@ -1,4 +1,7 @@
 import { RecordCard } from "../components/RecordCard";
+import { CIQUAL_ATTRIBUTION } from "../catalogs/ciqual";
+import { formatFoodNutrient, formatFoodServing, hasCompleteFoodNutrition } from "../catalogs/foodNutrition";
+import { normalizeCatalogName } from "../catalogs/matching";
 import { NoticeFrame } from "../components/NoticeFrame";
 import { Thumbnail } from "../components/Thumbnail";
 import { ItemRow } from "../components/ItemRow";
@@ -446,7 +449,7 @@ export const PersonalFoodsSettingsPanel = memo(function PersonalFoodsSettingsPan
               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Ración típica</Text>
               <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{model.selectedFood.serving_description}</Text>
               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                {Math.round(model.selectedFood.calories_per_100g * model.selectedFood.serving_size_g / 100)} kcal · P:{(model.selectedFood.protein_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g · C:{(model.selectedFood.carbs_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g · G:{(model.selectedFood.fat_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g
+                {formatFoodServing(model.selectedFood)}
               </Text>
             </View>
           ) : null}
@@ -1957,17 +1960,20 @@ export const FoodsSettingsPanel = memo(function FoodsSettingsPanel({
   actions: Readonly<FoodCatalogSettingsActions>;
 }) {
   const foods = model.foods.filter((food) => !food.source || food.source === "alimento");
+  const [visibleCount, setVisibleCount] = useState(30);
+  useEffect(() => { setVisibleCount(30); }, [model.foodSearch, model.foodCategory]);
   const categories = ["all", ...Array.from(new Set(foods.map((food) => food.category))).sort()];
-  const normalizedSearch = model.foodSearch.toLowerCase();
+  const normalizedSearch = normalizeCatalogName(model.foodSearch);
   const filtered = foods.filter((food) => (
-    (!normalizedSearch || food.name.toLowerCase().includes(normalizedSearch) || food.category.toLowerCase().includes(normalizedSearch))
+    (!normalizedSearch || normalizeCatalogName(food.name).includes(normalizedSearch) || normalizeCatalogName(food.category).includes(normalizedSearch))
     && (model.foodCategory === "all" || food.category === model.foodCategory)
   ));
   return (
     <View style={{ gap: 12 }}>
       <CatalogStatusNotice metadata={model.availability} onRetry={actions.retry} testID="settings-food-catalog-status" />
+      <Text testID="ciqual-attribution" style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{CIQUAL_ATTRIBUTION} Disponible sin conexión.</Text>
       <CatalogSearch value={model.foodSearch} onChange={actions.changeFoodSearch} placeholder="Buscar alimento..." />
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ gap: 6 }}>
         {categories.map((category) => {
           const active = model.foodCategory === category;
           const label = category === "all" ? "Todos" : category.charAt(0).toUpperCase() + category.slice(1);
@@ -1977,19 +1983,24 @@ export const FoodsSettingsPanel = memo(function FoodsSettingsPanel({
             </Pressable>
           );
         })}
-      </View>
+      </ScrollView>
       <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 10 }}>
         <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>Alimentos ({foods.length})</Text>
         {filtered.length === 0 ? (
           <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>No se encontraron alimentos.</Text>
-        ) : filtered.map((food) => (
-          <View key={food.id}>
+        ) : filtered.slice(0, visibleCount).map((food) => (
+          <View key={`${food.sourceId}/${food.id}`}>
             <FoodCatalogRow food={food} showCategory onPress={() => actions.selectFood(model.selectedFood?.id === food.id ? null : food)} />
             {model.selectedFood?.id === food.id ? (
               <FoodCatalogDetail food={food} testID={shellSurfaceTestId("settings-food-detail")} />
             ) : null}
           </View>
         ))}
+        {filtered.length > visibleCount ? (
+          <Pressable testID="food-catalog-load-more" onPress={() => setVisibleCount((count) => count + 30)} style={{ minHeight: 42, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md }}>
+            <Text style={{ color: mobileTheme.color.textPrimary }}>Mostrar más ({Math.min(visibleCount, filtered.length)} de {filtered.length})</Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
@@ -2025,13 +2036,14 @@ export const ProductsSettingsPanel = memo(function ProductsSettingsPanel({
 
 function FoodCatalogRow({ food, onPress, showCategory = false }: { food: FoodCatalogSettingsModel["foods"][number]; onPress(): void; showCategory?: boolean }) {
   return (
-    <ItemRow onPress={onPress} style={{ paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle }}>
+    <ItemRow testID={`food-catalog-row-${food.sourceId}-${food.id}`} onPress={onPress} style={{ paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle }}>
       <SettingsFoodThumbnail food={food} />
       <View style={{ flex: 1 }}>
-        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>{food.name}</Text>
-        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{food.calories_per_100g} kcal · P:{food.protein_per_100g}g · C:{food.carbs_per_100g}g · G:{food.fat_per_100g}g</Text>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={2}>{food.name}</Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{formatFoodNutrient(food, "calories_per_100g", "kcal")} · P: {formatFoodNutrient(food, "protein_per_100g", "g")} · C: {formatFoodNutrient(food, "carbs_per_100g", "g")} · G: {formatFoodNutrient(food, "fat_per_100g", "g")}</Text>
+        {food.ciqual ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>ANSES-CIQUAL 2025 · {food.id}</Text> : null}
+        {showCategory ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>{food.category}</Text> : null}
       </View>
-      {showCategory ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>{food.category}</Text> : null}
     </ItemRow>
   );
 }
@@ -2042,17 +2054,25 @@ function SettingsFoodThumbnail({ food }: { food: FoodCatalogSettingsModel["foods
 }
 
 function FoodCatalogDetail({ food, testID, onClose, showTitle = false }: { food: FoodCatalogSettingsModel["foods"][number]; testID: string; onClose?: () => void; showTitle?: boolean }) {
-  const servingCalories = Math.round(food.calories_per_100g * food.serving_size_g / 100);
   return (
     <View testID={testID} style={{ backgroundColor: mobileTheme.color.bgSurface, borderRadius: 12, padding: 16, gap: 12, marginTop: showTitle ? 0 : 6, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle }}>
       {showTitle ? <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}><Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18, flex: 1 }}>{food.name}</Text><Pressable onPress={onClose} style={{ padding: 4 }}><Feather name="x" size={20} color={mobileTheme.color.textSecondary} /></Pressable></View> : null}
       {showTitle && food.image ? <Image source={{ uri: foodCatalogImageUri(food)! }} style={{ width: "100%", height: 160, borderRadius: 8 }} resizeMode="contain" /> : null}
       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Por 100g</Text>
       <View style={{ flexDirection: "row", gap: 8 }}>
-        {[{ label: "Calorías", value: food.calories_per_100g, unit: "kcal", color: "#FF6B6B" }, { label: "Proteína", value: food.protein_per_100g, unit: "g", color: "#4ECDC4" }, { label: "Carbos", value: food.carbs_per_100g, unit: "g", color: "#FFE66D" }, { label: "Grasa", value: food.fat_per_100g, unit: "g", color: "#FF8A5C" }].map((macro) => <View key={macro.label} style={{ flex: 1, backgroundColor: `${macro.color}15`, borderRadius: 8, padding: 8, alignItems: "center", gap: 2 }}><Text style={{ color: macro.color, fontSize: 16, fontWeight: "700" }}>{macro.value}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.unit}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.label}</Text></View>)}
+        {[{ label: "Calorías", value: formatFoodNutrient(food, "calories_per_100g"), unit: "kcal", color: "#FF6B6B" }, { label: "Proteína", value: formatFoodNutrient(food, "protein_per_100g"), unit: "g", color: "#4ECDC4" }, { label: "Carbos", value: formatFoodNutrient(food, "carbs_per_100g"), unit: "g", color: "#FFE66D" }, { label: "Grasa", value: formatFoodNutrient(food, "fat_per_100g"), unit: "g", color: "#FF8A5C" }].map((macro) => <View key={macro.label} style={{ flex: 1, backgroundColor: `${macro.color}15`, borderRadius: 8, padding: 8, alignItems: "center", gap: 2 }}><Text style={{ color: macro.color, fontSize: macro.value.length > 8 ? 11 : 16, fontWeight: "700" }}>{macro.value}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.unit}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.label}</Text></View>)}
       </View>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text><Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>{food.fiber_per_100g}g</Text></View>
-      {food.serving_size_g > 0 ? <View style={{ backgroundColor: "#ffffff08", borderRadius: 8, padding: 10, gap: 4 }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>{showTitle ? `Ración típica (${food.serving_size_g}g)` : "Ración típica"}</Text>{!showTitle ? <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{food.serving_description || `${food.serving_size_g}g`}</Text> : null}<Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{servingCalories} kcal · P:{(food.protein_per_100g * food.serving_size_g / 100).toFixed(1)}g · C:{(food.carbs_per_100g * food.serving_size_g / 100).toFixed(1)}g · G:{(food.fat_per_100g * food.serving_size_g / 100).toFixed(1)}g</Text></View> : null}
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text><Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>{formatFoodNutrient(food, "fiber_per_100g", "g")}</Text></View>
+      {food.serving_size_g !== null && food.serving_size_g > 0 ? <View style={{ backgroundColor: "#ffffff08", borderRadius: 8, padding: 10, gap: 4 }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>{showTitle ? `Ración típica (${food.serving_size_g}g)` : "Ración típica"}</Text>{!showTitle ? <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{food.serving_description || `${food.serving_size_g}g`}</Text> : null}<Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{formatFoodServing(food)}</Text></View> : null}
+      {food.ciqual ? (
+        <View style={{ gap: 6 }}>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{food.serving_description}. Sin imagen ni ración doméstica documentada.</Text>
+          {!hasCompleteFoodNutrition(food) ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Datos incompletos: para registrar este alimento en la dieta tendrás que completar los valores manualmente. «No disponible», trazas y límites no equivalen a cero.</Text> : null}
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>ANSES-CIQUAL {food.ciqual.version} · {food.id} · Licence Ouverte 2.0</Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>Original francés: {food.ciqual.names.fr}</Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>Original inglés: {food.ciqual.names.en}</Text>
+        </View>
+      ) : null}
     </View>
   );
 }

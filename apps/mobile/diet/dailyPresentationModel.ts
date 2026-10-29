@@ -1,4 +1,6 @@
 import type { FoodCatalogEntry } from "../catalogs/types";
+import { normalizeCatalogName } from "../catalogs/matching";
+import { hasCompleteFoodNutrition, scaleFoodNutrient } from "../catalogs/foodNutrition";
 import {
   formatDietDayContext,
   formatDietDayHeader,
@@ -68,10 +70,10 @@ export function buildDietDailyPresentationModel(input: {
   const proteinConsumed = sumDayMacroGrams(input.day, "protein_g");
   const carbsConsumed = sumDayMacroGrams(input.day, "carbs_g");
   const fatConsumed = sumDayMacroGrams(input.day, "fat_g");
-  const query = input.foodSearch.trim().toLowerCase();
+  const query = normalizeCatalogName(input.foodSearch);
   const foodSearchResults = query
     ? [...input.foods, ...input.personalFoods]
-        .filter((food) => food.name.toLowerCase().includes(query))
+        .filter((food) => normalizeCatalogName(food.name).includes(query))
         .slice(0, 8)
     : [];
   const selectedFoodValidation = input.selectedFood
@@ -87,7 +89,6 @@ export function buildDietDailyPresentationModel(input: {
   const selectedFoodGrams = selectedFoodValidation?.ok
     ? selectedFoodValidation.value.grams
     : 0;
-  const selectedFoodRatio = selectedFoodGrams / 100;
 
   return {
     dateLabel: formatDietDayHeader(input.selectedDate),
@@ -131,12 +132,12 @@ export function buildDietDailyPresentationModel(input: {
       };
     }),
     foodSearchResults,
-    selectedFoodPreview: input.selectedFood
+    selectedFoodPreview: input.selectedFood && hasCompleteFoodNutrition(input.selectedFood)
       ? {
-          calories: Math.round(input.selectedFood.calories_per_100g * selectedFoodRatio),
-          protein: Math.round(input.selectedFood.protein_per_100g * selectedFoodRatio * 10) / 10,
-          carbs: Math.round(input.selectedFood.carbs_per_100g * selectedFoodRatio * 10) / 10,
-          fat: Math.round(input.selectedFood.fat_per_100g * selectedFoodRatio * 10) / 10,
+          calories: Math.round(input.selectedFood.calories_per_100g * selectedFoodGrams / 100),
+          protein: scaleFoodNutrient(input.selectedFood.protein_per_100g, selectedFoodGrams)!,
+          carbs: scaleFoodNutrient(input.selectedFood.carbs_per_100g, selectedFoodGrams)!,
+          fat: scaleFoodNutrient(input.selectedFood.fat_per_100g, selectedFoodGrams)!,
         }
       : null,
     nutritionIssues: new Map(input.nutritionIssues.map((issue) => [issue.field, issue])),
