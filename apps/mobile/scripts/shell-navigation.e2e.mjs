@@ -255,6 +255,8 @@ async function runViewport(browser, width) {
   assert.match(await diagnostic.innerText(), /Catálogos descargados/);
   assert.match(await diagnostic.innerText(), /Índices de búsqueda de ejercicios · 41/);
   assert.match(await diagnostic.innerText(), /Archivo de la base de datos/);
+  assert.match(await diagnostic.innerText(), /Caché pública separada/);
+  assert.match(await diagnostic.innerText(), /límite 24.00 MiB/);
   assert.match(await diagnostic.innerText(), /Suma parcial/);
   assert.equal((await diagnostic.innerText()).includes(marker), false);
   await page.getByTestId("storage-usage-copy").click();

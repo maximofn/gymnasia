@@ -1,4 +1,7 @@
+import { CATALOG_CACHE_DIRECTORY, CATALOG_CACHE_MAX_BYTES, utf8ByteLength, type CatalogCacheUsage } from "../catalogCache";
 import { LOCAL_DATA_MANIFEST } from "./localDataDeletion";
+
+export { utf8ByteLength } from "../catalogCache";
 
 type StorageReader = {
   getAllKeys(): Promise<readonly string[]>;
@@ -17,7 +20,7 @@ export type StorageDatabaseUsage = {
   auxiliaryBytes: number | null;
 };
 export type StorageUsageReport = {
-  version: 2;
+  version: 3;
   measuredAt: string;
   valueBytes: number;
   measuredEntries: number;
@@ -31,6 +34,7 @@ export type StorageUsageReport = {
   primarySections: StorageUsageRow[];
   photos: MeasurementMediaUsage;
   database: StorageDatabaseUsage;
+  artifacts: CatalogCacheUsage;
 };
 
 // Never inspect provider journals, legacy stores or quarantines that may still
@@ -108,22 +112,6 @@ function catalogSection(key: string, artifact: boolean): keyof typeof CATALOG_SE
   return "legacyExercises";
 }
 
-/** Matches UTF-8 encoding, including replacement characters for lone surrogates. */
-export function utf8ByteLength(value: string): number {
-  let bytes = 0;
-  for (let index = 0; index < value.length; index += 1) {
-    const code = value.charCodeAt(index);
-    if (code < 0x80) bytes += 1;
-    else if (code < 0x800) bytes += 2;
-    else if (code >= 0xd800 && code <= 0xdbff
-      && value.charCodeAt(index + 1) >= 0xdc00 && value.charCodeAt(index + 1) <= 0xdfff) {
-      bytes += 4;
-      index += 1;
-    } else bytes += 3;
-  }
-  return bytes;
-}
-
 function groupForKey(key: string): keyof typeof GROUPS {
   if (key === PRIMARY_KEY) return "primary";
   if (key.includes(".local.last_good.")) return "recovery";
@@ -161,17 +149,19 @@ export async function measureStorageUsage(input: {
   belongsToActiveNamespace(key: string): boolean;
   measurePhotos(): Promise<MeasurementMediaUsage>;
   measureDatabase?(): Promise<StorageDatabaseUsage>;
+  measureArtifacts?(): Promise<CatalogCacheUsage>;
   now?: () => Date;
 }): Promise<StorageUsageReport> {
   const report: StorageUsageReport = {
-    version: 2, measuredAt: (input.now?.() ?? new Date()).toISOString(),
+    version: 3, measuredAt: (input.now?.() ?? new Date()).toISOString(),
     valueBytes: 0, measuredEntries: 0, unreadableEntries: 0, excludedEntries: 0,
     unknownEntries: 0, largestEntryBytes: 0, groups: [], catalogSections: [],
     primaryStatus: "missing", primarySections: [],
     photos: { bytes: null, fileCount: null, availableDiskBytes: null },
     database: { databaseBytes: null, auxiliaryBytes: null },
+    artifacts: { bytes: null, entries: null, maxBytes: CATALOG_CACHE_MAX_BYTES },
   };
-  const knownKeys = new Map(LOCAL_DATA_MANIFEST.filter(({ key }) => key !== MEDIA_KEY)
+  const knownKeys = new Map(LOCAL_DATA_MANIFEST.filter(({ key }) => key !== MEDIA_KEY && key !== CATALOG_CACHE_DIRECTORY)
     .map(({ key }) => [input.scopedKey(key), key]));
   const groups = new Map<keyof typeof GROUPS, StorageUsageRow>();
   const catalogGroups = new Map<keyof typeof CATALOG_SECTIONS, StorageUsageRow>();
@@ -222,6 +212,9 @@ export async function measureStorageUsage(input: {
   try {
     if (input.measureDatabase) report.database = await readWithTimeout(input.measureDatabase());
   } catch { /* File metadata is optional; never expose paths or native errors. */ }
+  try {
+    if (input.measureArtifacts) report.artifacts = await readWithTimeout(input.measureArtifacts());
+  } catch { /* Public cache may be unavailable without affecting user data. */ }
   return report;
 }
 
@@ -252,11 +245,14 @@ export function formatStorageUsageReport(report: StorageUsageReport): string {
     `Archivos auxiliares SQLite: ${report.database.auxiliaryBytes ?? "no disponible"} bytes`,
     "", `Desglose del registro principal: ${report.primaryStatus}`,
     ...report.primarySections.map((row) => `${row.label}: ${row.bytes} bytes`),
+    "", `Caché pública separada: ${report.artifacts.bytes ?? "no disponible"} bytes`,
+    `Archivos públicos: ${report.artifacts.entries ?? "no disponible"}`,
+    `Límite de caché pública: ${report.artifacts.maxBytes} bytes`,
     "", `Archivos de fotos: ${report.photos.bytes ?? "no disponible"} bytes`,
     `Número de archivos de fotos: ${report.photos.fileCount ?? "no disponible"}`,
     `Espacio libre del dispositivo: ${report.photos.availableDiskBytes ?? "no disponible"} bytes`,
     "",
     "Medición parcial de valores, no del archivo SQLite ni de su cuota: excluye credenciales, almacenes heredados, cuarentena y claves desconocidas.",
-    "Los desgloses de catálogos y del registro principal no se suman al total. El principal serializa cada campo por separado. Las fotos y los archivos SQLite se miden aparte. Las lecturas no son una instantánea atómica.",
+    "Los desgloses de catálogos y del registro principal no se suman al total. El principal serializa cada campo por separado. La caché pública separada, las fotos y los archivos SQLite se miden aparte. Las lecturas no son una instantánea atómica.",
   ].join("\n");
 }

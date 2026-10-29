@@ -216,10 +216,20 @@ los datos locales y su recuperación. El contrato nativo verifica que un prebuil
 limpio la conserva. El ajuste requiere una nueva build Android instalada como
 actualización; no modifica ni borra los datos existentes.
 
+Las páginas y los índices públicos de ejercicios viven fuera de AsyncStorage:
+archivos privados persistentes en móvil e IndexedDB en web. La caché tiene un
+límite de contenido de 24 MiB (2 MiB por archivo); al llenarse conserva las páginas
+offline y permite usar las descargas sin guardarlas. Solo los manifiestos pequeños
+quedan en AsyncStorage. La actualización copia y verifica los artefactos antiguos
+antes de retirarlos; convierte los catálogos completos v2/v3 válidos en una copia
+paginada disponible sin conexión. El borrado de actividad conserva esta caché y el
+borrado total la elimina y verifica. No cambia los datos personales ni las fotos.
+
 En Ajustes → Trazas → Uso del almacenamiento, «Medir ocupación» muestra los
 bytes de los valores guardados, un desglose por categorías y las fotos aparte.
 Incluye las claves dinámicas de páginas e índices del catálogo de ejercicios,
-con recuentos y tamaños separados. En Android muestra además el tamaño físico
+con recuentos y tamaños separados, y mide la caché pública externa aparte de los
+valores de AsyncStorage. En Android muestra además el tamaño físico
 de `RKStorage` y sus archivos auxiliares mediante metadatos: no abre ni copia
 su contenido. Esos tamaños incluyen estructura y espacio reutilizable, no
 representan cuota restante y no se suman a los valores ni a las fotos. El dato

@@ -59,6 +59,16 @@
       "fullDeletion": "delete"
     },
     {
+      "key": "gymnasia_public_catalog_cache_v1",
+      "backend": "app-filesystem / indexeddb",
+      "personal": false,
+      "dataCategory": "public-catalog-cache",
+      "purpose": "Páginas e índices públicos verificados de ejercicios en archivos privados persistentes nativos o IndexedDB web, separados por entorno y fuera de AsyncStorage/localStorage. Límite total de contenido 24 MiB y 2 MiB por artefacto; sin expulsar páginas offline al alcanzar el límite. Las escrituras verifican lectura posterior. Solo versiones activa y anterior, preservando la copia completa migrada como anterior. No contiene datos personales ni credenciales. El diagnóstico mide tamaños y recuentos por separado.",
+      "clearedBy": "full-deletion",
+      "activityDeletion": "preserve",
+      "fullDeletion": "delete"
+    },
+    {
       "key": "gymnasia_measurement_media_v1",
       "backend": "app-filesystem",
       "personal": true,
@@ -233,7 +243,7 @@
       "backend": "async-storage",
       "personal": false,
       "dataCategory": "public-catalog-cache",
-      "purpose": "Familia de caché paginada del catálogo público de ejercicios. Guarda por separado el manifiesto activo y anterior, páginas, fragmentos de búsqueda e índices por ID verificados mediante SHA-256; conserva como máximo dos versiones y permite resolver rutinas sin conexión.",
+      "purpose": "Metadatos del catálogo público paginado: manifiesto activo y anterior. Los artefactos heredados de esta familia se leen y migran al almacén separado tras verificar su SHA-256 y su copia; solo entonces se retiran de AsyncStorage. Los catálogos completos v2/v3 válidos se convierten a páginas y se conservan como copia offline antes de retirar las claves antiguas.",
       "clearedBy": "full-deletion",
       "activityDeletion": "preserve",
       "fullDeletion": "delete"
@@ -510,6 +520,7 @@
     "'Borrar actividad y conversaciones' reescribe el estado principal y su snapshot íntegro sin rutinas, historial, dieta, medidas ni chats; elimina las fotos de progreso, la cuarentena y la sesión activa; y conserva memoria, alimentos personales, preferencias, claves, cachés y diagnósticos. 'Borrar todos mis datos' elimina y comprueba todos los destinos locales inventariados, incluidas las fotos, snapshots y cuarentenas, salvo la caché firmada anti-retroceso que no contiene datos del usuario y debe conservarse para impedir cargar una política de seguridad anterior.",
     "Hasta agosto de 2026 la app inyectaba en cada instalación 92 mediciones de grasa corporal que no pertenecían al usuario. Se retiró junto con su marca de migración. Si vuelve a aparecer una siembra de datos con apariencia real, no es una semilla de demostración: es dato de salud de un tercero distribuido en el binario.",
     "Las denuncias de respuestas son el único camino que envía texto literal de chat al backend propio: exactamente la pregunta anterior y la respuesta elegida, tras vista previa y confirmación. Su cuerpo se redacta automáticamente en GitHub a los 30 días; D1 solo conserva hashes, referencia de issue, estado y marcas temporales.",
-    "Los permisos no se declaran aquí: la fuente es scripts/android-permissions/policy.json. Los permisos que las dependencias aportan por manifest merger deben verificarse sobre el manifest FUSIONADO del artefacto en GYM-198 (ticket para generar y validar el Android App Bundle de producción), no sobre el manifest de origen."
+    "Los permisos no se declaran aquí: la fuente es scripts/android-permissions/policy.json. Los permisos que las dependencias aportan por manifest merger deben verificarse sobre el manifest FUSIONADO del artefacto en GYM-198 (ticket para generar y validar el Android App Bundle de producción), no sobre el manifest de origen.",
+    "La caché pública de ejercicios se separa de los datos personales: archivos privados persistentes nativos / IndexedDB web, sin nuevas dependencias ni destinos de red. La migración verifica cada copia y los metadatos antes de retirar v2/v3 o artefactos heredados; conserva una copia paginada offline. El límite de 24 MiB no expulsa páginas para admitir búsquedas nuevas. El borrado total vacía y verifica también este almacén; el parcial lo conserva. La generación del runtime impide escrituras tardías tras borrar. Revisión de docs/legal/privacy-change-checklist.md: mismas categorías públicas, finalidad, alcance de borrado y uso local ya declarados; no cambian fotos, copias personales, credenciales, permisos, proveedores, transmisiones ni declaraciones de Play, por lo que no se requiere nueva versión legal. El informe solo añade tamaños y recuentos de esta caché separada, sin su contenido."
   ]
 }

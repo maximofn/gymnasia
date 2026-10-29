@@ -100,6 +100,19 @@ describe("storage usage diagnostics", () => {
     expect(config.storage.removeItem).not.toHaveBeenCalled();
   });
 
+  it("measures public files separately without adding them to personal values or exposing cache content", async () => {
+    const config = input(new Map([[scope("gymnasia.mobile.local.v3"), "{}"]]));
+    const report = await measureStorageUsage({ ...config,
+      measureArtifacts: async () => ({ bytes: 2_500_000, entries: 41, maxBytes: 24 * 1024 * 1024 }) });
+    expect(report.valueBytes).toBe(2);
+    expect(report.artifacts.bytes).toBe(2_500_000);
+    expect(formatStorageUsageReport(report)).toContain("Caché pública separada: 2500000 bytes");
+    const unavailable = await measureStorageUsage({ ...config,
+      measureArtifacts: async () => { throw new Error("PRIVATE_PATH"); } });
+    expect(unavailable.artifacts.bytes).toBeNull();
+    expect(formatStorageUsageReport(unavailable)).not.toContain("PRIVATE_PATH");
+  });
+
   it("reports failed reads, invalid JSON and unavailable files without exposing exceptions or treating them as measured zero", async () => {
     const config = input(new Map([[scope("gymnasia.mobile.local.v3"), "{PRIVATE_INVALID_JSON"],
       [scope("gymnasia_debug_traces"), "[]"]]));
