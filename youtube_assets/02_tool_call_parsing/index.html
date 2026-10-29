@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07090d" />
+    <title>Gymnasia · Parsear tool calls</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="presentation controls-hidden" id="presentation">
+      <header class="presenter-bar">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true">G</span>
+          <span>GYMNASIA</span>
+          <span class="brand-divider">/</span>
+          <span class="brand-topic">PARSEAR TOOL CALLS</span>
+        </div>
+        <div class="scene-meta">
+          <span id="sceneTitle">Tres JSON, una intención</span>
+        </div>
+      </header>
+
+      <div class="ambient-grid" aria-hidden="true"></div>
+      <div class="signal-orb" aria-hidden="true"></div>
+
+      <div class="scene-stage" id="sceneStage" tabindex="0" aria-label="Presentación interactiva. Haz clic para avanzar.">
+
+        <!-- 01 · COLD OPEN -->
+        <section class="scene is-active" data-scene data-title="Tres JSON, una intención" data-max-step="4">
+          <div class="scene-heading compact">
+            <span class="eyebrow">01 · COLD OPEN</span>
+            <h1>Estos tres JSON dicen exactamente lo mismo</h1>
+            <p>«Ejecuta <code>lookup_demo_value</code> con la clave <code>height</code>». Cambia el envoltorio, no la intención.</p>
+          </div>
+
+          <div class="trio" aria-label="La misma llamada en tres proveedores">
+            <article class="code-window compact-code" data-reveal-step="0">
+              <div class="window-bar"><span></span><span></span><span></span><strong class="provider-tag" data-visible-steps="1-4">OpenAI</strong></div>
+              <pre><code>{
+  <span class="token-key">"type"</span>: <span class="token-string">"function_call"</span>,
+<span class="code-line" data-active-steps="3">  <span class="token-key">"call_id"</span>: <span class="token-string">"call_openai_1"</span>,</span>
+  <span class="token-key">"name"</span>: <span class="token-string">"lookup_demo_value"</span>,
+<span class="code-line" data-active-steps="2">  <span class="token-key">"arguments"</span>: <span class="token-string">"{\"key\":\"height\"}"</span></span>
+}</code></pre>
+            </article>
+            <article class="code-window compact-code" data-reveal-step="0">
+              <div class="window-bar"><span></span><span></span><span></span><strong class="provider-tag" data-visible-steps="1-4">Anthropic</strong></div>
+              <pre><code>{
+  <span class="token-key">"type"</span>: <span class="token-string">"tool_use"</span>,
+<span class="code-line" data-active-steps="3">  <span class="token-key">"id"</span>: <span class="token-string">"toolu_anthropic_1"</span>,</span>
+  <span class="token-key">"name"</span>: <span class="token-string">"lookup_demo_value"</span>,
+<span class="code-line" data-active-steps="2">  <span class="token-key">"input"</span>: { <span class="token-key">"key"</span>: <span class="token-string">"height"</span> }</span>
+}</code></pre>
+            </article>
+            <article class="code-window compact-code" data-reveal-step="0">
+              <div class="window-bar"><span></span><span></span><span></span><strong class="provider-tag" data-visible-steps="1-4">Google</strong></div>
+              <pre><code>{
+  <span class="token-key">"type"</span>: <span class="token-string">"function_call"</span>,
+<span class="code-line" data-active-steps="3">  <span class="token-key">"id"</span>: <span class="token-string">"call_google_1"</span>,</span>
+  <span class="token-key">"name"</span>: <span class="token-string">"lookup_demo_value"</span>,
+<span class="code-line" data-active-steps="2">  <span class="token-key">"arguments"</span>: { <span class="token-key">"key"</span>: <span class="token-string">"height"</span> }</span>
+}</code></pre>
+            </article>
+          </div>
+
+          <div class="insight-strip" data-reveal-step="4">
+            <span class="strip-label">Y CON STREAMING</span>
+            <code>{"key":"hei</code>
+            <p>El JSON puede llegar cortado por la mitad.</p>
+          </div>
+        </section>
+
+        <!-- 02 · MODELO MENTAL: FLUJO -->
+        <section class="scene" data-scene data-title="Lo que necesita el harness" data-max-step="4">
+          <div class="scene-heading compact">
+            <span class="eyebrow">02 · MODELO MENTAL</span>
+            <h1>El harness rodea al modelo</h1>
+            <p>Le envía mensajes, ejecuta lo que pide y le devuelve resultados. Este vídeo vive en el tramo del medio.</p>
+          </div>
+
+          <div class="line-flow" aria-label="Recorrido de una llamada a una tool">
+            <article class="flow-node actor-llm" data-reveal-step="0" data-active-steps="0">
+              <span class="node-index">LLM</span>
+              <strong>Pide una tool</strong>
+              <small>En su dialecto</small>
+            </article>
+            <span class="flow-arrow" data-reveal-step="1" aria-hidden="true">→</span>
+            <article class="flow-node" data-reveal-step="1" data-active-steps="1">
+              <span class="node-index">PARSER</span>
+              <strong>Traduce</strong>
+              <small>A una orden común</small>
+            </article>
+            <span class="flow-arrow" data-reveal-step="2" aria-hidden="true">→</span>
+            <article class="flow-node" data-reveal-step="2" data-active-steps="2">
+              <span class="node-index">HANDLER</span>
+              <strong>Ejecuta</strong>
+              <small>Solo nombre y argumentos</small>
+            </article>
+            <span class="flow-arrow" data-reveal-step="3" aria-hidden="true">→</span>
+            <article class="flow-node" data-reveal-step="3" data-active-steps="3">
+              <span class="node-index">ADAPTADOR</span>
+              <strong>Devuelve</strong>
+              <small>En el formato de esa API</small>
+            </article>
+            <span class="flow-arrow" data-reveal-step="4" aria-hidden="true">→</span>
+            <article class="flow-node actor-llm" data-reveal-step="4" data-active-steps="4">
+              <span class="node-index">LLM</span>
+              <strong>Contesta</strong>
+              <small>«Mides 170 cm»</small>
+            </article>
+          </div>
+        </section>
+
+        <!-- 03 · FORMA COMÚN -->
+        <section class="scene" data-scene data-title="La forma común" data-max-step="4">
+          <div class="scene-heading compact">
+            <span class="eyebrow">03 · TRES PREGUNTAS</span>
+            <h1>Lo que produce el parser, venga de donde venga</h1>
+          </div>
+
+          <div class="side-layout">
+            <div class="question-list">
+              <article data-reveal-step="1" data-active-steps="1"><span>1</span><p>¿Qué función?</p></article>
+              <article data-reveal-step="2" data-active-steps="2"><span>2</span><p>¿Con qué argumentos?</p></article>
+              <article data-reveal-step="3" data-active-steps="3"><span>3</span><p>¿A qué petición pertenece el resultado?</p><small>La que todo el mundo olvida</small></article>
+            </div>
+
+            <article class="code-window hero-code">
+              <div class="window-bar"><span></span><span></span><span></span><strong>Orden normalizada</strong></div>
+              <pre><code>{
+<span class="code-line" data-active-steps="1,4">  <span class="token-key">name</span>: <span class="token-string">"lookup_demo_value"</span>,</span>
+<span class="code-line" data-active-steps="2,4">  <span class="token-key">args</span>: { <span class="token-key">key</span>: <span class="token-string">"height"</span> },</span>
+<span class="code-line" data-active-steps="3,4">  <span class="token-key">provider</span>: <span class="token-string">"openai"</span>,</span>
+<span class="code-line" data-active-steps="3,4">  <span class="token-key">callId</span>: <span class="token-string">"call_openai_1"</span></span>
+}</code></pre>
+              <div class="code-legend" data-reveal-step="4">
+                <span class="legend-execute">name + args → PARA EJECUTAR</span>
+                <span class="legend-return">provider + callId → DIRECCIÓN DE VUELTA</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- 04 · VÍDEO ANTERIOR VS ESTE -->
+        <section class="scene" data-scene data-title="Un paso después" data-max-step="2">
+          <div class="scene-heading compact">
+            <span class="eyebrow">04 · ¿Y LA DESCRIPCIÓN?</span>
+            <h1>Antes: elegir la tool. Ahora: ejecutar la petición</h1>
+          </div>
+
+          <div class="two-halves">
+            <article class="half" data-reveal-step="0" data-active-steps="0">
+              <span class="half-label">VÍDEO ANTERIOR</span>
+              <div class="mini-flow">
+                <div class="mini-node actor-harness">Harness</div>
+                <i>→</i>
+                <div class="mini-node accent-node">Catálogo de tools<small>nombre + <b>descripción</b> + esquema</small></div>
+                <i>→</i>
+                <div class="mini-node actor-llm">LLM</div>
+              </div>
+              <p>El LLM lee la descripción para <strong>decidir qué tool usar</strong>.</p>
+            </article>
+            <article class="half" data-reveal-step="1" data-active-steps="1-2">
+              <span class="half-label">ESTE VÍDEO</span>
+              <div class="mini-flow">
+                <div class="mini-node actor-llm">LLM</div>
+                <i>→</i>
+                <div class="mini-node accent-node">Petición de ejecución<small>nombre + argumentos + id</small></div>
+                <i>→</i>
+                <div class="mini-node actor-harness">Harness</div>
+              </div>
+              <p>El LLM ya ha decidido. Nosotros <strong>procesamos su petición</strong>: sin descripción, con dirección de vuelta.</p>
+              <span class="here-marker" data-reveal-step="2">ESTAMOS AQUÍ</span>
+            </article>
+          </div>
+        </section>
+
+        <!-- 05 · OPENAI -->
+        <section class="scene" data-scene data-title="OpenAI Responses" data-max-step="3">
+          <div class="scene-heading compact">
+            <span class="eyebrow">05 · DIALECTO 1</span>
+            <h1>OpenAI Responses · <code>function_call</code></h1>
+          </div>
+
+          <div class="side-layout code-first">
+            <article class="code-window">
+              <div class="window-bar"><span></span><span></span><span></span><strong>output[ ] · elemento</strong></div>
+              <pre><code>{
+  <span class="token-key">"type"</span>: <span class="token-string">"function_call"</span>,
+<span class="code-line" data-active-steps="3">  <span class="token-key">"id"</span>: <span class="token-string">"fc_openai_1"</span>,</span>
+<span class="code-line" data-active-steps="3">  <span class="token-key">"call_id"</span>: <span class="token-string">"call_openai_1"</span>,</span>
+  <span class="token-key">"name"</span>: <span class="token-string">"lookup_demo_value"</span>,
+<span class="code-line" data-active-steps="1-2">  <span class="token-key">"arguments"</span>: <span class="token-string">"{\"key\":\"height\"}"</span>,</span>
+  <span class="token-key">"status"</span>: <span class="token-string">"completed"</span>
+}</code></pre>
+            </article>
+
+            <div class="note-stack">
+              <article class="note" data-reveal-step="1" data-active-steps="1">
+                <span class="note-title">1 · <code>arguments</code> es un string</span>
+                <p>Texto que contiene JSON. Hay que hacer <code>JSON.parse</code>.</p>
+              </article>
+              <article class="note" data-reveal-step="2" data-active-steps="2">
+                <span class="note-title">Y puede llegar truncado</span>
+                <div class="truncation">
+                  <div><b>Completo</b><code>{"key":"height"}</code></div>
+                  <div class="is-broken"><b>Truncado</b><code>{"key":"hei</code></div>
+                </div>
+                <p>Sin tokens de salida, o stream cortado. <code>JSON.parse</code> lanza. No lo «arregles» cerrando llaves.</p>
+              </article>
+              <article class="note" data-reveal-step="3" data-active-steps="3">
+                <span class="note-title">2 · Dos identificadores</span>
+                <div class="id-pair">
+                  <div><code>id</code> <em>fc_…</em><p>¿Dónde está este elemento en el mensaje?</p></div>
+                  <div class="is-return"><code>call_id</code> <em>call_…</em><p>¿De qué petición hablamos? Es el que devuelves.</p></div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- 06 · ANTHROPIC -->
+        <section class="scene" data-scene data-title="Anthropic Messages" data-max-step="2">
+          <div class="scene-heading compact">
+            <span class="eyebrow">06 · DIALECTO 2</span>
+            <h1>Anthropic Messages · <code>tool_use</code></h1>
+          </div>
+
+          <div class="side-layout code-first">
+            <article class="code-window">
+              <div class="window-bar"><span></span><span></span><span></span><strong>content[ ] · bloque</strong></div>
+              <pre><code>{
+  <span class="token-key">"type"</span>: <span class="token-string">"tool_use"</span>,
+<span class="code-line" data-active-steps="2">  <span class="token-key">"id"</span>: <span class="token-string">"toolu_anthropic_1"</span>,</span>
+  <span class="token-key">"name"</span>: <span class="token-string">"lookup_demo_value"</span>,
+<span class="code-line" data-active-steps="1">  <span class="token-key">"input"</span>: { <span class="token-key">"key"</span>: <span class="token-string">"height"</span> }</span>
+}
+<span class="token-comment">// en el mensaje: "stop_reason": "tool_use"</span></code></pre>
+            </article>
+
+            <div class="note-stack">
+              <article class="note" data-reveal-step="1" data-active-steps="1">
+                <span class="note-title">1 · <code>input</code> ya es un objeto</span>
+                <p>Nada que parsear. <code>stop_reason: "tool_use"</code> significa «me paro hasta que me contestes».</p>
+              </article>
+              <article class="note" data-reveal-step="2" data-active-steps="2">
+                <span class="note-title">2 · Un solo identificador</span>
+                <div class="id-pair single">
+                  <div class="is-return"><code>id</code> → <code>tool_use_id</code><p>Se devuelve en un bloque <code>tool_result</code>.</p></div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- 07 · GOOGLE -->
+        <section class="scene" data-scene data-title="Google Interactions" data-max-step="3">
+          <div class="scene-heading compact">
+            <span class="eyebrow">07 · DIALECTO 3</span>
+            <h1>Google Interactions · <code>function_call</code></h1>
+          </div>
+
+          <div class="side-layout code-first">
+            <article class="code-window">
+              <div class="window-bar"><span></span><span></span><span></span><strong>steps[ ] · paso</strong></div>
+              <pre><code>{
+  <span class="token-key">"type"</span>: <span class="token-string">"function_call"</span>,
+<span class="code-line" data-active-steps="2">  <span class="token-key">"id"</span>: <span class="token-string">"call_google_1"</span>,</span>
+  <span class="token-key">"name"</span>: <span class="token-string">"lookup_demo_value"</span>,
+<span class="code-line" data-active-steps="1">  <span class="token-key">"arguments"</span>: { <span class="token-key">"key"</span>: <span class="token-string">"height"</span> }</span>
+}
+<span class="code-line" data-active-steps="3"><span class="token-comment">// la interacción: "status": "requires_action"</span></span></code></pre>
+            </article>
+
+            <div class="note-stack">
+              <article class="note" data-reveal-step="1" data-active-steps="1">
+                <span class="note-title">1 · Misma palabra, otra estructura</span>
+                <p><code>arguments</code> es un <strong>objeto</strong>, no un string como en OpenAI.</p>
+              </article>
+              <article class="note" data-reveal-step="2" data-active-steps="2">
+                <span class="note-title">2 · <code>id</code> obligatorio</span>
+                <div class="id-pair single">
+                  <div class="is-return"><code>id</code> → <code>call_id</code><p>Se devuelve en un paso <code>function_result</code>.</p></div>
+                </div>
+              </article>
+              <article class="note" data-reveal-step="3" data-active-steps="3">
+                <span class="note-title">3 · <code>requires_action</code></span>
+                <p>La interacción termina diciéndote «te toca a ti».</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- 08 · TABLA -->
+        <section class="scene" data-scene data-title="Tabla comparativa" data-max-step="3">
+          <div class="scene-heading compact">
+            <span class="eyebrow">08 · TRES NOMBRES, UN CONCEPTO</span>
+            <h1>Lo que cambia entre proveedores</h1>
+          </div>
+
+          <div class="compare-table" role="table" aria-label="Comparativa de proveedores">
+            <div class="row head" role="row">
+              <span></span><span>OpenAI</span><span>Anthropic</span><span>Google</span>
+            </div>
+            <div class="row" role="row" data-reveal-step="1" data-active-steps="1">
+              <span class="row-label">Argumentos</span>
+              <span><code>arguments</code><small>string</small></span>
+              <span><code>input</code><small>objeto</small></span>
+              <span><code>arguments</code><small>objeto</small></span>
+            </div>
+            <div class="row" role="row" data-reveal-step="2" data-active-steps="2">
+              <span class="row-label">Correlación</span>
+              <span><code>call_id</code></span>
+              <span><code>id</code> → <code>tool_use_id</code></span>
+              <span><code>id</code> → <code>call_id</code></span>
+            </div>
+            <div class="row" role="row" data-reveal-step="3" data-active-steps="3">
+              <span class="row-label">Resultado</span>
+              <span><code>function_call_output</code></span>
+              <span><code>tool_result</code></span>
+              <span><code>function_result</code></span>
+            </div>
+          </div>
+          <p class="scene-footnote" data-reveal-step="3">Parser a la ida. Adaptador a la vuelta.</p>
+        </section>
+
+        <!-- 09 · DOS LLAMADAS -->
+        <section class="scene" data-scene data-title="El resguardo" data-max-step="3">
+          <div class="scene-heading compact">
+            <span class="eyebrow">09 · POR QUÉ IMPORTA EL IDENTIFICADOR</span>
+            <h1>Dos llamadas, la misma función</h1>
+          </div>
+
+          <div class="call-board">
+            <article class="message-card user-message" data-reveal-step="0" data-active-steps="0">
+              <span class="message-role">USUARIO</span>
+              <p>¿Cuánto mido y cuánto peso?</p>
+            </article>
+
+            <div class="call-rows">
+              <div class="call-row" data-reveal-step="1" data-active-steps="1">
+                <code class="call-id">call_height</code>
+                <i>→</i>
+                <code class="call-fn">lookup_demo_value({ key: "height" })</code>
+                <i data-visible-steps="2-3">→</i>
+                <strong data-visible-steps="2-3">170 cm</strong>
+              </div>
+              <div class="call-row" data-reveal-step="1" data-active-steps="1">
+                <code class="call-id">call_weight</code>
+                <i>→</i>
+                <code class="call-fn">lookup_demo_value({ key: "weight" })</code>
+                <i data-visible-steps="2-3">→</i>
+                <strong data-visible-steps="2-3">70 kg</strong>
+              </div>
+            </div>
+
+            <div class="insight-strip" data-reveal-step="3">
+              <span class="strip-label">RESGUARDO</span>
+              <p>Mismo nombre de función en las dos. Sin el identificador, el proveedor no sabe cuál es la altura y cuál el peso.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 10 · BUCLE DE DEVOLUCIÓN -->
+        <section class="scene" data-scene data-title="Cada capa toca lo mínimo" data-max-step="3">
+          <div class="scene-heading compact">
+            <span class="eyebrow">10 · EL ESQUELETO</span>
+            <h1>Ejecutar y devolver, por separado</h1>
+            <p>Versión simplificada del bucle real de Gymnasia.</p>
+          </div>
+
+          <article class="code-window giant-code">
+            <div class="window-bar"><span></span><span></span><span></span><strong>pseudocódigo</strong></div>
+            <pre><code><span class="token-keyword">for</span> (<span class="token-keyword">const</span> call <span class="token-keyword">of</span> calls) {
+<span class="code-line" data-active-steps="1">  <span class="token-keyword">const</span> result = <span class="token-keyword">await</span> <span class="token-type">executeTool</span>(call.name, call.args);</span>
+<span class="code-line" data-active-steps="2">  results.push(<span class="token-type">toProviderResult</span>(call.provider, call.callId, result));</span>
+}</code></pre>
+          </article>
+
+          <div class="pill-row">
+            <span class="pill" data-reveal-step="1" data-active-steps="1">El handler solo ve <code>name</code> y <code>args</code></span>
+            <span class="pill" data-reveal-step="2" data-active-steps="2">El adaptador solo ve la dirección de vuelta</span>
+            <span class="pill pill-rule" data-reveal-step="3" data-active-steps="3">Regla: un resultado por cada llamada, en el mismo orden</span>
+          </div>
+        </section>
+
+        <!-- 11 · STREAMING: TROZOS -->
+        <section class="scene" data-scene data-title="Llega por partes" data-max-step="3">
+          <div class="scene-heading compact">
+            <span class="eyebrow">11 · STREAMING</span>
+            <h1>Un JSON, dos lecturas de red</h1>
+          </div>
+
+          <div class="chunk-demo">
+            <div class="chunk-target" data-reveal-step="0">
+              <span class="strip-label">LO QUE QUEREMOS RECONSTRUIR</span>
+              <code>{"key":"height"}</code>
+            </div>
+            <div class="chunk-pieces">
+              <div class="chunk" data-reveal-step="1" data-active-steps="1"><span>TROZO 1</span><code>{"key":"hei</code></div>
+              <div class="chunk" data-reveal-step="2" data-active-steps="2"><span>TROZO 2</span><code>ght"}</code></div>
+            </div>
+            <div class="insight-strip" data-reveal-step="3">
+              <span class="strip-label">Y AL REVÉS</span>
+              <p>Dos mensajes completos en una sola lectura. Ni «un mensaje por lectura» ni «un JSON completo por lectura».</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 12 · ALGORITMO SSE -->
+        <section class="scene" data-scene data-title="El algoritmo" data-max-step="4">
+          <div class="scene-heading compact">
+            <span class="eyebrow">12 · SSE · SERVER-SENT EVENTS</span>
+            <h1>Una línea en blanco marca el final de un mensaje</h1>
+            <p>Texto plano sobre HTTP. Esa marca es la única referencia fiable; el tamaño del trozo no dice nada.</p>
+          </div>
+
+          <ol class="steps-list">
+            <li data-reveal-step="1" data-active-steps="1"><span>1</span><div><strong>Acumular</strong><p>Cada trozo se añade a lo que quedó pendiente.</p></div></li>
+            <li data-reveal-step="2" data-active-steps="2"><span>2</span><div><strong>Extraer mensajes completos</strong><p>Todos los que terminen en línea en blanco. El resto espera.</p></div></li>
+            <li data-reveal-step="3" data-active-steps="3"><span>3</span><div><strong>Reconstruir cada llamada</strong><p>Cada mensaje añade su pieza a la llamada correcta.</p></div></li>
+            <li data-reveal-step="4" data-active-steps="4"><span>4</span><div><strong>Revisar el final</strong><p>Si al cerrar queda texto inválido: error controlado. Nunca se adivina.</p></div></li>
+          </ol>
+        </section>
+
+        <!-- 13 · SSE REAL DE GOOGLE -->
+        <section class="scene" data-scene data-title="Secuencia real de Google" data-max-step="4">
+          <div class="scene-heading compact">
+            <span class="eyebrow">13 · FIXTURE REAL · GOOGLE INTERACTIONS</span>
+            <h1>Anunciar, completar, cerrar</h1>
+          </div>
+
+          <article class="code-window sse-code">
+            <div class="window-bar"><span></span><span></span><span></span><strong>text/event-stream</strong></div>
+            <pre><code><span class="code-line" data-active-steps="1"><span class="token-keyword">event:</span> step.start</span>
+<span class="code-line" data-active-steps="1"><span class="token-keyword">data:</span> {"event_type":"step.start", <span class="sse-index" data-active-steps="4">"index":0</span>,
+       "step":{"type":<span class="token-string">"function_call"</span>, "id":<span class="token-string">"google_call_0"</span>,
+               "name":<span class="token-string">"read_field_value"</span>, "arguments":<span class="token-type">{}</span>}}</span>
+
+<span class="code-line" data-active-steps="2"><span class="token-keyword">event:</span> step.delta</span>
+<span class="code-line" data-active-steps="2"><span class="token-keyword">data:</span> {"event_type":"step.delta", <span class="sse-index" data-active-steps="4">"index":0</span>,
+       "delta":{"type":<span class="token-string">"arguments_delta"</span>, "arguments":<span class="token-string">"{\"key\": \"Objetivo\"}"</span>}}</span>
+
+<span class="code-line" data-active-steps="3"><span class="token-keyword">event:</span> step.stop</span>
+<span class="code-line" data-active-steps="3"><span class="token-keyword">data:</span> {"event_type":"step.stop", <span class="sse-index" data-active-steps="4">"index":0</span>}</span></code></pre>
+          </article>
+
+          <div class="pill-row">
+            <span class="pill" data-reveal-step="1" data-active-steps="1"><code>step.start</code> anuncia la llamada con <code>arguments</code> vacío</span>
+            <span class="pill" data-reveal-step="2" data-active-steps="2"><code>arguments_delta</code> trae el JSON <strong>como texto</strong></span>
+            <span class="pill" data-reveal-step="3" data-active-steps="3"><code>step.stop</code> cierra: solo ahí se hace <code>JSON.parse</code></span>
+            <span class="pill pill-rule" data-reveal-step="4" data-active-steps="4">Lo que une los tres eventos es <code>index</code>, no el id de la tool</span>
+          </div>
+        </section>
+
+        <!-- 14 · DEMO SIMULADA -->
+        <section class="scene" data-scene data-title="El parser en marcha" data-max-step="6">
+          <div class="scene-heading compact">
+            <span class="eyebrow">14 · PASO A PASO</span>
+            <h1>Qué sabe el parser en cada evento</h1>
+            <p>Izquierda: el stream tal y como llega. Derecha: el estado interno que se va construyendo.</p>
+          </div>
+
+          <div class="demo-layout">
+            <article class="code-window terminal">
+              <div class="window-bar"><span></span><span></span><span></span><strong>stream · Google Interactions</strong></div>
+              <pre><code><span class="term-line" data-reveal-step="1" data-active-steps="1"><b>interaction.created</b>  {"id":"", "status":"in_progress"}</span>
+<span class="term-line" data-reveal-step="2" data-active-steps="2"><b>step.start</b>           index 0 · function_call · id "google_call_0"
+                     name "read_field_value" · arguments {}</span>
+<span class="term-line" data-reveal-step="3" data-active-steps="3"><b>step.delta</b>           index 0 · arguments_delta
+                     "{\"key\": \"Objetivo\"}"</span>
+<span class="term-line" data-reveal-step="4" data-active-steps="4"><b>step.stop</b>            index 0</span>
+<span class="term-line" data-reveal-step="5" data-active-steps="5"><b>interaction.completed</b> status "requires_action"</span>
+<span class="term-line term-done" data-reveal-step="5" data-active-steps="5">[DONE]</span></code></pre>
+            </article>
+
+            <article class="parser-state">
+              <span class="state-title">ESTADO DEL PARSER</span>
+              <dl>
+                <div data-reveal-step="1" data-active-steps="1"><dt>Interacción</dt><dd><span data-visible-steps="1-4">abierta</span><span data-visible-steps="5-6">cerrada · requires_action</span><small data-visible-steps="1-6">el id vacío no importa: cuenta el evento</small></dd></div>
+                <div data-reveal-step="2" data-active-steps="2"><dt>Paso 0</dt><dd><code>function_call</code> · <code>google_call_0</code><br /><code>read_field_value</code></dd></div>
+                <div data-reveal-step="2" data-active-steps="3"><dt>Buffer de argumentos</dt><dd><code data-visible-steps="2">""</code><code data-visible-steps="3-6">{"key": "Objetivo"}</code><small data-visible-steps="3">texto acumulado, aún sin parsear</small></dd></div>
+                <div data-reveal-step="4" data-active-steps="4"><dt>Argumentos</dt><dd><code>{ key: "Objetivo" }</code><small>parseados al cerrar el paso</small></dd></div>
+              </dl>
+              <div class="state-output" data-reveal-step="6" data-active-steps="6">
+                <span class="strip-label">ORDEN NORMALIZADA</span>
+                <code>{<br />  name: "read_field_value",<br />  args: { key: "Objetivo" },<br />  provider: "google",<br />  callId: "google_call_0"<br />}</code>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- 15 · DATOS ROTOS -->
+        <section class="scene" data-scene data-title="Cuando llegan rotos" data-max-step="4">
+          <div class="scene-heading compact">
+            <span class="eyebrow">15 · TRES REGLAS</span>
+            <h1>Un parser correcto sabe qué hacer cuando no es perfecto</h1>
+          </div>
+
+          <div class="rule-cards">
+            <article data-reveal-step="1" data-active-steps="1">
+              <span class="eyebrow">VARIAS PETICIONES</span>
+              <strong>No te quedes con la primera</strong>
+              <p>Conserva todas, su orden y sus identificadores.</p>
+            </article>
+            <article data-reveal-step="2" data-active-steps="2">
+              <span class="eyebrow">MENSAJE INCOMPLETO</span>
+              <strong>No adivines</strong>
+              <p><code>{"key":"hei</code> no es una llamada. Error controlado.</p>
+            </article>
+            <article data-reveal-step="3" data-active-steps="3">
+              <span class="eyebrow">ERROR DEL PROVEEDOR</span>
+              <strong>Trátalo como error</strong>
+              <p>Un evento <code>error</code> no puede parecer una respuesta vacía.</p>
+            </article>
+          </div>
+
+          <div class="insight-strip frontier" data-reveal-step="4">
+            <span class="strip-label">FRONTERA</span>
+            <p>El parser puede convertir argumentos inválidos en <code>{}</code> para no tirar el stream. Eso <strong>no autoriza a ejecutar</strong>: la capa de tools valida el esquema antes del handler.</p>
+            <em>El parser normaliza. La validación decide.</em>
+          </div>
+        </section>
+
+        <!-- 16 · REINTENTO -->
+        <section class="scene" data-scene data-title="El reintento que duplica" data-max-step="6">
+          <div class="scene-heading compact">
+            <span class="eyebrow">16 · PAYOFF</span>
+            <h1>Lo lógico guarda el dato dos veces</h1>
+          </div>
+
+          <ol class="retry-sequence">
+            <li data-reveal-step="1" data-active-steps="1"><span>1</span><p>Usuario: «guarda que hoy peso 70 kg»</p></li>
+            <li data-reveal-step="2" data-active-steps="2"><span>2</span><p>Modelo pide <code>save_measurement({ weight: 70 })</code></p></li>
+            <li class="is-ok" data-reveal-step="3" data-active-steps="3"><span>3</span><p>Handler guarda 70 kg</p><b>✓</b></li>
+            <li class="is-lost" data-reveal-step="4" data-active-steps="4"><span>4</span><p>Se pierde la confirmación (timeout)</p><b>✗</b></li>
+            <li data-reveal-step="5" data-active-steps="5"><span>5</span><p>Harness reintenta → <code>save_measurement({ weight: 70 })</code></p></li>
+            <li class="is-danger" data-reveal-step="6" data-active-steps="6"><span>6</span><p>Handler guarda 70 kg <strong>otra vez</strong></p><b>✗✗</b></li>
+          </ol>
+        </section>
+
+        <!-- 17 · LEDGER -->
+        <section class="scene" data-scene data-title="Reintentar sin duplicar" data-max-step="3">
+          <div class="scene-heading compact">
+            <span class="eyebrow">17 · LEDGER</span>
+            <h1>Una acción con efectos no se reintenta a ciegas</h1>
+            <p>Pseudocódigo del registro de llamadas ejecutadas.</p>
+          </div>
+
+          <article class="code-window giant-code">
+            <div class="window-bar"><span></span><span></span><span></span><strong>pseudocódigo</strong></div>
+            <pre><code><span class="code-line" data-active-steps="1,3"><span class="token-keyword">const</span> key = <span class="token-type">ledgerKey</span>(call.name, call.args, <span class="token-number">occurrence</span>);</span>
+<span class="code-line" data-active-steps="2"><span class="token-keyword">if</span> (ledger.has(key)) <span class="token-keyword">return</span> ledger.get(key);   <span class="token-comment">// ya se hizo</span></span>
+<span class="token-keyword">const</span> result = <span class="token-keyword">await</span> handler(call.args);
+ledger.set(key, result);</code></pre>
+          </article>
+
+          <div class="pill-row">
+            <span class="pill" data-reveal-step="1" data-active-steps="1">La clave identifica <em>esta</em> llamada, con estos argumentos</span>
+            <span class="pill" data-reveal-step="2" data-active-steps="2">Si ya se completó, se devuelve el resultado guardado. No se escribe otra vez</span>
+            <span class="pill pill-rule" data-reveal-step="3" data-active-steps="3"><code>occurrence</code> distingue «reintento de la misma llamada» de «dos llamadas iguales pedidas a propósito»</span>
+          </div>
+        </section>
+
+        <!-- 18 · QUIÉN ESCRIBE EL ERROR -->
+        <section class="scene" data-scene data-title="Quién escribe el error" data-max-step="2">
+          <div class="scene-heading compact">
+            <span class="eyebrow">18 · LO QUE VE EL USUARIO</span>
+            <h1>Depende de qué ha fallado</h1>
+          </div>
+
+          <div class="two-halves">
+            <article class="half" data-reveal-step="1" data-active-steps="1">
+              <span class="half-label">FALLA LA TOOL · el proveedor sigue vivo</span>
+              <p>Le devuelves al modelo un resultado de error <strong>con el mismo identificador</strong>.</p>
+              <div class="message-card assistant-message inline-card">
+                <span class="message-role">LLM</span>
+                <p>¿De qué fecha quieres la medición?</p>
+              </div>
+              <small>Suena natural porque lo escribe él.</small>
+            </article>
+            <article class="half" data-reveal-step="2" data-active-steps="2">
+              <span class="half-label">FALLA EL PROVEEDOR</span>
+              <p>No puedes pedirle que redacte nada. Mensaje <strong>local, escrito de antemano</strong>.</p>
+              <div class="message-card local-card inline-card">
+                <span class="message-role">APP</span>
+                <p>No he podido obtener una respuesta. Inténtalo de nuevo.</p>
+              </div>
+              <small>Código HTTP y JSON roto → al log, nunca a la pantalla.</small>
+            </article>
+          </div>
+        </section>
+
+        <!-- 19 · CIERRE -->
+        <section class="scene" data-scene data-title="Resumen" data-max-step="3">
+          <div class="scene-heading compact">
+            <span class="eyebrow">19 · EN UNA FRASE</span>
+            <h1>Tres proveedores, tres envoltorios, una sola orden</h1>
+          </div>
+
+          <ul class="summary-list">
+            <li data-reveal-step="1" data-active-steps="1"><span>01</span><p>El parser traduce <strong>en la frontera</strong>. El resto del agente no vuelve a ver un formato de API.</p></li>
+            <li data-reveal-step="2" data-active-steps="2"><span>02</span><p>Traducir no es tirar información: <strong>provider + callId</strong> son la dirección de vuelta.</p></li>
+            <li data-reveal-step="3" data-active-steps="3"><span>03</span><p>Antes de reintentar, <strong>distingue lectura de escritura</strong>.</p></li>
+          </ul>
+
+          <div class="insight-strip closing" data-reveal-step="3">
+            <span class="strip-label">ARTÍCULO</span>
+            <code>maximofn.com/gymnasia-agent-tool-call-parsing</code>
+            <p>JSON completos, tabla comparativa y los tests que cortan el stream en cualquier posición.</p>
+          </div>
+        </section>
+      </div>
+
+      <footer class="presenter-controls">
+        <div class="control-group">
+          <button type="button" id="previousScene" aria-label="Escena anterior">←</button>
+          <button type="button" id="resetScene" aria-label="Reiniciar escena">↺</button>
+        </div>
+        <div class="step-status">
+          <span class="step-track"><i id="stepProgress"></i></span>
+          <span id="stepCounter">STEP 0 / 4</span>
+          <span class="click-label">CLIC PARA AVANZAR</span>
+        </div>
+        <div class="control-group">
+          <button type="button" id="toggleControls" aria-label="Mostrar controles">S</button>
+          <button type="button" id="toggleFullscreen" aria-label="Pantalla completa">⛶</button>
+          <button type="button" id="nextScene" aria-label="Escena siguiente">→</button>
+        </div>
+      </footer>
+
+      <nav class="scene-dots" id="sceneDots" aria-label="Escenas"></nav>
+    </main>
+  </body>
+</html>
