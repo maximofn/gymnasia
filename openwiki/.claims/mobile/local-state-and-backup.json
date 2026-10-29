@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:33ebfafc1924ab672176fedf527be89a0059ccbeddc7fb067ded57b5f73e1b8b",
+  "pageVersion": "sha256:9cdd9b21e848686eb2d12710a2984084ef5c03407a220bd39086911c8bda3d9f",
   "claims": [
     {
       "id": "claim_428a8313744146638faca998dc695bce",
@@ -132,19 +132,23 @@
     },
     {
       "id": "claim_7ccc7ac6efb8420fba15235e30f5e9e1",
-      "statement": "El borrado de actividad reescribe el agregado y snapshot vaciados y elimina cuarentena, sesión, borradores, recibos técnicos de memoria, operaciones del agente y fotos propias; el borrado total elimina las particiones y secretos inventariados, salvo la caché pública firmada anti-retroceso.",
+      "statement": "El borrado de actividad reescribe el agregado y su snapshot de reinicio, elimina cuarentena, sesión, borradores, recibos técnicos de memoria y el ledger del agente, y en nativo borra las fotos propias; el borrado total elimina particiones, secretos y cachés de catálogo, incluido el backend separado de artefactos, salvo la caché pública firmada anti-retroceso.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/App.tsx#L8442-L8508",
-          "version": "repo-lines-v1:sha256:a05e632fe2a43c6b69c569c08d243b017a4edf0778ae256c2d0eb40d658c65ed:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3YWFkZWQ3YzYxMGQ2NjA1ZTVkNzdiNmUzNDUyOWNhOGEyOWM4ZTI4OTQ0YTE1MmFmNmIwNDBjNjdmNmI4OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlNjczYWJkNDU3YTk3ZWVhMTdhNjAwNjJlYjBmYWVhNmJkZjA5NDg2OGNjNmI4ZjhjMGViZGEyZjYxZWQ0MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyMmQ5YzdmYmE3MWVjYjAzNmZlOGVlZDAxNTZiYjdjYTNhZWU2MGViMzNiZTAzMjE3OGNlM2JmODg1ODgyZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmZjk0YWU4OTc1ODg2YzBlM2Y0OWNlODgwNDY3ODMyOWUxN2RiMWUxNDMzZjZmMWVmNDYxMTMyZjkwYTNmYzEifQ"
+          "resource": "repo://apps/mobile/App.tsx#L8427-L8494",
+          "version": "repo-lines-v1:sha256:9859cf81c26497958080a886e137eff4c604b560a11bb3142a7d07b07fbc1bbf:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3YWFkZWQ3YzYxMGQ2NjA1ZTVkNzdiNmUzNDUyOWNhOGEyOWM4ZTI4OTQ0YTE1MmFmNmIwNDBjNjdmNmI4OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxN2FmMTEwMWM5N2I3YzJmNTI1NDA3ODJlNjM0Y2M0NDQwZjBlOTcwMzQxZTUyZjk3NTIzMTFkNzhiN2Q3ZDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyMmQ5YzdmYmE3MWVjYjAzNmZlOGVlZDAxNTZiYjdjYTNhZWU2MGViMzNiZTAzMjE3OGNlM2JmODg1ODgyZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI0MGVmM2Q1OWI3N2QyYWRmODFmMWUxOTE0MWU0ZjliNjU4MWMyMjg4ZGM5Y2NiZDMyZGQxY2NjZTc4YmEwODkifQ"
         },
         {
-          "resource": "repo://apps/mobile/App.tsx#L8510-L8658",
-          "version": "repo-lines-v1:sha256:d09f6c8c69d109eac81b9e2ba5451156ccceddce21e649baa1af15c984f68f6a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQ5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NmI0MDljMWExNmFmN2Q1NDVkMzM3ZmMyZDJkN2ZhZmU4ZWVmNDFiMzMyMDVlZTU1ZDhlZTg2OTRiOGY2OTg1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIxZWZjMTQ5ZWFjOTIxNDcyNTliZDQ3ZDEwM2MwODYzYWQzMDE2Y2IwNjE5MTVkYTg5MmY3ZDVhZWQ2MWM0OTkwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI1MTJkNDUxMzk0NGRlMTZiZmMxOTQyYWVlNzUzODI2ZGUxODMxOTU0NzQ3Nzc1NDc2OWNlMjc5MjJlNmNmNGM4IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJiMTRjODEwZTkxOTVlZjVlZjFiZTVmNzc3OTM1MDY1ZTBkOTBhNzMzODRjYjI5OTQwZDQyYjI1YzViZTJhZDE4In0"
+          "resource": "repo://apps/mobile/App.tsx#L8495-L8650",
+          "version": "repo-lines-v1:sha256:95c34b69551dde53cbd0b484d6203a6062fe580e12d20aa88b2d572e0a7e1271:eyJzZWxlY3RlZExpbmVDb3VudCI6MTU2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NmI0MDljMWExNmFmN2Q1NDVkMzM3ZmMyZDJkN2ZhZmU4ZWVmNDFiMzMyMDVlZTU1ZDhlZTg2OTRiOGY2OTg1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI3MTdhZjExMDFjOTdiN2MyZjUyNTQwNzgyZTYzNGNjNDQ0MGYwZTk3MDM0MWU1MmY5NzUyMzExZDc4YjdkN2QwIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI1MTJkNDUxMzk0NGRlMTZiZmMxOTQyYWVlNzUzODI2ZGUxODMxOTU0NzQ3Nzc1NDc2OWNlMjc5MjJlNmNmNGM4IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIzNWI2OGYyOGU4MWQ2N2QwM2UxYjczZTk5MDAzZGM2NmUyYzUzMmE4YTQxOWRlNGU3NDBjY2MxNDZkOWQ0ZWQwIn0"
         },
         {
-          "resource": "repo://apps/mobile/storage/localDataDeletion.ts#L32-L81",
-          "version": "repo-lines-v1:sha256:fecaa22f0255cb4ff760feb68bd863484eaf5d2f9f6e4059530ef45589a49288:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjYzZmYWI4ODczMjdlYWMwNGExNWY4YzQxZDA0NGI2YWEzZjczMzRmMjM1ZDMyNjA2NzQzMjUwMzUxMGUzN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZGM3NmQxMmU1MzA0ZDMwNzllZGI1Zjg5MDAwN2VhMDVmMjI2ZTRkOTNiNjk1Njg0NjBjYWZhZjgwMDc0NGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5MzUxNmE4NDZiYjc1Zjg3N2ZiMDM0NzQ0YmJmYzU5ZTQ5OWJiNGEyODA3ZjRiOTA0ZDVmOGI1ODdlOThmNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkZWYwZWYyOTQ5OTA0YzlkODY4NGFkZmY4OGYyNWM5MzE2OGM2ZjJkZWQ3MGY4NGRkM2E2Y2YwZGJkZGUyY2MifQ"
+          "resource": "repo://apps/mobile/persistence/localStoreModel.ts#L125-L138",
+          "version": "repo-lines-v1:sha256:9590028d27b40109aa68858007bfb1cd909c9d2ff4a63d478fa4f2edfd722756:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3NGNmYTZjNDc1ZTA1ZjgxZTVlZjM3ODU5ZmRiOTMxOTZiYzZhZmQxOTEwNTc4ZmFmZmE4OGNiNzg1YTIyY2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzMjc2YmIxZGU2Y2U5NjEzOWRkZjAxNjAxMzhkZTIzNDUxNzFjNTI3NzhhNDA3YTY0MWZmMjcxMmIxYjUyOGMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/localDataDeletion.ts#L32-L82",
+          "version": "repo-lines-v1:sha256:ae03bdc0549154bbc0f47b148d712ee66c4bdb521fb7ae246e3942ab49c6de99:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjYzZmYWI4ODczMjdlYWMwNGExNWY4YzQxZDA0NGI2YWEzZjczMzRmMjM1ZDMyNjA2NzQzMjUwMzUxMGUzN2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZGM3NmQxMmU1MzA0ZDMwNzllZGI1Zjg5MDAwN2VhMDVmMjI2ZTRkOTNiNjk1Njg0NjBjYWZhZjgwMDc0NGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5MzUxNmE4NDZiYjc1Zjg3N2ZiMDM0NzQ0YmJmYzU5ZTQ5OWJiNGEyODA3ZjRiOTA0ZDVmOGI1ODdlOThmNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkZWYwZWYyOTQ5OTA0YzlkODY4NGFkZmY4OGYyNWM5MzE2OGM2ZjJkZWQ3MGY4NGRkM2E2Y2YwZGJkZGUyY2MifQ"
         }
       ]
     },
@@ -289,10 +293,64 @@
           "version": "repo-lines-v1:sha256:863d443b2f5d4529fec0daf4f05edd955aa21abbb0083c29ed3b2dddca3bf719:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwMjA1NjQzNjE1YjVjMDdjYzc2MDc3YTQ5YjE3Yjc0MDhmOTRiODY0MWFiMmQ0YzMyNDliOTEzZGJlZWQ4NzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNiMjRmZjM0NWI1YzliOGEzYTVjY2RlMjUzNzBjZDYxYjFhY2I5NDZlNGYzMDhmZjI2NWEzYWNhN2JmNmZlZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFmMjJjM2VlZjg3NGE0ZjNiNDU4MGU4ZDYzMzAwODA3ZGUwZjM0ZGQxM2FmNWRiMGEzNzg5NDljZTU5ZmZmMTgifQ"
         }
       ]
+    },
+    {
+      "id": "claim_9b6d844ca4a942b3b7037b88695a43a3",
+      "statement": "La caché de ejercicios mantiene metadatos de versión activa y anterior separados de los artefactos públicos; valida manifiestos, primera página y hashes antes de activarlos, conserva el catálogo activo ante un fallo remoto y poda artefactos a las versiones activa y anterior cuando la persistencia se verifica.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/catalogs/exerciseCatalogRuntime.ts#L369-L410",
+          "version": "repo-lines-v1:sha256:946362d8dfcd25c8ea6a2f030f48f943e59e6b728aea7f45935b2f0c27a2d585:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzYjZlMzljMTJjZDNjNzUzOTUyMDE0OTFlMzc4M2U1YmY2NGIwYjBiMjE1NjZkY2IyMTIwOWM3YzFjZWM3NmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3YzU0OTk0MzAyMzljOGEwNDM4MjcxYzVjMGE1MmFkMzQ1NmE3Mjc2ZTQ4MzdmMmQ0YmU1NDQxNGUzMjIyMGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlMTJiNjExODk0M2UzMGMwMDY4MzNlNzgxNjMwYTUzYjMyZjQxN2VmNWY5Nzk1YzNmMTJmMzMwODAyNGM1ZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJjMmQwYTYxNzg4MTQ0NWI4MTcwNWQ1OWM3MDczN2EwZTVjMWI4ZGE3N2Q4ZGJlNzM3YmRlZjFmODljOWMxNGMifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/catalogs/exerciseCatalogRuntime.ts#L441-L478",
+          "version": "repo-lines-v1:sha256:3ee70f81408ba1741bc044b6c6d621c934bb21b1f0f0685623a2e855151e929c:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ODJjNDcyNzNkNGVmYjhjZDQ1Y2FmOWY5MDliZDc1ZWYwMmM0ZjAwODI5YjEwODhjZDFmMWVlYTA5ZjJmOWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFjZTEyY2I1MjRkYjZjNTZhOTUwNmVlMWUxNTdiYjhkOTY4Y2E5NmU3NTI1NTVjYWQ3MjA3NDA5ZGFjN2FmZWYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/catalogs/exerciseCatalogRuntime.ts#L566-L627",
+          "version": "repo-lines-v1:sha256:6f78e088ea6e418b1ec938c1551c734d4f02749a359921bac5b70d2a8329404d:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyNWQ1N2Q2MDlmM2U0ZmQ5MjBlY2UwYzMyMjM3ODc0ZjU0MmMzZDhkMjkyNzg2NDVmZTE0NzlmYTYyODk4MTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4ODhmMzJhNmJhMTZkM2VhYjA1ZWZjZTA0YzI0MTdkODUzMzkwNWEzY2QwNzhlYTRkYzcwZDZmZGEyNTNjMzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_64234bbe00fa4530a783f0b541737d24",
+      "statement": "El almacenamiento de artefactos del catálogo acepta exclusivamente rutas públicas declaradas bajo una clave SHA-256, serializa y verifica escrituras y borrados, y limita cada objeto a 2 MiB y el conjunto a 24 MiB sin expulsar páginas offline cuando se alcanza el presupuesto.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/catalogCache.ts#L1-L36",
+          "version": "repo-lines-v1:sha256:1be44a383155d6075978719c78ab7c9f2b0d22d1adc974d8d9113b2f4fa31aa6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmMjY1Mjk3OWEwZDM2YTk5MjJiYzYxYmNmNDI4ZjYwZDFlMzNjYmEzMGNhYjllZWVhNjBmNzJlMzllMzdhNzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE3ZmY3NzFiMjAyMjJhZWM2YjJlMzk0NGE5NDE0NzBjNjVlNjZiM2RlMzA1ZjNiMzU3M2M3YzFlNmM0MDFkNzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/platform/catalogArtifactStorage.test.ts#L21-L61",
+          "version": "repo-lines-v1:sha256:fa355a89a7512dea17bb11c6861f8dd6a62b32f61245621a6d569a970feffaf7:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5MmY5NzFjODVkN2ExMjU5ODQ4YjdkNzQ3ZGY2NmI2N2Q2YmVmOTY0OGY4N2RmNWFhOTdiZTVlZWFjMWQ2OTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5NDI5NzE1NDEzYjU3ZWU0N2I0Njc1NWM5M2IxNmFmMjNlOGY3YWRhNDQ5Mzg3MGRlZGE1Yjk5NzJjOThmYjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/platform/catalogArtifactStorage.ts#L16-L68",
+          "version": "repo-lines-v1:sha256:276d5e438c8a2255abf554599ea85c097b621fd85f45fcb9096cc1c1a0cbc7d0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmMzkzYmRlZDQ0Y2MxYWMxNDQ3MjJkMTAyZjcwOTE4MzUxNzVmZGMxZTEyOTM0NTczNzI1NGIyYWMzMjhiNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxOWNhZWI1ZTdkOGI2ZjNjYmIyNmJjZmE3YmFhMzdhNzIyZmM3ODcyZjFlMGIyNDM0NDE3ZDg5ZjE3OTRhMjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3MDQzYjMyZjRiMjFkZWRiZWFhMjkzOTQ0Njc5Y2FiZTJiYTk0OWJlYTZmMWM5MzdhN2EyOGRjNzkxM2JiMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiNDQ2MmQwNzIyZmRmYzA2YmE3YmZlNWMyMTA5ZThhM2RlZDY0N2U3MGNjYTY4MTU1NzBhOWU4MzE1ZDBkM2IifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_82d109ea3ce5480b903c48d196304fd7",
+      "statement": "El diagnóstico de uso de almacenamiento informa tamaños agregados de claves, fotos, SQLite y artefactos públicos, pero excluye de la lectura journals de proveedores, cuarentenas, almacenes heredados y claves desconocidas; sus resultados son parciales y no atómicos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/storage/storageUsage.ts#L146-L218",
+          "version": "repo-lines-v1:sha256:8c79f4d707d8f0af6ab2bd08d46003176541d55a5049904669bcfd49ed6435ae:eyJzZWxlY3RlZExpbmVDb3VudCI6NzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlMTdkYTdhYTM3OWQyY2ZlYjI1ZTIxNGFkMDNhNjM3MjNlYzQzN2IwNWE2NzQ0NTlmZjI1NmIwNjU2ZDZjYzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwYWY2ZWY0ZGRjNTI4MzQ0MjExOTc5YTExODU0ODVmY2Q3N2Y3YTQxYmZkNjQ0NzE0ODJkZGJiNmNkYTVkMmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEzMDRlNzBmYzEyMDU4N2JkZWQ5N2I1ZjNmMmFiY2UwYTZmOWRjOTUwYjdhZmM0NmUwZTRkOTI1YmJlNmJjYmEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/storageUsage.ts#L229-L257",
+          "version": "repo-lines-v1:sha256:8ce3c4643c614f2a467491abb204dd86d593423f3b105e74532b91235cb74ac3:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzYWViZWE3NzVmZmYyNDZkYTczYjZhZGQzMDg2YTJhYWMzYTNlZmMwODUwY2NmODQ5YWU4NDllOGU0NjQyMDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzMjM0ZDdiZjE5Y2YzOTRiNDczY2M4ZDJkN2NhNzc5MTliNzMxOGY3NzkxYzU1ZDQ5OWUxZDRiMWIxYjdmYWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRmYWQzZjc0YTI3NDE0ZmY2N2M4ODUzNjkyMzA2MzFiYzZmODAyYjViN2MxZmZiMzc3ZWUyMzYwNGE5M2M1NTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/storage/storageUsage.ts#L40-L51",
+          "version": "repo-lines-v1:sha256:57fe0e709ac6af0cb5e62256ce8412dc7c2691860ae87d33eba0deb3a9249b34:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0N2IwNWY3YmU3Y2EzNjg4NWE3NDU0OWE4YzkyZTQ5MWE2ZmMwOGQ3YTgzNDA2NjU1MjUyZjY0YzEyNjEzMDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1YmE3YzJjNjNjNjZjNDZkZDZlYTAwMmJmYmVkYThiYWE5ZGI5M2ZjMjg0NGUwNWMzNDdlODFlNGYwYTQ2MDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljNzFkNDY2ODRlODU1MjE0MDY3ZGEwNzk3OGI3MzFlODlkYTZhMWE0NTljNzAwZDA3M2E5MTBiMzhlZjUyOGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3MzUxMTRjMDgyOTRmNzI0MDNmNWE0YWI1NmRlYTA4ZDcyZGY5ZWU5MmY0OTc2OGQ3YjhjOTJiNzQ3MzAwZDIifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-28T14:36:27.740Z"
+    "at": "2026-10-29T14:43:04.676Z"
   }
 }

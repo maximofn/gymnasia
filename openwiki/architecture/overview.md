@@ -1,8 +1,11 @@
 ---
-type: arquitectura de producto
-title: Arquitectura y límites de Gymnasia
-description: Gymnasia es un cliente Expo local-first para móvil y web cuyo estado de producto reside en el dispositivo. Esta página delimita aplicaciones, paquetes, superficies de arranque, flujos de IA, catálogos y el servicio opcional de feedback.
+type: arquitectura de sistema
+title: Arquitectura del sistema
+description: Mapa de los dominios ejecutables de Gymnasia, sus integraciones públicas y los límites local-first. Describe los contratos de persistencia, política, catálogos, IA y feedback que deben preservarse al hacer cambios transversales.
 tags: [local-first, mobile, web, byok, privacy]
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-29T14:43:04.676Z
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
@@ -52,13 +55,12 @@ sources:
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-20T13:07:24.686Z
+  - id: openwiki-source-6f9dc1fe6ee9c17751b010df
+    resource: repo://scripts/mobile-boundaries/policy.json
+generated: { by: "openwiki/0.6.0", at: "2026-10-29T14:43:04.676Z" }
 ---
 
-# Arquitectura y límites de Gymnasia
+# Arquitectura del sistema
 
 Gymnasia tiene una única superficie de producto: `apps/mobile`. `index.js` registra el mismo `App` de Expo para Android, iOS y web con `react-native-web`. Entrenamientos, dieta, medidas, conversaciones y preferencias se crean y conservan en el dispositivo: no dependen de una cuenta ni de una API de producto de Gymnasia. La red puede enriquecer una función concreta, pero no confirma ni autoriza las mutaciones de esos dominios.
 
@@ -66,7 +68,7 @@ La excepción remota es `apps/feedback-worker`: recibe voluntariamente propuesta
 
 ```mermaid
 flowchart TD
-    Person["Usuario"] --> Client["Cliente Expo local"]
+    Person["Persona usuaria"] --> Client["Cliente Expo local"]
     Client --> State["Estado local AsyncStorage"]
     Client --> Secrets["Credenciales SecureStore nativo"]
     Client --> Catalogs["Catálogos GitHub Raw"]
@@ -89,7 +91,7 @@ flowchart TD
 | Límite | Responsabilidad | No debe convertirse en |
 |---|---|---|
 | `apps/mobile` | Shell Expo, dominios de entrenamiento y dieta, agente, persistencia, backup y adaptadores de red. | Cliente de una API central, identidad de Gymnasia o sincronización implícita. |
-| Capas de la app | Los `controllers` adaptan dominios a flujos y memorizan acciones; `screens` y superposiciones no acceden directamente a servicios Expo; `platform` concentra sus puertos e implementaciones. | Lógica de plataforma dispersa en pantallas o acoplamiento directo de UI con almacenamiento y red. |
+| Capas de la app | La política de fronteras separa `bootstrap`, `app`, `controllers`, `screens`, `platform`, `shell`, UI y dominios; los `controllers` no importan React Native ni Expo y `platform` solo depende de `shared`. | Lógica de plataforma dispersa en controladores o dependencias entre capas fuera del contrato. |
 | Política del agente | Snapshot integrado en `Local`; en `Staging` y `Production`, resolución y verificación de un artefacto firmado para el canal. | Prompt remoto libre o almacén de datos del usuario. |
 | Catálogos | Referencias de alimentos, productos, recetas y ejercicios publicadas como JSON, validadas y cacheadas en el cliente. | Estado personal o fuente de autoridad sobre los registros del usuario. |
 | Proveedores de IA | OpenAI, Anthropic, Google o una API HTTPS compatible con OpenAI reciben una clave aportada por la persona usuaria y el contexto necesario para su petición. | Backend o cuenta compartida de Gymnasia. |
@@ -108,7 +110,7 @@ Las claves de `AsyncStorage` y de SecureStore se derivan de la variante. Develop
 
 El estado general se serializa en `AsyncStorage`. Las claves API no deben ir en esa serialización: en nativo, la configuración de proveedores usa `expo-secure-store` cuando está disponible y deja en AsyncStorage un espejo saneado sin `api_key`; si el almacén seguro falla, la app lo informa sin descartar el estado principal. En web la configuración de proveedor se guarda con el almacenamiento local disponible en el navegador; no tiene la garantía de un secreto de servidor ni la protección equivalente a SecureStore nativo.
 
-Las trazas de depuración son otro dato local sensible: `trace.ts` conserva hasta 1.000 entradas en `AsyncStorage` dentro del ámbito de la variante y además las escribe en consola. Incluyen metadatos de compilación y diagnósticos de selección de política; el borrado total las trata explícitamente como una familia que debe eliminarse y verificarse. Al añadir instrumentación, no incluya prompts, argumentos, resultados ni otros valores personales en `data`.
+Las trazas de depuración son otro dato local sensible: `trace.ts` usa una clave de `AsyncStorage` derivada de la variante, conserva las últimas 1.000 entradas y las escribe también en consola. El flujo de borrado total ejecuta `clearTraces` y comprueba tanto que la clave no exista como que el búfer cargado esté vacío. Al añadir instrumentación, no incluya prompts, argumentos, resultados ni otros valores personales en `data`.
 
 Una exportación `.gymnasia` es una copia local iniciada por la persona usuaria. Incluye los datos locales y fotos de progreso normalizadas, excluye claves API y las cachés remotas, y las exportaciones nuevas se cifran y autentican con una contraseña que la app no conserva. El importador todavía acepta, con aviso, los formatos antiguos JSON v1 y ZIP v2. Conversaciones y otros datos incluidos siguen siendo sensibles: importar, exportar o añadir una categoría de datos debe mantener la exclusión de credenciales y el borrado verificable.
 
@@ -120,11 +122,11 @@ El espejo `/dev-store` solo se habilita en el preview web de Development con `EX
 
 ## Catálogos: referencias remotas recuperables
 
-Los catálogos de alimentos, productos comerciales y recetas se obtienen desde sus `all.json` en GitHub Raw. Cada definición aporta URL, procedencia, clave de caché y parser. Antes de aceptar una descarga se comprueba el esquema; el sobre persistido incluye versión, fuente, fecha, ETag, procedencia y hash SHA-256 del contenido validado. Alimentos incluye además una línea base integrada para que una instalación nueva pueda consultar sin red.
+Los catálogos de alimentos, productos comerciales y recetas se obtienen desde sus `all.json` en GitHub Raw. Cada definición aporta URL, procedencia, clave de caché y parser. Antes de aceptar una descarga se comprueba el esquema; el sobre persistido incluye versión de esquema, fuente, fecha, ETag, procedencia y hash SHA-256 del contenido validado. Alimentos incluye además una línea base integrada para que una instalación nueva pueda consultar sin red.
 
-El catálogo de ejercicios usa un protocolo distinto con el mismo límite de confianza: descarga un manifiesto versionado de `ejercicios/catalog-v1`, valida sus descriptores y hashes, y obtiene por separado páginas, fragmentos de búsqueda e índices por ID. Solo activa una versión tras validar el manifiesto y su primera página; los artefactos se verifican contra el hash del manifiesto antes de cachearse. Así conserva una instantánea utilizable sin conexión y evita descargar el agregado completo para buscar o abrir una ficha.
+El catálogo de ejercicios usa un protocolo distinto: descarga `manifest.json` de `ejercicios/catalog-v1`, valida estrictamente versión de esquema, versión de catálogo, procedencia, paginación y descriptores de páginas y *shards*. Cada descriptor declara un hash SHA-256; la app verifica ese hash al leer de caché o descargar un artefacto. Solo activa un manifiesto remoto después de cargar y validar su primera página. El manifiesto apunta a páginas de fichas, *shards* de búsqueda y un directorio por ID, por lo que buscar, abrir una ficha y resolver IDs no exigen bajar el agregado completo.
 
-Al arrancar puede utilizarse una caché válida marcada como `cached` o `stale`. Al refrescar, un HTTP inválido, JSON malformado, esquema inválido o fallo de red conserva el snapshot anterior y señala el fallo en vez de borrar datos disponibles. Los alimentos personales son otro origen, `local://device`, y no se envían ni se sustituyen por GitHub Raw. Este diseño permite uso offline sin convertir el catálogo en una dependencia de arranque.
+La caché de ejercicios conserva un manifiesto activo y, cuando es durable, el anterior. La activación no reemplaza metadatos persistentes si la primera página de la versión nueva no está almacenada y verificada. Al inicializar puede recuperar el activo o el anterior si su primera página sigue siendo válida; al fallar una actualización remota conserva el snapshot disponible y expone `remote_failed`. Los catálogos agregados siguen el mismo principio de no borrar el snapshot anterior ante HTTP inválido, JSON malformado, esquema inválido o fallo de red. Los alimentos personales son otro origen, `local://device`, y no se envían ni se sustituyen por GitHub Raw.
 
 ## Política y llamadas de IA
 
@@ -160,6 +162,7 @@ Antes de cambiar estos límites, ejecute al menos:
 ```bash
 npm --workspace apps/mobile exec tsc --noEmit
 npm test
+npm run check:mobile-boundaries
 npm run check:health-safety
 npm run policy:bundle:check
 npm run check:policy-trust
@@ -168,4 +171,4 @@ npm --workspace apps/mobile run build:web
 npm --workspace apps/feedback-worker run test
 ```
 
-Para catálogos, añada `npm run check:catalogs`, `npm run test:catalogs` y `npm run test:catalogs:e2e`; para el proxy, `npm run test:proxy`. Los scripts de raíz incluyen pruebas deterministas de la app y del espejo de desarrollo, contratos de catálogos y política, comprobación de fronteras móviles, compilación web y E2E específicos del agente, recuperación de almacenamiento, shell y flujos de entrenamiento o dieta. La suite del Worker usa una base de datos y un entorno falsos, por lo que verifica creación, rechazo, límites, deduplicación, consulta de estado y retención sin token ni red reales.
+Para catálogos, añada `npm run check:catalogs`, `npm run test:catalogs` y `npm run test:catalogs:e2e`; para el proxy, `npm run test:proxy`. Los scripts de raíz incluyen comprobaciones y pruebas para fronteras móviles, política, seguridad sanitaria, proxy, catálogos, permisos y configuración Android, inventario de datos y release, además de pruebas deterministas, compilación web y E2E de la app. La suite del Worker utiliza entorno y dependencias de prueba, por lo que verifica creación, rechazo, límites, deduplicación, consulta de estado y retención sin token ni red reales.

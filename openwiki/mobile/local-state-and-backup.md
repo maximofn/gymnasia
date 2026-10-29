@@ -1,12 +1,9 @@
 ---
 type: referencia de persistencia
-title: Estado local, persistencia y copias
-description: Contrato local-first para hidratar, confirmar, recuperar, exportar y borrar el estado persistido de Gymnasia Mobile sin sobrescribir datos no verificables.
+title: Estado local, cachés y respaldo
+description: Contrato local-first para hidratar, confirmar, recuperar, respaldar y borrar el estado local de Gymnasia Mobile sin sobrescribir datos no verificables.
 tags: [local-first, persistence, backup, recovery, mobile]
 openwiki_generated: true
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-28T14:36:27.740Z
 sources:
   - id: openwiki-source-98e300a08b181f278443549a
     resource: repo://apps/mobile/agent/providerConfigurationPersistence.ts
@@ -22,29 +19,44 @@ sources:
     resource: repo://apps/mobile/backup/portableEncryption.test.ts
   - id: openwiki-source-8756ebcba5040e69bc188ab4
     resource: repo://apps/mobile/backup/portableEncryption.ts
+  - id: openwiki-source-8f1adfb78bfa21cdd364934d
+    resource: repo://apps/mobile/catalogCache.ts
+  - id: openwiki-source-997461d2f9cf061268adfc05
+    resource: repo://apps/mobile/catalogs/exerciseCatalogRuntime.ts
+  - id: openwiki-source-318f06e80876ecd0a060af5a
+    resource: repo://apps/mobile/persistence/localStoreModel.ts
   - id: openwiki-source-7385ff07d119a125cc2d0f88
     resource: repo://apps/mobile/persistence/localStoreRecovery.test.ts
   - id: openwiki-source-f6b98cd46b889ff9fc8877c4
     resource: repo://apps/mobile/persistence/localStoreRecovery.ts
   - id: openwiki-source-2c7bb274ff3842d79f3b5fb9
     resource: repo://apps/mobile/persistence/localStoreRuntime.ts
+  - id: openwiki-source-e31b724b23c1f9dfa27ee81d
+    resource: repo://apps/mobile/platform/catalogArtifactStorage.test.ts
+  - id: openwiki-source-7bb681db9716652e0e03a06b
+    resource: repo://apps/mobile/platform/catalogArtifactStorage.ts
   - id: openwiki-source-566414ee4d2c02f464360b14
     resource: repo://apps/mobile/scripts/storage-recovery.e2e.mjs
   - id: openwiki-source-3c944c63cf864826c8ed237d
     resource: repo://apps/mobile/storage/localDataDeletion.test.ts
   - id: openwiki-source-eb61d67eccd058343c908bca
     resource: repo://apps/mobile/storage/localDataDeletion.ts
+  - id: openwiki-source-b07bed6982772a253ff77116
+    resource: repo://apps/mobile/storage/storageUsage.ts
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-3ab934c3755042efcadeb0bc
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-generated: { by: "openwiki/0.6.0", at: "2026-10-28T14:36:27.740Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-29T14:43:04.676Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-29T14:43:04.676Z
 ---
 
 
-# Estado local, persistencia y copias
+# Estado local, cachés y respaldo
 
 Gymnasia Mobile es **local-first**: el estado de uso se mantiene en React y se persiste en el dispositivo. No se debe interpretar una exportación como una copia gestionada por la aplicación: contiene datos de salud, actividad y conversaciones, y quien la exporta debe custodiarla como información sensible.
 
@@ -60,9 +72,20 @@ La regla de seguridad central es **no sobrescribir un agregado que no se haya po
 | Sesión de entrenamiento | Sesión activa, snapshot de plantilla y borrador son claves independientes y dependientes del agregado. | No son portables; recuperación por descarte y ambos borrados los eliminan. |
 | Proveedores y secretos BYOK | El repositorio de proveedores mantiene un journal; en nativo el journal canónico está en `SecureStore` y el espejo de `AsyncStorage` se sanea sin claves. En web se usa `AsyncStorage`. | Las API keys no viajan en el backup. El borrado de actividad las conserva; el total elimina journal y secretos inventariados. |
 | Preferencias, alimentos y memoria | `user_prefs`, alimentos personales y memoria personal son particiones independientes. La memoria contiene también recibos técnicos. | Son datos portables con sus normalizaciones correspondientes. El borrado de actividad conserva preferencias y alimentos, reescribe la memoria para quitar sus recibos; el total los elimina. |
-| Fotos de medición | En nativo, JPEG en el directorio privado `gymnasia_measurement_media_v1`; no es una clave de `AsyncStorage`. | Pueden incluirse como assets; los dos alcances de borrado limpian el directorio propio. |
+| Fotos de medición | En nativo, JPEG en el directorio privado `gymnasia_measurement_media_v1`; no es una clave de `AsyncStorage`. | Pueden incluirse como assets; los dos alcances de borrado limpian el directorio propio nativo. |
+| Caché pública de ejercicios | Los metadatos v4 viven en el almacenamiento de claves; páginas e índices inmutables pueden vivir en el almacenamiento separado de artefactos. No pertenecen al agregado ni al respaldo. | El borrado de actividad la conserva. El total borra metadatos, versiones heredadas y artefactos públicos verificados. |
 
 La validación estructural migra contenedores raíz antiguos ausentes a valores vacíos, pero rechaza campos raíz desconocidos, tipos incompatibles, recibos no verificables y proveedores fuera de `openai`, `anthropic`, `google` y `custom_openai`. Los diagnósticos usan rutas generalizadas, por ejemplo `$[unknown]`, para no filtrar valores ni nombres de campo sensibles.
+
+## Caché de catálogo: datos públicos fuera del agregado
+
+La caché de ejercicios es un rendimiento offline, no una fuente de datos del usuario ni una entrada del backup. `createExerciseCatalogService()` mantiene en `EXERCISE_CATALOG_V4_CACHE_KEY` un metadato con manifiesto `active` y, cuando corresponde, `previous`; los artefactos se direccionan por versión y ruta declarada. Al abrir el selector, valida el manifiesto remoto y la primera página antes de activarlo. Si la red falla conserva el catálogo activo cuando existe; si los metadatos o su primera página no son verificables, deja el catálogo `unavailable` con `cache_invalid`, sin afectar la hidratación de `LocalStore`.
+
+Cada página o índice descargado se acepta solo si su hash de contenido coincide con el descriptor del manifiesto. Al cambiar de almacenamiento, el runtime copia únicamente claves públicas declaradas y verificadas y retira la copia antigua después; al activar una versión no sustituye metadatos durables si su primera página no pudo almacenarse. Conserva como mucho las versiones activa y anterior al podar. Por tanto, no se debe reutilizar esta interfaz como un almacén genérico ni guardar IDs personales, secretos o rutas aportadas por el usuario.
+
+`createBoundedCatalogArtifacts()` serializa mutaciones del backend de artefactos, restringe la clave a `sha256:<hash>` más una ruta de página o shard permitida, verifica cada escritura o borrado, y aplica 2 MiB por objeto y 24 MiB para el conjunto. Alcanzar el límite falla la escritura: no expulsa páginas offline existentes. Su `measure()` tampoco crea directorios, migra ni limpia datos.
+
+La pantalla de uso de almacenamiento mide por separado los valores de claves, fotos, base SQLite y artefactos públicos. No lee journals de proveedores, cuarentenas, almacenes heredados ni claves desconocidas; el informe contiene contadores y tamaños, no valores, rutas o errores nativos. Es una observación parcial y no atómica, no un inventario apto para decidir una restauración o un borrado.
 
 ## Inicio y recuperación antes de escribir
 
@@ -135,8 +158,8 @@ El agregado persistido no es autoridad para secretos. Durante hidratación, la a
 
 Hay dos alcances, declarados en `LOCAL_DATA_MANIFEST` y `LOCAL_SECURE_DATA_MANIFEST`:
 
-- **Borrar actividad y conversaciones** crea un `LocalStore` de reinicio que conserva ajustes de dieta y configuración de proveedores, pero vacía actividad, dieta, mediciones, chats y recibos del agregado. Reescribe primario y snapshot con ese valor, elimina cuarentena, sesión y borradores, limpia los recibos técnicos de memoria, el ledger del agente y las fotos propias. Conserva memoria personal, alimentos, preferencias y las demás claves de configuración o caché.
-- **Borrar todos mis datos** elimina la familia administrada, proveedores y secretos, memoria, preferencias, alimentos, cachés, trazas, consentimiento, metadatos, claves heredadas y claves detectadas del namespace activo. La excepción intencional es `gymnasia.mobile.signed_policy.cache.v1`: una caché pública firmada que se conserva como protección anti-retroceso, no como dato de usuario.
+- **Borrar actividad y conversaciones** crea un `LocalStore` de reinicio que conserva ajustes de dieta, selección y configuración de proveedores, pero vacía rutinas, historial, dieta por fecha, mediciones, chats y recibos del agregado. Reescribe primario y snapshot con ese valor, elimina cuarentena, sesión y borradores, y limpia los recibos técnicos de memoria y el ledger del agente. En nativo también borra las fotos de progreso del directorio propio. Conserva memoria personal, alimentos, preferencias y cachés.
+- **Borrar todos mis datos** elimina la familia administrada, proveedores y secretos, memoria, preferencias, alimentos, metadatos y cachés de catálogo, trazas, consentimiento, claves heredadas y cualquier clave detectada del namespace activo. También limpia el backend separado de artefactos públicos y, en nativo, fotos y notificaciones. La excepción intencional es `gymnasia.mobile.signed_policy.cache.v1`: una caché pública firmada que se conserva como protección anti-retroceso, no como dato de usuario.
 
 ```mermaid
 flowchart TD
@@ -160,6 +183,7 @@ Las pruebas relevantes son:
 
 - `persistence/localStoreRecovery.test.ts`: migración idempotente, diagnósticos sin secretos, cuarentena byte a byte, snapshot con hash, bloqueo durable, commits ambiguos, restauración y descarte selectivo; también simula `SQLITE_FULL` para comprobar que no borra ni sustituye el primario o el snapshot y que el commit puede reintentarse al volver a haber capacidad.
 - `storage/localDataDeletion.test.ts`: éxito solo tras borrar y verificar, continuidad ante fallos, timeout reintentable, propiedades con órdenes arbitrarios y correspondencia entre manifiesto e inventario de privacidad.
+- `catalogs/exerciseCatalogRuntime.test.ts` y `platform/catalogArtifactStorage.test.ts`: activación que conserva una versión comprobada si la nueva falla, migración de artefactos sin tocar claves privadas, poda de versiones y presupuesto concurrente que no expulsa páginas offline.
 - `backup/backupFormat.test.ts` y `backup/portableEncryption.test.ts`: ZIP v3, entrada v2/v1, hashes y límites de medios, JPEG, manipulación del sobre y autenticación.
 - `scripts/storage-recovery.e2e.mjs`: en web verifica que recuperación no sobrescriba JSON roto, no contacte proveedores, exporte cuarentena cifrada y permita reintentar o restaurar un snapshot.
 
