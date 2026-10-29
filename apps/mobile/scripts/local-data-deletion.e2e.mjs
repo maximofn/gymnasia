@@ -224,6 +224,25 @@ async function storageSnapshot(page) {
   ));
 }
 
+async function publicCache(page, seed = false) {
+  return page.evaluate((seed) => new Promise((resolve, reject) => {
+    const request = indexedDB.open("gymnasia.development:gymnasia_public_catalog_cache_v1", 1);
+    request.onupgradeneeded = () => request.result.createObjectStore("artifacts");
+    request.onerror = () => reject(new Error("IndexedDB unavailable"));
+    request.onsuccess = () => {
+      const database = request.result;
+      const tx = database.transaction("artifacts", seed ? "readwrite" : "readonly");
+      const store = tx.objectStore("artifacts");
+      if (seed) store.put("public-cache-deletion-fixture", `gymnasia.development:gymnasia.mobile.exercise_catalog.v4:artifact:sha256:${"a".repeat(64)}:pages/0000.json`);
+      const read = store.getAll();
+      let values;
+      read.onsuccess = () => { values = read.result; };
+      tx.oncomplete = () => { database.close(); resolve(values); };
+      tx.onabort = () => reject(new Error("IndexedDB transaction failed"));
+    };
+  }), seed);
+}
+
 async function run() {
   exportDevelopmentBundle();
   assert.ok(existsSync(join(distRoot, "index.html")), "La exportación no creó dist/index.html.");
@@ -278,6 +297,7 @@ async function run() {
       );
     }, { recoveryKeys: keys, staleMarker: marker });
 
+    assert.deepEqual(await publicCache(page, true), ["public-cache-deletion-fixture"]);
     log("Comprobando el borrado parcial y sus preservaciones");
     await openDataSettings(page);
     await page.getByTestId("data-deletion-open-activity").scrollIntoViewIfNeeded();
@@ -286,6 +306,7 @@ async function run() {
     await page.getByTestId("data-deletion-success").waitFor({ state: "visible", timeout: 30_000 });
 
     const partial = await storageSnapshot(page);
+    assert.deepEqual(await publicCache(page), ["public-cache-deletion-fixture"]);
     assert.match(partial[keys.personalData] ?? "", new RegExp(`memory-${marker}`));
     assert.deepEqual(JSON.parse(partial[keys.personalData]).toolOperationReceipts, []);
     assert.match(partial[keys.personalFoods] ?? "", new RegExp(`food-${marker}`));
@@ -334,6 +355,7 @@ async function run() {
     await page.getByTestId("data-deletion-success").waitFor({ state: "visible", timeout: 30_000 });
 
     const complete = await storageSnapshot(page);
+    assert.deepEqual(await publicCache(page), []);
     const combined = Object.entries(complete)
       .filter(([key]) => key !== keys.signedPolicy)
       .map(([, value]) => value)

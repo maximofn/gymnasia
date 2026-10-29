@@ -7,6 +7,8 @@ vi.mock("../runtimeEnvironment", () => ({
 import { catalogContentHash } from "./schemaValidation";
 import {
   EXERCISE_CATALOG_V3_CACHE_KEY,
+  EXERCISE_CATALOG_V2_CACHE_KEY,
+  EXERCISE_CATALOG_V4_CACHE_KEY,
   createExerciseCatalogService,
   type ExerciseCatalogManifest,
 } from "./exerciseCatalogRuntime";
@@ -253,7 +255,7 @@ describe("catálogo paginado de ejercicios", () => {
     const result = await service.search({ query: "ejercicio 1", queryFields: ["name"] });
     expect(result).toMatchObject({ globalCoverage: true, cachedResults: true });
     expect(result.items.map((item) => item.id)).toEqual(["e-001"]);
-    expect(storage.values.has(EXERCISE_CATALOG_V3_CACHE_KEY)).toBe(true);
+    expect(storage.values.has(EXERCISE_CATALOG_V3_CACHE_KEY)).toBe(false);
   });
 
   it("conserva la versión comprobada si la publicación nueva está corrupta", async () => {
@@ -322,4 +324,146 @@ describe("catálogo paginado de ejercicios", () => {
     expect(storage.setItem).not.toHaveBeenCalled();
     expect(storage.removeItem).not.toHaveBeenCalled();
   });
+});
+
+
+describe("migración verificada a caché separada", () => {
+  const offline = async () => ({ ok: false, status: 503, text: async () => "" });
+  const legacy = (entries: RawExerciseCatalogEntry[]) => JSON.stringify({ data: entries, sourceId: "gymnasia_exercises" });
+  it("mueve páginas, búsquedas e índices existentes y conserva todo al reiniciar offline", async () => {
+    const data = fixture();
+    const storage = memoryStorage();
+    const first = createExerciseCatalogService({ storage, fetcher: catalogFetcher(data.artifacts, []), baseUrl: "https://catalog.test" });
+    await first.open(); await first.search({ query: "curl" }); await first.resolveByIds(["e-030"]);
+    storage.values.set("private-history", "must not read or change");
+    const artifacts = memoryStorage();
+    const service = createExerciseCatalogService({ storage, artifacts, fetcher: offline });
+    await service.initialize();
+    expect(artifacts.values.size).toBe(4);
+    expect([...storage.values.keys()].some((key) => key.includes(":artifact:"))).toBe(false);
+    expect(storage.values.get("private-history")).toBe("must not read or change");
+    expect(storage.getItem).not.toHaveBeenCalledWith("private-history");
+    const restarted = createExerciseCatalogService({ storage, artifacts, fetcher: offline });
+    await restarted.initialize();
+    expect((await restarted.search({ query: "curl" })).items[0].id).toBe("e-030");
+    expect((await restarted.resolveCachedByIds(["e-030"])).get("e-030")?.instructions).toBe("Instrucciones 30");
+  });
+
+  it("retira v2 y v3 solo tras guardar todas las páginas y conserva IDs antiguos entre versiones remotas", async () => {
+    const storage = memoryStorage({
+      [EXERCISE_CATALOG_V2_CACHE_KEY]: legacy([rawExercise(99, "Cúrl antiguo 99")]),
+      [EXERCISE_CATALOG_V3_CACHE_KEY]: legacy(Array.from({ length: 61 }, (_, index) => rawExercise(index))),
+    });
+    const artifacts = memoryStorage();
+    let data = fixture("first");
+    const fetcher = async (url: string) => catalogFetcher(data.artifacts, [])(url);
+    const service = createExerciseCatalogService({ storage, artifacts, fetcher, baseUrl: "https://catalog.test" });
+    await service.initialize();
+    expect(storage.values.has(EXERCISE_CATALOG_V2_CACHE_KEY)).toBe(false);
+    expect(storage.values.has(EXERCISE_CATALOG_V3_CACHE_KEY)).toBe(false);
+    expect((await service.search({ query: "ejercicio" }, undefined, 30)).nextCursor).not.toBeNull();
+    for (const seed of ["first", "second", "third"]) { data = fixture(seed); await service.open(); }
+    const restarted = createExerciseCatalogService({ storage, artifacts, fetcher: offline });
+    await restarted.initialize();
+    expect((await restarted.resolveCachedByIds(["e-099", "e-060"])).size).toBe(2);
+    const result = await restarted.search({ query: "curl antiguo 99" });
+    expect((await restarted.getEntry(result.items[0]))?.id).toBe("e-099");
+    const versions = new Set([...artifacts.values.keys()].map((key) => key.split(":artifact:")[1].split(":pages")[0]));
+    expect(versions.size).toBe(2);
+  });
+
+  it.each(["write", "readback", "metadata"])("conserva las copias completas ante un fallo de %s", async (failure) => {
+    const storage = memoryStorage({ [EXERCISE_CATALOG_V3_CACHE_KEY]: legacy([rawExercise(0)]) });
+    const before = storage.values.get(EXERCISE_CATALOG_V3_CACHE_KEY);
+    const artifacts = memoryStorage();
+    if (failure === "write") artifacts.setItem.mockImplementation(async () => { throw new Error("disk full"); });
+    if (failure === "readback") artifacts.getItem.mockResolvedValue(null);
+    if (failure === "metadata") storage.setItem.mockImplementation(async () => {});
+    await createExerciseCatalogService({ storage, artifacts, fetcher: offline }).initialize();
+    expect(storage.values.get(EXERCISE_CATALOG_V3_CACHE_KEY)).toBe(before);
+    expect(storage.removeItem).not.toHaveBeenCalled();
+  });
+
+  it("reanuda tras un cierre entre la retirada de v2 y v3 sin perder IDs exclusivos de v2", async () => {
+    const storage = memoryStorage({
+      [EXERCISE_CATALOG_V2_CACHE_KEY]: legacy([rawExercise(99, "Cúrl antiguo 99")]),
+      [EXERCISE_CATALOG_V3_CACHE_KEY]: legacy([rawExercise(0)]),
+    });
+    const artifacts = memoryStorage();
+    storage.removeItem.mockImplementation(async (key) => {
+      if (key === EXERCISE_CATALOG_V3_CACHE_KEY) throw new Error("interrupted");
+      storage.values.delete(key);
+    });
+    await createExerciseCatalogService({ storage, artifacts, fetcher: offline }).initialize();
+    expect(storage.values.has(EXERCISE_CATALOG_V2_CACHE_KEY)).toBe(false);
+    storage.removeItem.mockImplementation(async (key) => { storage.values.delete(key); });
+    const resumed = createExerciseCatalogService({ storage, artifacts, fetcher: offline });
+    await resumed.initialize();
+    expect((await resumed.resolveCachedByIds(["e-099", "e-000"])).size).toBe(2);
+    expect(storage.values.has(EXERCISE_CATALOG_V3_CACHE_KEY)).toBe(false);
+  });
+
+  it("un fallo de caché no convierte una descarga válida en un fallo de catálogo ni poda la versión durable", async () => {
+    const data = fixture();
+    const storage = memoryStorage();
+    const artifacts = memoryStorage();
+    const first = createExerciseCatalogService({ storage, artifacts, fetcher: catalogFetcher(data.artifacts, []), baseUrl: "https://catalog.test" });
+    await first.open();
+    const durable = storage.values.get(EXERCISE_CATALOG_V4_CACHE_KEY);
+    artifacts.setItem.mockRejectedValue(new Error("cache full"));
+    const next = createExerciseCatalogService({ storage, artifacts, fetcher: catalogFetcher(fixture("next").artifacts, []), baseUrl: "https://catalog.test" });
+    await next.initialize();
+    expect((await next.open()).warning).toBe("cache_write_failed");
+    expect((await next.browse()).items).toHaveLength(30);
+    expect((await next.search({ query: "curl" })).items[0].id).toBe("e-030");
+    expect(storage.values.get(EXERCISE_CATALOG_V4_CACHE_KEY)).toBe(durable);
+    expect(artifacts.removeItem).not.toHaveBeenCalled();
+  });
+
+  it("no retira datos corruptos ni artefactos sin manifiesto verificable", async () => {
+    const storage = memoryStorage({
+      [EXERCISE_CATALOG_V3_CACHE_KEY]: JSON.stringify({ data: [rawExercise(0)], contentHashSha256: "sha256:invalid" }),
+      [`${EXERCISE_CATALOG_V4_CACHE_KEY}:artifact:unknown:search/63.json`]: "untrusted",
+    });
+    const before = new Map(storage.values);
+    await createExerciseCatalogService({ storage, artifacts: memoryStorage(), fetcher: offline }).initialize();
+    expect(storage.values).toEqual(before);
+    expect(storage.removeItem).not.toHaveBeenCalled();
+  });
+});
+
+
+it("una apertura concurrente espera la migración y no poda su copia a medias", async () => {
+  const storage = memoryStorage({ [EXERCISE_CATALOG_V3_CACHE_KEY]: JSON.stringify([rawExercise(99)]) });
+  const artifacts = memoryStorage();
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => { release = resolve; });
+  artifacts.setItem.mockImplementationOnce(async (key, raw) => { await gate; artifacts.values.set(key, raw); });
+  const fetcher = catalogFetcher(fixture().artifacts, []);
+  const service = createExerciseCatalogService({ storage, artifacts, fetcher, baseUrl: "https://catalog.test" });
+  const copying = service.initialize();
+  await vi.waitFor(() => expect(artifacts.setItem).toHaveBeenCalledOnce());
+  const opening = service.open();
+  await Promise.resolve();
+  expect(fetcher).not.toHaveBeenCalled();
+  expect(storage.values.has(EXERCISE_CATALOG_V3_CACHE_KEY)).toBe(true);
+  release();
+  await Promise.all([copying, opening]);
+  expect((await service.resolveCachedByIds(["e-099"])).has("e-099")).toBe(true);
+});
+
+it("conserva los fragmentos de AsyncStorage y los usa offline cuando la copia separada falla", async () => {
+  const data = fixture();
+  const storage = memoryStorage();
+  const old = createExerciseCatalogService({ storage, fetcher: catalogFetcher(data.artifacts, []), baseUrl: "https://catalog.test" });
+  await old.open(); await old.search({ query: "curl" }); await old.resolveByIds(["e-030"]);
+  const before = new Map(storage.values);
+  const artifacts = memoryStorage();
+  artifacts.setItem.mockRejectedValue(new Error("unavailable"));
+  const next = createExerciseCatalogService({ storage, artifacts,
+    fetcher: async () => ({ ok: false, status: 503, text: async () => "" }) });
+  await next.initialize();
+  expect(storage.values).toEqual(before);
+  expect((await next.search({ query: "curl" })).items[0].id).toBe("e-030");
+  expect((await next.resolveByIds(["e-030"])).get("e-030")?.instructions).toBe("Instrucciones 30");
 });

@@ -24,7 +24,7 @@
     { "id": "measurements", "paths": ["measurements/"] },
     { "id": "persistence", "paths": ["persistence/", "storage/", "backup/"] },
     { "id": "catalogs", "paths": ["catalogs/"] },
-    { "id": "shared", "paths": ["notifications/", "app.config.ts", "babel.config.js", "environment.ts", "legacySecureStorage.ts", "metro.config.js", "openExternalUrl.ts", "runtimeEnvironment.ts", "theme.ts", "trace.ts"] }
+    { "id": "shared", "paths": ["notifications/", "app.config.ts", "catalogCache.ts", "babel.config.js", "environment.ts", "legacySecureStorage.ts", "metro.config.js", "openExternalUrl.ts", "runtimeEnvironment.ts", "theme.ts", "trace.ts"] }
   ],
   "allowedDependencies": {
     "bootstrap": ["app"],

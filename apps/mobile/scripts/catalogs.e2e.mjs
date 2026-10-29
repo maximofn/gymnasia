@@ -229,8 +229,9 @@ async function preparePage(context, networkState, initialStorage = {}, agentEnab
     if (!localStorage.getItem(key)) {
       localStorage.setItem(key, JSON.stringify(store));
     }
-    for (const [storageKey, value] of Object.entries(seededStorage)) {
-      if (!localStorage.getItem(storageKey)) localStorage.setItem(storageKey, value);
+    if (!sessionStorage.getItem("catalog-fixture-seeded")) {
+      for (const [storageKey, value] of Object.entries(seededStorage)) localStorage.setItem(storageKey, value);
+      sessionStorage.setItem("catalog-fixture-seeded", "1");
     }
   }, { key: storageKey, store: seedStore(agentEnabled), seededStorage: initialStorage });
   await installRoutes(page, networkState);
@@ -510,6 +511,49 @@ try {
   assert.equal(lateSearch.availability, "fresh");
   assert.equal(lateSearch.results[0]?.nombre, fixtureFoodName);
   await lateContext.close();
+
+  log("Verificando migración offline de todos los artefactos y retirada verificada de v2/v3");
+  const migrationContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const oldArtifacts = exerciseCatalogFixture();
+  const oldManifest = JSON.parse(oldArtifacts["manifest.json"]);
+  const artifactPrefix = `${exerciseCatalogCacheKey}:artifact:`;
+  const legacyV2Key = exercisesCacheKey.replace(".v3", ".v2");
+  const largeStore = seedStore(false);
+  const preservedMessage = "Historial personal sintético 🏋️ ".repeat(20_000);
+  largeStore.messagesByThread.thread_catalogs_e2e.push({ id: "migration-history", role: "user",
+    content: preservedMessage, created_at: "2026-09-01T10:00:00Z" });
+  const oldStorage = {
+    [storageKey]: JSON.stringify(largeStore),
+    [exerciseCatalogCacheKey]: JSON.stringify({ schemaVersion: 4, active: { manifest: oldManifest, fetchedAt: new Date().toISOString() } }),
+    [legacyV2Key]: JSON.stringify(exerciseFixture),
+    [exercisesCacheKey]: JSON.stringify(exerciseFixture),
+    ...Object.fromEntries(Object.entries(oldArtifacts).filter(([path]) => path !== "manifest.json")
+      .map(([path, raw]) => [`${artifactPrefix}${oldManifest.catalogVersion}:${path}`, raw])),
+  };
+  const migratedPage = await preparePage(migrationContext, { offline: true }, oldStorage);
+  await openApp(migratedPage);
+  await migratedPage.waitForFunction(({ oldKeys, artifactPrefix }) => oldKeys.every((key) => localStorage.getItem(key) === null)
+    && !Object.keys(localStorage).some((key) => key.startsWith(artifactPrefix)),
+    { oldKeys: [legacyV2Key, exercisesCacheKey], artifactPrefix });
+  await expectExerciseConsumer(migratedPage, "Rutina migrada offline", true);
+  const storedArtifacts = await migratedPage.evaluate(() => new Promise((resolve, reject) => {
+    const request = indexedDB.open("gymnasia.development:gymnasia_public_catalog_cache_v1", 1);
+    request.onerror = () => reject(new Error("IndexedDB unavailable"));
+    request.onsuccess = () => {
+      const database = request.result;
+      const tx = database.transaction("artifacts", "readonly");
+      const read = tx.objectStore("artifacts").getAll();
+      read.onsuccess = () => resolve(read.result);
+      tx.oncomplete = () => database.close();
+    };
+  }));
+  assert.ok(storedArtifacts.length >= Object.keys(oldArtifacts).length - 1);
+  assert.ok(storedArtifacts.every((raw) => typeof raw === "string" && JSON.parse(raw).schemaVersion === 1));
+  await migratedPage.reload({ waitUntil: "domcontentloaded" });
+  await migratedPage.getByTestId("nav-tab-diet").waitFor({ state: "visible" });
+  await expectExerciseConsumer(migratedPage, "Rutina migrada offline", true);
+  assert.equal(await migratedPage.evaluate((key) => JSON.parse(localStorage.getItem(key)).messagesByThread.thread_catalogs_e2e[0].content, storageKey), preservedMessage);
+  await migrationContext.close();
 
   log("Verificando cachés heredadas antiguas y migración offline");
   const staleState = { offline: true };

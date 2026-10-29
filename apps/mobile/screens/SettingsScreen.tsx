@@ -707,6 +707,10 @@ function StorageUsageCard({ model, actions }: {
         <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700", marginTop: 4 }}>
           Fuera de este almacén
         </Text>
+        {row("Caché pública separada", report.artifacts.bytes, "public-cache")}
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          {report.artifacts.entries ?? "No disponible"} archivos públicos · límite {formatStorageBytes(report.artifacts.maxBytes)}. No ocupa el almacén de datos personales.
+        </Text>
         {row("Archivos de fotos", report.photos.bytes, "photos")}
         {row("Espacio libre del dispositivo", report.photos.availableDiskBytes, "free-space")}
         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
