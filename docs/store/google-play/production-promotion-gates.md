@@ -33,7 +33,8 @@ La aprobación humana de `Production` se conserva. El orden es:
 3. `compile-android` es el único job que referencia el environment `Production`:
    espera una sola aprobación y únicamente entonces wallabot recibe el trabajo;
 4. con los dos artefactos validados, el environment histórico `Play Internal`
-   ejecuta la subida a `alpha` sin un segundo aprobador.
+   ejecuta la subida a `alpha` sin un segundo aprobador en funcionamiento habitual;
+   la retención temporal descrita abajo añade una aprobación antes del envío.
 
 `Production` y `Play Internal` tienen cada uno su propio secreto `EXPO_TOKEN`.
 El nombre `Play Internal` del environment se conserva para no mover ni exponer
@@ -58,10 +59,70 @@ eas credentials --platform android
 # PLAY_VERSION_CODE_FLOOR = mayor versionCode real visible en Play Console
 ```
 
-`Play Internal` debe admitir únicamente ramas protegidas y no tener aprobadores.
+`Play Internal` debe admitir únicamente ramas protegidas. En funcionamiento
+habitual no tiene aprobadores; la retención temporal siguiente es una excepción
+autorizada por el mantenedor.
 `Production` sigue admitiendo únicamente ramas protegidas y conserva a
 `maximofn` como aprobador. La guía oficial para la cuenta de servicio está en
 [EAS Submit para Android](https://docs.expo.dev/submit/android/).
+
+## Retención temporal durante la revisión de España
+
+El 21 de octubre de 2026 el mantenedor pidió retener los envíos automáticos a
+Google Play hasta terminar la revisión del primer lanzamiento en España y
+recibir un recordatorio para reactivarlos. La retención se aplica directamente
+en la configuración de GitHub y tiene efecto aunque esta documentación aún esté
+en una PR. No requiere cambiar ni fusionar el workflow.
+
+En `Settings → Environments → Play Internal`, `maximofn` es ahora un revisor
+obligatorio y puede aprobar sus propias ejecuciones. Se conservan la restricción
+a ramas protegidas, las credenciales y la posibilidad de bypass administrativo
+que ya existía. No aprobar ni saltar esta puerta durante la revisión pendiente.
+La aprobación de `Production` para compilar sigue como estaba.
+
+El job `submit-play-and-release` espera esa aprobación antes de contactar con
+EAS Submit. La compilación y validación de AAB/APK ocurre antes; ambos binarios
+quedan adjuntos al borrador de GitHub. Como el envío a Play, la publicación final
+de la Release y el avance de la cola pertenecen a la misma transacción, esta
+retención también mantiene la Release en borrador y las siguientes ejecuciones
+en cola. No lanzar una build solo para comprobar la puerta.
+
+La revisión vigente comprobada el 21 de octubre es el
+[envío 13](https://play.google.com/console/u/0/developers/8108994737998375347/app/4972645631625321604/publishing/submission-activity/13/details),
+presentado el 20 de octubre a las 10:29, hora de Madrid. Incluye Producción
+`89 (1.52.2)`, añadir España y la versión `1.52.4` de Prueba cerrada Alpha.
+Los envíos 11 y 12 fueron sustituidos. Google indica que nuevos cambios pueden
+[devolver la aplicación al final de la cola de revisión](https://support.google.com/googleplay/android-developer/answer/9859654?hl=es);
+la API cancela y vuelve a enviar la revisión por defecto al confirmar otra edición
+([`edits.commit`](https://developers.google.com/android-publisher/api-ref/rest/v3/edits/commit)).
+
+El seguimiento diario de este chat, a las 09:00 de Europe/Madrid, debe recordar
+reactivar los envíos cuando Google termine la revisión, tanto si aprueba como
+si rechaza. Ese aviso no autoriza una reactivación automática. En caso de rechazo,
+revisar primero el motivo y decidir qué corrección enviar.
+
+Para reactivar, tras una decisión explícita del mantenedor:
+
+1. Confirmar el estado terminal del envío vigente en Play Console. Resolver qué
+   transacción debe continuar y qué hacer con las otras antes de retirar la puerta:
+   no dejar envíos acumulados listos para ejecutarse sin haberlos revisado.
+2. En `Settings → Environments → Play Internal`, quitar únicamente el requisito
+   de revisor obligatorio. Conservar las ramas protegidas, los secretos y la
+   configuración de `Production`.
+3. Comprobar la ejecución elegida y que la transacción conserva su AAB, APK y
+   `versionCode`; no reconstruir ni enviar automáticamente todas las versiones
+   acumuladas.
+
+La configuración se puede comprobar sin lanzar una build ni leer secretos:
+
+```bash
+gh api 'repos/maximofn/gymnasia/environments/Play%20Internal' \
+  --jq '{name, deployment_branch_policy, reviewers: [.protection_rules[] | select(.type == "required_reviewers") | .reviewers[].reviewer.login]}'
+```
+
+Durante la retención debe devolver `reviewers: ["maximofn"]` y
+`protected_branches: true`. En funcionamiento automático habitual, la lista de
+revisores debe quedar vacía.
 
 ## Contrato y evidencias
 
