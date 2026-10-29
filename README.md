@@ -107,12 +107,17 @@ separado del contrato de consumo actual de la app para representar valores
 desconocidos, trazas y límites sin inventar nutrientes o raciones. Incluye nombres
 oficiales en francés e inglés y traducciones españolas de todos los alimentos,
 categorías y componentes, versionadas en `translations.es.json` para conservarlas
-al reimportar. La integración móvil queda pendiente. No necesita backend ni base
-de datos externa.
+al reimportar. La app incluye además una proyección local de los 3.484 alimentos
+con kcal, proteína (factor de Jones), hidratos disponibles, grasa y fibra para
+Ajustes, Dieta y Coach. Conserva nulos y calificadores; las fichas incompletas
+requieren completar valores explícitos antes de registrarlas. No necesita backend
+ni base de datos externa.
 
 ```bash
 npm run import:ciqual -- --download # descarga oficial fijada y generación reproducible
 npm run check:ciqual                # verifica los 3.484 alimentos sin red
+npm run sync:ciqual:mobile          # regenera la proyección integrada tras cambios
+npm run check:ciqual:mobile         # comprueba que la app consume esos mismos datos
 ```
 
 ## Tests del agente

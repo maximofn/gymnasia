@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CIQUAL_FOODS, CIQUAL_STATUS } from "../catalogs/ciqual";
 
 import {
   aggregateCatalogAvailability,
@@ -553,14 +554,15 @@ export function useFoodCatalogRuntime(input: {
   }, [input.isHydrated, runtimeDependencies]);
 
   const foods = useMemo(
-    () => snapshots.flatMap((snapshot) => snapshot.data),
+    () => [...snapshots.flatMap((snapshot) => snapshot.data), ...CIQUAL_FOODS],
     [snapshots],
   );
   const availability = useMemo<CatalogSearchAvailability>(() => ({
-    availability: aggregateCatalogAvailability(snapshots),
+    availability: aggregateCatalogAvailability(snapshots) === "unavailable" ? "partial" : aggregateCatalogAvailability(snapshots),
     fetchedAt: latestCatalogFetch(snapshots),
     sources: [
       ...catalogStatuses(snapshots),
+      CIQUAL_STATUS,
       {
         sourceId: "user_personal_foods",
         label: "Alimentos personales",

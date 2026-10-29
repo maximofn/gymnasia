@@ -68,7 +68,7 @@ export function CatalogStatusNotice({ metadata, onRetry, testID }: CatalogStatus
   }
 
   const affectedSources = metadata.sources.filter(
-    (source) => source.sourceId !== "user_personal_foods" && source.availability !== "fresh",
+    (source) => source.sourceId !== "user_personal_foods" && source.sourceId !== "anses_ciqual_2025" && source.availability !== "fresh",
   );
   const affected = affectedSources.map((source) => source.label).join(", ");
   const affectedFetchedAt = affectedSources

@@ -141,19 +141,56 @@ La CI de catálogos verifica esta entrega y sus pruebas sin descargar CIQUAL ni
 necesitar claves o servicios externos. Los XML originales se pueden recuperar
 desde Zenodo y se comprueban por SHA-256 antes de cualquier conversión.
 
-## Alcance de esta primera entrega
+## Integración móvil local
 
-El catálogo puede consultarse enteramente desde archivos locales. Su integración
-con la app necesita un adaptador al contrato nutricional actual y una estrategia
-de búsqueda/carga; `alimentos/all.json` y el baseline móvil siguen perteneciendo
-al catálogo curado anterior. Las fichas CIQUAL no se añaden automáticamente al
-bundle móvil.
+La app incluye los 3.484 alimentos como fuente independiente
+`anses_ciqual_2025`, sin sustituir ni reenlazar los IDs del catálogo curado,
+productos, recetas o alimentos personales. Está disponible desde el primer
+arranque sin red ni caché. No descarga los 74 componentes de cada ficha al iniciar:
+`scripts/catalogs/ciqual-mobile.mjs` genera una proyección compacta versionada en
+`apps/mobile/catalogs/generated/ciqualBaseline.generated.json` (aproximadamente
+2,6 MB), separada de `alimentos/all.json` y del baseline curado anterior.
+
+La proyección incluye nombres españoles y originales, categoría general y cinco
+componentes por 100 g de parte comestible: energía UE en kcal (`ciqual-328`),
+proteínas con factor de Jones (`ciqual-25000`), hidratos disponibles
+(`ciqual-31000`), grasas (`ciqual-40000`) y fibra (`ciqual-34100`). El resto de la
+información sigue disponible en las fichas fuente completas. No se calculan
+kcal desde macros ni se sustituyen proteínas Jones por N × 6,25.
+
+Ajustes muestra las fichas con búsqueda global sin distinguir tildes y páginas
+de 30 filas, originales, atribución y valores exactos, límites, trazas o «No
+disponible». La búsqueda de Dieta y `search_foods` también incluyen CIQUAL.
+Los filtros numéricos no aceptan valores desconocidos y la ordenación los deja
+al final. Coach recibe los calificadores y `racion_g: null`, no ceros inventados.
+
+3.006 alimentos tienen kcal y los tres macronutrientes exactos: pueden escalarse
+por gramos, seleccionarse y guardarse con referencia estable e instantánea
+histórica. Las otras 478 fichas se consultan igualmente, pero la selección abre
+el formulario manual con los valores conocidos por 100 g y los ausentes en
+blanco. En este flujo todos los campos requieren un valor explícito (un cero
+real sí se admite); guardarlo manualmente no atribuye esos totales a CIQUAL.
+Las tools rechazan la escritura por referencia de una ficha incompleta.
+No se modifican comidas antiguas al actualizar el catálogo.
+
+Después de importar o corregir traducciones, regenerar y verificar:
+
+```bash
+npm run sync:ciqual:mobile
+npm run check:ciqual:mobile
+```
+
+La CI verifica que la proyección corresponde exactamente a la fuente. La
+actualización integrada llega con una nueva versión de la app, no depende de un
+backend ni crea una caché adicional de CIQUAL.
 
 Las raciones domésticas, imágenes, alérgenos y otras
 características que CIQUAL no documenta quedan sin completar. Los 100 g son la
 base de referencia nutricional, no una ración recomendada.
 
 Revisión de privacidad: el importador descarga exclusivamente datos públicos
-durante el mantenimiento del repositorio. Esta entrega no introduce conexiones
-de la app, claves de almacenamiento, datos personales, permisos ni envíos a IA;
-no requiere cambios del inventario de datos ni de la política publicada.
+durante el mantenimiento del repositorio. La integración no introduce conexiones,
+claves de almacenamiento ni permisos. Las referencias y las instantáneas siguen
+el contrato histórico de dieta, y los resultados públicos de las tools siguen el
+flujo existente de Coach. Revisión registrada en el inventario de datos: no cambia
+el tratamiento personal ni requiere una nueva versión de la política publicada.

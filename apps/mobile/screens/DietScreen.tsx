@@ -9,6 +9,7 @@ import { Animated, Pressable, ScrollView, Text, TextInput, View } from "react-na
 import { CatalogStatusNotice } from "../catalogs/CatalogStatusNotice";
 import { foodCatalogImageUri } from "../catalogs/sources";
 import type { FoodCatalogEntry } from "../catalogs/types";
+import { formatFoodNutrient } from "../catalogs/foodNutrition";
 import type { DietScreenActions, DietScreenModel } from "../controllers/dietController";
 import type { DietMealCategory } from "../diet/nutritionContract";
 import { dateFromISO, formatNutritionNumber } from "../diet/model";
@@ -296,7 +297,7 @@ export const DietMealsScreen = memo(function DietMealsScreen({
                           <FoodThumbnail food={food} />
                           <View style={{ flex: 1 }}>
                             <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>{food.name}</Text>
-                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>{food.calories_per_100g} kcal/100g · {food.serving_description || `${food.serving_size_g}g`}</Text>
+                            <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>{formatFoodNutrient(food, "calories_per_100g")} kcal/100g · {food.ciqual ? "ANSES-CIQUAL 2025" : food.serving_description || `${food.serving_size_g}g`}</Text>
                           </View>
                         </ItemRow>
                       ))}
@@ -335,7 +336,7 @@ export const DietMealsScreen = memo(function DietMealsScreen({
                       ))}
                     </View>
                     <View style={{ flexDirection: "row", gap: 8 }}>
-                      <Pressable onPress={actions.saveSelectedFood} style={{ flex: 1, minHeight: 42, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center" }}>
+                      <Pressable testID="save-selected-food" onPress={actions.saveSelectedFood} style={{ flex: 1, minHeight: 42, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center" }}>
                         <Text style={{ color: "#000", fontWeight: "700" }}>Guardar</Text>
                       </Pressable>
                       <Pressable onPress={actions.returnToFoodSearch} style={{ flex: 1, minHeight: 42, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, alignItems: "center", justifyContent: "center" }}>

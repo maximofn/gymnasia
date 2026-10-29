@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { hasCompleteFoodNutrition } from "../catalogs/foodNutrition";
+import { missingCatalogNutritionIssues } from "../diet/nutritionContract";
 
 import {
   unresolvedCatalog,
@@ -454,6 +456,7 @@ export function useDietRuntime(input: {
   const [mealGramsInput, setMealGramsInput] = useState("");
   const [mealNutritionIssues, setMealNutritionIssues] = useState<NutritionValidationIssue[]>([]);
   const mealPerGramRef = useRef<{ cal: number; prot: number; carbs: number; fat: number } | null>(null);
+  const requiresCompleteManualNutritionRef = useRef(false);
   const [selectedDate, setSelectedDate] = useState(() => todayISO());
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [copyPickCategory, setCopyPickCategory] = useState<DietMealCategory | null>(null);
@@ -479,6 +482,7 @@ export function useDietRuntime(input: {
   inputRef.current = input;
 
   function resetEditor(): void {
+    requiresCompleteManualNutritionRef.current = false;
     setEditorCategory(null);
     setEditingItem(null);
     setItemMenu(null);
@@ -588,6 +592,7 @@ export function useDietRuntime(input: {
   }
 
   function finishResolution(origin: PendingFoodResolution["origin"]): void {
+    requiresCompleteManualNutritionRef.current = false;
     setPendingResolution(null);
     setEditingItem(null);
     setItemMenu(null);
@@ -622,6 +627,12 @@ export function useDietRuntime(input: {
   function saveManualFood(): void {
     if (!editorCategory) {
       inputRef.current.setError("Selecciona una comida (Desayuno, Almuerzo, Comida, Merienda o Cena).");
+      return;
+    }
+    const requiredIssues = requiresCompleteManualNutritionRef.current ? missingCatalogNutritionIssues({ grams: mealGramsInput, calories_kcal: mealCaloriesInput, protein_g: mealProteinInput, carbs_g: mealCarbsInput, fat_g: mealFatInput }) : [];
+    if (requiredIssues.length > 0) {
+      setMealNutritionIssues(requiredIssues);
+      inputRef.current.setError(formatNutritionValidationIssues(requiredIssues));
       return;
     }
     const formResult = validateNutritionFormInput({
@@ -687,6 +698,7 @@ export function useDietRuntime(input: {
   }
 
   function openEditor(category: DietMealCategory): void {
+    requiresCompleteManualNutritionRef.current = false;
     setExpandedMeals((previous) => ({ ...previous, [category]: true }));
     setEditorCategory(category);
     setEditingItem(null);
@@ -852,13 +864,29 @@ export function useDietRuntime(input: {
       setEditorCategory(null);
     },
     selectFood: (category, food) => {
+      if (!hasCompleteFoodNutrition(food)) {
+        openEditor(category);
+        requiresCompleteManualNutritionRef.current = true;
+        setFoodSearch("");
+        setSelectedFood(null);
+        setMealTitleInput(food.name);
+        setMealGramsInput("100");
+        setMealCaloriesInput(food.calories_per_100g === null ? "" : String(food.calories_per_100g));
+        setMealProteinInput(food.protein_per_100g === null ? "" : String(food.protein_per_100g));
+        setMealCarbsInput(food.carbs_per_100g === null ? "" : String(food.carbs_per_100g));
+        setMealFatInput(food.fat_per_100g === null ? "" : String(food.fat_per_100g));
+        mealPerGramRef.current = null;
+        setAddMode("form");
+        inputRef.current.setError("Esta ficha no tiene calorías y macronutrientes exactos completos. Completa los datos por 100 g o introduce manualmente los totales de tu cantidad antes de guardar.");
+        return;
+      }
       setSelectedFood(food);
-      setSelectedGrams(String(food.serving_size_g));
+      setSelectedGrams(String(food.serving_size_g ?? 100));
       setAddMode("selected");
       setFoodSearch("");
       openEditor(category);
       setSelectedFood(food);
-      setSelectedGrams(String(food.serving_size_g));
+      setSelectedGrams(String(food.serving_size_g ?? 100));
       setAddMode("selected");
     },
     changeSelectedGrams: (value) => {
@@ -868,6 +896,10 @@ export function useDietRuntime(input: {
     },
     saveSelectedFood: () => {
       if (!editorCategory || !selectedFood) return;
+      if (!hasCompleteFoodNutrition(selectedFood)) {
+        inputRef.current.setError("Faltan datos nutricionales exactos. Introduce el alimento manualmente.");
+        return;
+      }
       const result = validateNutritionFormInput({
         name: selectedFood.name,
         grams: selectedGrams,

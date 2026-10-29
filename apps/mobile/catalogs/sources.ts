@@ -1,5 +1,6 @@
 import { scopedStorageKey } from "../runtimeEnvironment";
 import bundledFoods from "./generated/foodBaseline.generated.json";
+import { CIQUAL_SOURCE } from "./ciqual";
 import { parseFoodCatalog } from "./schemaValidation";
 import type {
   FoodCatalogEntry,
@@ -112,6 +113,7 @@ export const PERSONAL_FOODS_SOURCE_DEFINITION = {
 } as const;
 
 export const CATALOG_SOURCE_REGISTRY = {
+  anses_ciqual_2025: CIQUAL_SOURCE,
   gymnasia_foods: FOOD_CATALOG_DEFINITIONS[0],
   gymnasia_products: FOOD_CATALOG_DEFINITIONS[1],
   gymnasia_recipes: FOOD_CATALOG_DEFINITIONS[2],
@@ -119,6 +121,6 @@ export const CATALOG_SOURCE_REGISTRY = {
   user_personal_foods: PERSONAL_FOODS_SOURCE_DEFINITION,
 } as const;
 
-export function normalizePersonalFood(entry: RawFoodCatalogEntry): FoodCatalogEntry {
+export function normalizePersonalFood(entry: RawFoodCatalogEntry | FoodCatalogEntry): FoodCatalogEntry {
   return { ...entry, sourceId: LEGACY_FOOD_SOURCE_IDS.personal, source: "personal" };
 }

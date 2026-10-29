@@ -12,8 +12,9 @@ import {
 } from "./sources";
 
 describe("registro cerrado de fuentes", () => {
-  it("declara exactamente las cinco fuentes confiables", () => {
+  it("declara seis fuentes confiables, incluida CIQUAL sin red", () => {
     expect(Object.keys(CATALOG_SOURCE_REGISTRY).sort()).toEqual([
+      "anses_ciqual_2025",
       "gymnasia_exercises",
       "gymnasia_foods",
       "gymnasia_products",

@@ -7,13 +7,14 @@ import {
   type FoodCatalogEntry,
 } from "../catalogs/types";
 import type { DietItem } from "./model";
+import { hasCompleteFoodNutrition } from "../catalogs/foodNutrition";
 
 export function findDietFoodInCatalog(
   name: string,
   foods: readonly FoodCatalogEntry[],
   personalFoods: readonly FoodCatalogEntry[],
 ): ReturnType<typeof matchFoodCatalog<FoodCatalogEntry>> {
-  return matchFoodCatalog([...foods, ...personalFoods], name);
+  return matchFoodCatalog([...foods, ...personalFoods].filter(hasCompleteFoodNutrition), name);
 }
 
 export function dietItemFromCatalog(
@@ -22,6 +23,7 @@ export function dietItemFromCatalog(
   id: string,
   linkedBy: Extract<CatalogLink, { status: "linked" }>["linkedBy"],
 ): DietItem {
+  if (!hasCompleteFoodNutrition(entry)) throw new Error("Faltan datos nutricionales exactos en la ficha del catálogo.");
   const ratio = grams / 100;
   return {
     id,
