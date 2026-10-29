@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Volaille, viande cuite (aliment moyen)",
-    "en": "Poultry, meat, cooked (average)"
+    "en": "Poultry, meat, cooked (average)",
+    "es": "Ave, carne cocinada (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

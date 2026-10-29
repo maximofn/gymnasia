@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Bière sans alcool (<1,2° alcool) et sans sucres ajoutés, aromatisée ou non",
-    "en": "Beer, alcohol-free (<1,2° alcohol), without added sugars, flavoured or unflavoured"
+    "en": "Beer, alcohol-free (<1,2° alcohol), without added sugars, flavoured or unflavoured",
+    "es": "Cerveza sin alcohol (<1,2° de alcohol) y sin azúcares añadidos, aromatizada o no"
   },
   "scientific_name": null,
   "category_ids": [

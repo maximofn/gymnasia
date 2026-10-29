@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chewing-gum, sans précision sur la teneur en sucres (aliment moyen)",
-    "en": "Chewing gum, sugar level unknown (average)"
+    "en": "Chewing gum, sugar level unknown (average)",
+    "es": "Chicle, sin especificar el contenido en azúcares (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

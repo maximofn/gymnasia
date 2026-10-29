@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Escargot, cru",
-    "en": "Snail, raw"
+    "en": "Snail, raw",
+    "es": "Caracol, crudo"
   },
   "scientific_name": "Helix spp.",
   "category_ids": [

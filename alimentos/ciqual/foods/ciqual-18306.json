@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson à l'aloe vera, sucrée",
-    "en": "Aloe vera beverage, with sugar(s)"
+    "en": "Aloe vera beverage, with sugar(s)",
+    "es": "Bebida de aloe vera, azucarada"
   },
   "scientific_name": null,
   "category_ids": [

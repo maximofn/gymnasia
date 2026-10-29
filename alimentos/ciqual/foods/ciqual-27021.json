@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Truite saumonée, crue",
-    "en": "Salmon trout, raw"
+    "en": "Salmon trout, raw",
+    "es": "Trucha asalmonada, cruda"
   },
   "scientific_name": "Salmo trutta forma lacustris (Linnaeus, 1758)",
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage fondu en portion (triangle), non enrichi",
-    "en": "Processed cheese, from cow's milk, triangle, not fortified"
+    "en": "Processed cheese, from cow's milk, triangle, not fortified",
+    "es": "Queso fundido en porción (triángulo), no enriquecido, de leche de vaca"
   },
   "scientific_name": null,
   "category_ids": [

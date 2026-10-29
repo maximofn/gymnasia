@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert glacé type mystère ou vacherin",
-    "en": "Frozen dessert, ice cream with meringue"
+    "en": "Frozen dessert, ice cream with meringue",
+    "es": "Postre helado tipo Alaska o vacherin"
   },
   "scientific_name": null,
   "category_ids": [

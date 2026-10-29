@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson au thé, aromatisée, sans précision sur la teneur en sucres et édulcorants (aliment moyen)",
-    "en": "Still soft drink with tea extract, sugar and sweetener contents unknown (average)"
+    "en": "Still soft drink with tea extract, sugar and sweetener contents unknown (average)",
+    "es": "Bebida de té, aromatizada, sin precisión sobre el contenido en azúcares y edulcorantes (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cocktail à base de whisky",
-    "en": "Cocktail, whisky-based"
+    "en": "Cocktail, whisky-based",
+    "es": "Cóctel a base de whisky"
   },
   "scientific_name": null,
   "category_ids": [

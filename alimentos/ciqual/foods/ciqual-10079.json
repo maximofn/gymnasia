@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poulpe, cuit",
-    "en": "Octopus, common, cooked"
+    "en": "Octopus, common, cooked",
+    "es": "Pulpo común (Octopus vulgaris), cocido"
   },
   "scientific_name": "Octopus vulgaris",
   "category_ids": [

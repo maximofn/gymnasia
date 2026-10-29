@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poire, chair, crue (aliment moyen)",
-    "en": "Pear, flesh without skin, raw (average)"
+    "en": "Pear, flesh without skin, raw (average)",
+    "es": "Pera, pulpa, cruda (valor medio)"
   },
   "scientific_name": "Pyrus communis L.",
   "category_ids": [

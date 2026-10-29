@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage (aliment moyen)",
-    "en": "Cheese (average)"
+    "en": "Cheese (average)",
+    "es": "Queso (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

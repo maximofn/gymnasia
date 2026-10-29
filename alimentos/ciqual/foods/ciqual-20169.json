@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Tomate, chair, appertisée",
-    "en": "Tomato flesh without skin, canned"
+    "en": "Tomato flesh without skin, canned",
+    "es": "Tomate, pulpa, en conserva"
   },
   "scientific_name": "Solanum lycopersicum L.",
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Yaourt ou lait fermenté, aromatisé ou aux fruits, avec édulcorants (aliment moyen)",
-    "en": "Yogurt or fermented milk, with fruits or flavoured, with sweetener(s) (average)"
+    "en": "Yogurt or fermented milk, with fruits or flavoured, with sweetener(s) (average)",
+    "es": "Yogur o leche fermentada, aromatizado o con frutas, con edulcorantes (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

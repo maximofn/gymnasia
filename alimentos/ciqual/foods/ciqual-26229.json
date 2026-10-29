@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Saumon, grillé/poêlé",
-    "en": "Salmon, grilled/pan-fried without added fat"
+    "en": "Salmon, grilled/pan-fried without added fat",
+    "es": "Salmón, a la plancha/a la sartén sin grasa añadida"
   },
   "scientific_name": "Salmo salar (Linnaeus, 1758)",
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Carotte, cuite à la vapeur",
-    "en": "Carrot, steamed"
+    "en": "Carrot, steamed",
+    "es": "Zanahoria, cocinada al vapor"
   },
   "scientific_name": "Daucus carota L. subsp. Sativus",
   "category_ids": [

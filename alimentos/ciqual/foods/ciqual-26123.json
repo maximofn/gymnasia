@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Maquereau, filet (grillé ou non), au naturel, appertisé, égoutté",
-    "en": "Mackerel, fillet (grilled or not grilled), canned in brine, drained"
+    "en": "Mackerel, fillet (grilled or not grilled), canned in brine, drained",
+    "es": "Caballa, filete (a la parrilla o no), al natural, en conserva, escurrido"
   },
   "scientific_name": "Scomber scombrus (Linnaeus, 1758)",
   "category_ids": [

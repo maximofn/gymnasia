@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Céleri rave, bouilli/cuit à l'eau",
-    "en": "Celeriac, boiled/cooked in water"
+    "en": "Celeriac, boiled/cooked in water",
+    "es": "Apio nabo, hervido/cocido en agua"
   },
   "scientific_name": "Apium graveolens L. var. rapaceum (Mill.) Gaudin",
   "category_ids": [

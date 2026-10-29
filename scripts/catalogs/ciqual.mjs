@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
 import sax from "sax";
 
+import { applyCiqualTranslations } from "./ciqual-translations.mjs";
+
 const here = dirname(fileURLToPath(import.meta.url));
 export const ciqualRoot = resolve(here, "../../alimentos/ciqual");
 export const ciqualSource = JSON.parse(await readFile(join(here, "ciqual-source.json"), "utf8"));
@@ -255,6 +257,7 @@ export async function downloadCiqualSource(sourceDirectory, fetchImpl = fetch) {
 }
 
 export function createCiqualArtifacts(catalog) {
+  if (catalog.translations) catalog = applyCiqualTranslations(catalog, catalog.translations);
   validateCiqualCatalog(catalog);
   const artifacts = new Map();
   for (const food of catalog.foods) artifacts.set(`foods/${food.id}.json`, json(food));
@@ -264,6 +267,7 @@ export function createCiqualArtifacts(catalog) {
     id: food.id, names: food.names, category_ids: food.category_ids, path: `foods/${food.id}.json`,
   }))));
   for (const key of ["nutrients", "groups", "references"]) artifacts.set(`${key}.json`, json(catalog[key]));
+  if (catalog.translations) artifacts.set("translations.es.json", json(catalog.translations));
 
   const qualifiers = { reported: 0, less_than: 0, trace: 0, missing: 0 };
   for (const food of catalog.foods) {
@@ -284,6 +288,12 @@ export function createCiqualArtifacts(catalog) {
       protein_jones: "ciqual-25000", protein_crude: "ciqual-25003",
       carbs_available: "ciqual-31000", fat: "ciqual-40000", fiber: "ciqual-34100",
     },
+    ...(catalog.translations ? { localization: {
+      locale: catalog.translations.locale,
+      file: "translations.es.json",
+      provenance: catalog.translations.provenance,
+      counts: Object.fromEntries(["foods", "groups", "nutrients"].map((domain) => [domain, catalog[domain].length])),
+    } } : {}),
     files: Object.fromEntries([...artifacts].map(([path, text]) => [path, {
       sha256: sha256(text), bytes: Buffer.byteLength(text),
     }])),
@@ -326,12 +336,13 @@ export async function checkCiqualArtifacts(root = ciqualRoot, sourceCatalog = nu
     requireValue(name === `${food.id}.json`, `Nombre de fichero e ID distintos: ${name}.`);
     foods.push(food);
   }
-  const catalog = sourceCatalog ?? {
+  const translations = await readJson("translations.es.json");
+  const catalog = applyCiqualTranslations(sourceCatalog ?? {
     foods,
     nutrients: await readJson("nutrients.json"),
     groups: await readJson("groups.json"),
     references: await readJson("references.json"),
-  };
+  }, translations);
   requireValue(foods.length === ciqualSource.expected_foods, "Número de fichas CIQUAL incorrecto.");
   requireValue(catalog.nutrients.length === ciqualSource.expected_nutrients, "Número de componentes CIQUAL incorrecto.");
   const artifacts = createCiqualArtifacts(catalog);

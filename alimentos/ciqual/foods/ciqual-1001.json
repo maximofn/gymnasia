@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Eau de vie de fruits",
-    "en": "Fruit brandy or eau-de-vie"
+    "en": "Fruit brandy or eau-de-vie",
+    "es": "Aguardiente de fruta"
   },
   "scientific_name": null,
   "category_ids": [

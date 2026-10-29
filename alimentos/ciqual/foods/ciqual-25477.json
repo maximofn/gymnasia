@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza champignons fromage, préemballée",
-    "en": "Pizza, cheese and mushrooms, prepacked"
+    "en": "Pizza, cheese and mushrooms, prepacked",
+    "es": "Pizza de queso y champiñones, envasada"
   },
   "scientific_name": null,
   "category_ids": [

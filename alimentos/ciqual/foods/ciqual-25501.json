@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich panini, trois fromages",
-    "en": "Sandwich, panini bread, three-cheese, toasted"
+    "en": "Sandwich, panini bread, three-cheese, toasted",
+    "es": "Sándwich panini de tres quesos, tostado"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson lactée aromatisée au café, sucrée, au lait partiellement écrémé, non enrichie",
-    "en": "Coffee flavoured milk beverage, with sugar(s), partially skimmed, not fortified"
+    "en": "Coffee flavoured milk beverage, with sugar(s), partially skimmed, not fortified",
+    "es": "Bebida láctea aromatizada al café, azucarada, con leche parcialmente desnatada, no enriquecida"
   },
   "scientific_name": null,
   "category_ids": [

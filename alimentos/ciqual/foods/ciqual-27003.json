@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Carpe,  élevage, crue",
-    "en": "Carp, raw, farmed"
+    "en": "Carp, raw, farmed",
+    "es": "Carpa, de piscifactoría, cruda"
   },
   "scientific_name": "Cyprinus carpio",
   "category_ids": [

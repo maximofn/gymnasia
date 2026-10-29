@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson lactée aromatisée (sans précision sur l'arôme), sucrée, au lait partiellement écrémé, enrichie et/ou restaurée en vitamine(s) et/ou minéraux (aliment moyen)",
-    "en": "Flavoured milk beverage, with sugar(s), partially skimmed, fortified with vitamins and/ormineral(s) (average)"
+    "en": "Flavoured milk beverage, with sugar(s), partially skimmed, fortified with vitamins and/ormineral(s) (average)",
+    "es": "Bebida láctea aromatizada (sin especificar aroma), azucarada, con leche parcialmente desnatada, enriquecida y/o restaurada con vitamina(s) y/o minerales (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

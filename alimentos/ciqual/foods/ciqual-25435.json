@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza jambon fromage, préemballée",
-    "en": "Pizza, ham and cheese, prepacked"
+    "en": "Pizza, ham and cheese, prepacked",
+    "es": "Pizza de jamón y queso, envasada"
   },
   "scientific_name": null,
   "category_ids": [

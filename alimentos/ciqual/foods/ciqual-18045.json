@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Eau minérale, embouteilée, plate (aliment moyen)",
-    "en": "Mineral still water, bottled (average)"
+    "en": "Mineral still water, bottled (average)",
+    "es": "Agua mineral, embotellada, sin gas (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

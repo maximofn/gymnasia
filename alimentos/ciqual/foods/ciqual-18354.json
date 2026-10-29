@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson énergisante, sucrée, avec édulcorants",
-    "en": "Energy drink, with sugar(s) and with sweetener(s)"
+    "en": "Energy drink, with sugar(s) and with sweetener(s)",
+    "es": "Bebida energética, azucarada, con edulcorantes"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Maquereau, rôti/cuit au four",
-    "en": "Mackerel, roasted/baked"
+    "en": "Mackerel, roasted/baked",
+    "es": "Caballa, asada/al horno"
   },
   "scientific_name": "Scomber scombrus (Linnaeus, 1758)",
   "category_ids": [

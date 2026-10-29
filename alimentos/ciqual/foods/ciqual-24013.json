@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Biscuit sec, sans sucres ajoutés, avec édulcorant",
-    "en": "Biscuit (cookie), no added sugars and with sweetener(s)"
+    "en": "Biscuit (cookie), no added sugars and with sweetener(s)",
+    "es": "Galleta seca, sin azúcares añadidos, con edulcorante"
   },
   "scientific_name": null,
   "category_ids": [

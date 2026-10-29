@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Raisin cru (aliment moyen)",
-    "en": "Grape, raw (average)"
+    "en": "Grape, raw (average)",
+    "es": "Uva cruda (valor medio)"
   },
   "scientific_name": "Vitis vinifera L.",
   "category_ids": [

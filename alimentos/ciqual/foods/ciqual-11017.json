@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sel blanc alimentaire, non iodé, non fluoré (marin, ignigène ou gemme)",
-    "en": "Salt, white (sea, igneous or rock), no fortification"
+    "en": "Salt, white (sea, igneous or rock), no fortification",
+    "es": "Sal blanca alimentaria, no yodada, no fluorada (marina, ignígena o gema)"
   },
   "scientific_name": null,
   "category_ids": [

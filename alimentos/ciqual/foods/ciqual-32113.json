@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Muesli floconneux aux fruits, fruits à coque et/ou graines, sans sucres ajoutés, non enrichi",
-    "en": "Muesli, with fruits, nuts and/or seeds, no added sugars, not fortified"
+    "en": "Muesli, with fruits, nuts and/or seeds, no added sugars, not fortified",
+    "es": "Muesli en copos con frutas, frutos de cáscara y/o semillas, sin azúcares añadidos, no enriquecido"
   },
   "scientific_name": null,
   "category_ids": [

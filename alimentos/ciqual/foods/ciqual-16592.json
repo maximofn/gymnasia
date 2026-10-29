@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Matière grasse tartinable à teneur en MG <= 41%, doux, standard",
-    "en": "Spreadable fat <=  41% fat, unsalted, standard"
+    "en": "Spreadable fat <=  41% fat, unsalted, standard",
+    "es": "Materia grasa para untar con un contenido de materia grasa <= 41%, sin sal, estándar"
   },
   "scientific_name": null,
   "category_ids": [

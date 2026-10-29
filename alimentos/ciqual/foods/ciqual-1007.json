@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Apéritif à base de vin ou vermouth",
-    "en": "Wine-based aperitif"
+    "en": "Wine-based aperitif",
+    "es": "Aperitivo a base de vino o vermú"
   },
   "scientific_name": null,
   "category_ids": [

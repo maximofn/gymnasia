@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Jus de légumes, pur jus (aliment moyen)",
-    "en": "Vegetable juice, pure juice (average)"
+    "en": "Vegetable juice, pure juice (average)",
+    "es": "Zumo de verduras, zumo puro (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

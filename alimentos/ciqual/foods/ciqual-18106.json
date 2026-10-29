@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chocolat chaud, boisson instantanée, sucrée, enrichie en vitamines, prête à boire (reconstituée avec du lait demi-écrémé)",
-    "en": "Instant cocoa or chocolate beverage, with sugar(s), fortified with vitamins, ready-to-drink (reconstituted with semi-skimmed milk)"
+    "en": "Instant cocoa or chocolate beverage, with sugar(s), fortified with vitamins, ready-to-drink (reconstituted with semi-skimmed milk)",
+    "es": "Chocolate caliente, bebida instantánea, azucarada, enriquecida en vitaminas, lista para beber (reconstituida con leche semidesnatada)"
   },
   "scientific_name": null,
   "category_ids": [

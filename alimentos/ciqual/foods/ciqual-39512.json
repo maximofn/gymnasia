@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert glacé type sundae",
-    "en": "Frozen dessert, Sundae ice cream type"
+    "en": "Frozen dessert, Sundae ice cream type",
+    "es": "Postre helado tipo sundae"
   },
   "scientific_name": null,
   "category_ids": [

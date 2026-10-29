@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza au fromage ou pizza margherita, préemballée",
-    "en": "Pizza, cheese and tomato (Margherita), prepacked"
+    "en": "Pizza, cheese and tomato (Margherita), prepacked",
+    "es": "Pizza de queso o pizza margarita, envasada"
   },
   "scientific_name": null,
   "category_ids": [

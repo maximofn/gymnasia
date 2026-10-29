@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson plate aux fruits (teneur en fruits >= 10% et < 50%), sucrée, avec édulcorants",
-    "en": "Still soft drink, fruit content >= 10% and < 50%, with sugar(s) and  with sweetener(s)"
+    "en": "Still soft drink, fruit content >= 10% and < 50%, with sugar(s) and  with sweetener(s)",
+    "es": "Bebida no gasificada de fruta (contenido de fruta >= 10% y < 50%), azucarada, con edulcorantes"
   },
   "scientific_name": null,
   "category_ids": [

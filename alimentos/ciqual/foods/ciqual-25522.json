@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich (aliment moyen)",
-    "en": "Sandwich (average)"
+    "en": "Sandwich (average)",
+    "es": "Bocadillo (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

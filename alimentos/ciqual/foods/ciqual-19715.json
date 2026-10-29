@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage blanc ou spécialité laitière, aromatisé, 2-3% MG, sucré",
-    "en": "Quark or dairy specialty, flavoured, 2-3% fat, with sugar(s)"
+    "en": "Quark or dairy specialty, flavoured, 2-3% fat, with sugar(s)",
+    "es": "Queso fresco batido o especialidad láctea, aromatizado, 2-3% materia grasa, azucarado"
   },
   "scientific_name": null,
   "category_ids": [

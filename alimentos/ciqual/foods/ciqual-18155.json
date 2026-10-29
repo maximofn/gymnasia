@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Thé vert, infusé, sans sucres ajoutés",
-    "en": "Green tea, brewed, no added sugars"
+    "en": "Green tea, brewed, no added sugars",
+    "es": "Té verde, infusionado, sin azúcares añadidos"
   },
   "scientific_name": null,
   "category_ids": [

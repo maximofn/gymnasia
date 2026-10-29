@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Anguille, crue",
-    "en": "Eel, raw"
+    "en": "Eel, raw",
+    "es": "Anguila, cruda"
   },
   "scientific_name": "Anguilla anguilla (Linnaeus, 1758)",
   "category_ids": [

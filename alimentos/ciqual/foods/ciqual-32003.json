@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Céréales pour petit déjeuner (aliment moyen)",
-    "en": "Breakfast cereals (average)"
+    "en": "Breakfast cereals (average)",
+    "es": "Cereales de desayuno (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

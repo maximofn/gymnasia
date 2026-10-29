@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich baguette, camembert beurre, fait maison",
-    "en": "Sandwich, baguette, camembert cheese and butter, homemade"
+    "en": "Sandwich, baguette, camembert cheese and butter, homemade",
+    "es": "Bocadillo de baguette con camembert y mantequilla, casero"
   },
   "scientific_name": null,
   "category_ids": [

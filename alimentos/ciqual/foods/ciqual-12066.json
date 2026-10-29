@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Feta, au lait de brebis 70% minimum et lait de chèvre 30% maximum",
-    "en": "Feta cheese, 70% min. from ewe's milk, 30% min. from goat's milk"
+    "en": "Feta cheese, 70% min. from ewe's milk, 30% min. from goat's milk",
+    "es": "Feta, mínimo un 70% de leche de oveja y máximo un 30% de leche de cabra"
   },
   "scientific_name": null,
   "category_ids": [

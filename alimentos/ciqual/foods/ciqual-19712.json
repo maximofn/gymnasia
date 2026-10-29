@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage blanc, nature, au lait de brebis, 5% MG environ",
-    "en": "Quark from ewe's milk, plain, around 5% fat"
+    "en": "Quark from ewe's milk, plain, around 5% fat",
+    "es": "Queso fresco batido, natural, con leche de oveja, alrededor del 5% materia grasa"
   },
   "scientific_name": null,
   "category_ids": [

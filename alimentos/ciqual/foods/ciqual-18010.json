@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Limonade, sucrée",
-    "en": "Lemonade, with sugar(s)"
+    "en": "Lemonade, with sugar(s)",
+    "es": "Limonada, con azúcar(es)"
   },
   "scientific_name": null,
   "category_ids": [

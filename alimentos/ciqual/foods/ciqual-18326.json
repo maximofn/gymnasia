@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson à l'eau minérale ou de source, aromatisée, sans précision sur la teneur en sucres et édulcorants (aliment moyen)",
-    "en": "Bottled water, flavoured, sugar and sweetener contents unknown (average)"
+    "en": "Bottled water, flavoured, sugar and sweetener contents unknown (average)",
+    "es": "Bebida de agua mineral o de manantial, aromatizada, sin precisión sobre el contenido en azúcares y edulcorantes (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

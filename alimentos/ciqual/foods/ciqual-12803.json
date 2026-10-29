@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage de chèvre lactique affiné, type palet, crottin ou bûchette",
-    "en": "Cheese, lactic, matured, from goat's milk"
+    "en": "Cheese, lactic, matured, from goat's milk",
+    "es": "Queso de cabra láctico curado, tipo disco, crottin o rulo"
   },
   "scientific_name": null,
   "category_ids": [

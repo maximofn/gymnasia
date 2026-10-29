@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Canard, viande rôtie/cuite au four",
-    "en": "Duck, meat, roasted/baked"
+    "en": "Duck, meat, roasted/baked",
+    "es": "Pato, carne asada/cocinada al horno"
   },
   "scientific_name": null,
   "category_ids": [

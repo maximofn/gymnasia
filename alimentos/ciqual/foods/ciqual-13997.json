@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fruits rouges, crus (framboises, fraises, groseilles, cassis)",
-    "en": "Red berries (raspberries, strawberries, red currants, black currants), raw"
+    "en": "Red berries (raspberries, strawberries, red currants, black currants), raw",
+    "es": "Frutos rojos, crudos (frambuesas, fresas, grosellas, grosellas negras)"
   },
   "scientific_name": "Rubus idaeus L., Fragaria x ananassa Duchene ex Rozier, Ribes rubrum and Ribes nigrum",
   "category_ids": [

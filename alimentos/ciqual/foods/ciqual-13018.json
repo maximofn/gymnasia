@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Grenade, chair sans peau, avec pépins, crue",
-    "en": "Pomegranate, flesh without skin, with seeds, raw"
+    "en": "Pomegranate, flesh without skin, with seeds, raw",
+    "es": "Granada, pulpa sin piel, con pepitas, cruda"
   },
   "scientific_name": "Punica granatum L.",
   "category_ids": [

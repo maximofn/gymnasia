@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boeuf, côte crue",
-    "en": "Beef, rib, raw"
+    "en": "Beef, rib, raw",
+    "es": "Vacuno, costillar crudo"
   },
   "scientific_name": null,
   "category_ids": [

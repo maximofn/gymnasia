@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lait de brebis, entier",
-    "en": "Sheep milk, whole"
+    "en": "Sheep milk, whole",
+    "es": "Leche de oveja, entera"
   },
   "scientific_name": null,
   "category_ids": [

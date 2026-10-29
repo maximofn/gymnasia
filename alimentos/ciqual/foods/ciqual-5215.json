@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Vin blanc sec",
-    "en": "Wine, white, dry"
+    "en": "Wine, white, dry",
+    "es": "Vino blanco seco"
   },
   "scientific_name": null,
   "category_ids": [

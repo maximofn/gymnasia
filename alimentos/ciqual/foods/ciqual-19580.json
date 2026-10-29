@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Yaourt ou lait fermenté, aux copeaux de chocolat, à la crème, sucré",
-    "en": "Yogurt or fermented milk, with chocolate flakes, with cream, with sugar(s)"
+    "en": "Yogurt or fermented milk, with chocolate flakes, with cream, with sugar(s)",
+    "es": "Yogur o leche fermentada, con virutas de chocolate, con nata, azucarado"
   },
   "scientific_name": null,
   "category_ids": [

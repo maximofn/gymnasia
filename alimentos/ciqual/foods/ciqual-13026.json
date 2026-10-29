@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Melon cantaloup (par ex.: Charentais), chair sans peau, sans pépins, cru",
-    "en": "Melon, cantaloupe (ex Charentais melon), flesh without skin, without seeds, raw"
+    "en": "Melon, cantaloupe (ex Charentais melon), flesh without skin, without seeds, raw",
+    "es": "Melón cantalupo (p. ej.: Charentais), pulpa sin piel, sin pepitas, crudo"
   },
   "scientific_name": "Cucumis melo L.",
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson préparée à partir de sirop à diluer type menthe, fraise, etc, sucré, dilué dans l'eau",
-    "en": "Syrup (eg. Mint, strawberry etc.), with sugar(s), diluted in water"
+    "en": "Syrup (eg. Mint, strawberry etc.), with sugar(s), diluted in water",
+    "es": "Bebida preparada a partir de sirope para diluir tipo menta, fresa, etc., azucarado, diluido en agua"
   },
   "scientific_name": null,
   "category_ids": [

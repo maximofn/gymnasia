@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Biscuit sec, sans précision",
-    "en": "Biscuit (cookie)"
+    "en": "Biscuit (cookie)",
+    "es": "Galleta seca, sin especificar"
   },
   "scientific_name": null,
   "category_ids": [

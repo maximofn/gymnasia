@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert au soja, nature, sans sucres ajoutés, enrichi en calcium, fermenté, rayon frais",
-    "en": "Soy dessert, plain, no added sugars, fortified with calcium, fermented, refrigerated"
+    "en": "Soy dessert, plain, no added sugars, fortified with calcium, fermented, refrigerated",
+    "es": "Postre de soja, natural, sin azúcares añadidos, enriquecido con calcio, fermentado, sección de refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert au soja, aux amandes, sucré, enrichi en vitamines et minéraux, fermenté, rayon frais",
-    "en": "Soy dessert, with almonds, with sugar(s), fortified with vitamins and minerals, refrigerated"
+    "en": "Soy dessert, with almonds, with sugar(s), fortified with vitamins and minerals, refrigerated",
+    "es": "Postre de soja, con almendras, azucarado, enriquecido con vitaminas y minerales, fermentado, sección de refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

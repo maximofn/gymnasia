@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Gruyère, sans précision (origine France ou Suisse)",
-    "en": "Gruyere cheese, from cow's milk"
+    "en": "Gruyere cheese, from cow's milk",
+    "es": "Gruyère, sin especificar (origen Francia o Suiza)"
   },
   "scientific_name": null,
   "category_ids": [

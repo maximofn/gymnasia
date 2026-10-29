@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Merlu, cru",
-    "en": "European hake, raw"
+    "en": "European hake, raw",
+    "es": "Merluza, cruda"
   },
   "scientific_name": "Merluccius merluccius (Linnaeus, 1758)",
   "category_ids": [

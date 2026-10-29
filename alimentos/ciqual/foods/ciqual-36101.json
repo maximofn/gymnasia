@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Caille, viande crue",
-    "en": "Quail, meat, raw"
+    "en": "Quail, meat, raw",
+    "es": "Codorniz, carne cruda"
   },
   "scientific_name": null,
   "category_ids": [

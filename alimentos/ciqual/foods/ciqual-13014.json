@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fraise, crue",
-    "en": "Strawberry, raw"
+    "en": "Strawberry, raw",
+    "es": "Fresa, cruda"
   },
   "scientific_name": "Fragaria x ananassa Duchene ex Rozier",
   "category_ids": [

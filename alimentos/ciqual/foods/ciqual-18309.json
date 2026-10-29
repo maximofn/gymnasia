@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson plate aux fruits (teneur en fruits non spécifiée), sucrée",
-    "en": "Still soft drink, fruit content unknown, with sugar(s)"
+    "en": "Still soft drink, fruit content unknown, with sugar(s)",
+    "es": "Bebida de frutas sin gas (contenido de frutas no especificado), azucarada"
   },
   "scientific_name": null,
   "category_ids": [

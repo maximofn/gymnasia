@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lait entier, cru",
-    "en": "Milk, whole, raw"
+    "en": "Milk, whole, raw",
+    "es": "Leche entera, cruda"
   },
   "scientific_name": null,
   "category_ids": [

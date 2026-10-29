@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Légume sec, cuit (aliment moyen)",
-    "en": "Legume, cooked (average)"
+    "en": "Legume, cooked (average)",
+    "es": "Legumbre seca, cocida (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

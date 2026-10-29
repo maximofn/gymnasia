@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson plate aux fruits (teneur en fruits >= 10% et < 50%), sans sucres ajoutés",
-    "en": "Still soft drink, fruit content >= 10% and < 50%, no added sugars"
+    "en": "Still soft drink, fruit content >= 10% and < 50%, no added sugars",
+    "es": "Bebida de frutas sin gas (contenido de frutas >= 10% y < 50%), sin azúcares añadidos"
   },
   "scientific_name": null,
   "category_ids": [

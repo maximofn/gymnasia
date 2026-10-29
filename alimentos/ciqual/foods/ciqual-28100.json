@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Porc, côte crue",
-    "en": "Pork, chop, raw"
+    "en": "Pork, chop, raw",
+    "es": "Cerdo, chuleta cruda"
   },
   "scientific_name": null,
   "category_ids": [

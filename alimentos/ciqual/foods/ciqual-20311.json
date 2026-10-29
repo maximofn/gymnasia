@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chou vert, bouilli/cuit à l'eau",
-    "en": "Green cabbage, boiled/cooked in water"
+    "en": "Green cabbage, boiled/cooked in water",
+    "es": "Col verde, hervida/cocida en agua"
   },
   "scientific_name": "Brassica oleracea var. capitata",
   "category_ids": [

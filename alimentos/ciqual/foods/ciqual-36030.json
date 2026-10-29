@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poulet, cuisse, viande bouillie/cuite à l'eau",
-    "en": "Chicken leg, meat, boiled/cooked in water"
+    "en": "Chicken leg, meat, boiled/cooked in water",
+    "es": "Pollo, muslo, carne hervida/cocida en agua"
   },
   "scientific_name": null,
   "category_ids": [

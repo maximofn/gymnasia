@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich baguette, jambon emmental, vente à emporter",
-    "en": "Sandwich, baguette, ham and emmental cheese, takeaway"
+    "en": "Sandwich, baguette, ham and emmental cheese, takeaway",
+    "es": "Sándwich de barra de pan, jamón y queso emmental, para llevar"
   },
   "scientific_name": null,
   "category_ids": [

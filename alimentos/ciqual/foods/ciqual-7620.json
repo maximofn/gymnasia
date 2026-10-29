@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Croissant pur beurre, artisanal",
-    "en": "Croissant, pure butter, from bakery"
+    "en": "Croissant, pure butter, from bakery",
+    "es": "Croissant de mantequilla, artesanal"
   },
   "scientific_name": null,
   "category_ids": [

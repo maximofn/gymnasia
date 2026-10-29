@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lentille, bouillie/cuite à l'eau (aliment moyen)",
-    "en": "Lentil, boiled/cooked in water (average)"
+    "en": "Lentil, boiled/cooked in water (average)",
+    "es": "Lenteja, hervida/cocida en agua (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

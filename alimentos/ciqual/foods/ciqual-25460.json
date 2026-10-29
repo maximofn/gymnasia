@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fajita au poulet, préparé maison avec un kit",
-    "en": "Fajitas, home-prepared from kit"
+    "en": "Fajitas, home-prepared from kit",
+    "es": "Fajitas de pollo, preparadas en casa con kit"
   },
   "scientific_name": null,
   "category_ids": [

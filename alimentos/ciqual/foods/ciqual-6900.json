@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cheval, viande crue",
-    "en": "Horse, meat, raw"
+    "en": "Horse, meat, raw",
+    "es": "Caballo, carne cruda"
   },
   "scientific_name": null,
   "category_ids": [

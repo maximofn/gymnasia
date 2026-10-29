@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 import { join, resolve } from "node:path";
+import { readFile } from "node:fs/promises";
+
+import { applyCiqualTranslations } from "./ciqual-translations.mjs";
 
 import {
   checkCiqualArtifacts, ciqualRoot, downloadCiqualSource, loadCiqualSource, writeCiqualArtifacts,
@@ -28,7 +31,8 @@ try {
   if (options.mode === "--check" && options.download) throw new Error("El check no descarga ni escribe archivos.");
   if (options.download) await downloadCiqualSource(options.sourceDirectory);
   if (options.mode === "--write") {
-    const catalog = await loadCiqualSource(options.sourceDirectory);
+    const translations = JSON.parse(await readFile(join(ciqualRoot, "translations.es.json"), "utf8"));
+    const catalog = applyCiqualTranslations(await loadCiqualSource(options.sourceDirectory), translations);
     await writeCiqualArtifacts(catalog);
     console.log(`CIQUAL importado: ${catalog.foods.length} alimentos, ${catalog.nutrients.length} componentes.`);
   } else {

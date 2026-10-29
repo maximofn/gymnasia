@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson rafraîchissante sans alcool (aliment moyen)",
-    "en": "Non-alcoholic beverage (average)"
+    "en": "Non-alcoholic beverage (average)",
+    "es": "Bebida refrescante sin alcohol (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sorbet, en bac",
-    "en": "Sorbet, in box"
+    "en": "Sorbet, in box",
+    "es": "Sorbete, en tarrina"
   },
   "scientific_name": null,
   "category_ids": [

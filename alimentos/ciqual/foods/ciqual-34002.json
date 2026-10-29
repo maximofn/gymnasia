@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lapin, viande cuite",
-    "en": "Rabbit, meat, cooked"
+    "en": "Rabbit, meat, cooked",
+    "es": "Conejo, carne cocida"
   },
   "scientific_name": null,
   "category_ids": [

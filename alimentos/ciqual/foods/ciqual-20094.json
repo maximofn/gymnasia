@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chou-rave, bouilli/cuit à l'eau",
-    "en": "Kohlrabi, boiled/cooked in water"
+    "en": "Kohlrabi, boiled/cooked in water",
+    "es": "Colinabo, hervido o cocido en agua"
   },
   "scientific_name": "Brassica oleracea var. gongylodes L.",
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Base de pizza (pâte et sauce à la tomate), crue",
-    "en": "Base for pizza (dough + tomato sauce), raw"
+    "en": "Base for pizza (dough + tomato sauce), raw",
+    "es": "Base de pizza (masa y salsa de tomate), cruda"
   },
   "scientific_name": null,
   "category_ids": [

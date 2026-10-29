@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Comté",
-    "en": "Comté cheese, from cow's milk"
+    "en": "Comté cheese, from cow's milk",
+    "es": "Comté, de leche de vaca"
   },
   "scientific_name": null,
   "category_ids": [

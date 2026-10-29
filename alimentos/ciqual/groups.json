@@ -5,7 +5,8 @@
     "parent_id": null,
     "names": {
       "fr": "entrées et plats composés",
-      "en": "starters and dishes"
+      "en": "starters and dishes",
+      "es": "Entrantes y platos preparados"
     }
   },
   {
@@ -14,7 +15,8 @@
     "parent_id": "ciqual-01",
     "names": {
       "fr": "salades composées et crudités",
-      "en": "mixed salads"
+      "en": "mixed salads",
+      "es": "Ensaladas compuestas y hortalizas crudas"
     }
   },
   {
@@ -23,7 +25,8 @@
     "parent_id": "ciqual-01",
     "names": {
       "fr": "soupes",
-      "en": "soups"
+      "en": "soups",
+      "es": "Sopas"
     }
   },
   {
@@ -32,7 +35,8 @@
     "parent_id": "ciqual-01",
     "names": {
       "fr": "plats composés",
-      "en": "dishes"
+      "en": "dishes",
+      "es": "Platos preparados"
     }
   },
   {
@@ -41,7 +45,8 @@
     "parent_id": "ciqual-0103",
     "names": {
       "fr": "plats de viande sans garniture",
-      "en": "meat dishes, no garnish"
+      "en": "meat dishes, no garnish",
+      "es": "Platos de carne sin guarnición"
     }
   },
   {
@@ -50,7 +55,8 @@
     "parent_id": "ciqual-0103",
     "names": {
       "fr": "plats de viande et féculents",
-      "en": "meat dishes, with starchy food"
+      "en": "meat dishes, with starchy food",
+      "es": "Platos de carne con alimentos feculentos"
     }
   },
   {
@@ -59,7 +65,8 @@
     "parent_id": "ciqual-0103",
     "names": {
       "fr": "plats de viande et légumes/légumineuses",
-      "en": "meat dishes, with vegetables/legume"
+      "en": "meat dishes, with vegetables/legume",
+      "es": "Platos de carne con verduras o legumbres"
     }
   },
   {
@@ -68,7 +75,8 @@
     "parent_id": "ciqual-0103",
     "names": {
       "fr": "plats de poisson sans garniture",
-      "en": "fish dishes, no garnish"
+      "en": "fish dishes, no garnish",
+      "es": "Platos de pescado sin guarnición"
     }
   },
   {
@@ -77,7 +85,8 @@
     "parent_id": "ciqual-0103",
     "names": {
       "fr": "plats de poisson et féculents",
-      "en": "fish dishes, with starchy food"
+      "en": "fish dishes, with starchy food",
+      "es": "Platos de pescado con alimentos feculentos"
     }
   },
   {
@@ -86,7 +95,8 @@
     "parent_id": "ciqual-0103",
     "names": {
       "fr": "plats de légumes/légumineuses",
-      "en": "vegetable/legume dishes"
+      "en": "vegetable/legume dishes",
+      "es": "Platos de verduras o legumbres"
     }
   },
   {
@@ -95,7 +105,8 @@
     "parent_id": "ciqual-0103",
     "names": {
       "fr": "plats de céréales/pâtes",
-      "en": "pasta or cereal dishes"
+      "en": "pasta or cereal dishes",
+      "es": "Platos de cereales o pasta"
     }
   },
   {
@@ -104,7 +115,8 @@
     "parent_id": "ciqual-0103",
     "names": {
       "fr": "plats de fromage",
-      "en": "cheese dishes"
+      "en": "cheese dishes",
+      "es": "Platos de queso"
     }
   },
   {
@@ -113,7 +125,8 @@
     "parent_id": "ciqual-0103",
     "names": {
       "fr": "autres plats végétariens",
-      "en": "other vegetarian dishes"
+      "en": "other vegetarian dishes",
+      "es": "Otros platos vegetarianos"
     }
   },
   {
@@ -122,7 +135,8 @@
     "parent_id": "ciqual-01",
     "names": {
       "fr": "pizzas, tartes et crêpes salées",
-      "en": "pizzas, crepe and pies"
+      "en": "pizzas, crepe and pies",
+      "es": "Pizzas, tartas saladas y crepes salados"
     }
   },
   {
@@ -131,7 +145,8 @@
     "parent_id": "ciqual-01",
     "names": {
       "fr": "sandwichs",
-      "en": "sandwiches"
+      "en": "sandwiches",
+      "es": "Sándwiches"
     }
   },
   {
@@ -140,7 +155,8 @@
     "parent_id": "ciqual-01",
     "names": {
       "fr": "feuilletées et autres entrées",
-      "en": "savoury pastries and other starters"
+      "en": "savoury pastries and other starters",
+      "es": "Hojaldres y otros entrantes"
     }
   },
   {
@@ -149,7 +165,8 @@
     "parent_id": null,
     "names": {
       "fr": "fruits, légumes, légumineuses et oléagineux",
-      "en": "fruits, vegetables, legumes and nuts"
+      "en": "fruits, vegetables, legumes and nuts",
+      "es": "Frutas, verduras, legumbres, frutos secos y semillas oleaginosas"
     }
   },
   {
@@ -158,7 +175,8 @@
     "parent_id": "ciqual-02",
     "names": {
       "fr": "légumes",
-      "en": "vegetables"
+      "en": "vegetables",
+      "es": "Verduras y hortalizas"
     }
   },
   {
@@ -167,7 +185,8 @@
     "parent_id": "ciqual-0201",
     "names": {
       "fr": "légumes crus",
-      "en": "vegetables, raw"
+      "en": "vegetables, raw",
+      "es": "Verduras y hortalizas crudas"
     }
   },
   {
@@ -176,7 +195,8 @@
     "parent_id": "ciqual-0201",
     "names": {
       "fr": "légumes cuits",
-      "en": "vegetables, cooked"
+      "en": "vegetables, cooked",
+      "es": "Verduras y hortalizas cocinadas"
     }
   },
   {
@@ -185,7 +205,8 @@
     "parent_id": "ciqual-0201",
     "names": {
       "fr": "légumes séchés ou déshydratés",
-      "en": "vegetables, dried or dehydrated"
+      "en": "vegetables, dried or dehydrated",
+      "es": "Verduras y hortalizas secas o deshidratadas"
     }
   },
   {
@@ -194,7 +215,8 @@
     "parent_id": "ciqual-0201",
     "names": {
       "fr": "légumes et leurs produits de la Martinique",
-      "en": "vegetables from Martinique and their products"
+      "en": "vegetables from Martinique and their products",
+      "es": "Verduras y hortalizas de Martinica y sus productos"
     }
   },
   {
@@ -203,7 +225,8 @@
     "parent_id": "ciqual-0201",
     "names": {
       "fr": "légumes et leurs produits de la Réunion",
-      "en": "vegetables from Reunion Island and their products"
+      "en": "vegetables from Reunion Island and their products",
+      "es": "Verduras y hortalizas de La Reunión y sus productos"
     }
   },
   {
@@ -212,7 +235,8 @@
     "parent_id": "ciqual-02",
     "names": {
       "fr": "pommes de terre et autres tubercules",
-      "en": "potatoes and other tubers"
+      "en": "potatoes and other tubers",
+      "es": "Patatas y otros tubérculos"
     }
   },
   {
@@ -221,7 +245,8 @@
     "parent_id": "ciqual-02",
     "names": {
       "fr": "légumineuses",
-      "en": "legumes"
+      "en": "legumes",
+      "es": "Legumbres"
     }
   },
   {
@@ -230,7 +255,8 @@
     "parent_id": "ciqual-0203",
     "names": {
       "fr": "légumineuses cuites",
-      "en": "legumes, cooked"
+      "en": "legumes, cooked",
+      "es": "Legumbres cocidas"
     }
   },
   {
@@ -239,7 +265,8 @@
     "parent_id": "ciqual-0203",
     "names": {
       "fr": "légumineuses fraîches",
-      "en": "legumes, raw"
+      "en": "legumes, raw",
+      "es": "Legumbres frescas"
     }
   },
   {
@@ -248,7 +275,8 @@
     "parent_id": "ciqual-0203",
     "names": {
       "fr": "légumineuses sèches",
-      "en": "legumes, dried"
+      "en": "legumes, dried",
+      "es": "Legumbres secas"
     }
   },
   {
@@ -257,7 +285,8 @@
     "parent_id": "ciqual-02",
     "names": {
       "fr": "fruits",
-      "en": "fruits"
+      "en": "fruits",
+      "es": "Frutas"
     }
   },
   {
@@ -266,7 +295,8 @@
     "parent_id": "ciqual-0204",
     "names": {
       "fr": "fruits crus",
-      "en": "fresh fruits"
+      "en": "fresh fruits",
+      "es": "Frutas crudas"
     }
   },
   {
@@ -275,7 +305,8 @@
     "parent_id": "ciqual-0204",
     "names": {
       "fr": "compotes et assimilés",
-      "en": "puréed fruits"
+      "en": "puréed fruits",
+      "es": "Compotas y productos similares"
     }
   },
   {
@@ -284,7 +315,8 @@
     "parent_id": "ciqual-0204",
     "names": {
       "fr": "fruits appertisés",
-      "en": "canned fruits"
+      "en": "canned fruits",
+      "es": "Frutas en conserva"
     }
   },
   {
@@ -293,7 +325,8 @@
     "parent_id": "ciqual-0204",
     "names": {
       "fr": "fruits séchés",
-      "en": "dried fruits"
+      "en": "dried fruits",
+      "es": "Frutas desecadas"
     }
   },
   {
@@ -302,7 +335,8 @@
     "parent_id": "ciqual-0204",
     "names": {
       "fr": "fruits et leurs produits de la Martinique",
-      "en": "fruits from Martinique and their products"
+      "en": "fruits from Martinique and their products",
+      "es": "Frutas de Martinica y sus productos"
     }
   },
   {
@@ -311,7 +345,8 @@
     "parent_id": "ciqual-0204",
     "names": {
       "fr": "fruits et leurs produits de la Réunion",
-      "en": "fruits from Reunion Island and their products"
+      "en": "fruits from Reunion Island and their products",
+      "es": "Frutas de La Reunión y sus productos"
     }
   },
   {
@@ -320,7 +355,8 @@
     "parent_id": "ciqual-02",
     "names": {
       "fr": "fruits à coque et graines oléagineuses",
-      "en": "nuts and seeds"
+      "en": "nuts and seeds",
+      "es": "Frutos de cáscara y semillas oleaginosas"
     }
   },
   {
@@ -329,7 +365,8 @@
     "parent_id": null,
     "names": {
       "fr": "produits céréaliers",
-      "en": "cereal products"
+      "en": "cereal products",
+      "es": "Productos de cereales"
     }
   },
   {
@@ -338,7 +375,8 @@
     "parent_id": "ciqual-03",
     "names": {
       "fr": "pâtes, riz et céréales",
-      "en": "pasta, rice and grains"
+      "en": "pasta, rice and grains",
+      "es": "Pasta, arroz y cereales"
     }
   },
   {
@@ -347,7 +385,8 @@
     "parent_id": "ciqual-0301",
     "names": {
       "fr": "pâtes, riz et céréales cuits",
-      "en": "pasta, rice and grains, cooked"
+      "en": "pasta, rice and grains, cooked",
+      "es": "Pasta, arroz y cereales cocidos"
     }
   },
   {
@@ -356,7 +395,8 @@
     "parent_id": "ciqual-0301",
     "names": {
       "fr": "pâtes, riz et céréales crus",
-      "en": "pasta, rice and grains, raw"
+      "en": "pasta, rice and grains, raw",
+      "es": "Pasta, arroz y cereales crudos"
     }
   },
   {
@@ -365,7 +405,8 @@
     "parent_id": "ciqual-03",
     "names": {
       "fr": "pains et assimilés",
-      "en": "breads and similar"
+      "en": "breads and similar",
+      "es": "Panes y productos similares"
     }
   },
   {
@@ -374,7 +415,8 @@
     "parent_id": "ciqual-0302",
     "names": {
       "fr": "pains",
-      "en": "breads"
+      "en": "breads",
+      "es": "Panes"
     }
   },
   {
@@ -383,7 +425,8 @@
     "parent_id": "ciqual-0302",
     "names": {
       "fr": "biscottes et pains grillés",
-      "en": "rusks"
+      "en": "rusks",
+      "es": "Biscotes y panes tostados"
     }
   },
   {
@@ -392,7 +435,8 @@
     "parent_id": "ciqual-03",
     "names": {
       "fr": "biscuits apéritifs",
-      "en": "savoury biscuits"
+      "en": "savoury biscuits",
+      "es": "Galletas saladas de aperitivo"
     }
   },
   {
@@ -401,7 +445,8 @@
     "parent_id": "ciqual-03",
     "names": {
       "fr": "farines",
-      "en": "flours"
+      "en": "flours",
+      "es": "Harinas"
     }
   },
   {
@@ -410,7 +455,8 @@
     "parent_id": "ciqual-03",
     "names": {
       "fr": "pâtes à tarte",
-      "en": "pastry dough"
+      "en": "pastry dough",
+      "es": "Masas para tartas"
     }
   },
   {
@@ -419,7 +465,8 @@
     "parent_id": null,
     "names": {
       "fr": "viandes, oeufs, poissons",
-      "en": "meat, egg and fish"
+      "en": "meat, egg and fish",
+      "es": "Carnes, huevos y pescados"
     }
   },
   {
@@ -428,7 +475,8 @@
     "parent_id": "ciqual-04",
     "names": {
       "fr": "viandes cuites",
-      "en": "cooked meat"
+      "en": "cooked meat",
+      "es": "Carnes cocinadas"
     }
   },
   {
@@ -437,7 +485,8 @@
     "parent_id": "ciqual-0401",
     "names": {
       "fr": "boeuf et veau",
-      "en": "beef and veal"
+      "en": "beef and veal",
+      "es": "Vacuno y ternera"
     }
   },
   {
@@ -446,7 +495,8 @@
     "parent_id": "ciqual-0401",
     "names": {
       "fr": "porc",
-      "en": "pork"
+      "en": "pork",
+      "es": "Cerdo"
     }
   },
   {
@@ -455,7 +505,8 @@
     "parent_id": "ciqual-0401",
     "names": {
       "fr": "poulet",
-      "en": "poultry"
+      "en": "poultry",
+      "es": "Pollo"
     }
   },
   {
@@ -464,7 +515,8 @@
     "parent_id": "ciqual-0401",
     "names": {
       "fr": "dinde",
-      "en": "turkey"
+      "en": "turkey",
+      "es": "Pavo"
     }
   },
   {
@@ -473,7 +525,8 @@
     "parent_id": "ciqual-0401",
     "names": {
       "fr": "agneau et mouton",
-      "en": "lamb and mutton"
+      "en": "lamb and mutton",
+      "es": "Cordero y carnero"
     }
   },
   {
@@ -482,7 +535,8 @@
     "parent_id": "ciqual-0401",
     "names": {
       "fr": "gibier",
-      "en": "game"
+      "en": "game",
+      "es": "Carne de caza"
     }
   },
   {
@@ -491,7 +545,8 @@
     "parent_id": "ciqual-0401",
     "names": {
       "fr": "autres viandes",
-      "en": "other meats"
+      "en": "other meats",
+      "es": "Otras carnes"
     }
   },
   {
@@ -500,7 +555,8 @@
     "parent_id": "ciqual-0401",
     "names": {
       "fr": "abats",
-      "en": "offals"
+      "en": "offals",
+      "es": "Vísceras"
     }
   },
   {
@@ -509,7 +565,8 @@
     "parent_id": "ciqual-04",
     "names": {
       "fr": "viandes crues",
-      "en": "raw meat"
+      "en": "raw meat",
+      "es": "Carnes crudas"
     }
   },
   {
@@ -518,7 +575,8 @@
     "parent_id": "ciqual-0402",
     "names": {
       "fr": "boeuf et veau",
-      "en": "beef and veal"
+      "en": "beef and veal",
+      "es": "Vacuno y ternera"
     }
   },
   {
@@ -527,7 +585,8 @@
     "parent_id": "ciqual-0402",
     "names": {
       "fr": "porc",
-      "en": "pork"
+      "en": "pork",
+      "es": "Cerdo"
     }
   },
   {
@@ -536,7 +595,8 @@
     "parent_id": "ciqual-0402",
     "names": {
       "fr": "poulet",
-      "en": "poultry"
+      "en": "poultry",
+      "es": "Pollo"
     }
   },
   {
@@ -545,7 +605,8 @@
     "parent_id": "ciqual-0402",
     "names": {
       "fr": "dinde",
-      "en": "turkey"
+      "en": "turkey",
+      "es": "Pavo"
     }
   },
   {
@@ -554,7 +615,8 @@
     "parent_id": "ciqual-0402",
     "names": {
       "fr": "agneau et mouton",
-      "en": "lamb and mutton"
+      "en": "lamb and mutton",
+      "es": "Cordero y carnero"
     }
   },
   {
@@ -563,7 +625,8 @@
     "parent_id": "ciqual-0402",
     "names": {
       "fr": "gibier",
-      "en": "game"
+      "en": "game",
+      "es": "Carne de caza"
     }
   },
   {
@@ -572,7 +635,8 @@
     "parent_id": "ciqual-0402",
     "names": {
       "fr": "autres viandes",
-      "en": "other meats"
+      "en": "other meats",
+      "es": "Otras carnes"
     }
   },
   {
@@ -581,7 +645,8 @@
     "parent_id": "ciqual-0402",
     "names": {
       "fr": "abats",
-      "en": "offals"
+      "en": "offals",
+      "es": "Vísceras"
     }
   },
   {
@@ -590,7 +655,8 @@
     "parent_id": "ciqual-04",
     "names": {
       "fr": "charcuteries et alternatives végétales",
-      "en": "delicatessen meat and similar"
+      "en": "delicatessen meat and similar",
+      "es": "Productos de charcutería y alternativas vegetales"
     }
   },
   {
@@ -599,7 +665,8 @@
     "parent_id": "ciqual-0403",
     "names": {
       "fr": "jambons cuits",
-      "en": "cooked ham"
+      "en": "cooked ham",
+      "es": "Jamones cocidos"
     }
   },
   {
@@ -608,7 +675,8 @@
     "parent_id": "ciqual-0403",
     "names": {
       "fr": "jambons secs et crus",
-      "en": "raw and cured ham"
+      "en": "raw and cured ham",
+      "es": "Jamones curados y crudos"
     }
   },
   {
@@ -617,7 +685,8 @@
     "parent_id": "ciqual-0403",
     "names": {
       "fr": "saucisson secs",
-      "en": "dry sausages"
+      "en": "dry sausages",
+      "es": "Embutidos secos"
     }
   },
   {
@@ -626,7 +695,8 @@
     "parent_id": "ciqual-0403",
     "names": {
       "fr": "saucisses et assimilés",
-      "en": "sausages"
+      "en": "sausages",
+      "es": "Salchichas y productos similares"
     }
   },
   {
@@ -635,7 +705,8 @@
     "parent_id": "ciqual-0403",
     "names": {
       "fr": "pâtés et terrines",
-      "en": "pâtés and terrines"
+      "en": "pâtés and terrines",
+      "es": "Patés y terrinas"
     }
   },
   {
@@ -644,7 +715,8 @@
     "parent_id": "ciqual-0403",
     "names": {
       "fr": "rillettes",
-      "en": "rillettes"
+      "en": "rillettes",
+      "es": "Rillettes"
     }
   },
   {
@@ -653,7 +725,8 @@
     "parent_id": "ciqual-0403",
     "names": {
       "fr": "quenelles",
-      "en": "quenelles"
+      "en": "quenelles",
+      "es": "Quenelles"
     }
   },
   {
@@ -662,7 +735,8 @@
     "parent_id": "ciqual-0403",
     "names": {
       "fr": "autres spécialités charcutières",
-      "en": "other delicatessen"
+      "en": "other delicatessen",
+      "es": "Otras especialidades de charcutería"
     }
   },
   {
@@ -671,7 +745,8 @@
     "parent_id": "ciqual-0403",
     "names": {
       "fr": "alternatives végétales aux charcuteries",
-      "en": "plant-based alternatives to delicatessen"
+      "en": "plant-based alternatives to delicatessen",
+      "es": "Alternativas vegetales a los productos de charcutería"
     }
   },
   {
@@ -680,7 +755,8 @@
     "parent_id": "ciqual-04",
     "names": {
       "fr": "autres produits à base de viande",
-      "en": "other meat products"
+      "en": "other meat products",
+      "es": "Otros productos a base de carne"
     }
   },
   {
@@ -689,7 +765,8 @@
     "parent_id": "ciqual-04",
     "names": {
       "fr": "poissons cuits",
-      "en": "fish, cooked"
+      "en": "fish, cooked",
+      "es": "Pescados cocinados"
     }
   },
   {
@@ -698,7 +775,8 @@
     "parent_id": "ciqual-04",
     "names": {
       "fr": "poissons crus",
-      "en": "fish, raw"
+      "en": "fish, raw",
+      "es": "Pescados crudos"
     }
   },
   {
@@ -707,7 +785,8 @@
     "parent_id": "ciqual-04",
     "names": {
       "fr": "mollusques et crustacés cuits",
-      "en": "seafood, cooked"
+      "en": "seafood, cooked",
+      "es": "Moluscos y crustáceos cocinados"
     }
   },
   {
@@ -716,7 +795,8 @@
     "parent_id": "ciqual-04",
     "names": {
       "fr": "mollusques et crustacés crus",
-      "en": "seafood, raw"
+      "en": "seafood, raw",
+      "es": "Moluscos y crustáceos crudos"
     }
   },
   {
@@ -725,7 +805,8 @@
     "parent_id": "ciqual-04",
     "names": {
       "fr": "produits à base de poissons et produits de la mer",
-      "en": "fish products"
+      "en": "fish products",
+      "es": "Productos a base de pescado y marisco"
     }
   },
   {
@@ -734,7 +815,8 @@
     "parent_id": "ciqual-04",
     "names": {
       "fr": "oeufs",
-      "en": "eggs"
+      "en": "eggs",
+      "es": "Huevos"
     }
   },
   {
@@ -743,7 +825,8 @@
     "parent_id": "ciqual-0410",
     "names": {
       "fr": "oeufs cuits",
-      "en": "eggs, cooked"
+      "en": "eggs, cooked",
+      "es": "Huevos cocinados"
     }
   },
   {
@@ -752,7 +835,8 @@
     "parent_id": "ciqual-0410",
     "names": {
       "fr": "oeufs crus",
-      "en": "eggs, raw"
+      "en": "eggs, raw",
+      "es": "Huevos crudos"
     }
   },
   {
@@ -761,7 +845,8 @@
     "parent_id": "ciqual-0410",
     "names": {
       "fr": "omelettes et autres ovoproduits",
-      "en": "omelettes and other egg products"
+      "en": "omelettes and other egg products",
+      "es": "Tortillas y otros ovoproductos"
     }
   },
   {
@@ -770,7 +855,8 @@
     "parent_id": "ciqual-04",
     "names": {
       "fr": "alternatives végétales aux produits carnés",
-      "en": "plant-based alternatives to meat products"
+      "en": "plant-based alternatives to meat products",
+      "es": "Alternativas vegetales a los productos cárnicos"
     }
   },
   {
@@ -779,7 +865,8 @@
     "parent_id": null,
     "names": {
       "fr": "produits laitiers",
-      "en": "milk and milk products"
+      "en": "milk and milk products",
+      "es": "Productos lácteos"
     }
   },
   {
@@ -788,7 +875,8 @@
     "parent_id": "ciqual-05",
     "names": {
       "fr": "laits",
-      "en": "milk"
+      "en": "milk",
+      "es": "Leches"
     }
   },
   {
@@ -797,7 +885,8 @@
     "parent_id": "ciqual-0501",
     "names": {
       "fr": "laits de vaches liquides (non concentrés)",
-      "en": "milk from cow, liquid (not concentrated)"
+      "en": "milk from cow, liquid (not concentrated)",
+      "es": "Leches de vaca líquidas, no concentradas"
     }
   },
   {
@@ -806,7 +895,8 @@
     "parent_id": "ciqual-0501",
     "names": {
       "fr": "laits autres que de vache",
-      "en": "milk, other than from cow"
+      "en": "milk, other than from cow",
+      "es": "Leches de otros animales"
     }
   },
   {
@@ -815,7 +905,8 @@
     "parent_id": "ciqual-0501",
     "names": {
       "fr": "laits de vache concentrés ou en poudre",
-      "en": "milk from cow, concentrated or in powder"
+      "en": "milk from cow, concentrated or in powder",
+      "es": "Leches de vaca concentradas o en polvo"
     }
   },
   {
@@ -824,7 +915,8 @@
     "parent_id": "ciqual-05",
     "names": {
       "fr": "produits laitiers frais et alternatives végétales",
-      "en": "dairy products"
+      "en": "dairy products",
+      "es": "Productos lácteos frescos y alternativas vegetales"
     }
   },
   {
@@ -833,7 +925,8 @@
     "parent_id": "ciqual-0502",
     "names": {
       "fr": "yaourts et spécialités laitières type yaourt",
-      "en": "yoghurts"
+      "en": "yoghurts",
+      "es": "Yogures y especialidades lácteas tipo yogur"
     }
   },
   {
@@ -842,7 +935,8 @@
     "parent_id": "ciqual-0502",
     "names": {
       "fr": "fromages blancs",
-      "en": "fromages blanc"
+      "en": "fromages blanc",
+      "es": "Quesos frescos batidos"
     }
   },
   {
@@ -851,7 +945,8 @@
     "parent_id": "ciqual-0502",
     "names": {
       "fr": "desserts lactés",
-      "en": "dairy desserts"
+      "en": "dairy desserts",
+      "es": "Postres lácteos"
     }
   },
   {
@@ -860,7 +955,8 @@
     "parent_id": "ciqual-0502",
     "names": {
       "fr": "autres desserts",
-      "en": "other desserts"
+      "en": "other desserts",
+      "es": "Otros postres"
     }
   },
   {
@@ -869,7 +965,8 @@
     "parent_id": "ciqual-0502",
     "names": {
       "fr": "desserts végétaux",
-      "en": "plant-based desserts"
+      "en": "plant-based desserts",
+      "es": "Postres vegetales"
     }
   },
   {
@@ -878,7 +975,8 @@
     "parent_id": "ciqual-05",
     "names": {
       "fr": "fromages et alternatives végétales",
-      "en": "cheese and similar"
+      "en": "cheese and similar",
+      "es": "Quesos y alternativas vegetales"
     }
   },
   {
@@ -887,7 +985,8 @@
     "parent_id": "ciqual-0503",
     "names": {
       "fr": "fromages à pâte molle",
-      "en": "soft cheeses"
+      "en": "soft cheeses",
+      "es": "Quesos de pasta blanda"
     }
   },
   {
@@ -896,7 +995,8 @@
     "parent_id": "ciqual-0503",
     "names": {
       "fr": "fromages à pâte persillée",
-      "en": "blue cheeses"
+      "en": "blue cheeses",
+      "es": "Quesos azules"
     }
   },
   {
@@ -905,7 +1005,8 @@
     "parent_id": "ciqual-0503",
     "names": {
       "fr": "fromages à pâte pressée ou dure",
-      "en": "hard or pressed cheeses"
+      "en": "hard or pressed cheeses",
+      "es": "Quesos de pasta prensada o dura"
     }
   },
   {
@@ -914,7 +1015,8 @@
     "parent_id": "ciqual-0503",
     "names": {
       "fr": "fromage fondus",
-      "en": "processed cheeses"
+      "en": "processed cheeses",
+      "es": "Quesos fundidos"
     }
   },
   {
@@ -923,7 +1025,8 @@
     "parent_id": "ciqual-0503",
     "names": {
       "fr": "autres fromages et spécialités",
-      "en": "uncured cheeses and similar"
+      "en": "uncured cheeses and similar",
+      "es": "Otros quesos y especialidades"
     }
   },
   {
@@ -932,7 +1035,8 @@
     "parent_id": "ciqual-0503",
     "names": {
       "fr": "alternatives végétales aux fromages",
-      "en": "plant-based alternatives to cheese"
+      "en": "plant-based alternatives to cheese",
+      "es": "Alternativas vegetales a los quesos"
     }
   },
   {
@@ -941,7 +1045,8 @@
     "parent_id": "ciqual-05",
     "names": {
       "fr": "crèmes et spécialités à base de crème",
-      "en": "cream and similar"
+      "en": "cream and similar",
+      "es": "Natas y especialidades a base de nata"
     }
   },
   {
@@ -950,7 +1055,8 @@
     "parent_id": null,
     "names": {
       "fr": "eaux et autres boissons",
-      "en": "beverages"
+      "en": "beverages",
+      "es": "Aguas y otras bebidas"
     }
   },
   {
@@ -959,7 +1065,8 @@
     "parent_id": "ciqual-06",
     "names": {
       "fr": "eaux",
-      "en": "water"
+      "en": "water",
+      "es": "Aguas"
     }
   },
   {
@@ -968,7 +1075,8 @@
     "parent_id": "ciqual-06",
     "names": {
       "fr": "boissons sans alcool",
-      "en": "non-alcoholic beverages"
+      "en": "non-alcoholic beverages",
+      "es": "Bebidas sin alcohol"
     }
   },
   {
@@ -977,7 +1085,8 @@
     "parent_id": "ciqual-0602",
     "names": {
       "fr": "jus",
-      "en": "juices"
+      "en": "juices",
+      "es": "Zumos"
     }
   },
   {
@@ -986,7 +1095,8 @@
     "parent_id": "ciqual-0602",
     "names": {
       "fr": "nectars",
-      "en": "nectars"
+      "en": "nectars",
+      "es": "Néctares"
     }
   },
   {
@@ -995,7 +1105,8 @@
     "parent_id": "ciqual-0602",
     "names": {
       "fr": "boissons rafraîchissantes sans alcool",
-      "en": "soft drinks"
+      "en": "soft drinks",
+      "es": "Bebidas refrescantes sin alcohol"
     }
   },
   {
@@ -1004,7 +1115,8 @@
     "parent_id": "ciqual-0602",
     "names": {
       "fr": "boissons rafraîchissantes lactées",
-      "en": "dairy beverages"
+      "en": "dairy beverages",
+      "es": "Bebidas refrescantes lácteas"
     }
   },
   {
@@ -1013,7 +1125,8 @@
     "parent_id": "ciqual-0602",
     "names": {
       "fr": "boissons végétales",
-      "en": "plant-based beverages"
+      "en": "plant-based beverages",
+      "es": "Bebidas vegetales"
     }
   },
   {
@@ -1022,7 +1135,8 @@
     "parent_id": "ciqual-0602",
     "names": {
       "fr": "café, thé, cacao etc. prêts à consommer",
-      "en": "coffee, tea, cocoa beverages, etc. ready to drink"
+      "en": "coffee, tea, cocoa beverages, etc. ready to drink",
+      "es": "Café, té, cacao y otras bebidas listas para consumir"
     }
   },
   {
@@ -1031,7 +1145,8 @@
     "parent_id": "ciqual-0602",
     "names": {
       "fr": "boissons à reconstituer",
-      "en": "beverages, to reconstitute"
+      "en": "beverages, to reconstitute",
+      "es": "Bebidas para reconstituir"
     }
   },
   {
@@ -1040,7 +1155,8 @@
     "parent_id": "ciqual-06",
     "names": {
       "fr": "boisson alcoolisées",
-      "en": "alcoholic beverages"
+      "en": "alcoholic beverages",
+      "es": "Bebidas alcohólicas"
     }
   },
   {
@@ -1049,7 +1165,8 @@
     "parent_id": "ciqual-0603",
     "names": {
       "fr": "vins",
-      "en": "wines"
+      "en": "wines",
+      "es": "Vinos"
     }
   },
   {
@@ -1058,7 +1175,8 @@
     "parent_id": "ciqual-0603",
     "names": {
       "fr": "bières et cidres",
-      "en": "beers and ciders"
+      "en": "beers and ciders",
+      "es": "Cervezas y sidras"
     }
   },
   {
@@ -1067,7 +1185,8 @@
     "parent_id": "ciqual-0603",
     "names": {
       "fr": "liqueurs et alcools",
-      "en": "liqueurs and spirits"
+      "en": "liqueurs and spirits",
+      "es": "Licores y bebidas espirituosas"
     }
   },
   {
@@ -1076,7 +1195,8 @@
     "parent_id": "ciqual-0603",
     "names": {
       "fr": "cocktails",
-      "en": "cocktails"
+      "en": "cocktails",
+      "es": "Cócteles"
     }
   },
   {
@@ -1085,7 +1205,8 @@
     "parent_id": null,
     "names": {
       "fr": "produits sucrés",
-      "en": "sugar and confectionery"
+      "en": "sugar and confectionery",
+      "es": "Productos azucarados"
     }
   },
   {
@@ -1094,7 +1215,8 @@
     "parent_id": "ciqual-07",
     "names": {
       "fr": "sucres, miels et assimilés",
-      "en": "sugars and honey"
+      "en": "sugars and honey",
+      "es": "Azúcares, mieles y productos similares"
     }
   },
   {
@@ -1103,7 +1225,8 @@
     "parent_id": "ciqual-07",
     "names": {
       "fr": "chocolats et produits à base de chocolat",
-      "en": "chocolate and chocolate products"
+      "en": "chocolate and chocolate products",
+      "es": "Chocolates y productos a base de chocolate"
     }
   },
   {
@@ -1112,7 +1235,8 @@
     "parent_id": "ciqual-07",
     "names": {
       "fr": "confiseries non chocolatées",
-      "en": "non-chocolate confectionery"
+      "en": "non-chocolate confectionery",
+      "es": "Confitería sin chocolate"
     }
   },
   {
@@ -1121,7 +1245,8 @@
     "parent_id": "ciqual-07",
     "names": {
       "fr": "confitures et assimilés",
-      "en": "jam"
+      "en": "jam",
+      "es": "Mermeladas y productos similares"
     }
   },
   {
@@ -1130,7 +1255,8 @@
     "parent_id": "ciqual-07",
     "names": {
       "fr": "viennoiseries",
-      "en": "Viennese pastries"
+      "en": "Viennese pastries",
+      "es": "Bollería"
     }
   },
   {
@@ -1139,7 +1265,8 @@
     "parent_id": "ciqual-07",
     "names": {
       "fr": "biscuits sucrés",
-      "en": "sweet biscuits"
+      "en": "sweet biscuits",
+      "es": "Galletas dulces"
     }
   },
   {
@@ -1148,7 +1275,8 @@
     "parent_id": "ciqual-07",
     "names": {
       "fr": "céréales de petit-déjeuner",
-      "en": "breakfast cereals"
+      "en": "breakfast cereals",
+      "es": "Cereales de desayuno"
     }
   },
   {
@@ -1157,7 +1285,8 @@
     "parent_id": "ciqual-07",
     "names": {
       "fr": "barres céréalières",
-      "en": "cereal bars"
+      "en": "cereal bars",
+      "es": "Barritas de cereales"
     }
   },
   {
@@ -1166,7 +1295,8 @@
     "parent_id": "ciqual-07",
     "names": {
       "fr": "gâteaux et pâtisseries",
-      "en": "cakes and pastry"
+      "en": "cakes and pastry",
+      "es": "Bizcochos, pasteles y repostería"
     }
   },
   {
@@ -1175,7 +1305,8 @@
     "parent_id": null,
     "names": {
       "fr": "glaces et sorbets",
-      "en": "ice cream and sorbet"
+      "en": "ice cream and sorbet",
+      "es": "Helados y sorbetes"
     }
   },
   {
@@ -1184,7 +1315,8 @@
     "parent_id": "ciqual-08",
     "names": {
       "fr": "glaces",
-      "en": "ice cream"
+      "en": "ice cream",
+      "es": "Helados"
     }
   },
   {
@@ -1193,7 +1325,8 @@
     "parent_id": "ciqual-08",
     "names": {
       "fr": "sorbets",
-      "en": "sorbet"
+      "en": "sorbet",
+      "es": "Sorbetes"
     }
   },
   {
@@ -1202,7 +1335,8 @@
     "parent_id": "ciqual-08",
     "names": {
       "fr": "desserts glacés",
-      "en": "frozen desserts"
+      "en": "frozen desserts",
+      "es": "Postres helados"
     }
   },
   {
@@ -1211,7 +1345,8 @@
     "parent_id": null,
     "names": {
       "fr": "matières grasses",
-      "en": "fats and oils"
+      "en": "fats and oils",
+      "es": "Grasas"
     }
   },
   {
@@ -1220,7 +1355,8 @@
     "parent_id": "ciqual-09",
     "names": {
       "fr": "beurres",
-      "en": "butters"
+      "en": "butters",
+      "es": "Mantequillas"
     }
   },
   {
@@ -1229,7 +1365,8 @@
     "parent_id": "ciqual-09",
     "names": {
       "fr": "huiles et graisses végétales",
-      "en": "vegetable oils"
+      "en": "vegetable oils",
+      "es": "Aceites y grasas vegetales"
     }
   },
   {
@@ -1238,7 +1375,8 @@
     "parent_id": "ciqual-09",
     "names": {
       "fr": "margarines",
-      "en": "margarines"
+      "en": "margarines",
+      "es": "Margarinas"
     }
   },
   {
@@ -1247,7 +1385,8 @@
     "parent_id": "ciqual-09",
     "names": {
       "fr": "huiles de poissons",
-      "en": "fish oils"
+      "en": "fish oils",
+      "es": "Aceites de pescado"
     }
   },
   {
@@ -1256,7 +1395,8 @@
     "parent_id": "ciqual-09",
     "names": {
       "fr": "autres matières grasses",
-      "en": "other fats"
+      "en": "other fats",
+      "es": "Otras grasas"
     }
   },
   {
@@ -1265,7 +1405,8 @@
     "parent_id": null,
     "names": {
       "fr": "aides culinaires et ingrédients divers",
-      "en": "miscellaneous"
+      "en": "miscellaneous",
+      "es": "Productos auxiliares de cocina e ingredientes diversos"
     }
   },
   {
@@ -1274,7 +1415,8 @@
     "parent_id": "ciqual-10",
     "names": {
       "fr": "sauces",
-      "en": "sauces"
+      "en": "sauces",
+      "es": "Salsas"
     }
   },
   {
@@ -1283,7 +1425,8 @@
     "parent_id": "ciqual-1001",
     "names": {
       "fr": "sauces froides",
-      "en": "cold sauces"
+      "en": "cold sauces",
+      "es": "Salsas frías"
     }
   },
   {
@@ -1292,7 +1435,8 @@
     "parent_id": "ciqual-1001",
     "names": {
       "fr": "sauces chaudes",
-      "en": "warm sauces"
+      "en": "warm sauces",
+      "es": "Salsas calientes"
     }
   },
   {
@@ -1301,7 +1445,8 @@
     "parent_id": "ciqual-1001",
     "names": {
       "fr": "sauces sucrées",
-      "en": "dessert sauces"
+      "en": "dessert sauces",
+      "es": "Salsas dulces"
     }
   },
   {
@@ -1310,7 +1455,8 @@
     "parent_id": "ciqual-10",
     "names": {
       "fr": "condiments",
-      "en": "condiments"
+      "en": "condiments",
+      "es": "Condimentos"
     }
   },
   {
@@ -1319,7 +1465,8 @@
     "parent_id": "ciqual-10",
     "names": {
       "fr": "aides culinaires",
-      "en": "cooking aids"
+      "en": "cooking aids",
+      "es": "Productos auxiliares de cocina"
     }
   },
   {
@@ -1328,7 +1475,8 @@
     "parent_id": "ciqual-10",
     "names": {
       "fr": "sels",
-      "en": "salts"
+      "en": "salts",
+      "es": "Sales"
     }
   },
   {
@@ -1337,7 +1485,8 @@
     "parent_id": "ciqual-10",
     "names": {
       "fr": "épices",
-      "en": "spices"
+      "en": "spices",
+      "es": "Especias"
     }
   },
   {
@@ -1346,7 +1495,8 @@
     "parent_id": "ciqual-10",
     "names": {
       "fr": "herbes",
-      "en": "herbs"
+      "en": "herbs",
+      "es": "Hierbas aromáticas"
     }
   },
   {
@@ -1355,7 +1505,8 @@
     "parent_id": "ciqual-1006",
     "names": {
       "fr": "herbes fraîches",
-      "en": "fresh herbs"
+      "en": "fresh herbs",
+      "es": "Hierbas aromáticas frescas"
     }
   },
   {
@@ -1364,7 +1515,8 @@
     "parent_id": "ciqual-1006",
     "names": {
       "fr": "herbes séchées",
-      "en": "dried herbs"
+      "en": "dried herbs",
+      "es": "Hierbas aromáticas secas"
     }
   },
   {
@@ -1373,7 +1525,8 @@
     "parent_id": "ciqual-10",
     "names": {
       "fr": "algues",
-      "en": "seaweed"
+      "en": "seaweed",
+      "es": "Algas"
     }
   },
   {
@@ -1382,7 +1535,8 @@
     "parent_id": "ciqual-10",
     "names": {
       "fr": "denrées destinées à une alimentation particulière",
-      "en": "foods for particular nutritional uses"
+      "en": "foods for particular nutritional uses",
+      "es": "Alimentos destinados a una alimentación especial"
     }
   },
   {
@@ -1391,7 +1545,8 @@
     "parent_id": "ciqual-10",
     "names": {
       "fr": "ingrédients pour végétariens",
-      "en": "ingredients for vegetarian"
+      "en": "ingredients for vegetarian",
+      "es": "Ingredientes para vegetarianos"
     }
   },
   {
@@ -1400,7 +1555,8 @@
     "parent_id": "ciqual-10",
     "names": {
       "fr": "tartinables végétariens",
-      "en": "plant-based spreads"
+      "en": "plant-based spreads",
+      "es": "Preparados vegetales para untar"
     }
   },
   {
@@ -1409,7 +1565,8 @@
     "parent_id": null,
     "names": {
       "fr": "aliments infantiles",
-      "en": "baby food"
+      "en": "baby food",
+      "es": "Alimentos infantiles"
     }
   },
   {
@@ -1418,7 +1575,8 @@
     "parent_id": "ciqual-11",
     "names": {
       "fr": "laits et boissons infantiles",
-      "en": "baby milk and beverages"
+      "en": "baby milk and beverages",
+      "es": "Leches y bebidas infantiles"
     }
   },
   {
@@ -1427,7 +1585,8 @@
     "parent_id": "ciqual-11",
     "names": {
       "fr": "petits pots salés et plats infantiles",
-      "en": "baby dishes"
+      "en": "baby dishes",
+      "es": "Tarritos salados y platos infantiles"
     }
   },
   {
@@ -1436,7 +1595,8 @@
     "parent_id": "ciqual-11",
     "names": {
       "fr": "desserts infantiles",
-      "en": "baby deserts"
+      "en": "baby deserts",
+      "es": "Postres infantiles"
     }
   },
   {
@@ -1445,7 +1605,8 @@
     "parent_id": "ciqual-11",
     "names": {
       "fr": "céréales et biscuits infantiles",
-      "en": "baby biscuits and cereals"
+      "en": "baby biscuits and cereals",
+      "es": "Cereales y galletas infantiles"
     }
   }
 ]

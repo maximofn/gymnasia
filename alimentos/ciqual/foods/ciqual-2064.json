@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Nectar, avec édulcorants, allégé en sucres",
-    "en": "Fruit nectar, with sweetener(s), reduced sugar"
+    "en": "Fruit nectar, with sweetener(s), reduced sugar",
+    "es": "Néctar de fruta, con edulcorantes, con contenido reducido de azúcares"
   },
   "scientific_name": null,
   "category_ids": [

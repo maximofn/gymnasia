@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Carotte, cuite (aliment moyen)",
-    "en": "Carrot, cooked (average)"
+    "en": "Carrot, cooked (average)",
+    "es": "Zanahoria, cocida (valor medio)"
   },
   "scientific_name": "Daucus carota L. subsp. Sativus",
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Champignon de Paris ou champignon de couche, appertisé, égoutté",
-    "en": "Button mushroom or cultivated mushroom, canned, drained"
+    "en": "Button mushroom or cultivated mushroom, canned, drained",
+    "es": "Champiñón de París o champiñón cultivado, en conserva, escurrido"
   },
   "scientific_name": "Agaricus bisporus",
   "category_ids": [

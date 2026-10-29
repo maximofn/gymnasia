@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson lactée aromatisée au chocolat, sucrée, au lait partiellement écrémé, non enrichie",
-    "en": "Chocolate flavoured milk beverage, with sugar(s), partially skimmed, not fortified"
+    "en": "Chocolate flavoured milk beverage, with sugar(s), partially skimmed, not fortified",
+    "es": "Bebida láctea aromatizada al chocolate, azucarada, con leche parcialmente desnatada, no enriquecida"
   },
   "scientific_name": null,
   "category_ids": [

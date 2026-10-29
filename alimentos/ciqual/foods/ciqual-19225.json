@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lait de jument, entier",
-    "en": "Mare's milk, whole"
+    "en": "Mare's milk, whole",
+    "es": "Leche de yegua, entera"
   },
   "scientific_name": null,
   "category_ids": [

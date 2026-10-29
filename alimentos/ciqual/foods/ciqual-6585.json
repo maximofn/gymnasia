@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Viande rouge, cuite (aliment moyen)",
-    "en": "Red meat, cooked (average)"
+    "en": "Red meat, cooked (average)",
+    "es": "Carne roja, cocida (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

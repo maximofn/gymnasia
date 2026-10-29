@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Brie, sans précision",
-    "en": "Brie cheese, from cow's milk"
+    "en": "Brie cheese, from cow's milk",
+    "es": "Queso brie, sin precisar, de leche de vaca"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Vin doux",
-    "en": "Wine, sweet"
+    "en": "Wine, sweet",
+    "es": "Vino dulce"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson à l'amande, nature, sans sucres ajoutés, non enrichie, préemballée",
-    "en": "Almond drink, plain, no added sugars, not fortified, prepacked"
+    "en": "Almond drink, plain, no added sugars, not fortified, prepacked",
+    "es": "Bebida de almendra, natural, sin azúcares añadidos, no enriquecida, envasada"
   },
   "scientific_name": null,
   "category_ids": [

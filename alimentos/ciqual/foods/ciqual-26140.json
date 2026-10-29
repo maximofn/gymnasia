@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poisson cuit (aliment moyen)",
-    "en": "Fish, cooked (average)"
+    "en": "Fish, cooked (average)",
+    "es": "Pescado cocinado (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

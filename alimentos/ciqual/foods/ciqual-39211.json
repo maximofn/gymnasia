@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Crème aux oeufs (petit pot de crème chocolat, vanille, etc.), rayon frais",
-    "en": "Custard with eggs (small jar of chocolate or vanilla cream), refrigerated"
+    "en": "Custard with eggs (small jar of chocolate or vanilla cream), refrigerated",
+    "es": "Crema de huevo (tarrito de crema de chocolate, vainilla, etc.), sección de refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

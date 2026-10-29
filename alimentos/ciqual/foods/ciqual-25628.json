@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Salade César au poulet (salade verte, fromage, croûtons, sauce), préemballée",
-    "en": "Caesar's salad (salad, chicken, croûtons, sauce), prepacked"
+    "en": "Caesar's salad (salad, chicken, croûtons, sauce), prepacked",
+    "es": "Ensalada César con pollo (ensalada verde, queso, picatostes, salsa), envasada"
   },
   "scientific_name": null,
   "category_ids": [

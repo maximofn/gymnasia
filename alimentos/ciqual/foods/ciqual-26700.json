@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Anchois, filets, marinés, semi-conserve, égouttés (aliment moyen)",
-    "en": "Anchovy, marinated, semi-preserved, drained (average)"
+    "en": "Anchovy, marinated, semi-preserved, drained (average)",
+    "es": "Anchoa, filetes, marinados, semiconserva, escurridos (valor medio)"
   },
   "scientific_name": "Engraulis encrasicolus (Linnaeus, 1758)",
   "category_ids": [

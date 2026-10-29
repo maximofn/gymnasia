@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Laitue iceberg, crue",
-    "en": "Iceberg lettuce, raw"
+    "en": "Iceberg lettuce, raw",
+    "es": "Lechuga iceberg, cruda"
   },
   "scientific_name": "Lactuca sativa L.",
   "category_ids": [

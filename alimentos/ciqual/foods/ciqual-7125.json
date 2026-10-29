@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pain de seigle et froment",
-    "en": "Rye and wheat bread"
+    "en": "Rye and wheat bread",
+    "es": "Pan de centeno y trigo"
   },
   "scientific_name": null,
   "category_ids": [

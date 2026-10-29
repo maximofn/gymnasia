@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Parmesan",
-    "en": "Parmesan cheese, from cow's milk"
+    "en": "Parmesan cheese, from cow's milk",
+    "es": "Parmesano"
   },
   "scientific_name": null,
   "category_ids": [

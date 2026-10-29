@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sirop pour fruits appertisés au sirop",
-    "en": "Syrup for canned fruits"
+    "en": "Syrup for canned fruits",
+    "es": "Jarabe para frutas en almíbar en conserva"
   },
   "scientific_name": null,
   "category_ids": [

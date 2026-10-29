@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Viande blanche, cuite (aliment moyen)",
-    "en": "Meat, white, cooked (average)"
+    "en": "Meat, white, cooked (average)",
+    "es": "Carne blanca, cocida (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

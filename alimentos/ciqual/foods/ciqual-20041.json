@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poivron, vert, jaune ou rouge, cru",
-    "en": "Sweet pepper, green, yellow or red, raw"
+    "en": "Sweet pepper, green, yellow or red, raw",
+    "es": "Pimiento, verde, amarillo o rojo, crudo"
   },
   "scientific_name": "Capsicum annuum",
   "category_ids": [

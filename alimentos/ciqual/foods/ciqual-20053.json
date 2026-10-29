@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Aubergine, crue",
-    "en": "Eggplant, raw"
+    "en": "Eggplant, raw",
+    "es": "Berenjena, cruda"
   },
   "scientific_name": "Solanum melongena L.",
   "category_ids": [

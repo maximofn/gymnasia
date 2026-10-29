@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Mélange de fromages râpés (ex : spécial gratins, spécial pâtes, spécial pizzas…)",
-    "en": "Cheese mix, grated, from cow's milk"
+    "en": "Cheese mix, grated, from cow's milk",
+    "es": "Mezcla de quesos rallados (ej.: especial gratinados, especial pasta, especial pizzas…), de leche de vaca"
   },
   "scientific_name": null,
   "category_ids": [

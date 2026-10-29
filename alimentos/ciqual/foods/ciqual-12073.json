@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage frais ou spécialité fromagère non affinée, olives, figues et noix, etc (autre que ail et fines herbes), à tartiner, non allégée en matière grasse",
-    "en": "Uncured soft cheese, spreadable, flavoured, olives or fig and nuts (other than garlic and herbs), from cow's milk"
+    "en": "Uncured soft cheese, spreadable, flavoured, olives or fig and nuts (other than garlic and herbs), from cow's milk",
+    "es": "Queso fresco o especialidad quesera sin madurar, con aceitunas, higos y nueces, etc. (distinto de ajo y finas hierbas), para untar, sin reducción de materia grasa"
   },
   "scientific_name": null,
   "category_ids": [

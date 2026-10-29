@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Café décaféiné, instantané, sans sucres ajoutés, prêt à boire",
-    "en": "Decaffeinated instant coffee, no added sugars, ready-to-drink"
+    "en": "Decaffeinated instant coffee, no added sugars, ready-to-drink",
+    "es": "Café descafeinado, instantáneo, sin azúcares añadidos, listo para beber"
   },
   "scientific_name": null,
   "category_ids": [

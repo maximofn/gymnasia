@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Tilapia, cru",
-    "en": "Tilapia, raw"
+    "en": "Tilapia, raw",
+    "es": "Tilapia, cruda"
   },
   "scientific_name": "Oreochromis spp.",
   "category_ids": [

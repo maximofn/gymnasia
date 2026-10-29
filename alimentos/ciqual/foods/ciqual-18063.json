@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cola, sans précision sur la teneur en sucres et édulcorants (aliment moyen)",
-    "en": "Cola, sugar(s) and sweetener(s) content unknown (average)"
+    "en": "Cola, sugar(s) and sweetener(s) content unknown (average)",
+    "es": "Cola, sin precisión sobre el contenido en azúcares y edulcorantes (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

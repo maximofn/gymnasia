@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Autruche, viande cuite",
-    "en": "Ostrich, meat, cooked"
+    "en": "Ostrich, meat, cooked",
+    "es": "Avestruz, carne cocinada"
   },
   "scientific_name": null,
   "category_ids": [

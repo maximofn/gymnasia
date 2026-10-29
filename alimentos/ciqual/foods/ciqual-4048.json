@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pomme de terre, cuite (aliment moyen)",
-    "en": "Potato, cooked (average food)"
+    "en": "Potato, cooked (average food)",
+    "es": "Patata, cocinada (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

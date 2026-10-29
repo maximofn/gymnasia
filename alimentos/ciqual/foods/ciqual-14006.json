@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cerf, viande crue",
-    "en": "Venison, hart, raw"
+    "en": "Venison, hart, raw",
+    "es": "Ciervo, carne cruda"
   },
   "scientific_name": null,
   "category_ids": [

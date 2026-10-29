@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Yaourt au lait de chèvre, aux fruits, sucré",
-    "en": "Yogurt, goat's milk, with fruits, with sugar(s)"
+    "en": "Yogurt, goat's milk, with fruits, with sugar(s)",
+    "es": "Yogur de leche de cabra, con frutas, azucarado"
   },
   "scientific_name": null,
   "category_ids": [

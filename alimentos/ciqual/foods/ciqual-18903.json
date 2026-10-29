@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson au soja, aromatisée, sucrée, enrichie en calcium, préemballée",
-    "en": "Soy drink, flavoured, with sugar(s), fortified in calcium, prepacked"
+    "en": "Soy drink, flavoured, with sugar(s), fortified in calcium, prepacked",
+    "es": "Bebida de soja, aromatizada, azucarada, enriquecida en calcio, envasada"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Saumon fumé",
-    "en": "Salmon, smoked"
+    "en": "Salmon, smoked",
+    "es": "Salmón ahumado"
   },
   "scientific_name": "Salmo salar (Linnaeus, 1758)",
   "category_ids": [

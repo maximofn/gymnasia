@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza (aliment moyen)",
-    "en": "Pizza (average)"
+    "en": "Pizza (average)",
+    "es": "Pizza (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

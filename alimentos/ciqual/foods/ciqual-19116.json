@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson lactée aromatisée au café, sucrée, au lait partiellement écrémé, enrichie en vitamine(s) et/ou minéraux",
-    "en": "Coffee flavoured milk beverage, with sugar(s), partially skimmed fortified with vitamin(s) and/or mineral(s)"
+    "en": "Coffee flavoured milk beverage, with sugar(s), partially skimmed fortified with vitamin(s) and/or mineral(s)",
+    "es": "Bebida láctea aromatizada al café, azucarada, con leche parcialmente desnatada, enriquecida con vitamina(s) y/o minerales"
   },
   "scientific_name": null,
   "category_ids": [

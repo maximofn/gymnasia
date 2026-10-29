@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Porc, filet mignon cuit",
-    "en": "Pork, filet mignon, cooked"
+    "en": "Pork, filet mignon, cooked",
+    "es": "Cerdo, filete miñón cocido"
   },
   "scientific_name": null,
   "category_ids": [

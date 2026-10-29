@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sardine, crue",
-    "en": "European pilchard or sardine, raw"
+    "en": "European pilchard or sardine, raw",
+    "es": "Sardina, cruda"
   },
   "scientific_name": "Sardina pichardus (Walbaum, 1792)",
   "category_ids": [

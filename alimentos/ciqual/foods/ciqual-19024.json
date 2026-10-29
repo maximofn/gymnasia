@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lait entier, pasteurisé",
-    "en": "Milk, whole, pasteurised"
+    "en": "Milk, whole, pasteurised",
+    "es": "Leche entera, pasteurizada"
   },
   "scientific_name": null,
   "category_ids": [

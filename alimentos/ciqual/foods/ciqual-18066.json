@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Eau du robinet",
-    "en": "Water, municipal"
+    "en": "Water, municipal",
+    "es": "Agua del grifo"
   },
   "scientific_name": null,
   "category_ids": [

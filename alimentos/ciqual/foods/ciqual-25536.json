@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich baguette, salami beurre",
-    "en": "Sandwich, baguette, salami and butter"
+    "en": "Sandwich, baguette, salami and butter",
+    "es": "Bocadillo de barra de pan, salami y mantequilla"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert au soja, aromatisé, sucré, enrichi en calcium, rayon frais",
-    "en": "Soy dessert, flavoured, with sugar(s), fortified with calcium, refrigerated"
+    "en": "Soy dessert, flavoured, with sugar(s), fortified with calcium, refrigerated",
+    "es": "Postre de soja, aromatizado, azucarado, enriquecido en calcio, sección de refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

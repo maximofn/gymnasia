@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lait entier (aliment moyen)",
-    "en": "Milk, whole (average)"
+    "en": "Milk, whole (average)",
+    "es": "Leche entera (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

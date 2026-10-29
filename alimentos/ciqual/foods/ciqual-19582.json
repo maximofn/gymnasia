@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Yaourt ou lait fermenté, aux fruits, 0% MG, avec édulcorants, enrichi en vitamine D",
-    "en": "Yogurt or fermented milk, with fruits, 0% fat, with sweetener(s), fortified with vitamin D"
+    "en": "Yogurt or fermented milk, with fruits, 0% fat, with sweetener(s), fortified with vitamin D",
+    "es": "Yogur o leche fermentada, con frutas, 0% materia grasa, con edulcorantes, enriquecido con vitamina D"
   },
   "scientific_name": null,
   "category_ids": [

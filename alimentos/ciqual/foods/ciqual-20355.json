@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chou rouge, cuit (aliment moyen)",
-    "en": "Red cabbage, cooked (average)"
+    "en": "Red cabbage, cooked (average)",
+    "es": "Col lombarda, cocida (valor medio)"
   },
   "scientific_name": "Brassica oleracea L. convar. capitata L. var. rubra",
   "category_ids": [

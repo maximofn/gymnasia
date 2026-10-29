@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chocolat au lait, tablette",
-    "en": "Milk chocolate, bar"
+    "en": "Milk chocolate, bar",
+    "es": "Chocolate con leche, tableta"
   },
   "scientific_name": null,
   "category_ids": [

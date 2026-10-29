@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Yaourt ou lait fermenté, aromatisé ou aux fruits, non allégé en matière grasse (aliment moyen)",
-    "en": "Yogurt or fermented milk, with fruits or flavoured, no reduced fat (average)"
+    "en": "Yogurt or fermented milk, with fruits or flavoured, no reduced fat (average)",
+    "es": "Yogur o leche fermentada, aromatizado o con frutas, sin reducción de materia grasa (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

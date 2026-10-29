@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sanglier, viande rôtie/cuite au four",
-    "en": "Wild boar, roasted/baked"
+    "en": "Wild boar, roasted/baked",
+    "es": "Jabalí, carne asada/cocida al horno"
   },
   "scientific_name": null,
   "category_ids": [

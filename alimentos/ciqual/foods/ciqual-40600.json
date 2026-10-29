@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sang, boeuf, cru",
-    "en": "Blood, beef, raw"
+    "en": "Blood, beef, raw",
+    "es": "Sangre, vacuno, cruda"
   },
   "scientific_name": null,
   "category_ids": [

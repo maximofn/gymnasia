@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lait, sans précision sur la teneur en matière grasse, UHT (aliment moyen)",
-    "en": "Milk, fat content unknown, UHT (average)"
+    "en": "Milk, fat content unknown, UHT (average)",
+    "es": "Leche, sin especificar contenido de materia grasa, UHT (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

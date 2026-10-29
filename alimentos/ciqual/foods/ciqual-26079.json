@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Anchois, cru",
-    "en": "Anchovy, raw"
+    "en": "Anchovy, raw",
+    "es": "Anchoa, cruda"
   },
   "scientific_name": "Engraulis encrasicolus (Linnaeus, 1758)",
   "category_ids": [

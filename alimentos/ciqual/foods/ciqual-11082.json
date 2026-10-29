@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fleur de sel, non iodée, non fluorée",
-    "en": "Salt, pure sea salt, no fortification"
+    "en": "Salt, pure sea salt, no fortification",
+    "es": "Flor de sal, no yodada, no fluorada"
   },
   "scientific_name": null,
   "category_ids": [

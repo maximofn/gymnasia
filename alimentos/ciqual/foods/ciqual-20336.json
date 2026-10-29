@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Épinard, bouilli/cuit à l'eau",
-    "en": "Spinach, boiled/cooked in water"
+    "en": "Spinach, boiled/cooked in water",
+    "es": "Espinaca, hervida/cocida en agua"
   },
   "scientific_name": "Spinacia oleracea L.",
   "category_ids": [

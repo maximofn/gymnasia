@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson au soja, aromatisée, sucrée, non enrichie, préemballée",
-    "en": "Soy drink, flavoured, with sugar(s), not fortified, prepacked"
+    "en": "Soy drink, flavoured, with sugar(s), not fortified, prepacked",
+    "es": "Bebida de soja, aromatizada, azucarada, no enriquecida, envasada"
   },
   "scientific_name": null,
   "category_ids": [

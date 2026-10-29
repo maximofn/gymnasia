@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Bière forte (>8° alcool)",
-    "en": "Beer, strong (>8° alcohol)"
+    "en": "Beer, strong (>8° alcohol)",
+    "es": "Cerveza fuerte (>8° alcohol)"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Asperge, bouillie/cuite à l'eau (aliment moyen)",
-    "en": "Asparagus, boiled/cooked in water (average)"
+    "en": "Asparagus, boiled/cooked in water (average)",
+    "es": "Espárrago, hervido/cocido en agua (valor medio)"
   },
   "scientific_name": "Asparagus officinalis L.",
   "category_ids": [

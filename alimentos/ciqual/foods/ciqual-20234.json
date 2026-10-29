@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Navet, surgelé, cru",
-    "en": "Turnip, frozen, raw"
+    "en": "Turnip, frozen, raw",
+    "es": "Nabo, ultracongelado, crudo"
   },
   "scientific_name": "Brassica rapa subsp. rapa L.",
   "category_ids": [

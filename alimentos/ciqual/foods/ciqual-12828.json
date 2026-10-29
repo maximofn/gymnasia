@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage de lactosérum de brebis",
-    "en": "Cheese, from ewe's whey"
+    "en": "Cheese, from ewe's whey",
+    "es": "Queso de suero de leche de oveja"
   },
   "scientific_name": null,
   "category_ids": [

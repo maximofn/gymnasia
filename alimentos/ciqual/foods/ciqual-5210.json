@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Vin (aliment moyen)",
-    "en": "Wine (average)"
+    "en": "Wine (average)",
+    "es": "Vino (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

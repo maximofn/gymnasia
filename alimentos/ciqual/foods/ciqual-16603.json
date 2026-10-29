@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Matière grasse tartinable, sans précision sur la teneur en matière grasse, doux, riche en oméga 3 (aliment moyen)",
-    "en": "Spreadable fat, fat % unknown, unsalted, rich in omega 3 (average)"
+    "en": "Spreadable fat, fat % unknown, unsalted, rich in omega 3 (average)",
+    "es": "Materia grasa para untar, sin precisión sobre el contenido de materia grasa, sin sal, rica en omega 3 (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

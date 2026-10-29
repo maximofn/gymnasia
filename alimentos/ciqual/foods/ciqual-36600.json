@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pigeon, viande crue",
-    "en": "Pigeon, meat, raw"
+    "en": "Pigeon, meat, raw",
+    "es": "Paloma, carne cruda"
   },
   "scientific_name": null,
   "category_ids": [

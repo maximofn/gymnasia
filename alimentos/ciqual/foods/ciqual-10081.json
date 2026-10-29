@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Moules à la sauce catalane ou escabèche (tomate), appertisée, égouttée",
-    "en": "Mussels, in Catalan-style sauce or marinade (tomatoes), canned, drained"
+    "en": "Mussels, in Catalan-style sauce or marinade (tomatoes), canned, drained",
+    "es": "Mejillones en salsa catalana o escabeche (tomate), en conserva, escurridos"
   },
   "scientific_name": "Mytilus spp.",
   "category_ids": [

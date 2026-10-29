@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Échalote, cuite",
-    "en": "Shallot, cooked"
+    "en": "Shallot, cooked",
+    "es": "Chalota, cocida"
   },
   "scientific_name": "Allium cepa var. aggregatum",
   "category_ids": [

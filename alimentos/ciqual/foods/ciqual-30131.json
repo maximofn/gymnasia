@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Saucisse de volaille type knack",
-    "en": "Poultry sausage, knack-style"
+    "en": "Poultry sausage, knack-style",
+    "es": "Salchicha de ave tipo knack"
   },
   "scientific_name": null,
   "category_ids": [

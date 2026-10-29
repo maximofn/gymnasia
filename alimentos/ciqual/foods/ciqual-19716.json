@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage blanc, nature, 2-3% MG, sucré",
-    "en": "Quark, plain, 2-3% fat, with sugar(s)"
+    "en": "Quark, plain, 2-3% fat, with sugar(s)",
+    "es": "Queso fresco batido, natural, 2-3% materia grasa, azucarado"
   },
   "scientific_name": null,
   "category_ids": [

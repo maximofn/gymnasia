@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chocolat, tablette (aliment moyen)",
-    "en": "Chocolate, bar (average)"
+    "en": "Chocolate, bar (average)",
+    "es": "Chocolate, tableta (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Crabe ou tourteau, bouilli/cuit à l'eau",
-    "en": "Crab, boiled/cooked in water"
+    "en": "Crab, boiled/cooked in water",
+    "es": "Cangrejo o buey de mar, hervido/cocido en agua"
   },
   "scientific_name": "Cancer pagurus",
   "category_ids": [

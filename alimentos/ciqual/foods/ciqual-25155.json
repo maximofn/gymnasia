@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pâtes fraîches farcies (ex : raviolis, tortellinis), au fromage et aux légumes, préemballées, cuites",
-    "en": "Fresh pasta, stuffed with cheese and vegetables (e.g. ravioli), cooked, prepacked"
+    "en": "Fresh pasta, stuffed with cheese and vegetables (e.g. ravioli), cooked, prepacked",
+    "es": "Pasta fresca rellena (ej.: raviolis, tortelinis), de queso y verduras, envasada, cocida"
   },
   "scientific_name": null,
   "category_ids": [

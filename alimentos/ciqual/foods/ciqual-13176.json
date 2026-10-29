@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pomme, chair sans peau, bouillie/cuite à l'eau",
-    "en": "Apples, raw, without skin, cooked, boiled/cooked in water"
+    "en": "Apples, raw, without skin, cooked, boiled/cooked in water",
+    "es": "Manzana, pulpa sin piel, cocida/cocinada en agua"
   },
   "scientific_name": null,
   "category_ids": [

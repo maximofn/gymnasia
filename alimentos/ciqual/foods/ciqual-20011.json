@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Champignon, tout type, appertisé, égoutté",
-    "en": "Mushroom, all types, canned, drained"
+    "en": "Mushroom, all types, canned, drained",
+    "es": "Champiñón, cualquier tipo, en conserva, escurrido"
   },
   "scientific_name": "(Genus and species unknown or multiple)",
   "category_ids": [

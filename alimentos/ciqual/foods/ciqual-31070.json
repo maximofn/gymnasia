@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chocolat noir aux fruits secs (noisettes, amandes, raisins, praline), tablette",
-    "en": "Dark chocolate, with dried fruits (nuts, almonds, raisin, praliné), bar"
+    "en": "Dark chocolate, with dried fruits (nuts, almonds, raisin, praliné), bar",
+    "es": "Chocolate negro con frutos secos (avellanas, almendras, pasas, praliné), tableta"
   },
   "scientific_name": null,
   "category_ids": [

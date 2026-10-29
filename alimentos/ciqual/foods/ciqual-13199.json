@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Compote, tout type de fruits autres que pomme seule, allégée en sucres, préemballée, rayon ambiant",
-    "en": "Fruit compote, miscellaneous fruits other than apple only, reduced sugar, prepacked, room temperature"
+    "en": "Fruit compote, miscellaneous fruits other than apple only, reduced sugar, prepacked, room temperature",
+    "es": "Compota, todo tipo de frutas distintas de manzana sola, con contenido reducido de azúcares, envasada, zona ambiente"
   },
   "scientific_name": null,
   "category_ids": [

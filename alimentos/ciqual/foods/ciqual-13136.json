@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Framboise, surgelée, crue",
-    "en": "Raspberry, frozen, raw"
+    "en": "Raspberry, frozen, raw",
+    "es": "Frambuesa, ultracongelada, cruda"
   },
   "scientific_name": "Rubus idaeus L.",
   "category_ids": [

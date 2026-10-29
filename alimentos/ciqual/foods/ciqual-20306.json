@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Carotte, bouillie/cuite à l'eau, fondante",
-    "en": "Carrot, boiled/cooked in water, tender"
+    "en": "Carrot, boiled/cooked in water, tender",
+    "es": "Zanahoria, hervida/cocida en agua, tierna"
   },
   "scientific_name": "Daucus carota L. subsp. Sativus",
   "category_ids": [

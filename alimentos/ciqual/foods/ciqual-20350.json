@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Brocoli, bouilli/cuit à l'eau (aliment moyen)",
-    "en": "Broccoli, boiled/cooked in water (average)"
+    "en": "Broccoli, boiled/cooked in water (average)",
+    "es": "Brócoli, hervido/cocido en agua (valor medio)"
   },
   "scientific_name": "Brassica oleracea L. var. italica Plenck",
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Carpe, rôtie/cuite au four",
-    "en": "Carp, roasted/baked"
+    "en": "Carp, roasted/baked",
+    "es": "Carpa, asada/cocida al horno"
   },
   "scientific_name": "Cyprinus carpio",
   "category_ids": [

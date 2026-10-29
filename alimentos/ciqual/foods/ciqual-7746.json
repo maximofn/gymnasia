@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Brioche, sans précision (aliment moyen)",
-    "en": "Brioche (average)"
+    "en": "Brioche (average)",
+    "es": "Brioche, sin especificación (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

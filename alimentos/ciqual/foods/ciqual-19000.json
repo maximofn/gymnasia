@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lait de grand mélange, en vrac",
-    "en": "Milk, bulk"
+    "en": "Milk, bulk",
+    "es": "Leche de mezcla general, a granel"
   },
   "scientific_name": null,
   "category_ids": [

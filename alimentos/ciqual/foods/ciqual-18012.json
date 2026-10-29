@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson à l'eau minérale ou de source, aromatisée, sucrée",
-    "en": "Bottled water, flavoured, with sugar(s)"
+    "en": "Bottled water, flavoured, with sugar(s)",
+    "es": "Bebida con agua mineral o de manantial, aromatizada, azucarada"
   },
   "scientific_name": null,
   "category_ids": [

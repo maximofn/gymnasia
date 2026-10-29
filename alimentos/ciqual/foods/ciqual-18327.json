@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Limonade, sans précision sur la teneur en sucres et édulcorants (aliment moyen)",
-    "en": "Lemonade, sugar and sweetener contents unknown (average)"
+    "en": "Lemonade, sugar and sweetener contents unknown (average)",
+    "es": "Limonada, sin especificar contenido de azúcares y edulcorantes (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

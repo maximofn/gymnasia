@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Truite ou truite fario, cuite à la vapeur",
-    "en": "Trout, steamed"
+    "en": "Trout, steamed",
+    "es": "Trucha o trucha común, cocida al vapor"
   },
   "scientific_name": "Salmo trutta",
   "category_ids": [

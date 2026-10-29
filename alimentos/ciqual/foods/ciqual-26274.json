@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza au speck ou jambon cru, préemballée",
-    "en": "Pizza, cured ham, prepacked"
+    "en": "Pizza, cured ham, prepacked",
+    "es": "Pizza de speck o jamón curado, envasada"
   },
   "scientific_name": null,
   "category_ids": [

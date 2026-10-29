@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Herbes aromatiques fraîches (aliment moyen)",
-    "en": "Herbs, fresh (average)"
+    "en": "Herbs, fresh (average)",
+    "es": "Hierbas aromáticas frescas (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

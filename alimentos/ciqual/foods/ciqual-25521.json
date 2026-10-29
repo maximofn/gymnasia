@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich baguette, jambon emmental beurre",
-    "en": "Sandwich, baguette, ham, emmental cheese and butter"
+    "en": "Sandwich, baguette, ham, emmental cheese and butter",
+    "es": "Bocadillo de baguette con jamón, emmental y mantequilla"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Escargot, cuit",
-    "en": "Snail, without added fat, cooked"
+    "en": "Snail, without added fat, cooked",
+    "es": "Caracol, cocido"
   },
   "scientific_name": "Helix spp.",
   "category_ids": [

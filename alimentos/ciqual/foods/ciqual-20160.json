@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Champignon, cèpe, cru",
-    "en": "Cep or boletus mushroom, raw"
+    "en": "Cep or boletus mushroom, raw",
+    "es": "Champiñón, boletus, crudo"
   },
   "scientific_name": "Boletus edulis",
   "category_ids": [

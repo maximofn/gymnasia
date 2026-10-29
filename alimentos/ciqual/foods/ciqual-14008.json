@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Gibier à poil, cuit (aliment moyen)",
-    "en": "Game, cooked (average)"
+    "en": "Game, cooked (average)",
+    "es": "Caza de pelo, cocinada (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

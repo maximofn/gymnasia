@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage blanc ou spécialité laitière, aux fruits, 0% MG, avec édulcorants, sucré, enrichi en vitamine D",
-    "en": "Quark or dairy specialty, with fruits, 0% fat, with sweetener(s), with sugar(s), fortified with vitamin D"
+    "en": "Quark or dairy specialty, with fruits, 0% fat, with sweetener(s), with sugar(s), fortified with vitamin D",
+    "es": "Queso fresco batido o especialidad láctea, con frutas, 0% materia grasa, con edulcorantes, azucarado, enriquecido con vitamina D"
   },
   "scientific_name": null,
   "category_ids": [

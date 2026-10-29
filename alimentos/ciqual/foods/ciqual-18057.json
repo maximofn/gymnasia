@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson préparée à partir de boisson concentrée à diluer type menthe, fraise, etc, sans sucres ajoutés, avec édulcorants, type \"sirop 0%\", diluée dans l'eau",
-    "en": "Preparation for beverage diluted in water (eg. mint, strawberry etc.), no added sugars, with sweetener(s), type syrup 0%"
+    "en": "Preparation for beverage diluted in water (eg. mint, strawberry etc.), no added sugars, with sweetener(s), type syrup 0%",
+    "es": "Bebida preparada a partir de bebida concentrada para diluir tipo menta, fresa, etc., sin azúcares añadidos, con edulcorantes, tipo \"sirop 0%\", diluida en agua"
   },
   "scientific_name": null,
   "category_ids": [

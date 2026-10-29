@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Raisin noir, cru",
-    "en": "Grape, red, raw"
+    "en": "Grape, red, raw",
+    "es": "Uva negra, cruda"
   },
   "scientific_name": "Vitis vinifera L.",
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Épinard, cru",
-    "en": "Spinach, raw"
+    "en": "Spinach, raw",
+    "es": "Espinaca, cruda"
   },
   "scientific_name": "Spinacia oleracea L.",
   "category_ids": [

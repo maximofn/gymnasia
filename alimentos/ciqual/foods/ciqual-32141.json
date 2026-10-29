@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Muesli non enrichi en vitamines et minéraux (aliment moyen)",
-    "en": "Muesli, not fortified (average food)"
+    "en": "Muesli, not fortified (average food)",
+    "es": "Muesli no enriquecido con vitaminas y minerales (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

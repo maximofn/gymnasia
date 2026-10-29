@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Bière sans alcool, sucrée, aromatisée ou au jus de fruits",
-    "en": "Beer, alcohol-free, sweetened, flavoured or with fruit juice"
+    "en": "Beer, alcohol-free, sweetened, flavoured or with fruit juice",
+    "es": "Cerveza sin alcohol, azucarada, aromatizada o con zumo de frutas"
   },
   "scientific_name": null,
   "category_ids": [

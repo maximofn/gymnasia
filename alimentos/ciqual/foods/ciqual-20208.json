@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Carotte, surgelée, crue",
-    "en": "Carrot, frozen, raw"
+    "en": "Carrot, frozen, raw",
+    "es": "Zanahoria, ultracongelada, cruda"
   },
   "scientific_name": "Daucus carota L. subsp. Sativus",
   "category_ids": [

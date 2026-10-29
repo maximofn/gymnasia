@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Tomate sans précision, crue (aliment moyen)",
-    "en": "Tomato, raw (average)"
+    "en": "Tomato, raw (average)",
+    "es": "Tomate sin especificar, crudo (valor medio)"
   },
   "scientific_name": "Solanum lycopersicum L.",
   "category_ids": [

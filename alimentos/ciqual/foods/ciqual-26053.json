@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Thon, cru",
-    "en": "Tuna, raw"
+    "en": "Tuna, raw",
+    "es": "Atún, crudo"
   },
   "scientific_name": "Thunnus spp.",
   "category_ids": [

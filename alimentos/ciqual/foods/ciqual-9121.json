@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Riz, mélange de variétés (blanc, complet, rouge, sauvage, etc.), cru",
-    "en": "Rice, mix of species (white, wholegrain, wild, red, etc.), raw"
+    "en": "Rice, mix of species (white, wholegrain, wild, red, etc.), raw",
+    "es": "Arroz, mezcla de variedades (blanco, integral, rojo, salvaje, etc.), crudo"
   },
   "scientific_name": null,
   "category_ids": [

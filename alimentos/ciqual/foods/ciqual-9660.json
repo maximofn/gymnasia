@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Germe de blé",
-    "en": "Wheat germ"
+    "en": "Wheat germ",
+    "es": "Germen de trigo"
   },
   "scientific_name": null,
   "category_ids": [

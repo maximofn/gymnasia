@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Coq au vin",
-    "en": "Cockerel in red wine sauce"
+    "en": "Cockerel in red wine sauce",
+    "es": "Gallo al vino"
   },
   "scientific_name": null,
   "category_ids": [

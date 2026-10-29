@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Spécialité de fruits, tout type de fruits, sans sucres ajoutés (mélange chairs et/ou purées de fruits, mais toujours avec autre ingrédient), préemballée, rayon ambiant",
-    "en": "Stewed fruits, no added sugars (pulp or mixed fruits, but always with other ingredient), prepacked, room temperature"
+    "en": "Stewed fruits, no added sugars (pulp or mixed fruits, but always with other ingredient), prepacked, room temperature",
+    "es": "Especialidad de frutas variadas, sin azúcares añadidos (mezcla de pulpas o purés de fruta con algún otro ingrediente), envasada, sección a temperatura ambiente"
   },
   "scientific_name": null,
   "category_ids": [

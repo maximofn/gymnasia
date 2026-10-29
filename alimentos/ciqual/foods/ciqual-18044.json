@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Eau minérale (aliment moyen)",
-    "en": "Water, mineral (average)"
+    "en": "Water, mineral (average)",
+    "es": "Agua mineral (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

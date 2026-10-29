@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boeuf, paleron cru",
-    "en": "Beef, chuck, raw"
+    "en": "Beef, chuck, raw",
+    "es": "Vacuno, paleta, crudo"
   },
   "scientific_name": null,
   "category_ids": [

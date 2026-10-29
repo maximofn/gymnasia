@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cola, sans sucres ajoutés, avec édulcorants",
-    "en": "Cola, without added sugars and with sweetener(s)"
+    "en": "Cola, without added sugars and with sweetener(s)",
+    "es": "Cola, sin azúcares añadidos, con edulcorantes"
   },
   "scientific_name": null,
   "category_ids": [

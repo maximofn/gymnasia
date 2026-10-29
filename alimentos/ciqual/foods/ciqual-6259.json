@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boeuf, steak haché, cuit (aliment moyen)",
-    "en": "Beef, ground, cooked (average)"
+    "en": "Beef, ground, cooked (average)",
+    "es": "Vacuno, hamburguesa, cocinada (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

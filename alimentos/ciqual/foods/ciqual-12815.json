@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage de chèvre sec",
-    "en": "Cheese, dry, from goat's milk"
+    "en": "Cheese, dry, from goat's milk",
+    "es": "Queso de cabra curado"
   },
   "scientific_name": null,
   "category_ids": [

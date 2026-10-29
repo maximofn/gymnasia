@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pain de campagne",
-    "en": "French bread, country-style"
+    "en": "French bread, country-style",
+    "es": "Pan de campo"
   },
   "scientific_name": null,
   "category_ids": [

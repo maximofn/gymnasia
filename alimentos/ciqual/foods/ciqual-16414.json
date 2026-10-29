@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Beurre ou assimilé sans précision sur la teneur en matière grasse, doux (aliment moyen)",
-    "en": "Butter, unknown fat content, unsalted (average)"
+    "en": "Butter, unknown fat content, unsalted (average)",
+    "es": "Mantequilla o similar sin especificar el contenido de materia grasa, sin sal (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

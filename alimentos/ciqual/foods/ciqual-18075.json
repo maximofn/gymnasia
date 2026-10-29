@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson au thé, aromatisée, sucrée",
-    "en": "Still soft drink with tea extract, flavoured, with sugar(s)"
+    "en": "Still soft drink with tea extract, flavoured, with sugar(s)",
+    "es": "Bebida de té, aromatizada, azucarada"
   },
   "scientific_name": null,
   "category_ids": [

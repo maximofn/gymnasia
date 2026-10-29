@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poule, viande crue",
-    "en": "Hen, meat, raw"
+    "en": "Hen, meat, raw",
+    "es": "Gallina, carne cruda"
   },
   "scientific_name": null,
   "category_ids": [

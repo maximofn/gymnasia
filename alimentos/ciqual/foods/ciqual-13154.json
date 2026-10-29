@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Spécialité de fruits, tout type de fruits, sucrée (mélange chairs et/ou purées de fruits, mais toujours avec autre ingrédient), préemballée, rayon ambiant",
-    "en": "Stewed fruits, sweetened (pulp or mixed fruits, with sugar(s), but always with other ingredient), prepacked, room temperature"
+    "en": "Stewed fruits, sweetened (pulp or mixed fruits, with sugar(s), but always with other ingredient), prepacked, room temperature",
+    "es": "Especialidad de fruta, todo tipo de frutas, azucarada (mezcla de pulpas y/o purés de fruta, pero siempre con otro ingrediente), envasada, sección ambiente"
   },
   "scientific_name": null,
   "category_ids": [

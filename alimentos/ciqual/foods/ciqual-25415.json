@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Double cheeseburger, de restauration rapide",
-    "en": "Cheeseburger, double, from fast food"
+    "en": "Cheeseburger, double, from fast food",
+    "es": "Hamburguesa doble con queso, de comida rápida"
   },
   "scientific_name": null,
   "category_ids": [

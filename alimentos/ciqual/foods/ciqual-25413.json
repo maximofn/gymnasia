@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Hamburger, de restauration rapide",
-    "en": "Hamburger, from fast food"
+    "en": "Hamburger, from fast food",
+    "es": "Hamburguesa, de comida rápida"
   },
   "scientific_name": null,
   "category_ids": [

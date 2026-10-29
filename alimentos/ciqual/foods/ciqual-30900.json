@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Charcuterie (aliment moyen)",
-    "en": "Cured meat and sausages (average)"
+    "en": "Cured meat and sausages (average)",
+    "es": "Charcutería (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

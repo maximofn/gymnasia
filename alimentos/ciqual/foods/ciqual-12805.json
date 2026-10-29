@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage de chèvre frais, type palet, crottin ou bûchette",
-    "en": "Cheese, fresh, from goat's milk,"
+    "en": "Cheese, fresh, from goat's milk,",
+    "es": "Queso de cabra fresco, tipo disco, crottin o rulo"
   },
   "scientific_name": null,
   "category_ids": [

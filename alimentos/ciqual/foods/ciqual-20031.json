@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Laitue, crue",
-    "en": "Lettuce, raw"
+    "en": "Lettuce, raw",
+    "es": "Lechuga, cruda"
   },
   "scientific_name": "Lactuca sativa L.",
   "category_ids": [

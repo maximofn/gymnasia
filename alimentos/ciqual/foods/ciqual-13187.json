@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Purée de pommes, type \"compote sans sucres ajoutés\", rayon ambiant",
-    "en": "Stewed fruits, apple, no added sugars, (pulp or mixed fruits), room temperature"
+    "en": "Stewed fruits, apple, no added sugars, (pulp or mixed fruits), room temperature",
+    "es": "Puré de manzana, tipo compota sin azúcares añadidos, sección a temperatura ambiente"
   },
   "scientific_name": null,
   "category_ids": [

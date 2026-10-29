@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage à pâte molle et croûte fleurie, allégé en matière grasse (type camembert)",
-    "en": "Soft-ripened cheese with bloomy rind, reduced fat (Camembert-type cheese), from cow's milk"
+    "en": "Soft-ripened cheese with bloomy rind, reduced fat (Camembert-type cheese), from cow's milk",
+    "es": "Queso de pasta blanda y corteza enmohecida, con contenido reducido de materia grasa (tipo camembert), de leche de vaca"
   },
   "scientific_name": null,
   "category_ids": [

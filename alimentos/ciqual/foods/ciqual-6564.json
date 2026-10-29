@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Veau, viande, cuite (aliment moyen)",
-    "en": "Veal, meat, cooked (average)"
+    "en": "Veal, meat, cooked (average)",
+    "es": "Ternera, carne, cocida (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage fondu en tranchettes",
-    "en": "Processed cheese, in slices, from cow's milk"
+    "en": "Processed cheese, in slices, from cow's milk",
+    "es": "Queso fundido en lonchas, de leche de vaca"
   },
   "scientific_name": null,
   "category_ids": [

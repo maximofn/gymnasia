@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pomme, chair sans peau, crue (aliment moyen)",
-    "en": "Apple, flesh without skin, raw (average)"
+    "en": "Apple, flesh without skin, raw (average)",
+    "es": "Manzana, pulpa sin piel, cruda (valor medio)"
   },
   "scientific_name": "Malus domestica Borkhausen",
   "category_ids": [

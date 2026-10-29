@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Aubergine, cuite",
-    "en": "Eggplant, cooked"
+    "en": "Eggplant, cooked",
+    "es": "Berenjena, cocida"
   },
   "scientific_name": "Solanum melongena L.",
   "category_ids": [

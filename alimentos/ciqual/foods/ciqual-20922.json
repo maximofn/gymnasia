@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert végétal sans soja (amande, avoine, chanvre, coco, riz), aromatisé, sucré, non enrichi, rayon frais",
-    "en": "Plant-based dessert (almond, oat, hemp, coconut, rice), flavoured, with sugar(s), not fortified, refrigerated"
+    "en": "Plant-based dessert (almond, oat, hemp, coconut, rice), flavoured, with sugar(s), not fortified, refrigerated",
+    "es": "Postre vegetal sin soja (almendra, avena, cáñamo, coco, arroz), aromatizado, azucarado, no enriquecido, sección de refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

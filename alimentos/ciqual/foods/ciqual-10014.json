@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Moule commune, crue",
-    "en": "Mussel, common, raw"
+    "en": "Mussel, common, raw",
+    "es": "Mejillón común, crudo"
   },
   "scientific_name": "Mytilus edulis",
   "category_ids": [

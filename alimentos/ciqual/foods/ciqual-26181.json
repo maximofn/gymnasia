@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Thon albacore, au naturel, appertisé, égoutté",
-    "en": "Yellowfin tuna, canned in brine, drained"
+    "en": "Yellowfin tuna, canned in brine, drained",
+    "es": "Atún de aleta amarilla, al natural, en conserva, escurrido"
   },
   "scientific_name": "Thunnus albacares",
   "category_ids": [

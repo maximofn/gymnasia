@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chocolat chaud, boisson instantanée, sucrée, prête à boire (reconstituée avec du lait demi-écrémé)",
-    "en": "Instant cocoa or chocolate beverage, with sugar(s), ready-to-drink (reconstituted with standard semi-skimmed milk)"
+    "en": "Instant cocoa or chocolate beverage, with sugar(s), ready-to-drink (reconstituted with standard semi-skimmed milk)",
+    "es": "Chocolate caliente, bebida instantánea, azucarada, lista para beber (reconstituida con leche semidesnatada)"
   },
   "scientific_name": null,
   "category_ids": [

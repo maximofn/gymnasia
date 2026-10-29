@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Brocoli, cuit (aliment moyen)",
-    "en": "Broccoli, cooked (average)"
+    "en": "Broccoli, cooked (average)",
+    "es": "Brócoli, cocido (valor medio)"
   },
   "scientific_name": "Brassica oleracea L. var. italica Plenck",
   "category_ids": [

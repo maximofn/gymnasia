@@ -6,6 +6,8 @@ import test from "node:test";
 
 import fc from "fast-check";
 
+import { applyCiqualTranslations, ciqualNameFingerprint } from "./ciqual-translations.mjs";
+
 import {
   checkCiqualArtifacts, ciqualRoot, ciqualSource, convertCiqualTables,
   createCiqualArtifacts, downloadCiqualSource, loadCiqualSource,
@@ -41,6 +43,66 @@ async function temporary(t) {
   t.after(() => rm(directory, { recursive: true, force: true }));
   return directory;
 }
+
+function translationsFor(catalog) {
+  return {
+    schema_version: 1, dataset_id: "anses-ciqual-2025", locale: "es-ES",
+    provenance: { method: "test_fixture", attribution: "Traducciones de prueba de Gymnasia." },
+    ...Object.fromEntries(["foods", "groups", "nutrients"].map((domain) => [domain,
+      Object.fromEntries(catalog[domain].map((row) => [row.id, {
+        source_sha256: ciqualNameFingerprint(row.names), name: `Español ${domain}: ${row.id}`,
+      }])),
+    ])),
+  };
+}
+
+test("las traducciones CIQUAL añaden español sin cambiar originales, IDs, unidades o nutrientes", () => {
+  const catalog = convertCiqualTables(fixture());
+  const before = structuredClone(catalog);
+  const translations = translationsFor(catalog);
+  const localized = applyCiqualTranslations(catalog, translations);
+  assert.deepEqual(catalog, before);
+  for (const domain of ["foods", "groups", "nutrients"]) {
+    for (let index = 0; index < catalog[domain].length; index++) {
+      const { names, ...rest } = localized[domain][index];
+      assert.deepEqual(rest, Object.fromEntries(Object.entries(catalog[domain][index]).filter(([key]) => key !== "names")));
+      assert.equal(names.fr, catalog[domain][index].names.fr);
+      assert.equal(names.en, catalog[domain][index].names.en);
+      assert.equal(names.es, translations[domain][localized[domain][index].id].name);
+    }
+  }
+  assert.equal(localized.foods[0].nutrition_profiles, catalog.foods[0].nutrition_profiles);
+  assert.deepEqual(localized.references, catalog.references);
+  const artifacts = createCiqualArtifacts(localized);
+  assert.deepEqual(JSON.parse(artifacts.get("all.json")), localized.foods);
+  assert.equal(JSON.parse(artifacts.get("index.json"))[0].names.es, "Español foods: ciqual-123");
+  assert.deepEqual(JSON.parse(artifacts.get("translations.es.json")), translations);
+  assert.equal(JSON.parse(artifacts.get("manifest.json")).localization.counts.foods, 1);
+});
+
+test("las traducciones CIQUAL detectan nombres oficiales modificados, ausencias y entradas ajenas", () => {
+  for (const mutate of [
+    (overlay) => { overlay.foods["ciqual-123"].source_sha256 = "0".repeat(64); },
+    (overlay) => { delete overlay.foods["ciqual-123"]; },
+    (overlay) => { overlay.foods["ciqual-999"] = overlay.foods["ciqual-123"]; },
+    (overlay) => { overlay.foods["ciqual-123"].name = ""; },
+    (overlay) => { overlay.foods["ciqual-123"].name = " Pomme "; },
+    (overlay) => { overlay.foods["ciqual-123"].name = "Manzana\n"; },
+    (overlay) => { overlay.dataset_id = "otra-fuente"; },
+    (overlay) => { overlay.locale = "fr"; },
+    (overlay) => { delete overlay.provenance.attribution; },
+    (overlay) => { delete overlay.groups; },
+  ]) {
+    const catalog = convertCiqualTables(fixture());
+    const overlay = translationsFor(catalog);
+    mutate(overlay);
+    assert.throws(() => applyCiqualTranslations(catalog, overlay));
+  }
+  const catalog = convertCiqualTables(fixture());
+  const translations = translationsFor(catalog);
+  catalog.foods[0].names.en = "Changed English source";
+  assert.throws(() => applyCiqualTranslations(catalog, translations), /obsoleta/);
+});
 
 test("CIQUAL conserva ceros, trazas, desconocidos, límites, comas y exponentes", () => {
   assert.deepEqual(parseCiqualValue("0"), { value: 0, qualifier: "reported", source_value: "0" });
@@ -175,4 +237,9 @@ test("la entrega CIQUAL completa pasa el contrato y conserva las cifras de la pu
   const food = JSON.parse(await readFile(join(root, "foods/ciqual-24999.json"), "utf8"));
   assert.deepEqual(food.category_ids, []);
   assert.equal(food.names.en, "Dessert (average)");
+  assert.equal(food.names.es, "Postre (valor medio)");
+  const overlay = JSON.parse(await readFile(join(root, "translations.es.json"), "utf8"));
+  assert.equal(Object.keys(overlay.foods).length, 3484);
+  assert.equal(Object.keys(overlay.groups).length, 161);
+  assert.equal(Object.keys(overlay.nutrients).length, 74);
 });

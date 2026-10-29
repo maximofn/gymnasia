@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert au soja, rayon frais (aliment moyen)",
-    "en": "Soy dessert, refrigerated (average)"
+    "en": "Soy dessert, refrigerated (average)",
+    "es": "Postre de soja, sección refrigerados (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage blanc et crème fouettée, sur lit de fruits, sucré",
-    "en": "Quark and whipped cream, on a fruit layer, with sugar(s)"
+    "en": "Quark and whipped cream, on a fruit layer, with sugar(s)",
+    "es": "Queso fresco batido y nata montada, sobre lecho de frutas, azucarado"
   },
   "scientific_name": null,
   "category_ids": [

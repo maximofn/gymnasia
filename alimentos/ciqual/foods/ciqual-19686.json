@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Spécialité laitière ou dessert lacté, aromatisé, à faible teneur en matière grasse, sucré, avec édulcorants, rayon frais",
-    "en": "Dairy specialty or milk-based desert, flavoured, reduced fat, with sugar(s) and sweetener(s), refrigerated"
+    "en": "Dairy specialty or milk-based desert, flavoured, reduced fat, with sugar(s) and sweetener(s), refrigerated",
+    "es": "Especialidad láctea o postre lácteo, aromatizado, bajo en materia grasa, azucarado, con edulcorantes, sección de refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage type feta, au lait de vache 100%",
-    "en": "Feta-type cheese, 100% from cow's milk"
+    "en": "Feta-type cheese, 100% from cow's milk",
+    "es": "Queso tipo feta, 100% de leche de vaca"
   },
   "scientific_name": null,
   "category_ids": [

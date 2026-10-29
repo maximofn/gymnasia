@@ -15,22 +15,27 @@ barras ni proporciona una receta con cantidades de ingredientes.
 | Archivo | Contenido |
 | --- | --- |
 | `foods/ciqual-<código>.json` | Una ficha completa por alimento; el código original permanece estable |
-| `index.json` | IDs, nombres oficiales, categorías y rutas de las fichas; permite buscar y cargar una sola ficha |
+| `index.json` | IDs, nombres oficiales y españoles, categorías y rutas de las fichas; permite buscar y cargar una sola ficha |
 | `all.json` | Agregado JSON completo, un alimento por línea; pensado para importaciones y análisis |
 | `nutrients.json` | Diccionario de 74 componentes: códigos CIQUAL, etiquetas originales, unidades y códigos INFOODS |
 | `groups.json` | 161 categorías con nombres y relación padre/hijo |
 | `references.json` | 1.978 referencias bibliográficas originales, resueltas mediante `source_ref` |
+| `translations.es.json` | Traducciones españolas versionadas de alimentos, categorías y componentes, vinculadas al texto de origen por SHA-256 |
 | `manifest.json` | Versión, atribución, fuente, huellas de entrada/salida, contadores y roles de nutrientes comunes |
 
-Los JSON se generan de forma determinista. No se editan a mano. El formato está
+Las fichas, índices y diccionarios se generan de forma determinista y no se editan
+a mano. `translations.es.json` es la fuente de curación de las traducciones; su
+campo `name` se puede corregir y se conserva al reimportar los XML. El formato está
 definido en `scripts/catalogs/schemas/ciqual-food.schema.json`; los diccionarios
 se obtienen de las tablas de componentes, grupos y fuentes de la misma entrega.
 
 ## Fichas y valores
 
-- `names.fr` y `names.en`: nombres oficiales completos. La preparación (crudo,
-  cocido, escurrido, etc.) se conserva en esos nombres. Esta entrega no infiere
-  estados estructurados a partir de palabras ni añade traducciones automáticas.
+- `names.fr` y `names.en`: nombres oficiales completos, conservados literalmente.
+  La preparación (crudo, cocido, escurrido, etc.) se conserva en esos nombres.
+- `names.es`: traducción al español de España para alimentos, categorías y
+  componentes. No es una etiqueta oficial de ANSES. Esta entrega no infiere
+  estados estructurados a partir de palabras.
 - `category_ids`: jerarquía CIQUAL, con sus ceros iniciales. Los códigos formados
   solo por ceros significan clasificación ausente y se omiten; por ejemplo,
   `ciqual-24999` conserva una lista vacía.
@@ -73,6 +78,36 @@ disponibles y no incluyen fibra.
 La etiqueta inglesa del componente `ciqual-51104` contiene la errata de origen
 `µg/100mg`. Se conserva literalmente; su unidad normalizada es `ug` por **100 g**,
 según la etiqueta francesa y la sección 3.2.1 de la documentación oficial.
+La etiqueta española también utiliza correctamente `µg/100 g`.
+
+## Traducciones españolas
+
+El catálogo incluye las 3.484 etiquetas de alimentos, 161 categorías y 74
+componentes en español. Las traducciones se elaboraron con asistencia de Google
+Gemini, revisión editorial de categorías y componentes, comprobaciones de cifras
+y calificadores y correcciones selectivas de alimentos. La procedencia está
+documentada en `translations.es.json` y en el manifiesto; no constituye una
+revisión profesional exhaustiva de cada denominación alimentaria.
+
+Para desambiguar algunos pescados se contrastó el nombre científico con el
+[listado de denominaciones comerciales de la Secretaría General de Pesca](https://www.boe.es/buscar/act.php?id=BOE-A-2026-12598).
+
+Cada entrada de `translations.es.json` contiene `name` y `source_sha256`. La
+huella se calcula sobre `JSON.stringify({ fr: names.fr, en: names.en })`, en ese
+orden y sin indentación. Vincula la traducción a las dos etiquetas de origen: si
+un nombre original cambia, falta una traducción o sobra un ID, la importación y
+el check se detienen para exigir una revisión. Los espacios, la puntuación y los
+acentos del original forman parte de la huella.
+
+Para corregir una traducción, editar solo su `name` y volver a ejecutar
+`npm run import:ciqual -- --source-dir /ruta/a/los/xml` (o `--download`). No cambiar
+la huella salvo después de revisar un cambio del texto original. La importación
+y las pruebas utilizan el archivo versionado: no llaman a un modelo ni necesitan
+claves del proveedor.
+
+Los nombres científicos y las citas bibliográficas conservan su forma original.
+Las traducciones no modifican IDs, clasificaciones, unidades, valores, rangos,
+códigos de confianza ni referencias nutricionales.
 
 ## Reproducir y verificar
 
@@ -114,7 +149,7 @@ de búsqueda/carga; `alimentos/all.json` y el baseline móvil siguen pertenecien
 al catálogo curado anterior. Las fichas CIQUAL no se añaden automáticamente al
 bundle móvil.
 
-Las raciones domésticas, imágenes, traducciones españolas, alérgenos y otras
+Las raciones domésticas, imágenes, alérgenos y otras
 características que CIQUAL no documenta quedan sin completar. Los 100 g son la
 base de referencia nutricional, no una ración recomendada.
 

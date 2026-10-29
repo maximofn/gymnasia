@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson gazeuse aromatisée, sans fruit, sucrée, avec édulcorants",
-    "en": "Carbonated beverage or soft drink, without fruit, with sugar(s) and with sweetener(s)"
+    "en": "Carbonated beverage or soft drink, without fruit, with sugar(s) and with sweetener(s)",
+    "es": "Bebida gaseosa aromatizada, sin fruta, azucarada, con edulcorantes"
   },
   "scientific_name": null,
   "category_ids": [

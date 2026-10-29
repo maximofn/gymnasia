@@ -4,7 +4,8 @@
     "source_code": "10000",
     "names": {
       "fr": "Cendres (g/100 g)",
-      "en": "Ash (g/100g)"
+      "en": "Ash (g/100g)",
+      "es": "Cenizas (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "ASH"
@@ -14,7 +15,8 @@
     "source_code": "10004",
     "names": {
       "fr": "Sel chlorure de sodium (g/100 g)",
-      "en": "Salt (g/100g)"
+      "en": "Salt (g/100g)",
+      "es": "Sal, cloruro de sodio (g/100 g)"
     },
     "unit": "g",
     "infoods_code": null
@@ -24,7 +26,8 @@
     "source_code": "10110",
     "names": {
       "fr": "Sodium (mg/100 g)",
-      "en": "Sodium (mg/100g)"
+      "en": "Sodium (mg/100g)",
+      "es": "Sodio (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "NA"
@@ -34,7 +37,8 @@
     "source_code": "10120",
     "names": {
       "fr": "Magnésium (mg/100 g)",
-      "en": "Magnesium (mg/100g)"
+      "en": "Magnesium (mg/100g)",
+      "es": "Magnesio (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "MG"
@@ -44,7 +48,8 @@
     "source_code": "10150",
     "names": {
       "fr": "Phosphore (mg/100 g)",
-      "en": "Phosphorus (mg/100g)"
+      "en": "Phosphorus (mg/100g)",
+      "es": "Fósforo (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "P"
@@ -54,7 +59,8 @@
     "source_code": "10170",
     "names": {
       "fr": "Chlorure (mg/100 g)",
-      "en": "Chloride (mg/100g)"
+      "en": "Chloride (mg/100g)",
+      "es": "Cloruro (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "CLD"
@@ -64,7 +70,8 @@
     "source_code": "10190",
     "names": {
       "fr": "Potassium (mg/100 g)",
-      "en": "Potassium (mg/100g)"
+      "en": "Potassium (mg/100g)",
+      "es": "Potasio (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "K"
@@ -74,7 +81,8 @@
     "source_code": "10200",
     "names": {
       "fr": "Calcium (mg/100 g)",
-      "en": "Calcium (mg/100g)"
+      "en": "Calcium (mg/100g)",
+      "es": "Calcio (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "CA"
@@ -84,7 +92,8 @@
     "source_code": "10251",
     "names": {
       "fr": "Manganèse (mg/100 g)",
-      "en": "Manganese (mg/100g)"
+      "en": "Manganese (mg/100g)",
+      "es": "Manganeso (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "MN"
@@ -94,7 +103,8 @@
     "source_code": "10260",
     "names": {
       "fr": "Fer (mg/100 g)",
-      "en": "Iron (mg/100g)"
+      "en": "Iron (mg/100g)",
+      "es": "Hierro (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "FE"
@@ -104,7 +114,8 @@
     "source_code": "10290",
     "names": {
       "fr": "Cuivre (mg/100 g)",
-      "en": "Copper (mg/100g)"
+      "en": "Copper (mg/100g)",
+      "es": "Cobre (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "CU"
@@ -114,7 +125,8 @@
     "source_code": "10300",
     "names": {
       "fr": "Zinc (mg/100 g)",
-      "en": "Zinc (mg/100g)"
+      "en": "Zinc (mg/100g)",
+      "es": "Zinc (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "ZN"
@@ -124,7 +136,8 @@
     "source_code": "10340",
     "names": {
       "fr": "Sélénium (µg/100 g)",
-      "en": "Selenium (µg/100g)"
+      "en": "Selenium (µg/100g)",
+      "es": "Selenio (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "SE"
@@ -134,7 +147,8 @@
     "source_code": "10530",
     "names": {
       "fr": "Iode (µg/100 g)",
-      "en": "Iodine (µg/100g)"
+      "en": "Iodine (µg/100g)",
+      "es": "Yodo (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "ID"
@@ -144,7 +158,8 @@
     "source_code": "25000",
     "names": {
       "fr": "Protéines, N x facteur de Jones (g/100 g)",
-      "en": "Protein (g/100g)"
+      "en": "Protein (g/100g)",
+      "es": "Proteínas, N × factor de Jones (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "PROCNT"
@@ -154,7 +169,8 @@
     "source_code": "25003",
     "names": {
       "fr": "Protéines, N x 6.25 (g/100 g)",
-      "en": "Protein, crude, N x 6.25 (g/100g)"
+      "en": "Protein, crude, N x 6.25 (g/100g)",
+      "es": "Proteínas, N × 6,25 (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "PROCNT"
@@ -164,7 +180,8 @@
     "source_code": "31000",
     "names": {
       "fr": "Glucides (g/100 g)",
-      "en": "Carbohydrate (g/100g)"
+      "en": "Carbohydrate (g/100g)",
+      "es": "Hidratos de carbono disponibles (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "CHOAVL"
@@ -174,7 +191,8 @@
     "source_code": "32000",
     "names": {
       "fr": "Sucres (g/100 g)",
-      "en": "Sugars (g/100g)"
+      "en": "Sugars (g/100g)",
+      "es": "Azúcares (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "SUGAR"
@@ -184,7 +202,8 @@
     "source_code": "32210",
     "names": {
       "fr": "Fructose (g/100 g)",
-      "en": "Fructose (g/100g)"
+      "en": "Fructose (g/100g)",
+      "es": "Fructosa (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "FRUS"
@@ -194,7 +213,8 @@
     "source_code": "32220",
     "names": {
       "fr": "Galactose (g/100 g)",
-      "en": "Galactose (g/100g)"
+      "en": "Galactose (g/100g)",
+      "es": "Galactosa (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "GALS"
@@ -204,7 +224,8 @@
     "source_code": "32250",
     "names": {
       "fr": "Glucose (g/100 g)",
-      "en": "Glucose (g/100g)"
+      "en": "Glucose (g/100g)",
+      "es": "Glucosa (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "GLUS"
@@ -214,7 +235,8 @@
     "source_code": "32410",
     "names": {
       "fr": "Lactose (g/100 g)",
-      "en": "Lactose (g/100g)"
+      "en": "Lactose (g/100g)",
+      "es": "Lactosa (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "LACS"
@@ -224,7 +246,8 @@
     "source_code": "32430",
     "names": {
       "fr": "Maltose (g/100 g)",
-      "en": "Maltose (g/100g)"
+      "en": "Maltose (g/100g)",
+      "es": "Maltosa (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "MALS"
@@ -234,7 +257,8 @@
     "source_code": "32480",
     "names": {
       "fr": "Saccharose (g/100 g)",
-      "en": "Sucrose (g/100g)"
+      "en": "Sucrose (g/100g)",
+      "es": "Sacarosa (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "SUCS"
@@ -244,7 +268,8 @@
     "source_code": "327",
     "names": {
       "fr": "Energie, Règlement UE N° 1169/2011 (kJ/100 g)",
-      "en": "Energy, Regulation EU No 1169/2011 (kJ/100g)"
+      "en": "Energy, Regulation EU No 1169/2011 (kJ/100g)",
+      "es": "Energía, Reglamento UE n.º 1169/2011 (kJ/100 g)"
     },
     "unit": "kJ",
     "infoods_code": "ENERC"
@@ -254,7 +279,8 @@
     "source_code": "328",
     "names": {
       "fr": "Energie, Règlement UE N° 1169/2011 (kcal/100 g)",
-      "en": "Energy, Regulation EU No 1169/2011 (kcal/100g)"
+      "en": "Energy, Regulation EU No 1169/2011 (kcal/100g)",
+      "es": "Energía, Reglamento UE n.º 1169/2011 (kcal/100 g)"
     },
     "unit": "kcal",
     "infoods_code": "ENERC"
@@ -264,7 +290,8 @@
     "source_code": "33110",
     "names": {
       "fr": "Amidon (g/100 g)",
-      "en": "Starch (g/100g)"
+      "en": "Starch (g/100g)",
+      "es": "Almidón (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "STARCH"
@@ -274,7 +301,8 @@
     "source_code": "332",
     "names": {
       "fr": "Energie, N x facteur Jones, avec fibres (kJ/100 g)",
-      "en": "Energy, N x Jones' factor, with fibres (kJ/100g)"
+      "en": "Energy, N x Jones' factor, with fibres (kJ/100g)",
+      "es": "Energía, N × factor de Jones, con fibra (kJ/100 g)"
     },
     "unit": "kJ",
     "infoods_code": "ENERC"
@@ -284,7 +312,8 @@
     "source_code": "333",
     "names": {
       "fr": "Energie, N x facteur Jones, avec fibres (kcal/100 g)",
-      "en": "Energy, N x Jones' factor, with fibres (kcal/100g)"
+      "en": "Energy, N x Jones' factor, with fibres (kcal/100g)",
+      "es": "Energía, N × factor de Jones, con fibra (kcal/100 g)"
     },
     "unit": "kcal",
     "infoods_code": "ENERC"
@@ -294,7 +323,8 @@
     "source_code": "34000",
     "names": {
       "fr": "Polyols totaux (g/100 g)",
-      "en": "Polyols (g/100g)"
+      "en": "Polyols (g/100g)",
+      "es": "Polialcoholes totales (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "POLYL"
@@ -304,7 +334,8 @@
     "source_code": "34100",
     "names": {
       "fr": "Fibres alimentaires (g/100 g)",
-      "en": "Fibres (g/100g)"
+      "en": "Fibres (g/100g)",
+      "es": "Fibra alimentaria (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "FIB-"
@@ -314,7 +345,8 @@
     "source_code": "400",
     "names": {
       "fr": "Eau (g/100 g)",
-      "en": "Water (g/100g)"
+      "en": "Water (g/100g)",
+      "es": "Agua (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "WATER"
@@ -324,7 +356,8 @@
     "source_code": "40000",
     "names": {
       "fr": "Lipides (g/100 g)",
-      "en": "Fat (g/100g)"
+      "en": "Fat (g/100g)",
+      "es": "Grasas (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "FAT"
@@ -334,7 +367,8 @@
     "source_code": "40302",
     "names": {
       "fr": "AG saturés (g/100 g)",
-      "en": "FA saturated (g/100g)"
+      "en": "FA saturated (g/100g)",
+      "es": "Ácidos grasos saturados (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "FASAT"
@@ -344,7 +378,8 @@
     "source_code": "40303",
     "names": {
       "fr": "AG monoinsaturés (g/100 g)",
-      "en": "FA mono (g/100g)"
+      "en": "FA mono (g/100g)",
+      "es": "Ácidos grasos monoinsaturados (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "FAMS"
@@ -354,7 +389,8 @@
     "source_code": "40304",
     "names": {
       "fr": "AG polyinsaturés (g/100 g)",
-      "en": "FA poly (g/100g)"
+      "en": "FA poly (g/100g)",
+      "es": "Ácidos grasos poliinsaturados (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "FAPU"
@@ -364,7 +400,8 @@
     "source_code": "40400",
     "names": {
       "fr": "AG 4:0, butyrique (g/100 g)",
-      "en": "FA 4:0 (g/100g)"
+      "en": "FA 4:0 (g/100g)",
+      "es": "Ácido graso 4:0, butírico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F4D0"
@@ -374,7 +411,8 @@
     "source_code": "40600",
     "names": {
       "fr": "AG 6:0, caproïque (g/100 g)",
-      "en": "FA 6:0 (g/100g)"
+      "en": "FA 6:0 (g/100g)",
+      "es": "Ácido graso 6:0, caproico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F6D0"
@@ -384,7 +422,8 @@
     "source_code": "40800",
     "names": {
       "fr": "AG 8:0, caprylique (g/100 g)",
-      "en": "FA 8:0 (g/100g)"
+      "en": "FA 8:0 (g/100g)",
+      "es": "Ácido graso 8:0, caprílico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F8D0"
@@ -394,7 +433,8 @@
     "source_code": "41000",
     "names": {
       "fr": "AG 10:0, caprique (g/100 g)",
-      "en": "FA 10:0 (g/100g)"
+      "en": "FA 10:0 (g/100g)",
+      "es": "Ácido graso 10:0, cáprico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F10D0"
@@ -404,7 +444,8 @@
     "source_code": "41200",
     "names": {
       "fr": "AG 12:0, laurique (g/100 g)",
-      "en": "FA 12:0 (g/100g)"
+      "en": "FA 12:0 (g/100g)",
+      "es": "Ácido graso 12:0, láurico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F12D0"
@@ -414,7 +455,8 @@
     "source_code": "41400",
     "names": {
       "fr": "AG 14:0, myristique (g/100 g)",
-      "en": "FA 14:0 (g/100g)"
+      "en": "FA 14:0 (g/100g)",
+      "es": "Ácido graso 14:0, mirístico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F14D0"
@@ -424,7 +466,8 @@
     "source_code": "41600",
     "names": {
       "fr": "AG 16:0, palmitique (g/100 g)",
-      "en": "FA 16:0 (g/100g)"
+      "en": "FA 16:0 (g/100g)",
+      "es": "Ácido graso 16:0, palmítico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F16D0"
@@ -434,7 +477,8 @@
     "source_code": "41800",
     "names": {
       "fr": "AG 18:0, stéarique (g/100 g)",
-      "en": "FA 18:0 (g/100g)"
+      "en": "FA 18:0 (g/100g)",
+      "es": "Ácido graso 18:0, esteárico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F18D0"
@@ -444,7 +488,8 @@
     "source_code": "41819",
     "names": {
       "fr": "AG 18:1 9c (n-9), oléique (g/100 g)",
-      "en": "FA 18:1 n-9 cis (g/100g)"
+      "en": "FA 18:1 n-9 cis (g/100g)",
+      "es": "Ácido graso 18:1 9c (n-9), oleico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F18D1CN9"
@@ -454,7 +499,8 @@
     "source_code": "41826",
     "names": {
       "fr": "AG 18:2 9c,12c (n-6), linoléique (g/100 g)",
-      "en": "FA 18:2 9c,12c (n-6) (g/100g)"
+      "en": "FA 18:2 9c,12c (n-6) (g/100g)",
+      "es": "Ácido graso 18:2 9c,12c (n-6), linoleico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F18D2CN6"
@@ -464,7 +510,8 @@
     "source_code": "41833",
     "names": {
       "fr": "AG 18:3 c9,c12,c15 (n-3), alpha-linolénique (g/100 g)",
-      "en": "FA 18:3 c9,c12,c15 (n-3) (g/100g)"
+      "en": "FA 18:3 c9,c12,c15 (n-3) (g/100g)",
+      "es": "Ácido graso 18:3 c9,c12,c15 (n-3), alfa-linolénico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F18D3N3"
@@ -474,7 +521,8 @@
     "source_code": "42046",
     "names": {
       "fr": "AG 20:4 5c,8c,11c,14c (n-6), arachidonique (g/100 g)",
-      "en": "FA 20:4 5c,8c,11c,14c (n-6) (g/100g)"
+      "en": "FA 20:4 5c,8c,11c,14c (n-6) (g/100g)",
+      "es": "Ácido graso 20:4 5c,8c,11c,14c (n-6), araquidónico (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F20D4N6"
@@ -484,7 +532,8 @@
     "source_code": "42053",
     "names": {
       "fr": "AG 20:5 5c,8c,11c,14c,17c (n-3) EPA (g/100 g)",
-      "en": "FA 20:5 5c,8c,11c,14c,17c (n-3) EPA (g/100g)"
+      "en": "FA 20:5 5c,8c,11c,14c,17c (n-3) EPA (g/100g)",
+      "es": "Ácido graso 20:5 5c,8c,11c,14c,17c (n-3), EPA (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F20D5N3"
@@ -494,7 +543,8 @@
     "source_code": "42263",
     "names": {
       "fr": "AG 22:6 4c,7c,10c,13c,16c,19c (n-3) DHA (g/100 g)",
-      "en": "FA 22:6 4c,7c,10c,13c,16c,19c (n-3) DHA (g/100g)"
+      "en": "FA 22:6 4c,7c,10c,13c,16c,19c (n-3) DHA (g/100g)",
+      "es": "Ácido graso 22:6 4c,7c,10c,13c,16c,19c (n-3), DHA (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "F22D6N3"
@@ -504,7 +554,8 @@
     "source_code": "51104",
     "names": {
       "fr": "Activité vitaminique A, équivalents rétinol (µg/100 g)",
-      "en": "Vitamin A activity, retinol equivalent (µg/100mg)"
+      "en": "Vitamin A activity, retinol equivalent (µg/100mg)",
+      "es": "Actividad de la vitamina A, equivalentes de retinol (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "RAE"
@@ -514,7 +565,8 @@
     "source_code": "51200",
     "names": {
       "fr": "Rétinol (µg/100 g)",
-      "en": "Retinol (µg/100g)"
+      "en": "Retinol (µg/100g)",
+      "es": "Retinol (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "RETOL"
@@ -524,7 +576,8 @@
     "source_code": "51330",
     "names": {
       "fr": "Beta-Carotène (µg/100 g)",
-      "en": "Beta-carotene (µg/100g)"
+      "en": "Beta-carotene (µg/100g)",
+      "es": "Betacaroteno (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "CARTB"
@@ -534,7 +587,8 @@
     "source_code": "52100",
     "names": {
       "fr": "Vitamine D (µg/100 g)",
-      "en": "Vitamin D (µg/100g)"
+      "en": "Vitamin D (µg/100g)",
+      "es": "Vitamina D (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "VITD-"
@@ -544,7 +598,8 @@
     "source_code": "52200",
     "names": {
       "fr": "Vitamine D2 (ergocalciférol) (µg/100 g)",
-      "en": "Vitamin D2 (ergocalciferol) (µg/100g)"
+      "en": "Vitamin D2 (ergocalciferol) (µg/100g)",
+      "es": "Vitamina D2 (ergocalciferol) (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "ERGCAL"
@@ -554,7 +609,8 @@
     "source_code": "52300",
     "names": {
       "fr": "Vitamine D3 (cholécalciférol) (µg/100 g)",
-      "en": "Vitamin D3 (cholecalciferol) (µg/100g)"
+      "en": "Vitamin D3 (cholecalciferol) (µg/100g)",
+      "es": "Vitamina D3 (colecalciferol) (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "CHOCAL"
@@ -564,7 +620,8 @@
     "source_code": "53100",
     "names": {
       "fr": "Vitamine E (mg/100 g)",
-      "en": "Vitamin E (mg/100g)"
+      "en": "Vitamin E (mg/100g)",
+      "es": "Vitamina E (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "VITE-"
@@ -574,7 +631,8 @@
     "source_code": "54101",
     "names": {
       "fr": "Vitamine K1 (µg/100 g)",
-      "en": "Vitamin K1 (µg/100g)"
+      "en": "Vitamin K1 (µg/100g)",
+      "es": "Vitamina K1 (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "VITK1"
@@ -584,7 +642,8 @@
     "source_code": "54104",
     "names": {
       "fr": "Vitamine K2 (µg/100 g)",
-      "en": "Vitamin K2 (µg/100g)"
+      "en": "Vitamin K2 (µg/100g)",
+      "es": "Vitamina K2 (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "VITK2"
@@ -594,7 +653,8 @@
     "source_code": "55100",
     "names": {
       "fr": "Vitamine C (mg/100 g)",
-      "en": "Vitamin C (mg/100g)"
+      "en": "Vitamin C (mg/100g)",
+      "es": "Vitamina C (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "VITC"
@@ -604,7 +664,8 @@
     "source_code": "56100",
     "names": {
       "fr": "Vitamine B1 ou Thiamine (mg/100 g)",
-      "en": "Vitamin B1 or Thiamin (mg/100g)"
+      "en": "Vitamin B1 or Thiamin (mg/100g)",
+      "es": "Vitamina B1 o tiamina (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "THIA"
@@ -614,7 +675,8 @@
     "source_code": "56200",
     "names": {
       "fr": "Vitamine B2 ou Riboflavine (mg/100 g)",
-      "en": "Vitamin B2 or Riboflavin (mg/100g)"
+      "en": "Vitamin B2 or Riboflavin (mg/100g)",
+      "es": "Vitamina B2 o riboflavina (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "RIBF"
@@ -624,7 +686,8 @@
     "source_code": "56310",
     "names": {
       "fr": "Vitamine B3 ou PP ou Niacine (mg/100 g)",
-      "en": "Vitamin B3 or Niacin (mg/100g)"
+      "en": "Vitamin B3 or Niacin (mg/100g)",
+      "es": "Vitamina B3 o PP o niacina (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "NIA"
@@ -634,7 +697,8 @@
     "source_code": "56400",
     "names": {
       "fr": "Vitamine B5 ou Acide pantothénique (mg/100 g)",
-      "en": "Vitamin B5 or Pantothenic acid (mg/100g)"
+      "en": "Vitamin B5 or Pantothenic acid (mg/100g)",
+      "es": "Vitamina B5 o ácido pantoténico (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "PANTAC"
@@ -644,7 +708,8 @@
     "source_code": "56500",
     "names": {
       "fr": "Vitamine B6 (mg/100 g)",
-      "en": "Vitamin B6 (mg/100g)"
+      "en": "Vitamin B6 (mg/100g)",
+      "es": "Vitamina B6 (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "VITB6-"
@@ -654,7 +719,8 @@
     "source_code": "56600",
     "names": {
       "fr": "Vitamine B12 (µg/100 g)",
-      "en": "Vitamin B12 (µg/100g)"
+      "en": "Vitamin B12 (µg/100g)",
+      "es": "Vitamina B12 (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "VITB12"
@@ -664,7 +730,8 @@
     "source_code": "56700",
     "names": {
       "fr": "Vitamine B9 ou Folates totaux (µg/100 g)",
-      "en": "Vitamin B9 or total folates (µg/100g)"
+      "en": "Vitamin B9 or total folates (µg/100g)",
+      "es": "Vitamina B9 o folatos totales (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "FOL"
@@ -674,7 +741,8 @@
     "source_code": "56702",
     "names": {
       "fr": "Vitamine B9 ou Folates totaux, équivalents folates alimentaires, DFE (µg/100 g)",
-      "en": "Vitamin B9 or total folates, dietary folate equivalents, DFE (µg/100g)"
+      "en": "Vitamin B9 or total folates, dietary folate equivalents, DFE (µg/100g)",
+      "es": "Vitamina B9 o folatos totales, equivalentes de folato dietético, DFE (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "FOLDFE"
@@ -684,7 +752,8 @@
     "source_code": "56704",
     "names": {
       "fr": "Folates intrinsèques (µg/100 g)",
-      "en": "Intrinsic folate (µg/100 g)"
+      "en": "Intrinsic folate (µg/100 g)",
+      "es": "Folatos intrínsecos (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "FOLFD"
@@ -694,7 +763,8 @@
     "source_code": "56708",
     "names": {
       "fr": "Acide folique (enrichissement) (µg/100 g)",
-      "en": "Folic acid (enrichment) (µg/100g)"
+      "en": "Folic acid (enrichment) (µg/100g)",
+      "es": "Ácido fólico (enriquecimiento) (µg/100 g)"
     },
     "unit": "ug",
     "infoods_code": "FOLAC"
@@ -704,7 +774,8 @@
     "source_code": "60000",
     "names": {
       "fr": "Alcool (éthanol) (g/100 g)",
-      "en": "Alcohol (g/100g)"
+      "en": "Alcohol (g/100g)",
+      "es": "Alcohol (etanol) (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "ALC"
@@ -714,7 +785,8 @@
     "source_code": "65000",
     "names": {
       "fr": "Acides organiques (g/100 g)",
-      "en": "Organic acids (g/100g)"
+      "en": "Organic acids (g/100g)",
+      "es": "Ácidos orgánicos (g/100 g)"
     },
     "unit": "g",
     "infoods_code": "OA"
@@ -724,7 +796,8 @@
     "source_code": "71010",
     "names": {
       "fr": "Alpha-tocophérol (vitamine E) (mg/100 g)",
-      "en": "Alpha-tocopherol (vitamine E)(mg/100g)"
+      "en": "Alpha-tocopherol (vitamine E)(mg/100g)",
+      "es": "Alfa-tocoferol (vitamina E) (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "TOCPHA"
@@ -734,7 +807,8 @@
     "source_code": "75100",
     "names": {
       "fr": "Cholestérol (mg/100 g)",
-      "en": "Cholesterol (mg/100g)"
+      "en": "Cholesterol (mg/100g)",
+      "es": "Colesterol (mg/100 g)"
     },
     "unit": "mg",
     "infoods_code": "CHOL-"

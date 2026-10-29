@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Framboise, crue",
-    "en": "Raspberry, raw"
+    "en": "Raspberry, raw",
+    "es": "Frambuesa, cruda"
   },
   "scientific_name": "Rubus idaeus L.",
   "category_ids": [

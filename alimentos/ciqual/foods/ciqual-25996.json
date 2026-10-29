@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Saumon, cuit, sans précision (aliment moyen)",
-    "en": "Salmon, cooked (average)"
+    "en": "Salmon, cooked (average)",
+    "es": "Salmón, cocinado, sin especificar (valor medio)"
   },
   "scientific_name": "Salmo salar",
   "category_ids": [

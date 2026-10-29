@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Purée de fruits, tout type de fruits, type \"compote sans sucres ajoutés\", sans précision sur le rayon (aliment moyen)",
-    "en": "Stewed fruits, no added sugars (pulp or mixed fruits,), prepacked (average)"
+    "en": "Stewed fruits, no added sugars (pulp or mixed fruits,), prepacked (average)",
+    "es": "Puré de frutas, todo tipo de frutas, tipo \"compota sin azúcares añadidos\", sin precisión sobre la sección (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

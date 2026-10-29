@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Substitut de repas hypocalorique, poudre reconstituée avec lait écrémé, type milkshake",
-    "en": "Meal replacement, low calorie, powder, reconstituted with skimmed milk, milkshake type"
+    "en": "Meal replacement, low calorie, powder, reconstituted with skimmed milk, milkshake type",
+    "es": "Sustitutivo de comida hipocalórico, polvo reconstituido con leche desnatada, tipo batido"
   },
   "scientific_name": null,
   "category_ids": [

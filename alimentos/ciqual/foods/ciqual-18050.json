@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson gazeuse aux fruits (teneur en fruits < 10%), à teneur réduite en sucres",
-    "en": "Carbonated beverage or fruit soft drink, fruit content <10%, reduced sugar"
+    "en": "Carbonated beverage or fruit soft drink, fruit content <10%, reduced sugar",
+    "es": "Bebida gaseosa de frutas (contenido de frutas < 10%), con contenido reducido en azúcares"
   },
   "scientific_name": null,
   "category_ids": [

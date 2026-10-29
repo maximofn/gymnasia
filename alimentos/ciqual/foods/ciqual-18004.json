@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Café, non instantané, sans sucres ajoutés, prêt à boire",
-    "en": "Coffee, non instant no added sugars, ready-to-drink"
+    "en": "Coffee, non instant no added sugars, ready-to-drink",
+    "es": "Café, no instantáneo, sin azúcares añadidos, listo para beber"
   },
   "scientific_name": null,
   "category_ids": [
