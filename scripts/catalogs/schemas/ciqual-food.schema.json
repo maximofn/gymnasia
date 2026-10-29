@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gymnasia.maximofn.com/schemas/catalogs/ciqual-food.schema.json",
+  "title": "Ficha de composición ANSES-CIQUAL",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "kind", "names", "scientific_name", "category_ids", "source", "nitrogen_to_protein_factor", "nutrition_profiles"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "id": { "type": "string", "pattern": "^ciqual-[0-9]+$" },
+    "kind": { "const": "generic" },
+    "names": { "$ref": "#/definitions/names" },
+    "scientific_name": { "type": ["string", "null"] },
+    "category_ids": {
+      "type": "array", "maxItems": 3, "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^ciqual-[0-9]+$" }
+    },
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["dataset_id", "food_code"],
+      "properties": {
+        "dataset_id": { "const": "anses-ciqual-2025" },
+        "food_code": { "type": "string", "pattern": "^[0-9]+$" }
+      }
+    },
+    "nitrogen_to_protein_factor": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+    "nutrition_profiles": {
+      "type": "array", "minItems": 1, "maxItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "basis", "nutrients"],
+        "properties": {
+          "id": { "const": "ciqual-2025" },
+          "basis": { "const": { "amount": 100, "unit": "g", "portion": "edible" } },
+          "nutrients": {
+            "type": "object", "minProperties": 1,
+            "propertyNames": { "pattern": "^ciqual-[0-9]+$" },
+            "additionalProperties": { "$ref": "#/definitions/measurement" }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "names": {
+      "type": "object", "additionalProperties": false, "required": ["fr", "en"],
+      "properties": {
+        "fr": { "type": "string", "minLength": 1 },
+        "en": { "type": "string", "minLength": 1 }
+      }
+    },
+    "measurement": {
+      "type": "object", "additionalProperties": false,
+      "required": ["value", "qualifier", "source_value"],
+      "properties": {
+        "value": { "type": ["number", "null"], "minimum": 0 },
+        "qualifier": { "enum": ["reported", "less_than", "trace", "missing"] },
+        "source_value": { "type": "string" },
+        "limit": { "type": "number", "minimum": 0 },
+        "minimum": { "type": "number", "minimum": 0 },
+        "maximum": { "type": "number", "minimum": 0 },
+        "source_minimum": { "type": "string", "minLength": 1 },
+        "source_maximum": { "type": "string", "minLength": 1 },
+        "confidence_code": { "enum": ["A", "B", "C", "D"] },
+        "source_ref": { "type": "string", "pattern": "^[0-9]+$" }
+      },
+      "dependencies": {
+        "minimum": ["source_minimum"], "source_minimum": ["minimum"],
+        "maximum": ["source_maximum"], "source_maximum": ["maximum"]
+      },
+      "oneOf": [
+        {
+          "properties": { "qualifier": { "const": "reported" }, "value": { "type": "number" }, "limit": false }
+        },
+        {
+          "properties": { "qualifier": { "const": "less_than" }, "value": { "type": "null" }, "limit": { "type": "number" } },
+          "required": ["limit"]
+        },
+        {
+          "properties": { "qualifier": { "enum": ["trace", "missing"] }, "value": { "type": "null" }, "limit": false }
+        }
+      ]
+    }
+  }
+}

@@ -15,6 +15,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `apps/feedback-worker`: Worker de Cloudflare que recibe propuestas de mejora, alimentos, ejercicios y denuncias de respuestas de IA desde la app y crea issues en un repositorio privado. Opcional: si esta caido, la app avisa y sigue funcionando
 - `apps/anthropic_proxy`: Proxy CORS para Anthropic (solo necesario cuando se ejecuta la app en el navegador del ordenador para depurar; en movil no se usa). Ver su `README.md`
 - `alimentos/`: Repositorio de alimentos (JSONs con datos nutricionales)
+- `alimentos/ciqual/`: Catálogo ANSES-CIQUAL 2025 con 3.484 fichas y 74 componentes; fuente, contrato e importación en [`alimentos/ciqual/README.md`](alimentos/ciqual/README.md)
 - `productos_comerciales/`: Repositorio de productos comerciales (JSONs con datos nutricionales)
 - `recetas/`: Repositorio de recetas (JSONs con datos nutricionales)
 - `ejercicios/`: Repositorio de ejercicios (JSONs + imagenes generadas)
@@ -99,6 +100,18 @@ La generación de imágenes en `image-generation/generate_images.py` termina
 invocando este mismo generador, por lo que no existe un segundo formato de
 agregados. La CI dedicada repite estas comprobaciones sin claves ni servicios
 externos cuando cambia cualquier catálogo o su código de consumo.
+
+El catálogo fuente de ANSES-CIQUAL se mantiene en `alimentos/ciqual/`, con una
+ficha por alimento, índice, diccionarios y manifiesto de integridad. Se conserva
+separado del contrato de consumo actual de la app para representar valores
+desconocidos, trazas y límites sin inventar nutrientes o raciones. Incluye nombres
+oficiales en francés e inglés; la traducción al español y la integración móvil
+quedan para la curación posterior. No necesita backend ni base de datos externa.
+
+```bash
+npm run import:ciqual -- --download # descarga oficial fijada y generación reproducible
+npm run check:ciqual                # verifica los 3.484 alimentos sin red
+```
 
 ## Tests del agente
 

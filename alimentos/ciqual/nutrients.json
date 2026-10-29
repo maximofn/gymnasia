@@ -1,0 +1,742 @@
+[
+  {
+    "id": "ciqual-10000",
+    "source_code": "10000",
+    "names": {
+      "fr": "Cendres (g/100 g)",
+      "en": "Ash (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "ASH"
+  },
+  {
+    "id": "ciqual-10004",
+    "source_code": "10004",
+    "names": {
+      "fr": "Sel chlorure de sodium (g/100 g)",
+      "en": "Salt (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": null
+  },
+  {
+    "id": "ciqual-10110",
+    "source_code": "10110",
+    "names": {
+      "fr": "Sodium (mg/100 g)",
+      "en": "Sodium (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "NA"
+  },
+  {
+    "id": "ciqual-10120",
+    "source_code": "10120",
+    "names": {
+      "fr": "Magnésium (mg/100 g)",
+      "en": "Magnesium (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "MG"
+  },
+  {
+    "id": "ciqual-10150",
+    "source_code": "10150",
+    "names": {
+      "fr": "Phosphore (mg/100 g)",
+      "en": "Phosphorus (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "P"
+  },
+  {
+    "id": "ciqual-10170",
+    "source_code": "10170",
+    "names": {
+      "fr": "Chlorure (mg/100 g)",
+      "en": "Chloride (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "CLD"
+  },
+  {
+    "id": "ciqual-10190",
+    "source_code": "10190",
+    "names": {
+      "fr": "Potassium (mg/100 g)",
+      "en": "Potassium (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "K"
+  },
+  {
+    "id": "ciqual-10200",
+    "source_code": "10200",
+    "names": {
+      "fr": "Calcium (mg/100 g)",
+      "en": "Calcium (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "CA"
+  },
+  {
+    "id": "ciqual-10251",
+    "source_code": "10251",
+    "names": {
+      "fr": "Manganèse (mg/100 g)",
+      "en": "Manganese (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "MN"
+  },
+  {
+    "id": "ciqual-10260",
+    "source_code": "10260",
+    "names": {
+      "fr": "Fer (mg/100 g)",
+      "en": "Iron (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "FE"
+  },
+  {
+    "id": "ciqual-10290",
+    "source_code": "10290",
+    "names": {
+      "fr": "Cuivre (mg/100 g)",
+      "en": "Copper (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "CU"
+  },
+  {
+    "id": "ciqual-10300",
+    "source_code": "10300",
+    "names": {
+      "fr": "Zinc (mg/100 g)",
+      "en": "Zinc (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "ZN"
+  },
+  {
+    "id": "ciqual-10340",
+    "source_code": "10340",
+    "names": {
+      "fr": "Sélénium (µg/100 g)",
+      "en": "Selenium (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "SE"
+  },
+  {
+    "id": "ciqual-10530",
+    "source_code": "10530",
+    "names": {
+      "fr": "Iode (µg/100 g)",
+      "en": "Iodine (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "ID"
+  },
+  {
+    "id": "ciqual-25000",
+    "source_code": "25000",
+    "names": {
+      "fr": "Protéines, N x facteur de Jones (g/100 g)",
+      "en": "Protein (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "PROCNT"
+  },
+  {
+    "id": "ciqual-25003",
+    "source_code": "25003",
+    "names": {
+      "fr": "Protéines, N x 6.25 (g/100 g)",
+      "en": "Protein, crude, N x 6.25 (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "PROCNT"
+  },
+  {
+    "id": "ciqual-31000",
+    "source_code": "31000",
+    "names": {
+      "fr": "Glucides (g/100 g)",
+      "en": "Carbohydrate (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "CHOAVL"
+  },
+  {
+    "id": "ciqual-32000",
+    "source_code": "32000",
+    "names": {
+      "fr": "Sucres (g/100 g)",
+      "en": "Sugars (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "SUGAR"
+  },
+  {
+    "id": "ciqual-32210",
+    "source_code": "32210",
+    "names": {
+      "fr": "Fructose (g/100 g)",
+      "en": "Fructose (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "FRUS"
+  },
+  {
+    "id": "ciqual-32220",
+    "source_code": "32220",
+    "names": {
+      "fr": "Galactose (g/100 g)",
+      "en": "Galactose (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "GALS"
+  },
+  {
+    "id": "ciqual-32250",
+    "source_code": "32250",
+    "names": {
+      "fr": "Glucose (g/100 g)",
+      "en": "Glucose (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "GLUS"
+  },
+  {
+    "id": "ciqual-32410",
+    "source_code": "32410",
+    "names": {
+      "fr": "Lactose (g/100 g)",
+      "en": "Lactose (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "LACS"
+  },
+  {
+    "id": "ciqual-32430",
+    "source_code": "32430",
+    "names": {
+      "fr": "Maltose (g/100 g)",
+      "en": "Maltose (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "MALS"
+  },
+  {
+    "id": "ciqual-32480",
+    "source_code": "32480",
+    "names": {
+      "fr": "Saccharose (g/100 g)",
+      "en": "Sucrose (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "SUCS"
+  },
+  {
+    "id": "ciqual-327",
+    "source_code": "327",
+    "names": {
+      "fr": "Energie, Règlement UE N° 1169/2011 (kJ/100 g)",
+      "en": "Energy, Regulation EU No 1169/2011 (kJ/100g)"
+    },
+    "unit": "kJ",
+    "infoods_code": "ENERC"
+  },
+  {
+    "id": "ciqual-328",
+    "source_code": "328",
+    "names": {
+      "fr": "Energie, Règlement UE N° 1169/2011 (kcal/100 g)",
+      "en": "Energy, Regulation EU No 1169/2011 (kcal/100g)"
+    },
+    "unit": "kcal",
+    "infoods_code": "ENERC"
+  },
+  {
+    "id": "ciqual-33110",
+    "source_code": "33110",
+    "names": {
+      "fr": "Amidon (g/100 g)",
+      "en": "Starch (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "STARCH"
+  },
+  {
+    "id": "ciqual-332",
+    "source_code": "332",
+    "names": {
+      "fr": "Energie, N x facteur Jones, avec fibres (kJ/100 g)",
+      "en": "Energy, N x Jones' factor, with fibres (kJ/100g)"
+    },
+    "unit": "kJ",
+    "infoods_code": "ENERC"
+  },
+  {
+    "id": "ciqual-333",
+    "source_code": "333",
+    "names": {
+      "fr": "Energie, N x facteur Jones, avec fibres (kcal/100 g)",
+      "en": "Energy, N x Jones' factor, with fibres (kcal/100g)"
+    },
+    "unit": "kcal",
+    "infoods_code": "ENERC"
+  },
+  {
+    "id": "ciqual-34000",
+    "source_code": "34000",
+    "names": {
+      "fr": "Polyols totaux (g/100 g)",
+      "en": "Polyols (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "POLYL"
+  },
+  {
+    "id": "ciqual-34100",
+    "source_code": "34100",
+    "names": {
+      "fr": "Fibres alimentaires (g/100 g)",
+      "en": "Fibres (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "FIB-"
+  },
+  {
+    "id": "ciqual-400",
+    "source_code": "400",
+    "names": {
+      "fr": "Eau (g/100 g)",
+      "en": "Water (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "WATER"
+  },
+  {
+    "id": "ciqual-40000",
+    "source_code": "40000",
+    "names": {
+      "fr": "Lipides (g/100 g)",
+      "en": "Fat (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "FAT"
+  },
+  {
+    "id": "ciqual-40302",
+    "source_code": "40302",
+    "names": {
+      "fr": "AG saturés (g/100 g)",
+      "en": "FA saturated (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "FASAT"
+  },
+  {
+    "id": "ciqual-40303",
+    "source_code": "40303",
+    "names": {
+      "fr": "AG monoinsaturés (g/100 g)",
+      "en": "FA mono (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "FAMS"
+  },
+  {
+    "id": "ciqual-40304",
+    "source_code": "40304",
+    "names": {
+      "fr": "AG polyinsaturés (g/100 g)",
+      "en": "FA poly (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "FAPU"
+  },
+  {
+    "id": "ciqual-40400",
+    "source_code": "40400",
+    "names": {
+      "fr": "AG 4:0, butyrique (g/100 g)",
+      "en": "FA 4:0 (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F4D0"
+  },
+  {
+    "id": "ciqual-40600",
+    "source_code": "40600",
+    "names": {
+      "fr": "AG 6:0, caproïque (g/100 g)",
+      "en": "FA 6:0 (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F6D0"
+  },
+  {
+    "id": "ciqual-40800",
+    "source_code": "40800",
+    "names": {
+      "fr": "AG 8:0, caprylique (g/100 g)",
+      "en": "FA 8:0 (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F8D0"
+  },
+  {
+    "id": "ciqual-41000",
+    "source_code": "41000",
+    "names": {
+      "fr": "AG 10:0, caprique (g/100 g)",
+      "en": "FA 10:0 (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F10D0"
+  },
+  {
+    "id": "ciqual-41200",
+    "source_code": "41200",
+    "names": {
+      "fr": "AG 12:0, laurique (g/100 g)",
+      "en": "FA 12:0 (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F12D0"
+  },
+  {
+    "id": "ciqual-41400",
+    "source_code": "41400",
+    "names": {
+      "fr": "AG 14:0, myristique (g/100 g)",
+      "en": "FA 14:0 (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F14D0"
+  },
+  {
+    "id": "ciqual-41600",
+    "source_code": "41600",
+    "names": {
+      "fr": "AG 16:0, palmitique (g/100 g)",
+      "en": "FA 16:0 (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F16D0"
+  },
+  {
+    "id": "ciqual-41800",
+    "source_code": "41800",
+    "names": {
+      "fr": "AG 18:0, stéarique (g/100 g)",
+      "en": "FA 18:0 (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F18D0"
+  },
+  {
+    "id": "ciqual-41819",
+    "source_code": "41819",
+    "names": {
+      "fr": "AG 18:1 9c (n-9), oléique (g/100 g)",
+      "en": "FA 18:1 n-9 cis (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F18D1CN9"
+  },
+  {
+    "id": "ciqual-41826",
+    "source_code": "41826",
+    "names": {
+      "fr": "AG 18:2 9c,12c (n-6), linoléique (g/100 g)",
+      "en": "FA 18:2 9c,12c (n-6) (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F18D2CN6"
+  },
+  {
+    "id": "ciqual-41833",
+    "source_code": "41833",
+    "names": {
+      "fr": "AG 18:3 c9,c12,c15 (n-3), alpha-linolénique (g/100 g)",
+      "en": "FA 18:3 c9,c12,c15 (n-3) (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F18D3N3"
+  },
+  {
+    "id": "ciqual-42046",
+    "source_code": "42046",
+    "names": {
+      "fr": "AG 20:4 5c,8c,11c,14c (n-6), arachidonique (g/100 g)",
+      "en": "FA 20:4 5c,8c,11c,14c (n-6) (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F20D4N6"
+  },
+  {
+    "id": "ciqual-42053",
+    "source_code": "42053",
+    "names": {
+      "fr": "AG 20:5 5c,8c,11c,14c,17c (n-3) EPA (g/100 g)",
+      "en": "FA 20:5 5c,8c,11c,14c,17c (n-3) EPA (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F20D5N3"
+  },
+  {
+    "id": "ciqual-42263",
+    "source_code": "42263",
+    "names": {
+      "fr": "AG 22:6 4c,7c,10c,13c,16c,19c (n-3) DHA (g/100 g)",
+      "en": "FA 22:6 4c,7c,10c,13c,16c,19c (n-3) DHA (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "F22D6N3"
+  },
+  {
+    "id": "ciqual-51104",
+    "source_code": "51104",
+    "names": {
+      "fr": "Activité vitaminique A, équivalents rétinol (µg/100 g)",
+      "en": "Vitamin A activity, retinol equivalent (µg/100mg)"
+    },
+    "unit": "ug",
+    "infoods_code": "RAE"
+  },
+  {
+    "id": "ciqual-51200",
+    "source_code": "51200",
+    "names": {
+      "fr": "Rétinol (µg/100 g)",
+      "en": "Retinol (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "RETOL"
+  },
+  {
+    "id": "ciqual-51330",
+    "source_code": "51330",
+    "names": {
+      "fr": "Beta-Carotène (µg/100 g)",
+      "en": "Beta-carotene (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "CARTB"
+  },
+  {
+    "id": "ciqual-52100",
+    "source_code": "52100",
+    "names": {
+      "fr": "Vitamine D (µg/100 g)",
+      "en": "Vitamin D (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "VITD-"
+  },
+  {
+    "id": "ciqual-52200",
+    "source_code": "52200",
+    "names": {
+      "fr": "Vitamine D2 (ergocalciférol) (µg/100 g)",
+      "en": "Vitamin D2 (ergocalciferol) (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "ERGCAL"
+  },
+  {
+    "id": "ciqual-52300",
+    "source_code": "52300",
+    "names": {
+      "fr": "Vitamine D3 (cholécalciférol) (µg/100 g)",
+      "en": "Vitamin D3 (cholecalciferol) (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "CHOCAL"
+  },
+  {
+    "id": "ciqual-53100",
+    "source_code": "53100",
+    "names": {
+      "fr": "Vitamine E (mg/100 g)",
+      "en": "Vitamin E (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "VITE-"
+  },
+  {
+    "id": "ciqual-54101",
+    "source_code": "54101",
+    "names": {
+      "fr": "Vitamine K1 (µg/100 g)",
+      "en": "Vitamin K1 (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "VITK1"
+  },
+  {
+    "id": "ciqual-54104",
+    "source_code": "54104",
+    "names": {
+      "fr": "Vitamine K2 (µg/100 g)",
+      "en": "Vitamin K2 (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "VITK2"
+  },
+  {
+    "id": "ciqual-55100",
+    "source_code": "55100",
+    "names": {
+      "fr": "Vitamine C (mg/100 g)",
+      "en": "Vitamin C (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "VITC"
+  },
+  {
+    "id": "ciqual-56100",
+    "source_code": "56100",
+    "names": {
+      "fr": "Vitamine B1 ou Thiamine (mg/100 g)",
+      "en": "Vitamin B1 or Thiamin (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "THIA"
+  },
+  {
+    "id": "ciqual-56200",
+    "source_code": "56200",
+    "names": {
+      "fr": "Vitamine B2 ou Riboflavine (mg/100 g)",
+      "en": "Vitamin B2 or Riboflavin (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "RIBF"
+  },
+  {
+    "id": "ciqual-56310",
+    "source_code": "56310",
+    "names": {
+      "fr": "Vitamine B3 ou PP ou Niacine (mg/100 g)",
+      "en": "Vitamin B3 or Niacin (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "NIA"
+  },
+  {
+    "id": "ciqual-56400",
+    "source_code": "56400",
+    "names": {
+      "fr": "Vitamine B5 ou Acide pantothénique (mg/100 g)",
+      "en": "Vitamin B5 or Pantothenic acid (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "PANTAC"
+  },
+  {
+    "id": "ciqual-56500",
+    "source_code": "56500",
+    "names": {
+      "fr": "Vitamine B6 (mg/100 g)",
+      "en": "Vitamin B6 (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "VITB6-"
+  },
+  {
+    "id": "ciqual-56600",
+    "source_code": "56600",
+    "names": {
+      "fr": "Vitamine B12 (µg/100 g)",
+      "en": "Vitamin B12 (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "VITB12"
+  },
+  {
+    "id": "ciqual-56700",
+    "source_code": "56700",
+    "names": {
+      "fr": "Vitamine B9 ou Folates totaux (µg/100 g)",
+      "en": "Vitamin B9 or total folates (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "FOL"
+  },
+  {
+    "id": "ciqual-56702",
+    "source_code": "56702",
+    "names": {
+      "fr": "Vitamine B9 ou Folates totaux, équivalents folates alimentaires, DFE (µg/100 g)",
+      "en": "Vitamin B9 or total folates, dietary folate equivalents, DFE (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "FOLDFE"
+  },
+  {
+    "id": "ciqual-56704",
+    "source_code": "56704",
+    "names": {
+      "fr": "Folates intrinsèques (µg/100 g)",
+      "en": "Intrinsic folate (µg/100 g)"
+    },
+    "unit": "ug",
+    "infoods_code": "FOLFD"
+  },
+  {
+    "id": "ciqual-56708",
+    "source_code": "56708",
+    "names": {
+      "fr": "Acide folique (enrichissement) (µg/100 g)",
+      "en": "Folic acid (enrichment) (µg/100g)"
+    },
+    "unit": "ug",
+    "infoods_code": "FOLAC"
+  },
+  {
+    "id": "ciqual-60000",
+    "source_code": "60000",
+    "names": {
+      "fr": "Alcool (éthanol) (g/100 g)",
+      "en": "Alcohol (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "ALC"
+  },
+  {
+    "id": "ciqual-65000",
+    "source_code": "65000",
+    "names": {
+      "fr": "Acides organiques (g/100 g)",
+      "en": "Organic acids (g/100g)"
+    },
+    "unit": "g",
+    "infoods_code": "OA"
+  },
+  {
+    "id": "ciqual-71010",
+    "source_code": "71010",
+    "names": {
+      "fr": "Alpha-tocophérol (vitamine E) (mg/100 g)",
+      "en": "Alpha-tocopherol (vitamine E)(mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "TOCPHA"
+  },
+  {
+    "id": "ciqual-75100",
+    "source_code": "75100",
+    "names": {
+      "fr": "Cholestérol (mg/100 g)",
+      "en": "Cholesterol (mg/100g)"
+    },
+    "unit": "mg",
+    "infoods_code": "CHOL-"
+  }
+]

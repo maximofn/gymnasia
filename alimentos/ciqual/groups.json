@@ -1,0 +1,1451 @@
+[
+  {
+    "id": "ciqual-01",
+    "source_code": "01",
+    "parent_id": null,
+    "names": {
+      "fr": "entrées et plats composés",
+      "en": "starters and dishes"
+    }
+  },
+  {
+    "id": "ciqual-0101",
+    "source_code": "0101",
+    "parent_id": "ciqual-01",
+    "names": {
+      "fr": "salades composées et crudités",
+      "en": "mixed salads"
+    }
+  },
+  {
+    "id": "ciqual-0102",
+    "source_code": "0102",
+    "parent_id": "ciqual-01",
+    "names": {
+      "fr": "soupes",
+      "en": "soups"
+    }
+  },
+  {
+    "id": "ciqual-0103",
+    "source_code": "0103",
+    "parent_id": "ciqual-01",
+    "names": {
+      "fr": "plats composés",
+      "en": "dishes"
+    }
+  },
+  {
+    "id": "ciqual-010301",
+    "source_code": "010301",
+    "parent_id": "ciqual-0103",
+    "names": {
+      "fr": "plats de viande sans garniture",
+      "en": "meat dishes, no garnish"
+    }
+  },
+  {
+    "id": "ciqual-010302",
+    "source_code": "010302",
+    "parent_id": "ciqual-0103",
+    "names": {
+      "fr": "plats de viande et féculents",
+      "en": "meat dishes, with starchy food"
+    }
+  },
+  {
+    "id": "ciqual-010303",
+    "source_code": "010303",
+    "parent_id": "ciqual-0103",
+    "names": {
+      "fr": "plats de viande et légumes/légumineuses",
+      "en": "meat dishes, with vegetables/legume"
+    }
+  },
+  {
+    "id": "ciqual-010304",
+    "source_code": "010304",
+    "parent_id": "ciqual-0103",
+    "names": {
+      "fr": "plats de poisson sans garniture",
+      "en": "fish dishes, no garnish"
+    }
+  },
+  {
+    "id": "ciqual-010305",
+    "source_code": "010305",
+    "parent_id": "ciqual-0103",
+    "names": {
+      "fr": "plats de poisson et féculents",
+      "en": "fish dishes, with starchy food"
+    }
+  },
+  {
+    "id": "ciqual-010306",
+    "source_code": "010306",
+    "parent_id": "ciqual-0103",
+    "names": {
+      "fr": "plats de légumes/légumineuses",
+      "en": "vegetable/legume dishes"
+    }
+  },
+  {
+    "id": "ciqual-010307",
+    "source_code": "010307",
+    "parent_id": "ciqual-0103",
+    "names": {
+      "fr": "plats de céréales/pâtes",
+      "en": "pasta or cereal dishes"
+    }
+  },
+  {
+    "id": "ciqual-010308",
+    "source_code": "010308",
+    "parent_id": "ciqual-0103",
+    "names": {
+      "fr": "plats de fromage",
+      "en": "cheese dishes"
+    }
+  },
+  {
+    "id": "ciqual-010309",
+    "source_code": "010309",
+    "parent_id": "ciqual-0103",
+    "names": {
+      "fr": "autres plats végétariens",
+      "en": "other vegetarian dishes"
+    }
+  },
+  {
+    "id": "ciqual-0104",
+    "source_code": "0104",
+    "parent_id": "ciqual-01",
+    "names": {
+      "fr": "pizzas, tartes et crêpes salées",
+      "en": "pizzas, crepe and pies"
+    }
+  },
+  {
+    "id": "ciqual-0105",
+    "source_code": "0105",
+    "parent_id": "ciqual-01",
+    "names": {
+      "fr": "sandwichs",
+      "en": "sandwiches"
+    }
+  },
+  {
+    "id": "ciqual-0106",
+    "source_code": "0106",
+    "parent_id": "ciqual-01",
+    "names": {
+      "fr": "feuilletées et autres entrées",
+      "en": "savoury pastries and other starters"
+    }
+  },
+  {
+    "id": "ciqual-02",
+    "source_code": "02",
+    "parent_id": null,
+    "names": {
+      "fr": "fruits, légumes, légumineuses et oléagineux",
+      "en": "fruits, vegetables, legumes and nuts"
+    }
+  },
+  {
+    "id": "ciqual-0201",
+    "source_code": "0201",
+    "parent_id": "ciqual-02",
+    "names": {
+      "fr": "légumes",
+      "en": "vegetables"
+    }
+  },
+  {
+    "id": "ciqual-020101",
+    "source_code": "020101",
+    "parent_id": "ciqual-0201",
+    "names": {
+      "fr": "légumes crus",
+      "en": "vegetables, raw"
+    }
+  },
+  {
+    "id": "ciqual-020102",
+    "source_code": "020102",
+    "parent_id": "ciqual-0201",
+    "names": {
+      "fr": "légumes cuits",
+      "en": "vegetables, cooked"
+    }
+  },
+  {
+    "id": "ciqual-020103",
+    "source_code": "020103",
+    "parent_id": "ciqual-0201",
+    "names": {
+      "fr": "légumes séchés ou déshydratés",
+      "en": "vegetables, dried or dehydrated"
+    }
+  },
+  {
+    "id": "ciqual-020104",
+    "source_code": "020104",
+    "parent_id": "ciqual-0201",
+    "names": {
+      "fr": "légumes et leurs produits de la Martinique",
+      "en": "vegetables from Martinique and their products"
+    }
+  },
+  {
+    "id": "ciqual-020105",
+    "source_code": "020105",
+    "parent_id": "ciqual-0201",
+    "names": {
+      "fr": "légumes et leurs produits de la Réunion",
+      "en": "vegetables from Reunion Island and their products"
+    }
+  },
+  {
+    "id": "ciqual-0202",
+    "source_code": "0202",
+    "parent_id": "ciqual-02",
+    "names": {
+      "fr": "pommes de terre et autres tubercules",
+      "en": "potatoes and other tubers"
+    }
+  },
+  {
+    "id": "ciqual-0203",
+    "source_code": "0203",
+    "parent_id": "ciqual-02",
+    "names": {
+      "fr": "légumineuses",
+      "en": "legumes"
+    }
+  },
+  {
+    "id": "ciqual-020301",
+    "source_code": "020301",
+    "parent_id": "ciqual-0203",
+    "names": {
+      "fr": "légumineuses cuites",
+      "en": "legumes, cooked"
+    }
+  },
+  {
+    "id": "ciqual-020302",
+    "source_code": "020302",
+    "parent_id": "ciqual-0203",
+    "names": {
+      "fr": "légumineuses fraîches",
+      "en": "legumes, raw"
+    }
+  },
+  {
+    "id": "ciqual-020303",
+    "source_code": "020303",
+    "parent_id": "ciqual-0203",
+    "names": {
+      "fr": "légumineuses sèches",
+      "en": "legumes, dried"
+    }
+  },
+  {
+    "id": "ciqual-0204",
+    "source_code": "0204",
+    "parent_id": "ciqual-02",
+    "names": {
+      "fr": "fruits",
+      "en": "fruits"
+    }
+  },
+  {
+    "id": "ciqual-020401",
+    "source_code": "020401",
+    "parent_id": "ciqual-0204",
+    "names": {
+      "fr": "fruits crus",
+      "en": "fresh fruits"
+    }
+  },
+  {
+    "id": "ciqual-020402",
+    "source_code": "020402",
+    "parent_id": "ciqual-0204",
+    "names": {
+      "fr": "compotes et assimilés",
+      "en": "puréed fruits"
+    }
+  },
+  {
+    "id": "ciqual-020403",
+    "source_code": "020403",
+    "parent_id": "ciqual-0204",
+    "names": {
+      "fr": "fruits appertisés",
+      "en": "canned fruits"
+    }
+  },
+  {
+    "id": "ciqual-020404",
+    "source_code": "020404",
+    "parent_id": "ciqual-0204",
+    "names": {
+      "fr": "fruits séchés",
+      "en": "dried fruits"
+    }
+  },
+  {
+    "id": "ciqual-020405",
+    "source_code": "020405",
+    "parent_id": "ciqual-0204",
+    "names": {
+      "fr": "fruits et leurs produits de la Martinique",
+      "en": "fruits from Martinique and their products"
+    }
+  },
+  {
+    "id": "ciqual-020406",
+    "source_code": "020406",
+    "parent_id": "ciqual-0204",
+    "names": {
+      "fr": "fruits et leurs produits de la Réunion",
+      "en": "fruits from Reunion Island and their products"
+    }
+  },
+  {
+    "id": "ciqual-0205",
+    "source_code": "0205",
+    "parent_id": "ciqual-02",
+    "names": {
+      "fr": "fruits à coque et graines oléagineuses",
+      "en": "nuts and seeds"
+    }
+  },
+  {
+    "id": "ciqual-03",
+    "source_code": "03",
+    "parent_id": null,
+    "names": {
+      "fr": "produits céréaliers",
+      "en": "cereal products"
+    }
+  },
+  {
+    "id": "ciqual-0301",
+    "source_code": "0301",
+    "parent_id": "ciqual-03",
+    "names": {
+      "fr": "pâtes, riz et céréales",
+      "en": "pasta, rice and grains"
+    }
+  },
+  {
+    "id": "ciqual-030101",
+    "source_code": "030101",
+    "parent_id": "ciqual-0301",
+    "names": {
+      "fr": "pâtes, riz et céréales cuits",
+      "en": "pasta, rice and grains, cooked"
+    }
+  },
+  {
+    "id": "ciqual-030102",
+    "source_code": "030102",
+    "parent_id": "ciqual-0301",
+    "names": {
+      "fr": "pâtes, riz et céréales crus",
+      "en": "pasta, rice and grains, raw"
+    }
+  },
+  {
+    "id": "ciqual-0302",
+    "source_code": "0302",
+    "parent_id": "ciqual-03",
+    "names": {
+      "fr": "pains et assimilés",
+      "en": "breads and similar"
+    }
+  },
+  {
+    "id": "ciqual-030201",
+    "source_code": "030201",
+    "parent_id": "ciqual-0302",
+    "names": {
+      "fr": "pains",
+      "en": "breads"
+    }
+  },
+  {
+    "id": "ciqual-030202",
+    "source_code": "030202",
+    "parent_id": "ciqual-0302",
+    "names": {
+      "fr": "biscottes et pains grillés",
+      "en": "rusks"
+    }
+  },
+  {
+    "id": "ciqual-0303",
+    "source_code": "0303",
+    "parent_id": "ciqual-03",
+    "names": {
+      "fr": "biscuits apéritifs",
+      "en": "savoury biscuits"
+    }
+  },
+  {
+    "id": "ciqual-0304",
+    "source_code": "0304",
+    "parent_id": "ciqual-03",
+    "names": {
+      "fr": "farines",
+      "en": "flours"
+    }
+  },
+  {
+    "id": "ciqual-0305",
+    "source_code": "0305",
+    "parent_id": "ciqual-03",
+    "names": {
+      "fr": "pâtes à tarte",
+      "en": "pastry dough"
+    }
+  },
+  {
+    "id": "ciqual-04",
+    "source_code": "04",
+    "parent_id": null,
+    "names": {
+      "fr": "viandes, oeufs, poissons",
+      "en": "meat, egg and fish"
+    }
+  },
+  {
+    "id": "ciqual-0401",
+    "source_code": "0401",
+    "parent_id": "ciqual-04",
+    "names": {
+      "fr": "viandes cuites",
+      "en": "cooked meat"
+    }
+  },
+  {
+    "id": "ciqual-040101",
+    "source_code": "040101",
+    "parent_id": "ciqual-0401",
+    "names": {
+      "fr": "boeuf et veau",
+      "en": "beef and veal"
+    }
+  },
+  {
+    "id": "ciqual-040102",
+    "source_code": "040102",
+    "parent_id": "ciqual-0401",
+    "names": {
+      "fr": "porc",
+      "en": "pork"
+    }
+  },
+  {
+    "id": "ciqual-040103",
+    "source_code": "040103",
+    "parent_id": "ciqual-0401",
+    "names": {
+      "fr": "poulet",
+      "en": "poultry"
+    }
+  },
+  {
+    "id": "ciqual-040104",
+    "source_code": "040104",
+    "parent_id": "ciqual-0401",
+    "names": {
+      "fr": "dinde",
+      "en": "turkey"
+    }
+  },
+  {
+    "id": "ciqual-040105",
+    "source_code": "040105",
+    "parent_id": "ciqual-0401",
+    "names": {
+      "fr": "agneau et mouton",
+      "en": "lamb and mutton"
+    }
+  },
+  {
+    "id": "ciqual-040106",
+    "source_code": "040106",
+    "parent_id": "ciqual-0401",
+    "names": {
+      "fr": "gibier",
+      "en": "game"
+    }
+  },
+  {
+    "id": "ciqual-040107",
+    "source_code": "040107",
+    "parent_id": "ciqual-0401",
+    "names": {
+      "fr": "autres viandes",
+      "en": "other meats"
+    }
+  },
+  {
+    "id": "ciqual-040108",
+    "source_code": "040108",
+    "parent_id": "ciqual-0401",
+    "names": {
+      "fr": "abats",
+      "en": "offals"
+    }
+  },
+  {
+    "id": "ciqual-0402",
+    "source_code": "0402",
+    "parent_id": "ciqual-04",
+    "names": {
+      "fr": "viandes crues",
+      "en": "raw meat"
+    }
+  },
+  {
+    "id": "ciqual-040201",
+    "source_code": "040201",
+    "parent_id": "ciqual-0402",
+    "names": {
+      "fr": "boeuf et veau",
+      "en": "beef and veal"
+    }
+  },
+  {
+    "id": "ciqual-040202",
+    "source_code": "040202",
+    "parent_id": "ciqual-0402",
+    "names": {
+      "fr": "porc",
+      "en": "pork"
+    }
+  },
+  {
+    "id": "ciqual-040203",
+    "source_code": "040203",
+    "parent_id": "ciqual-0402",
+    "names": {
+      "fr": "poulet",
+      "en": "poultry"
+    }
+  },
+  {
+    "id": "ciqual-040204",
+    "source_code": "040204",
+    "parent_id": "ciqual-0402",
+    "names": {
+      "fr": "dinde",
+      "en": "turkey"
+    }
+  },
+  {
+    "id": "ciqual-040205",
+    "source_code": "040205",
+    "parent_id": "ciqual-0402",
+    "names": {
+      "fr": "agneau et mouton",
+      "en": "lamb and mutton"
+    }
+  },
+  {
+    "id": "ciqual-040206",
+    "source_code": "040206",
+    "parent_id": "ciqual-0402",
+    "names": {
+      "fr": "gibier",
+      "en": "game"
+    }
+  },
+  {
+    "id": "ciqual-040207",
+    "source_code": "040207",
+    "parent_id": "ciqual-0402",
+    "names": {
+      "fr": "autres viandes",
+      "en": "other meats"
+    }
+  },
+  {
+    "id": "ciqual-040208",
+    "source_code": "040208",
+    "parent_id": "ciqual-0402",
+    "names": {
+      "fr": "abats",
+      "en": "offals"
+    }
+  },
+  {
+    "id": "ciqual-0403",
+    "source_code": "0403",
+    "parent_id": "ciqual-04",
+    "names": {
+      "fr": "charcuteries et alternatives végétales",
+      "en": "delicatessen meat and similar"
+    }
+  },
+  {
+    "id": "ciqual-040301",
+    "source_code": "040301",
+    "parent_id": "ciqual-0403",
+    "names": {
+      "fr": "jambons cuits",
+      "en": "cooked ham"
+    }
+  },
+  {
+    "id": "ciqual-040302",
+    "source_code": "040302",
+    "parent_id": "ciqual-0403",
+    "names": {
+      "fr": "jambons secs et crus",
+      "en": "raw and cured ham"
+    }
+  },
+  {
+    "id": "ciqual-040303",
+    "source_code": "040303",
+    "parent_id": "ciqual-0403",
+    "names": {
+      "fr": "saucisson secs",
+      "en": "dry sausages"
+    }
+  },
+  {
+    "id": "ciqual-040304",
+    "source_code": "040304",
+    "parent_id": "ciqual-0403",
+    "names": {
+      "fr": "saucisses et assimilés",
+      "en": "sausages"
+    }
+  },
+  {
+    "id": "ciqual-040305",
+    "source_code": "040305",
+    "parent_id": "ciqual-0403",
+    "names": {
+      "fr": "pâtés et terrines",
+      "en": "pâtés and terrines"
+    }
+  },
+  {
+    "id": "ciqual-040306",
+    "source_code": "040306",
+    "parent_id": "ciqual-0403",
+    "names": {
+      "fr": "rillettes",
+      "en": "rillettes"
+    }
+  },
+  {
+    "id": "ciqual-040307",
+    "source_code": "040307",
+    "parent_id": "ciqual-0403",
+    "names": {
+      "fr": "quenelles",
+      "en": "quenelles"
+    }
+  },
+  {
+    "id": "ciqual-040308",
+    "source_code": "040308",
+    "parent_id": "ciqual-0403",
+    "names": {
+      "fr": "autres spécialités charcutières",
+      "en": "other delicatessen"
+    }
+  },
+  {
+    "id": "ciqual-040309",
+    "source_code": "040309",
+    "parent_id": "ciqual-0403",
+    "names": {
+      "fr": "alternatives végétales aux charcuteries",
+      "en": "plant-based alternatives to delicatessen"
+    }
+  },
+  {
+    "id": "ciqual-0404",
+    "source_code": "0404",
+    "parent_id": "ciqual-04",
+    "names": {
+      "fr": "autres produits à base de viande",
+      "en": "other meat products"
+    }
+  },
+  {
+    "id": "ciqual-0405",
+    "source_code": "0405",
+    "parent_id": "ciqual-04",
+    "names": {
+      "fr": "poissons cuits",
+      "en": "fish, cooked"
+    }
+  },
+  {
+    "id": "ciqual-0406",
+    "source_code": "0406",
+    "parent_id": "ciqual-04",
+    "names": {
+      "fr": "poissons crus",
+      "en": "fish, raw"
+    }
+  },
+  {
+    "id": "ciqual-0407",
+    "source_code": "0407",
+    "parent_id": "ciqual-04",
+    "names": {
+      "fr": "mollusques et crustacés cuits",
+      "en": "seafood, cooked"
+    }
+  },
+  {
+    "id": "ciqual-0408",
+    "source_code": "0408",
+    "parent_id": "ciqual-04",
+    "names": {
+      "fr": "mollusques et crustacés crus",
+      "en": "seafood, raw"
+    }
+  },
+  {
+    "id": "ciqual-0409",
+    "source_code": "0409",
+    "parent_id": "ciqual-04",
+    "names": {
+      "fr": "produits à base de poissons et produits de la mer",
+      "en": "fish products"
+    }
+  },
+  {
+    "id": "ciqual-0410",
+    "source_code": "0410",
+    "parent_id": "ciqual-04",
+    "names": {
+      "fr": "oeufs",
+      "en": "eggs"
+    }
+  },
+  {
+    "id": "ciqual-041001",
+    "source_code": "041001",
+    "parent_id": "ciqual-0410",
+    "names": {
+      "fr": "oeufs cuits",
+      "en": "eggs, cooked"
+    }
+  },
+  {
+    "id": "ciqual-041002",
+    "source_code": "041002",
+    "parent_id": "ciqual-0410",
+    "names": {
+      "fr": "oeufs crus",
+      "en": "eggs, raw"
+    }
+  },
+  {
+    "id": "ciqual-041003",
+    "source_code": "041003",
+    "parent_id": "ciqual-0410",
+    "names": {
+      "fr": "omelettes et autres ovoproduits",
+      "en": "omelettes and other egg products"
+    }
+  },
+  {
+    "id": "ciqual-0411",
+    "source_code": "0411",
+    "parent_id": "ciqual-04",
+    "names": {
+      "fr": "alternatives végétales aux produits carnés",
+      "en": "plant-based alternatives to meat products"
+    }
+  },
+  {
+    "id": "ciqual-05",
+    "source_code": "05",
+    "parent_id": null,
+    "names": {
+      "fr": "produits laitiers",
+      "en": "milk and milk products"
+    }
+  },
+  {
+    "id": "ciqual-0501",
+    "source_code": "0501",
+    "parent_id": "ciqual-05",
+    "names": {
+      "fr": "laits",
+      "en": "milk"
+    }
+  },
+  {
+    "id": "ciqual-050101",
+    "source_code": "050101",
+    "parent_id": "ciqual-0501",
+    "names": {
+      "fr": "laits de vaches liquides (non concentrés)",
+      "en": "milk from cow, liquid (not concentrated)"
+    }
+  },
+  {
+    "id": "ciqual-050102",
+    "source_code": "050102",
+    "parent_id": "ciqual-0501",
+    "names": {
+      "fr": "laits autres que de vache",
+      "en": "milk, other than from cow"
+    }
+  },
+  {
+    "id": "ciqual-050103",
+    "source_code": "050103",
+    "parent_id": "ciqual-0501",
+    "names": {
+      "fr": "laits de vache concentrés ou en poudre",
+      "en": "milk from cow, concentrated or in powder"
+    }
+  },
+  {
+    "id": "ciqual-0502",
+    "source_code": "0502",
+    "parent_id": "ciqual-05",
+    "names": {
+      "fr": "produits laitiers frais et alternatives végétales",
+      "en": "dairy products"
+    }
+  },
+  {
+    "id": "ciqual-050201",
+    "source_code": "050201",
+    "parent_id": "ciqual-0502",
+    "names": {
+      "fr": "yaourts et spécialités laitières type yaourt",
+      "en": "yoghurts"
+    }
+  },
+  {
+    "id": "ciqual-050202",
+    "source_code": "050202",
+    "parent_id": "ciqual-0502",
+    "names": {
+      "fr": "fromages blancs",
+      "en": "fromages blanc"
+    }
+  },
+  {
+    "id": "ciqual-050203",
+    "source_code": "050203",
+    "parent_id": "ciqual-0502",
+    "names": {
+      "fr": "desserts lactés",
+      "en": "dairy desserts"
+    }
+  },
+  {
+    "id": "ciqual-050204",
+    "source_code": "050204",
+    "parent_id": "ciqual-0502",
+    "names": {
+      "fr": "autres desserts",
+      "en": "other desserts"
+    }
+  },
+  {
+    "id": "ciqual-050205",
+    "source_code": "050205",
+    "parent_id": "ciqual-0502",
+    "names": {
+      "fr": "desserts végétaux",
+      "en": "plant-based desserts"
+    }
+  },
+  {
+    "id": "ciqual-0503",
+    "source_code": "0503",
+    "parent_id": "ciqual-05",
+    "names": {
+      "fr": "fromages et alternatives végétales",
+      "en": "cheese and similar"
+    }
+  },
+  {
+    "id": "ciqual-050301",
+    "source_code": "050301",
+    "parent_id": "ciqual-0503",
+    "names": {
+      "fr": "fromages à pâte molle",
+      "en": "soft cheeses"
+    }
+  },
+  {
+    "id": "ciqual-050302",
+    "source_code": "050302",
+    "parent_id": "ciqual-0503",
+    "names": {
+      "fr": "fromages à pâte persillée",
+      "en": "blue cheeses"
+    }
+  },
+  {
+    "id": "ciqual-050303",
+    "source_code": "050303",
+    "parent_id": "ciqual-0503",
+    "names": {
+      "fr": "fromages à pâte pressée ou dure",
+      "en": "hard or pressed cheeses"
+    }
+  },
+  {
+    "id": "ciqual-050304",
+    "source_code": "050304",
+    "parent_id": "ciqual-0503",
+    "names": {
+      "fr": "fromage fondus",
+      "en": "processed cheeses"
+    }
+  },
+  {
+    "id": "ciqual-050305",
+    "source_code": "050305",
+    "parent_id": "ciqual-0503",
+    "names": {
+      "fr": "autres fromages et spécialités",
+      "en": "uncured cheeses and similar"
+    }
+  },
+  {
+    "id": "ciqual-050306",
+    "source_code": "050306",
+    "parent_id": "ciqual-0503",
+    "names": {
+      "fr": "alternatives végétales aux fromages",
+      "en": "plant-based alternatives to cheese"
+    }
+  },
+  {
+    "id": "ciqual-0504",
+    "source_code": "0504",
+    "parent_id": "ciqual-05",
+    "names": {
+      "fr": "crèmes et spécialités à base de crème",
+      "en": "cream and similar"
+    }
+  },
+  {
+    "id": "ciqual-06",
+    "source_code": "06",
+    "parent_id": null,
+    "names": {
+      "fr": "eaux et autres boissons",
+      "en": "beverages"
+    }
+  },
+  {
+    "id": "ciqual-0601",
+    "source_code": "0601",
+    "parent_id": "ciqual-06",
+    "names": {
+      "fr": "eaux",
+      "en": "water"
+    }
+  },
+  {
+    "id": "ciqual-0602",
+    "source_code": "0602",
+    "parent_id": "ciqual-06",
+    "names": {
+      "fr": "boissons sans alcool",
+      "en": "non-alcoholic beverages"
+    }
+  },
+  {
+    "id": "ciqual-060201",
+    "source_code": "060201",
+    "parent_id": "ciqual-0602",
+    "names": {
+      "fr": "jus",
+      "en": "juices"
+    }
+  },
+  {
+    "id": "ciqual-060202",
+    "source_code": "060202",
+    "parent_id": "ciqual-0602",
+    "names": {
+      "fr": "nectars",
+      "en": "nectars"
+    }
+  },
+  {
+    "id": "ciqual-060203",
+    "source_code": "060203",
+    "parent_id": "ciqual-0602",
+    "names": {
+      "fr": "boissons rafraîchissantes sans alcool",
+      "en": "soft drinks"
+    }
+  },
+  {
+    "id": "ciqual-060204",
+    "source_code": "060204",
+    "parent_id": "ciqual-0602",
+    "names": {
+      "fr": "boissons rafraîchissantes lactées",
+      "en": "dairy beverages"
+    }
+  },
+  {
+    "id": "ciqual-060205",
+    "source_code": "060205",
+    "parent_id": "ciqual-0602",
+    "names": {
+      "fr": "boissons végétales",
+      "en": "plant-based beverages"
+    }
+  },
+  {
+    "id": "ciqual-060206",
+    "source_code": "060206",
+    "parent_id": "ciqual-0602",
+    "names": {
+      "fr": "café, thé, cacao etc. prêts à consommer",
+      "en": "coffee, tea, cocoa beverages, etc. ready to drink"
+    }
+  },
+  {
+    "id": "ciqual-060207",
+    "source_code": "060207",
+    "parent_id": "ciqual-0602",
+    "names": {
+      "fr": "boissons à reconstituer",
+      "en": "beverages, to reconstitute"
+    }
+  },
+  {
+    "id": "ciqual-0603",
+    "source_code": "0603",
+    "parent_id": "ciqual-06",
+    "names": {
+      "fr": "boisson alcoolisées",
+      "en": "alcoholic beverages"
+    }
+  },
+  {
+    "id": "ciqual-060301",
+    "source_code": "060301",
+    "parent_id": "ciqual-0603",
+    "names": {
+      "fr": "vins",
+      "en": "wines"
+    }
+  },
+  {
+    "id": "ciqual-060302",
+    "source_code": "060302",
+    "parent_id": "ciqual-0603",
+    "names": {
+      "fr": "bières et cidres",
+      "en": "beers and ciders"
+    }
+  },
+  {
+    "id": "ciqual-060303",
+    "source_code": "060303",
+    "parent_id": "ciqual-0603",
+    "names": {
+      "fr": "liqueurs et alcools",
+      "en": "liqueurs and spirits"
+    }
+  },
+  {
+    "id": "ciqual-060304",
+    "source_code": "060304",
+    "parent_id": "ciqual-0603",
+    "names": {
+      "fr": "cocktails",
+      "en": "cocktails"
+    }
+  },
+  {
+    "id": "ciqual-07",
+    "source_code": "07",
+    "parent_id": null,
+    "names": {
+      "fr": "produits sucrés",
+      "en": "sugar and confectionery"
+    }
+  },
+  {
+    "id": "ciqual-0701",
+    "source_code": "0701",
+    "parent_id": "ciqual-07",
+    "names": {
+      "fr": "sucres, miels et assimilés",
+      "en": "sugars and honey"
+    }
+  },
+  {
+    "id": "ciqual-0702",
+    "source_code": "0702",
+    "parent_id": "ciqual-07",
+    "names": {
+      "fr": "chocolats et produits à base de chocolat",
+      "en": "chocolate and chocolate products"
+    }
+  },
+  {
+    "id": "ciqual-0703",
+    "source_code": "0703",
+    "parent_id": "ciqual-07",
+    "names": {
+      "fr": "confiseries non chocolatées",
+      "en": "non-chocolate confectionery"
+    }
+  },
+  {
+    "id": "ciqual-0704",
+    "source_code": "0704",
+    "parent_id": "ciqual-07",
+    "names": {
+      "fr": "confitures et assimilés",
+      "en": "jam"
+    }
+  },
+  {
+    "id": "ciqual-0705",
+    "source_code": "0705",
+    "parent_id": "ciqual-07",
+    "names": {
+      "fr": "viennoiseries",
+      "en": "Viennese pastries"
+    }
+  },
+  {
+    "id": "ciqual-0706",
+    "source_code": "0706",
+    "parent_id": "ciqual-07",
+    "names": {
+      "fr": "biscuits sucrés",
+      "en": "sweet biscuits"
+    }
+  },
+  {
+    "id": "ciqual-0707",
+    "source_code": "0707",
+    "parent_id": "ciqual-07",
+    "names": {
+      "fr": "céréales de petit-déjeuner",
+      "en": "breakfast cereals"
+    }
+  },
+  {
+    "id": "ciqual-0708",
+    "source_code": "0708",
+    "parent_id": "ciqual-07",
+    "names": {
+      "fr": "barres céréalières",
+      "en": "cereal bars"
+    }
+  },
+  {
+    "id": "ciqual-0709",
+    "source_code": "0709",
+    "parent_id": "ciqual-07",
+    "names": {
+      "fr": "gâteaux et pâtisseries",
+      "en": "cakes and pastry"
+    }
+  },
+  {
+    "id": "ciqual-08",
+    "source_code": "08",
+    "parent_id": null,
+    "names": {
+      "fr": "glaces et sorbets",
+      "en": "ice cream and sorbet"
+    }
+  },
+  {
+    "id": "ciqual-0801",
+    "source_code": "0801",
+    "parent_id": "ciqual-08",
+    "names": {
+      "fr": "glaces",
+      "en": "ice cream"
+    }
+  },
+  {
+    "id": "ciqual-0802",
+    "source_code": "0802",
+    "parent_id": "ciqual-08",
+    "names": {
+      "fr": "sorbets",
+      "en": "sorbet"
+    }
+  },
+  {
+    "id": "ciqual-0803",
+    "source_code": "0803",
+    "parent_id": "ciqual-08",
+    "names": {
+      "fr": "desserts glacés",
+      "en": "frozen desserts"
+    }
+  },
+  {
+    "id": "ciqual-09",
+    "source_code": "09",
+    "parent_id": null,
+    "names": {
+      "fr": "matières grasses",
+      "en": "fats and oils"
+    }
+  },
+  {
+    "id": "ciqual-0901",
+    "source_code": "0901",
+    "parent_id": "ciqual-09",
+    "names": {
+      "fr": "beurres",
+      "en": "butters"
+    }
+  },
+  {
+    "id": "ciqual-0902",
+    "source_code": "0902",
+    "parent_id": "ciqual-09",
+    "names": {
+      "fr": "huiles et graisses végétales",
+      "en": "vegetable oils"
+    }
+  },
+  {
+    "id": "ciqual-0903",
+    "source_code": "0903",
+    "parent_id": "ciqual-09",
+    "names": {
+      "fr": "margarines",
+      "en": "margarines"
+    }
+  },
+  {
+    "id": "ciqual-0904",
+    "source_code": "0904",
+    "parent_id": "ciqual-09",
+    "names": {
+      "fr": "huiles de poissons",
+      "en": "fish oils"
+    }
+  },
+  {
+    "id": "ciqual-0905",
+    "source_code": "0905",
+    "parent_id": "ciqual-09",
+    "names": {
+      "fr": "autres matières grasses",
+      "en": "other fats"
+    }
+  },
+  {
+    "id": "ciqual-10",
+    "source_code": "10",
+    "parent_id": null,
+    "names": {
+      "fr": "aides culinaires et ingrédients divers",
+      "en": "miscellaneous"
+    }
+  },
+  {
+    "id": "ciqual-1001",
+    "source_code": "1001",
+    "parent_id": "ciqual-10",
+    "names": {
+      "fr": "sauces",
+      "en": "sauces"
+    }
+  },
+  {
+    "id": "ciqual-100101",
+    "source_code": "100101",
+    "parent_id": "ciqual-1001",
+    "names": {
+      "fr": "sauces froides",
+      "en": "cold sauces"
+    }
+  },
+  {
+    "id": "ciqual-100102",
+    "source_code": "100102",
+    "parent_id": "ciqual-1001",
+    "names": {
+      "fr": "sauces chaudes",
+      "en": "warm sauces"
+    }
+  },
+  {
+    "id": "ciqual-100103",
+    "source_code": "100103",
+    "parent_id": "ciqual-1001",
+    "names": {
+      "fr": "sauces sucrées",
+      "en": "dessert sauces"
+    }
+  },
+  {
+    "id": "ciqual-1002",
+    "source_code": "1002",
+    "parent_id": "ciqual-10",
+    "names": {
+      "fr": "condiments",
+      "en": "condiments"
+    }
+  },
+  {
+    "id": "ciqual-1003",
+    "source_code": "1003",
+    "parent_id": "ciqual-10",
+    "names": {
+      "fr": "aides culinaires",
+      "en": "cooking aids"
+    }
+  },
+  {
+    "id": "ciqual-1004",
+    "source_code": "1004",
+    "parent_id": "ciqual-10",
+    "names": {
+      "fr": "sels",
+      "en": "salts"
+    }
+  },
+  {
+    "id": "ciqual-1005",
+    "source_code": "1005",
+    "parent_id": "ciqual-10",
+    "names": {
+      "fr": "épices",
+      "en": "spices"
+    }
+  },
+  {
+    "id": "ciqual-1006",
+    "source_code": "1006",
+    "parent_id": "ciqual-10",
+    "names": {
+      "fr": "herbes",
+      "en": "herbs"
+    }
+  },
+  {
+    "id": "ciqual-100601",
+    "source_code": "100601",
+    "parent_id": "ciqual-1006",
+    "names": {
+      "fr": "herbes fraîches",
+      "en": "fresh herbs"
+    }
+  },
+  {
+    "id": "ciqual-100602",
+    "source_code": "100602",
+    "parent_id": "ciqual-1006",
+    "names": {
+      "fr": "herbes séchées",
+      "en": "dried herbs"
+    }
+  },
+  {
+    "id": "ciqual-1007",
+    "source_code": "1007",
+    "parent_id": "ciqual-10",
+    "names": {
+      "fr": "algues",
+      "en": "seaweed"
+    }
+  },
+  {
+    "id": "ciqual-1008",
+    "source_code": "1008",
+    "parent_id": "ciqual-10",
+    "names": {
+      "fr": "denrées destinées à une alimentation particulière",
+      "en": "foods for particular nutritional uses"
+    }
+  },
+  {
+    "id": "ciqual-1009",
+    "source_code": "1009",
+    "parent_id": "ciqual-10",
+    "names": {
+      "fr": "ingrédients pour végétariens",
+      "en": "ingredients for vegetarian"
+    }
+  },
+  {
+    "id": "ciqual-1010",
+    "source_code": "1010",
+    "parent_id": "ciqual-10",
+    "names": {
+      "fr": "tartinables végétariens",
+      "en": "plant-based spreads"
+    }
+  },
+  {
+    "id": "ciqual-11",
+    "source_code": "11",
+    "parent_id": null,
+    "names": {
+      "fr": "aliments infantiles",
+      "en": "baby food"
+    }
+  },
+  {
+    "id": "ciqual-1101",
+    "source_code": "1101",
+    "parent_id": "ciqual-11",
+    "names": {
+      "fr": "laits et boissons infantiles",
+      "en": "baby milk and beverages"
+    }
+  },
+  {
+    "id": "ciqual-1102",
+    "source_code": "1102",
+    "parent_id": "ciqual-11",
+    "names": {
+      "fr": "petits pots salés et plats infantiles",
+      "en": "baby dishes"
+    }
+  },
+  {
+    "id": "ciqual-1103",
+    "source_code": "1103",
+    "parent_id": "ciqual-11",
+    "names": {
+      "fr": "desserts infantiles",
+      "en": "baby deserts"
+    }
+  },
+  {
+    "id": "ciqual-1104",
+    "source_code": "1104",
+    "parent_id": "ciqual-11",
+    "names": {
+      "fr": "céréales et biscuits infantiles",
+      "en": "baby biscuits and cereals"
+    }
+  }
+]

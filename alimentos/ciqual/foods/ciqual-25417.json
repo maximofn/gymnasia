@@ -1,0 +1,567 @@
+{
+  "schema_version": 1,
+  "id": "ciqual-25417",
+  "kind": "generic",
+  "names": {
+    "fr": "Tarte aux légumes, préemballée",
+    "en": "Tart, vegetables, prepacked"
+  },
+  "scientific_name": null,
+  "category_ids": [
+    "ciqual-01",
+    "ciqual-0104"
+  ],
+  "source": {
+    "dataset_id": "anses-ciqual-2025",
+    "food_code": "25417"
+  },
+  "nitrogen_to_protein_factor": 6.25,
+  "nutrition_profiles": [
+    {
+      "id": "ciqual-2025",
+      "basis": {
+        "amount": 100,
+        "unit": "g",
+        "portion": "edible"
+      },
+      "nutrients": {
+        "ciqual-327": {
+          "value": 902,
+          "qualifier": "reported",
+          "source_value": "902",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-328": {
+          "value": 216,
+          "qualifier": "reported",
+          "source_value": "216",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-332": {
+          "value": 902,
+          "qualifier": "reported",
+          "source_value": "902",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-333": {
+          "value": 216,
+          "qualifier": "reported",
+          "source_value": "216",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-400": {
+          "value": 57.4,
+          "qualifier": "reported",
+          "source_value": "57,4",
+          "confidence_code": "A",
+          "source_ref": "193"
+        },
+        "ciqual-10000": {
+          "value": 2,
+          "qualifier": "reported",
+          "source_value": "2",
+          "confidence_code": "D",
+          "source_ref": "243"
+        },
+        "ciqual-10004": {
+          "value": 0.98,
+          "qualifier": "reported",
+          "source_value": "0,98",
+          "minimum": 0.95,
+          "source_minimum": "0,95",
+          "maximum": 1,
+          "source_maximum": "1",
+          "confidence_code": "A",
+          "source_ref": "349"
+        },
+        "ciqual-10110": {
+          "value": 392,
+          "qualifier": "reported",
+          "source_value": "392",
+          "minimum": 380,
+          "source_minimum": "380",
+          "maximum": 400,
+          "source_maximum": "400",
+          "confidence_code": "A",
+          "source_ref": "349"
+        },
+        "ciqual-10120": {
+          "value": 13.9,
+          "qualifier": "reported",
+          "source_value": "13,9",
+          "minimum": 12.5,
+          "source_minimum": "12,5",
+          "maximum": 15.2,
+          "source_maximum": "15,2",
+          "confidence_code": "A",
+          "source_ref": "162"
+        },
+        "ciqual-10150": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-10170": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-10190": {
+          "value": 242,
+          "qualifier": "reported",
+          "source_value": "242",
+          "minimum": 128,
+          "source_minimum": "128",
+          "maximum": 410,
+          "source_maximum": "410",
+          "confidence_code": "D",
+          "source_ref": "6"
+        },
+        "ciqual-10200": {
+          "value": 104,
+          "qualifier": "reported",
+          "source_value": "104",
+          "minimum": 82.1,
+          "source_minimum": "82,1",
+          "maximum": 126,
+          "source_maximum": "126",
+          "confidence_code": "A",
+          "source_ref": "162"
+        },
+        "ciqual-10251": {
+          "value": 0.13,
+          "qualifier": "reported",
+          "source_value": "0,13",
+          "minimum": 0.091,
+          "source_minimum": "0,091",
+          "maximum": 0.16,
+          "source_maximum": "0,16",
+          "confidence_code": "A",
+          "source_ref": "162"
+        },
+        "ciqual-10260": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-10290": {
+          "value": 0.058,
+          "qualifier": "reported",
+          "source_value": "0,058",
+          "minimum": 0.055,
+          "source_minimum": "0,055",
+          "maximum": 0.062,
+          "source_maximum": "0,062",
+          "confidence_code": "A",
+          "source_ref": "162"
+        },
+        "ciqual-10300": {
+          "value": 0.62,
+          "qualifier": "reported",
+          "source_value": "0,62",
+          "minimum": 0.47,
+          "source_minimum": "0,47",
+          "maximum": 0.76,
+          "source_maximum": "0,76",
+          "confidence_code": "A",
+          "source_ref": "162"
+        },
+        "ciqual-10340": {
+          "value": 2.95,
+          "qualifier": "reported",
+          "source_value": "2,95",
+          "minimum": 2.2,
+          "source_minimum": "2,2",
+          "maximum": 4.8,
+          "source_maximum": "4,8",
+          "confidence_code": "A",
+          "source_ref": "162"
+        },
+        "ciqual-10530": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-25000": {
+          "value": 5,
+          "qualifier": "reported",
+          "source_value": "5",
+          "minimum": 3.2,
+          "source_minimum": "3,2",
+          "maximum": 5.9,
+          "source_maximum": "5,9",
+          "confidence_code": "A",
+          "source_ref": "444"
+        },
+        "ciqual-25003": {
+          "value": 5,
+          "qualifier": "reported",
+          "source_value": "5",
+          "minimum": 3.2,
+          "source_minimum": "3,2",
+          "maximum": 5.9,
+          "source_maximum": "5,9",
+          "confidence_code": "A",
+          "source_ref": "444"
+        },
+        "ciqual-31000": {
+          "value": 21.8,
+          "qualifier": "reported",
+          "source_value": "21,8",
+          "minimum": 19,
+          "source_minimum": "19",
+          "maximum": 25.5,
+          "source_maximum": "25,5",
+          "confidence_code": "A",
+          "source_ref": "444"
+        },
+        "ciqual-32000": {
+          "value": 3.2,
+          "qualifier": "reported",
+          "source_value": "3,2",
+          "confidence_code": "A",
+          "source_ref": "349"
+        },
+        "ciqual-32210": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-32220": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-32250": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-32410": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-32430": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-32480": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-33110": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-34000": {
+          "value": 0,
+          "qualifier": "reported",
+          "source_value": "0",
+          "confidence_code": "B",
+          "source_ref": "444"
+        },
+        "ciqual-34100": {
+          "value": 1.7,
+          "qualifier": "reported",
+          "source_value": "1,7",
+          "confidence_code": "A",
+          "source_ref": "349"
+        },
+        "ciqual-40000": {
+          "value": 11.7,
+          "qualifier": "reported",
+          "source_value": "11,7",
+          "minimum": 11,
+          "source_minimum": "11",
+          "maximum": 12.4,
+          "source_maximum": "12,4",
+          "confidence_code": "A",
+          "source_ref": "349"
+        },
+        "ciqual-40302": {
+          "value": 6,
+          "qualifier": "reported",
+          "source_value": "6",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-40303": {
+          "value": 4.7,
+          "qualifier": "reported",
+          "source_value": "4,7",
+          "minimum": 0.05,
+          "source_minimum": "0,05",
+          "maximum": 5.75,
+          "source_maximum": "5,75",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-40304": {
+          "value": 1,
+          "qualifier": "reported",
+          "source_value": "1",
+          "minimum": 0.05,
+          "source_minimum": "0,05",
+          "maximum": 1.24,
+          "source_maximum": "1,24",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-40400": {
+          "value": 0.12,
+          "qualifier": "reported",
+          "source_value": "0,12",
+          "minimum": 0.05,
+          "source_minimum": "0,05",
+          "maximum": 0.13,
+          "source_maximum": "0,13",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-40600": {
+          "value": 0.077,
+          "qualifier": "reported",
+          "source_value": "0,077",
+          "minimum": 0.05,
+          "source_minimum": "0,05",
+          "maximum": 0.08,
+          "source_maximum": "0,08",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-40800": {
+          "value": 0.051,
+          "qualifier": "reported",
+          "source_value": "0,051",
+          "minimum": 0.05,
+          "source_minimum": "0,05",
+          "maximum": 0.053,
+          "source_maximum": "0,053",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-41000": {
+          "value": 0.12,
+          "qualifier": "reported",
+          "source_value": "0,12",
+          "minimum": 0.05,
+          "source_minimum": "0,05",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-41200": {
+          "value": 0.15,
+          "qualifier": "reported",
+          "source_value": "0,15",
+          "minimum": 0.05,
+          "source_minimum": "0,05",
+          "maximum": 0.16,
+          "source_maximum": "0,16",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-41400": {
+          "value": 0.49,
+          "qualifier": "reported",
+          "source_value": "0,49",
+          "minimum": 0.05,
+          "source_minimum": "0,05",
+          "maximum": 0.51,
+          "source_maximum": "0,51",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-41600": {
+          "value": 4.15,
+          "qualifier": "reported",
+          "source_value": "4,15",
+          "minimum": 0.05,
+          "source_minimum": "0,05",
+          "maximum": 4.3,
+          "source_maximum": "4,3",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-41800": {
+          "value": 0.84,
+          "qualifier": "reported",
+          "source_value": "0,84",
+          "minimum": 0.05,
+          "source_minimum": "0,05",
+          "maximum": 0.87,
+          "source_maximum": "0,87",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-41819": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-41826": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-41833": {
+          "value": 0.15,
+          "qualifier": "reported",
+          "source_value": "0,15",
+          "minimum": 0.05,
+          "source_minimum": "0,05",
+          "maximum": 0.16,
+          "source_maximum": "0,16",
+          "confidence_code": "A",
+          "source_ref": "194"
+        },
+        "ciqual-42046": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-42053": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-42263": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-51104": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-51200": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-51330": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-52100": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-52200": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-52300": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-53100": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-54101": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-54104": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-55100": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-56100": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-56200": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-56310": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-56400": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-56500": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-56600": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-56700": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-56702": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-56704": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-56708": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-60000": {
+          "value": 0,
+          "qualifier": "reported",
+          "source_value": "0",
+          "confidence_code": "B",
+          "source_ref": "444"
+        },
+        "ciqual-65000": {
+          "value": null,
+          "qualifier": "trace",
+          "source_value": "traces",
+          "confidence_code": "D",
+          "source_ref": "444"
+        },
+        "ciqual-71010": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        },
+        "ciqual-75100": {
+          "value": null,
+          "qualifier": "missing",
+          "source_value": "-"
+        }
+      }
+    }
+  ]
+}

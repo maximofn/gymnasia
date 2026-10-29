@@ -1,0 +1,43 @@
+{
+  "id": "anses-ciqual-2025",
+  "version": "2025",
+  "release_date": "2025-11-19",
+  "record_url": "https://zenodo.org/records/17550133",
+  "doi": "10.5281/zenodo.17550133",
+  "attribution": "Anses. 2025. Ciqual French food composition table.",
+  "license": {
+    "name": "Licence Ouverte / Open Licence",
+    "url": "https://www.etalab.gouv.fr/licence-ouverte-open-licence/",
+    "documentation_url": "https://zenodo.org/records/17550133/files/Table%20Ciqual%202025%20doc%20ENG_2025_11_19.pdf",
+    "documentation_sha256": "dd6325a83dd13177abf156626e1a94ba8623fd04767719072257dbb53cadec6d"
+  },
+  "expected_foods": 3484,
+  "expected_nutrients": 74,
+  "files": [
+    {
+      "name": "alim_2025_11_03.xml",
+      "tag": "ALIM",
+      "sha256": "e0b1de25b3039028205e9d54a96892e403e1b313c2efeb41180fabe132627478"
+    },
+    {
+      "name": "alim_grp_2025_11_03.xml",
+      "tag": "ALIM_GRP",
+      "sha256": "e216928be1001aed15ba1b120405b70a98145da2a1a76026d6e33542bd5e39dc"
+    },
+    {
+      "name": "compo_2025_11_03.xml",
+      "tag": "COMPO",
+      "sha256": "8c46a9032ece4eab4ffccc9dfcb0c490ec2f416aa664cc1ee013b241c6bdd4af"
+    },
+    {
+      "name": "const_2025_11_03.xml",
+      "tag": "CONST",
+      "sha256": "3a231ea3e9836e4ac0b6ff94511e010210b2523d1b8b486c6b29e211066ba3f3"
+    },
+    {
+      "name": "sources_2025_11_03.xml",
+      "tag": "SOURCES",
+      "sha256": "73e6a0c573f88c23f23b4670a016c616edea806b3d92340942cdbdb9b4323137"
+    }
+  ]
+}
