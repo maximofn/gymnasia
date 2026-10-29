@@ -1,6 +1,8 @@
 # QA: integración local de ANSES-CIQUAL 2025
 
 Fecha: 2026-10-29. Rama: `codex/ciqual-mobile-catalog`.
+Versión preparada para publicación: 1.54.0, incremento minor exigido por la
+validación de releases para esta funcionalidad nueva. No se ha lanzado una build.
 
 ## Alcance y plan de pruebas
 
