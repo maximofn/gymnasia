@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Viande cuite (aliment moyen)",
-    "en": "Meat, cooked (average)"
+    "en": "Meat, cooked (average)",
+    "es": "Carne cocinada (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

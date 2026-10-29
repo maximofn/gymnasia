@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich baguette, poulet crudités mayonnaise, vente à emporter",
-    "en": "Sandwich, baguette, chicken, raw vegetables and mayonnaise, takeaway"
+    "en": "Sandwich, baguette, chicken, raw vegetables and mayonnaise, takeaway",
+    "es": "Sándwich de barra de pan, pollo, crudités y mayonesa, para llevar"
   },
   "scientific_name": null,
   "category_ids": [

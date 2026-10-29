@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pêche, chair sans peau, sans noyau, crue (aliment moyen)",
-    "en": "Peach, flesh without skin, pitted, raw (average)"
+    "en": "Peach, flesh without skin, pitted, raw (average)",
+    "es": "Melocotón, pulpa sin piel, sin hueso, crudo (valor medio)"
   },
   "scientific_name": "Prunus persica",
   "category_ids": [

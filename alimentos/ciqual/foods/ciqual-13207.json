@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert de fruits, tout type de fruits (en taux de sucres : compotes allégées en sucres < desserts de fruits < compotes), préemballé, rayon frais",
-    "en": "Fruits dessert, all types (sugar content is less than fruits compote but more than fruits compote reduced sugar), prepacked, refrigerated"
+    "en": "Fruits dessert, all types (sugar content is less than fruits compote but more than fruits compote reduced sugar), prepacked, refrigerated",
+    "es": "Postre de frutas, todo tipo de frutas (por contenido de azúcares: compotas ligeras en azúcares < postres de frutas < compotas), envasado, sección refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

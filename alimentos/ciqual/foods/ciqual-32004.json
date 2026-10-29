@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Muesli (aliment moyen)",
-    "en": "Muesli (average)"
+    "en": "Muesli (average)",
+    "es": "Muesli (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

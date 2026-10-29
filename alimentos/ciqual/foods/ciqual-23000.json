@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Gâteau (aliment moyen)",
-    "en": "Cake (average)"
+    "en": "Cake (average)",
+    "es": "Pastel (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

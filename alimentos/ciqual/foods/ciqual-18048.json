@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson gazeuse aux fruits (teneur en jus non spécifiée), sucrée (aliment moyen)",
-    "en": "Carbonated beverage or fruit soft drink (fruit juice content unknown), with sugar(s) (average)"
+    "en": "Carbonated beverage or fruit soft drink (fruit juice content unknown), with sugar(s) (average)",
+    "es": "Bebida gaseosa de fruta (contenido de zumo de fruta no especificado), azucarada (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

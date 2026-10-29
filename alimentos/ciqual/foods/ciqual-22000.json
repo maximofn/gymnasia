@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Oeuf cru",
-    "en": "Egg, raw"
+    "en": "Egg, raw",
+    "es": "Huevo, crudo"
   },
   "scientific_name": null,
   "category_ids": [

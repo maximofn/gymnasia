@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Truite ou truite fario, élevage, crue",
-    "en": "Trout, raw, farmed"
+    "en": "Trout, raw, farmed",
+    "es": "Trucha o trucha común, de piscifactoría, cruda"
   },
   "scientific_name": "Salmo trutta",
   "category_ids": [

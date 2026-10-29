@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Mozzarella au lait de vache",
-    "en": "Mozzarella cheese, from cow's milk"
+    "en": "Mozzarella cheese, from cow's milk",
+    "es": "Queso mozzarella de leche de vaca"
   },
   "scientific_name": null,
   "category_ids": [

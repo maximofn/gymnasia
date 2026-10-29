@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Foie gras, canard, entier, cuit",
-    "en": "Foie gras, duck, whole, cooked"
+    "en": "Foie gras, duck, whole, cooked",
+    "es": "Foie gras, pato, entero, cocido"
   },
   "scientific_name": null,
   "category_ids": [

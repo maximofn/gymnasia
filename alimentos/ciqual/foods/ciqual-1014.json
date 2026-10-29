@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Alcool pur",
-    "en": "Pure alcohol"
+    "en": "Pure alcohol",
+    "es": "Alcohol puro"
   },
   "scientific_name": null,
   "category_ids": [

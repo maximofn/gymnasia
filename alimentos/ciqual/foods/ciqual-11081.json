@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Epice (aliment moyen)",
-    "en": "Spice (average)"
+    "en": "Spice (average)",
+    "es": "Especias (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

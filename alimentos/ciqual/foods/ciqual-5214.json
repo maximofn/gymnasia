@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Vin rouge",
-    "en": "Wine, red"
+    "en": "Wine, red",
+    "es": "Vino tinto"
   },
   "scientific_name": null,
   "category_ids": [

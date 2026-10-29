@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poivron, vert, jaune ou rouge, cuit (aliment moyen)",
-    "en": "Sweet pepper, green , yellow or red, cooked (average)"
+    "en": "Sweet pepper, green , yellow or red, cooked (average)",
+    "es": "Pimiento, verde, amarillo o rojo, cocido (valor medio)"
   },
   "scientific_name": "Capsicum annuum",
   "category_ids": [

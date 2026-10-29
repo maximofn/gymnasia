@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Compote ou assimilé, tout type de fruits, sans précision sur la teneur en sucres (allégée en sucres ou non, sans sucres ajoutés…) ni sur le rayon (aliment moyen)",
-    "en": "Fruit compote and similar, any fruit, sugar content unknown (average)"
+    "en": "Fruit compote and similar, any fruit, sugar content unknown (average)",
+    "es": "Compota o similar, todo tipo de frutas, sin especificar el contenido de azúcares (con contenido reducido de azúcares o no, sin azúcares añadidos...) ni el lineal (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

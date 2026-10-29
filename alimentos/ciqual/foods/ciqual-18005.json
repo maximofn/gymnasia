@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Café, poudre soluble",
-    "en": "Coffee, powder, instant"
+    "en": "Coffee, powder, instant",
+    "es": "Café, polvo soluble"
   },
   "scientific_name": null,
   "category_ids": [

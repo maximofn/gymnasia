@@ -105,8 +105,10 @@ El catálogo fuente de ANSES-CIQUAL se mantiene en `alimentos/ciqual/`, con una
 ficha por alimento, índice, diccionarios y manifiesto de integridad. Se conserva
 separado del contrato de consumo actual de la app para representar valores
 desconocidos, trazas y límites sin inventar nutrientes o raciones. Incluye nombres
-oficiales en francés e inglés; la traducción al español y la integración móvil
-quedan para la curación posterior. No necesita backend ni base de datos externa.
+oficiales en francés e inglés y traducciones españolas de todos los alimentos,
+categorías y componentes, versionadas en `translations.es.json` para conservarlas
+al reimportar. La integración móvil queda pendiente. No necesita backend ni base
+de datos externa.
 
 ```bash
 npm run import:ciqual -- --download # descarga oficial fijada y generación reproducible

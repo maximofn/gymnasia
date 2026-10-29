@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chou vert, cuit",
-    "en": "Green cabbage, cooked"
+    "en": "Green cabbage, cooked",
+    "es": "Col berza, cocida"
   },
   "scientific_name": "Brassica oleracea var. capitata",
   "category_ids": [

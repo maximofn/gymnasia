@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Spécialité de fruits, tout type de fruits, (mélange chairs et/ou purées de fruits, mais toujours avec autre ingrédient), sans précision sur la teneur en sucres ni sur le rayon (aliment moyen)",
-    "en": "Stewed fruits, sugar content unknown (pulp or mixed fruits, w or without sugar, but always with other ingredient), prepacked (average)"
+    "en": "Stewed fruits, sugar content unknown (pulp or mixed fruits, w or without sugar, but always with other ingredient), prepacked (average)",
+    "es": "Especialidad de frutas, todo tipo de frutas, (mezcla de pulpas y/o purés de frutas, pero siempre con otro ingrediente), sin precisión sobre el contenido en azúcares ni sobre la sección (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

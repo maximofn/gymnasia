@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pain au levain",
-    "en": "Bread, French bread, with yeast"
+    "en": "Bread, French bread, with yeast",
+    "es": "Pan de masa madre"
   },
   "scientific_name": null,
   "category_ids": [

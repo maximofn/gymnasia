@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poivron rouge, cuit",
-    "en": "Sweet pepper, red, cooked"
+    "en": "Sweet pepper, red, cooked",
+    "es": "Pimiento rojo, cocido"
   },
   "scientific_name": "Capsicum annuum",
   "category_ids": [

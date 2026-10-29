@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Agneau, viande, cuite (aliment moyen)",
-    "en": "Lamb, meat, cooked (average)"
+    "en": "Lamb, meat, cooked (average)",
+    "es": "Cordero, carne, cocida (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

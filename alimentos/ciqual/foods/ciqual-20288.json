@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Salade sucrine, crue",
-    "en": "Lettuce, sucrine, raw"
+    "en": "Lettuce, sucrine, raw",
+    "es": "Lechuga sucrine, cruda"
   },
   "scientific_name": "Lactuca sativa L.",
   "category_ids": [

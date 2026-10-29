@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Bière faiblement alcoolisée (3° alcool)",
-    "en": "Beer, low alcohol-content (3° alcohol)"
+    "en": "Beer, low alcohol-content (3° alcohol)",
+    "es": "Cerveza baja en alcohol (3° alcohol)"
   },
   "scientific_name": null,
   "category_ids": [

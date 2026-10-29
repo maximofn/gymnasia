@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Thon à l'huile de tournesol, entier, appertisé, égoutté",
-    "en": "Tuna, whole slice, in sunflower oil, canned, drained"
+    "en": "Tuna, whole slice, in sunflower oil, canned, drained",
+    "es": "Atún en aceite de girasol, entero, en conserva, escurrido"
   },
   "scientific_name": "Thunnus spp.",
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pâtes fraîches farcies (ex : raviolis, tortellinis), au boeuf (ex : bolognaise), préemballées, cuites",
-    "en": "Fresh pasta, stuffed with meat (e.g. bolognese-style ravioli), prepacked, cooked"
+    "en": "Fresh pasta, stuffed with meat (e.g. bolognese-style ravioli), prepacked, cooked",
+    "es": "Pasta fresca rellena (ej.: raviolis, tortelinis), de vacuno (ej.: boloñesa), envasada, cocida"
   },
   "scientific_name": null,
   "category_ids": [

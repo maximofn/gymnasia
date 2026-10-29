@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Champignon, rosé des prés, cru",
-    "en": "Field mushroom, raw"
+    "en": "Field mushroom, raw",
+    "es": "Champiñón, champiñón silvestre, crudo"
   },
   "scientific_name": "Agaricus campestris",
   "category_ids": [

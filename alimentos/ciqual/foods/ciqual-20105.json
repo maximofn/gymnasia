@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Champignon, morille, crue",
-    "en": "Morel, raw"
+    "en": "Morel, raw",
+    "es": "Seta, colmenilla, cruda"
   },
   "scientific_name": "Morchella esculenta pers.",
   "category_ids": [

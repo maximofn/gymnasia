@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Café, décaféiné, poudre soluble",
-    "en": "Decaffeinated coffee, powder, instant"
+    "en": "Decaffeinated coffee, powder, instant",
+    "es": "Café, descafeinado, polvo soluble"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cola, sucré, avec édulcorants",
-    "en": "Cola, with sugar(s) and with sweetener(s)"
+    "en": "Cola, with sugar(s) and with sweetener(s)",
+    "es": "Cola, azucarada, con edulcorantes"
   },
   "scientific_name": null,
   "category_ids": [

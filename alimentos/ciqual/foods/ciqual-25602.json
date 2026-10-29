@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Salade composée avec viande ou poisson, appertisée",
-    "en": "Mixed salad, with meat/fish, canned"
+    "en": "Mixed salad, with meat/fish, canned",
+    "es": "Ensalada mixta con carne o pescado, en conserva"
   },
   "scientific_name": null,
   "category_ids": [

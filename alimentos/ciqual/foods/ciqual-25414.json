@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cheeseburger, de restauration rapide",
-    "en": "Cheeseburger, from fast food"
+    "en": "Cheeseburger, from fast food",
+    "es": "Hamburguesa con queso, de comida rápida"
   },
   "scientific_name": null,
   "category_ids": [

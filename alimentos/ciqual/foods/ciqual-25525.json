@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sauce tomate cuisinée pour pizza",
-    "en": "Tomato sauce for pizza"
+    "en": "Tomato sauce for pizza",
+    "es": "Salsa de tomate cocinada para pizza"
   },
   "scientific_name": null,
   "category_ids": [

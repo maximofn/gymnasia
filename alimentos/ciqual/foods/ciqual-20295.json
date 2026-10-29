@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Salade feuille de chêne, crue",
-    "en": "Lettuce, oak-leaf, raw"
+    "en": "Lettuce, oak-leaf, raw",
+    "es": "Lechuga hoja de roble, cruda"
   },
   "scientific_name": "Lactuca sativa L.",
   "category_ids": [

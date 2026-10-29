@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Calmar ou calamar ou encornet, bouilli/cuit à l'eau",
-    "en": "Squid, boiled/cooked in water"
+    "en": "Squid, boiled/cooked in water",
+    "es": "Calamar, hervido o cocido en agua"
   },
   "scientific_name": "Loligo vulgaris",
   "category_ids": [

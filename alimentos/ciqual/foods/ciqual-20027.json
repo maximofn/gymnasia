@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Épinard, cuit",
-    "en": "Spinach, cooked"
+    "en": "Spinach, cooked",
+    "es": "Espinaca, cocida"
   },
   "scientific_name": "Spinacia oleracea L.",
   "category_ids": [

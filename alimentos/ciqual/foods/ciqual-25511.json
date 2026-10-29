@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Légumes farcis (sauf tomate)",
-    "en": "Stuffed vegetables (excluding tomato)"
+    "en": "Stuffed vegetables (excluding tomato)",
+    "es": "Verduras rellenas (excepto tomate)"
   },
   "scientific_name": null,
   "category_ids": [

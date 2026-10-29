@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Yaourt ou lait fermenté, nature, sans précision sur teneur en matière grasse et sucre (aliment moyen)",
-    "en": "Yoghurt or fermented milk, plain (average)"
+    "en": "Yoghurt or fermented milk, plain (average)",
+    "es": "Yogur o leche fermentada, natural, sin especificar contenido de materia grasa y azúcar (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

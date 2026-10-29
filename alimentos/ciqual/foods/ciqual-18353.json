@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson énergisante, sans sucres ajoutés, avec édulcorants, enrichie en vitamines",
-    "en": "Energy drink, no added sugar(s) and with sweetener(s), fortified with vitamins"
+    "en": "Energy drink, no added sugar(s) and with sweetener(s), fortified with vitamins",
+    "es": "Bebida energética, sin azúcares añadidos, con edulcorantes, enriquecida con vitaminas"
   },
   "scientific_name": null,
   "category_ids": [

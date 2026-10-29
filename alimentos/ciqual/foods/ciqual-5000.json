@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Bière brune",
-    "en": "Beer, dark"
+    "en": "Beer, dark",
+    "es": "Cerveza negra"
   },
   "scientific_name": null,
   "category_ids": [

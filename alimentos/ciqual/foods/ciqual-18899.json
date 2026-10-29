@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson à l'avoine, nature, sans sucres ajoutés, non enrichie, préemballée",
-    "en": "Oat drink, plain, no added sugar, not fortified, prepacked"
+    "en": "Oat drink, plain, no added sugar, not fortified, prepacked",
+    "es": "Bebida de avena, natural, sin azúcar añadido, no enriquecida, envasada"
   },
   "scientific_name": null,
   "category_ids": [

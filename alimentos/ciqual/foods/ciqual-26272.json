@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza au poulet, préemballée",
-    "en": "Pizza, chicken, prepacked"
+    "en": "Pizza, chicken, prepacked",
+    "es": "Pizza de pollo, envasada"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Compote de pomme, sans précision sur la teneur en sucres ni sur le rayon (aliment moyen)",
-    "en": "Apple compote, sugar content and temperature unknown, prepacked (average)"
+    "en": "Apple compote, sugar content and temperature unknown, prepacked (average)",
+    "es": "Compota de manzana, sin precisión sobre el contenido en azúcares ni sobre la sección (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

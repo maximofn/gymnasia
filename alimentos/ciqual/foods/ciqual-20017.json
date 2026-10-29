@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chou-fleur, bouilli/cuit à l'eau",
-    "en": "Cauliflower, boiled"
+    "en": "Cauliflower, boiled",
+    "es": "Coliflor, hervida"
   },
   "scientific_name": "Brassica oleracea L. var. botrytis L.",
   "category_ids": [

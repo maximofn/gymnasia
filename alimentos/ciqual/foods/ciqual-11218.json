@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sauce chaude (aliment moyen)",
-    "en": "Sauce, warm (average)"
+    "en": "Sauce, warm (average)",
+    "es": "Salsa caliente (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

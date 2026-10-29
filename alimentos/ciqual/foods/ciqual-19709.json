@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage blanc ou spécialité laitière, aromatisé, 0% MG, avec édulcorants, sans sucres ajoutés",
-    "en": "Quark or dairy specialty, flavoured, 0% fat, with sweetener(s), no added sugars"
+    "en": "Quark or dairy specialty, flavoured, 0% fat, with sweetener(s), no added sugars",
+    "es": "Queso fresco batido o especialidad láctea, aromatizado, 0% materia grasa, con edulcorantes, sin azúcares añadidos"
   },
   "scientific_name": null,
   "category_ids": [

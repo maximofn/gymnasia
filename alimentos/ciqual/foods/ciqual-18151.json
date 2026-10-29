@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Café au lait, café crème ou cappuccino, instantané ou non, sans sucres ajoutés, prêt à boire",
-    "en": "Coffee with milk or white coffee or cappuccino, instant or non instant coffee, no added sugars, ready-to-drink"
+    "en": "Coffee with milk or white coffee or cappuccino, instant or non instant coffee, no added sugars, ready-to-drink",
+    "es": "Café con leche, café con nata o cappuccino, instantáneo o no, sin azúcares añadidos, listo para beber"
   },
   "scientific_name": null,
   "category_ids": [

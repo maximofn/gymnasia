@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Truite saumonée, sautée/poêlée",
-    "en": "Salmon trout, sautéed/pan-fried without added fat"
+    "en": "Salmon trout, sautéed/pan-fried without added fat",
+    "es": "Trucha asalmonada, salteada/a la sartén"
   },
   "scientific_name": "Salmo trutta forma lacustris (Linnaeus, 1758)",
   "category_ids": [

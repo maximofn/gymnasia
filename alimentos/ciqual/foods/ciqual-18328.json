@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson préparée à partir de sirop ou de boisson concentrée à diluer type menthe, fraise, etc, diluée dans l'eau, sans précision sur la teneur en sucres et édulcorants (aliment moyen)",
-    "en": "Syrup (eg. Mint, strawberry etc.), sugar content unknown, diluted in water (average)"
+    "en": "Syrup (eg. Mint, strawberry etc.), sugar content unknown, diluted in water (average)",
+    "es": "Bebida preparada a partir de sirope o bebida concentrada para diluir tipo menta, fresa, etc., diluida en agua, sin especificar contenido de azúcares y edulcorantes (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

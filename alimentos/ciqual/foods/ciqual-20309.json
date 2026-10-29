@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chou de Bruxelles, bouilli/cuit à l'eau",
-    "en": "Brussels sprout, boiled/cooked in water"
+    "en": "Brussels sprout, boiled/cooked in water",
+    "es": "Col de Bruselas, hervida/cocida en agua"
   },
   "scientific_name": "Brassica oleracea L. var. Gemnifera (DC.) Zenker",
   "category_ids": [

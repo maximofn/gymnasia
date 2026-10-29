@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Saumon, élevage, fumé",
-    "en": "Salmon, smoked, farmed"
+    "en": "Salmon, smoked, farmed",
+    "es": "Salmón, de piscifactoría, ahumado"
   },
   "scientific_name": "Salmo salar (Linnaeus, 1758)",
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poisson blanc, cuit (aliment moyen)",
-    "en": "White fish, cooked (average)"
+    "en": "White fish, cooked (average)",
+    "es": "Pescado blanco, cocinado (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

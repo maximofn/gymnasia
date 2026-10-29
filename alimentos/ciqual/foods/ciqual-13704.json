@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Abricot au sirop (sans précision sur léger ou classique), appertisé, égoutté (aliment moyen)",
-    "en": "Apricot, canned in syrup (sugar content unknown), drained (average)"
+    "en": "Apricot, canned in syrup (sugar content unknown), drained (average)",
+    "es": "Albaricoque en almíbar (sin especificar si es ligero o clásico), en conserva, escurrido (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

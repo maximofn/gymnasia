@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Thon, à la catalane ou à l'escabèche (sauce tomate), appertisé",
-    "en": "Tuna, in Catalan-style or tomato sauce, canned"
+    "en": "Tuna, in Catalan-style or tomato sauce, canned",
+    "es": "Atún a la catalana o en escabeche (salsa de tomate), en conserva"
   },
   "scientific_name": "Thunnus spp.",
   "category_ids": [

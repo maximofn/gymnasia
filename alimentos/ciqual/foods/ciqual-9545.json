@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Farine de maïs",
-    "en": "Maize/corn flour"
+    "en": "Maize/corn flour",
+    "es": "Harina de maíz"
   },
   "scientific_name": null,
   "category_ids": [

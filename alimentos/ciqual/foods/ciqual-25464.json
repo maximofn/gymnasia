@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza au saumon, préemballée",
-    "en": "Pizza, salmon, prepacked"
+    "en": "Pizza, salmon, prepacked",
+    "es": "Pizza de salmón, envasada"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lait fermenté ou yaourt à boire, aux fruits, sucré, enrichi en vitamine D",
-    "en": "Fermented milk drink, with fruits, with sugar(s), fortified with vitamin D"
+    "en": "Fermented milk drink, with fruits, with sugar(s), fortified with vitamin D",
+    "es": "Leche fermentada o yogur para beber, con frutas, azucarado, enriquecido con vitamina D"
   },
   "scientific_name": null,
   "category_ids": [

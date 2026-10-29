@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Morue, salée, sèche",
-    "en": "Cod, salted, dried"
+    "en": "Cod, salted, dried",
+    "es": "Bacalao, salado, seco"
   },
   "scientific_name": "Gadus morhua morhua (Linnaeus, 1758)",
   "category_ids": [

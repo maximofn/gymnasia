@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Vin rosé",
-    "en": "Wine, rose"
+    "en": "Wine, rose",
+    "es": "Vino rosado"
   },
   "scientific_name": null,
   "category_ids": [

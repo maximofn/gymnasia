@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Préparation de fruits divers (en taux de sucres : confitures allégées en sucres < préparations de fruits < confitures)",
-    "en": "Fruit preparation, sweetened, less sugar than classic, but not as reduced as in reduced sugar jams"
+    "en": "Fruit preparation, sweetened, less sugar than classic, but not as reduced as in reduced sugar jams",
+    "es": "Preparado de frutas varias (por contenido de azúcares: mermeladas ligeras en azúcares < preparados de frutas < mermeladas)"
   },
   "scientific_name": null,
   "category_ids": [

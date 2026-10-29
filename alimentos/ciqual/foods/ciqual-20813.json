@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fruit à pain, chair sans peau, cuit à la vapeur, prélevé à la Martinique",
-    "en": "Breadfruit, flesh without skin, steamed, sampled in the island of La Martinique"
+    "en": "Breadfruit, flesh without skin, steamed, sampled in the island of La Martinique",
+    "es": "Fruta del pan, pulpa sin piel, cocinada al vapor, muestreada en Martinica"
   },
   "scientific_name": "Artocarpus altilis",
   "category_ids": [

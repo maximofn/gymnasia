@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson au thé, aromatisée, sans sucres ajoutés, avec édulcorants",
-    "en": "Still soft drink with tea extract, flavoured, no added sugars and with sweetener(s)"
+    "en": "Still soft drink with tea extract, flavoured, no added sugars and with sweetener(s)",
+    "es": "Bebida de té, aromatizada, sin azúcares añadidos, con edulcorantes"
   },
   "scientific_name": null,
   "category_ids": [

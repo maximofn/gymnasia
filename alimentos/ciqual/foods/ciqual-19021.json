@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lait en poudre, entier",
-    "en": "Milk powder, whole"
+    "en": "Milk powder, whole",
+    "es": "Leche en polvo, entera"
   },
   "scientific_name": null,
   "category_ids": [

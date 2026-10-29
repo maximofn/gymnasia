@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sel marin gris, non iodé, non fluoré",
-    "en": "Salt, sea salt, grey, no fortification"
+    "en": "Salt, sea salt, grey, no fortification",
+    "es": "Sal marina gris, no yodada, no fluorada"
   },
   "scientific_name": null,
   "category_ids": [

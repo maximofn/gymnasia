@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Crème dessert à la vanille, appertisée",
-    "en": "Custard dessert, vanilla, canned"
+    "en": "Custard dessert, vanilla, canned",
+    "es": "Crema de postre de vainilla, en conserva"
   },
   "scientific_name": null,
   "category_ids": [

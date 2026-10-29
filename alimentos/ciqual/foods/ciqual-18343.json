@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson au(x) fruit(s) et au lait",
-    "en": "Still beverage with fruit juice and milk"
+    "en": "Still beverage with fruit juice and milk",
+    "es": "Bebida de fruta(s) y leche"
   },
   "scientific_name": null,
   "category_ids": [

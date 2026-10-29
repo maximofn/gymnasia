@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Langouste, bouillie/cuite à l'eau",
-    "en": "Spiny lobster, boiled/cooked in water"
+    "en": "Spiny lobster, boiled/cooked in water",
+    "es": "Langosta, hervida/cocida en agua"
   },
   "scientific_name": "Panulirus spp., Palinurus spp.",
   "category_ids": [

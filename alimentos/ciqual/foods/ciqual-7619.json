@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Croissant pur beurre, sans précision (aliment moyen)",
-    "en": "Croissant, pure butter (average)"
+    "en": "Croissant, pure butter (average)",
+    "es": "Croissant de mantequilla, sin especificar (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

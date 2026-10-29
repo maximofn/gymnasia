@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Burger au poulet, de restauration rapide",
-    "en": "Chicken burger, from fast food"
+    "en": "Chicken burger, from fast food",
+    "es": "Hamburguesa de pollo, de comida rápida"
   },
   "scientific_name": null,
   "category_ids": [

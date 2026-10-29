@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lait concentré sucré, entier",
-    "en": "Condensed milk, with sugar(s), whole"
+    "en": "Condensed milk, with sugar(s), whole",
+    "es": "Leche condensada azucarada, entera"
   },
   "scientific_name": null,
   "category_ids": [

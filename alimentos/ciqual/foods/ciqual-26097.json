@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Maquereau, filet au vin blanc, appertisé, égoutté",
-    "en": "Mackerel, fillet in white wine, canned, drained"
+    "en": "Mackerel, fillet in white wine, canned, drained",
+    "es": "Caballa, filete al vino blanco, en conserva, escurrido"
   },
   "scientific_name": "Scomber scombrus (Linnaeus, 1758)",
   "category_ids": [

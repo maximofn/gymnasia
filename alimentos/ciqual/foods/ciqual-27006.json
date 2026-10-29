@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Truite, rôtie/cuite au four",
-    "en": "Trout, roasted/baked"
+    "en": "Trout, roasted/baked",
+    "es": "Trucha, asada/cocida al horno"
   },
   "scientific_name": "Salmo trutta",
   "category_ids": [

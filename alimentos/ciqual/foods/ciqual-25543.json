@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich baguette (aliment moyen)",
-    "en": "Sandwich baguette (average)"
+    "en": "Sandwich baguette (average)",
+    "es": "Bocadillo de barra de pan (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

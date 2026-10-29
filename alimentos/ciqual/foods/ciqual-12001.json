@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Camembert, sans précision sur le type de lait (pasteurisé ou cru)",
-    "en": "Camembert cheese, from cow's milk"
+    "en": "Camembert cheese, from cow's milk",
+    "es": "Camembert, sin especificar el tipo de leche (pasteurizada o cruda)"
   },
   "scientific_name": null,
   "category_ids": [

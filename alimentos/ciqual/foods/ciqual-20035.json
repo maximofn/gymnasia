@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Oignon, cuit",
-    "en": "Onion, cooked"
+    "en": "Onion, cooked",
+    "es": "Cebolla, cocida"
   },
   "scientific_name": "Allium cepa L.",
   "category_ids": [

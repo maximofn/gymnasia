@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cabillaud, cuit, sans précision (aliment moyen)",
-    "en": "Cod, cooked (average)"
+    "en": "Cod, cooked (average)",
+    "es": "Bacalao, cocinado, sin especificar (valor medio)"
   },
   "scientific_name": "Gadus morhua morhua Linnaeus, 1758",
   "category_ids": [

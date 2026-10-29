@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Confiture ou marmelade, tout type de fruits, sans précision sur la teneur en sucres (aliment moyen)",
-    "en": "Jam or marmalade, miscellaneaous fruits, sugar content unknown, (average)"
+    "en": "Jam or marmalade, miscellaneaous fruits, sugar content unknown, (average)",
+    "es": "Mermelada o confitura, todo tipo de frutas, sin precisión sobre el contenido en azúcares (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

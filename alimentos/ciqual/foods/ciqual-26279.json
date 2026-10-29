@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Salade de pâtes aux poulet, oeuf, fromage et crudités, avec sauce, préemballée",
-    "en": "Pasta salad, with chicken, egg, cheese and raw vegetables, with sauce, prepacked"
+    "en": "Pasta salad, with chicken, egg, cheese and raw vegetables, with sauce, prepacked",
+    "es": "Ensalada de pasta con pollo, huevo, queso y verduras crudas, con salsa, envasada"
   },
   "scientific_name": null,
   "category_ids": [

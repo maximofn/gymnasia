@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson concentrée à diluer, sans sucres ajoutés, avec édulcorants, type \"sirop 0%\"",
-    "en": "Concentrate beverage (to be diluted), no added sugars and with sweeteners, \"syrup 0%\" type"
+    "en": "Concentrate beverage (to be diluted), no added sugars and with sweeteners, \"syrup 0%\" type",
+    "es": "Bebida concentrada para diluir, sin azúcares añadidos, con edulcorantes, tipo \"sirop 0%\""
   },
   "scientific_name": null,
   "category_ids": [

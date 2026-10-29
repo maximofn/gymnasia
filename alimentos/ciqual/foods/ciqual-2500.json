@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Smoothie, sans précision sur la teneur en fruits et les ingrédients autres que fruits",
-    "en": "Smoothie, no precision on fruit content and other ingredients"
+    "en": "Smoothie, no precision on fruit content and other ingredients",
+    "es": "Batido de frutas (smoothie), sin precisión sobre el contenido de fruta y los ingredientes distintos de la fruta"
   },
   "scientific_name": null,
   "category_ids": [

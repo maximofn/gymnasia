@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Croissant, sans précision (aliment moyen)",
-    "en": "Croissant (average)"
+    "en": "Croissant (average)",
+    "es": "Cruasán, sin especificar (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

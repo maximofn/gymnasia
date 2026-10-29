@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza aux fruits de mer, préemballée",
-    "en": "Pizza, seafood, prepacked"
+    "en": "Pizza, seafood, prepacked",
+    "es": "Pizza de marisco, envasada"
   },
   "scientific_name": null,
   "category_ids": [

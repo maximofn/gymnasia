@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Morue, salée, bouillie/cuite à l'eau",
-    "en": "Cod, salted, boiled/cooked in water"
+    "en": "Cod, salted, boiled/cooked in water",
+    "es": "Bacalao, salado, hervido/cocido en agua"
   },
   "scientific_name": "Gadus morhua morhua (Linnaeus, 1758)",
   "category_ids": [

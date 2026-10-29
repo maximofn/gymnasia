@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Jus de tomate, pur jus, salé à 6 g/L",
-    "en": "Tomato juice, pure juice, 6 g salt/L"
+    "en": "Tomato juice, pure juice, 6 g salt/L",
+    "es": "Zumo de tomate, zumo puro, con 6 g de sal/l"
   },
   "scientific_name": null,
   "category_ids": [

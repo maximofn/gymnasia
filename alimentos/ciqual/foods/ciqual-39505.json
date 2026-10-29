@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Crème dessert, appertisée (aliment moyen)",
-    "en": "Custard dessert, canned (average)"
+    "en": "Custard dessert, canned (average)",
+    "es": "Crema postre, en conserva (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

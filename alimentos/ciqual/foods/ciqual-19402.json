@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Crème ou spécialité à base de crème légère, sans précision sur la teneur en matière grasse (aliment moyen)",
-    "en": "Cream and similar, fat content unknown (average)"
+    "en": "Cream and similar, fat content unknown (average)",
+    "es": "Nata o especialidad a base de nata ligera, sin precisión sobre el contenido de materia grasa (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

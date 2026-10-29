@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Nectarine ou brugnon, chair et peau, sans noyau, crue (aliment moyen)",
-    "en": "Nectarine, flesh and skin, pitted, raw (average)"
+    "en": "Nectarine, flesh and skin, pitted, raw (average)",
+    "es": "Nectarina o bruñón, pulpa y piel, sin hueso, cruda (valor medio)"
   },
   "scientific_name": "Prunus persica Mill. var nectarina (Alton)",
   "category_ids": [

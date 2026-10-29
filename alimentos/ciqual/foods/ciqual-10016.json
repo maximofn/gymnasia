@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Seiche, crue",
-    "en": "Cuttlefish, raw"
+    "en": "Cuttlefish, raw",
+    "es": "Sepia, cruda"
   },
   "scientific_name": "Sepia spp.",
   "category_ids": [

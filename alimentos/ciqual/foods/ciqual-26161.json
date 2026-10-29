@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Saumon, sauvage, cru",
-    "en": "Salmon, wild, raw"
+    "en": "Salmon, wild, raw",
+    "es": "Salmón, salvaje, crudo"
   },
   "scientific_name": "Salmo salar (Linnaeus, 1758)",
   "category_ids": [

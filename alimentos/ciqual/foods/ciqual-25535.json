@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich baguette, merguez ketchup moutarde",
-    "en": "Sandwich, baguette, merguez sausage, ketchup and mustard"
+    "en": "Sandwich, baguette, merguez sausage, ketchup and mustard",
+    "es": "Bocadillo de barra de pan, merguez, kétchup y mostaza"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Eau de source gazeuse ou plate",
-    "en": "Spring water, bottled"
+    "en": "Spring water, bottled",
+    "es": "Agua de manantial con gas o sin gas, embotellada"
   },
   "scientific_name": null,
   "category_ids": [

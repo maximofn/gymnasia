@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Oie, viande crue",
-    "en": "Goose, meat, raw"
+    "en": "Goose, meat, raw",
+    "es": "Oca, carne cruda"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich baguette, saucisson beurre, fait maison",
-    "en": "Sandwich, baguette, dry sausage and butter, homemade"
+    "en": "Sandwich, baguette, dry sausage and butter, homemade",
+    "es": "Bocadillo de baguette con salchichón y mantequilla, casero"
   },
   "scientific_name": null,
   "category_ids": [

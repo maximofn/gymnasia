@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Moule, bouillie/cuite à l'eau",
-    "en": "Mussel, boiled/cooked in water"
+    "en": "Mussel, boiled/cooked in water",
+    "es": "Mejillón, hervido/cocido en agua"
   },
   "scientific_name": "Mytilus spp.",
   "category_ids": [

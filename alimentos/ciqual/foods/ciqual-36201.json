@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Canard, viande crue",
-    "en": "Duck, meat, raw"
+    "en": "Duck, meat, raw",
+    "es": "Pato, carne cruda"
   },
   "scientific_name": null,
   "category_ids": [

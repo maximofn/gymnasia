@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson plate aux fruits (teneur en fruits >= 50%), rayon ambiant",
-    "en": "Still soft drink, fruit content >= 50%,  room temperature"
+    "en": "Still soft drink, fruit content >= 50%,  room temperature",
+    "es": "Bebida de frutas sin gas (contenido de frutas >= 50%), temperatura ambiente"
   },
   "scientific_name": null,
   "category_ids": [

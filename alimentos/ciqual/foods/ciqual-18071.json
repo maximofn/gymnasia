@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Café expresso, non instantané, sans sucres ajoutés, prêt à boire",
-    "en": "Espresso coffee non instant coffee, no added sugars, ready-to-drink"
+    "en": "Espresso coffee non instant coffee, no added sugars, ready-to-drink",
+    "es": "Café expreso, no instantáneo, sin azúcares añadidos, listo para beber"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Tomate, chair et peau, bouillie/cuite à l'eau",
-    "en": "Tomato, flesh and skin, boiled/cooked in water"
+    "en": "Tomato, flesh and skin, boiled/cooked in water",
+    "es": "Tomate, pulpa y piel, hervido/cocido en agua"
   },
   "scientific_name": "Solanum lycopersicum L.",
   "category_ids": [

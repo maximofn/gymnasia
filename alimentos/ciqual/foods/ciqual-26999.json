@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Anguille, cuite (aliment moyen)",
-    "en": "Eel, cooked (average)"
+    "en": "Eel, cooked (average)",
+    "es": "Anguila, cocida (valor medio)"
   },
   "scientific_name": "Anguilla anguilla (Linnaeus, 1758)",
   "category_ids": [

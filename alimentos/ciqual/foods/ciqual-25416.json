@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Burger au poisson, de restauration rapide",
-    "en": "Fish burger, from fast food"
+    "en": "Fish burger, from fast food",
+    "es": "Hamburguesa de pescado, de comida rápida"
   },
   "scientific_name": null,
   "category_ids": [

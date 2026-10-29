@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Oeuf, blanc (blanc d'oeuf), cru",
-    "en": "Egg white, raw"
+    "en": "Egg white, raw",
+    "es": "Huevo, clara (clara de huevo), cruda"
   },
   "scientific_name": null,
   "category_ids": [

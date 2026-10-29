@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage frais type petit suisse, aux fruits, 2-3% MG, sucré, enrichi en vitamine D",
-    "en": "Fresh cream cheese, petit-suisse type, with fruits, 2-3% fat, with sugar(s), fortified with vitamin D"
+    "en": "Fresh cream cheese, petit-suisse type, with fruits, 2-3% fat, with sugar(s), fortified with vitamin D",
+    "es": "Queso fresco tipo petit suisse, con frutas, 2-3% de materia grasa, azucarado, enriquecido con vitamina D"
   },
   "scientific_name": null,
   "category_ids": [

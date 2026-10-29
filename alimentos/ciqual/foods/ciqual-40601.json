@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Abat, cuit (aliment moyen)",
-    "en": "Offal, cooked (average)"
+    "en": "Offal, cooked (average)",
+    "es": "Víscera, cocinada (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage à pâte pressée cuite (aliment moyen)",
-    "en": "Hard cheese (average)"
+    "en": "Hard cheese (average)",
+    "es": "Queso de pasta prensada cocida (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

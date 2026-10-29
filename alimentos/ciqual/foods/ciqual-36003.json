@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poulet, viande crue",
-    "en": "Chicken, meat, raw"
+    "en": "Chicken, meat, raw",
+    "es": "Pollo, carne cruda"
   },
   "scientific_name": null,
   "category_ids": [

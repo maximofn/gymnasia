@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lapin de garenne, viande cuite",
-    "en": "Rabbit, wild, meat, cooked"
+    "en": "Rabbit, wild, meat, cooked",
+    "es": "Conejo de monte, carne cocida"
   },
   "scientific_name": null,
   "category_ids": [

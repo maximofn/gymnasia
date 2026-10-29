@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sanglier, viande crue",
-    "en": "Wild boar, raw"
+    "en": "Wild boar, raw",
+    "es": "Jabalí, carne cruda"
   },
   "scientific_name": null,
   "category_ids": [

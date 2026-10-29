@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Brochette de poisson",
-    "en": "Fish on skewer"
+    "en": "Fish on skewer",
+    "es": "Brocheta de pescado"
   },
   "scientific_name": null,
   "category_ids": [

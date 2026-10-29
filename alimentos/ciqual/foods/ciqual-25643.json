@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Burger au poulet, préemballé",
-    "en": "Chicken burger, prepacked"
+    "en": "Chicken burger, prepacked",
+    "es": "Hamburguesa de pollo, envasada"
   },
   "scientific_name": null,
   "category_ids": [

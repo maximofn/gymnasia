@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Nectar de pomme",
-    "en": "Apple nectar"
+    "en": "Apple nectar",
+    "es": "Néctar de manzana"
   },
   "scientific_name": null,
   "category_ids": [

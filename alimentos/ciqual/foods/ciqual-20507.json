@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pois chiche, bouilli/cuit à l'eau",
-    "en": "Chick pea, boiled/cooked in water"
+    "en": "Chick pea, boiled/cooked in water",
+    "es": "Garbanzo, hervido/cocido en agua"
   },
   "scientific_name": null,
   "category_ids": [

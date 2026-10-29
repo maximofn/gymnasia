@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cerf, viande rôtie/cuite au four",
-    "en": "Venison, hart, roasted/baked"
+    "en": "Venison, hart, roasted/baked",
+    "es": "Ciervo, carne asada/cocida al horno"
   },
   "scientific_name": null,
   "category_ids": [

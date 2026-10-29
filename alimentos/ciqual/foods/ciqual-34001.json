@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lapin, viande crue",
-    "en": "Rabbit, meat, raw"
+    "en": "Rabbit, meat, raw",
+    "es": "Conejo, carne cruda"
   },
   "scientific_name": null,
   "category_ids": [

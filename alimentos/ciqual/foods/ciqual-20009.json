@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Carotte, crue",
-    "en": "Carrot, raw"
+    "en": "Carrot, raw",
+    "es": "Zanahoria, cruda"
   },
   "scientific_name": "Daucus carota L. subsp. Sativus",
   "category_ids": [

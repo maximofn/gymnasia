@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boeuf, queue bouillie/cuite à l'eau",
-    "en": "Beef, oxtail, boiled/cooked in water"
+    "en": "Beef, oxtail, boiled/cooked in water",
+    "es": "Vacuno, rabo hervido/cocido en agua"
   },
   "scientific_name": null,
   "category_ids": [

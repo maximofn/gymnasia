@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson pour le sport, sucrée",
-    "en": "Sports drink, with sugar(s)"
+    "en": "Sports drink, with sugar(s)",
+    "es": "Bebida para deportistas, azucarada"
   },
   "scientific_name": null,
   "category_ids": [

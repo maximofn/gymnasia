@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Truite arc en ciel, élevage, rôtie/cuite au four",
-    "en": "Rainbow trout, farmed, roasted/baked"
+    "en": "Rainbow trout, farmed, roasted/baked",
+    "es": "Trucha arco iris, de piscifactoría, asada/cocida al horno"
   },
   "scientific_name": "Oncorhynchus mykiss",
   "category_ids": [

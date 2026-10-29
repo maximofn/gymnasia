@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Thon albacore, cru",
-    "en": "Yellowfin tuna, raw"
+    "en": "Yellowfin tuna, raw",
+    "es": "Atún rabil, crudo"
   },
   "scientific_name": "Thunnus albacares",
   "category_ids": [

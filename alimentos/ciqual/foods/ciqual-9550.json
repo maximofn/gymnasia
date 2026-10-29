@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Farine d'orge",
-    "en": "Barley flour"
+    "en": "Barley flour",
+    "es": "Harina de cebada"
   },
   "scientific_name": null,
   "category_ids": [

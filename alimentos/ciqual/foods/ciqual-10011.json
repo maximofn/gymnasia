@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Huître, sans précision, crue",
-    "en": "Oyster, raw"
+    "en": "Oyster, raw",
+    "es": "Ostra, sin especificar, cruda"
   },
   "scientific_name": "Crassostrea spp.",
   "category_ids": [

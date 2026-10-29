@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Farine de riz",
-    "en": "Rice flour"
+    "en": "Rice flour",
+    "es": "Harina de arroz"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chorizo",
-    "en": "Spicy pork sausage with red pepper"
+    "en": "Spicy pork sausage with red pepper",
+    "es": "Chorizo"
   },
   "scientific_name": null,
   "category_ids": [

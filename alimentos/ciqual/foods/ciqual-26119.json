@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Saumon, appertisé, égoutté",
-    "en": "Salmon, canned, drained"
+    "en": "Salmon, canned, drained",
+    "es": "Salmón, en conserva, escurrido"
   },
   "scientific_name": "Salmo salar (Linnaeus, 1758)",
   "category_ids": [

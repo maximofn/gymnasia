@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Crème dessert, rayon frais (aliment moyen)",
-    "en": "Custard dessert, refrigerated (average)"
+    "en": "Custard dessert, refrigerated (average)",
+    "es": "Crema postre, sección refrigerados (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Thé, feuille",
-    "en": "Tea leaf"
+    "en": "Tea leaf",
+    "es": "Té, hoja"
   },
   "scientific_name": null,
   "category_ids": [

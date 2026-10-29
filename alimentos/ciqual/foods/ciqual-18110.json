@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson à l'amande, sucrée, enrichie en calcium, préemballée",
-    "en": "Almond drink, with sugar(s), fortified with calcium, prepacked"
+    "en": "Almond drink, with sugar(s), fortified with calcium, prepacked",
+    "es": "Bebida de almendra, azucarada, enriquecida en calcio, envasada"
   },
   "scientific_name": null,
   "category_ids": [

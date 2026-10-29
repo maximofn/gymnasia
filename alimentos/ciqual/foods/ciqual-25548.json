@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza jambon fromage champignons ou pizza royale, reine ou regina, préemballée",
-    "en": "Pizza, ham cheese and mushrooms (Regina), prepacked"
+    "en": "Pizza, ham cheese and mushrooms (Regina), prepacked",
+    "es": "Pizza de jamón, queso y champiñones o pizza real, reina o regina, envasada"
   },
   "scientific_name": null,
   "category_ids": [

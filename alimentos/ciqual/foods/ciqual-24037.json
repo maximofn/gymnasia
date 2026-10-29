@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Biscuit sec fourré à la pâte ou purée de fruits (ex : figue)",
-    "en": "Biscuit (cookie) filled with fruit paste or fruit puree"
+    "en": "Biscuit (cookie) filled with fruit paste or fruit puree",
+    "es": "Galleta seca rellena de pasta o puré de frutas (p. ej. higo)"
   },
   "scientific_name": null,
   "category_ids": [

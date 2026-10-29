@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cocktail à base de rhum",
-    "en": "Cocktail, rum-based"
+    "en": "Cocktail, rum-based",
+    "es": "Cóctel a base de ron"
   },
   "scientific_name": null,
   "category_ids": [

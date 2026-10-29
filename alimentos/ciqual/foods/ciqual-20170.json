@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Tomate, purée, appertisée",
-    "en": "Tomato puree, canned"
+    "en": "Tomato puree, canned",
+    "es": "Tomate, puré, en conserva"
   },
   "scientific_name": "Solanum lycopersicum L.",
   "category_ids": [

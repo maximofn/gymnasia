@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert végétal sans soja (coco, riz), aux fruits, sucré, enrichi en calcium, fermenté, rayon frais",
-    "en": "Plant-based dessert (coconut, rice), with fruits, with sugar(s), fortified with calcium, fermented, refrigerated"
+    "en": "Plant-based dessert (coconut, rice), with fruits, with sugar(s), fortified with calcium, fermented, refrigerated",
+    "es": "Postre vegetal sin soja (coco, arroz), con frutas, azucarado, enriquecido en calcio, fermentado, sección de refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

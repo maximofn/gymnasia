@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Jus de fruits (aliment moyen)",
-    "en": "Fruit juice (average)"
+    "en": "Fruit juice (average)",
+    "es": "Zumo de fruta (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

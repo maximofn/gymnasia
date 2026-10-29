@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Anguille, rôtie/cuite au four",
-    "en": "Eel, roasted/baked"
+    "en": "Eel, roasted/baked",
+    "es": "Anguila, asada/cocida al horno"
   },
   "scientific_name": "Anguilla anguilla (Linnaeus, 1758)",
   "category_ids": [

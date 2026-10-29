@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson plate aux fruits (teneur en fruits non spécifiée), sans précision sur la teneur en sucres et édulcorants ni sur l'enrichissement (aliment moyen)",
-    "en": "Still soft drink, fruit content unknown, sugar and sweetener contents unknown (average)"
+    "en": "Still soft drink, fruit content unknown, sugar and sweetener contents unknown (average)",
+    "es": "Bebida de frutas sin gas (contenido de frutas no especificado), sin precisión sobre el contenido en azúcares y edulcorantes ni sobre el enriquecimiento (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

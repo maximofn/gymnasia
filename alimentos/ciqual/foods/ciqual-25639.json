@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich baguette, saucisson beurre, vente à emporter",
-    "en": "Sandwich, baguette, dry sausage and butter, takeaway"
+    "en": "Sandwich, baguette, dry sausage and butter, takeaway",
+    "es": "Sándwich de barra de pan, salchichón y mantequilla, para llevar"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boeuf, entrecôte crue",
-    "en": "Beef, rib steak, raw"
+    "en": "Beef, rib steak, raw",
+    "es": "Vacuno, chuletón crudo"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich baguette, jambon beurre, fait maison",
-    "en": "Sandwich, baguette, ham and butter, homemade"
+    "en": "Sandwich, baguette, ham and butter, homemade",
+    "es": "Bocadillo de baguette con jamón y mantequilla, casero"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Foie, porc, cru",
-    "en": "Liver, pork, raw"
+    "en": "Liver, pork, raw",
+    "es": "Hígado, cerdo, crudo"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cake salé (garniture : fromage, légumes, viande, poisson, volaille, etc.), préemballé",
-    "en": "Savoury cake (with cheese, vegetables, meat, fish, poultry, etc.), prepacked"
+    "en": "Savoury cake (with cheese, vegetables, meat, fish, poultry, etc.), prepacked",
+    "es": "Bizcocho salado (relleno: queso, verduras, carne, pescado, ave, etc.), envasado"
   },
   "scientific_name": null,
   "category_ids": [

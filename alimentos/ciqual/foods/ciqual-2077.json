@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Jus de fruits, à base de concentré (aliment moyen)",
-    "en": "Fruit juice, from concentrate (average)"
+    "en": "Fruit juice, from concentrate (average)",
+    "es": "Zumo de frutas, a base de concentrado (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

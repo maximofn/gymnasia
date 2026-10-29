@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Saumon, élevage, rôti/cuit au four",
-    "en": "Salmon, farmed, roasted/baked"
+    "en": "Salmon, farmed, roasted/baked",
+    "es": "Salmón, de piscifactoría, asado/cocinado al horno"
   },
   "scientific_name": "Salmo salar (Linnaeus, 1758)",
   "category_ids": [

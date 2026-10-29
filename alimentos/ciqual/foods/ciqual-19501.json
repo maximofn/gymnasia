@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage blanc, nature ou aux fruits (aliment moyen)",
-    "en": "Quark, plain or with fruits (average)"
+    "en": "Quark, plain or with fruits (average)",
+    "es": "Queso fresco batido, natural o con frutas (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

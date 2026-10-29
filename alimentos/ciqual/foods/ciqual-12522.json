@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fourme d'Ambert",
-    "en": "Fourme d'Ambert cheese, from cow's milk"
+    "en": "Fourme d'Ambert cheese, from cow's milk",
+    "es": "Fourme d'Ambert (queso de leche de vaca)"
   },
   "scientific_name": null,
   "category_ids": [

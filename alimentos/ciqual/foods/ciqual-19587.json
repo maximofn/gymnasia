@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Yaourt ou lait fermenté, aux fruits, sucré",
-    "en": "Yogurt or fermented milk, with fruits, with sugar(s)"
+    "en": "Yogurt or fermented milk, with fruits, with sugar(s)",
+    "es": "Yogur o leche fermentada, con frutas, azucarado"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Compote, tout type de fruits, allégée en sucres, préemballée, rayon frais",
-    "en": "Fruit compote, miscellaneous fruits, reduced sugar, prepacked, refrigerated"
+    "en": "Fruit compote, miscellaneous fruits, reduced sugar, prepacked, refrigerated",
+    "es": "Compota, todo tipo de frutas, ligera en azúcares, envasada, sección de refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

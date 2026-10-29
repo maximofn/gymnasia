@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Matière grasse tartinable à teneur en MG > 41% et <= 62%, doux, riche en oméga 3",
-    "en": "Spreadable fat > 41% fat and <= 62% fat, unsalted, rich in omega 3"
+    "en": "Spreadable fat > 41% fat and <= 62% fat, unsalted, rich in omega 3",
+    "es": "Materia grasa para untar con un contenido de materia grasa > 41% y <= 62%, sin sal, rica en omega 3"
   },
   "scientific_name": null,
   "category_ids": [

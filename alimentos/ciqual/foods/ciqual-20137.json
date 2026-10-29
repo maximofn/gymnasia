@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Tomate, pelée, appertisée, au jus, non égouttée",
-    "en": "Tomato, peeled, canned, in juice, solids and liquids"
+    "en": "Tomato, peeled, canned, in juice, solids and liquids",
+    "es": "Tomate, pelado, en conserva, en su jugo, no escurrido"
   },
   "scientific_name": "Solanum lycopersicum L.",
   "category_ids": [

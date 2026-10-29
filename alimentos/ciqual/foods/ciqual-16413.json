@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Beurre sans précision sur la teneur en matière grasse (allégé ou non), demi-sel (aliment moyen)",
-    "en": "Butter, unknown fat content, half-salted (average)"
+    "en": "Butter, unknown fat content, half-salted (average)",
+    "es": "Mantequilla sin especificar el contenido de materia grasa (ligera o no), semicentrada (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

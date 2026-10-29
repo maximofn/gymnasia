@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage frais type petit suisse, aux fruits, 2-3% MG, sucré",
-    "en": "Fresh cream cheese, petit-suisse type, with fruits, 2-3% fat, with sugar(s)"
+    "en": "Fresh cream cheese, petit-suisse type, with fruits, 2-3% fat, with sugar(s)",
+    "es": "Queso fresco tipo petit suisse, con frutas, 2-3% materia grasa, azucarado"
   },
   "scientific_name": null,
   "category_ids": [

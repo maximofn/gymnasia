@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cola, sucré, sans caféine",
-    "en": "Cola, with sugar(s) and without caffeine"
+    "en": "Cola, with sugar(s) and without caffeine",
+    "es": "Cola, azucarada, sin cafeína"
   },
   "scientific_name": null,
   "category_ids": [

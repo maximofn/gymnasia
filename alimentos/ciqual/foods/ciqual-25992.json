@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Saumon fumé, aux cinq baies",
-    "en": "Salmon, smoked, with spices"
+    "en": "Salmon, smoked, with spices",
+    "es": "Salmón ahumado, a las cinco bayas"
   },
   "scientific_name": "Salmo salar (Linnaeus, 1758)",
   "category_ids": [

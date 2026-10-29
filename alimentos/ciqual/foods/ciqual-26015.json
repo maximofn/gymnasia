@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lieu noir, cuit",
-    "en": "Saithe, cooked"
+    "en": "Saithe, cooked",
+    "es": "Carbonero, cocido"
   },
   "scientific_name": "Pollachius virens (Linnaeus, 1758)",
   "category_ids": [

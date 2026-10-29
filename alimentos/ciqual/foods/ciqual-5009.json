@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Bière blanche",
-    "en": "Beer, white"
+    "en": "Beer, white",
+    "es": "Cerveza de trigo"
   },
   "scientific_name": null,
   "category_ids": [

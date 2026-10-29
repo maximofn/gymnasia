@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Homard, bouilli/cuit à l'eau",
-    "en": "Lobster, boiled/cooked in water"
+    "en": "Lobster, boiled/cooked in water",
+    "es": "Bogavante, hervido/cocido en agua"
   },
   "scientific_name": "Homarus gammarus or Homarus americanus",
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boeuf, steak haché 20% MG cru",
-    "en": "Beef, minced steak, 20% fat, raw"
+    "en": "Beef, minced steak, 20% fat, raw",
+    "es": "Vacuno, hamburguesa 20% materia grasa, cruda"
   },
   "scientific_name": null,
   "category_ids": [

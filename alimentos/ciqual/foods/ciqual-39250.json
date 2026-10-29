@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Mousse aux fruits, au fromage frais, sucrée, rayon frais",
-    "en": "Fruit mousse, with cottage cheese, with sugar(s), refrigerated"
+    "en": "Fruit mousse, with cottage cheese, with sugar(s), refrigerated",
+    "es": "Mousse de frutas, de queso fresco, azucarada, sección refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

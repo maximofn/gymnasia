@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pain complet ou intégral (à la farine T150)",
-    "en": "Bread, French bread, wholemeal or integral bread (made with flour type 150)"
+    "en": "Bread, French bread, wholemeal or integral bread (made with flour type 150)",
+    "es": "Pan completo o integral (con harina T150)"
   },
   "scientific_name": null,
   "category_ids": [

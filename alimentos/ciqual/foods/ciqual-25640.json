@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sandwich baguette, camembert beurre, vente à emporter",
-    "en": "Sandwich, baguette, camembert cheese and butter, takeaway"
+    "en": "Sandwich, baguette, camembert cheese and butter, takeaway",
+    "es": "Sándwich de barra de pan, queso camembert y mantequilla, para llevar"
   },
   "scientific_name": null,
   "category_ids": [

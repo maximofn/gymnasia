@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poulet, filet sans peau cru",
-    "en": "Chicken, breast, without skin, raw"
+    "en": "Chicken, breast, without skin, raw",
+    "es": "Pechuga de pollo sin piel, cruda"
   },
   "scientific_name": null,
   "category_ids": [

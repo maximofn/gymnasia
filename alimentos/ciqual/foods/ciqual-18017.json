@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Sirop à diluer, sucré",
-    "en": "Syrup, to be diluted, with sugar(s)"
+    "en": "Syrup, to be diluted, with sugar(s)",
+    "es": "Jarabe para diluir, azucarado"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lieu noir, surgelé, cru",
-    "en": "Saithe, frozen, raw"
+    "en": "Saithe, frozen, raw",
+    "es": "Carbonero, ultracongelado, crudo"
   },
   "scientific_name": "Pollachius virens (Linnaeus, 1758)",
   "category_ids": [

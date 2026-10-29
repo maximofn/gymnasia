@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson au thé, aromatisée, à teneur réduite en sucres",
-    "en": "Still soft drink with tea extract, flavoured, reduced sugar"
+    "en": "Still soft drink with tea extract, flavoured, reduced sugar",
+    "es": "Bebida de té, aromatizada, con contenido reducido en azúcares"
   },
   "scientific_name": null,
   "category_ids": [

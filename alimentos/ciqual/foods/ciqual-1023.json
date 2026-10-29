@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Eau de vie de vin type armagnac ou cognac",
-    "en": "Brandy, Armagnac or Cognac type"
+    "en": "Brandy, Armagnac or Cognac type",
+    "es": "Aguardiente de vino tipo armañac o coñac"
   },
   "scientific_name": null,
   "category_ids": [

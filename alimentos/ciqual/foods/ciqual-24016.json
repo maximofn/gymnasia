@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Biscuit sec avec tablette de chocolat",
-    "en": "Biscuit (cookie),  with a chocolate bar covering"
+    "en": "Biscuit (cookie),  with a chocolate bar covering",
+    "es": "Galleta seca con tableta de chocolate"
   },
   "scientific_name": null,
   "category_ids": [

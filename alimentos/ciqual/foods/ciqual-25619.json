@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Salade de pâtes aux légumes et poisson ou viande, avec sauce, préemballée",
-    "en": "Pasta salad, with vegetable and meat/fish, with sauce, prepacked"
+    "en": "Pasta salad, with vegetable and meat/fish, with sauce, prepacked",
+    "es": "Ensalada de pasta con verduras y pescado o carne, con salsa, envasada"
   },
   "scientific_name": null,
   "category_ids": [

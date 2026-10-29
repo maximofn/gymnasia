@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fruit à pain, cru",
-    "en": "Breadfruit, raw"
+    "en": "Breadfruit, raw",
+    "es": "Fruta del pan, cruda"
   },
   "scientific_name": "Artocarpus altilis",
   "category_ids": [

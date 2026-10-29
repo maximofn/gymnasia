@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Oignon, cru",
-    "en": "Onion, raw"
+    "en": "Onion, raw",
+    "es": "Cebolla, cruda"
   },
   "scientific_name": "Allium cepa L.",
   "category_ids": [

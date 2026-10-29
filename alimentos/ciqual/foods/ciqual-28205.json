@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Porc, viande, cuite (aliment moyen)",
-    "en": "Pork, meat, cooked (average)"
+    "en": "Pork, meat, cooked (average)",
+    "es": "Cerdo, carne, cocida (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

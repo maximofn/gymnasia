@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lapin, viande braisée",
-    "en": "Rabbit, meat, braised"
+    "en": "Rabbit, meat, braised",
+    "es": "Conejo, carne braseada"
   },
   "scientific_name": null,
   "category_ids": [

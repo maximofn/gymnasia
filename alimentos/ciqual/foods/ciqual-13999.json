@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fruit cru (aliment moyen)",
-    "en": "Fruit, raw (average)"
+    "en": "Fruit, raw (average)",
+    "es": "Fruta cruda (valor medio)"
   },
   "scientific_name": "(Genus and species unknown or multiple)",
   "category_ids": [

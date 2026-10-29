@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Bière \"de spécialités\" ou d'abbaye, régionales ou d'une brasserie (degré d'alcool variable)",
-    "en": "Beer, from an abbey or brewery (variable alcohol content)"
+    "en": "Beer, from an abbey or brewery (variable alcohol content)",
+    "es": "Cerveza de especialidad o de abadía, regional o de cervecería (grado alcohólico variable)"
   },
   "scientific_name": null,
   "category_ids": [

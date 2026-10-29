@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson aux fruits avec de la purée de fruits type smoothie (teneur en fruits >= 50%), sans sucres ajoutés, rayon frais",
-    "en": "Still soft drink,  with fruit puree, smoothie type, fruit content >= 50%, no added sugars, refrigerated"
+    "en": "Still soft drink,  with fruit puree, smoothie type, fruit content >= 50%, no added sugars, refrigerated",
+    "es": "Bebida de frutas con puré de frutas tipo smoothie (contenido de frutas >= 50%), sin azúcares añadidos, sección refrigerada"
   },
   "scientific_name": null,
   "category_ids": [

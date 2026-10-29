@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boeuf, faux-filet cru",
-    "en": "Beef, sirloin steak, raw"
+    "en": "Beef, sirloin steak, raw",
+    "es": "Vacuno, entrecot crudo"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson gazeuse à la pomme (teneur en fruits >= 50%), sans sucres ajoutés",
-    "en": "Carbonated beverage, apple content >=  50% and <99%, no added sugars"
+    "en": "Carbonated beverage, apple content >=  50% and <99%, no added sugars",
+    "es": "Bebida gaseosa de manzana (contenido de fruta >= 50%), sin azúcares añadidos"
   },
   "scientific_name": null,
   "category_ids": [

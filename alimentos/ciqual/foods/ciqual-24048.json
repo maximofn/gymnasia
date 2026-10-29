@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Biscuit sec, sablé, galette ou palet, autre que pur beurre",
-    "en": "Biscuit (cookie), shortbread, commercial, whith vegetal fat"
+    "en": "Biscuit (cookie), shortbread, commercial, whith vegetal fat",
+    "es": "Galleta seca, tipo sablé, galette o palet, distinta de la de mantequilla"
   },
   "scientific_name": null,
   "category_ids": [

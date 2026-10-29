@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pâté de gibier",
-    "en": "Game pâté"
+    "en": "Game pâté",
+    "es": "Paté de caza"
   },
   "scientific_name": null,
   "category_ids": [

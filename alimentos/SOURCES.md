@@ -23,5 +23,11 @@ La transformación a JSON no calcula ni completa datos nutricionales ausentes.
 
 Las fichas antiguas de `alimentos/*.json` tienen su propio formato y no deben
 atribuirse automáticamente a CIQUAL. La correspondencia y revisión de esas
-fichas, las traducciones al español y los recursos visuales son trabajos de
-curación posteriores.
+fichas y los recursos visuales son trabajos de curación posteriores.
+
+Las etiquetas españolas de `ciqual/translations.es.json` son traducciones de
+Gymnasia, asistidas por Google Gemini y con revisión editorial específica. No son
+traducciones oficiales de ANSES. Conservan las etiquetas oficiales francesas e
+inglesas, y cada traducción se vincula a su texto de origen por SHA-256 para
+detectarla como obsoleta si cambia la fuente. Los nombres científicos y las
+referencias bibliográficas no se traducen.

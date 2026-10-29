@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boeuf, faux-filet rôti/cuit au four",
-    "en": "Beef, sirloin steak, roasted/baked"
+    "en": "Beef, sirloin steak, roasted/baked",
+    "es": "Vacuno, entrecot asado/al horno"
   },
   "scientific_name": null,
   "category_ids": [

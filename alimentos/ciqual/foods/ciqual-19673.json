@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Crème dessert, allégée en matière grasse, rayon frais",
-    "en": "Custard dessert, reduced fat, refrigerated"
+    "en": "Custard dessert, reduced fat, refrigerated",
+    "es": "Crema de postre, con contenido reducido de materia grasa, sección de refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

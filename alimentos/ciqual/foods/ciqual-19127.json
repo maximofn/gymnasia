@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson lactée aromatisée à la fraise, sucrée, au lait partiellement écrémé, enrichie en vitamine D",
-    "en": "Strawberry flavoured milk, with sugar(s), partially skimmed, fortified with vitamin D"
+    "en": "Strawberry flavoured milk, with sugar(s), partially skimmed, fortified with vitamin D",
+    "es": "Bebida láctea aromatizada a la fresa, azucarada, con leche parcialmente desnatada, enriquecida con vitamina D"
   },
   "scientific_name": null,
   "category_ids": [

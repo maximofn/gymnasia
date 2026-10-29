@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Café, moulu",
-    "en": "Coffee, ground"
+    "en": "Coffee, ground",
+    "es": "Café, molido"
   },
   "scientific_name": null,
   "category_ids": [

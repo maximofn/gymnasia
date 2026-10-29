@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson énergisante, sans précision sur la teneur en sucres et édulcorants (aliment moyen)",
-    "en": "Energy drink, sugar and artifical sweetener contents unknown (average)"
+    "en": "Energy drink, sugar and artifical sweetener contents unknown (average)",
+    "es": "Bebida energética, sin precisión sobre el contenido en azúcares y edulcorantes (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

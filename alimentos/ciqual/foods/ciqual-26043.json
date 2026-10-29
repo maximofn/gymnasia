@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Cabillaud, cru",
-    "en": "Cod, raw"
+    "en": "Cod, raw",
+    "es": "Bacalao, crudo"
   },
   "scientific_name": "Gadus morhua morhua (Linnaeus, 1758)",
   "category_ids": [

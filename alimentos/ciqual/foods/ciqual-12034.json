@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage à pâte molle et croûte lavée (aliment moyen)",
-    "en": "Soft-ripened cheese, washed rind (average)"
+    "en": "Soft-ripened cheese, washed rind (average)",
+    "es": "Queso de pasta blanda y corteza lavada (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

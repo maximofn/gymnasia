@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Maquereau, fumé",
-    "en": "Mackerel, smoked"
+    "en": "Mackerel, smoked",
+    "es": "Caballa, ahumada"
   },
   "scientific_name": "Scomber scombrus (Linnaeus, 1758)",
   "category_ids": [

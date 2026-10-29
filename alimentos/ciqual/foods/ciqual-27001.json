@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Anguille, bouillie/cuite à l'eau",
-    "en": "Eel, boiled/cooked in water"
+    "en": "Eel, boiled/cooked in water",
+    "es": "Anguila, hervida/cocida en agua"
   },
   "scientific_name": "Anguilla anguilla (Linnaeus, 1758)",
   "category_ids": [

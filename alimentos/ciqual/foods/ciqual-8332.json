@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pâté (aliment moyen)",
-    "en": "Paté (average)"
+    "en": "Paté (average)",
+    "es": "Paté (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

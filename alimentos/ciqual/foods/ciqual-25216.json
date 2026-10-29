@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pâtes fraîches farcies (ex : raviolis, tortellinis), cuites (aliment moyen)",
-    "en": "Pasta (e.g. ravioli), filled, cooked (average)"
+    "en": "Pasta (e.g. ravioli), filled, cooked (average)",
+    "es": "Pasta fresca rellena (ej.: raviolis, tortelinis), cocida (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

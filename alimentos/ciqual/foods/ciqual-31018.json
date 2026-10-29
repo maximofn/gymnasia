@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Chocolat au lait aux fruits secs (noisettes, amandes, raisins, praline), tablette",
-    "en": "Milk chocolate, with dried fruits (nuts, almonds, raisins, praliné), bar"
+    "en": "Milk chocolate, with dried fruits (nuts, almonds, raisins, praliné), bar",
+    "es": "Chocolate con leche con frutos secos (avellanas, almendras, pasas, praliné), tableta"
   },
   "scientific_name": null,
   "category_ids": [

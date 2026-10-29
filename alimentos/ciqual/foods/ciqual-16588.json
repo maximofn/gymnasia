@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Matière grasse tartinable à teneur en MG <= 41%, doux, aux stérols végétaux",
-    "en": "Spreadable fat <= 41% fat, unsalted, with plant strols"
+    "en": "Spreadable fat <= 41% fat, unsalted, with plant strols",
+    "es": "Materia grasa para untar con un contenido de materia grasa <= 41%, sin sal, con esteroles vegetales"
   },
   "scientific_name": null,
   "category_ids": [

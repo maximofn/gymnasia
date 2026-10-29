@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Tonic ou bitter, sans précision sur la teneur en sucres et édulcorants (aliment moyen)",
-    "en": "Tonic drink, sugar(s) and sweetener(s) content unknown (average)"
+    "en": "Tonic drink, sugar(s) and sweetener(s) content unknown (average)",
+    "es": "Tónica o bitter, sin especificar el contenido de azúcares y edulcorantes (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage blanc ou spécialité laitière, aux fruits, 6-7% MG, sucré",
-    "en": "Quark or dairy specialty, with fruits, 7-8% fat, with sugar(s)"
+    "en": "Quark or dairy specialty, with fruits, 7-8% fat, with sugar(s)",
+    "es": "Queso fresco batido o especialidad láctea, con frutas, 6-7% materia grasa, azucarado"
   },
   "scientific_name": null,
   "category_ids": [

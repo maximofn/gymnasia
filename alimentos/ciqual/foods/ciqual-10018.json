@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Poulpe, cru",
-    "en": "Octopus, common, raw"
+    "en": "Octopus, common, raw",
+    "es": "Pulpo, común, crudo"
   },
   "scientific_name": "Octopus vulgaris",
   "category_ids": [

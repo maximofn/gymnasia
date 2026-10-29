@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Piment, cru",
-    "en": "Chili pepper, raw"
+    "en": "Chili pepper, raw",
+    "es": "Pimiento picante, crudo"
   },
   "scientific_name": "Capsicum annuum",
   "category_ids": [

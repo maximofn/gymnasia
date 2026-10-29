@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Viande en sauce (aliment moyen)",
-    "en": "Meat in sauce (average)"
+    "en": "Meat in sauce (average)",
+    "es": "Carne en salsa (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

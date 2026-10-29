@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Maquereau, filet sauce tomate, appertisé, égoutté",
-    "en": "Mackerel, fillet, in tomato sauce, canned, drained"
+    "en": "Mackerel, fillet, in tomato sauce, canned, drained",
+    "es": "Caballa, filete en salsa de tomate, en conserva, escurrido"
   },
   "scientific_name": "Scomber scombrus (Linnaeus, 1758)",
   "category_ids": [

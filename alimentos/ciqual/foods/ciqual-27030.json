@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Bar commun ou loup, rôti/cuit au four",
-    "en": "European bass, roasted/baked"
+    "en": "European bass, roasted/baked",
+    "es": "Lubina o róbalo, asada/cocida al horno"
   },
   "scientific_name": "Dicentrarchus labrax (Linnaeus, 1758)",
   "category_ids": [

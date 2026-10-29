@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Saucisse (aliment moyen)",
-    "en": "Sausage (average)"
+    "en": "Sausage (average)",
+    "es": "Salchicha (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

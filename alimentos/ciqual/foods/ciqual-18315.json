@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Boisson plate au(x) fruits et au(x) légume(s)",
-    "en": "Fruit and vegetable beverage"
+    "en": "Fruit and vegetable beverage",
+    "es": "Bebida de fruta(s) y verdura(s)"
   },
   "scientific_name": null,
   "category_ids": [

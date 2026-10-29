@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert (aliment moyen)",
-    "en": "Dessert (average)"
+    "en": "Dessert (average)",
+    "es": "Postre (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [],

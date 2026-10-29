@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Céréales pour petit déjeuner, enrichies en vitamines et minéraux (aliment moyen)",
-    "en": "Breakfast cereals, fortified with vitamins and minerals (average)"
+    "en": "Breakfast cereals, fortified with vitamins and minerals (average)",
+    "es": "Cereales de desayuno, enriquecidos con vitaminas y minerales (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

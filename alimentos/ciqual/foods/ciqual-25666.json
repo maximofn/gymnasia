@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Salade composée à base de crudités, charcuterie et fromage, avec sauce, préemballée",
-    "en": "Mixed salad with raw vegetables, cold meat and cheese, with sauce, prepacked"
+    "en": "Mixed salad with raw vegetables, cold meat and cheese, with sauce, prepacked",
+    "es": "Ensalada mixta a base de crudités, embutido y queso, con salsa, envasada"
   },
   "scientific_name": null,
   "category_ids": [

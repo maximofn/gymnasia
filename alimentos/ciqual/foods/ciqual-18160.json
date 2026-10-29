@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Café au lait ou cappuccino, poudre soluble",
-    "en": "Coffee with milk or cappuccino, powder, instant"
+    "en": "Coffee with milk or cappuccino, powder, instant",
+    "es": "Café con leche o cappuccino, polvo soluble"
   },
   "scientific_name": null,
   "category_ids": [

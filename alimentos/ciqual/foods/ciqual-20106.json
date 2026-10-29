@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Champignon, truffe noire, crue",
-    "en": "Black truffle, raw"
+    "en": "Black truffle, raw",
+    "es": "Seta, trufa negra, cruda"
   },
   "scientific_name": "Tuber melanosporum vitt.",
   "category_ids": [

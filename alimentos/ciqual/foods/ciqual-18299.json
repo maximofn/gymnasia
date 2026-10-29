@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Citronnade, boisson plate au citron (teneur en fruits >= 10% et < 50%), sucrée",
-    "en": "Still soft drink, lemonade, fruit content >= 10% and < 50%, with sugar(s)"
+    "en": "Still soft drink, lemonade, fruit content >= 10% and < 50%, with sugar(s)",
+    "es": "Limonada, bebida de limón sin gas (contenido de frutas >= 10% y < 50%), azucarada"
   },
   "scientific_name": null,
   "category_ids": [

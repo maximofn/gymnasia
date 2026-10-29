@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage frais type petit suisse, aromatisé chocolat, sucré",
-    "en": "Fresh cream cheese, petit-suisse type, chocolate flavoured, with sugar(s)"
+    "en": "Fresh cream cheese, petit-suisse type, chocolate flavoured, with sugar(s)",
+    "es": "Queso fresco tipo petit suisse, sabor chocolate, azucarado"
   },
   "scientific_name": null,
   "category_ids": [

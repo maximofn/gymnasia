@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Huile végétale (aliment moyen)",
-    "en": "Vegetable oil (average)"
+    "en": "Vegetable oil (average)",
+    "es": "Aceite vegetal (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

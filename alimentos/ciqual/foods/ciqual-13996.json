@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fruit séché (aliment moyen)",
-    "en": "Fruit, dried (average)"
+    "en": "Fruit, dried (average)",
+    "es": "Fruta seca (valor medio)"
   },
   "scientific_name": null,
   "category_ids": [

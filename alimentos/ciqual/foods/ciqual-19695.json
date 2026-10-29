@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert au soja, aux fruits, sucré, non enrichi, fermenté, rayon frais",
-    "en": "Soy dessert, with fruits, with sugar(s), not fortified, fermented, refrigerated"
+    "en": "Soy dessert, with fruits, with sugar(s), not fortified, fermented, refrigerated",
+    "es": "Postre de soja, con frutas, azucarado, no enriquecido, fermentado, sección de refrigerados"
   },
   "scientific_name": null,
   "category_ids": [

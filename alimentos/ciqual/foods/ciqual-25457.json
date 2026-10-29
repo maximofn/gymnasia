@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza à la viande, type bolognaise, préemballée",
-    "en": "Pizza, Bolognese-style with meat, prepacked"
+    "en": "Pizza, Bolognese-style with meat, prepacked",
+    "es": "Pizza de carne, tipo boloñesa, envasada"
   },
   "scientific_name": null,
   "category_ids": [

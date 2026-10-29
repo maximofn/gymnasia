@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage blanc, nature, 0% MG, enrichi en vitamine D",
-    "en": "Quark, plain, 0% fat, fortified with vitamin D"
+    "en": "Quark, plain, 0% fat, fortified with vitamin D",
+    "es": "Queso fresco batido, natural, 0% materia grasa, enriquecido con vitamina D"
   },
   "scientific_name": null,
   "category_ids": [

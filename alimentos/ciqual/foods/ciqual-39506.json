@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Crème dessert au chocolat, appertisée",
-    "en": "Custard dessert, chocolate, canned"
+    "en": "Custard dessert, chocolate, canned",
+    "es": "Crema postre de chocolate, en conserva"
   },
   "scientific_name": null,
   "category_ids": [

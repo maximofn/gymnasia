@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Mouton, viande crue",
-    "en": "Mutton, meat, raw"
+    "en": "Mutton, meat, raw",
+    "es": "Ovino, carne cruda"
   },
   "scientific_name": null,
   "category_ids": [

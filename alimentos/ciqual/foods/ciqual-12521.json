@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Fromage bleu d'Auvergne",
-    "en": "Auvergne blue cheese, from cow's milk"
+    "en": "Auvergne blue cheese, from cow's milk",
+    "es": "Bleu d'Auvergne (queso azul de leche de vaca)"
   },
   "scientific_name": null,
   "category_ids": [

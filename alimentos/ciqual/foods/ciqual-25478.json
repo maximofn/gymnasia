@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza aux fromages, préemballée",
-    "en": "Pizza, cheeses, prepacked"
+    "en": "Pizza, cheeses, prepacked",
+    "es": "Pizza de quesos, envasada"
   },
   "scientific_name": null,
   "category_ids": [

@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Champignon, tout type, cru",
-    "en": "Mushroom, all types, raw"
+    "en": "Mushroom, all types, raw",
+    "es": "Champiñón, cualquier tipo, crudo"
   },
   "scientific_name": "(Genus and species unknown or multiple)",
   "category_ids": [

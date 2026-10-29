@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Truite arc en ciel, élevage, crue",
-    "en": "Rainbow trout, raw, farmed"
+    "en": "Rainbow trout, raw, farmed",
+    "es": "Trucha arco iris, de piscifactoría, cruda"
   },
   "scientific_name": "Oncorhynchus mykiss",
   "category_ids": [

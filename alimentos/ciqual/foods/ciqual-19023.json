@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Lait entier, UHT",
-    "en": "Milk, whole, UHT"
+    "en": "Milk, whole, UHT",
+    "es": "Leche entera, UHT"
   },
   "scientific_name": null,
   "category_ids": [

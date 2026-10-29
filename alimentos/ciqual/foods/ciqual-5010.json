@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Bière \"spéciale\" (5-6° alcool)",
-    "en": "Beer, special (5-6° alcohol)"
+    "en": "Beer, special (5-6° alcohol)",
+    "es": "Cerveza especial (5-6° alcohol)"
   },
   "scientific_name": null,
   "category_ids": [

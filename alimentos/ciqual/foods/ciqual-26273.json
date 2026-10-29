@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pizza type raclette ou tartiflette, préemballée",
-    "en": "Pizza, raclette or tartiflette cheese, prepacked"
+    "en": "Pizza, raclette or tartiflette cheese, prepacked",
+    "es": "Pizza tipo raclette o tartiflette, envasada"
   },
   "scientific_name": null,
   "category_ids": [

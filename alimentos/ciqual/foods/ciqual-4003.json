@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Pomme de terre, bouillie/cuite à l'eau",
-    "en": "Potato, boiled/cooked in water"
+    "en": "Potato, boiled/cooked in water",
+    "es": "Patata, hervida/cocinada en agua"
   },
   "scientific_name": null,
   "category_ids": [

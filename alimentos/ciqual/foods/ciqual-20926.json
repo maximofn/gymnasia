@@ -4,7 +4,8 @@
   "kind": "generic",
   "names": {
     "fr": "Dessert au soja, aux fruits, sucré, enrichi en calcium et vitamine D, fermenté, rayon frais",
-    "en": "Soy dessert, with fruits, with sugar(s), fortified with calcium and vitamin D, fermented, refrigerated"
+    "en": "Soy dessert, with fruits, with sugar(s), fortified with calcium and vitamin D, fermented, refrigerated",
+    "es": "Postre de soja, con frutas, azucarado, enriquecido con calcio y vitamina D, fermentado, sección refrigerados"
   },
   "scientific_name": null,
   "category_ids": [
