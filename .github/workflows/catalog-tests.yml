@@ -73,7 +73,9 @@ jobs:
         run: npm exec -- playwright install --with-deps chromium
 
       - name: Verify catalog contracts and generated files
-        run: npm run check:catalogs
+        run: |
+          npm run check:catalogs
+          npm run check:ciqual
 
       - name: Run catalog regression tests
         run: npm run test:catalogs
