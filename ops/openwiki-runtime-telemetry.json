@@ -3,17 +3,17 @@
   "project": "openwiki",
   "latestAttempt": {
     "status": "available",
-    "at": "2026-10-26T14:42:06.786Z",
+    "at": "2026-11-02T17:30:12.580Z",
     "failureCategory": null
   },
   "sample": {
-    "collectedAt": "2026-10-26T14:42:06.786Z",
-    "windowStartAt": "2026-10-19T14:42:06.786Z",
-    "windowEndAt": "2026-10-26T14:42:06.786Z",
+    "collectedAt": "2026-11-02T17:30:12.580Z",
+    "windowStartAt": "2026-10-26T17:30:12.580Z",
+    "windowEndAt": "2026-11-02T17:30:12.580Z",
     "truncated": true,
     "roots": {
-      "total": 8,
-      "succeeded": 8,
+      "total": 6,
+      "succeeded": 6,
       "failed": 0,
       "unknown": 0
     },
@@ -29,33 +29,33 @@
     },
     "durationMs": {
       "roots": {
-        "count": 8,
+        "count": 6,
         "unknown": 0,
-        "p50": 103329,
-        "p95": 212020,
-        "max": 212020
+        "p50": 150281,
+        "p95": 184082,
+        "max": 184082
       },
       "models": {
-        "count": 150,
+        "count": 127,
         "unknown": 0,
-        "p50": 3210,
-        "p95": 19264,
-        "max": 134046
+        "p50": 3694,
+        "p95": 18956,
+        "max": 88227
       },
       "tools": {
-        "count": 159,
+        "count": 130,
         "unknown": 0,
         "p50": 2,
-        "p95": 145,
-        "max": 757
+        "p95": 224,
+        "max": 865
       }
     },
     "llm": {
-      "calls": 150,
+      "calls": 127,
       "callsPerRoot": {
-        "count": 8,
+        "count": 6,
         "unknown": 0,
-        "p50": 17,
+        "p50": 20,
         "p95": 30,
         "max": 30
       },
@@ -75,15 +75,15 @@
       }
     },
     "tools": {
-      "total": 159,
+      "total": 130,
       "categories": {
         "search": 0,
-        "read": 83,
-        "write": 15,
+        "read": 66,
+        "write": 21,
         "command": 0,
-        "other": 61
+        "other": 43
       },
-      "unknownNames": 61
+      "unknownNames": 43
     }
   }
 }
