@@ -221,8 +221,11 @@ el canal de avisos.
 ## Builds y funcionamiento sin red
 
 Production contiene su `EXPO_TOKEN` de environment para firma y contador. El
-environment automático `Play Internal` (nombre heredado) contiene otro token
-para EAS Submit al track cerrado `alpha`; la
+environment `Play Internal` (nombre heredado) contiene otro token para EAS Submit
+al track cerrado `alpha`. Normalmente es automático, pero desde el 21 de octubre
+de 2026 exige temporalmente aprobación de `maximofn` para proteger la revisión
+pendiente de España; ver la
+[retención y reactivación de los envíos](../store/google-play/production-promotion-gates.md#retención-temporal-durante-la-revisión-de-españa). La
 cuenta de servicio de Google permanece en EAS. Antes de invocar EAS local, el workflow
 resuelve el deployment Production y ejecuta:
 
