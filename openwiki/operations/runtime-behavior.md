@@ -3,9 +3,6 @@ type: observabilidad de runtime
 title: Comportamiento en ejecución y oportunidades
 description: Lectura operativa del runtime del agente móvil que separa los agregados disponibles y truncados de telemetría de los invariantes verificables de control de herramientas, efectos y privacidad.
 tags: [runtime, observability, mobile, agent, tools]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-27T13:41:37.716Z
 sources:
   - id: openwiki-source-0c30fc96b9e7c8b57c35473c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
@@ -29,7 +26,10 @@ sources:
     resource: repo://apps/mobile/App.tsx
   - id: openwiki-source-ea083ff1c1afd80c588dedd8
     resource: repo://ops/openwiki-runtime-telemetry.json
-generated: { by: "openwiki/0.6.0", at: "2026-10-27T13:41:37.716Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-03T15:32:51.876Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-03T15:32:51.876Z
 ---
 
 # Comportamiento en ejecución y oportunidades
@@ -38,15 +38,15 @@ Esta página interpreta el manifiesto operativo vigente junto con los límites q
 
 ## Muestra disponible: agregados, cobertura y límites
 
-**Observado — no es una tasa de flota.** El último intento está disponible y aporta una ventana de siete días, pero el manifiesto la marca como `truncated`. Hay 8 roots: 8 con éxito, 0 fallidos y 0 de estado desconocido. Los contadores de fallos por categoría del manifiesto son todos cero; esto no convierte el resultado en una medición exhaustiva ni permite inferir disponibilidad global.
+**Observado — no es una tasa de flota.** El último intento está disponible y aporta una ventana de siete días, pero el manifiesto la marca como `truncated`. Hay 6 roots: 6 con éxito, 0 fallidos y 0 de estado desconocido. Los contadores de fallos por categoría del manifiesto son todos cero; esto no convierte el resultado en una medición exhaustiva ni permite inferir disponibilidad global.
 
 | Señal agregada | Valor observado | Cómo leerla |
 | --- | ---: | --- |
-| Duración de roots | p50 103329 ms; p95 y máximo 212020 ms | 8 duraciones conocidas; no atribuye el tiempo a un proveedor ni a una tool. |
-| Duración de modelos | p50 3210 ms; p95 19264 ms; máximo 134046 ms | 150 duraciones conocidas. |
-| Duración de tools | p50 2 ms; p95 145 ms; máximo 757 ms | 159 mediciones; el agregado no identifica handlers ni argumentos. |
-| Llamadas LLM | 150; p50 17 y p95 30 por root | Una root puede incluir reintentos, rondas de tools y cierre; no equivale a mensajes de usuario. |
-| Tools | 159: 83 `read`, 15 `write`, 61 `other` | Hay 61 nombres no clasificados; `other` no demuestra que sean efectos ni permite asignarlos a una implementación. |
+| Duración de roots | p50 150281 ms; p95 y máximo 184082 ms | 6 duraciones conocidas; no atribuye el tiempo a un proveedor ni a una tool. |
+| Duración de modelos | p50 3694 ms; p95 18956 ms; máximo 88227 ms | 127 duraciones conocidas. |
+| Duración de tools | p50 2 ms; p95 224 ms; máximo 865 ms | 130 mediciones; el agregado no identifica handlers ni argumentos. |
+| Llamadas LLM | 127; p50 20 y p95 30 por root | Una root puede incluir reintentos, rondas de tools y cierre; no equivale a mensajes de usuario. |
+| Tools | 130: 66 `read`, 21 `write`, 43 `other` | Hay 43 nombres no clasificados; `other` no demuestra que sean efectos ni permite asignarlos a una implementación. |
 | Tokens y coste | `unavailable`, cobertura `partial` | Los ceros del manifiesto no son valores medidos: no hay llamadas observadas con tokens o coste. |
 
 Los percentiles y máximos son agregados de la muestra truncada, no objetivos ni SLO. Las duraciones declaradas no tienen valores desconocidos, pero siguen sin desglosar proveedor, handler, argumentos ni contenido; no permiten atribuir causalmente la latencia. No se publican contenido de runs, prompts, argumentos, resultados, URLs ni identificadores de traza.
@@ -96,8 +96,8 @@ Para una tool con efecto, `ToolOperationCoordinator` deriva la identidad de vers
 ## Oportunidades operativas priorizadas
 
 1. **Alta — tratar tokens y coste como señal ausente, no como cero.** La muestra declara ambos `unavailable` con cobertura parcial y cero llamadas observadas. Antes de optimizar precios o contexto, recupere cobertura de uso y coste con agregados por proveedor y ventana; no copie inputs, outputs ni razonamiento.
-2. **Alta — separar la presión de rondas del coste por solicitud.** La mediana de 17 llamadas LLM por root y el total de 150 son compatibles con el flujo de reintentos, tools y cierre. Instrumentar contadores agregados de intento remoto, ronda, cierre y estado del límite permitirá distinguirlos sin revelar contenido.
-3. **Media — investigar clasificación incompleta de tools.** Las 61 tools `other` coinciden con 61 nombres desconocidos en el manifiesto. Complete el mapeo de categorías en el productor de telemetría usando metadatos seguros de tipo o efecto, pero no nombres, argumentos o resultados de calls; mientras tanto no interprete ese grupo como lectura o escritura.
+2. **Alta — separar la presión de rondas del coste por solicitud.** La mediana de 20 llamadas LLM por root y el total de 127 son compatibles con el flujo de reintentos, tools y cierre. Instrumentar contadores agregados de intento remoto, ronda, cierre y estado del límite permitirá distinguirlos sin revelar contenido.
+3. **Media — investigar clasificación incompleta de tools.** Las 43 tools `other` coinciden con 43 nombres desconocidos en el manifiesto. Complete el mapeo de categorías en el productor de telemetría usando metadatos seguros de tipo o efecto, pero no nombres, argumentos o resultados de calls; mientras tanto no interprete ese grupo como lectura o escritura.
 4. **Media — medir lote además de handler.** Las duraciones de tools no indican si una lectura compartió lote ni si una barrera serializó el turno. Añada agregados de duración de lote, concurrencia máxima y número de barreras, preservando el orden de los efectos y sin identificar operaciones.
 5. **Media — operar incertidumbre de escrituras explícitamente.** Una repetición observable puede ser unión `inFlight`, replay de memoria, replay de ledger o reconciliación. Toda nueva escritura necesita recibo y reconciliador; `indeterminate` requiere revisión del estado de dominio, no un reintento automático.
 
