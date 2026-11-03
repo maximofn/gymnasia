@@ -201,8 +201,8 @@ ese valor, el PR no puede fusionarse.
 La release Android solo se lanza mediante `.github/workflows/build-apk.yml`.
 Después de la aprobación humana de `Production`, una VM desechable de wallabot
 compila primero el AAB `production` y después el APK `production-apk` con el
-mismo `versionCode`. Un runner administrado verifica ambos, envía el AAB a Prueba
-cerrada Alpha mediante EAS Submit y publica los dos en GitHub. EAS aporta firma,
+mismo `versionCode`. Un runner administrado verifica ambos, envía el AAB al canal
+público `production` mediante EAS Submit y publica los dos en GitHub. EAS aporta firma,
 contador y submission, pero no capacidad de compilación.
 
 Operaciones manuales:
@@ -252,8 +252,14 @@ Antes de cualquier envío, `Play Internal` debe tener configurado el secreto
 `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` de la cuenta de servicio existente: el
 workflow valida esa credencial, vuelve a comparar los bytes descargados y exige
 un recibo con hash/track consultados a Google después del submission. No copiar
-la clave al repo, a logs ni al chat. El servicio sigue limitado a canales de
-pruebas. Las promociones del propietario en Play Console tienen un procedimiento
+la clave al repo, a logs ni al chat. El servicio necesita permiso de publicación
+en Producción solo para Gymnasia, nunca de administrador. Google activa también
+«Gestionar declaraciones de políticas» y «Gestionar enlaces profundos» al marcar
+Producción: son dependencias obligatorias y deben estar expresamente autorizadas
+antes de guardar. La publicación efectiva sigue pendiente de revisión de Google;
+`FINISHED` o `completed` no prueban que aparezca «Actualizar» en Play Store.
+No cambiar el canal de una transacción histórica al reintentar: sus evidencias
+siguen ligadas al track original. Las promociones del propietario en Play Console tienen un procedimiento
 y una frontera de confianza explícitos en el runbook; no afirmar que GitHub
 pueda bloquear una acción directa del propietario en otra plataforma.
 

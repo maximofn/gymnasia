@@ -1,4 +1,4 @@
-# Publicación Android: wallabot, GitHub y Prueba cerrada Alpha
+# Publicación Android: wallabot, GitHub y Google Play Producción
 
 ## Resultado del flujo
 
@@ -7,19 +7,21 @@ publicable de `main` en una sola transacción con dos binarios de la misma versi
 
 - wallabot compila primero `gymnasia.aab` con `production` y después
   `gymnasia.apk` con `production-apk`;
-- el AAB se envía automáticamente al track `alpha` (Prueba cerrada) con estado
-  `completed`, para que los testers cerrados reciban cada build publicable;
+- el AAB se envía automáticamente al track público `production` con estado
+  `completed`, conservando los países ya habilitados en Google Play;
 - ambos binarios se adjuntan a la misma GitHub Release;
 - la Release permanece como borrador hasta que AAB, APK y submission estén
   validados.
 
-El grupo `gymnasia-cerrada-2026-08` de 14 testers es el destinatario de las
-actualizaciones. Cada tester debe estar en la lista y haberse unido a la prueba
-cerrada con la misma cuenta de Google que usa en Play; estar en la lista no basta.
-La disponibilidad efectiva puede esperar la revisión de Google. No se cambia a
-los testers al canal interno, pues eso los excluiría de la prueba cerrada.
+Desde la decisión del mantenedor del 3 de noviembre de 2026, las actualizaciones
+normales se destinan a todos los usuarios de los territorios habilitados, sin
+inscripción como tester. La app ya tiene acceso a Producción; no confundir esa
+habilitación con la configuración antigua del flujo, que seguía enviando a Alpha.
+Las transacciones históricas conservan sus canales y evidencias originales.
 
-La promoción de esa release a producción sigue siendo manual. El workflow no
+El envío completado no demuestra revisión aprobada ni disponibilidad en tienda:
+comprobar la versión en Producción de Play Console y, cuando sea posible, la
+actualización en Play Store con una cuenta normal. El workflow no
 envía notas de versión a Google Play: EAS Submit para Android no ofrece ese
 campo. El resumen automático de commits queda en GitHub y en Actions.
 
@@ -33,7 +35,7 @@ La aprobación humana de `Production` se conserva. El orden es:
 3. `compile-android` es el único job que referencia el environment `Production`:
    espera una sola aprobación y únicamente entonces wallabot recibe el trabajo;
 4. con los dos artefactos validados, el environment histórico `Play Internal`
-   ejecuta la subida a `alpha` sin un segundo aprobador.
+   ejecuta la subida a `production` sin un segundo aprobador.
 
 `Production` y `Play Internal` tienen cada uno su propio secreto `EXPO_TOKEN`.
 El nombre `Play Internal` del environment se conserva para no mover ni exponer
@@ -72,8 +74,8 @@ La V2 conserva tres patas independientes:
 - `aab`: perfil `production`, intentos de wallabot, hash, tamaño, evidencia y
   `versionCode`;
 - `apk`: perfil `production-apk`, los mismos datos y el mismo `versionCode`;
-- `play`: proveedor EAS, perfil `production`, track `alpha` para transacciones
-  nuevas (`internal` sigue siendo legible para Releases históricas), estado
+- `play`: proveedor EAS, perfil `production`, track `production` para transacciones
+  nuevas (`internal` y `alpha` siguen siendo legibles para Releases históricas), estado
   `completed`, intención, submission ID, estado y error saneado.
 
 Los estados globales son `prepared`, `building`, `artifacts-validated`,
@@ -201,17 +203,18 @@ como sustituto de estas operaciones ni se salta silenciosamente una versión.
 
 Tras cada ejecución real, verificar:
 
-1. el AAB aparece en Prueba cerrada Alpha con el código esperado y está
-   disponible para el grupo de 14 una vez termine la revisión de Google;
-2. un tester cerrado lo actualiza desde Play y completa el smoke test;
+1. el AAB aparece en Producción con el código esperado y está
+   disponible para los usuarios una vez termine la revisión de Google;
+2. una cuenta normal lo actualiza desde Play y completa el smoke test;
 3. el APK está disponible en GitHub;
 4. hashes, versiones, intentos de wallabot, submission ID, track y resultado
    aparecen en la Release y el resumen del workflow.
 
 Solo después se cierra GYM-226 (ticket para automatizar la subida a Google
 Play), se coordina el resultado con GYM-199 (ticket para validar el AAB en
-pruebas internas y cerradas) y se sincroniza el tablero. Promover a producción
-requiere una decisión humana.
+pruebas internas y cerradas) y se sincroniza el tablero. La aprobación de la build
+incluye el envío público normal; una promoción manual de un histórico exige una
+decisión específica y no se ejecuta como efecto de cambiar la configuración.
 
 ## Comprobación de los bytes enviados y recibidos
 
@@ -223,15 +226,17 @@ los tres ficheros de evidencia: una ruta y un token no bastan para enviarlo.
 
 La confirmación `FINISHED` de Expo no acredita por sí sola los bytes que recibió
 Google. Una vez terminado el submission, `google-play-receipt.mjs` consulta el
-bundle por `versionCode` y el track `alpha` en Google Play. Solo acepta el mismo
+bundle por `versionCode` y el track registrado en la transacción en Google Play. Solo acepta el mismo
 SHA-256 y una release `completed`. El recibo se incorpora a la evidencia de Play
 y se conserva también como asset independiente. Si Google no responde, devuelve
-otro hash o no conserva esa versión en Alpha, la release de GitHub sigue siendo
+otro hash o no conserva esa versión en el track esperado, la release de GitHub sigue siendo
 borrador; la recuperación consulta el submission existente, sin subir de nuevo.
 
 El verificador usa `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON`, secreto del environment
 `Play Internal`, con la clave de la misma cuenta de servicio auditada que usa
-EAS. No se le concede acceso a producción ni permisos globales. Antes de enviar,
+EAS. Para nuevas publicaciones necesita permiso de Producción limitado a Gymnasia,
+con sus dependencias obligatorias de declaraciones de políticas y enlaces profundos,
+autorizadas por el mantenedor; nunca permisos globales ni de administrador. Antes de enviar,
 el workflow comprueba que Google acepta esa credencial. La clave y el token OAuth
 solo están en memoria y nunca se escriben en assets ni en logs. No pegar el JSON
 en el repositorio ni en el chat. Desde un fichero privado existente:
@@ -268,8 +273,8 @@ público `production` de Google Play esté habilitado.
 
 | Camino | Ref, environment y perfil | Destino | Control obligatorio |
 |---|---|---|---|
-| Merge o push publicable | PR a `main`, `Production`, AAB `production` + APK `production-apk` | GitHub y Alpha | Ruleset sin bypass, autorización y política de la PR, 20 gates sobre el commit, aprobación humana, verificación de ambos binarios y recibo de Google |
-| `workflow_dispatch` | Solo `refs/heads/main`; misma transacción y perfiles | GitHub y Alpha | Misma puerta; retry/reconcile conservan commit, código y binarios, no admiten ref arbitrario |
+| Merge o push publicable | PR a `main`, `Production`, AAB `production` + APK `production-apk` | GitHub y Play Producción | Ruleset sin bypass, autorización y política de la PR, 20 gates sobre el commit, aprobación humana, verificación de ambos binarios y recibo de Google |
+| `workflow_dispatch` | Solo `refs/heads/main`; misma transacción y perfiles | GitHub y Play Producción | Misma puerta; retry/reconcile conservan commit, código, binarios y track, no admiten ref arbitrario |
 | Build local en wallabot | Fuente exacta de la transacción, VM desechable, mismos perfiles | Artifacts en cuarentena | Gates antes de compilar, firma, snapshot, manifest, permisos, versión y hash antes de subir; nueva comparación justo antes de EAS |
 | Build independiente o EAS directo | No es una vía de publicación autorizada | Ninguno | Usar el workflow en `main`; una build aislada no hereda ni sustituye autorización o evidencias |
 | Promoción manual entre tracks | AAB ya validado, mismo `versionCode` | Track elegido en Play | Procedimiento del propietario indicado abajo; Play no ejecuta los checks de GitHub |
@@ -281,11 +286,19 @@ antes de publicar, aunque no sean checks obligatorios para el merge. Production
 admite solo ramas protegidas, exige a `maximofn` y no permite bypass de admins.
 El propietario puede aprobar su propia build: es el responsable autorizado.
 
-Play Console tenía exactamente dos usuarios: el propietario, con todos los
+En la auditoría histórica, Play Console tenía exactamente dos usuarios: el propietario, con todos los
 permisos, y `gymnasia-play-submit@gymnasia-play-review.iam.gserviceaccount.com`.
-El servicio tiene cuatro permisos de Gymnasia: lectura de información, lectura
+El servicio tenía cuatro permisos de Gymnasia: lectura de información, lectura
 de calidad, publicación en pruebas y gestión de canales/testers. No tiene
-permisos de cuenta, administrador o publicación en producción. La cuenta Expo
+permisos de cuenta, administrador o publicación en producción. El nuevo flujo
+requiere añadir Producción y las dos dependencias que Google marca obligatoriamente,
+solo para esta app. La autorización explícita del 3 de noviembre de 2026 no
+sustituye la comprobación de que el cambio quedó guardado en Play Console.
+Ese mismo día se guardó el cambio y se reabrió el usuario para verificarlo:
+una sola app (`com.maximofn.gymnasia`), siete permisos, Producción activo,
+declaraciones y enlaces profundos activos como dependencias, administrador
+desactivado. No se cambiaron países ni se publicó una versión en esa operación.
+La cuenta Expo
 es personal; la pantalla de miembros no permite añadir colaboradores sin
 convertirla en organización.
 
@@ -294,8 +307,18 @@ y puede operar directamente en esa plataforma. GitHub no puede impedirlo ni
 exigir sus pruebas allí. El contrato prohíbe usar esa vía para subir binarios
 nuevos de Production: la única operación manual autorizable es promover el
 artefacto validado, conservando las evidencias. No se afirma que una instrucción
-operativa sea un bloqueo técnico del propietario. Tampoco se amplían los permisos
-del servicio de envío para automatizar el track público.
+operativa sea un bloqueo técnico del propietario. La ampliación autorizada del
+servicio permite ahora el track público, sin eliminar los gates ni la aprobación
+humana de Production y sin habilitar otros países.
+
+### Cambio de canal y transacciones históricas
+
+El canal se fija al crear la transacción. La lectura de históricos y el recibo
+de Google usan ese canal registrado, no el valor por defecto actual. Antes de
+enviar, `verifySubmissionArtifact` exige que coincida con el perfil activo: un
+reintento antiguo de Alpha o Interno falla antes de EAS, en lugar de publicar
+silenciosamente esos bytes en Producción. Resolver o sustituir la transacción
+histórica de forma explícita; no editar sus evidencias ni su track.
 
 ### Promoción manual sin recompilación
 

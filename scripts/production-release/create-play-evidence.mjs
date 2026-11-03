@@ -29,7 +29,7 @@ if (transaction.schemaVersion !== 2 || transaction.state !== "submitting") viola
 if (submission.id !== transaction.legs.play.submission?.id) violations.push("El submission no coincide con la intención durable.");
 if (submission.status !== "FINISHED") violations.push("EAS no confirmó FINISHED.");
 if (submission.platform !== "ANDROID") violations.push("El submission no es Android.");
-if (submission.track !== policy.play.track) violations.push(`El track no es ${policy.play.track}.`);
+if (submission.track !== transaction.legs.play.track) violations.push(`El track no es ${transaction.legs.play.track}.`);
 if (submission.releaseStatus !== policy.play.releaseStatus) violations.push(`El releaseStatus no es ${policy.play.releaseStatus}.`);
 
 const evidence = {
@@ -41,7 +41,7 @@ const evidence = {
   googleReceipt,
   googleReceiptSha256: createHash("sha256").update(googleReceiptBytes).digest("hex"),
   profile: policy.play.profile,
-  track: policy.play.track,
+  track: transaction.legs.play.track,
   releaseStatus: policy.play.releaseStatus,
   source: { commit: transaction.sourceCommit, version: transaction.version },
   artifact: {
