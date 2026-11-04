@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:1c5b7591027e5f45c86d68143092f0d1377e70824c311c803af3f5a16cda5d0a",
+  "pageVersion": "sha256:0a0abe9e063471f312d30afb6dc9457afb1edd9e3d8e21b80f97f9e9a0b283f8",
   "claims": [
     {
       "id": "claim_1d4d762ab7864a9e8244128e8ce1357f",
@@ -86,15 +86,23 @@
     },
     {
       "id": "claim_7e7d0a95106845829cebec0af7ab86bd",
-      "statement": "La distribución Android es externa al cliente y construye un AAB y un APK validados del mismo candidato: con el destino predeterminado `play` envía el AAB por path al track `alpha` y después publica una GitHub Release con `gymnasia.aab` y `gymnasia.apk`; con el destino manual `github-apk` no contacta Play y publica únicamente el APK y sus evidencias, aunque también exige construir y validar el AAB.",
+      "statement": "La distribución Android es externa al cliente y construye un AAB y un APK validados del mismo candidato: con el destino predeterminado `play` envía el AAB por path al track `production` y después publica una GitHub Release con `gymnasia.aab` y `gymnasia.apk`; con el destino manual `github-apk` no contacta Play y publica únicamente el APK y las evidencias de fuente/AAB/APK, aunque también exige construir y validar el AAB.",
       "evidence": [
         {
-          "resource": "repo://.github/workflows/build-apk.yml",
-          "version": "repo-file-v1:sha256:eb22f7b983f3090ed45d28ddf62c62276caa460049de4c91dfc9fc5eb00a60e5"
+          "resource": "repo://.github/workflows/build-apk.yml#L3-L42",
+          "version": "repo-lines-v1:sha256:958c0b9cd6435342f44b281402eeeb521eff2285fc56cb6d5ad984950587db9d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0YTAxZjI4YjZiMDRkNDVjYWQwZmU2Yjg2MmQxYTgwMmQ3YzFiYzVlNzdlYjg4NTgwMGI4ZDkxY2Y3ZjQ0ODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5NDM0MDM2N2RlNDBkNmFiYjlmNDA0OGMzMTQ0MWM0ODc5NzhhMjZjNmQ2YzRmNTY3NDQ5ZTc1MWNmZDA2YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBmMWE2YTg2N2VmYjJhOWNlZTBhYTRjZmRiN2MzMjA1MzYxNjc5N2EyM2IwYjMzYmI4NDRjYzNkMjI1NjI5ZTAifQ"
         },
         {
-          "resource": "repo://scripts/production-release/release-transaction.mjs",
-          "version": "repo-file-v1:sha256:6bca55d9a7839332550250764e21b36ea05afb224b7a38788a1cb05f9d0109f5"
+          "resource": "repo://.github/workflows/build-apk.yml#L640-L895",
+          "version": "repo-lines-v1:sha256:cc65f6b6d2efd7ee53747dfc883b616aeb047cd89ea5ef599366bc6c782cfbe5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjU2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhYWVlZGI2OWM4ZmZkZGQwODllMjc2YTRiNGYxYThkYzQ1ZmE1M2QyNjA5YTI1NjM3MjQ2NzE5YzUzY2I0MDMzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJhNDRiYWU4ZmJlYjdjMjZkYTY0M2IzNzg4MTg3NTZiYjliNjNjNjY4YmMyNjVhOTA4MjVmZWRmMWIzMGM2ZjBkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkYTdjNTJkNmU0M2VjMjkxNDAwZjhjZGU2MzE0YmRjYmNiZTA4MWQ1MTFmNWUzZGVlZDY5ZjM1ZDgxNGNjNGVhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkNmJiMjg4ZWRjMDhiZGE2YThlODdlZTBlMDcwNmRjZjhmYWI0MmFlM2ExODc1OWZjMjA2YjBmZGE4YTNhMDEyIn0"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L917-L942",
+          "version": "repo-lines-v1:sha256:9a5833039c2f409f2abdb277e843db5da697bdbb3edf9c6c1c6f6b7f22cbf51d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhODgyMjYyZjM0Yzk4MTgwNTk2YjQzMTFkY2VmZGMzNjAyMWE1NTVjNDNlYmE4YzZmNTg2ZjIxZDgzM2RiMDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiOTU5OTY1MzA1NDQyZjc2NWUxM2UwMzNlZTYxNWM3ZGQ0ODYyZGZjZjY2MDIxY2I1MjJlNDJiZjIyMjZjNjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQzZmJiYjhhN2FhMThhZGYxMjM3NTc2NTM1YzRkODQ3YTc4ODRkNDg3MmUzNzQyN2RmNWE3NWYwN2VjOTMxMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmZDY1MmJlZmRiNDIxNWMwMDQ5NjI1NDdmMDcyMWFhOTE1NmI0MmJjNGUzZWUwYWVmZTI0ZTE2MTdjMDVhNWIifQ"
+        },
+        {
+          "resource": "repo://scripts/production-release/release-transaction.mjs#L504-L537",
+          "version": "repo-lines-v1:sha256:5cbecb36f025e2d7c014fa249ff7626475ebf932eef2c7943019b07110118242:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJiNTA2M2U1ZTU5YzE2MTY1ZjlmNTY4ODQ5MzI3Njc5MDk0MjM4M2I5NWZkZGYzNWExZDI5ZDkyZGQ1NTViNzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNkZDgyYjliNjZlZGNkMDQ0NDUxYzY5MDRhMjJlNDk0NGRkNDhjZWFjOGUxOGQ3MWZkZGQyZjFjMzlmMmM4MzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3YzBmNTFhYjAyZTNhNjM1ZWZlODZiYzliMDI1MWI0NzI1ODc0Yzk4OWExZTkzNDA4NDM5ZWU1YmFhYmQzNzEifQ"
         }
       ]
     },
@@ -136,7 +144,7 @@
       "evidence": [
         {
           "resource": "repo://.github/workflows/build-apk.yml",
-          "version": "repo-file-v1:sha256:eb22f7b983f3090ed45d28ddf62c62276caa460049de4c91dfc9fc5eb00a60e5"
+          "version": "repo-file-v1:sha256:b27223ae936a4b1fcd53fc3010cfc6bb657dcc0f79ba522303c5ec3c03798042"
         }
       ]
     },
@@ -145,12 +153,12 @@
       "statement": "La política de `REQUEST_INSTALL_PACKAGES` aún afirma que Production se actualiza exclusivamente mediante Google Play, aunque el workflow ejecutable también publica `gymnasia.apk` en GitHub para instalación directa; la contradicción documental no cambia que el permiso está bloqueado y que el cliente carece de actualizador propio.",
       "evidence": [
         {
-          "resource": "repo://.github/workflows/build-apk.yml#L818-L877",
-          "version": "repo-lines-v1:sha256:9306f50abf87a1420ac1f911818ec5df6e9613a5040ee1b37a436c1439b4a4b4:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYThiOGE5ZWNlY2JmNTUyNzU1NjJiMWMxZjJmMWJiMjIzMTE1MmM1YTBiNDY3ZjliYzU0NmFiOTU2M2ZmYTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0NGJhZThmYmViN2MyNmRhNjQzYjM3ODgxODc1NmJiOWI2M2M2NjhiYzI2NWE5MDgyNWZlZGYxYjMwYzZmMGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4Njg5MTc2YzA4MGU1NDFiNmE5YTY2ODAzZmJhMDY0ODkzMDk2MjlmODQ2ZDQyYzdhYWNhMTI3Yzk3NDg2ZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2YmIyODhlZGMwOGJkYTZhOGU4N2VlMGUwNzA2ZGNmOGZhYjQyYWUzYTE4NzU5ZmMyMDZiMGZkYThhM2EwMTIifQ"
+          "resource": "repo://.github/workflows/build-apk.yml#L917-L942",
+          "version": "repo-lines-v1:sha256:9a5833039c2f409f2abdb277e843db5da697bdbb3edf9c6c1c6f6b7f22cbf51d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhODgyMjYyZjM0Yzk4MTgwNTk2YjQzMTFkY2VmZGMzNjAyMWE1NTVjNDNlYmE4YzZmNTg2ZjIxZDgzM2RiMDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiOTU5OTY1MzA1NDQyZjc2NWUxM2UwMzNlZTYxNWM3ZGQ0ODYyZGZjZjY2MDIxY2I1MjJlNDJiZjIyMjZjNjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQzZmJiYjhhN2FhMThhZGYxMjM3NTc2NTM1YzRkODQ3YTc4ODRkNDg3MmUzNzQyN2RmNWE3NWYwN2VjOTMxMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmZDY1MmJlZmRiNDIxNWMwMDQ5NjI1NDdmMDcyMWFhOTE1NmI0MmJjNGUzZWUwYWVmZTI0ZTE2MTdjMDVhNWIifQ"
         },
         {
-          "resource": "repo://apps/mobile/agent/updateRemoval.contract.test.ts#L13-L60",
-          "version": "repo-lines-v1:sha256:96cad45e4bd17f8853dd11fc91ed62de0d30a07fbbcd1c8db3fed5b04c317996:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwZThmMTdkYjlhODkxNmYzZmViNDA1OWEyMjc3OGU3MmE5ZTZmOTNlYjJmYjRkYWFkODgzYmQzYTQzOWNmMjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4MWY5ODU5MWJmZTA1YzliOWQ1ZWE0MmYwYzcxNDc2OWQ3YzQzZjJjMTc5ZDBkOWMyZTg0MTg1OTczZjMyMjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+          "resource": "repo://apps/mobile/agent/updateRemoval.contract.test.ts#L11-L60",
+          "version": "repo-lines-v1:sha256:71fed415bd65c56dd96ff57b16c5eec97296779847a771f837d6cd4bef54166f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM4NTQ2NzIwZmJkMjkzMjUwNzNkMDUxZWU3N2Q5YzE0MTI5ZjljOGFhYjA2MmNhYTk3ZDRiNGU3ZGY1ZWEwYTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0YTJmMmFjYjY5NGM5ZjVhOWFhN2Q3MDA4NzgwMjNmZTlhYWIzMmJlMjE4ZGEwNjE4YTU4NGM5YzNhZjViNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
         },
         {
           "resource": "repo://apps/mobile/app.json#L26-L44",
@@ -168,11 +176,11 @@
       "evidence": [
         {
           "resource": "repo://.github/workflows/build-apk.yml",
-          "version": "repo-file-v1:sha256:eb22f7b983f3090ed45d28ddf62c62276caa460049de4c91dfc9fc5eb00a60e5"
+          "version": "repo-file-v1:sha256:b27223ae936a4b1fcd53fc3010cfc6bb657dcc0f79ba522303c5ec3c03798042"
         },
         {
           "resource": "repo://scripts/production-release/release-transaction.mjs",
-          "version": "repo-file-v1:sha256:6bca55d9a7839332550250764e21b36ea05afb224b7a38788a1cb05f9d0109f5"
+          "version": "repo-file-v1:sha256:1820fc35f2ada8ca5e6fdf7a91436722812703595b5c511b940358498411d5c3"
         }
       ]
     },
@@ -182,7 +190,7 @@
       "evidence": [
         {
           "resource": "repo://apps/mobile/eas.json",
-          "version": "repo-file-v1:sha256:aac3ae711f7b40a497ba3097d34c818ab9045dccaf2480729263dedc4601302e"
+          "version": "repo-file-v1:sha256:a95b5a79b2a4e788891c3e85d3b3c72fe0750ce035bce73b65afd02a288db771"
         },
         {
           "resource": "repo://scripts/production-release/local-controller.mjs",
@@ -200,11 +208,11 @@
       "evidence": [
         {
           "resource": "repo://.github/workflows/build-apk.yml",
-          "version": "repo-file-v1:sha256:eb22f7b983f3090ed45d28ddf62c62276caa460049de4c91dfc9fc5eb00a60e5"
+          "version": "repo-file-v1:sha256:b27223ae936a4b1fcd53fc3010cfc6bb657dcc0f79ba522303c5ec3c03798042"
         },
         {
           "resource": "repo://scripts/production-release/release-transaction.mjs",
-          "version": "repo-file-v1:sha256:6bca55d9a7839332550250764e21b36ea05afb224b7a38788a1cb05f9d0109f5"
+          "version": "repo-file-v1:sha256:1820fc35f2ada8ca5e6fdf7a91436722812703595b5c511b940358498411d5c3"
         },
         {
           "resource": "repo://scripts/production-release/verify-artifact.mjs",
@@ -232,7 +240,7 @@
       "evidence": [
         {
           "resource": "repo://scripts/production-release/release-transaction.mjs",
-          "version": "repo-file-v1:sha256:6bca55d9a7839332550250764e21b36ea05afb224b7a38788a1cb05f9d0109f5"
+          "version": "repo-file-v1:sha256:1820fc35f2ada8ca5e6fdf7a91436722812703595b5c511b940358498411d5c3"
         }
       ]
     },
@@ -252,7 +260,7 @@
       "evidence": [
         {
           "resource": "repo://.github/workflows/build-apk.yml",
-          "version": "repo-file-v1:sha256:eb22f7b983f3090ed45d28ddf62c62276caa460049de4c91dfc9fc5eb00a60e5"
+          "version": "repo-file-v1:sha256:b27223ae936a4b1fcd53fc3010cfc6bb657dcc0f79ba522303c5ec3c03798042"
         },
         {
           "resource": "repo://scripts/production-release/verify-source.mjs",
@@ -292,23 +300,27 @@
     },
     {
       "id": "claim_9350d26a06ec4f1c9671fa9e0d65c107",
-      "statement": "`Play Internal` es el nombre del GitHub Environment que protege el job de submission de la ruta `play`, mientras que la política y el perfil EAS actuales dirigen las nuevas transacciones Play al track `alpha`; el validador conserva compatibilidad de lectura para transacciones históricas con track `internal`.",
+      "statement": "`Play Internal` es el nombre del GitHub Environment que protege el job de submission de la ruta `play`, mientras que la política y el perfil EAS actuales dirigen las nuevas transacciones Play al track `production`; el validador conserva compatibilidad de lectura para tracks históricos `internal` y `alpha`.",
       "evidence": [
         {
-          "resource": "repo://.github/workflows/build-apk.yml",
-          "version": "repo-file-v1:sha256:eb22f7b983f3090ed45d28ddf62c62276caa460049de4c91dfc9fc5eb00a60e5"
+          "resource": "repo://.github/workflows/build-apk.yml#L640-L684",
+          "version": "repo-lines-v1:sha256:c3c681239360b9fb1001a18e8cbd998383529db1b3d8ec04cc3dbaf9070a80da:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhZWVkYjY5YzhmZmRkZDA4OWUyNzZhNGI0ZjFhOGRjNDVmYTUzZDI2MDlhMjU2MzcyNDY3MTljNTNjYjQwMzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyMmEzMjg1N2FhODg4MzgxOGI0ZTU5ZDhmNzM2OTY2YjM4MmQ3OGQ4ZjY3OGMxM2UzMTIxOTIxMTljN2QyZTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRhN2M1MmQ2ZTQzZWMyOTE0MDBmOGNkZTYzMTRiZGNiY2JlMDgxZDUxMWY1ZTNkZWVkNjlmMzVkODE0Y2M0ZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4MmZiMWRiMWEwOGMyYTY2YTc2NWE0ZGQwNmZkZmU1MDQyZTJiNDM0YTY3NTQxMjA0NTI1MzA4YjU4YzBhMTUifQ"
         },
         {
-          "resource": "repo://apps/mobile/eas.json",
-          "version": "repo-file-v1:sha256:aac3ae711f7b40a497ba3097d34c818ab9045dccaf2480729263dedc4601302e"
+          "resource": "repo://apps/mobile/eas.json#L40-L46",
+          "version": "repo-lines-v1:sha256:f750f0c95613bcd3c497703815ed978a49723555c42fe16bc5137b7030895b52:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDZjYzc0OGVjYmM3Y2YwYTgyMWI4ZWU1ZmQzNzJjYzI4ZGRiNzZhMTE2MjNmYTkyOTAxMDVmZjFkNTU2ZGJjNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWZlOTMwYTIyOWI5YzQzOTdlYjZiNGY5MzI4YThhM2QyMTRlNGE0ZjczZmFkNmY0NzBiN2M2NzhjNThlNDMxYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGY3MzlhMDZjMWNiYjEyNDRlMzM2M2QzOGJjZjlmYTUwY2U4NGZlZDM5OWMyMTkzYTNjN2YwOGQ1OTkxOGIyYSJ9"
         },
         {
-          "resource": "repo://scripts/production-release/policy.json",
-          "version": "repo-file-v1:sha256:8a400f9063602e28be25f8ae7deeaa6b76cfb97462b6ba8a9115da1fc8a9df8e"
+          "resource": "repo://scripts/production-release/policy.json#L65-L71",
+          "version": "repo-lines-v1:sha256:a23506afbac6d0001eacdff5ab3f24223c021c04c1ca316d8c39912f961cee84:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmRhMDY3ZGI1ZWFjMTZlNTBkYjNlNTA1ZTMzOTEyMzkxM2M3YzBjMzBlNDA1Y2I4Njc3MzQyNzIzZGQwOGJlNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjdlNTc4OGQ1ZDlkNzNkMjRhODFkYmMwYTVhNzRiZmE4MmM5YzNiM2FmOTllNTJhZjc5NmU5MGI0NjhhOGEzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGRjYTI0YzE0YTk5ZTdlZWYzZjVjNmQ5ZTJlYzBiZjYzMjhiYjUxNDFlNDY5Yjk3ZGNjYzUyNmNhYzlkMDVkMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
         },
         {
-          "resource": "repo://scripts/production-release/release-transaction.mjs",
-          "version": "repo-file-v1:sha256:6bca55d9a7839332550250764e21b36ea05afb224b7a38788a1cb05f9d0109f5"
+          "resource": "repo://scripts/production-release/release-transaction.mjs#L137-L143",
+          "version": "repo-lines-v1:sha256:864096113eeae6ad657b5daa202b57de64540d80372db6381a5fb747d8eb45bc:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjNmZTRmZjI0MTNhN2E0MTYyMGUwOGNhOTExMzNmYTQ4YzhiZTJlYzY5Y2E2OWZjOTJmYWMwOTJlMWI3MWYyMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRmNGMzMWI4NzQ4ZmQxN2M0ZTE3NDE5ZDBhODlmMTVkZTMwZWRhNzk4NjAzMGNkM2M3NTUzYTQyZDBlMjgxZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWMwOGNiN2I4NTQ5MjY0ZjE1YjI0YzIzYTM5MmI5NDZiMzQ4MzVlMzIwODU0ZTBhYzVhMDUzM2M1NmM5YzM2ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzZmYmI2ZGEyOWIyMmNiODgwZDY1ZTc3MzRiNDRmODJkZDYwYWM2M2ViMDBhYTY5M2YyNTI3MGIxNzNkNWQzYiJ9"
+        },
+        {
+          "resource": "repo://scripts/production-release/release-transaction.mjs#L55-L85",
+          "version": "repo-lines-v1:sha256:295af7a160edbdb13dca749c5d54e6c45f1dd3f2dddb4507a0193c2b0c12b056:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0ZDRkNDA2NTQ2YmU0MWFkMTc0OGI2NGU2MTk3NjNiZmY5MDMxY2FjMGU3MWUxOWI2YWI3MjRkZGQ2NzU5MjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFkZGVmNDhiMmExNGRlODAwZGVhNTE4YmVlYWFkMjk3NTU3ZjJmZGFjYjNjNzcyYWE0MTc0MDRiMzQxMzg0OTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIyOWM2MmNjNDdhYWFlMmQxYzM5ZjdkODc1NDM4MzM2MGI2MTcyN2RkZDMyN2UzZWEwZjAxYjkxMjJiZTRjN2UifQ"
         }
       ]
     },
@@ -322,7 +334,7 @@
         },
         {
           "resource": "repo://.github/workflows/build-apk.yml#L793-L877",
-          "version": "repo-lines-v1:sha256:22d414a3a99ad357ab7e37a479715330a2a5caa58bf4037da5c3746cced9402a:eyJzZWxlY3RlZExpbmVDb3VudCI6ODUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlNDZlNTViZTI5YzM5MTE5MDUxMTRmNDE4MWQwNzkwYTFkYTc0YzQ1MjQ2ZTI2MGVmOTJhYmZiNmM0YzVhYzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0NGJhZThmYmViN2MyNmRhNjQzYjM3ODgxODc1NmJiOWI2M2M2NjhiYzI2NWE5MDgyNWZlZGYxYjMwYzZmMGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2MTMwZjlkMDhkNGYzNzg2ZWVhNDljNTE3YTIwMjZhYjhjMDBmZTBlNmVlZWRkNGJiMzJlMGUwMTk0YWI2NDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2YmIyODhlZGMwOGJkYTZhOGU4N2VlMGUwNzA2ZGNmOGZhYjQyYWUzYTE4NzU5ZmMyMDZiMGZkYThhM2EwMTIifQ"
+          "version": "repo-lines-v1:sha256:a3619832aecd84bf236509b3f617363591f9ac74878871a16f4bf9c593ca6bd4:eyJzZWxlY3RlZExpbmVDb3VudCI6ODYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlNDZlNTViZTI5YzM5MTE5MDUxMTRmNDE4MWQwNzkwYTFkYTc0YzQ1MjQ2ZTI2MGVmOTJhYmZiNmM0YzVhYzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0NGJhZThmYmViN2MyNmRhNjQzYjM3ODgxODc1NmJiOWI2M2M2NjhiYzI2NWE5MDgyNWZlZGYxYjMwYzZmMGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2MTMwZjlkMDhkNGYzNzg2ZWVhNDljNTE3YTIwMjZhYjhjMDBmZTBlNmVlZWRkNGJiMzJlMGUwMTk0YWI2NDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2YmIyODhlZGMwOGJkYTZhOGU4N2VlMGUwNzA2ZGNmOGZhYjQyYWUzYTE4NzU5ZmMyMDZiMGZkYThhM2EwMTIifQ"
         },
         {
           "resource": "repo://scripts/production-release/release-transaction.mjs#L395-L407",
@@ -337,6 +349,6 @@
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-28T14:36:27.740Z"
+    "at": "2026-11-04T15:49:26.600Z"
   }
 }
