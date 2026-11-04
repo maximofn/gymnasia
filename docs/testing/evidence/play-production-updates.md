@@ -44,3 +44,11 @@ países, usuarios, otros permisos, versiones ni declaraciones de la ficha.
 - E2E web/native: no se cambia UI ni comportamiento de la app; no se instala
   ninguna actualización. La prueba real de envío y disponibilidad pública queda
   para después del merge autorizado y de la revisión de Google.
+
+## Actualización del 4 de noviembre de 2026
+
+El check remoto detectó otra expectativa de Alpha en el contrato de configuración
+de `scripts/policy-promotion/policy-contract.test.mjs`. Se actualiza para exigir
+Producción, sin modificar prompts, políticas sanitarias ni puertas de aprobación.
+`npm run test:prompt-policy`: 51/51 pruebas correctas. Se integra también la
+actualización documental de `main` antes de volver a ejecutar los checks remotos.
