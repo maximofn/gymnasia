@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:52fccc1b997aec1f0386f9928fc275fda9e917352e6c19bf2e58040f44d5923a",
+  "pageVersion": "sha256:a4042c84fff94cfd0f14c4d9e6b4473d13f03e42d3500c76c0c579bad91fd954",
   "claims": [
     {
       "id": "claim_ce775168303d462f8a8b2454581c60e3",
@@ -120,7 +120,7 @@
     },
     {
       "id": "claim_4511d72198534bc982a1e9d9f9ea55e3",
-      "statement": "`validate-production` acredita el SHA seleccionado antes de la aprobación humana ejecutando `verify:production-source`, cuyos gates canónicos incluyen los checks y tests de permisos y configuración nativa. El único job del entorno `Production` vuelve a obtener ese SHA y construye localmente AAB y APK, en ese orden, en el runner self-hosted wallabot; un runner separado los verifica desde cuarentena. Para Play se restaura y envía solo el AAB validado mediante el perfil `production` al track `alpha`; el borrador se publica únicamente tras validar transacción, hashes, evidencias y recibo de Google Play.",
+      "statement": "`validate-production` acredita el SHA seleccionado antes de la aprobación humana ejecutando `verify:production-source`, cuyos gates canónicos incluyen los checks y tests de permisos y configuración nativa. El único job del entorno `Production` vuelve a obtener ese SHA y construye localmente AAB y APK, en ese orden, en el runner self-hosted wallabot; un runner separado los verifica desde cuarentena. Para Play se restaura y envía solo el AAB validado mediante el perfil `production` al track `production` con estado `completed`; el borrador se publica únicamente tras validar transacción, hashes, evidencias y recibo de Google Play.",
       "evidence": [
         {
           "resource": "repo://.github/workflows/build-apk.yml#L109-L164",
@@ -135,12 +135,12 @@
           "version": "repo-lines-v1:sha256:e6f48be7b0279759ff0c710d34d0b5d5bf8e9029a26834878e9eb4fcaecdef4f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQ2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2NzZjNDJmYTg3ZjhkNDZjNDdjNjc2YmY0YmI5YTU0NDc2ODNiYmJmOTI3OWU4OWJiOTM2YjlmN2UwMDkyN2JmIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJhYTI3OTY4ZjRkNmM0OWRlZTA4MzdkYjcxODE2ZmRiNTViYWQyNGEwNDUzMmJkMjY3M2EzMGQ3M2ZkNzQxM2I0IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiZjA1MzhkMjQzZTU2MzI1YTZmM2RiMjUxNGY2YTQ1NTY0MTMxYTY1NDI2ZTdkNDllOWM2ZjAwYjVhMGU0NzUwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmMGQ0ODcyZDExN2YzMjk3OTFjZDRiY2EwN2UxNWZkY2UzZGI3NzdkNWQyMTAzN2JkNzBjMzRmNzk4OTk4MDQ1In0"
         },
         {
-          "resource": "repo://.github/workflows/build-apk.yml#L640-L894",
-          "version": "repo-lines-v1:sha256:0c083da1a4bea0f355d4adf276c19d7b77ecb723440044902e73a4c9c68c99aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjU1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhYWVlZGI2OWM4ZmZkZGQwODllMjc2YTRiNGYxYThkYzQ1ZmE1M2QyNjA5YTI1NjM3MjQ2NzE5YzUzY2I0MDMzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJhNDRiYWU4ZmJlYjdjMjZkYTY0M2IzNzg4MTg3NTZiYjliNjNjNjY4YmMyNjVhOTA4MjVmZWRmMWIzMGM2ZjBkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkYTdjNTJkNmU0M2VjMjkxNDAwZjhjZGU2MzE0YmRjYmNiZTA4MWQ1MTFmNWUzZGVlZDY5ZjM1ZDgxNGNjNGVhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkNmJiMjg4ZWRjMDhiZGE2YThlODdlZTBlMDcwNmRjZjhmYWI0MmFlM2ExODc1OWZjMjA2YjBmZGE4YTNhMDEyIn0"
+          "resource": "repo://.github/workflows/build-apk.yml#L640-L895",
+          "version": "repo-lines-v1:sha256:cc65f6b6d2efd7ee53747dfc883b616aeb047cd89ea5ef599366bc6c782cfbe5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjU2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhYWVlZGI2OWM4ZmZkZGQwODllMjc2YTRiNGYxYThkYzQ1ZmE1M2QyNjA5YTI1NjM3MjQ2NzE5YzUzY2I0MDMzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJhNDRiYWU4ZmJlYjdjMjZkYTY0M2IzNzg4MTg3NTZiYjliNjNjNjY4YmMyNjVhOTA4MjVmZWRmMWIzMGM2ZjBkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJkYTdjNTJkNmU0M2VjMjkxNDAwZjhjZGU2MzE0YmRjYmNiZTA4MWQ1MTFmNWUzZGVlZDY5ZjM1ZDgxNGNjNGVhIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkNmJiMjg4ZWRjMDhiZGE2YThlODdlZTBlMDcwNmRjZjhmYWI0MmFlM2ExODc1OWZjMjA2YjBmZGE4YTNhMDEyIn0"
         },
         {
           "resource": "repo://scripts/production-release/policy.json#L65-L71",
-          "version": "repo-lines-v1:sha256:733122259e602324162b2c473b9a57331e9e7396a0f595dbeb5388a6189937df:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmRhMDY3ZGI1ZWFjMTZlNTBkYjNlNTA1ZTMzOTEyMzkxM2M3YzBjMzBlNDA1Y2I4Njc3MzQyNzIzZGQwOGJlNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjdlNTc4OGQ1ZDlkNzNkMjRhODFkYmMwYTVhNzRiZmE4MmM5YzNiM2FmOTllNTJhZjc5NmU5MGI0NjhhOGEzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGRjYTI0YzE0YTk5ZTdlZWYzZjVjNmQ5ZTJlYzBiZjYzMjhiYjUxNDFlNDY5Yjk3ZGNjYzUyNmNhYzlkMDVkMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+          "version": "repo-lines-v1:sha256:a23506afbac6d0001eacdff5ab3f24223c021c04c1ca316d8c39912f961cee84:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmRhMDY3ZGI1ZWFjMTZlNTBkYjNlNTA1ZTMzOTEyMzkxM2M3YzBjMzBlNDA1Y2I4Njc3MzQyNzIzZGQwOGJlNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjdlNTc4OGQ1ZDlkNzNkMjRhODFkYmMwYTVhNzRiZmE4MmM5YzNiM2FmOTllNTJhZjc5NmU5MGI0NjhhOGEzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGRjYTI0YzE0YTk5ZTdlZWYzZjVjNmQ5ZTJlYzBiZjYzMjhiYjUxNDFlNDY5Yjk3ZGNjYzUyNmNhYzlkMDVkMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
         },
         {
           "resource": "repo://scripts/production-release/production-release.mjs#L22-L47",
@@ -201,6 +201,6 @@
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-28T14:36:27.740Z"
+    "at": "2026-11-04T15:49:26.600Z"
   }
 }
