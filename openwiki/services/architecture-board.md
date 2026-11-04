@@ -1,10 +1,12 @@
 ---
-type: "Referencia"
+type: "referencia de servicio"
 title: "Tablero de arquitectura"
+description: "Referencia del espejo estático de Linear: su contrato editorial, conciliación asistida y publicación. Distingue el plan versionado de los componentes ejecutables de Gymnasia."
+tags: [linear, static-site, planning, github-actions]
 openwiki_generated: true
 verified:
   - by: openwiki/0.6.0
-    at: 2026-10-28T14:36:27.740Z
+    at: 2026-11-03T15:32:51.876Z
 sources:
   - id: openwiki-source-95db82d22801961ce58f4a00
     resource: repo://.claude/skills/linear-tickets/scripts/linear.py
@@ -40,7 +42,7 @@ sources:
     resource: repo://scripts/board-automation/verify-production.mjs
   - id: openwiki-source-2d527a0a2fddf1f1e4422fcf
     resource: repo://scripts/board-automation/workflow-contract.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-10-28T14:36:27.740Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-03T15:32:51.876Z" }
 ---
 
 
@@ -49,6 +51,8 @@ generated: { by: "openwiki/0.6.0", at: "2026-10-28T14:36:27.740Z" }
 ## Propósito y límite
 
 `arquitectura-agente/` es el sitio estático de seguimiento publicado en <https://gymnasia-sable.vercel.app/>. El navegador carga recursos estáticos y lee `data/board.json`; durante esa navegación no usa API ni token de Linear, backend, cron o base de datos. Linear es la autoridad cuando el espejo discrepa.
+
+La instantánea editorial actualmente versionada declara `meta.updated: "2026-11-03"`. Esta fecha y los estados, títulos y resúmenes del archivo describen el espejo en esa fecha; no acreditan implementación, despliegue ni comportamiento del producto.
 
 El tablero es un artefacto editorial versionado, no una prueba de que los tickets descritos estén implementados, desplegados o formen parte del runtime. Tampoco es una ruta del cliente Expo: la entrada móvil registra `App`, mientras que `arquitectura-agente/index.html` carga el cascarón del tablero. Para los componentes ejecutables del producto, véase [Arquitectura local-first](../architecture/overview.md).
 
