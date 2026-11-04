@@ -295,11 +295,12 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
 - **El entorno de build móvil por defecto es Producción.** Para una petición
   aislada de APK instalable usa `production-apk`; para un AAB usa `production`.
   El workflow normal de release compila automáticamente primero el AAB y después
-  el APK en wallabot con el mismo `versionCode`, envía el AAB a Prueba cerrada
-  Alpha para que los 14 testers reciban cada build publicable y
+  el APK en wallabot con el mismo `versionCode`, envía el AAB a Producción
+  de Google Play para todos los usuarios de los países ya habilitados y
   publica ambos en GitHub. No lances una build `staging` salvo que el mantenedor
   solicite Staging explícitamente. Google puede demorar la disponibilidad hasta
-  terminar su revisión. Solo la promoción a producción sigue siendo manual.
+  terminar su revisión. Se conserva la aprobación humana de la build; no cambiar
+  países, permisos ni canales adicionales sin autorización explícita.
 - **Qué dispara realmente el build Android**: no todo push a `main`. El workflow
   `.github/workflows/build-apk.yml` filtra por rutas:
   ```yaml
@@ -774,8 +775,8 @@ wallabot/Play flow.
 Un push a `main` **solo** dispara el build Android si toca `apps/mobile/**`
 (excluyendo `apps/mobile/scripts/**` y los `.md`). Ver el filtro de rutas en
 "Commit & Pull Request Guidelines". Un push que sí entre en el filtro reserva
-wallabot, genera AAB y APK, y envía el AAB a Prueba cerrada Alpha para los 14
-testers; el resto no. Las builds
+wallabot, genera AAB y APK, y envía el AAB al canal público `production` de
+Google Play; el resto no. Las builds
 se ejecutan de una en una: ver "Una build parada no está en la cola de Expo" en
 el Solved Problems Log.
 

@@ -1,4 +1,4 @@
-name: Build Android APK + AAB on wallabot & Publish Play Closed Alpha
+name: Build Android APK + AAB on wallabot & Publish Play Production
 
 on:
   workflow_dispatch:
@@ -887,7 +887,8 @@ jobs:
             if [ -n "$LATEST_TAG" ]; then git log "$LATEST_TAG".."$SOURCE_COMMIT" --max-count=30 --pretty=format:'- %s'; fi
             echo
             echo "### Install"
-            echo 'Download `gymnasia.apk` for direct installation. `gymnasia.aab` is the exact bundle submitted to the recorded Google Play test track.'
+            echo 'Download `gymnasia.apk` for direct installation. `gymnasia.aab` is the exact bundle submitted to the recorded Google Play track.'
+            echo 'Submission completed does not prove Google review or public availability; verify the version in Play Console and Play Store.'
           } > "$BODY_FILE"
           gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --notes-file "$BODY_FILE"
           cat "$BODY_FILE" >> "$GITHUB_STEP_SUMMARY"

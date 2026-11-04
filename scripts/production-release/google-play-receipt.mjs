@@ -31,7 +31,7 @@ export async function getGooglePlayAccessToken(key, fetchImpl = fetch) {
   return auth.access_token;
 }
 
-export function assertGooglePlayReceipt(receipt, transaction, track = loadReleasePolicy().play.track) {
+export function assertGooglePlayReceipt(receipt, transaction, track = transaction.legs.play.track) {
   assert.equal(receipt?.schemaVersion, 1);
   assert.equal(receipt?.kind, "GooglePlayArtifactReceiptV1");
   assert.equal(receipt.packageName, loadReleasePolicy().android.packageName);
@@ -74,7 +74,7 @@ export async function observeGooglePlayArtifact({ transaction, key, fetchImpl = 
   let receipt;
   try {
     const bundles = await request(`${editUrl}/bundles`, { headers });
-    const track = await request(`${editUrl}/tracks/${policy.play.track}`, { headers });
+    const track = await request(`${editUrl}/tracks/${transaction.legs.play.track}`, { headers });
     const matches = (bundles.bundles ?? []).filter((bundle) => String(bundle.versionCode) === transaction.versionCode);
     assert.equal(matches.length, 1, "Google no conserva un único bundle con ese versionCode.");
     const release = (track.releases ?? []).find((candidate) => candidate.status === "completed"

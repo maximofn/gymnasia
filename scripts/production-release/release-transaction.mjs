@@ -135,7 +135,7 @@ export function assertReleaseTransaction(transaction) {
     }
   }
   const play = transaction.legs?.play;
-  if (play?.provider !== "eas" || play?.profile !== "production" || !["internal", "alpha"].includes(play?.track)
+  if (play?.provider !== "eas" || play?.profile !== "production" || !["internal", "alpha", "production"].includes(play?.track)
     || play?.releaseStatus !== "completed" || !Array.isArray(play?.attempts)) {
     throw new Error("La pata Play no cumple su contrato.");
   }

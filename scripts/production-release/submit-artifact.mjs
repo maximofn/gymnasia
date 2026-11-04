@@ -14,6 +14,8 @@ export function verifySubmissionArtifact({ artifact, transaction, sourceBytes, e
   const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
   assert.equal(transaction.schemaVersion, 2);
   assert.equal(transaction.publicationTarget ?? "play", "play", "La transacción no autoriza Google Play.");
+  assert.equal(transaction.legs.play.track, policy.play.track,
+    "La transacción conserva otro canal de Play; no se puede cambiar de destino al reintentar.");
   assert.equal(source.publicationTarget ?? "play", "play", "La fuente no autoriza Google Play.");
   assert.ok(["artifacts-validated", "submitting"].includes(transaction.state));
   assert.equal(source.schemaVersion, 2);

@@ -37,8 +37,21 @@ test("la CLI de evidencia liga el recibo real al submission y bloquea su ausenci
     const evidence = JSON.parse(readFileSync(join(directory, "evidence.json")));
     assert.deepEqual(evidence.googleReceipt, receipt);
     assert.equal(evidence.googleReceiptSha256, hash(readFileSync(join(directory, "receipt.json"))));
-    for (const changed of [{ sha256: "0".repeat(64) }, { versionCode: "87" }, { track: "production" }, { releaseStatus: "draft" }]) {
+    for (const changed of [{ sha256: "0".repeat(64) }, { versionCode: "87" }, { track: "alpha" }, { releaseStatus: "draft" }]) {
       write("receipt.json", { ...receipt, ...changed });
+      assert.notEqual(run(extra).status, 0);
+    }
+    for (const track of ["alpha", "internal"]) {
+      const historical = structuredClone(transaction);
+      historical.legs.play.track = track;
+      write("transaction.json", historical);
+      write("receipt.json", { ...receipt, track });
+      write("submission.json", { id: "test-submission", status: "FINISHED", platform: "ANDROID",
+        track, releaseStatus: "completed" });
+      assert.equal(run(extra).status, 0);
+      assert.equal(JSON.parse(readFileSync(join(directory, "evidence.json"))).track, track);
+      write("submission.json", { id: "test-submission", status: "FINISHED", platform: "ANDROID",
+        track: "production", releaseStatus: "completed" });
       assert.notEqual(run(extra).status, 0);
     }
   } finally { rmSync(directory, { recursive: true }); }

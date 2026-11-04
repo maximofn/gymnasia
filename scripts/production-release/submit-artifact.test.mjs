@@ -53,6 +53,14 @@ test("una fuente o transacción para GitHub APK nunca autoriza subir a Play", ()
   }), /no autoriza Google Play/);
 });
 
+test("regresión: un reintento histórico no convierte Alpha o Interno en una publicación pública", () => {
+  for (const track of ["alpha", "internal"]) {
+    const input = fixture();
+    input.transaction.legs.play.track = track;
+    assert.throws(() => verifySubmissionArtifact({ ...input, artifact: "/not-read.aab" }), /otro canal/);
+  }
+});
+
 test("propiedad: cualquier sustitución de bytes de igual tamaño se rechaza", () => {
   const directory = mkdtempSync(join(tmpdir(), "submit-property-"));
   try {
