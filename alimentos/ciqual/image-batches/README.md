@@ -71,6 +71,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-15011` | [Girasol, semilla](0004/ciqual-15011.webp) |
 | `ciqual-15052` | [Lino, marrón, semilla](0004/ciqual-15052.webp) |
 
+## Quinta tanda (`0005`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-32140` | [Copos de avena](0005/ciqual-32140.webp) |
+| `ciqual-9340` | [Quinoa, cruda](0005/ciqual-9340.webp) |
+| `ciqual-9690` | [Bulgur de trigo, crudo](0005/ciqual-9690.webp) |
+| `ciqual-9683` | [Sémola o grano de cuscús, cocido, sin sal añadida](0005/ciqual-9683.webp) |
+| `ciqual-20507` | [Garbanzo, hervido/cocido en agua](0005/ciqual-20507.webp) |
+| `ciqual-20503` | [Alubia roja, hervida/cocida en agua](0005/ciqual-20503.webp) |
+| `ciqual-20502` | [Alubia blanca, hervida/cocida en agua](0005/ciqual-20502.webp) |
+| `ciqual-20535` | [Lenteja coral, seca](0005/ciqual-20535.webp) |
+| `ciqual-20515` | [Guisante partido, seco](0005/ciqual-20515.webp) |
+| `ciqual-9810` | [Pasta seca, estándar, cruda](0005/ciqual-9810.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
