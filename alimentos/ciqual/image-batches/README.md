@@ -116,6 +116,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-12500` | [Roquefort (queso de oveja)](0007/ciqual-12500.webp) |
 | `ciqual-16400` | [Mantequilla con 80% de materia grasa mínimo, sin sal](0007/ciqual-16400.webp) |
 
+## Octava tanda (`0008`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-7001` | [Pan blanco (p. ej.: baguette, hogaza...)](0008/ciqual-7001.webp) |
+| `ciqual-7110` | [Pan completo o integral (con harina T150)](0008/ciqual-7110.webp) |
+| `ciqual-7200` | [Pan de molde blanco, envasado](0008/ciqual-7200.webp) |
+| `ciqual-7111` | [Pan de molde integral, envasado](0008/ciqual-7111.webp) |
+| `ciqual-7125` | [Pan de centeno y trigo](0008/ciqual-7125.webp) |
+| `ciqual-7180` | [Pan de pita](0008/ciqual-7180.webp) |
+| `ciqual-7258` | [Pan bagel](0008/ciqual-7258.webp) |
+| `ciqual-7300` | [Pan tostado clásico](0008/ciqual-7300.webp) |
+| `ciqual-7620` | [Croissant de mantequilla, artesanal](0008/ciqual-7620.webp) |
+| `ciqual-7730` | [Napolitana de chocolate, artesanal](0008/ciqual-7730.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
