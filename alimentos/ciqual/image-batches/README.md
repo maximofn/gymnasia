@@ -131,6 +131,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-7620` | [Croissant de mantequilla, artesanal](0008/ciqual-7620.webp) |
 | `ciqual-7730` | [Napolitana de chocolate, artesanal](0008/ciqual-7730.webp) |
 
+## Novena tanda (`0009`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-13015` | [Frambuesa, cruda](0009/ciqual-13015.webp) |
+| `ciqual-13028` | [Arándano, crudo](0009/ciqual-13028.webp) |
+| `ciqual-13029` | [Mora (de zarza), cruda](0009/ciqual-13029.webp) |
+| `ciqual-13008` | [Cereza, pulpa y piel, sin hueso, cruda](0009/ciqual-13008.webp) |
+| `ciqual-13018` | [Granada, pulpa sin piel, con pepitas, cruda](0009/ciqual-13018.webp) |
+| `ciqual-13024` | [Clementina o mandarina, pulpa sin piel, sin pepitas, cruda](0009/ciqual-13024.webp) |
+| `ciqual-13100` | [Ciruela, sin hueso, cruda](0009/ciqual-13100.webp) |
+| `ciqual-13036` | [Sandía, pulpa sin piel, sin pepitas, cruda](0009/ciqual-13036.webp) |
+| `ciqual-13009` | [Limón, pulpa sin piel, sin pepitas, crudo](0009/ciqual-13009.webp) |
+| `ciqual-13023` | [Lichi, pulpa sin piel, sin hueso, crudo](0009/ciqual-13023.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
