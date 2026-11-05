@@ -42,6 +42,16 @@ La clasificación IARC es independiente de la audiencia elegida. Se aceptará el
 resultado que produzcan las respuestas reales; no se manipulará para obtener un
 16+.
 
+## Estado de operador
+
+Decisión del mantenedor del 5 de noviembre de 2026: **no operador** mientras
+Gymnasia sea un proyecto personal sin actividad comercial. El consentimiento y
+el guardado en consola siguen pendientes. Antes de iniciar la monetización,
+cambiar a **operador** y completar las verificaciones de cuenta y aplicación del
+[procedimiento de futura monetización](../../legal/play-declarations.md#6-estado-de-operador-y-futura-monetización).
+Revisar la declaración al preparar un plan comercial concreto, sin esperar al
+primer ingreso.
+
 ## App access
 
 Seleccionar que parte de la funcionalidad requiere acceso especial. Las

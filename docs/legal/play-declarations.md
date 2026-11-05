@@ -215,3 +215,46 @@ AAB final y bloquearlo si reaparece cualquiera de los dos.
   (ticket para preparar credenciales BYOK temporales para la revisión de Google Play).
 - Ficha, capturas y textos: GYM-197 (ticket para preparar la ficha española de Google
   Play).
+
+---
+
+## 6. Estado de operador y futura monetización
+
+**Decisión del mantenedor, 5 de noviembre de 2026:** declarar la cuenta como
+**no operador** mientras Gymnasia sea un proyecto personal sin actividad comercial.
+Monetizarla es una aspiración futura; esta decisión no cubre el inicio de un plan
+comercial concreto. Google también considera la intención de recibir remuneración
+de forma regular o comercial, aunque todavía no haya ingresos.
+
+**Estado del trámite:** opción «No operador» seleccionada en Play Console el
+5 de noviembre de 2026. Pendiente de aceptar el consentimiento de publicación
+de los datos del perfil y guardar; no se considera enviada todavía. La pantalla
+de revisión incluye nombre legal, dirección y correo, y la vista previa muestra
+nombre, correo y país. Revisar ese alcance con el mantenedor antes de consentir.
+
+### Antes de empezar a monetizar
+
+Al iniciar la actividad comercial de Gymnasia, **hay que cambiar la declaración a
+operador**. Revisarla al preparar un plan comercial concreto, sin esperar al primer
+cobro, y completar estos pasos antes de activar pagos, suscripciones o anuncios:
+
+1. En Play Console, ir a **Gestionar cuenta → Información de la cuenta →
+   Información sobre ti → Estado de operador**, cambiar a **operador** y guardar.
+   La declaración es de la cuenta: revisar también las demás aplicaciones que
+   pueda tener en ese momento.
+2. Si la cuenta sigue siendo personal, proporcionar y verificar el teléfono de
+   contacto público. Revisar con el mantenedor el nombre, la dirección, el teléfono
+   y el correo que Google mostrará, y completar la autocertificación exigida.
+3. En cada aplicación, ir a **Monitorizar y mejorar → Política y programas →
+   Contenido de la aplicación**, confirmar si se aplica el estado de operador y
+   proporcionar el enlace a los términos del servicio solicitado por la consola.
+4. Revisar las declaraciones de anuncios, compras y suscripciones de la
+   [matriz de Play Console](../store/google-play/console-matrix.md). Si el modelo
+   comercial cambia los datos tratados, actualizar el inventario y recorrer el
+   [checklist de privacidad](privacy-change-checklist.md).
+5. Comprobar que los cambios han quedado guardados y actualizar en este documento
+   el estado, la fecha y las verificaciones realizadas, sin copiar datos privados.
+
+La declaración inicial debe completarse antes del **1 de febrero de 2027** y puede
+actualizarse si cambia la actividad. Fuente oficial consultada el 5 de noviembre
+de 2026: [Declaración del estado de operador — Ayuda de Play Console](https://support.google.com/googleplay/android-developer/answer/17594752?hl=es).
