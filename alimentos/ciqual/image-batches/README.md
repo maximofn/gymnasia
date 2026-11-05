@@ -41,6 +41,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-13004` | [Aguacate, pulpa sin piel, sin hueso, crudo](0002/ciqual-13004.webp) |
 | `ciqual-13025` | [Mango, pulpa sin piel, sin hueso, crudo](0002/ciqual-13025.webp) |
 
+## Tercera tanda (`0003`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-20059` | [Espinaca, cruda](0003/ciqual-20059.webp) |
+| `ciqual-20239` | [Cebolla amarilla, cruda](0003/ciqual-20239.webp) |
+| `ciqual-20087` | [Pimiento rojo, crudo](0003/ciqual-20087.webp) |
+| `ciqual-11000` | [Ajo, crudo](0003/ciqual-11000.webp) |
+| `ciqual-20171` | [Lechuga romana, cruda](0003/ciqual-20171.webp) |
+| `ciqual-20016` | [Coliflor, cruda](0003/ciqual-20016.webp) |
+| `ciqual-20039` | [Puerro, crudo](0003/ciqual-20039.webp) |
+| `ciqual-20023` | [Apio en rama, crudo](0003/ciqual-20023.webp) |
+| `ciqual-20045` | [Rábano rojo, crudo](0003/ciqual-20045.webp) |
+| `ciqual-20056` | [Champiñón de París o champiñón cultivado, crudo](0003/ciqual-20056.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
