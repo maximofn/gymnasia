@@ -113,10 +113,13 @@ Ajustes, Dieta y Coach. Conserva nulos y calificadores; las fichas incompletas
 requieren completar valores explícitos antes de registrarlas. No necesita backend
 ni base de datos externa.
 
-Las primeras muestras de imágenes CIQUAL, todavía sin integrar en la app, viven
+Las primeras muestras de imágenes CIQUAL, con estilo aprobado y sin integrar en la app, viven
 en [`alimentos/ciqual/image-samples/`](alimentos/ciqual/image-samples/README.md).
 Conservan los prompts y referencias de estilo; `npm run check:ciqual:images`
 comprueba su correspondencia con la fuente y los WebP reales de 1024 × 1024.
+Las [tandas sucesivas](alimentos/ciqual/image-batches/README.md) tienen manifiestos
+independientes; ese mismo check valida todas y calcula el progreso sin duplicados.
+`npm run next:ciqual:images -- 10` lista diez alimentos todavía sin imagen.
 
 ```bash
 npm run import:ciqual -- --download # descarga oficial fijada y generación reproducible

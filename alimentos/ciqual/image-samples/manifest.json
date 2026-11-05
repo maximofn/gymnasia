@@ -1,7 +1,11 @@
 {
   "schema_version": 1,
   "dataset_id": "anses-ciqual-2025",
-  "status": "pending-review",
+  "status": "approved",
+  "review": {
+    "approved_by": "maintainer",
+    "approved_on": "2026-11-05"
+  },
   "generated_on": "2026-11-05",
   "generator": "Codex integrated image generator",
   "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
