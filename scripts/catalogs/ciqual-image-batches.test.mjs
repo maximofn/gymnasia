@@ -40,7 +40,9 @@ test("detecta manifiesto roto, referencia sin aprobación, duplicados entre tand
   t.after(() => rm(fixture, { recursive: true, force: true }));
   const target = resolve(fixture, "alimentos/ciqual");
   await cp(resolve(root, "alimentos/ciqual/image-samples"), resolve(target, "image-samples"), { recursive: true });
-  await cp(resolve(root, "alimentos/ciqual/image-batches"), resolve(target, "image-batches"), { recursive: true });
+  // La segunda tanda de esta fixture es un duplicado deliberado: no copiar
+  // tandas reales adicionales que colisionarían con ese escenario.
+  await cp(resolve(root, "alimentos/ciqual/image-batches/0001"), resolve(target, "image-batches/0001"), { recursive: true });
   await cp(resolve(root, "alimentos/ciqual/all.json"), resolve(target, "all.json"));
   await cp(resolve(root, "alimentos/images"), resolve(fixture, "alimentos/images"), { recursive: true });
   const path = resolve(target, "image-batches/0001/manifest.json");

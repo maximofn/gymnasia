@@ -26,6 +26,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-13014` | [Fresa, cruda](0001/ciqual-13014.webp) |
 | `ciqual-13010` | [Membrillo, crudo](0001/ciqual-13010.webp) |
 
+## Segunda tanda (`0002`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-13021` | [Kiwi, pulpa sin piel, con pepitas, crudo](0002/ciqual-13021.webp) |
+| `ciqual-13002` | [Piña, pulpa sin piel, cruda](0002/ciqual-13002.webp) |
+| `ciqual-13044` | [Uva blanca, de grano grande (tipo Italia o Dattier), cruda](0002/ciqual-13044.webp) |
+| `ciqual-13000` | [Albaricoque, sin hueso, crudo](0002/ciqual-13000.webp) |
+| `ciqual-13043` | [Melocotón, pulpa y piel, sin hueso, crudo](0002/ciqual-13043.webp) |
+| `ciqual-13026` | [Melón cantalupo (p. ej.: Charentais), pulpa sin piel, sin pepitas, crudo](0002/ciqual-13026.webp) |
+| `ciqual-20019` | [Pepino, pulpa y piel, crudo](0002/ciqual-20019.webp) |
+| `ciqual-20053` | [Berenjena, cruda](0002/ciqual-20053.webp) |
+| `ciqual-13004` | [Aguacate, pulpa sin piel, sin hueso, crudo](0002/ciqual-13004.webp) |
+| `ciqual-13025` | [Mango, pulpa sin piel, sin hueso, crudo](0002/ciqual-13025.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
