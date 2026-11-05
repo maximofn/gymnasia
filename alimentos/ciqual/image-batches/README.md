@@ -101,6 +101,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-22000` | [Huevo, crudo](0006/ciqual-22000.webp) |
 | `ciqual-20904` | [Tofu natural, envasado](0006/ciqual-20904.webp) |
 
+## Séptima tanda (`0007`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-19041` | [Leche semidesnatada, UHT](0007/ciqual-19041.webp) |
+| `ciqual-19593` | [Yogur o leche fermentada, natural](0007/ciqual-19593.webp) |
+| `ciqual-19585` | [Queso ricotta, de leche de vaca](0007/ciqual-19585.webp) |
+| `ciqual-12120` | [Parmesano](0007/ciqual-12120.webp) |
+| `ciqual-12115` | [Emmental](0007/ciqual-12115.webp) |
+| `ciqual-19590` | [Queso mozzarella de leche de vaca](0007/ciqual-19590.webp) |
+| `ciqual-12001` | [Camembert, sin especificar el tipo de leche (pasteurizada o cruda)](0007/ciqual-12001.webp) |
+| `ciqual-12066` | [Feta, mínimo un 70% de leche de oveja y máximo un 30% de leche de cabra](0007/ciqual-12066.webp) |
+| `ciqual-12500` | [Roquefort (queso de oveja)](0007/ciqual-12500.webp) |
+| `ciqual-16400` | [Mantequilla con 80% de materia grasa mínimo, sin sal](0007/ciqual-16400.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
