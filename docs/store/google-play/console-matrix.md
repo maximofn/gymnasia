@@ -52,6 +52,11 @@ cambiar a **operador** y completar las verificaciones de cuenta y aplicación de
 Revisar la declaración al preparar un plan comercial concreto, sin esperar al
 primer ingreso.
 
+**Requisito previo de privacidad:** el mantenedor no quiere que se publique su
+domicilio particular. Antes de monetizar o aceptar su publicación, resolver una
+dirección alternativa legítima, verificable y admitida por Google, modificarla y
+comprobar el resultado público. No activar la monetización hasta resolverlo.
+
 ## App access
 
 Seleccionar que parte de la funcionalidad requiere acceso especial. Las
