@@ -11,9 +11,10 @@ const foods = JSON.parse(await readFile(new URL("../../alimentos/ciqual/all.json
 const manifest = JSON.parse(await readFile(new URL("../../alimentos/ciqual/image-samples/manifest.json", import.meta.url), "utf8"));
 const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
-test("tres muestras reales, trazables y pendientes sin alterar la fuente nutricional", async () => {
+test("tres muestras reales, trazables y aprobadas sin alterar la fuente nutricional", async () => {
   const original = JSON.stringify(foods);
   const result = await checkCiqualImageSamples(root);
+  assert.equal(result.status, "approved");
   assert.deepEqual(result.samples.map((sample) => sample.id), ["ciqual-9100", "ciqual-13620", "ciqual-20587"]);
   assert.equal(JSON.stringify(foods), original);
   const mobile = JSON.parse(await readFile(new URL("../../apps/mobile/catalogs/generated/ciqualBaseline.generated.json", import.meta.url), "utf8"));
@@ -29,7 +30,8 @@ test("rechaza IDs, rutas, atribución, nombres y huellas incorrectos", () => {
     (m) => { m.samples[0].names.en += " cooked"; },
     (m) => { m.samples[0].source_sha256 = "0".repeat(64); },
     (m) => { m.attribution = "ANSES"; },
-    (m) => { m.status = "approved"; },
+    (m) => { m.status = "unknown"; },
+    (m) => { delete m.review; },
   ];
   for (const mutate of mutations) {
     const copy = structuredClone(manifest);

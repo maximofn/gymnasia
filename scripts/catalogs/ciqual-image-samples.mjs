@@ -10,16 +10,20 @@ const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
 // Las muestras son material editorial separado: nunca modifican datos ANSES
 // ni se incorporan automáticamente a la proyección móvil.
-export function validateSampleManifest(manifest, foods) {
+export function validateSampleManifest(manifest, foods, entryKey = "samples") {
   assert.equal(manifest.schema_version, 1);
   assert.equal(manifest.dataset_id, "anses-ciqual-2025");
-  assert.equal(manifest.status, "pending-review");
+  assert.ok(["pending-review", "approved"].includes(manifest.status));
+  if (manifest.status === "approved") {
+    assert.equal(manifest.review?.approved_by, "maintainer");
+    assert.match(manifest.review?.approved_on ?? "", /^\d{4}-\d{2}-\d{2}$/);
+  }
   assert.ok(manifest.attribution?.includes("no proporcionadas ni validadas por ANSES"));
   assert.ok(manifest.generator?.trim());
-  assert.ok(Array.isArray(manifest.samples) && manifest.samples.length > 0);
+  assert.ok(Array.isArray(manifest[entryKey]) && manifest[entryKey].length > 0);
   const source = new Map(foods.map((food) => [food.id, food]));
   const seen = new Set();
-  for (const sample of manifest.samples) {
+  for (const sample of manifest[entryKey]) {
     assert.match(sample.id, /^ciqual-\d+$/);
     assert.ok(!seen.has(sample.id), `Muestra duplicada: ${sample.id}`);
     seen.add(sample.id);
@@ -29,7 +33,7 @@ export function validateSampleManifest(manifest, foods) {
     assert.equal(sample.source_sha256, ciqualNameFingerprint(food.names), `Origen desactualizado: ${sample.id}`);
     assert.equal(sample.image, `${sample.id}.webp`, `Ruta no permitida: ${sample.id}`);
     assert.match(sample.sha256, /^[a-f0-9]{64}$/);
-    assert.match(sample.reference_image, /^alimentos\/images\/[a-z0-9_-]+\.webp$/);
+    assert.match(sample.reference_image, /^alimentos\/(?:images\/[a-z0-9_-]+|ciqual\/image-samples\/ciqual-\d+)\.webp$/);
     assert.ok(typeof sample.prompt === "string" && sample.prompt.includes("Subject:") && sample.prompt.includes("STYLE REFERENCE ONLY"));
   }
 }
@@ -64,5 +68,5 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   assert.ok(process.argv.length === 2 || (process.argv.length === 3 && process.argv[2] === "--check"),
     "Uso: node scripts/catalogs/ciqual-image-samples.mjs [--check]. No genera ni publica imágenes.");
   const manifest = await checkCiqualImageSamples(fileURLToPath(new URL("../../", import.meta.url)));
-  console.log(`${manifest.samples.length} muestras CIQUAL verificadas; pendientes de revisión. Sin cambios en la app.`);
+  console.log(`${manifest.samples.length} muestras CIQUAL verificadas (${manifest.status}). Sin cambios en la app.`);
 }

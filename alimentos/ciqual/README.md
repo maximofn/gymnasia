@@ -189,9 +189,11 @@ características que CIQUAL no documenta quedan sin completar. Los 100 g son la
 base de referencia nutricional, no una ración recomendada.
 
 Las [muestras de imágenes de Gymnasia](image-samples/README.md) se mantienen
-aparte: son ilustraciones generadas por IA pendientes de revisión, no material
+aparte: son ilustraciones generadas por IA con estilo aprobado, no material
 de ANSES. No alteran las fichas oficiales ni la proyección móvil. Los prompts,
 referencias y comprobaciones de integridad están en ese directorio.
+La generación continúa en [tandas numeradas](image-batches/README.md), con
+recuento de pendientes y sin repetir los IDs ya ilustrados.
 
 Revisión de privacidad: el importador descarga exclusivamente datos públicos
 durante el mantenimiento del repositorio. La integración no introduce conexiones,

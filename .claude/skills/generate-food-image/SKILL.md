@@ -33,6 +33,9 @@ Para la ruta integrada, emitir una llamada independiente por cada alimento. Copi
   su `README.md`. Su manifiesto conserva nombres originales, huella de origen,
   prompt exacto, referencia de estilo y SHA-256 del WebP. Validar con
   `npm run check:ciqual:images` y `npm run test:catalogs`.
+  Tras aprobar las muestras y autorizar la generación por tandas, leer
+  `alimentos/ciqual/image-batches/README.md`: cada tanda vive en una carpeta
+  numerada, con manifiesto propio, sin sobrescribir las anteriores.
 
 En CIQUAL, usar el nombre completo francés e inglés para decidir qué representar;
 la traducción española ayuda a la revisión. Respetar preparación, variedad,
@@ -44,6 +47,14 @@ Si el usuario pide unas muestras antes de hacer todas, generar solo la selecció
 y esperar su revisión. No integrar esas muestras en la app ni lanzar el resto
 del catálogo como consecuencia de la generación. Son ilustraciones de Gymnasia
 generadas por IA, no fotografías proporcionadas o validadas por ANSES.
+
+Para reanudar las tandas CIQUAL autorizadas, `npm run next:ciqual:images -- 10`
+lista IDs y nombres que aún no tienen imagen registrada; es solo lectura y no
+llama a ningún proveedor. Consultar nombres completos y elegir descripciones
+visuales revisadas antes de generar. No regenerar IDs ya presentes en muestras
+o tandas. El validador cuenta ambos conjuntos y rechaza duplicados entre ellos.
+Mantener la rama solicitada por el usuario y abrir una PR por tanda; la fusión
+de una PR no es autorización automática para publicar cambios en la app.
 
 ## Fallback y avisos
 

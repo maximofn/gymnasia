@@ -1,8 +1,9 @@
 # Muestras de imágenes CIQUAL
 
-Tres muestras **pendientes de revisión del mantenedor**, generadas con la
-herramienta de imágenes integrada de Codex. No se han incorporado a la app ni
-se ha iniciado la generación del resto de los 3.484 alimentos.
+Tres muestras con **estilo aprobado por el mantenedor el 5 de noviembre de
+2026**, generadas con la herramienta de imágenes integrada de Codex. No se han
+incorporado a la app. La PR de las muestras está fusionada; la generación del
+resto continúa por [tandas separadas](../image-batches/README.md).
 
 | Alimento | Imagen | Referencia de estilo |
 | --- | --- | --- |
@@ -33,7 +34,7 @@ necesitan claves. Detectan nombres o hashes desactualizados, IDs duplicados,
 rutas inválidas, archivos sin registrar, formatos falsos, tamaños incorrectos
 y archivos dañados.
 
-Para continuar tras la revisión: acordar primero las correcciones o la aceptación
-del estilo. La incorporación al catálogo móvil y la generación completa son
-pasos posteriores; este directorio no los activa. Mantener siempre separada la
-procedencia editorial de las ilustraciones y la fuente nutricional oficial.
+El estilo aprobado es la referencia para las tandas siguientes. La incorporación
+al catálogo móvil sigue siendo un paso separado; este directorio no la activa.
+Mantener siempre separada la procedencia editorial de las ilustraciones y la
+fuente nutricional oficial.
