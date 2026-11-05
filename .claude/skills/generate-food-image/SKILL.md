@@ -20,7 +20,30 @@ La skill admite cuatro rutas, en este orden:
 
 La herramienta integrada de Codex **no es un backend del script**. `generate_images.py` y `generate.sh` solo soportan los tres backends de Hugging Face y no pueden reutilizar la suscripción de Codex/ChatGPT como una clave de API. No usar `OPENAI_API_KEY` ni facturación de API salvo que el usuario solicite expresamente esa ruta.
 
-Para la ruta integrada, emitir una llamada independiente por cada alimento. Copiar el resultado final desde el directorio de imágenes generadas de Codex a `alimentos/images/<id>.webp` y normalizarlo como WebP real de 1024×1024.
+Para la ruta integrada, emitir una llamada independiente por cada alimento. Copiar el resultado final desde el directorio de imágenes generadas de Codex al destino del catálogo correspondiente y normalizarlo como WebP real de 1024×1024.
+
+## Elegir el catálogo antes de generar
+
+- **Catálogo curado** (`alimentos/<id>.json`): seguir el flujo de esta skill;
+  las imágenes viven en `alimentos/images/`.
+- **ANSES-CIQUAL** (`alimentos/ciqual/foods/ciqual-<código>.json`): no editar
+  esas fichas ni los agregados oficiales para añadir imágenes. Tampoco añadir
+  los 3.484 alimentos a `FOOD_PROMPTS`: el generador legado no conoce ese contrato.
+  Para la fase de muestras, guardar en `alimentos/ciqual/image-samples/` y leer
+  su `README.md`. Su manifiesto conserva nombres originales, huella de origen,
+  prompt exacto, referencia de estilo y SHA-256 del WebP. Validar con
+  `npm run check:ciqual:images` y `npm run test:catalogs`.
+
+En CIQUAL, usar el nombre completo francés e inglés para decidir qué representar;
+la traducción española ayuda a la revisión. Respetar preparación, variedad,
+piel, hueso y escurrido cuando se documenten. Una foto de arroz cocido no sirve
+para arroz crudo aunque ambos sean blancos. Las imágenes existentes son solo
+referencias de estilo, no prueban equivalencia entre fichas ni raciones.
+
+Si el usuario pide unas muestras antes de hacer todas, generar solo la selección
+y esperar su revisión. No integrar esas muestras en la app ni lanzar el resto
+del catálogo como consecuencia de la generación. Son ilustraciones de Gymnasia
+generadas por IA, no fotografías proporcionadas o validadas por ANSES.
 
 ## Fallback y avisos
 

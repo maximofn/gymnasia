@@ -188,6 +188,11 @@ Las raciones domésticas, imágenes, alérgenos y otras
 características que CIQUAL no documenta quedan sin completar. Los 100 g son la
 base de referencia nutricional, no una ración recomendada.
 
+Las [muestras de imágenes de Gymnasia](image-samples/README.md) se mantienen
+aparte: son ilustraciones generadas por IA pendientes de revisión, no material
+de ANSES. No alteran las fichas oficiales ni la proyección móvil. Los prompts,
+referencias y comprobaciones de integridad están en ese directorio.
+
 Revisión de privacidad: el importador descarga exclusivamente datos públicos
 durante el mantenimiento del repositorio. La integración no introduce conexiones,
 claves de almacenamiento ni permisos. Las referencias y las instantáneas siguen
