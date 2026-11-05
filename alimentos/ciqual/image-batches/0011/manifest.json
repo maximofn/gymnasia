@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0011",
+  "status": "pending-review",
+  "generated_on": "2026-11-05",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-10021",
+      "names": {
+        "fr": "Crevette, crue",
+        "en": "Shrimp or prawn, raw",
+        "es": "Langostino o gamba, crudo"
+      },
+      "source_sha256": "11807915ca381af6aff21934a578b44f26bfc1e1fcb80821a97d7f37b051cc61",
+      "image": "ciqual-10021.webp",
+      "sha256": "1a65b5f407d052637a3a67857d8eab1c4cd04d769af2108004ce6b6a3762fead",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Fresh raw shrimp or prawns: a compact group of four headless shell-on raw prawns with tails, naturally curved segmented translucent gray-beige bodies and subtle darker shell bands. Clearly raw, not pink or orange cooked prawns, no ice, lemon, sauce or garnish..\nSingle centered food subject or specified compact group, entire fish including tail or entire seafood group visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image, no blood, viscera or graphic anatomy. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-10007",
+      "names": {
+        "fr": "Crevette, cuite",
+        "en": "Shrimp or prawn, boiled",
+        "es": "Langostino o gamba, cocido"
+      },
+      "source_sha256": "401c1058ef9f3334b86541ef22f9ee1f39d1582a0522768b3b30913a98c1c75c",
+      "image": "ciqual-10007.webp",
+      "sha256": "fcaace15a7d3de840932a7e6a1ed3cf3e58a4d51d7afccc2bd09b977a545b62b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Plain boiled shrimp or prawns: a compact group of four headless shell-on cooked prawns with tails, naturally curled segmented bodies, opaque white flesh visible between salmon-pink and orange shell bands. Clearly boiled, not translucent gray raw prawns, no sear marks, sauce, lemon or garnish..\nSingle centered food subject or specified compact group, entire fish including tail or entire seafood group visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image, no blood, viscera or graphic anatomy. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-10001",
+      "names": {
+        "fr": "Calmar ou calamar ou encornet, cru",
+        "en": "Squid, raw",
+        "es": "Calamar, crudo"
+      },
+      "source_sha256": "592799aa96520cdb6c7cd1663669146291b369715d7fecf7dc63fc2a9acee74f",
+      "image": "ciqual-10001.webp",
+      "sha256": "e3c56cbb61ab75e300a71424517c316fb5b4494a95349ee407ea9c5ada909fd9",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Fresh raw cleaned squid: one small pearly ivory squid mantle tube with its natural taper, two adjacent thick raw squid rings and a small neatly grouped cleaned tentacle cluster. Slightly translucent moist flesh, no innards, ink, blood, breading, frying, cooking or garnish..\nSingle centered food subject or specified compact group, entire fish including tail or entire seafood group visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image, no blood, viscera or graphic anatomy. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-10003",
+      "names": {
+        "fr": "Coquille Saint-Jacques, noix et corail, crue",
+        "en": "Scallop, with coral, raw",
+        "es": "Vieira, carne y coral, cruda"
+      },
+      "source_sha256": "227aaea308d14af4cce7a5d8a19343d43d9e9a3035799dd0e72a53353051cc6e",
+      "image": "ciqual-10003.webp",
+      "sha256": "53091f1e797ed9934eab229a234f345ec36302fb70eec5e09333e13022bbb113",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Raw scallops WITH coral: three closely grouped glossy ivory round scallop adductor muscles, each with a clearly visible attached natural orange crescent-shaped coral roe lobe. Soft translucent raw surface, no shells, searing, browned crust, sauce or garnish..\nSingle centered food subject or specified compact group, entire fish including tail or entire seafood group visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image, no blood, viscera or graphic anatomy. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-10045",
+      "names": {
+        "fr": "Coquille Saint-Jacques, noix, crue",
+        "en": "Scallop, without coral, raw",
+        "es": "Vieira, sin coral, cruda"
+      },
+      "source_sha256": "2c51dbf1ba79a7640e45e2cb5174f43b8a789a46d77512b472a34eff53f88920",
+      "image": "ciqual-10045.webp",
+      "sha256": "075c1b1520c93b31c3a0ad2b2a91c83cfe0aaac4ec7aeb95149d1107d547f69d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Raw scallops WITHOUT coral: three closely grouped plump ivory round scallop adductor muscles, clean trimmed edges and subtly translucent moist raw surfaces. Only white scallop meat, absolutely no orange roe, coral, shells, searing, browned crust or garnish..\nSingle centered food subject or specified compact group, entire fish including tail or entire seafood group visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image, no blood, viscera or graphic anatomy. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-10013",
+      "names": {
+        "fr": "Moule, bouillie/cuite à l'eau",
+        "en": "Mussel, boiled/cooked in water",
+        "es": "Mejillón, hervido/cocido en agua"
+      },
+      "source_sha256": "62abd4186bdaeb31addb1765f14faed1ba6eb6ac0a79100594286744972a4a5d",
+      "image": "ciqual-10013.webp",
+      "sha256": "a1113ee5b9b0f16874c4b1236d129c833fdf241b0d9ebd7a91e8111c64d72f0b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Plain mussels boiled in water: a compact group of five opened glossy dark blue-black mussel half-shells holding opaque plump orange and pale cream cooked mussel meat. Clearly cooked and open, no closed shells, broth puddles, sauce, parsley, lemon or garnish..\nSingle centered food subject or specified compact group, entire fish including tail or entire seafood group visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image, no blood, viscera or graphic anatomy. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-26043",
+      "names": {
+        "fr": "Cabillaud, cru",
+        "en": "Cod, raw",
+        "es": "Bacalao, crudo"
+      },
+      "source_sha256": "12da16581378b7e206ba8df4c0bb6d29b19033d5b273dd7c9225dd56a84970c4",
+      "image": "ciqual-26043.webp",
+      "sha256": "25618cf37a4ad9c4ccb2bf161222d665400de7828b83e689e9478d082438157b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Fresh raw cod: one compact thick boneless skinless cod loin portion, natural pearly translucent ivory-white flesh with broad curved muscle flakes and a subtle moist sheen, firm neatly cut fish portion. Not salted dried cod, not cooked, no ice, seasoning, lemon or garnish..\nSingle centered food subject or specified compact group, entire fish including tail or entire seafood group visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image, no blood, viscera or graphic anatomy. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-26079",
+      "names": {
+        "fr": "Anchois, cru",
+        "en": "Anchovy, raw",
+        "es": "Anchoa, cruda"
+      },
+      "source_sha256": "7d269b016f93b44502d45fabbac9277726f19d6dc7950000e3b226a9afbb7f40",
+      "image": "ciqual-26079.webp",
+      "sha256": "a6008815495850d37d771d703b41f9ee864c64d8fa2d43e82d733e0370b04704",
+      "revision": {
+        "reason": "Distinguir las anchoas de las sardinas por su silueta y boca",
+        "original_prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Fresh raw anchovies: a compact group of three small slender whole anchovy fish, natural silver flanks, narrow blue-green backs, fine scales and small intact tails, clean fresh fishmonger presentation. Clearly slender anchovies, not broad sardines, not salted, cured, canned or cooked, no blood, ice, oil or garnish..\nSingle centered food subject or specified compact group, entire fish including tail or entire seafood group visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image, no blood, viscera or graphic anatomy. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+        "intermediate_prompt": "Use case: precise-object-edit. Asset type: square food catalog thumbnail for Gymnasia.\nImage 1 is the EDIT TARGET, a draft catalog photo of three small fish. Image 2 is a STYLE REFERENCE ONLY.\nCorrect ONLY the identity of the three fish to fresh raw European anchovies (Engraulis encrasicolus), not sardines. Each fish must be noticeably slender and narrow-bodied, with an elongated pointed projecting snout and a conspicuously long mouth opening whose jaw line extends backwards beneath and behind the eye. The large low-set mouth is the key identifying feature: avoid the current tiny terminal sardine-like mouths and blunt heads. Natural silver flanks, narrow blue-green backs, delicate fine scales, intact small forked tails. No sardine side dots or broad deep bodies.\nKeep the number of fish, compact centered grouping, approximate positions, full tails visible, dark charcoal matte background, warm studio lighting and shadows, negative space and photorealistic style unchanged.\nRaw fresh fishmonger food presentation, not salted, cured, canned or cooked. No blood, viscera, ice, oil, garnish, props, text, labels, branding, hands or utensils. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not an official ANSES image.",
+        "previous_edit_prompt": "Use case: precise-object-edit. Asset type: square food catalog thumbnail for Gymnasia.\nImage 1 is the edit target. Image 2 is an approved style reference.\nChange ONLY the heads and mouth shapes of the three raw European anchovies. The current draft has overly long sharply pointed needle-like beaks. Replace those beaks with natural SHORT gently rounded projecting upper snouts typical of fresh anchovies. Keep the conspicuous long lower-set jaw line running back beneath the eye, but shorten each forward-projecting snout to less than half the eye diameter. Mouths can be almost closed with a thin gap. No elongated needlefish beaks, pike-like jaws or visible teeth. Natural small food-fish heads, not stylized anatomy.\nKeep the three slender silvery bodies, blue-green backs, fish positions, intact forked tails, total scale, matte dark charcoal background, warm soft lighting, grounded shadows and square framing unchanged. Whole fish entirely visible with generous negative space.\nPhotorealistic raw fresh fishmonger presentation. No cooking, curing, oil, blood, viscera, ice, garnish, props, text, labels, branding, hands or utensils. Opaque background, 1:1, 1024x1024. Illustrative Gymnasia image, not an official ANSES image."
+      },
+      "prompt": "Use case: precise-object-edit. Asset type: square food catalog thumbnail for Gymnasia.\nImage 1 is the EDIT TARGET: the selected photograph of three fresh raw anchovies. Image 2 is a STYLE REFERENCE ONLY from the approved Gymnasia catalog.\nSubject: three fresh raw European anchovies, slender silver bodies with narrow blue-green backs, natural small heads with short gently rounded projecting upper snouts and long lower-set mouth lines extending beneath the eyes, intact small forked tails.\nPreserve this selected composition and appearance. Keep the number, positions, body shapes, natural heads and nearly closed mouths, fish colors, scales, fins, tails, food scale, warm soft light and grounded shadows unchanged. Keep the matte dark charcoal (#0D1117) surface and generous negative space. Do not add long needle-like beaks, large teeth or deep sardine-like bodies. No additional fish or props.\nPhotorealistic raw fresh fishmonger food presentation, not cooked, cured, canned or salted. Whole fish fully visible in one centered compact group. No blood, viscera, ice, oil, garnish, text, logos, labels, branding, watermark, hands or utensils. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-26088",
+      "names": {
+        "fr": "Dorade royale ou daurade ou vraie daurade, élevage, crue",
+        "en": "Gilthead seabream, raw, farmed",
+        "es": "Dorada real o dorada, de piscifactoría, cruda"
+      },
+      "source_sha256": "9ee07fbedaf1d2ba98b9282a9639a5823a8b49c37a509bdba709ff3ebea63c6b",
+      "image": "ciqual-26088.webp",
+      "sha256": "cc2ee18efecded85ff50fe7587e18b67c14ab8daf4616fa27be58d10596737de",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Fresh raw farmed gilthead seabream: one compact whole silver oval-bodied fish with a natural subtle gold band between its eyes, dark gill-cover spot, intact fins and tail. Clean fishmonger presentation, not filleted or cooked, no blood, ice, lemon, herbs or garnish..\nSingle centered food subject or specified compact group, entire fish including tail or entire seafood group visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image, no blood, viscera or graphic anatomy. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-27009",
+      "names": {
+        "fr": "Truite arc en ciel, élevage, crue",
+        "en": "Rainbow trout, raw, farmed",
+        "es": "Trucha arco iris, de piscifactoría, cruda"
+      },
+      "source_sha256": "3b0eb07bd0275e64e523a6b011e35fe92e71657743b8ae7726df31bbb9757386",
+      "image": "ciqual-27009.webp",
+      "sha256": "3bbc5a1877d3ab06ead0728491214994a35d7fc44bc11a4bc10ec6a993053a4d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Fresh raw farmed rainbow trout: one whole streamlined silver trout with a clearly visible subtle pink iridescent lateral band and scattered small dark spots on its back and tail, intact fins and tail. Clean fishmonger presentation, not salmon or seabream, not smoked or cooked, no blood, ice or garnish..\nSingle centered food subject or specified compact group, entire fish including tail or entire seafood group visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image, no blood, viscera or graphic anatomy. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    }
+  ]
+}

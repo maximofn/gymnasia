@@ -161,6 +161,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-20052` | [Alcachofa, cruda](0010/ciqual-20052.webp) |
 | `ciqual-20026` | [Endibia, cruda](0010/ciqual-20026.webp) |
 
+## Undécima tanda (`0011`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-10021` | [Langostino o gamba, crudo](0011/ciqual-10021.webp) |
+| `ciqual-10007` | [Langostino o gamba, cocido](0011/ciqual-10007.webp) |
+| `ciqual-10001` | [Calamar, crudo](0011/ciqual-10001.webp) |
+| `ciqual-10003` | [Vieira, carne y coral, cruda](0011/ciqual-10003.webp) |
+| `ciqual-10045` | [Vieira, sin coral, cruda](0011/ciqual-10045.webp) |
+| `ciqual-10013` | [Mejillón, hervido/cocido en agua](0011/ciqual-10013.webp) |
+| `ciqual-26043` | [Bacalao, crudo](0011/ciqual-26043.webp) |
+| `ciqual-26079` | [Anchoa, cruda](0011/ciqual-26079.webp) |
+| `ciqual-26088` | [Dorada real o dorada, de piscifactoría, cruda](0011/ciqual-26088.webp) |
+| `ciqual-27009` | [Trucha arco iris, de piscifactoría, cruda](0011/ciqual-27009.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
