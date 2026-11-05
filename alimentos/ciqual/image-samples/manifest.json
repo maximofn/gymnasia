@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "status": "pending-review",
+  "generated_on": "2026-11-05",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "samples": [
+    {
+      "id": "ciqual-9100",
+      "names": {
+        "fr": "Riz blanc, cru",
+        "en": "Rice, white, raw",
+        "es": "Arroz blanco, crudo"
+      },
+      "source_sha256": "58c7b3679056a25553d47245982e2d19b399714ef321dd3897d730e4f8030a54",
+      "image": "ciqual-9100.webp",
+      "sha256": "5c7de3779c2be1e11cbc131daf28cbf65c8a9ed6a9d306da2f437c807fcdfcb0",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with dry uncooked white rice grains, visibly hard, small, slender ivory grains; NOT cooked rice, not soft or fluffy, no steam.\nSingle centered food subject, entire bowl or fruit visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, fruit from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/images/arroz-blanco.webp"
+    },
+    {
+      "id": "ciqual-13620",
+      "names": {
+        "fr": "Pomme Golden, chair et peau, crue",
+        "en": "Apple, var. Golden, flesh and skin,, raw",
+        "es": "Manzana Golden, pulpa y piel, cruda"
+      },
+      "source_sha256": "d1d6ea65cfdc9e94138f8ceba593728a1d63c05fce4f3c007eddfcb5ce93dcfe",
+      "image": "ciqual-13620.webp",
+      "sha256": "329a50258eca91fc140ff6f3dd9ca37bf5673a8b19ede68bf01966736c45ab6e",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: one whole fresh Golden Delicious apple with intact yellow-green skin, a short brown stem and a tiny natural green leaf; realistic subtle speckles and natural fruit texture; NOT a red apple, not peeled, not sliced.\nSingle centered food subject, entire bowl or fruit visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, fruit from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/images/manzana.webp"
+    },
+    {
+      "id": "ciqual-20587",
+      "names": {
+        "fr": "Lentille verte, bouillie/cuite à l'eau",
+        "en": "Lentil, green, boiled/cooked in water",
+        "es": "Lenteja verde, hervida/cocida en agua"
+      },
+      "source_sha256": "c7b478d599da12850d20dc6b8e849bdebf2ddb505fd2c35f5434a1e7ee8797dc",
+      "image": "ciqual-20587.webp",
+      "sha256": "0dd7026c35aba137275b0efd9e0ca8fdba95a4ffa58285651867b81e9bf7a171",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with plain green lentils boiled in water and drained, muted olive-green and brown round lentils with intact softened skins and a slight moist sheen; NOT dry raw lentils, no broth, no vegetables, no meat, no garnish.\nSingle centered food subject, entire bowl or fruit visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, fruit from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/images/lentejas.webp"
+    }
+  ]
+}
