@@ -86,6 +86,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-20515` | [Guisante partido, seco](0005/ciqual-20515.webp) |
 | `ciqual-9810` | [Pasta seca, estándar, cruda](0005/ciqual-9810.webp) |
 
+## Sexta tanda (`0006`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-36017` | [Pechuga de pollo sin piel, cruda](0006/ciqual-36017.webp) |
+| `ciqual-36304` | [Pavo, filete crudo](0006/ciqual-36304.webp) |
+| `ciqual-6250` | [Vacuno, hamburguesa 5% materia grasa, cruda](0006/ciqual-6250.webp) |
+| `ciqual-28204` | [Cerdo, filete miñón crudo](0006/ciqual-28204.webp) |
+| `ciqual-26036` | [Salmón, de piscifactoría, crudo](0006/ciqual-26036.webp) |
+| `ciqual-26044` | [Merluza, cruda](0006/ciqual-26044.webp) |
+| `ciqual-26065` | [Sardina, cruda](0006/ciqual-26065.webp) |
+| `ciqual-26053` | [Atún, crudo](0006/ciqual-26053.webp) |
+| `ciqual-22000` | [Huevo, crudo](0006/ciqual-22000.webp) |
+| `ciqual-20904` | [Tofu natural, envasado](0006/ciqual-20904.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
