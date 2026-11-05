@@ -176,6 +176,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-26088` | [Dorada real o dorada, de piscifactoría, cruda](0011/ciqual-26088.webp) |
 | `ciqual-27009` | [Trucha arco iris, de piscifactoría, cruda](0011/ciqual-27009.webp) |
 
+## Duodécima tanda (`0012`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-11014` | [Perejil, fresco](0012/ciqual-11014.webp) |
+| `ciqual-11033` | [Albahaca, fresca](0012/ciqual-11033.webp) |
+| `ciqual-11027` | [Menta, fresca](0012/ciqual-11027.webp) |
+| `ciqual-11068` | [Romero, fresco](0012/ciqual-11068.webp) |
+| `ciqual-11070` | [Tomillo, fresco](0012/ciqual-11070.webp) |
+| `ciqual-11035` | [Orégano, seco](0012/ciqual-11035.webp) |
+| `ciqual-11042` | [Comino, semilla](0012/ciqual-11042.webp) |
+| `ciqual-11049` | [Pimentón, en polvo](0012/ciqual-11049.webp) |
+| `ciqual-11089` | [Cúrcuma, polvo](0012/ciqual-11089.webp) |
+| `ciqual-11074` | [Jengibre, raíz fresca](0012/ciqual-11074.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
