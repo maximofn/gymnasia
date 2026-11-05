@@ -56,6 +56,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-20045` | [Rábano rojo, crudo](0003/ciqual-20045.webp) |
 | `ciqual-20056` | [Champiñón de París o champiñón cultivado, crudo](0003/ciqual-20056.webp) |
 
+## Cuarta tanda (`0004`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-15000` | [Almendra, con piel, sin sal añadida](0004/ciqual-15000.webp) |
+| `ciqual-15004` | [Avellana, sin sal añadida](0004/ciqual-15004.webp) |
+| `ciqual-15005` | [Nuez, grano, seca](0004/ciqual-15005.webp) |
+| `ciqual-15055` | [Anacardo, tostado en seco, sin sal añadida](0004/ciqual-15055.webp) |
+| `ciqual-15044` | [Pistacho, tostado, sin sal añadida](0004/ciqual-15044.webp) |
+| `ciqual-15001` | [Cacahuete, sin sal añadida](0004/ciqual-15001.webp) |
+| `ciqual-15047` | [Chía, semilla, seca](0004/ciqual-15047.webp) |
+| `ciqual-15064` | [Calabaza, semilla, seca](0004/ciqual-15064.webp) |
+| `ciqual-15011` | [Girasol, semilla](0004/ciqual-15011.webp) |
+| `ciqual-15052` | [Lino, marrón, semilla](0004/ciqual-15052.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
