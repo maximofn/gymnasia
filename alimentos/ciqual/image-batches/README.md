@@ -146,6 +146,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-13009` | [Limón, pulpa sin piel, sin pepitas, crudo](0009/ciqual-13009.webp) |
 | `ciqual-13023` | [Lichi, pulpa sin piel, sin hueso, crudo](0009/ciqual-13023.webp) |
 
+## Décima tanda (`0010`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-20020` | [Calabacín, pulpa y piel, crudo](0010/ciqual-20020.webp) |
+| `ciqual-20279` | [Espárrago, verde, crudo](0010/ciqual-20279.webp) |
+| `ciqual-20061` | [Judía verde, cruda](0010/ciqual-20061.webp) |
+| `ciqual-20072` | [Guisante verde, crudo](0010/ciqual-20072.webp) |
+| `ciqual-20044` | [Calabaza, cruda](0010/ciqual-20044.webp) |
+| `ciqual-20091` | [Remolacha roja, cruda](0010/ciqual-20091.webp) |
+| `ciqual-4101` | [Boniato, crudo](0010/ciqual-4101.webp) |
+| `ciqual-20028` | [Hinojo, crudo](0010/ciqual-20028.webp) |
+| `ciqual-20052` | [Alcachofa, cruda](0010/ciqual-20052.webp) |
+| `ciqual-20026` | [Endibia, cruda](0010/ciqual-20026.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
