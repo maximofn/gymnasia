@@ -236,6 +236,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-15026` | [Nuez pecana, sin sal añadida](0015/ciqual-15026.webp) |
 | `ciqual-15027` | [Nuez de macadamia, sin sal añadida](0015/ciqual-15027.webp) |
 
+## Decimosexta tanda (`0016`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-20304` | [Brócoli, cocinado al vapor](0016/ciqual-20304.webp) |
+| `ciqual-20307` | [Zanahoria, cocinada al vapor](0016/ciqual-20307.webp) |
+| `ciqual-20017` | [Coliflor, hervida](0016/ciqual-20017.webp) |
+| `ciqual-20320` | [Judía verde, hervida/cocida en agua](0016/ciqual-20320.webp) |
+| `ciqual-20336` | [Espinaca, hervida/cocida en agua](0016/ciqual-20336.webp) |
+| `ciqual-20021` | [Calabacín, pulpa y piel, cocido](0016/ciqual-20021.webp) |
+| `ciqual-20326` | [Guisantes, hervidos/cocidos en agua](0016/ciqual-20326.webp) |
+| `ciqual-20327` | [Puerro, hervido/cocido en agua](0016/ciqual-20327.webp) |
+| `ciqual-20096` | [Calabaza, cocida](0016/ciqual-20096.webp) |
+| `ciqual-20102` | [Champiñón de París o champiñón cultivado, hervido o cocido en agua](0016/ciqual-20102.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
