@@ -191,6 +191,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-11089` | [Cúrcuma, polvo](0012/ciqual-11089.webp) |
 | `ciqual-11074` | [Jengibre, raíz fresca](0012/ciqual-11074.webp) |
 
+## Decimotercera tanda (`0013`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-17270` | [Aceite de oliva virgen extra](0013/ciqual-17270.webp) |
+| `ciqual-31008` | [Miel](0013/ciqual-31008.webp) |
+| `ciqual-11013` | [Mostaza](0013/ciqual-11013.webp) |
+| `ciqual-11008` | [Kétchup, envasado](0013/ciqual-11008.webp) |
+| `ciqual-11054` | [Mayonesa (70% materia grasa mín.), envasada](0013/ciqual-11054.webp) |
+| `ciqual-11017` | [Sal blanca alimentaria, no yodada, no fluorada (marina, ignígena o gema)](0013/ciqual-11017.webp) |
+| `ciqual-11015` | [Pimienta negra, en polvo](0013/ciqual-11015.webp) |
+| `ciqual-11091` | [Vinagre balsámico](0013/ciqual-11091.webp) |
+| `ciqual-18100` | [Cacao, sin azúcares añadidos, polvo soluble](0013/ciqual-18100.webp) |
+| `ciqual-31016` | [Azúcar blanco](0013/ciqual-31016.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
