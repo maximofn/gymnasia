@@ -525,6 +525,113 @@ Cien imágenes generadas individualmente con el mismo estilo aprobado: frutos se
 | `ciqual-12749` | Raclette (queso), de leche de vaca | [WebP](0022/ciqual-12749.webp) |
 | `ciqual-12767` | Gouda con comino, de leche de vaca | [WebP](0022/ciqual-12767.webp) |
 
+## Vigesimotercera tanda (`0023`) — 100 imágenes
+
+Cien imágenes generadas individualmente con el mismo estilo aprobado: verduras y hortalizas frescas, cocidas, en conserva, congeladas y deshidratadas. Ilustraciones de Gymnasia generadas por IA, no proporcionadas ni validadas por ANSES. Cada ficha conserva su identidad y preparación, con prompts y huellas en [el manifiesto](0023/manifest.json); una imagen no permite distinguir todas las diferencias de formulación o nutrición.
+
+| ID | Alimento | Imagen |
+| --- | --- | --- |
+| `ciqual-20000` | Alcachofa, cocida | [WebP](0023/ciqual-20000.webp) |
+| `ciqual-20002` | Berenjena, cocida | [WebP](0023/ciqual-20002.webp) |
+| `ciqual-20003` | Remolacha roja, cocida | [WebP](0023/ciqual-20003.webp) |
+| `ciqual-20005` | Acelga, penca (sin hoja), cocida | [WebP](0023/ciqual-20005.webp) |
+| `ciqual-20007` | Zanahoria, en conserva, escurrida | [WebP](0023/ciqual-20007.webp) |
+| `ciqual-20010` | Champiñón, cualquier tipo, crudo | [WebP](0023/ciqual-20010.webp) |
+| `ciqual-20011` | Champiñón, cualquier tipo, en conserva, escurrido | [WebP](0023/ciqual-20011.webp) |
+| `ciqual-20015` | Col berza, cocida | [WebP](0023/ciqual-20015.webp) |
+| `ciqual-20018` | Palmito, en conserva, escurrido | [WebP](0023/ciqual-20018.webp) |
+| `ciqual-20025` | Apio rábano, cocido | [WebP](0023/ciqual-20025.webp) |
+| `ciqual-20027` | Espinaca, cocida | [WebP](0023/ciqual-20027.webp) |
+| `ciqual-20029` | Brotes de judía mungo o brotes de soja, en conserva, escurridos | [WebP](0023/ciqual-20029.webp) |
+| `ciqual-20030` | Judía verde, cocida | [WebP](0023/ciqual-20030.webp) |
+| `ciqual-20031` | Lechuga, cruda | [WebP](0023/ciqual-20031.webp) |
+| `ciqual-20033` | Nabo, cocido | [WebP](0023/ciqual-20033.webp) |
+| `ciqual-20034` | Cebolla, cruda | [WebP](0023/ciqual-20034.webp) |
+| `ciqual-20035` | Cebolla, cocida | [WebP](0023/ciqual-20035.webp) |
+| `ciqual-20036` | Guisantes, en conserva, escurridos | [WebP](0023/ciqual-20036.webp) |
+| `ciqual-20037` | Guisantes, cocidos | [WebP](0023/ciqual-20037.webp) |
+| `ciqual-20038` | Diente de león, crudo | [WebP](0023/ciqual-20038.webp) |
+| `ciqual-20040` | Puerro, cocido | [WebP](0023/ciqual-20040.webp) |
+| `ciqual-20041` | Pimiento, verde, amarillo o rojo, crudo | [WebP](0023/ciqual-20041.webp) |
+| `ciqual-20046` | Salsifí, cocido | [WebP](0023/ciqual-20046.webp) |
+| `ciqual-20048` | Tomate, pelado, en conserva, escurrido | [WebP](0023/ciqual-20048.webp) |
+| `ciqual-20049` | Maíz dulce, en mazorca, cocido | [WebP](0023/ciqual-20049.webp) |
+| `ciqual-20050` | Pataca, cocida | [WebP](0023/ciqual-20050.webp) |
+| `ciqual-20051` | Macedonia de verduras, en conserva, escurrida | [WebP](0023/ciqual-20051.webp) |
+| `ciqual-20054` | Cardo, crudo | [WebP](0023/ciqual-20054.webp) |
+| `ciqual-20060` | Espinaca, en conserva, escurrida | [WebP](0023/ciqual-20060.webp) |
+| `ciqual-20062` | Judía verde, en conserva, escurrida | [WebP](0023/ciqual-20062.webp) |
+| `ciqual-20063` | Judía verde plana, en conserva, escurrida | [WebP](0023/ciqual-20063.webp) |
+| `ciqual-20066` | Maíz dulce, en conserva, escurrido | [WebP](0023/ciqual-20066.webp) |
+| `ciqual-20067` | Alcachofa, en conserva, escurrida | [WebP](0023/ciqual-20067.webp) |
+| `ciqual-20068` | Tomate, concentrado, en conserva | [WebP](0023/ciqual-20068.webp) |
+| `ciqual-20070` | Judía verde, ultracongelada, cruda | [WebP](0023/ciqual-20070.webp) |
+| `ciqual-20071` | Judía verde, ultracongelada, cocida | [WebP](0023/ciqual-20071.webp) |
+| `ciqual-20074` | Alcachofa, cocida al vapor a presión | [WebP](0023/ciqual-20074.webp) |
+| `ciqual-20076` | Espárrago, en conserva, escurrido | [WebP](0023/ciqual-20076.webp) |
+| `ciqual-20077` | Col de Bruselas, en conserva, escurrido | [WebP](0023/ciqual-20077.webp) |
+| `ciqual-20078` | Apio en rama, en conserva, escurrido | [WebP](0023/ciqual-20078.webp) |
+| `ciqual-20079` | Champiñón de París o champiñón cultivado, en conserva, escurrido | [WebP](0023/ciqual-20079.webp) |
+| `ciqual-20081` | Salsifí, en conserva, escurrido | [WebP](0023/ciqual-20081.webp) |
+| `ciqual-20082` | Coliflor, ultracongelado, crudo | [WebP](0023/ciqual-20082.webp) |
+| `ciqual-20083` | Espinaca, picada o en puré o en hojas, ultracongelada, cruda | [WebP](0023/ciqual-20083.webp) |
+| `ciqual-20084` | Guisante verde, ultracongelado, crudo | [WebP](0023/ciqual-20084.webp) |
+| `ciqual-20086` | Pimiento verde, cocido | [WebP](0023/ciqual-20086.webp) |
+| `ciqual-20088` | Pimiento rojo, cocido | [WebP](0023/ciqual-20088.webp) |
+| `ciqual-20090` | Escarola, cruda | [WebP](0023/ciqual-20090.webp) |
+| `ciqual-20092` | Zanahoria, deshidratada | [WebP](0023/ciqual-20092.webp) |
+| `ciqual-20093` | Guisantes verdes y zanahorias, en conserva, escurridos | [WebP](0023/ciqual-20093.webp) |
+| `ciqual-20094` | Colinabo, hervido o cocido en agua | [WebP](0023/ciqual-20094.webp) |
+| `ciqual-20095` | Col lombarda, hervida o cocida en agua | [WebP](0023/ciqual-20095.webp) |
+| `ciqual-20101` | Verduras, mezcla ultracongelada, crudas | [WebP](0023/ciqual-20101.webp) |
+| `ciqual-20106` | Seta, trufa negra, cruda | [WebP](0023/ciqual-20106.webp) |
+| `ciqual-20108` | Maíz dulce, en mazorca, ultracongelado, crudo | [WebP](0023/ciqual-20108.webp) |
+| `ciqual-20111` | Acedera, cruda | [WebP](0023/ciqual-20111.webp) |
+| `ciqual-20118` | Hinojo, hervido/cocido en agua | [WebP](0023/ciqual-20118.webp) |
+| `ciqual-20119` | Tomate verde, crudo | [WebP](0023/ciqual-20119.webp) |
+| `ciqual-20123` | Lechuga batavia, cruda | [WebP](0023/ciqual-20123.webp) |
+| `ciqual-20124` | Guisantes, ultracongelados, cocidos | [WebP](0023/ciqual-20124.webp) |
+| `ciqual-20125` | Champiñón de París o champiñón de cultivo, salteado/a la sartén, sin materia grasa | [WebP](0023/ciqual-20125.webp) |
+| `ciqual-20127` | Verdolaga, hoja, cruda | [WebP](0023/ciqual-20127.webp) |
+| `ciqual-20128` | Calabaza almizclera, pulpa sin piel, cruda | [WebP](0023/ciqual-20128.webp) |
+| `ciqual-20132` | Calabaza potimarron, pulpa sin piel, cruda | [WebP](0023/ciqual-20132.webp) |
+| `ciqual-20134` | Calabaza hokkaido, pulpa sin piel, cruda | [WebP](0023/ciqual-20134.webp) |
+| `ciqual-20135` | Fondue de puerro, envasada | [WebP](0023/ciqual-20135.webp) |
+| `ciqual-20136` | Calabaza melonnette, pulpa sin piel, cruda | [WebP](0023/ciqual-20136.webp) |
+| `ciqual-20137` | Tomate, pelado, en conserva, en su jugo, no escurrido | [WebP](0023/ciqual-20137.webp) |
+| `ciqual-20138` | Calabaza butternut, pulpa sin piel, cruda | [WebP](0023/ciqual-20138.webp) |
+| `ciqual-20139` | Calabaza, cruda | [WebP](0023/ciqual-20139.webp) |
+| `ciqual-20141` | Calabaza butternut, pulpa sin piel, hervida/cocida en agua | [WebP](0023/ciqual-20141.webp) |
+| `ciqual-20143` | Calabaza espagueti, pulpa sin piel, cocida | [WebP](0023/ciqual-20143.webp) |
+| `ciqual-20145` | Calabaza espagueti, pulpa sin piel, cruda | [WebP](0023/ciqual-20145.webp) |
+| `ciqual-20155` | Alcachofa, corazón, en conserva, escurrido | [WebP](0023/ciqual-20155.webp) |
+| `ciqual-20156` | Alcachofa, fondo, en conserva, escurrido | [WebP](0023/ciqual-20156.webp) |
+| `ciqual-20158` | Espinaca de Nueva Zelanda, cocida | [WebP](0023/ciqual-20158.webp) |
+| `ciqual-20159` | Champiñón, oronja, crudo | [WebP](0023/ciqual-20159.webp) |
+| `ciqual-20161` | Champiñón, champiñón silvestre, crudo | [WebP](0023/ciqual-20161.webp) |
+| `ciqual-20162` | Achicoria roja, cruda | [WebP](0023/ciqual-20162.webp) |
+| `ciqual-20163` | Achicoria verde, cruda | [WebP](0023/ciqual-20163.webp) |
+| `ciqual-20165` | Nabicol, cocido | [WebP](0023/ciqual-20165.webp) |
+| `ciqual-20166` | Calabaza, pulpa sin piel, cruda | [WebP](0023/ciqual-20166.webp) |
+| `ciqual-20169` | Tomate, pulpa, en conserva | [WebP](0023/ciqual-20169.webp) |
+| `ciqual-20170` | Tomate, puré, en conserva | [WebP](0023/ciqual-20170.webp) |
+| `ciqual-20180` | Cebolla, seca | [WebP](0023/ciqual-20180.webp) |
+| `ciqual-20188` | Bambú, brotes, en conserva, escurridos | [WebP](0023/ciqual-20188.webp) |
+| `ciqual-20189` | Tomate, seco | [WebP](0023/ciqual-20189.webp) |
+| `ciqual-20192` | Tomate asurcado o corazón de buey, crudo | [WebP](0023/ciqual-20192.webp) |
+| `ciqual-20194` | Alubias blancas con salsa de tomate, en conserva | [WebP](0023/ciqual-20194.webp) |
+| `ciqual-20195` | Judía verde plana o amarilla, cruda | [WebP](0023/ciqual-20195.webp) |
+| `ciqual-20196` | Pataca, cruda | [WebP](0023/ciqual-20196.webp) |
+| `ciqual-20197` | Salsifí negro o escorzonera de España, crudo | [WebP](0023/ciqual-20197.webp) |
+| `ciqual-20198` | Bambú, brote, crudo | [WebP](0023/ciqual-20198.webp) |
+| `ciqual-20199` | Berro almienzo, crudo | [WebP](0023/ciqual-20199.webp) |
+| `ciqual-20201` | Nabicol, crudo | [WebP](0023/ciqual-20201.webp) |
+| `ciqual-20202` | Hongo negro, deshidratado | [WebP](0023/ciqual-20202.webp) |
+| `ciqual-20203` | Judía amarilla, ultracongelada, cruda | [WebP](0023/ciqual-20203.webp) |
+| `ciqual-20204` | Brócoli, ultracongelado, crudo | [WebP](0023/ciqual-20204.webp) |
+| `ciqual-20206` | Col de Bruselas, ultracongelada, cruda | [WebP](0023/ciqual-20206.webp) |
+| `ciqual-20208` | Zanahoria, ultracongelada, cruda | [WebP](0023/ciqual-20208.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
