@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0012",
+  "status": "pending-review",
+  "generated_on": "2026-11-05",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-11014",
+      "names": {
+        "fr": "Persil, frais",
+        "en": "Parsley, fresh",
+        "es": "Perejil, fresco"
+      },
+      "source_sha256": "e60e2b033dc350eb2c67051689f4e43b2d8094794ace6566b894079ef3b5b363",
+      "image": "ciqual-11014.webp",
+      "sha256": "9ac634bc806d6e30587e7d82cfc2446648fc09214dfe370b802a3560f59bc17c",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Fresh parsley: a small loose compact bunch of bright green flat-leaf parsley sprigs with characteristic sharply lobed serrated leaves on slender fresh stems. Realistic leaf veins and natural slight curling, not cilantro or curly lettuce. No pot, tie, soil or other herbs..\nSingle centered food subject or specified compact group, entire herb group, root or specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; herb groups and roots from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-11033",
+      "names": {
+        "fr": "Basilic, frais",
+        "en": "Basil, fresh",
+        "es": "Albahaca, fresca"
+      },
+      "source_sha256": "b6f593615f41e50b9f294302ac1567bf0fc8a5ddd8cf6187f2498991b8092dd9",
+      "image": "ciqual-11033.webp",
+      "sha256": "c15af5809a1b008299e88e84e18c92c093479f9fd496f50bb95215d8b603a601",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Fresh basil: a small compact group of basil sprigs with broad tender oval vivid green leaves, smooth slightly cupped surfaces, delicate visible veins and gently pointed tips. Soft green stems, not mint with deeply serrated leaves. No flowers, pot, tie, soil or other ingredients..\nSingle centered food subject or specified compact group, entire herb group, root or specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; herb groups and roots from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-11027",
+      "names": {
+        "fr": "Menthe, fraîche",
+        "en": "Mint, fresh",
+        "es": "Menta, fresca"
+      },
+      "source_sha256": "83ddbc6707dd98a6092f088620c8d16ebc7bfe9a02f36c375c6d88129da76a1c",
+      "image": "ciqual-11027.webp",
+      "sha256": "3a79afc760811b4123f4757c0be9062ad4344106616ce8a8d23a75902ac555d6",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Fresh mint: a small compact group of mint sprigs with opposing oval green leaves, visibly serrated margins, softly wrinkled textured surfaces and clear veins. Fresh natural herb texture, not smooth basil leaves. No flowers, pot, tie, soil or other ingredients..\nSingle centered food subject or specified compact group, entire herb group, root or specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; herb groups and roots from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-11068",
+      "names": {
+        "fr": "Romarin, frais",
+        "en": "Rosemary, fresh",
+        "es": "Romero, fresco"
+      },
+      "source_sha256": "6ee933fc33334b1f1df4461136c7fdd9e7c80da79915ca96115cb6575d8e95f8",
+      "image": "ciqual-11068.webp",
+      "sha256": "6f096914e6161c416c58854e717fd848220bc8249b6d40ba7f9d2f24f88aebff",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Fresh rosemary: three short closely grouped rosemary sprigs, slender woody stems covered with narrow firm needle-like dark green leaves with paler undersides. Clearly fresh pliable sprigs, not dried fragments, pine branches or thyme. No flowers, pot, tie or other ingredients..\nSingle centered food subject or specified compact group, entire herb group, root or specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; herb groups and roots from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-11070",
+      "names": {
+        "fr": "Thym, frais",
+        "en": "Thyme, fresh",
+        "es": "Tomillo, fresco"
+      },
+      "source_sha256": "b49dae6d2e1fdb0f1241d217bb30e390f6701372ce7f0cfe5ac0ee028261845e",
+      "image": "ciqual-11070.webp",
+      "sha256": "86cc7e01fde5d7457303343addec319a78643b36e234e40fd911f4870e25ac0f",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Fresh thyme: a small compact group of delicate thin thyme sprigs, fine branching stems densely carrying very tiny opposing oval green leaves. Clearly small rounded leaves rather than rosemary needles. Fresh natural herb texture, no flowers, pot, tie or other ingredients..\nSingle centered food subject or specified compact group, entire herb group, root or specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; herb groups and roots from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-11035",
+      "names": {
+        "fr": "Origan, séché",
+        "en": "Oregano, dried",
+        "es": "Orégano, seco"
+      },
+      "source_sha256": "31b9b6b8d9118a0c245c7a7bf0b7c6470e97f2bc12025625d9cacea6fbd282f9",
+      "image": "ciqual-11035.webp",
+      "sha256": "34d78c1e6e9e7e2b22db6eb3edf41698dc0f64db3ccdd94a3ac22a043954920f",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Dried oregano: a small dark matte ceramic bowl filled with coarse dry crumbled oregano leaves, muted olive-green and gray-green irregular papery leaf flakes with tiny tan stem fragments. Clearly dry, not fresh sprigs and not fine powder. No other herbs or ingredients..\nSingle centered food subject or specified compact group, entire herb group, root or specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; herb groups and roots from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-11042",
+      "names": {
+        "fr": "Cumin, graine",
+        "en": "Cumin, seed",
+        "es": "Comino, semilla"
+      },
+      "source_sha256": "9cd9a63936e0b618429701c1d02b511dec438a82874081519bda08faa45fd377",
+      "image": "ciqual-11042.webp",
+      "sha256": "0e4f75fa801907590a5c25df50f7c4afb64843d1bab6b86d7b0a98668ae2a574",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Whole cumin seeds: a small dark matte ceramic bowl filled with dry slender elongated tan-brown cumin seeds, slightly curved tapered ends and distinct fine lengthwise ridges. Not round coriander seeds, not black seeds or ground powder. No other spices or ingredients..\nSingle centered food subject or specified compact group, entire herb group, root or specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; herb groups and roots from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-11049",
+      "names": {
+        "fr": "Paprika, poudre",
+        "en": "Paprika, powder",
+        "es": "Pimentón, en polvo"
+      },
+      "source_sha256": "cee15e4ba6c02b7bdf4e5955ad9eec66cd6dd16c1d3483ef0ad789b108bab042",
+      "image": "ciqual-11049.webp",
+      "sha256": "a024a8eade8f6450ee5ff955ae929d1c87227b5293c39283891e483a17bb4c6d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Paprika powder: a small dark matte ceramic bowl with a modest softly peaked mound of finely ground dry warm brick-red to red-orange paprika. Fine matte dusty texture, not whole peppers, chili flakes, sauce or seeds. No other spices, utensils or ingredients..\nSingle centered food subject or specified compact group, entire herb group, root or specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; herb groups and roots from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-11089",
+      "names": {
+        "fr": "Curcuma, poudre",
+        "en": "Turmeric, powder",
+        "es": "Cúrcuma, polvo"
+      },
+      "source_sha256": "b2b323c7893c4233a89feaf426a28ecb3444114e19690f11404ed48d669d5364",
+      "image": "ciqual-11089.webp",
+      "sha256": "35932f7e40077105c2570da487eb572b8dabf719891350945c1f78684950ac25",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Turmeric powder: a small dark matte ceramic bowl with a modest softly peaked mound of very fine dry saturated golden-yellow turmeric powder. Matte powder with a few tiny natural clumps, not curry mixture, roots, mustard paste or liquid. No other ingredients..\nSingle centered food subject or specified compact group, entire herb group, root or specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; herb groups and roots from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-11074",
+      "names": {
+        "fr": "Gingembre, racine fraîche",
+        "en": "Ginger, raw",
+        "es": "Jengibre, raíz fresca"
+      },
+      "source_sha256": "5ef8811ec9430b6611920e530ff46ff6856194751ddcbc76150267e4e9ac4d29",
+      "image": "ciqual-11074.webp",
+      "sha256": "d44b422d83ac038e04c18ebae507e91eb5d2156063d3a3fe444340946ba578f1",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Fresh raw ginger root: one small compact knobbly branched ginger rhizome with natural pale beige papery skin and one adjacent freshly cut thick slice showing crisp fibrous pale yellow flesh. Clean realistic root texture, no dirt, sprouting leaves, cooking, peeling tool or garnish..\nSingle centered food subject or specified compact group, entire herb group, root or specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; herb groups and roots from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    }
+  ]
+}
