@@ -226,11 +226,11 @@ Monetizarla es una aspiración futura; esta decisión no cubre el inicio de un p
 comercial concreto. Google también considera la intención de recibir remuneración
 de forma regular o comercial, aunque todavía no haya ingresos.
 
-**Estado del trámite:** opción «No operador» seleccionada en Play Console el
-5 de noviembre de 2026. Pendiente de aceptar el consentimiento de publicación
-de los datos del perfil y guardar; no se considera enviada todavía. La pantalla
-de revisión incluye nombre legal, dirección y correo, y la vista previa muestra
-nombre, correo y país. Revisar ese alcance con el mantenedor antes de consentir.
+**Estado del trámite:** declaración como **no operador guardada**, según
+confirmación del mantenedor recibida el 6 de noviembre de 2026. La pantalla de
+revisión inspeccionada el 5 de noviembre incluía nombre legal, dirección y correo;
+la vista previa mostraba nombre, correo y país. La confirmación del guardado no
+sustituye la futura comprobación del perfil público antes de monetizar.
 
 ### Antes de empezar a monetizar
 

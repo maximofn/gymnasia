@@ -45,8 +45,8 @@ resultado que produzcan las respuestas reales; no se manipulará para obtener un
 ## Estado de operador
 
 Decisión del mantenedor del 5 de noviembre de 2026: **no operador** mientras
-Gymnasia sea un proyecto personal sin actividad comercial. El consentimiento y
-el guardado en consola siguen pendientes. Antes de iniciar la monetización,
+Gymnasia sea un proyecto personal sin actividad comercial. El mantenedor confirmó
+el 6 de noviembre de 2026 que la declaración quedó guardada. Antes de iniciar la monetización,
 cambiar a **operador** y completar las verificaciones de cuenta y aplicación del
 [procedimiento de futura monetización](../../legal/play-declarations.md#6-estado-de-operador-y-futura-monetización).
 Revisar la declaración al preparar un plan comercial concreto, sin esperar al
