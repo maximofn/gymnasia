@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0017",
+  "status": "pending-review",
+  "generated_on": "2026-11-06",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-9103",
+      "names": {
+        "fr": "Riz complet, cuit, sans sel ajouté",
+        "en": "Rice, wholegrain, cooked, no added salt",
+        "es": "Arroz integral, cocido, sin sal añadida"
+      },
+      "source_sha256": "c593732afa5e3ae657d589342a1596376bc3cfa25b75ea9d041b5715dc74432a",
+      "image": "ciqual-9103.webp",
+      "sha256": "e0919ca992145b5e0adc0b6a80aecf8a3c52f63fffb90a1fa3cabba1f1f9d013",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Cooked wholegrain brown rice with no added salt, a small bowl of plump separate warm beige-brown rice grains retaining their bran layer, tender moist cooked texture. No white rice, sauce, butter, oil or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-9322",
+      "names": {
+        "fr": "Orge perlée, bouilli/cuite à l'eau, sans sel ajouté",
+        "en": "Pearled barley, boiled/cooked in water, no added salt",
+        "es": "Cebada perlada, hervida/cocida en agua, sin sal añadida"
+      },
+      "source_sha256": "79a01afd34795918b1f8e247291ca6e23083c5918729372016d020f62e8ffc0f",
+      "image": "ciqual-9322.webp",
+      "sha256": "a1ea853622b744a3cc57bcd45d26e6495df8872649b744637588a76c54c30fa1",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Pearled barley boiled in water with no added salt, a small bowl of swollen ivory-beige oval barley grains with their characteristic fine central crease, tender slightly glossy cooked texture. Not rice or dry kernels, no sauce, butter, oil or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-9341",
+      "names": {
+        "fr": "Quinoa, bouilli/cuit à l'eau, sans sel ajouté",
+        "en": "Quinoa, boiled/cooked in water, no added salt",
+        "es": "Quinoa, hervida/cocida en agua, sin sal añadida"
+      },
+      "source_sha256": "139b7440d54f1026349c1af0b6fcc8641c7b607ec3e80364f416270a049228a2",
+      "image": "ciqual-9341.webp",
+      "sha256": "067088c983005a27f21849ac2d3f2238bf46ac310a4ca7742451b920984b748e",
+      "prompt": "Use case: precise-object-edit. Asset type: square food catalog thumbnail for Gymnasia.\nSubject: Quinoa boiled in water with no added salt.\nCorrect only the food in this image. It currently resembles translucent tapioca pearls or round gel beads. Replace those spheres with botanically realistic cooked WHITE QUINOA: tiny flattened irregular disk-shaped ivory grains, mostly opaque soft off-white centers, with characteristic delicate C-shaped curled white germ tails attached to the grain edges. Some grains are side-on, others flat, forming a naturally fluffy uneven mound. The attached germ is not a large detached hollow ring. Do not make spherical pearls, jelly balls, couscous or rice. Tender hydrated quinoa texture, not dry seed or porridge. No sauce, oil, cheese or garnish.\nThe original is a STYLE REFERENCE ONLY for the vessel and scene: preserve the dark ceramic bowl, charcoal background, warm soft overhead light, subtle grounded shadow, centered composition and generous negative space. Entire bowl visible, photorealistic, opaque dark background, square 1024x1024. No text, labels, logos, hands, utensils, extra ingredients or props. Illustrative Gymnasia image, not official ANSES imagery.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp",
+      "revision": {
+        "reason": "Corregir granos esféricos demasiado translúcidos para representar quinoa cocida con su germen curvado.",
+        "original_prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Quinoa boiled in water with no added salt, a small bowl of fluffy tender pale cream cooked quinoa grains, translucent centers and visible tiny curled white germ rings. Not dry quinoa, no sauce, butter, oil or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+        "edit_reference": "/Users/macm1/.codex/generated_images/01a01928-1c04-73e2-9bfd-00909cd06a0e/exec-10a47fe8-17fb-4efa-9f3a-e046aadf6e96.png"
+      }
+    },
+    {
+      "id": "ciqual-9691",
+      "names": {
+        "fr": "Boulgour de blé, cuit, sans sel ajouté",
+        "en": "Wheat bulgur, cooked, no added salt",
+        "es": "Bulgur de trigo, cocido, sin sal añadida"
+      },
+      "source_sha256": "d253ead01bd855e500887a74398c83f035ccf5830c71aaca9dbce9cfdf4b3c9f",
+      "image": "ciqual-9691.webp",
+      "sha256": "31a0613e01c42aaba64ee5c8dd5c0b7bb6b0887d7b183a7997b13e201e6a1c62",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Cooked wheat bulgur with no added salt, a small bowl of tender irregular cracked wheat grains, warm golden tan color, hydrated fluffy separate texture. Not couscous or raw wheat, no sauce, butter, oil or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-9615",
+      "names": {
+        "fr": "Polenta ou semoule de maïs, cuite, sans sel ajouté",
+        "en": "Polenta or maize/corn semolina, cooked, no added salt",
+        "es": "Polenta o sémola de maíz, cocida, sin sal añadida"
+      },
+      "source_sha256": "e4df42a6b7b593ee34014d9d9ef197ef078310384520b992b76cb6512cd93422",
+      "image": "ciqual-9615.webp",
+      "sha256": "974876ff8dce066c55b73a038dc02781732cd8c5651efeaff9b21dd1f7895e3d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Cooked polenta or corn semolina with no added salt, one small bowl of soft golden-yellow polenta with a thick creamy gently swirled surface and fine cornmeal texture. Not raw cornmeal or grilled slices, no cheese, butter, sauce, oil or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-9901",
+      "names": {
+        "fr": "Vermicelle de riz, cuite, sans sel ajouté",
+        "en": "Rice vermicelli, dry, cooked, no added salt",
+        "es": "Fideos de arroz, cocidos, sin sal añadida"
+      },
+      "source_sha256": "11ed6e65b3d0a4c9557697061b99a84dd0b988f2be1c9aab07de6bf35a9ae9bb",
+      "image": "ciqual-9901.webp",
+      "sha256": "842acad07befe180e305f7884be5fbeb14f9bcc41343befc3d29bfe8f2c2b2d5",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Cooked rice vermicelli with no added salt, a small bowl of fine thin white slightly translucent rice noodles, hydrated soft flexible strands in a natural loose nest. Not thick wheat noodles or dry brittle vermicelli, no soup, sauce, oil or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-9811",
+      "names": {
+        "fr": "Pâtes sèches, standard, cuites, sans sel ajouté",
+        "en": "Pasta, dry, regular, cooked, no added salt",
+        "es": "Pasta seca, estándar, cocida, sin sal añadida"
+      },
+      "source_sha256": "8a9a904f8dc15339aee227fa7c50775d2dbb3aad6485acd385af9be4328caa32",
+      "image": "ciqual-9811.webp",
+      "sha256": "e0837d9f2509ac554942203d7ac68be9091061c2c54fb206b1fc74ca0fae56a5",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Regular dried wheat pasta after cooking, no added salt, a small bowl of cooked pale golden penne pasta with clear diagonal ends and fine longitudinal ridges, soft hydrated pasta texture. Not raw hard pasta, no sauce, cheese, oil or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-9816",
+      "names": {
+        "fr": "Pâtes fraîches, aux oeufs, cuites, sans sel ajouté",
+        "en": "Pasta, fresh, with egg, cooked, no added salt",
+        "es": "Pasta fresca, al huevo, cocida, sin sal añadida"
+      },
+      "source_sha256": "550892411e07de1631ba5d6744e46c2cc8bb7194fcab8cc2d3e1e68a4199d68f",
+      "image": "ciqual-9816.webp",
+      "sha256": "500a1c7cf26b84d7ff56a21342fb9632a6bb4f37714218e2245fc8ee4bbb0a65",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Fresh egg pasta after cooking with no added salt, a small bowl of tender golden yellow ribbon tagliatelle loosely folded into a natural nest, soft hydrated slightly glossy texture. No uncooked flour, sauce, cheese, oil or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-9871",
+      "names": {
+        "fr": "Pâtes sèches, au blé complet, cuites, sans sel ajouté",
+        "en": "Pasta, dry, wholewheat, cooked, no added salt",
+        "es": "Pasta seca, de trigo integral, cocida, sin sal añadida"
+      },
+      "source_sha256": "c6372d72ac8ca200ca5df8bf77dfc291b5917ae17b24adb75b8588b0c998bd97",
+      "image": "ciqual-9871.webp",
+      "sha256": "b84bbc56742293c365c5938a7dc5c58698b61cbf08e7c8cb6c6e58050bd767e0",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Dried wholewheat pasta after cooking with no added salt, a small bowl of cooked warm brown wholewheat fusilli spirals, tender hydrated texture with subtle bran flecks. Not raw hard pasta, no sauce, cheese, oil or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-9876",
+      "names": {
+        "fr": "Pâtes sèches, sans gluten (à base de lentilles corail), cuites, sans sel ajouté",
+        "en": "Pasta, dry, gluten-free (from red lentils), cooked, no added salt",
+        "es": "Pasta seca, sin gluten (a base de lenteja roja), cocida, sin sal añadida"
+      },
+      "source_sha256": "9b62a00711a7c4c84b2d79e813377d981c9c87f30975bac16ed7ddc4b5d14f17",
+      "image": "ciqual-9876.webp",
+      "sha256": "96c0a1e4058e434b357e596a8b116bf574ab6d8b2ef24f16dfdbee797012da29",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Dried gluten-free pasta made from red lentils after cooking, no added salt, a small bowl of cooked warm orange-red lentil fusilli spirals, soft hydrated texture and realistic muted orange color. Only red lentil pasta, not loose lentils or regular wheat pasta, no sauce, cheese, oil or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    }
+  ]
+}
