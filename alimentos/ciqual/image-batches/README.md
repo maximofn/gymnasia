@@ -418,6 +418,113 @@ Cien imágenes generadas individualmente con el mismo estilo aprobado. Ilustraci
 | `ciqual-20200` | Lechuga iceberg, cruda | [WebP](0021/ciqual-20200.webp) |
 | `ciqual-20210` | Pepino, pulpa sin piel, crudo | [WebP](0021/ciqual-20210.webp) |
 
+## Vigesimosegunda tanda (`0022`) — 100 imágenes
+
+Cien imágenes generadas individualmente con el mismo estilo aprobado: frutos secos, semillas y derivados, pastas, panes y quesos. Ilustraciones de Gymnasia generadas por IA, no proporcionadas ni validadas por ANSES. Cada ficha conserva su identidad y preparación, con prompts y huellas en [el manifiesto](0022/manifest.json); una imagen no permite distinguir todas las diferencias de formulación o nutrición.
+
+| ID | Alimento | Imagen |
+| --- | --- | --- |
+| `ciqual-15002` | Cacahuete, tostado, salado | [WebP](0022/ciqual-15002.webp) |
+| `ciqual-15006` | Coco, pulpa, fresco | [WebP](0022/ciqual-15006.webp) |
+| `ciqual-15007` | Coco, pulpa, seca | [WebP](0022/ciqual-15007.webp) |
+| `ciqual-15009` | Pistacho, tostado, salado | [WebP](0022/ciqual-15009.webp) |
+| `ciqual-15010` | Sésamo, semilla | [WebP](0022/ciqual-15010.webp) |
+| `ciqual-15013` | Crema de marrón o confitura de castaña, envasada | [WebP](0022/ciqual-15013.webp) |
+| `ciqual-15014` | Coco, pulpa inmadura, fresca | [WebP](0022/ciqual-15014.webp) |
+| `ciqual-15015` | Puré de castañas, en conserva | [WebP](0022/ciqual-15015.webp) |
+| `ciqual-15019` | Anacardo, tostado, salado | [WebP](0022/ciqual-15019.webp) |
+| `ciqual-15020` | Castaña, hervida/cocida en agua | [WebP](0022/ciqual-15020.webp) |
+| `ciqual-15021` | Castaña, tostada | [WebP](0022/ciqual-15021.webp) |
+| `ciqual-15024` | Castaña, cruda | [WebP](0022/ciqual-15024.webp) |
+| `ciqual-15029` | Brotes germinados de alfalfa, crudos | [WebP](0022/ciqual-15029.webp) |
+| `ciqual-15030` | Brotes germinados de rábano, frescos, crudos | [WebP](0022/ciqual-15030.webp) |
+| `ciqual-15032` | Alfalfa, semilla | [WebP](0022/ciqual-15032.webp) |
+| `ciqual-15033` | Avellana tostada, sin sal añadida | [WebP](0022/ciqual-15033.webp) |
+| `ciqual-15035` | Sésamo, semilla pelada | [WebP](0022/ciqual-15035.webp) |
+| `ciqual-15037` | Cacahuete, tostado en seco, salado | [WebP](0022/ciqual-15037.webp) |
+| `ciqual-15038` | Sésamo, tostado, semilla pelada | [WebP](0022/ciqual-15038.webp) |
+| `ciqual-15039` | Castaña o marrón, en conserva | [WebP](0022/ciqual-15039.webp) |
+| `ciqual-15041` | Almendra, repelada, sin sal añadida | [WebP](0022/ciqual-15041.webp) |
+| `ciqual-15042` | Almendra, tostada, salada | [WebP](0022/ciqual-15042.webp) |
+| `ciqual-15043` | Nuez de macadamia, tostada, salada | [WebP](0022/ciqual-15043.webp) |
+| `ciqual-15045` | Girasol, semilla, tostada, salada | [WebP](0022/ciqual-15045.webp) |
+| `ciqual-15046` | Nuez pecana, salada | [WebP](0022/ciqual-15046.webp) |
+| `ciqual-15050` | Avellana tostada, salada | [WebP](0022/ciqual-15050.webp) |
+| `ciqual-15063` | Cáñamo, semilla pelada | [WebP](0022/ciqual-15063.webp) |
+| `ciqual-15201` | Mazapán, envasado | [WebP](0022/ciqual-15201.webp) |
+| `ciqual-15202` | Mantequilla de cacahuete o crema de cacahuete | [WebP](0022/ciqual-15202.webp) |
+| `ciqual-15203` | Tahini o puré de sésamo | [WebP](0022/ciqual-15203.webp) |
+| `ciqual-9815` | Pasta fresca, al huevo, cruda | [WebP](0022/ciqual-9815.webp) |
+| `ciqual-9821` | Pasta seca, al huevo, cruda | [WebP](0022/ciqual-9821.webp) |
+| `ciqual-9822` | Pasta seca, al huevo, cocida, sin sal añadida | [WebP](0022/ciqual-9822.webp) |
+| `ciqual-9824` | Pasta seca, sin gluten, cocida, sin sal añadida | [WebP](0022/ciqual-9824.webp) |
+| `ciqual-9863` | Pasta o fideos asiáticos secos, de trigo y al huevo, natural, crudos | [WebP](0022/ciqual-9863.webp) |
+| `ciqual-9870` | Pasta seca, de trigo integral, cruda | [WebP](0022/ciqual-9870.webp) |
+| `ciqual-9874` | Pasta seca, sin gluten, cruda | [WebP](0022/ciqual-9874.webp) |
+| `ciqual-9875` | Pasta seca, sin gluten (a base de arroz y maíz), cocida, sin sal añadida | [WebP](0022/ciqual-9875.webp) |
+| `ciqual-9877` | Pasta seca, semiintegral, cocida, sin sal añadida | [WebP](0022/ciqual-9877.webp) |
+| `ciqual-9900` | Fideos de arroz secos, crudos | [WebP](0022/ciqual-9900.webp) |
+| `ciqual-9902` | Fideos de soja secos, crudos | [WebP](0022/ciqual-9902.webp) |
+| `ciqual-9903` | Fideos de soja, cocidos, sin sal añadida | [WebP](0022/ciqual-9903.webp) |
+| `ciqual-7002` | Pan de masa madre | [WebP](0022/ciqual-7002.webp) |
+| `ciqual-7004` | Pan blanco, tostado | [WebP](0022/ciqual-7004.webp) |
+| `ciqual-7007` | Pan de tradición francesa (p. ej.: baguette, hogaza...) | [WebP](0022/ciqual-7007.webp) |
+| `ciqual-7010` | Pan semiintegral (con harina T80 o T110) | [WebP](0022/ciqual-7010.webp) |
+| `ciqual-7098` | Pan con cereales y/o semillas, envasado | [WebP](0022/ciqual-7098.webp) |
+| `ciqual-7100` | Pan de campo | [WebP](0022/ciqual-7100.webp) |
+| `ciqual-7106` | Pan integral de centeno, envasado | [WebP](0022/ciqual-7106.webp) |
+| `ciqual-7107` | Pan con semillas sin gluten, envasado | [WebP](0022/ciqual-7107.webp) |
+| `ciqual-7109` | Pan de molde integral, sin corteza, envasado | [WebP](0022/ciqual-7109.webp) |
+| `ciqual-7113` | Pan de molde con cereales y/o semillas, envasado | [WebP](0022/ciqual-7113.webp) |
+| `ciqual-7114` | Pan ácimo, envasado | [WebP](0022/ciqual-7114.webp) |
+| `ciqual-7115` | Pan de salvado | [WebP](0022/ciqual-7115.webp) |
+| `ciqual-7116` | Pan de molde blanco sin gluten, envasado | [WebP](0022/ciqual-7116.webp) |
+| `ciqual-7117` | Pan de molde blanco, sin azúcares añadidos, envasado | [WebP](0022/ciqual-7117.webp) |
+| `ciqual-7130` | Pan sin gluten, envasado | [WebP](0022/ciqual-7130.webp) |
+| `ciqual-7160` | Pan blanco, sin sal añadida | [WebP](0022/ciqual-7160.webp) |
+| `ciqual-7170` | Pan panini | [WebP](0022/ciqual-7170.webp) |
+| `ciqual-7201` | Pan de molde blanco, sin corteza, envasado | [WebP](0022/ciqual-7201.webp) |
+| `ciqual-7210` | Pan de molde tipo brioche, envasado | [WebP](0022/ciqual-7210.webp) |
+| `ciqual-7225` | Pan brioche o vienés, artesanal | [WebP](0022/ciqual-7225.webp) |
+| `ciqual-7255` | Pan de cereales y/o semillas | [WebP](0022/ciqual-7255.webp) |
+| `ciqual-7256` | Muffin inglés integral, panecillo especial, envasado | [WebP](0022/ciqual-7256.webp) |
+| `ciqual-7257` | Muffin inglés, panecillo especial, envasado | [WebP](0022/ciqual-7257.webp) |
+| `ciqual-7259` | Pan para hamburguesa o perrito caliente (bun), envasado | [WebP](0022/ciqual-7259.webp) |
+| `ciqual-7262` | Pan para hamburguesa o perrito caliente (bun) integral, envasado | [WebP](0022/ciqual-7262.webp) |
+| `ciqual-7263` | Pretzel, pan fresco | [WebP](0022/ciqual-7263.webp) |
+| `ciqual-7347` | Galleta salada de mesa con semillas | [WebP](0022/ciqual-7347.webp) |
+| `ciqual-7352` | Tortita de arroz integral soplado | [WebP](0022/ciqual-7352.webp) |
+| `ciqual-7354` | Tortita de maíz soplado | [WebP](0022/ciqual-7354.webp) |
+| `ciqual-7355` | Tortita de arroz soplado, recubierta de chocolate | [WebP](0022/ciqual-7355.webp) |
+| `ciqual-12020` | Queso brie, sin precisar, de leche de vaca | [WebP](0022/ciqual-12020.webp) |
+| `ciqual-12060` | Queso tipo feta, 100% de leche de vaca | [WebP](0022/ciqual-12060.webp) |
+| `ciqual-12061` | Queso tipo feta, 100% de leche de oveja | [WebP](0022/ciqual-12061.webp) |
+| `ciqual-12068` | Queso fresco o especialidad quesera sin madurar, natural, para untar, en tarrina, sin reducción de materia grasa | [WebP](0022/ciqual-12068.webp) |
+| `ciqual-12069` | Queso fresco o especialidad quesera sin madurar, natural, para untar, en tarrina, con contenido reducido de materia grasa | [WebP](0022/ciqual-12069.webp) |
+| `ciqual-12070` | Queso fresco o especialidad quesera sin madurar, al ajo y finas hierbas, para untar, sin reducción de materia grasa | [WebP](0022/ciqual-12070.webp) |
+| `ciqual-12072` | Burrata | [WebP](0022/ciqual-12072.webp) |
+| `ciqual-12110` | Comté, de leche de vaca | [WebP](0022/ciqual-12110.webp) |
+| `ciqual-12114` | Gruyère, sin especificar (origen Francia o Suiza) | [WebP](0022/ciqual-12114.webp) |
+| `ciqual-12118` | Emmental, rallado | [WebP](0022/ciqual-12118.webp) |
+| `ciqual-12119` | Ossau-Iraty (queso de oveja) | [WebP](0022/ciqual-12119.webp) |
+| `ciqual-12121` | Fontina | [WebP](0022/ciqual-12121.webp) |
+| `ciqual-12122` | Pecorino (queso de oveja) | [WebP](0022/ciqual-12122.webp) |
+| `ciqual-12123` | Grana Padano (queso de leche de vaca) | [WebP](0022/ciqual-12123.webp) |
+| `ciqual-12300` | Queso fundido en lonchas, de leche de vaca | [WebP](0022/ciqual-12300.webp) |
+| `ciqual-12303` | Queso fundido en porción (triángulo), no enriquecido, de leche de vaca | [WebP](0022/ciqual-12303.webp) |
+| `ciqual-12325` | Cancoillotte (especialidad quesera fundida), de leche de vaca | [WebP](0022/ciqual-12325.webp) |
+| `ciqual-12520` | Queso azul de leche de vaca, no reducido en materia grasa | [WebP](0022/ciqual-12520.webp) |
+| `ciqual-12524` | Gorgonzola (queso de leche de vaca) | [WebP](0022/ciqual-12524.webp) |
+| `ciqual-12716` | Provolone (queso de leche de vaca) | [WebP](0022/ciqual-12716.webp) |
+| `ciqual-12726` | Cheddar, de leche de vaca | [WebP](0022/ciqual-12726.webp) |
+| `ciqual-12729` | Edam, de leche de vaca | [WebP](0022/ciqual-12729.webp) |
+| `ciqual-12735` | Mimolette joven (menos de 6 meses de curación), de leche de vaca | [WebP](0022/ciqual-12735.webp) |
+| `ciqual-12736` | Gouda, de leche de vaca | [WebP](0022/ciqual-12736.webp) |
+| `ciqual-12741` | Queso de pasta prensada no cocida tipo maasdam, sin contenido graso reducido, de leche de vaca | [WebP](0022/ciqual-12741.webp) |
+| `ciqual-12743` | Morbier, de leche de vaca | [WebP](0022/ciqual-12743.webp) |
+| `ciqual-12749` | Raclette (queso), de leche de vaca | [WebP](0022/ciqual-12749.webp) |
+| `ciqual-12767` | Gouda con comino, de leche de vaca | [WebP](0022/ciqual-12767.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
