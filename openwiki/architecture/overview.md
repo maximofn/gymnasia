@@ -5,10 +5,12 @@ description: Mapa de los dominios ejecutables de Gymnasia, sus integraciones pú
 tags: [local-first, mobile, web, byok, privacy]
 verified:
   - by: openwiki/0.6.0
-    at: 2026-10-29T14:43:04.676Z
+    at: 2026-11-06T15:26:57.218Z
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
+  - id: openwiki-source-ecc8cf626716f1ed125add59
+    resource: repo://apps/feedback-worker/package.json
   - id: openwiki-source-00f3917787dfe248860adc3b
     resource: repo://apps/feedback-worker/src/index.ts
   - id: openwiki-source-3cfa88bf1d888145532ec324
@@ -55,9 +57,11 @@ sources:
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
+  - id: openwiki-source-3a6fcd656a0c5c85a01f8e48
+    resource: repo://scripts/mobile-boundaries/check.mjs
   - id: openwiki-source-6f9dc1fe6ee9c17751b010df
     resource: repo://scripts/mobile-boundaries/policy.json
-generated: { by: "openwiki/0.6.0", at: "2026-10-29T14:43:04.676Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-06T15:26:57.218Z" }
 ---
 
 # Arquitectura del sistema
@@ -157,18 +161,16 @@ La tarea programada redacta denuncias `report` que superan 30 días y poda conta
 
 ## Validación enfocada
 
-Antes de cambiar estos límites, ejecute al menos:
+No hay un único comando que demuestre todos los límites de esta página. Use una base proporcional al cambio y añada la validación del dominio que realmente atraviesa:
 
 ```bash
 npm --workspace apps/mobile exec tsc --noEmit
 npm test
 npm run check:mobile-boundaries
-npm run check:health-safety
-npm run policy:bundle:check
-npm run check:policy-trust
-npm run check:anthropic-proxy
-npm --workspace apps/mobile run build:web
-npm --workspace apps/feedback-worker run test
 ```
 
-Para catálogos, añada `npm run check:catalogs`, `npm run test:catalogs` y `npm run test:catalogs:e2e`; para el proxy, `npm run test:proxy`. Los scripts de raíz incluyen comprobaciones y pruebas para fronteras móviles, política, seguridad sanitaria, proxy, catálogos, permisos y configuración Android, inventario de datos y release, además de pruebas deterministas, compilación web y E2E de la app. La suite del Worker utiliza entorno y dependencias de prueba, por lo que verifica creación, rechazo, límites, deduplicación, consulta de estado y retención sin token ni red reales.
+El último comando analiza los módulos fuente de `apps/mobile` —no los tests ni los artefactos generados— y falla ante módulos sin capa, imports locales no resolubles, dependencias entre capas no permitidas, imports que no usan la entrada pública del destino, excepciones heredadas ya innecesarias o ciclos. Es la comprobación que protege la separación entre shell, controladores, plataforma y dominios; no sustituye una prueba de comportamiento.
+
+Después seleccione el control según el límite modificado, sin convertir esta página en un inventario de scripts: política y seguridad sanitaria requieren sus checks de artefactos y reglas; catálogos, privacidad/persistencia, permisos o configuración nativa, proxy y release tienen controles propios. La [guía de inicio](../quickstart.md#mapa-compacto-de-tareas) enlaza cada superficie con su validación mínima y las páginas de [runtime del agente](../agent/runtime.md), [repositorios de contenido](../content/repositories.md), [shell móvil](../mobile/application-shell.md) y [build, release y pruebas](../operations/build-release-and-testing.md) especifican qué prueba focalizada corresponde.
+
+Para una modificación del Worker, ejecute `npm --workspace apps/feedback-worker run test`. La suite construye un entorno con D1 falso, token, sal y repositorio de prueba, y sustituye `fetch`; por ello verifica el contrato y los fallos del Worker sin usar la credencial ni la red reales. Para una ruta web, añada `npm --workspace apps/mobile run build:web`; la exportación no acredita por sí misma capacidades nativas.

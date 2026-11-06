@@ -61,6 +61,10 @@ sources:
     resource: repo://scripts/board-automation/verify-production.mjs
   - id: openwiki-source-2d527a0a2fddf1f1e4422fcf
     resource: repo://scripts/board-automation/workflow-contract.test.mjs
+  - id: openwiki-source-479a8e1beb0e92cbabe03d8c
+    resource: repo://scripts/catalogs/ciqual-image-batches.mjs
+  - id: openwiki-source-a98f882a58d31990459e44fd
+    resource: repo://scripts/catalogs/ciqual-image-samples.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
   - id: openwiki-source-f807c3c379c670c5871c2b49
@@ -87,10 +91,10 @@ sources:
     resource: repo://scripts/production-release/vm-contract.test.mjs
   - id: openwiki-source-b368a0060923f31656ab90b3
     resource: repo://scripts/production-release/workflow.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-11-04T15:49:26.600Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-06T15:26:57.218Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-11-04T15:49:26.600Z
+    at: 2026-11-06T15:26:57.218Z
 ---
 
 
@@ -155,7 +159,7 @@ Asocie cada uno a su riesgo: `expo start` sirve para iterar; `expo run:android` 
 | Configuración, plugin o dependencia Android | `npm run check:android-permissions && npm run test:android-permissions && npm run check:android-native-config && npm run test:android-native-config` | Contrasta configuración, manifests de dependencias y configuración nativa generable con sus políticas; los tests prueban los guard rails. Requiere `node_modules`, pero no produce el artefacto final ni sustituye un dispositivo. |
 | Claves locales, destinos HTTPS o impacto de permisos en privacidad | `npm run check:data-inventory && npm run test:data-inventory` | Impide que el inventario publicable deje de describir las claves, hosts y permisos declarados por la app. |
 | Texto legal o política de privacidad publicada | `npm run check:legal && npm run test:legal` | Comprueba los artefactos legales generados y sus contratos. Para el sitio publicado, añada `npm run test:privacy:e2e`. |
-| Catálogos, CIQUAL o sus salidas móviles | `npm run check:catalogs && npm run check:ciqual && npm run check:ciqual:mobile && npm run test:catalogs` | Los tres checks no escriben: comprueban los contratos/generados de catálogos, la importación CIQUAL y su proyección móvil; los tests cubren regresiones. |
+| Catálogos, CIQUAL, imágenes CIQUAL o sus salidas móviles | `npm run check:catalogs && npm run check:ciqual && npm run check:ciqual:mobile && npm run check:ciqual:images && npm run test:catalogs` | Los cuatro checks no escriben: comprueban los contratos y generados de catálogos, la importación CIQUAL, su proyección móvil y las muestras/tandas de imágenes CIQUAL; los tests cubren regresiones. |
 | Consumidores de catálogos | `npm run test:catalogs:e2e` | Prueba la proyección web con fixtures e indisponibilidad simulada, sin consultar servicios externos. |
 | Chat/agente web | `npm run test:agent:e2e` | Ejecuta las E2E de chat y proveedor de desarrollo contra navegador y dependencias interceptadas; no acredita proveedores reales ni funcionalidades nativas. |
 | Recuperación de almacenamiento y exportación cifrada en web | `npm run test:storage-recovery:e2e` | Exporta web development, siembra `localStorage` y usa Chromium para comprobar el flujo de cuarentena; no ejecuta almacenamiento, selector de archivos ni compartir nativos. |
@@ -218,6 +222,7 @@ Los generadores de catálogo separan comprobar de escribir:
 npm run check:catalogs
 npm run check:ciqual
 npm run check:ciqual:mobile
+npm run check:ciqual:images
 npm run test:catalogs
 npm run test:catalogs:e2e
 npm run sync:catalogs
@@ -225,7 +230,7 @@ npm run sync:catalogs
 node scripts/catalogs/generate.mjs --write --domain alimentos
 ```
 
-`check:catalogs` no modifica el checkout y verifica todos los catálogos y sus artefactos; no acepta `--domain`. `check:ciqual` y `check:ciqual:mobile` son controles separados para la importación CIQUAL y su salida móvil, por lo que deben acompañar a un cambio que las afecte. `sync:catalogs` o `--write --domain` materializan salidas que deben revisarse y confirmarse junto con su fuente. Después, los tests y la E2E de consumidores comprueban que una salida correcta sea usable; escribir no reemplaza esa validación.
+`check:catalogs` no modifica el checkout y verifica todos los catálogos y sus artefactos; no acepta `--domain`. `check:ciqual` y `check:ciqual:mobile` son controles separados para la importación CIQUAL y su salida móvil, por lo que deben acompañar a un cambio que las afecte. `check:ciqual:images` valida las muestras y tandas editoriales: exige una muestra de estilo aprobada, manifiestos completos, hashes, WebP opaco de 1024 × 1024 y referencias de estilo aprobadas; estas imágenes no modifican los datos de ANSES ni se incorporan automáticamente a la proyección móvil. `sync:catalogs` o `--write --domain` materializan salidas que deben revisarse y confirmarse junto con su fuente. Después, los tests y la E2E de consumidores comprueban que una salida correcta sea usable; escribir no reemplaza esa validación.
 
 De modo equivalente, `check:android-permissions` revisa `app.json` y los manifests de dependencias instaladas, mientras `test:android-permissions` valida la capacidad del escáner para detectar las clases de infracción. Un check verde valida el contrato del checkout instalado, no la aceptación por Google Play ni el comportamiento de una alarma en hardware.
 
@@ -239,7 +244,7 @@ Por ello, use una E2E cuando cambie la interfaz, el contrato de almacenamiento o
 
 `agent-tests.yml` se activa en PR y `main` solo para sus rutas declaradas. Su job Node usa Node 22, `npm ci`, permiso `contents: read` y diez minutos para verificar prompt integrado, política sanitaria y sus tests, `npm test`, límites de arquitectura móvil, la E2E Metro del dev store, feedback worker, automatización OpenWiki, los tests del controlador de release Android y TypeScript. El job `android-controller`, separado y sin credenciales, ejecuta con Python/Bash los contratos de aprovisionamiento, registro, canal de smoke y la sintaxis del instalador. El proxy corre en otro job con `uv`, de modo que no forma parte del entorno Node. Un cambio fuera de esos filtros no recibe este workflow.
 
-`catalog-tests.yml` se activa en PR y `main` para las rutas declaradas de datos de catálogo, generador, consumidores móviles, inventario y sus dependencias de workflow. En Ubuntu 24.04 usa Node 22 y `npm ci`, instala Chromium y ejecuta los checks `check:catalogs`, `check:ciqual` y `check:ciqual:mobile`, seguidos de `test:catalogs` y `test:catalogs:e2e`. Esta última capa prueba consumidores web con sus dobles, sin servicios externos; el workflow no sustituye los controles Android ni un release.
+`catalog-tests.yml` se activa en PR y `main` para las rutas declaradas de datos de catálogo, generador e imágenes, consumidores móviles, inventario y sus dependencias de workflow. En Ubuntu 24.04 usa Node 22 y `npm ci`, instala Chromium y ejecuta los checks `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `check:ciqual:images`, seguidos de `test:catalogs` y `test:catalogs:e2e`. Esta última capa prueba consumidores web con sus dobles, sin servicios externos; el workflow no sustituye los controles Android ni un release.
 
 ## Tablero de arquitectura: gates, despliegue y conciliación
 
@@ -372,7 +377,7 @@ Incluso con fuente, AAB, APK y Play verificados, instale el APK en un dispositiv
 
 - **Cambio aislado de lógica:** añada/ejecute el test determinista responsable, `npm test` y typecheck si modifica el workspace móvil.
 - **Cambio de UI, persistencia o flujo web:** añada `build:web` y la E2E concreta; amplíe a flujos vecinos cuando comparten el contrato.
-- **Cambio de catálogo:** ejecute `check:catalogs`, `test:catalogs` y `test:catalogs:e2e`; añada `check:ciqual` y `check:ciqual:mobile` si afecta la importación o la proyección móvil CIQUAL. Ejecute escritura solo si debe actualizar salidas.
+- **Cambio de catálogo:** ejecute `check:catalogs`, `test:catalogs` y `test:catalogs:e2e`; añada `check:ciqual` y `check:ciqual:mobile` si afecta la importación o la proyección móvil CIQUAL, y `check:ciqual:images` si cambia muestras, tandas o referencias de imagen. Ejecute escritura solo si debe actualizar salidas.
 - **Cambio de privacidad o datos:** `check:data-inventory`, sus tests, checks legales y la E2E de privacidad o borrado cuando modifique la experiencia publicada o de eliminación.
 - **Cambio de permiso, plugin o dependencia nativa:** guard rail de permisos, tipado, export y build/prueba nativa; una E2E web no basta.
 - **Cambio sensible de prompt o salud:** gates de política más autorización explícita antes de merge; promoción firmada posterior si corresponde.

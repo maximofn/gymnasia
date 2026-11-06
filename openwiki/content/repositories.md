@@ -3,10 +3,9 @@ type: concepto
 title: Repositorios de contenido y catálogos
 description: Contratos de edición, generación, publicación y consumo offline de los catálogos de alimentos, productos, recetas y ejercicios. Incluye la importación versionada de CIQUAL y el runtime móvil que verifica artefactos remotos.
 tags: [content, catalogs, validation, offline, mobile]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-29T14:43:04.676Z
 sources:
+  - id: openwiki-source-dcc8df172a5f2296d6d2f3bc
+    resource: repo://alimentos/ciqual/image-batches/README.md
   - id: openwiki-source-947f1d235f257ae2a1e059b1
     resource: repo://alimentos/ciqual/README.md
   - id: openwiki-source-929e8e1df23628a3f3848ff8
@@ -39,10 +38,18 @@ sources:
     resource: repo://apps/mobile/scripts/catalogs.e2e.mjs
   - id: openwiki-source-d54ece17be93a2b0fabf9d35
     resource: repo://ejercicios/SOURCES.md
-  - id: openwiki-source-5b54a58d1b51cd490b0e7162
-    resource: repo://package.json
   - id: openwiki-source-b896fa4e3ea6b5bfcc4ef173
     resource: repo://scripts/catalogs/catalogs.mjs
+  - id: openwiki-source-479a8e1beb0e92cbabe03d8c
+    resource: repo://scripts/catalogs/ciqual-image-batches.mjs
+  - id: openwiki-source-3d1a9d1127deb646eef6e057
+    resource: repo://scripts/catalogs/ciqual-image-batches.test.mjs
+  - id: openwiki-source-a98f882a58d31990459e44fd
+    resource: repo://scripts/catalogs/ciqual-image-samples.mjs
+  - id: openwiki-source-411e49560b8040e2084caa53
+    resource: repo://scripts/catalogs/ciqual-image-samples.test.mjs
+  - id: openwiki-source-ffa640596f2637a03b25785c
+    resource: repo://scripts/catalogs/ciqual-mobile.mjs
   - id: openwiki-source-87ef8bdaf847493a7f3a10e0
     resource: repo://scripts/catalogs/exercise-pagination.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
@@ -51,7 +58,10 @@ sources:
     resource: repo://scripts/catalogs/schemas/ejercicio.schema.json
   - id: openwiki-source-025372dfd931964e023a41cf
     resource: repo://scripts/catalogs/schemas/food-entry.schema.json
-generated: { by: "openwiki/0.6.0", at: "2026-10-29T14:43:04.676Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-06T15:26:57.218Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-06T15:26:57.218Z
 ---
 
 # Repositorios de contenido y catálogos
@@ -79,18 +89,19 @@ La inspección bloquea JSON o schema inválido, discrepancia entre fichero e ID,
 
 ## Generación y guardas de publicación
 
-Los puntos de entrada habituales desde la raíz son:
+El entrypoint del generador es `scripts/catalogs/generate.mjs`. Desde la raíz, el contrato del CLI es:
 
 ```bash
-npm run sync:catalogs
-npm run check:catalogs
-npm run test:catalogs
-npm run test:catalogs:e2e
+node scripts/catalogs/generate.mjs --write
+node scripts/catalogs/generate.mjs --check
+node scripts/catalogs/generate.mjs --write --domain alimentos
+node --test scripts/catalogs/*.test.mjs
+node apps/mobile/scripts/catalogs.e2e.mjs
 ```
 
-`sync:catalogs` inspecciona las entradas y escribe derivados. `check:catalogs` inspecciona los cuatro dominios, compara todos los derivados esperados y detecta tanto drift como JSON inesperado en `ejercicios/catalog-v1/`. No acepta `--domain`: el check es deliberadamente global. En cambio, una regeneración enfocada sí puede usar `node scripts/catalogs/generate.mjs --write --domain alimentos`; úsela solo cuando se haya determinado qué derivados de ese dominio deben cambiar.
+`--check` siempre inspecciona los cuatro dominios y compara los derivados esperados; rechaza `--domain`, para evitar validar solo una parte de una publicación. `--write` inspecciona antes de escribir y puede limitar la escritura a un dominio. Una escritura enfocada sirve únicamente cuando ya se determinó qué derivados de ese dominio deben cambiar; antes de integrar, ejecutar la comprobación global.
 
-La escritura prepara archivos temporales, instala primero contenido y elimina artefactos de ejercicio obsoletos; `catalog-v1/manifest.json` se renombra al final. Ante una falla, revierte reemplazos y restaura los borrados que alcance a recuperar. Esta orden protege al consumidor de un manifiesto que describa páginas aún no publicadas, aunque una falla de rollback se comunica como error y debe investigarse antes de publicar.
+La publicación de derivados usa sustituciones temporales, instala el contenido antes de eliminar artefactos de ejercicio obsoletos y publica `catalog-v1/manifest.json` al final. Si falla una operación, intenta revertir sustituciones y restaurar borrados; un error de rollback impide considerar publicable el resultado. Este orden evita que el manifiesto activo describa páginas que aún no están instaladas.
 
 ```mermaid
 flowchart TD
@@ -99,7 +110,7 @@ flowchart TD
     Repair --> Edit
     Inspect -->|"Válido"| Derive["Generar agregados, baseline y catalog-v1"]
     Derive --> Install["Instalar artefactos y manifiesto al final"]
-    Install --> Check["Ejecutar check:catalogs"]
+    Install --> Check["Comprobación global"]
     Check -->|"Drift"| Derive
     Check -->|"Al día"| Commit["Confirmar entrada y derivados juntos"]
 ```
@@ -112,16 +123,30 @@ flowchart TD
 
 CIQUAL conserva 3.484 fichas locales procedentes de los cinco XML oficiales de la entrega ANSES 2025. Las fichas, índices, diccionarios y manifiesto se generan de forma determinista; `translations.es.json` es la superficie editorial para las traducciones y vincula cada nombre a las etiquetas originales mediante SHA-256. No se deben editar a mano los archivos generados de `alimentos/ciqual/`.
 
-La importación puede descargar los XML fijados o usar una copia local. Comprueba hashes antes de convertir y `check:ciqual` valida la entrega sin red; con `--source-dir` además reconstruye y compara todos los archivos. Después de cambiar la importación o las traducciones, genere y compruebe la proyección móvil:
-
-```bash
-npm run import:ciqual -- --download
-npm run check:ciqual
-npm run sync:ciqual:mobile
-npm run check:ciqual:mobile
-```
+La importación puede descargar los XML fijados o usar una copia local. Comprueba hashes antes de convertir y `check:ciqual` valida la entrega sin red; con `--source-dir` además reconstruye y compara todos los archivos. Después de cambiar la importación o las traducciones, genere y compruebe la proyección móvil con `scripts/catalogs/ciqual-mobile.mjs`: `--write` actualiza `apps/mobile/catalogs/generated/ciqualBaseline.generated.json` y, sin esa opción, compara el archivo con la proyección esperada. El script parte de `all.json` y `groups.json`, exige traducción española, base de 100 g y los cinco roles nutricionales; solo conserva un valor numérico cuando su calificador es `reported`, y transporta los demás calificadores.
 
 La proyección integrada contiene los nombres, categoría y cinco valores por 100 g necesarios en la app. Conserva calificadores como límite, traza o dato ausente: no convierte incertidumbre en cero. Es una fuente independiente, `anses_ciqual_2025`, disponible en el primer arranque sin conexión y actualizable únicamente mediante una nueva versión de la app; no reemplaza IDs de los catálogos curados ni crea una caché remota de CIQUAL.
+
+### Muestras y tandas de imágenes: material editorial separado
+
+Las imágenes de `alimentos/ciqual/image-samples/` y `image-batches/<NNNN>/` son ilustraciones de Gymnasia, no datos ni imágenes de ANSES. Son salidas editoriales versionadas junto con un manifiesto, pero no modifican fichas, nutrientes, traducciones ni el baseline móvil; por tanto, añadirlas no las hace consumibles por la app. No se deben confundir con los recursos declarados de los catálogos curados.
+
+El validador lee `all.json` como autoridad de IDs y nombres. Cada manifiesto exige un ID CIQUAL existente y único, nombres idénticos a la fuente, huella de esos nombres, prompt, atribución y una ruta `ciqual-<id>.webp`; también exige una imagen de referencia permitida. Los bytes deben coincidir con el SHA-256 del manifiesto y decodificar como WebP opaco, no animado, de 1024 × 1024. Las muestras deben estar aprobadas por el mantenedor antes de aceptar tandas; cada tanda contiene solo su manifiesto y las imágenes listadas, usa un directorio numérico de cuatro dígitos y no puede repetir IDs de muestras ni de otra tanda.
+
+```mermaid
+flowchart TD
+    Source["all.json de CIQUAL"] --> Manifest["Manifiesto de muestra o tanda"]
+    Reference["Referencia de estilo aprobada"] --> Manifest
+    Manifest --> Validate["Validar identidad, huella, archivos y WebP"]
+    Validate -->|"Falla"| Fix["Corregir manifiesto o imagen"]
+    Fix --> Validate
+    Validate -->|"Pasa"| Editorial["Confirmar material editorial"]
+    Editorial --> Separate["Sin cambios en fichas ni baseline móvil"]
+```
+
+*La validación ancla las ilustraciones a la identidad de CIQUAL, pero las mantiene fuera del contrato nutricional y del artefacto móvil.*
+
+Para validar sin escribir, ejecutar `node scripts/catalogs/ciqual-image-batches.mjs --check`; `--next <1..50>` solo lista los primeros alimentos pendientes en el orden de la fuente. Para una nueva tanda, seleccionar IDs aún pendientes, preservar preparación y variedad, no sobrescribir imágenes existentes y registrar prompt, referencia y hash. La validación mínima antes de una PR de imágenes es el check de tandas y las pruebas de catálogos; además, inspeccionar visualmente cada WebP final. Para cambios de fichas o traducciones, la validación mínima proporcional es comprobar la importación, regenerar/verificar el baseline móvil y ejecutar el check global de catálogos antes de la E2E móvil cuando se modifica un contrato de consumo.
 
 ## Fuentes nutricionales, procedencia e imágenes
 
@@ -168,6 +193,6 @@ Si el shard de búsqueda no está disponible o es inválido, la búsqueda recorr
 
 Las referencias persistidas usan `{ schemaVersion, sourceId, itemId }` dentro de un enlace `linked`, o conservan un motivo `unresolved`; no dependen del nombre que ve la persona. Al resolver ejercicios enlazados se actualizan nombre, grupo muscular e imagen en las plantillas, por lo que un renombre publicado mantiene el vínculo. Para contenido heredado sin enlace, la migración automática solo acepta una coincidencia exacta o un alias con candidato único. Una coincidencia ambigua requiere selección manual.
 
-Al añadir contenido, asigne un ID estable, declare y añada exactamente los recursos requeridos, ejecute `npm run sync:catalogs` y confirme el resultado. Cambiar IDs, schemas, rutas de imágenes o el formato de `catalog-v1` modifica un contrato de publicación, caché y referencias: requiere una estrategia explícita de compatibilidad o migración. Los puntos de extensión seguros son nuevas fichas que cumplen el schema y nuevos datos CIQUAL regenerados desde su fuente; no editar agregados, shards, baselines ni schemas generados directamente.
+Al añadir contenido, asigne un ID estable, declare y añada exactamente los recursos requeridos, ejecute `node scripts/catalogs/generate.mjs --write` y confirme el resultado con `--check`. Cambiar IDs, schemas, rutas de imágenes o el formato de `catalog-v1` modifica un contrato de publicación, caché y referencias: requiere una estrategia explícita de compatibilidad o migración. Los puntos de extensión seguros son nuevas fichas que cumplen el schema y nuevos datos CIQUAL regenerados desde su fuente; no editar agregados, shards, baselines ni schemas generados directamente.
 
-Las pruebas unitarias de catálogos cubren determinismo, drift, imágenes, rutas, limpieza de artefactos obsoletos y rollback de escritura. Las del runtime cubren manifiestos y hashes, activación, recuperación de caché, migración V2/V3, versiones anterior/activa y fallos de persistencia. La E2E exporta la app web e intercepta GitHub Raw para verificar agregados nutricionales, selector paginado con scroll y búsqueda, enlaces que sobreviven a un renombre, continuidad offline, migración, disponibilidad parcial, rechazo de caché manipulada y selección manual ante alimentos ambiguos. También cubre CIQUAL integrado sin red, sus datos incompletos y la escritura por referencia rechazada cuando faltan nutrientes.
+Las pruebas unitarias de catálogos cubren determinismo, drift, imágenes, rutas, limpieza de artefactos obsoletos y rollback de escritura. Las pruebas de muestras y tandas CIQUAL comprueban que no cambian la fuente nutricional ni añaden imágenes al baseline móvil, y rechazan hashes, formato, dimensiones, IDs, nombres, referencias, duplicados y archivos huérfanos incorrectos. Las del runtime cubren manifiestos y hashes, activación, recuperación de caché, migración V2/V3, versiones anterior/activa y fallos de persistencia. La E2E exporta la app web e intercepta GitHub Raw para verificar agregados nutricionales, selector paginado con scroll y búsqueda, enlaces que sobreviven a un renombre, continuidad offline, migración, disponibilidad parcial, rechazo de caché manipulada y selección manual ante alimentos ambiguos. También cubre CIQUAL integrado sin red, sus datos incompletos y la escritura por referencia rechazada cuando faltan nutrientes.

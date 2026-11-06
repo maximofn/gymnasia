@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:d9dc4acb2f7501282b619fcb17815efaeac7c4f09d799f12496d29e5803537af",
+  "pageVersion": "sha256:7a7ce8c24c347d176df733b2c1f8f9ffd088039d4b478bcf2568745c23301e09",
   "claims": [
     {
       "id": "claim_ba30cd1761e84be4b9024a08a918264b",
@@ -80,15 +80,11 @@
     },
     {
       "id": "claim_fda0eed0a7844a7095f9d13f8c9ec608",
-      "statement": "`App` selecciona los últimos 20 mensajes antes de adaptar el historial a cualquier proveedor; para Google, `prepareGoogleInteractionRequest` reduce ese historial a como máximo diez intercambios, elimina imágenes antiguas y descarta intercambios adicionales para respetar los presupuestos de bytes.",
+      "statement": "`App` selecciona los últimos 20 mensajes antes de adaptar el historial a cualquier proveedor; en la ruta Coach de Google, `requestProviderToolChat` sobrescribe el máximo genérico de diez y permite hasta 20 intercambios antes de que `prepareGoogleInteractionRequest` elimine imágenes antiguas o descarte intercambios para respetar los presupuestos de bytes.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/App.tsx#L4947-L4948",
+          "resource": "repo://apps/mobile/App.tsx#L4959-L4960",
           "version": "repo-lines-v1:sha256:932033ead9989406103f30349bf8a73e2b047c094b4714cb75c0c0f9e0b88c26:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTMzNmZkNDdmZTNiN2NhMDRmNjk0ZDhjMDNmZDRiYTkwMzA5NjkxODk4ZjFlOWI2YjM2MDYwZDNmOTAzYzVkOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDc0NmEzNTI1ODc1Y2JkOTRkYTM3MzBmM2M1MTcxZDFmZWJkYWVkMzQwYmY4ZGUxZjZmYmFlYTFhYzIzOWYzMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzU5MGEzMzg1NTM2MzEyZjI2YTkxN2QwNDIxYmU4MjFmYjlhNTQzMjM5NzE1MjU3NWE5ZGQ1OWI5ZmQ5ZTc1ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWU1ODMzODhhNTZlNmJkZDc5NjM2N2I4M2FiZGNjYzc0MDIxMjc5NzkxZmU3MmFiNDg5ZGQ4NDdkMzI4ZjI4ZSJ9"
-        },
-        {
-          "resource": "repo://apps/mobile/agent/coachContext.ts#L1-L7",
-          "version": "repo-lines-v1:sha256:db355317700b9b8dc9badee3e90d76ab9d24ac7a5422d2dd76c44315080246e8:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjMxNWQ0MWQwNjJjOTQ0YWNiM2Y2MThlYzI0YWEyY2JhNGJjMTVkNGZhZDNhYTBjM2YyMDUwY2FlODgxMmVkNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
         },
         {
           "resource": "repo://apps/mobile/agent/googleContextBudget.ts#L186-L276",
@@ -97,6 +93,10 @@
         {
           "resource": "repo://apps/mobile/agent/googleContextBudget.ts#L21-L27",
           "version": "repo-lines-v1:sha256:87f0266a281cbcdedc04903b5b95360ee4b373dcf4ad72d3323c232396758f1a:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTJiNWJmZTM2MGY2ZTY4ZTUxZWRiZmNlNWJjNWQ2MTQwMTg5MzYzNTRkNmQ4Yzc4ZWNhNmY4ZTVmMGRjMzg0MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWExZDFhNjMzOTAyMjljNzk4MzQ3ZTgzYTA0MDU0NDFjOTQwMDAzNTI4NGFkMTY4YzFiZjZjZGYxZDcwYTM3MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDQzNTU4NDg0NTE4YzE3Njc3ZmI0N2RjYmNmYWZkYTU0YzVkNmYwNzIzOGE5NTYzYzAyN2NiNDgwNjM3OWE1ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDQxMjEwYWIzMmVjYzQ4N2Y5YjZjNmZkNjllZTFhZmUzNjc3ZDFhMzc0M2EwMDY1MmVmMDIwMGY5MzExOTRiNyJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolClient.ts#L331-L360",
+          "version": "repo-lines-v1:sha256:423a6c2d8871fb172519b191589cab9bc2a92428d90212e5264e0f8c98d7fe6f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NjYwMWQ1MzAwNzNkODU2Y2ZjMDhmNmViMzQ0ZjY0ZjAwNTQ2NGQyMTQ4MGVmNzIxYTYyOTQ2MWNiNzhkODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhODI2NDRjNjAyNDg2YzFhM2EzYWJlYTY4MzM1Njk4MDFiMTM0YjRkMDQxMTBkZDRkOTdjOTMwMDU0Y2ZkNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBiNWViY2RlZWQxMWM3YjZhYzBlZDU1Mjk2NTM4Y2JlZjIyYWEzODVkNzFkNGYzMGQ5OGI2YWNmZjVlMDVlNTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4M2JkMDM3NjA2ZDU2MjI1NjkzZDFkOTQ4NzNjYTg5N2YwYmI0MDU3Y2ZhNmZmYTAyMzRiYjYyOTYyOWRkOWEifQ"
         }
       ]
     },
@@ -211,6 +211,6 @@
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-11-03T15:32:51.876Z"
+    "at": "2026-11-06T15:26:57.218Z"
   }
 }

@@ -1,20 +1,23 @@
 ---
 type: guía de enrutamiento de cambios
 title: Guía de inicio para cambios seguros
-description: Ruta breve para localizar el dominio responsable de un cambio en Gymnasia y escoger la validación mínima que corresponde. Distingue arquitectura local-first, privacidad, contenido, agente, operación y pruebas.
-tags: [quickstart, change-routing, mobile, operations, local-first]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-29T14:43:04.676Z
+description: Ruta breve para localizar el dominio responsable de un cambio en Gymnasia y escoger la validación mínima correspondiente. Incluye la investigación cautelosa de comportamiento real del agente sin confundir una muestra con cobertura de flota.
+tags: [quickstart, change-routing, mobile, operations, local-first, agent, runtime]
 sources:
   - id: openwiki-source-88e87a6a49f8c4bba044cff2
     resource: repo://apps/anthropic_proxy/README.md
   - id: openwiki-source-45602fc0f28e2e3187ce8790
     resource: repo://apps/feedback-worker/README.md
+  - id: openwiki-source-b14a4ecd65e83b5561f88e2a
+    resource: repo://apps/mobile/agent/providerToolLoop.ts
+  - id: openwiki-source-9e7ddd51c09caf628a81acad
+    resource: repo://apps/mobile/agent/toolOperationLedger.ts
   - id: openwiki-source-12bdb95b5f863aab1ff9964a
     resource: repo://apps/mobile/index.js
   - id: openwiki-source-e86fe7b76c693666bc2cb828
     resource: repo://apps/mobile/package.json
+  - id: openwiki-source-ea083ff1c1afd80c588dedd8
+    resource: repo://ops/openwiki-runtime-telemetry.json
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
@@ -23,7 +26,10 @@ sources:
     resource: repo://scripts/catalogs/generate.mjs
   - id: openwiki-source-92ee27e969d35b12e4aae573
     resource: repo://scripts/data-inventory/check.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-10-29T14:43:04.676Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-06T15:26:57.218Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-06T15:26:57.218Z
 ---
 
 # Guía de inicio para cambios seguros
@@ -67,7 +73,8 @@ npm --workspace apps/mobile run start -- --tunnel --clear
 | Entrenamiento, series, historial o ejecución de ejercicios | [Entrenamiento móvil](mobile/training.md) | `npm test` y la E2E de entrenamiento específica afectada. |
 | Dieta, alimento personal, catálogo nutricional o estimación asistida | [Dieta, catálogo y estimación de alimentos](mobile/diet-and-food-estimation.md) | `npm run test:diet:e2e`; añada pruebas del agente si una *tool* interviene. |
 | Catálogos fuente, CIQUAL, agregados, imágenes o consumidor offline | [Repositorios de contenido y catálogos](content/repositories.md) y [Generación y uso de imágenes de catálogo](content/image-generation.md) | `npm run check:catalogs && npm run test:catalogs && npm run test:catalogs:e2e`; sume los checks CIQUAL si modifica su importación o proyección móvil. |
-| Conversación, herramientas, confirmaciones, reintentos o contexto de política | [Runtime del agente y herramientas](agent/runtime.md) | pruebas focalizadas, `npm test` y `npm run test:agent:e2e` si cambia el recorrido web. |
+| Conversación, herramientas, confirmaciones, reintentos o contexto de política | [Runtime del agente y herramientas](agent/runtime.md) | Ejecute sus pruebas focalizadas; añada `npm test` y `npm run test:agent:e2e` si cambia el recorrido web. |
+| Comportamiento, latencia, coste, errores o uso real del agente | [Runtime del agente y herramientas](agent/runtime.md) y [Comportamiento en ejecución y oportunidades](operations/runtime-behavior.md) | Use el informe consolidado para localizar la señal y el runtime para comprobar el límite/código implicado; ejecute la prueba focalizada del contrato que vaya a cambiar. |
 | Clave BYOK, proveedor, modelo, streaming o continuación | [Configuración de proveedores](agent/provider-configuration.md) y [Streaming y continuaciones](agent/provider-streaming.md) | pruebas del adaptador y la E2E del agente afectada. |
 | Prompt, regla sanitaria, artefacto firmado o promoción de política | [Arquitectura del sistema](architecture/overview.md) | `npm run check:health-safety`, `npm run test:health-safety`, los checks de política aplicables y la autorización requerida. |
 | Permiso, plugin Expo, configuración nativa, notificación, build o release | [Build, release y pruebas](operations/build-release-and-testing.md) | guard rails de Android aplicables, typecheck, export y una build/prueba nativa representativa. |
@@ -82,7 +89,11 @@ npm --workspace apps/mobile run start -- --tunnel --clear
 
 La exportación web y las pruebas deterministas no prueban capacidades nativas. Un cambio de permisos, plugins, notificaciones, recursos, instalación o distribución requiere los controles específicos y una comprobación nativa —preferiblemente en dispositivo—. Del mismo modo, una E2E web valida el recorrido controlado y sus dobles, no un proveedor externo ni Android/iOS.
 
-Para modificaciones de privacidad, no basta con que la UI funcione: actualice y compruebe el inventario de datos cuando cambien claves locales, hosts HTTPS o permisos, y añada el check legal o la E2E de privacidad/borrado si cambia la experiencia o el contenido publicado. Para contenido, `check:*` detecta *drift* sin escribir; use `sync:catalogs` solo cuando deba materializar y revisar artefactos derivados.
+### Investigar el runtime del agente
+
+Para una pregunta de comportamiento, latencia, coste, errores o uso real, siga primero [Runtime del agente y herramientas](agent/runtime.md) para distinguir turnos, reintentos, rondas, presupuesto y efectos; consulte después el [informe consolidado de runtime](operations/runtime-behavior.md) para la señal agregada y sus hipótesis. La evidencia disponible es una muestra truncada: sirve para priorizar investigación, **no** sustituye pruebas focalizadas ni representa tasas de flota, disponibilidad, frecuencia, coste o latencia poblacional. No atribuya una llamada o duración agregada a un mensaje, una tool o una escritura sin contrastarla con el control de flujo y el contrato del dominio.
+
+Para modificaciones de privacidad, no basta con que la UI funcione: actualice y compruebe el inventario de datos cuando cambien claves locales, hosts HTTPS o permisos, y añada el check legal o la E2E de privacidad/borrado si cambia la experiencia o el contenido publicado. Para contenido, `check:*` detecta *drift* sin escribir; use `sync:catalogs` solo cuando deba materializar y revisar artefactos derivados. `check:catalogs` valida todos los dominios; para materializar una salida limitada, use `node scripts/catalogs/generate.mjs --write --domain <dominio>`.
 
 ## Límites que deben sobrevivir al cambio
 
