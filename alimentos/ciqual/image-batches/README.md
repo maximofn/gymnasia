@@ -311,6 +311,113 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-9321` | [Cebada perlada, cruda](0020/ciqual-9321.webp) |
 | `ciqual-9380` | [Trigo sarraceno integral, crudo](0020/ciqual-9380.webp) |
 
+## Vigesimoprimera tanda (`0021`) — 100 imágenes
+
+Cien imágenes generadas individualmente con el mismo estilo aprobado. Ilustraciones de Gymnasia generadas por IA, no proporcionadas ni validadas por ANSES. Se conserva el nombre y la preparación de cada ficha, con prompts y huellas en [el manifiesto](0021/manifest.json).
+
+| ID | Alimento | Imagen |
+| --- | --- | --- |
+| `ciqual-11002` | Perifollo, fresco | [WebP](0021/ciqual-11002.webp) |
+| `ciqual-11003` | Cebollino o cebolleta, fresco | [WebP](0021/ciqual-11003.webp) |
+| `ciqual-11004` | Pepinillo, en vinagre | [WebP](0021/ciqual-11004.webp) |
+| `ciqual-11005` | Curry, en polvo | [WebP](0021/ciqual-11005.webp) |
+| `ciqual-11006` | Jengibre, en polvo | [WebP](0021/ciqual-11006.webp) |
+| `ciqual-11009` | Levadura de cerveza en copos | [WebP](0021/ciqual-11009.webp) |
+| `ciqual-11010` | Levadura de panadería fresca | [WebP](0021/ciqual-11010.webp) |
+| `ciqual-11019` | Pimienta blanca, en polvo | [WebP](0021/ciqual-11019.webp) |
+| `ciqual-11021` | Mostaza a la antigua | [WebP](0021/ciqual-11021.webp) |
+| `ciqual-11023` | Ajo seco, en polvo | [WebP](0021/ciqual-11023.webp) |
+| `ciqual-11024` | Perejil, seco | [WebP](0021/ciqual-11024.webp) |
+| `ciqual-11025` | Canela, en polvo | [WebP](0021/ciqual-11025.webp) |
+| `ciqual-11026` | Cilantro, semilla | [WebP](0021/ciqual-11026.webp) |
+| `ciqual-11029` | Menta, seca | [WebP](0021/ciqual-11029.webp) |
+| `ciqual-11032` | Albahaca, seca | [WebP](0021/ciqual-11032.webp) |
+| `ciqual-11034` | Mejorana, seca | [WebP](0021/ciqual-11034.webp) |
+| `ciqual-11036` | Romero, seco | [WebP](0021/ciqual-11036.webp) |
+| `ciqual-11037` | Salvia, seca | [WebP](0021/ciqual-11037.webp) |
+| `ciqual-11038` | Tomillo, seco | [WebP](0021/ciqual-11038.webp) |
+| `ciqual-11039` | Azafrán | [WebP](0021/ciqual-11039.webp) |
+| `ciqual-11040` | Alcaparras, en vinagre | [WebP](0021/ciqual-11040.webp) |
+| `ciqual-11045` | Levadura de panadería deshidratada | [WebP](0021/ciqual-11045.webp) |
+| `ciqual-11046` | Gasificante o levadura química | [WebP](0021/ciqual-11046.webp) |
+| `ciqual-11048` | Nuez moscada | [WebP](0021/ciqual-11048.webp) |
+| `ciqual-11050` | Estragón, seco | [WebP](0021/ciqual-11050.webp) |
+| `ciqual-11052` | Clavo | [WebP](0021/ciqual-11052.webp) |
+| `ciqual-11053` | Laurel, hoja | [WebP](0021/ciqual-11053.webp) |
+| `ciqual-11055` | Cebollita en vinagre | [WebP](0021/ciqual-11055.webp) |
+| `ciqual-11057` | Vainilla, en vaina | [WebP](0021/ciqual-11057.webp) |
+| `ciqual-11060` | Hierbas provenzales, secas | [WebP](0021/ciqual-11060.webp) |
+| `ciqual-11061` | Amapola, semilla | [WebP](0021/ciqual-11061.webp) |
+| `ciqual-11063` | Eneldo, seco | [WebP](0021/ciqual-11063.webp) |
+| `ciqual-11064` | Alcaravea, semilla | [WebP](0021/ciqual-11064.webp) |
+| `ciqual-11066` | Hinojo, semilla | [WebP](0021/ciqual-11066.webp) |
+| `ciqual-11069` | Salvia, fresca | [WebP](0021/ciqual-11069.webp) |
+| `ciqual-11075` | Cardamomo, polvo | [WebP](0021/ciqual-11075.webp) |
+| `ciqual-11077` | Fenogreco, semilla | [WebP](0021/ciqual-11077.webp) |
+| `ciqual-11092` | Estragón, fresco | [WebP](0021/ciqual-11092.webp) |
+| `ciqual-11093` | Eneldo, fresco | [WebP](0021/ciqual-11093.webp) |
+| `ciqual-11094` | Coriandro, fresco | [WebP](0021/ciqual-11094.webp) |
+| `ciqual-9003` | Trigo khorasan, crudo | [WebP](0021/ciqual-9003.webp) |
+| `ciqual-9060` | Trigo duro integral, crudo | [WebP](0021/ciqual-9060.webp) |
+| `ciqual-9101` | Arroz blanco vaporizado, crudo | [WebP](0021/ciqual-9101.webp) |
+| `ciqual-9102` | Arroz integral, crudo | [WebP](0021/ciqual-9102.webp) |
+| `ciqual-9108` | Arroz salvaje, crudo | [WebP](0021/ciqual-9108.webp) |
+| `ciqual-9109` | Arroz rojo, crudo | [WebP](0021/ciqual-9109.webp) |
+| `ciqual-9119` | Arroz tailandés o basmati, crudo | [WebP](0021/ciqual-9119.webp) |
+| `ciqual-9121` | Arroz, mezcla de variedades (blanco, integral, rojo, salvaje, etc.), crudo | [WebP](0021/ciqual-9121.webp) |
+| `ciqual-9310` | Avena, cruda | [WebP](0021/ciqual-9310.webp) |
+| `ciqual-9320` | Cebada integral, cruda | [WebP](0021/ciqual-9320.webp) |
+| `ciqual-9330` | Mijo integral, crudo | [WebP](0021/ciqual-9330.webp) |
+| `ciqual-9345` | Amaranto, crudo | [WebP](0021/ciqual-9345.webp) |
+| `ciqual-9360` | Sorgo integral, crudo | [WebP](0021/ciqual-9360.webp) |
+| `ciqual-9390` | Centeno integral, crudo | [WebP](0021/ciqual-9390.webp) |
+| `ciqual-9410` | Harina de trigo blando o común T110 | [WebP](0021/ciqual-9410.webp) |
+| `ciqual-9415` | Harina de trigo blando o común T150 | [WebP](0021/ciqual-9415.webp) |
+| `ciqual-9435` | Harina de trigo blando o común T65 | [WebP](0021/ciqual-9435.webp) |
+| `ciqual-9436` | Harina de trigo blando o común T55 (para pan) | [WebP](0021/ciqual-9436.webp) |
+| `ciqual-9440` | Harina de trigo blando o común T45 (para repostería) | [WebP](0021/ciqual-9440.webp) |
+| `ciqual-9445` | Harina de trigo blando o común T80 | [WebP](0021/ciqual-9445.webp) |
+| `ciqual-9480` | Harina de espelta (espelta mayor) | [WebP](0021/ciqual-9480.webp) |
+| `ciqual-9510` | Almidón de maíz o fécula de maíz | [WebP](0021/ciqual-9510.webp) |
+| `ciqual-9520` | Harina de arroz | [WebP](0021/ciqual-9520.webp) |
+| `ciqual-9530` | Harina de centeno T170 | [WebP](0021/ciqual-9530.webp) |
+| `ciqual-9540` | Harina de trigo sarraceno | [WebP](0021/ciqual-9540.webp) |
+| `ciqual-9545` | Harina de maíz | [WebP](0021/ciqual-9545.webp) |
+| `ciqual-9570` | Harina de castaña | [WebP](0021/ciqual-9570.webp) |
+| `ciqual-9580` | Harina de garbanzo | [WebP](0021/ciqual-9580.webp) |
+| `ciqual-9621` | Salvado de trigo | [WebP](0021/ciqual-9621.webp) |
+| `ciqual-9640` | Salvado de avena | [WebP](0021/ciqual-9640.webp) |
+| `ciqual-13027` | Ciruela mirabel, sin hueso, cruda | [WebP](0021/ciqual-13027.webp) |
+| `ciqual-13041` | Ciruela reina-claudia, sin hueso, cruda | [WebP](0021/ciqual-13041.webp) |
+| `ciqual-13045` | Uva negra, cruda | [WebP](0021/ciqual-13045.webp) |
+| `ciqual-13047` | Ruibarbo, tallo, crudo | [WebP](0021/ciqual-13047.webp) |
+| `ciqual-13054` | Carambola, pulpa y piel, cruda | [WebP](0021/ciqual-13054.webp) |
+| `ciqual-13067` | Lima, pulpa sin piel, sin pepitas, cruda | [WebP](0021/ciqual-13067.webp) |
+| `ciqual-13071` | Mora negra (de moral), cruda | [WebP](0021/ciqual-13071.webp) |
+| `ciqual-13077` | Rambután, pulpa sin piel, sin hueso, crudo | [WebP](0021/ciqual-13077.webp) |
+| `ciqual-13101` | Uva Chasselas, cruda | [WebP](0021/ciqual-13101.webp) |
+| `ciqual-13110` | Guinda, cruda | [WebP](0021/ciqual-13110.webp) |
+| `ciqual-20004` | Acelga, penca (sin hoja), cruda | [WebP](0021/ciqual-20004.webp) |
+| `ciqual-20012` | Escarola, cruda | [WebP](0021/ciqual-20012.webp) |
+| `ciqual-20022` | Berro de agua, crudo | [WebP](0021/ciqual-20022.webp) |
+| `ciqual-20069` | Col verde, cruda | [WebP](0021/ciqual-20069.webp) |
+| `ciqual-20085` | Pimiento verde, crudo | [WebP](0021/ciqual-20085.webp) |
+| `ciqual-20089` | Rábano negro, crudo | [WebP](0021/ciqual-20089.webp) |
+| `ciqual-20097` | Chalota, cruda | [WebP](0021/ciqual-20097.webp) |
+| `ciqual-20103` | Seta, rebozuelo o chantarela, cruda | [WebP](0021/ciqual-20103.webp) |
+| `ciqual-20105` | Seta, colmenilla, cruda | [WebP](0021/ciqual-20105.webp) |
+| `ciqual-20114` | Champiñón, seta ostra, crudo | [WebP](0021/ciqual-20114.webp) |
+| `ciqual-20116` | Col blanca, cruda | [WebP](0021/ciqual-20116.webp) |
+| `ciqual-20151` | Pimiento picante, crudo | [WebP](0021/ciqual-20151.webp) |
+| `ciqual-20160` | Champiñón, boletus, crudo | [WebP](0021/ciqual-20160.webp) |
+| `ciqual-20167` | Col china pé-tsaï, cruda | [WebP](0021/ciqual-20167.webp) |
+| `ciqual-20168` | Pimiento amarillo, crudo | [WebP](0021/ciqual-20168.webp) |
+| `ciqual-20173` | Tirabeque, crudo | [WebP](0021/ciqual-20173.webp) |
+| `ciqual-20181` | Chirivía, cruda | [WebP](0021/ciqual-20181.webp) |
+| `ciqual-20183` | Brotes de judía mungo o brotes de soja, crudos | [WebP](0021/ciqual-20183.webp) |
+| `ciqual-20200` | Lechuga iceberg, cruda | [WebP](0021/ciqual-20200.webp) |
+| `ciqual-20210` | Pepino, pulpa sin piel, crudo | [WebP](0021/ciqual-20210.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
