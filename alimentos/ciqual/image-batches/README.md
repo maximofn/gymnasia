@@ -206,6 +206,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-18100` | [Cacao, sin azúcares añadidos, polvo soluble](0013/ciqual-18100.webp) |
 | `ciqual-31016` | [Azúcar blanco](0013/ciqual-31016.webp) |
 
+## Decimocuarta tanda (`0014`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-18071` | [Café expreso, no instantáneo, sin azúcares añadidos, listo para beber](0014/ciqual-18071.webp) |
+| `ciqual-18154` | [Té negro, infusionado, sin azúcares añadidos](0014/ciqual-18154.webp) |
+| `ciqual-18155` | [Té verde, infusionado, sin azúcares añadidos](0014/ciqual-18155.webp) |
+| `ciqual-18104` | [Chocolate caliente, bebida instantánea, azucarada, lista para beber (reconstituida con leche semidesnatada)](0014/ciqual-18104.webp) |
+| `ciqual-18107` | [Bebida de almendra, natural, sin azúcares añadidos, no enriquecida, envasada](0014/ciqual-18107.webp) |
+| `ciqual-18900` | [Bebida de soja, natural, no enriquecida, envasada](0014/ciqual-18900.webp) |
+| `ciqual-2013` | [Zumo de naranja, fresco](0014/ciqual-2013.webp) |
+| `ciqual-2074` | [Zumo de manzana, zumo puro](0014/ciqual-2074.webp) |
+| `ciqual-2016` | [Zumo de uva, puro](0014/ciqual-2016.webp) |
+| `ciqual-2073` | [Zumo de piña, zumo puro](0014/ciqual-2073.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
