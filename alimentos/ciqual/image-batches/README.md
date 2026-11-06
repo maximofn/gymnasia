@@ -266,6 +266,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-9871` | [Pasta seca, de trigo integral, cocida, sin sal añadida](0017/ciqual-9871.webp) |
 | `ciqual-9876` | [Pasta seca, sin gluten (a base de lenteja roja), cocida, sin sal añadida](0017/ciqual-9876.webp) |
 
+## Decimoctava tanda (`0018`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-13007` | [Grosella negra, cruda](0018/ciqual-13007.webp) |
+| `ciqual-13012` | [Higo, crudo](0018/ciqual-13012.webp) |
+| `ciqual-13016` | [Fruta de la pasión o maracuyá, pulpa sin piel, con pepitas, cruda](0018/ciqual-13016.webp) |
+| `ciqual-13019` | [Grosella roja, cruda](0018/ciqual-13019.webp) |
+| `ciqual-13020` | [Grosella espinosa, cruda](0018/ciqual-13020.webp) |
+| `ciqual-13035` | [Papaya, pulpa sin piel, cruda](0018/ciqual-13035.webp) |
+| `ciqual-13180` | [Pomelo rosa, pulpa sin piel, sin pepitas, crudo](0018/ciqual-13180.webp) |
+| `ciqual-13066` | [Caqui, pulpa y piel, crudo](0018/ciqual-13066.webp) |
+| `ciqual-13083` | [Guayaba, pulpa sin piel, cruda](0018/ciqual-13083.webp) |
+| `ciqual-13113` | [Arándano rojo o cranberry, crudo](0018/ciqual-13113.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
