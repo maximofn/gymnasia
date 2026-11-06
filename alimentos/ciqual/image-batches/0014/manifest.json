@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0014",
+  "status": "pending-review",
+  "generated_on": "2026-11-06",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-18071",
+      "names": {
+        "fr": "Café expresso, non instantané, sans sucres ajoutés, prêt à boire",
+        "en": "Espresso coffee non instant coffee, no added sugars, ready-to-drink",
+        "es": "Café expreso, no instantáneo, sin azúcares añadidos, listo para beber"
+      },
+      "source_sha256": "e8421362676b7bcc9a169d3481f69e3163bfd9253142c27e8f557f03231e2200",
+      "image": "ciqual-18071.webp",
+      "sha256": "7ef7113e933e470c883a5ffe93ec9c4dbb6059549c3f4743c7b9b9d23920838e",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic texture, quiet premium composition and framing. Do not reproduce the reference's apple, fruit, leaf or stem: the new subject is a beverage.\nSubject: A single small plain dark ceramic espresso cup filled with freshly prepared non-instant espresso coffee, no added sugar, ready to drink. Dark brown coffee with a thin natural hazelnut crema, cup and handle entirely visible, no saucer, spoon, sugar or coffee beans.\nSingle centered beverage container, entire glass or cup and any handle fully visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 viewpoint showing both the surface of the drink and the volume of the container. Clear recognizable silhouette at 48x48 pixels, natural appetizing colors and realistic glass or ceramic, not an illustration or plastic 3D render. No surrounding ingredients.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, saucers or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-18154",
+      "names": {
+        "fr": "Thé noir, infusé, sans sucres ajoutés",
+        "en": "Black tea, brewed, no added sugars",
+        "es": "Té negro, infusionado, sin azúcares añadidos"
+      },
+      "source_sha256": "43681a39dcabc18b31ba6f2a739b066c587f7e3c1970476b8cd83c16c7fd02cc",
+      "image": "ciqual-18154.webp",
+      "sha256": "001e4b904421155f7fc15634ddf6e501d07d02109b5f5b429fa4afe72b62ec07",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic texture, quiet premium composition and framing. Do not reproduce the reference's apple, fruit, leaf or stem: the new subject is a beverage.\nSubject: A single simple clear handleless heatproof glass filled with brewed black tea, unsweetened, no added sugar. Transparent deep amber tea, still surface, no tea bag, leaves, lemon, saucer or spoon.\nSingle centered beverage container, entire glass or cup and any handle fully visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 viewpoint showing both the surface of the drink and the volume of the container. Clear recognizable silhouette at 48x48 pixels, natural appetizing colors and realistic glass or ceramic, not an illustration or plastic 3D render. No surrounding ingredients.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, saucers or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-18155",
+      "names": {
+        "fr": "Thé vert, infusé, sans sucres ajoutés",
+        "en": "Green tea, brewed, no added sugars",
+        "es": "Té verde, infusionado, sin azúcares añadidos"
+      },
+      "source_sha256": "a0245dccb7391dce3fcbf15ab3936ed8d3e81311a0519fed5f23b6998551fb80",
+      "image": "ciqual-18155.webp",
+      "sha256": "f825013468a144e7ee78a723950bc047f5fff8d73799338686b3763ea807093c",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic texture, quiet premium composition and framing. Do not reproduce the reference's apple, fruit, leaf or stem: the new subject is a beverage.\nSubject: A single simple clear handleless heatproof glass filled with brewed green tea, unsweetened, no added sugar. Transparent pale yellow-green tea, still surface, no tea bag, leaves, lemon, saucer or spoon.\nSingle centered beverage container, entire glass or cup and any handle fully visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 viewpoint showing both the surface of the drink and the volume of the container. Clear recognizable silhouette at 48x48 pixels, natural appetizing colors and realistic glass or ceramic, not an illustration or plastic 3D render. No surrounding ingredients.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, saucers or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-18104",
+      "names": {
+        "fr": "Chocolat chaud, boisson instantanée, sucrée, prête à boire (reconstituée avec du lait demi-écrémé)",
+        "en": "Instant cocoa or chocolate beverage, with sugar(s), ready-to-drink (reconstituted with standard semi-skimmed milk)",
+        "es": "Chocolate caliente, bebida instantánea, azucarada, lista para beber (reconstituida con leche semidesnatada)"
+      },
+      "source_sha256": "6e58cb43e7196eca9bb6ddd591d57937d9628bd0de368068afb4131f8ad72f61",
+      "image": "ciqual-18104.webp",
+      "sha256": "e763258ea3b926dbf2a1a8f57d2165fd00e7295e11ca17555dd3e2d1fcf74104",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic texture, quiet premium composition and framing. Do not reproduce the reference's apple, fruit, leaf or stem: the new subject is a beverage.\nSubject: A single plain dark ceramic mug filled with instant hot chocolate drink, sweetened and reconstituted with semi-skimmed milk, ready to drink. Fluid milk chocolate brown drink with only a thin natural surface froth, mug and handle fully visible. Not thick dipping chocolate, no whipped cream, marshmallows, chocolate pieces, saucer or spoon.\nSingle centered beverage container, entire glass or cup and any handle fully visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 viewpoint showing both the surface of the drink and the volume of the container. Clear recognizable silhouette at 48x48 pixels, natural appetizing colors and realistic glass or ceramic, not an illustration or plastic 3D render. No surrounding ingredients.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, saucers or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-18107",
+      "names": {
+        "fr": "Boisson à l'amande, nature, sans sucres ajoutés, non enrichie, préemballée",
+        "en": "Almond drink, plain, no added sugars, not fortified, prepacked",
+        "es": "Bebida de almendra, natural, sin azúcares añadidos, no enriquecida, envasada"
+      },
+      "source_sha256": "b51355e98b1cd9afe3879271e587d7e69c1d3780508e9f98b7e3c87644e8bd73",
+      "image": "ciqual-18107.webp",
+      "sha256": "4b7d339375370371c08edd49283d74c611b4c5ea3dfc10aa506bf940a8d0cd9a",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic texture, quiet premium composition and framing. Do not reproduce the reference's apple, fruit, leaf or stem: the new subject is a beverage.\nSubject: Plain prepacked almond drink with no added sugar, not fortified, served out of its packaging in one simple clear straight-sided drinking glass. Opaque very pale ivory almond beverage, smooth liquid, no almonds, carton, branding, straw or garnish.\nSingle centered beverage container, entire glass or cup and any handle fully visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 viewpoint showing both the surface of the drink and the volume of the container. Clear recognizable silhouette at 48x48 pixels, natural appetizing colors and realistic glass or ceramic, not an illustration or plastic 3D render. No surrounding ingredients.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, saucers or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-18900",
+      "names": {
+        "fr": "Boisson au soja, nature, non enrichie, préemballée",
+        "en": "Soy drink, plain, not fortified, prepacked",
+        "es": "Bebida de soja, natural, no enriquecida, envasada"
+      },
+      "source_sha256": "647008942c8ec57632596df89066bd6a45d491e5e3ceb36079d02300651257be",
+      "image": "ciqual-18900.webp",
+      "sha256": "35e3c3feacb2474bbbf0f29883092b7d19f48d30924ae37f55f7d5fdacaca465",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic texture, quiet premium composition and framing. Do not reproduce the reference's apple, fruit, leaf or stem: the new subject is a beverage.\nSubject: Plain prepacked soy drink, not fortified, served out of its packaging in one simple clear straight-sided drinking glass. Opaque pale cream soy beverage, smooth liquid, no soybeans, carton, branding, straw or garnish.\nSingle centered beverage container, entire glass or cup and any handle fully visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 viewpoint showing both the surface of the drink and the volume of the container. Clear recognizable silhouette at 48x48 pixels, natural appetizing colors and realistic glass or ceramic, not an illustration or plastic 3D render. No surrounding ingredients.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, saucers or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-2013",
+      "names": {
+        "fr": "Jus d'orange, frais",
+        "en": "Orange juice, fresh",
+        "es": "Zumo de naranja, fresco"
+      },
+      "source_sha256": "158c1a2a09c8bee491f6c5cede4dc1f8df6da727186f18c855dff9a0d0029a0e",
+      "image": "ciqual-2013.webp",
+      "sha256": "01e609298022bbf834ac3d137bc95cce19e4f28fc29153e4c967ff2fa6139dcb",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic texture, quiet premium composition and framing. Do not reproduce the reference's apple, fruit, leaf or stem: the new subject is a beverage.\nSubject: Fresh orange juice in one simple clear straight-sided drinking glass. Naturally opaque vibrant orange juice with fine suspended pulp and a few tiny surface bubbles. No orange fruit, carton, ice, straw or garnish.\nSingle centered beverage container, entire glass or cup and any handle fully visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 viewpoint showing both the surface of the drink and the volume of the container. Clear recognizable silhouette at 48x48 pixels, natural appetizing colors and realistic glass or ceramic, not an illustration or plastic 3D render. No surrounding ingredients.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, saucers or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-2074",
+      "names": {
+        "fr": "Jus de pomme, pur jus",
+        "en": "Apple juice, pure juice",
+        "es": "Zumo de manzana, zumo puro"
+      },
+      "source_sha256": "eef6bd2b0479eaccdc7f8e8c26d4bc49f6f1090d853d19c6d32f77b8cf373036",
+      "image": "ciqual-2074.webp",
+      "sha256": "474037f576d0f28345914ab6f550379485e0dd7a7cc98ae5a32308da12bdcef4",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic texture, quiet premium composition and framing. Do not reproduce the reference's apple, fruit, leaf or stem: the new subject is a beverage.\nSubject: Pure apple juice in one simple clear straight-sided drinking glass. Clear golden amber juice, fluid still surface, no apple fruit, carton, ice, straw or garnish.\nSingle centered beverage container, entire glass or cup and any handle fully visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 viewpoint showing both the surface of the drink and the volume of the container. Clear recognizable silhouette at 48x48 pixels, natural appetizing colors and realistic glass or ceramic, not an illustration or plastic 3D render. No surrounding ingredients.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, saucers or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-2016",
+      "names": {
+        "fr": "Jus de raisin, pur jus",
+        "en": "Grape juice, pure juice",
+        "es": "Zumo de uva, puro"
+      },
+      "source_sha256": "09b48f4dc284a8149081f869ae7bcf42a320c5ec92d52842e2f68db385639737",
+      "image": "ciqual-2016.webp",
+      "sha256": "716e50e058a79287525abb49faf56410ec9672c7b0f5372cf39786a87b54416e",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic texture, quiet premium composition and framing. Do not reproduce the reference's apple, fruit, leaf or stem: the new subject is a beverage.\nSubject: Pure grape juice in one simple clear straight-sided drinking glass. Deep reddish purple grape juice with realistic subtle translucency at the edges, no grapes, carton, ice, straw or garnish.\nSingle centered beverage container, entire glass or cup and any handle fully visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 viewpoint showing both the surface of the drink and the volume of the container. Clear recognizable silhouette at 48x48 pixels, natural appetizing colors and realistic glass or ceramic, not an illustration or plastic 3D render. No surrounding ingredients.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, saucers or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-2073",
+      "names": {
+        "fr": "Jus d'ananas, pur jus",
+        "en": "Pineapple juice, pure juice",
+        "es": "Zumo de piña, zumo puro"
+      },
+      "source_sha256": "fd2f82ee4dc4fbc4cef235065f608c091eef1d3bea39c86f72c034c9d460d91d",
+      "image": "ciqual-2073.webp",
+      "sha256": "d6bb893edcae184f8f51a32718cc7943a742950ae027656cea55095765a42372",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic texture, quiet premium composition and framing. Do not reproduce the reference's apple, fruit, leaf or stem: the new subject is a beverage.\nSubject: Pure pineapple juice in one simple clear straight-sided drinking glass. Opaque pale golden-yellow juice with fine suspended fruit pulp and a few small natural bubbles at the edge, no pineapple fruit, carton, ice, straw or garnish.\nSingle centered beverage container, entire glass or cup and any handle fully visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 viewpoint showing both the surface of the drink and the volume of the container. Clear recognizable silhouette at 48x48 pixels, natural appetizing colors and realistic glass or ceramic, not an illustration or plastic 3D render. No surrounding ingredients.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, saucers or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    }
+  ]
+}
