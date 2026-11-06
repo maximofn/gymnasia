@@ -281,6 +281,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-13083` | [Guayaba, pulpa sin piel, cruda](0018/ciqual-13083.webp) |
 | `ciqual-13113` | [Arándano rojo o cranberry, crudo](0018/ciqual-13113.webp) |
 
+## Decimonovena tanda (`0019`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-20014` | [Col lombarda, cruda](0019/ciqual-20014.webp) |
+| `ciqual-20055` | [Apionabo, crudo](0019/ciqual-20055.webp) |
+| `ciqual-20058` | [Col de Bruselas, cruda](0019/ciqual-20058.webp) |
+| `ciqual-20064` | [Nabo, pelado, crudo](0019/ciqual-20064.webp) |
+| `ciqual-20065` | [Colirrábano, crudo](0019/ciqual-20065.webp) |
+| `ciqual-20099` | [Canónigos, crudos](0019/ciqual-20099.webp) |
+| `ciqual-20217` | [Rúcula, cruda](0019/ciqual-20217.webp) |
+| `ciqual-20238` | [Cebolla roja, cruda](0019/ciqual-20238.webp) |
+| `ciqual-20280` | [Col romanesco o brócoli romanesco, cruda](0019/ciqual-20280.webp) |
+| `ciqual-20340` | [Col china pak choi o pak choy (hojas verdes parecidas a las acelgas), cruda](0019/ciqual-20340.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
