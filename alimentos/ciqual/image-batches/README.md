@@ -221,6 +221,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-2016` | [Zumo de uva, puro](0014/ciqual-2016.webp) |
 | `ciqual-2073` | [Zumo de piña, zumo puro](0014/ciqual-2073.webp) |
 
+## Decimoquinta tanda (`0015`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-13001` | [Albaricoque, sin hueso, desecado](0015/ciqual-13001.webp) |
+| `ciqual-13011` | [Dátil, pulpa y piel, sin hueso, seco](0015/ciqual-13011.webp) |
+| `ciqual-13013` | [Higo, seco](0015/ciqual-13013.webp) |
+| `ciqual-13042` | [Ciruela pasa, sin hueso, seca](0015/ciqual-13042.webp) |
+| `ciqual-13046` | [Uva pasa](0015/ciqual-13046.webp) |
+| `ciqual-13178` | [Arándano rojo o cranberry, deshidratado, azucarado](0015/ciqual-13178.webp) |
+| `ciqual-15008` | [Nuez de Brasil o nuez del Amazonas, sin sal añadida](0015/ciqual-15008.webp) |
+| `ciqual-15025` | [Piñón](0015/ciqual-15025.webp) |
+| `ciqual-15026` | [Nuez pecana, sin sal añadida](0015/ciqual-15026.webp) |
+| `ciqual-15027` | [Nuez de macadamia, sin sal añadida](0015/ciqual-15027.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
