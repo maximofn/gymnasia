@@ -296,6 +296,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-20280` | [Col romanesco o brócoli romanesco, cruda](0019/ciqual-20280.webp) |
 | `ciqual-20340` | [Col china pak choi o pak choy (hojas verdes parecidas a las acelgas), cruda](0019/ciqual-20340.webp) |
 
+## Vigésima tanda (`0020`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-20501` | [Alubia blanca, seca](0020/ciqual-20501.webp) |
+| `ciqual-20516` | [Garbanzo, seco](0020/ciqual-20516.webp) |
+| `ciqual-20525` | [Alubia roja, seca](0020/ciqual-20525.webp) |
+| `ciqual-20530` | [Judía mungo, seca](0020/ciqual-20530.webp) |
+| `ciqual-20539` | [Judía flageolet, verde, seca](0020/ciqual-20539.webp) |
+| `ciqual-20585` | [Lenteja verde, seca](0020/ciqual-20585.webp) |
+| `ciqual-20586` | [Lenteja rubia, seca](0020/ciqual-20586.webp) |
+| `ciqual-9001` | [Espelta, cruda](0020/ciqual-9001.webp) |
+| `ciqual-9321` | [Cebada perlada, cruda](0020/ciqual-9321.webp) |
+| `ciqual-9380` | [Trigo sarraceno integral, crudo](0020/ciqual-9380.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash

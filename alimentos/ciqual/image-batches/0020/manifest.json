@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0020",
+  "status": "pending-review",
+  "generated_on": "2026-11-06",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-20501",
+      "names": {
+        "fr": "Haricot blanc, sec",
+        "en": "Haricot bean, dried",
+        "es": "Alubia blanca, seca"
+      },
+      "source_sha256": "03453d92560e4eaae3781b4b8c6f8d277c4451a3157624df94f04d96207075d6",
+      "image": "ciqual-20501.webp",
+      "sha256": "d595c4b6ba59471da734cceabcded3c079b4f091a72e15db732c2014c6fb62a3",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's cooked lentils or their wet sheen: this subject is dry and uncooked.\nSubject: Dried uncooked white haricot beans in one small plain dark ceramic bowl. Creamy ivory elongated oval kidney-shaped beans with small natural hilum marks, firm smooth dry matte surfaces. Not swollen boiled beans; no water, sauce, herbs or garnish.\nSingle centered food subject in the specified bowl, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle as in the reference. Show the dry raw food's true shape, skin and surface texture. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20516",
+      "names": {
+        "fr": "Pois chiche, sec",
+        "en": "Chick pea, dried",
+        "es": "Garbanzo, seco"
+      },
+      "source_sha256": "f9b493148e7893dd7bfea382f0417983e74732ed52d2786a5d03b428bfd3911f",
+      "image": "ciqual-20516.webp",
+      "sha256": "66545b12b3d9a0b90ebd5492a8c9e07373ad766f7c07b4c450f87a30a748de9b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's cooked lentils or their wet sheen: this subject is dry and uncooked.\nSubject: Dried uncooked chickpeas in one small plain dark ceramic bowl. Hard angular beige chickpeas with characteristic pointed beaks, irregular ridged wrinkled matte surfaces, not round smooth cooked chickpeas. No water, sauce, herbs or garnish.\nSingle centered food subject in the specified bowl, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle as in the reference. Show the dry raw food's true shape, skin and surface texture. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20525",
+      "names": {
+        "fr": "Haricot rouge, sec",
+        "en": "Red kidney bean, dried",
+        "es": "Alubia roja, seca"
+      },
+      "source_sha256": "a443bdacda51cdd6598aab77cceccaa6550a3893e4f005463cffe9fdb70a4235",
+      "image": "ciqual-20525.webp",
+      "sha256": "ce649bfacc816048c7146175d22e971136a5086f78e103b527e837dae1f69f9c",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's cooked lentils or their wet sheen: this subject is dry and uncooked.\nSubject: Dried uncooked red kidney beans in one small plain dark ceramic bowl. Firm dark burgundy red curved kidney-shaped beans with a distinct pale hilum, naturally dry smooth surfaces. Not swollen wet boiled beans; no water, sauce, herbs or garnish.\nSingle centered food subject in the specified bowl, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle as in the reference. Show the dry raw food's true shape, skin and surface texture. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20530",
+      "names": {
+        "fr": "Haricot mungo, sec",
+        "en": "Beans, mung, mature, seeds, dried",
+        "es": "Judía mungo, seca"
+      },
+      "source_sha256": "e99d84b7d7a14cc219fc062b947df87a770ea18d18d32861df2eee108d8ed348",
+      "image": "ciqual-20530.webp",
+      "sha256": "bff7c6d2a6e9c22e3f5bbf0a7a38cde62ba6eaeccd01163e70ac41ed980e13af",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's cooked lentils or their wet sheen: this subject is dry and uncooked.\nSubject: Dried mature mung bean seeds in one small plain dark ceramic bowl. Tiny olive-green oval beans with narrow pale white hilum lines, firm dry smooth surfaces, not sprouted or cooked. No sprouts, leaves, water, sauce or garnish.\nSingle centered food subject in the specified bowl, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle as in the reference. Show the dry raw food's true shape, skin and surface texture. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20539",
+      "names": {
+        "fr": "Haricot flageolet, vert, sec",
+        "en": "Flageolet bean, green, dried",
+        "es": "Judía flageolet, verde, seca"
+      },
+      "source_sha256": "6ddb1c6a2782cb53978c4ed678b6cb5757b26ea9aee3d67b6ea985ed49b42aaa",
+      "image": "ciqual-20539.webp",
+      "sha256": "95eb6fe9562eec7cfe8c1cb3529d02e63686a6cd48e6a1d425aa5e7247a426d1",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's cooked lentils or their wet sheen: this subject is dry and uncooked.\nSubject: Dried green flageolet beans in one small plain dark ceramic bowl. Slender small curved kidney-shaped beans, pale pistachio and light mint green, matte dry surfaces with tiny white hilum marks. Not round mung beans, not fresh pods or cooked beans. No water, sauce or garnish.\nSingle centered food subject in the specified bowl, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle as in the reference. Show the dry raw food's true shape, skin and surface texture. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20585",
+      "names": {
+        "fr": "Lentille verte, sèche",
+        "en": "Lentil, green, dried",
+        "es": "Lenteja verde, seca"
+      },
+      "source_sha256": "81d157ccda20dec1e6a57abdcf87007863e21077793f3436b84bdf3a2dfb5506",
+      "image": "ciqual-20585.webp",
+      "sha256": "22defaa2fcbb50dc8c31b10469415838a3be0d22fff6abbc06c7dfe57a2fc17b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's cooked lentils or their wet sheen: this subject is dry and uncooked.\nSubject: Dried green lentils in one small plain dark ceramic bowl. Small flat biconvex lentil discs with muted olive and green-brown lightly mottled skin, hard dry matte surfaces and crisp defined edges. Not shiny swollen boiled lentils, no water, sauce, herbs or garnish.\nSingle centered food subject in the specified bowl, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle as in the reference. Show the dry raw food's true shape, skin and surface texture. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20586",
+      "names": {
+        "fr": "Lentille blonde, sèche",
+        "en": "Lentil, blond, dried",
+        "es": "Lenteja rubia, seca"
+      },
+      "source_sha256": "5cc3dab6d11ffbb2c38ce868159463fd228a3e9f799c1107470dcbf8622e1331",
+      "image": "ciqual-20586.webp",
+      "sha256": "433baba16491df9611f96741cd00f495e0f09f546e7013e82ec17ab95c778280",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's cooked lentils or their wet sheen: this subject is dry and uncooked.\nSubject: Dried blond lentils in one small plain dark ceramic bowl. Flat biconvex lentil discs in naturally pale tan, warm beige and light golden-brown tones, hard dry matte skin and crisp edges. Not green lentils, not orange split red lentils, not glossy boiled lentils. No water, sauce, herbs or garnish.\nSingle centered food subject in the specified bowl, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle as in the reference. Show the dry raw food's true shape, skin and surface texture. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-9001",
+      "names": {
+        "fr": "Épeautre, cru",
+        "en": "Spelt, raw",
+        "es": "Espelta, cruda"
+      },
+      "source_sha256": "714c1a1819108311bc964f86f427333bc750961fbb7ca50f0dbfa56b5774bd47",
+      "image": "ciqual-9001.webp",
+      "sha256": "77ccdc91d956a5db28d8d63674dbb15f43c9f8a0dde835e1f9fbdb2aa8e2299e",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's cooked lentils or their wet sheen: this subject is dry and uncooked.\nSubject: Raw uncooked dehulled spelt kernels in one small plain dark ceramic bowl. Whole elongated warm golden-tan grain kernels with a clearly visible lengthwise crease and natural dry bran texture, not flour, flakes or cooked grain. No wheat ears, husks, water, herbs or garnish.\nSingle centered food subject in the specified bowl, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle as in the reference. Show the dry raw food's true shape, skin and surface texture. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-9321",
+      "names": {
+        "fr": "Orge perlée, crue",
+        "en": "Pearled barley, raw",
+        "es": "Cebada perlada, cruda"
+      },
+      "source_sha256": "3ec65f37482eb40b4e6620c223116da0beb8737998a8f9192be9d620014aee61",
+      "image": "ciqual-9321.webp",
+      "sha256": "06a1130c82f48769cced0bbcc06af98fd481f1d5abacb7e13db67e9d890c9a69",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's cooked lentils or their wet sheen: this subject is dry and uncooked.\nSubject: Raw uncooked pearled barley in one small plain dark ceramic bowl. Small rounded oval pale ivory to cream grain kernels with faint lengthwise grooves, firm dry polished surfaces, not swollen translucent cooked barley. No husks, water, sauce, herbs or garnish.\nSingle centered food subject in the specified bowl, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle as in the reference. Show the dry raw food's true shape, skin and surface texture. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-9380",
+      "names": {
+        "fr": "Sarrasin complet, cru",
+        "en": "Buckwheat, wholegrain, raw",
+        "es": "Trigo sarraceno integral, crudo"
+      },
+      "source_sha256": "24f471f63dbc1031f19c01601458fba9797e5338a88ba9896fa899bd668452ac",
+      "image": "ciqual-9380.webp",
+      "sha256": "a823e4a7482daf1e22ef7f7da7cd325d6ad63c47da39f0123fa1d444dc8fd4a8",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's cooked lentils or their wet sheen: this subject is dry and uncooked.\nSubject: Raw uncooked wholegrain buckwheat groats in one small plain dark ceramic bowl. Small triangular pyramidal kernels with distinct three-sided faces, naturally pale greenish-beige and light tan colors, dry matte surfaces, not dark roasted kasha or flour. No water, herbs, husks or garnish.\nSingle centered food subject in the specified bowl, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle as in the reference. Show the dry raw food's true shape, skin and surface texture. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    }
+  ]
+}
