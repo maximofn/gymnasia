@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:5171bbcd6365ce52c7fe450035d2db65afab3d56a2f5d9df84c0acd86da425ae",
+  "pageVersion": "sha256:683e17c19e3db40db8ba18cae23ce211f497a6543cf508cb201267970289f3e7",
   "claims": [
     {
       "id": "claim_bc663f1e35e24138a802a690498f6187",
@@ -381,10 +381,24 @@
           "version": "repo-lines-v1:sha256:f89928390dcd4b962729937075f8814ccec4725707cc0706241fb442a3ebdc8e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZjU5ZTE0YWI2Nzk5N2E4NzQ1NDY3NzQ0ZDc1YTUxNGEwYTRkYTAwYzc4NTlkOWI1ZDBjMmE4NTI4YTQ5YjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4NzE1MjYwZmJmN2EyMDBlMDY5NzJiMmZkMGI5MzM2MmY5NGNiMzYwZjljMjYxODFiYTQ0NmNiMjNhYjJmYjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4MWE3Y2U2MmE5YTUyZDIyZTJiZTAzZmNhNTU3MDBmNTAzYTY2YThjMzhiOTc1YjgzOGNmNzhjYTUwYThmOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg0ZGRlODJkMjA2NjFkMjdkZDcyMDE3NmQ1OWE2ZTU2ZGNmNzE0Zjk0MTVlOTZiYTI0NGM1YzFkMmE1ZjVmZjkifQ"
         }
       ]
+    },
+    {
+      "id": "claim_4cdc2826ca0248ec897c98c7fe330007",
+      "statement": "El manifiesto operativo vigente describe una muestra de siete días marcada como truncada y declara tokens y coste como `unavailable` con cobertura `partial`; por ello sus agregados deben consultarse como evidencia limitada y no como métricas poblacionales.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L4-L13",
+          "version": "repo-lines-v1:sha256:0c5e53116c3aa8ceb64e72fac5a91ec4f4f5568e53c382133e4d7be8b5b91f84:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhMDEzNzc1NzE2YmU0NWU5ZDhjMGExMDgxMTM4NDgwOTNiYTY1NDMzNTJiZGM2YTZlMTE0ODE1ZmYwNGY5ZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmNzAyMWM4ZDc5YmE3NDdjYzMyMDAyNzJkMTk0ZTkxMWM1MmM0MjM2ZGQ5MGU2YjJhZDhmNzQzYzJjNWNjMDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxMzczYTc4NTA3MjY3NDM4ZmI1ODk3ZDYxNzU4ZmNlNDdiNGNmNDEwYWJiYzE4NDkxMDQ4MGI0Mzg5NTVhNWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3NGJmNjdkYzQyYWE1OTQxZjJjODZlZjYwYmU0ZTJhYmZjMTkxODM1OTAxNDE0NzZiNmMzOGVlYmMyN2UyYzYifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L53-L75",
+          "version": "repo-lines-v1:sha256:0a41cb76d596efa1add38a2cd80d297e91b6c77c4a37c5cf60548e99d665723d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDhjMDA4NmRmMjYwZDlkZTQ5NDQ2NTFjMDEzZDE5MTdiYmE5ZGJlZTc3YjIxMGI2NjA0NjQxMTFmMTU4MTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxOTRlNGU1Yzg5NWYzZTQ5NTdhYTczNWJlYTVkYWUyOGRhZjU4MGI4MDJmMWQ1ZWE2OTUyOTUyMDJkNDlhZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIyZmQ5MGE1YmJhMGI1MjYzZGQzN2M3NGNjYjFjYzJkYThkNDlmMWVhNGVmOWIxMTVlYzZkZjJjNGY3NzcxOTIifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-21T13:25:19.535Z"
+    "at": "2026-11-06T15:26:57.218Z"
   }
 }
