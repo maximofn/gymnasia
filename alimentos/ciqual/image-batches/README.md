@@ -251,6 +251,21 @@ para otras variantes por compartir el nombre principal.
 | `ciqual-20096` | [Calabaza, cocida](0016/ciqual-20096.webp) |
 | `ciqual-20102` | [Champiñón de París o champiñón cultivado, hervido o cocido en agua](0016/ciqual-20102.webp) |
 
+## Decimoséptima tanda (`0017`)
+
+| ID | Alimento |
+| --- | --- |
+| `ciqual-9103` | [Arroz integral, cocido, sin sal añadida](0017/ciqual-9103.webp) |
+| `ciqual-9322` | [Cebada perlada, hervida/cocida en agua, sin sal añadida](0017/ciqual-9322.webp) |
+| `ciqual-9341` | [Quinoa, hervida/cocida en agua, sin sal añadida](0017/ciqual-9341.webp) |
+| `ciqual-9691` | [Bulgur de trigo, cocido, sin sal añadida](0017/ciqual-9691.webp) |
+| `ciqual-9615` | [Polenta o sémola de maíz, cocida, sin sal añadida](0017/ciqual-9615.webp) |
+| `ciqual-9901` | [Fideos de arroz, cocidos, sin sal añadida](0017/ciqual-9901.webp) |
+| `ciqual-9811` | [Pasta seca, estándar, cocida, sin sal añadida](0017/ciqual-9811.webp) |
+| `ciqual-9816` | [Pasta fresca, al huevo, cocida, sin sal añadida](0017/ciqual-9816.webp) |
+| `ciqual-9871` | [Pasta seca, de trigo integral, cocida, sin sal añadida](0017/ciqual-9871.webp) |
+| `ciqual-9876` | [Pasta seca, sin gluten (a base de lenteja roja), cocida, sin sal añadida](0017/ciqual-9876.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
