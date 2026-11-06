@@ -42,6 +42,21 @@ La clasificación IARC es independiente de la audiencia elegida. Se aceptará el
 resultado que produzcan las respuestas reales; no se manipulará para obtener un
 16+.
 
+## Estado de operador
+
+Decisión del mantenedor del 5 de noviembre de 2026: **no operador** mientras
+Gymnasia sea un proyecto personal sin actividad comercial. El mantenedor confirmó
+el 6 de noviembre de 2026 que la declaración quedó guardada. Antes de iniciar la monetización,
+cambiar a **operador** y completar las verificaciones de cuenta y aplicación del
+[procedimiento de futura monetización](../../legal/play-declarations.md#6-estado-de-operador-y-futura-monetización).
+Revisar la declaración al preparar un plan comercial concreto, sin esperar al
+primer ingreso.
+
+**Requisito previo de privacidad:** el mantenedor no quiere que se publique su
+domicilio particular. Antes de monetizar o aceptar su publicación, resolver una
+dirección alternativa legítima, verificable y admitida por Google, modificarla y
+comprobar el resultado público. No activar la monetización hasta resolverlo.
+
 ## App access
 
 Seleccionar que parte de la funcionalidad requiere acceso especial. Las
