@@ -846,6 +846,113 @@ Cien imágenes generadas individualmente con el mismo estilo aprobado: legumbres
 | `ciqual-13136` | Frambuesa, ultracongelada, cruda | [WebP](0025/ciqual-13136.webp) |
 | `ciqual-13147` | Aceitunas verdes, rellenas (anchoa, pimientos, etc.) | [WebP](0025/ciqual-13147.webp) |
 
+## Vigesimosexta tanda (`0026`) — 100 imágenes
+
+Cien imágenes generadas individualmente con el mismo estilo aprobado: frutas, compotas, conservas de fruta y cereales o arroz. Ilustraciones de Gymnasia generadas por IA, no proporcionadas ni validadas por ANSES. Cada ficha conserva su identidad y preparación, con prompts y huellas en [el manifiesto](0026/manifest.json); una imagen no permite distinguir todas las diferencias de formulación, azúcar, variedad o nutrición. Las mezclas y fichas genéricas se representan de forma ilustrativa, no como una receta oficial.
+
+| ID | Alimento | Imagen |
+| --- | --- | --- |
+| `ciqual-13148` | Nectarina o brugñón, amarilla, pulpa y piel, sin hueso, cruda | [WebP](0026/ciqual-13148.webp) |
+| `ciqual-13149` | Nectarina o brugñón, blanca, pulpa y piel, sin hueso, cruda | [WebP](0026/ciqual-13149.webp) |
+| `ciqual-13150` | Mora silvestre, ultracongelada, cruda | [WebP](0026/ciqual-13150.webp) |
+| `ciqual-13151` | Compota de manzana, ligera en azúcares, sección ambiente | [WebP](0026/ciqual-13151.webp) |
+| `ciqual-13152` | Postre de fruta, todo tipo de frutas (en contenido de azúcares: compotas ligeras en azúcares < postres de fruta < compotas), envasado, sección ambiente | [WebP](0026/ciqual-13152.webp) |
+| `ciqual-13153` | Puré de frutas, todo tipo de frutas, tipo "compota sin azúcares añadidos", sección ambiente | [WebP](0026/ciqual-13153.webp) |
+| `ciqual-13154` | Especialidad de fruta, todo tipo de frutas, azucarada (mezcla de pulpas y/o purés de fruta, pero siempre con otro ingrediente), envasada, sección ambiente | [WebP](0026/ciqual-13154.webp) |
+| `ciqual-13174` | Especialidad de frutas variadas, sin azúcares añadidos (mezcla de pulpas o purés de fruta con algún otro ingrediente), envasada, sección a temperatura ambiente | [WebP](0026/ciqual-13174.webp) |
+| `ciqual-13175` | Manzana, pulpa sin piel, asada/cocinada al horno | [WebP](0026/ciqual-13175.webp) |
+| `ciqual-13176` | Manzana, pulpa sin piel, cocida/cocinada en agua | [WebP](0026/ciqual-13176.webp) |
+| `ciqual-13177` | Chayota o cristofina, hervida/cocinada en agua | [WebP](0026/ciqual-13177.webp) |
+| `ciqual-13179` | Pomelo amarillo, pulpa sin piel, sin pepitas, crudo | [WebP](0026/ciqual-13179.webp) |
+| `ciqual-13183` | Baya de goji, deshidratada | [WebP](0026/ciqual-13183.webp) |
+| `ciqual-13184` | Aceituna (valor medio) | [WebP](0026/ciqual-13184.webp) |
+| `ciqual-13185` | Compota o similar, todo tipo de frutas, sin especificar el contenido de azúcares (con contenido reducido de azúcares o no, sin azúcares añadidos...) ni el lineal (valor medio) | [WebP](0026/ciqual-13185.webp) |
+| `ciqual-13186` | Aceituna negra (valor medio) | [WebP](0026/ciqual-13186.webp) |
+| `ciqual-13187` | Puré de manzana, tipo compota sin azúcares añadidos, sección a temperatura ambiente | [WebP](0026/ciqual-13187.webp) |
+| `ciqual-13188` | Pera Conference, pulpa sin piel, cruda | [WebP](0026/ciqual-13188.webp) |
+| `ciqual-13189` | Pera Williams, pulpa sin piel, cruda | [WebP](0026/ciqual-13189.webp) |
+| `ciqual-13190` | Manzana Chantecler, pulpa sin piel, cruda | [WebP](0026/ciqual-13190.webp) |
+| `ciqual-13191` | Manzana Gala, pulpa sin piel, cruda | [WebP](0026/ciqual-13191.webp) |
+| `ciqual-13192` | Manzana Pink Lady, pulpa sin piel, cruda | [WebP](0026/ciqual-13192.webp) |
+| `ciqual-13193` | Melocotón blanco, pulpa y piel, sin hueso, crudo | [WebP](0026/ciqual-13193.webp) |
+| `ciqual-13194` | Melocotón blanco, pulpa sin piel, sin hueso, crudo | [WebP](0026/ciqual-13194.webp) |
+| `ciqual-13195` | Melocotón amarillo, pulpa sin piel, sin hueso, crudo | [WebP](0026/ciqual-13195.webp) |
+| `ciqual-13199` | Compota, todo tipo de frutas distintas de manzana sola, con contenido reducido de azúcares, envasada, zona ambiente | [WebP](0026/ciqual-13199.webp) |
+| `ciqual-13200` | Mango José, pulpa sin piel, sin hueso, crudo, recolectado en La Reunión | [WebP](0026/ciqual-13200.webp) |
+| `ciqual-13201` | Piña Victoria o Queen Victoria, pulpa sin piel, cruda, muestreada en La Reunión | [WebP](0026/ciqual-13201.webp) |
+| `ciqual-13202` | Papaya colombo (fruto maduro), pulpa sin piel, sin pepitas, cruda, tomada en la isla de La Reunión (Carica papaya L.) | [WebP](0026/ciqual-13202.webp) |
+| `ciqual-13203` | Ruibarbo, tallo, cocido | [WebP](0026/ciqual-13203.webp) |
+| `ciqual-13204` | Compota de melocotón, envasada | [WebP](0026/ciqual-13204.webp) |
+| `ciqual-13205` | Compota de albaricoque, envasada | [WebP](0026/ciqual-13205.webp) |
+| `ciqual-13206` | Compota de ruibarbo, envasada | [WebP](0026/ciqual-13206.webp) |
+| `ciqual-13207` | Postre de frutas, todo tipo de frutas (por contenido de azúcares: compotas ligeras en azúcares < postres de frutas < compotas), envasado, sección refrigerados | [WebP](0026/ciqual-13207.webp) |
+| `ciqual-13208` | Especialidad de frutas variadas, azucarada (mezcla de pulpas y/o purés de frutas, pero siempre con otro ingrediente), envasada, sección refrigerados | [WebP](0026/ciqual-13208.webp) |
+| `ciqual-13209` | Especialidad de frutas, todo tipo de frutas, sin azúcares añadidos (mezcla de pulpas y/o purés de frutas, pero siempre con otro ingrediente), envasada, sección refrigerados | [WebP](0026/ciqual-13209.webp) |
+| `ciqual-13210` | Puré de frutas, todo tipo de frutas, tipo "compota sin azúcares añadidos", envasado, sección refrigerados | [WebP](0026/ciqual-13210.webp) |
+| `ciqual-13211` | Compota, otras frutas, envasada | [WebP](0026/ciqual-13211.webp) |
+| `ciqual-13212` | Compota de manzana, sin precisión sobre el contenido en azúcares ni sobre la sección (valor medio) | [WebP](0026/ciqual-13212.webp) |
+| `ciqual-13213` | Postre de frutas, todo tipo de frutas (por contenido de azúcares: compotas ligeras en azúcares < postres de frutas < compotas), envasado, sin precisión sobre la sección (valor medio) | [WebP](0026/ciqual-13213.webp) |
+| `ciqual-13214` | Puré de frutas, todo tipo de frutas, tipo "compota sin azúcares añadidos", sin precisión sobre la sección (valor medio) | [WebP](0026/ciqual-13214.webp) |
+| `ciqual-13215` | Especialidad de frutas, todo tipo de frutas, (mezcla de pulpas y/o purés de frutas, pero siempre con otro ingrediente), sin precisión sobre el contenido en azúcares ni sobre la sección (valor medio) | [WebP](0026/ciqual-13215.webp) |
+| `ciqual-13395` | Uva cruda (valor medio) | [WebP](0026/ciqual-13395.webp) |
+| `ciqual-13396` | Manzana, pulpa sin piel, cruda (valor medio) | [WebP](0026/ciqual-13396.webp) |
+| `ciqual-13397` | Pera, pulpa, cruda (valor medio) | [WebP](0026/ciqual-13397.webp) |
+| `ciqual-13398` | Melocotón, pulpa sin piel, sin hueso, crudo (valor medio) | [WebP](0026/ciqual-13398.webp) |
+| `ciqual-13399` | Nectarina o bruñón, pulpa y piel, sin hueso, cruda (valor medio) | [WebP](0026/ciqual-13399.webp) |
+| `ciqual-13402` | Piña, pulpa sin piel, cruda, tomada en Martinica | [WebP](0026/ciqual-13402.webp) |
+| `ciqual-13404` | Cereza acerola, pulpa y piel, sin hueso, cruda, tomada en Martinica | [WebP](0026/ciqual-13404.webp) |
+| `ciqual-13405` | Pampelmusa, pulpa sin piel, sin pepitas, cruda, tomada en Martinica | [WebP](0026/ciqual-13405.webp) |
+| `ciqual-13425` | Mandarina común, pulpa sin piel, sin pepitas, en almíbar, en conserva, no escurrida, muestreada en la isla de Martinica | [WebP](0026/ciqual-13425.webp) |
+| `ciqual-13426` | Mango bassignac, pulpa sin piel, sin hueso, crudo, muestreado en la isla de Martinica | [WebP](0026/ciqual-13426.webp) |
+| `ciqual-13427` | Mango moussache, pulpa sin piel, sin hueso, crudo, muestreado en la isla de Martinica | [WebP](0026/ciqual-13427.webp) |
+| `ciqual-13428` | Mango julie, pulpa sin piel, sin hueso, crudo, muestreado en la isla de Martinica | [WebP](0026/ciqual-13428.webp) |
+| `ciqual-13429` | Mango verde, pulpa sin piel, sin hueso, crudo, muestreado en la isla de Martinica | [WebP](0026/ciqual-13429.webp) |
+| `ciqual-13430` | Melón, pulpa sin piel, sin pepitas, crudo, muestreado en la isla de Martinica | [WebP](0026/ciqual-13430.webp) |
+| `ciqual-13431` | Naranja (variedad local), pulpa sin piel, sin pepitas, muestreada en la isla de Martinica | [WebP](0026/ciqual-13431.webp) |
+| `ciqual-13432` | Naranja amarga, pulpa sin piel, sin pepitas, cruda, muestreada en la isla de Martinica | [WebP](0026/ciqual-13432.webp) |
+| `ciqual-13433` | Sandía, pulpa sin piel, sin pepitas, cruda, muestreada en la isla de Martinica | [WebP](0026/ciqual-13433.webp) |
+| `ciqual-13499` | Yaca o yaca, pulpa sin piel, cruda | [WebP](0026/ciqual-13499.webp) |
+| `ciqual-13529` | Dorián o durián, pulpa sin piel, sin hueso, crudo | [WebP](0026/ciqual-13529.webp) |
+| `ciqual-13549` | Kumquat, pulpa y piel, sin pepitas, crudo | [WebP](0026/ciqual-13549.webp) |
+| `ciqual-13552` | Longán, pulpa sin piel, sin hueso, crudo | [WebP](0026/ciqual-13552.webp) |
+| `ciqual-13564` | Níspero de Japón, pulpa y piel, sin hueso, crudo | [WebP](0026/ciqual-13564.webp) |
+| `ciqual-13583` | Ciruela morada, sin hueso, cruda | [WebP](0026/ciqual-13583.webp) |
+| `ciqual-13614` | Pampelmusa, pulpa sin piel, sin pepitas, cruda | [WebP](0026/ciqual-13614.webp) |
+| `ciqual-13621` | Uva negra moscatel, cruda | [WebP](0026/ciqual-13621.webp) |
+| `ciqual-13623` | Albaricoque, sin hueso, seco, tierno (rehidratado al 35-45%) | [WebP](0026/ciqual-13623.webp) |
+| `ciqual-13704` | Albaricoque en almíbar (sin especificar si es ligero o clásico), en conserva, escurrido (valor medio) | [WebP](0026/ciqual-13704.webp) |
+| `ciqual-13705` | Macedonia o cóctel o ensalada de frutas, en almíbar (sin especificar si es ligero o clásico), en conserva, escurrida (valor medio) | [WebP](0026/ciqual-13705.webp) |
+| `ciqual-13706` | Macedonia o cóctel o ensalada de frutas, en almíbar, en conserva, escurrida | [WebP](0026/ciqual-13706.webp) |
+| `ciqual-13707` | Macedonia o cóctel o ensalada de frutas, en almíbar, en conserva, no escurrida | [WebP](0026/ciqual-13707.webp) |
+| `ciqual-13708` | Macedonia o cóctel o ensalada de frutas, en almíbar ligero, en conserva, escurrida | [WebP](0026/ciqual-13708.webp) |
+| `ciqual-13709` | Macedonia o cóctel o ensalada de frutas, en almíbar ligero, en conserva, no escurrida | [WebP](0026/ciqual-13709.webp) |
+| `ciqual-13712` | Albaricoque en almíbar ligero, en conserva, escurrido | [WebP](0026/ciqual-13712.webp) |
+| `ciqual-13713` | Albaricoque en almíbar ligero, en conserva, no escurrido | [WebP](0026/ciqual-13713.webp) |
+| `ciqual-13714` | Albaricoque en almíbar, en conserva, escurrido | [WebP](0026/ciqual-13714.webp) |
+| `ciqual-13715` | Albaricoque en almíbar, en conserva, no escurrido | [WebP](0026/ciqual-13715.webp) |
+| `ciqual-13716` | Piña en jugo de piña, en conserva, escurrida | [WebP](0026/ciqual-13716.webp) |
+| `ciqual-13717` | Piña en jugo de piña, en conserva, no escurrida | [WebP](0026/ciqual-13717.webp) |
+| `ciqual-13718` | Piña en almíbar ligero, en conserva, escurrida | [WebP](0026/ciqual-13718.webp) |
+| `ciqual-13719` | Piña en almíbar ligero, en conserva, no escurrida | [WebP](0026/ciqual-13719.webp) |
+| `ciqual-13724` | Lichi, pulpa sin piel, sin hueso, en almíbar ligero, en conserva, escurrido | [WebP](0026/ciqual-13724.webp) |
+| `ciqual-13730` | Melocotón, sin hueso, en almíbar ligero, en conserva, escurrido | [WebP](0026/ciqual-13730.webp) |
+| `ciqual-13731` | Melocotón, sin hueso, en almíbar ligero, en conserva, no escurrido | [WebP](0026/ciqual-13731.webp) |
+| `ciqual-13734` | Pera en almíbar ligero, en conserva, escurrida | [WebP](0026/ciqual-13734.webp) |
+| `ciqual-13735` | Pera en almíbar ligero, en conserva, no escurrida | [WebP](0026/ciqual-13735.webp) |
+| `ciqual-13742` | Melón piel de sapo o melón honeydew, pulpa sin piel, sin pepitas, crudo | [WebP](0026/ciqual-13742.webp) |
+| `ciqual-13996` | Fruta seca (valor medio) | [WebP](0026/ciqual-13996.webp) |
+| `ciqual-13997` | Frutos rojos, crudos (frambuesas, fresas, grosellas, grosellas negras) | [WebP](0026/ciqual-13997.webp) |
+| `ciqual-13998` | Coulis de frutos rojos (frambuesas, fresas, grosellas, grosellas negras) | [WebP](0026/ciqual-13998.webp) |
+| `ciqual-13999` | Fruta cruda (valor medio) | [WebP](0026/ciqual-13999.webp) |
+| `ciqual-9080` | Trigo duro integral, precocido, para cocer | [WebP](0026/ciqual-9080.webp) |
+| `ciqual-9081` | Trigo duro (granos enteros), precocido, cocido, sin sal añadida | [WebP](0026/ciqual-9081.webp) |
+| `ciqual-9082` | Trigo duro precocido, preparado, en bolsita apta para microondas | [WebP](0026/ciqual-9082.webp) |
+| `ciqual-9085` | Fideos asiáticos preparados (vacuno, pollo, verduras...), no instantáneos | [WebP](0026/ciqual-9085.webp) |
+| `ciqual-9104` | Arroz blanco, cocido, sin sal añadida | [WebP](0026/ciqual-9104.webp) |
+| `ciqual-9105` | Arroz blanco parboilizado, cocido, sin sal añadida | [WebP](0026/ciqual-9105.webp) |
+| `ciqual-9107` | Arroz blanco, precocido, cocido, sin sal añadida | [WebP](0026/ciqual-9107.webp) |
+| `ciqual-9110` | Arroz rojo, cocido, sin sal añadida | [WebP](0026/ciqual-9110.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
