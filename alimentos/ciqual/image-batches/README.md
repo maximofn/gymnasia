@@ -739,6 +739,113 @@ Cien imágenes generadas individualmente con el mismo estilo aprobado: verduras 
 | `ciqual-20352` | Zanahoria, hervida/cocida en agua (valor medio) | [WebP](0024/ciqual-20352.webp) |
 | `ciqual-20353` | Zanahoria, cocida (valor medio) | [WebP](0024/ciqual-20353.webp) |
 
+## Vigesimoquinta tanda (`0025`) — 100 imágenes
+
+Cien imágenes generadas individualmente con el mismo estilo aprobado: legumbres, preparaciones de patata, aceitunas y frutas. Ilustraciones de Gymnasia generadas por IA, no proporcionadas ni validadas por ANSES. Cada ficha conserva su identidad y preparación, con prompts y huellas en [el manifiesto](0025/manifest.json); una imagen no permite distinguir todas las diferencias de formulación, sal, grasa o nutrición. Las mezclas genéricas se representan de forma ilustrativa, no como una receta oficial.
+
+| ID | Alimento | Imagen |
+| --- | --- | --- |
+| `ciqual-20500` | Haba, hervida/cocida en agua | [WebP](0025/ciqual-20500.webp) |
+| `ciqual-20506` | Guisante partido, hervido o cocido en agua | [WebP](0025/ciqual-20506.webp) |
+| `ciqual-20508` | Alubia flageolet, en conserva, escurrida | [WebP](0025/ciqual-20508.webp) |
+| `ciqual-20510` | Lenteja, cocinada, en conserva, escurrida | [WebP](0025/ciqual-20510.webp) |
+| `ciqual-20511` | Alubia blanca, en conserva, escurrida | [WebP](0025/ciqual-20511.webp) |
+| `ciqual-20513` | Alubia verdina o flageolet, hervida/cocida en agua | [WebP](0025/ciqual-20513.webp) |
+| `ciqual-20517` | Haba para desgranar, fresca, cruda | [WebP](0025/ciqual-20517.webp) |
+| `ciqual-20518` | Haba, seca | [WebP](0025/ciqual-20518.webp) |
+| `ciqual-20521` | Brotes de lenteja germinados, frescos, crudos | [WebP](0025/ciqual-20521.webp) |
+| `ciqual-20524` | Alubia roja, en conserva, escurrida | [WebP](0025/ciqual-20524.webp) |
+| `ciqual-20527` | Guandú verde, fresco, crudo | [WebP](0025/ciqual-20527.webp) |
+| `ciqual-20529` | Judía de Lima o frijol tape, cruda | [WebP](0025/ciqual-20529.webp) |
+| `ciqual-20531` | Judía mungo, fresca, hervida/cocida en agua | [WebP](0025/ciqual-20531.webp) |
+| `ciqual-20532` | Garbanzo, en conserva, escurrido | [WebP](0025/ciqual-20532.webp) |
+| `ciqual-20534` | Altramuz, semilla, seco | [WebP](0025/ciqual-20534.webp) |
+| `ciqual-20537` | Judía flageolet, fresca, ultracongelada, cruda | [WebP](0025/ciqual-20537.webp) |
+| `ciqual-20540` | Judía flageolet, verde, hervida/cocida en agua | [WebP](0025/ciqual-20540.webp) |
+| `ciqual-20541` | Haba, pelada, fresca, ultracongelada, cruda | [WebP](0025/ciqual-20541.webp) |
+| `ciqual-20542` | Haba, pelada, fresca, ultracongelada, hervida/cocida en agua | [WebP](0025/ciqual-20542.webp) |
+| `ciqual-20543` | Haba, fresca, ultracongelada, hervida/cocida en agua | [WebP](0025/ciqual-20543.webp) |
+| `ciqual-20584` | Tomate en racimo, crudo | [WebP](0025/ciqual-20584.webp) |
+| `ciqual-20588` | Lenteja rubia, hervida/cocida en agua | [WebP](0025/ciqual-20588.webp) |
+| `ciqual-20589` | Lenteja coral, hervida/cocida en agua | [WebP](0025/ciqual-20589.webp) |
+| `ciqual-20590` | Crosne, cocido | [WebP](0025/ciqual-20590.webp) |
+| `ciqual-20591` | Proteína de soja texturizada, rehidratada | [WebP](0025/ciqual-20591.webp) |
+| `ciqual-4000` | Tapioca o perlas de Japón, cruda | [WebP](0025/ciqual-4000.webp) |
+| `ciqual-4002` | Patata, sin piel, asada/cocinada al horno | [WebP](0025/ciqual-4002.webp) |
+| `ciqual-4003` | Patata, hervida/cocinada en agua | [WebP](0025/ciqual-4003.webp) |
+| `ciqual-4004` | Patatas fritas de bolsa naturales o aromatizadas | [WebP](0025/ciqual-4004.webp) |
+| `ciqual-4007` | Patata nueva o temprana, cocida en agua | [WebP](0025/ciqual-4007.webp) |
+| `ciqual-4011` | Patata, en conserva, escurrida | [WebP](0025/ciqual-4011.webp) |
+| `ciqual-4013` | Patata noisette, ultracongelada, a cocinar | [WebP](0025/ciqual-4013.webp) |
+| `ciqual-4014` | Patata al vapor, al vacío | [WebP](0025/ciqual-4014.webp) |
+| `ciqual-4015` | Patata salteada a la sartén, con materia grasa | [WebP](0025/ciqual-4015.webp) |
+| `ciqual-4016` | Copos de patata, con leche o nata, deshidratados | [WebP](0025/ciqual-4016.webp) |
+| `ciqual-4017` | Puré de patata, a base de copos, reconstituido con leche entera y materia grasa | [WebP](0025/ciqual-4017.webp) |
+| `ciqual-4018` | Puré de patata, con leche y mantequilla, sin sal añadida | [WebP](0025/ciqual-4018.webp) |
+| `ciqual-4019` | Puré de patata, a base de copos, reconstituido con leche semidesnatada y agua, sin sal | [WebP](0025/ciqual-4019.webp) |
+| `ciqual-4020` | Patata dauphine, ultracongelada, a cocinar | [WebP](0025/ciqual-4020.webp) |
+| `ciqual-4021` | Patata dauphine, ultracongelada, cocida | [WebP](0025/ciqual-4021.webp) |
+| `ciqual-4022` | Copos de patata, naturales, deshidratados | [WebP](0025/ciqual-4022.webp) |
+| `ciqual-4023` | Patata nueva o temprana, cruda | [WebP](0025/ciqual-4023.webp) |
+| `ciqual-4025` | Patatas gajo especiadas, ultracongeladas, cocidas | [WebP](0025/ciqual-4025.webp) |
+| `ciqual-4026` | Patata, asada al horno | [WebP](0025/ciqual-4026.webp) |
+| `ciqual-4027` | Patata salteada a la sartén/dorada, prefrita, ultracongelada, cocida | [WebP](0025/ciqual-4027.webp) |
+| `ciqual-4028` | Patata de conservación, sin piel, hervida/cocida en agua | [WebP](0025/ciqual-4028.webp) |
+| `ciqual-4029` | Patata nueva o temprana, hervida/cocida en agua, sin piel | [WebP](0025/ciqual-4029.webp) |
+| `ciqual-4030` | Patatas fritas de bolsa o bastón, ultracongeladas, asadas al horno | [WebP](0025/ciqual-4030.webp) |
+| `ciqual-4032` | Patatas fritas de bastón, ultracongeladas, fritas en freidora | [WebP](0025/ciqual-4032.webp) |
+| `ciqual-4034` | Patata duquesa, ultracongelada, cocida | [WebP](0025/ciqual-4034.webp) |
+| `ciqual-4035` | Patatas noisette, ultracongeladas, cocinadas | [WebP](0025/ciqual-4035.webp) |
+| `ciqual-4036` | Patata salteada/en sartén/dorada con grasa de pato | [WebP](0025/ciqual-4036.webp) |
+| `ciqual-4037` | Patatas fritas de bolsa naturales o aromatizadas, estilo antiguo | [WebP](0025/ciqual-4037.webp) |
+| `ciqual-4038` | Patatas fritas de bolsa y similares, naturales o aromatizadas, reducidas en materia grasa | [WebP](0025/ciqual-4038.webp) |
+| `ciqual-4039` | Rostis o galleta de patata | [WebP](0025/ciqual-4039.webp) |
+| `ciqual-4040` | Puré de patata, con leche y mantequilla, salado | [WebP](0025/ciqual-4040.webp) |
+| `ciqual-4041` | Aligot (puré de patata con queso tome fresco), envasado | [WebP](0025/ciqual-4041.webp) |
+| `ciqual-4042` | Patata duquesa, ultracongelada, para cocinar | [WebP](0025/ciqual-4042.webp) |
+| `ciqual-4043` | Patata salteada/en sartén/dorada, prefrita, ultracongelada, para cocinar | [WebP](0025/ciqual-4043.webp) |
+| `ciqual-4044` | Patatas fritas, ultracongeladas, prefritas, para cocinado al horno | [WebP](0025/ciqual-4044.webp) |
+| `ciqual-4045` | Patatas fritas, ultracongeladas, prefritas, para cocinado en microondas | [WebP](0025/ciqual-4045.webp) |
+| `ciqual-4046` | Patatas fritas, ultracongeladas, prefritas, para cocinado en freidora | [WebP](0025/ciqual-4046.webp) |
+| `ciqual-4047` | Puré de patata (valor medio) | [WebP](0025/ciqual-4047.webp) |
+| `ciqual-4048` | Patata, cocinada (valor medio) | [WebP](0025/ciqual-4048.webp) |
+| `ciqual-4049` | Croqueta de patata, ultracongelada, para cocinar | [WebP](0025/ciqual-4049.webp) |
+| `ciqual-4050` | Patatas fritas de bolsa naturales o aromatizadas, sin sal añadida | [WebP](0025/ciqual-4050.webp) |
+| `ciqual-4051` | Salteado de patatas a la sarladaise (grasa de pato, ajo y perejil), ultracongelado, para cocinar | [WebP](0025/ciqual-4051.webp) |
+| `ciqual-4052` | Patatas gajo especiadas, ultracongeladas, para cocinar | [WebP](0025/ciqual-4052.webp) |
+| `ciqual-4053` | Patata menuda (grenaille), prefrita, ultracongelada, para cocinar | [WebP](0025/ciqual-4053.webp) |
+| `ciqual-4090` | Fécula de patata | [WebP](0025/ciqual-4090.webp) |
+| `ciqual-4102` | Boniato, cocinado | [WebP](0025/ciqual-4102.webp) |
+| `ciqual-4103` | Boniato, puré, cocinado con nata | [WebP](0025/ciqual-4103.webp) |
+| `ciqual-13032` | Aceituna negra, en salmuera, escurrida | [WebP](0025/ciqual-13032.webp) |
+| `ciqual-13033` | Aceituna verde, en salmuera, escurrida | [WebP](0025/ciqual-13033.webp) |
+| `ciqual-13038` | Compota de manzana, envasada | [WebP](0025/ciqual-13038.webp) |
+| `ciqual-13039` | Manzana, pulpa y piel, cruda | [WebP](0025/ciqual-13039.webp) |
+| `ciqual-13040` | Pomelo, pulpa sin piel, sin pepitas, crudo | [WebP](0025/ciqual-13040.webp) |
+| `ciqual-13051` | Mezcla de frutos exóticos para aperitivo, azucarada, seca | [WebP](0025/ciqual-13051.webp) |
+| `ciqual-13055` | Cereza acerola, pulpa y piel, sin hueso, cruda | [WebP](0025/ciqual-13055.webp) |
+| `ciqual-13056` | Chirimoya, pulpa sin piel, cruda | [WebP](0025/ciqual-13056.webp) |
+| `ciqual-13061` | Feijoa, pulpa sin piel, cruda | [WebP](0025/ciqual-13061.webp) |
+| `ciqual-13063` | Higo chumbo, pulpa y piel, con pepitas, crudo | [WebP](0025/ciqual-13063.webp) |
+| `ciqual-13080` | Tamarindo, fruto maduro, pulpa sin piel, con pepitas, crudo | [WebP](0025/ciqual-13080.webp) |
+| `ciqual-13085` | Manzana Reineta del Canadá, pulpa sin piel, cruda | [WebP](0025/ciqual-13085.webp) |
+| `ciqual-13086` | Manzana Golden, pulpa sin piel, cruda | [WebP](0025/ciqual-13086.webp) |
+| `ciqual-13089` | Plátano, pulpa sin piel, seco | [WebP](0025/ciqual-13089.webp) |
+| `ciqual-13111` | Manzana, seca | [WebP](0025/ciqual-13111.webp) |
+| `ciqual-13118` | Melocotón, pulpa y piel, sin hueso, seco | [WebP](0025/ciqual-13118.webp) |
+| `ciqual-13119` | Ciruela pasa, sin hueso, cocida | [WebP](0025/ciqual-13119.webp) |
+| `ciqual-13121` | Manzana Granny Smith, pulpa sin piel, cruda | [WebP](0025/ciqual-13121.webp) |
+| `ciqual-13122` | Manzana Granny Smith, pulpa y piel, cruda | [WebP](0025/ciqual-13122.webp) |
+| `ciqual-13125` | Limón, piel rallada, crudo | [WebP](0025/ciqual-13125.webp) |
+| `ciqual-13126` | Saúco, baya, cruda | [WebP](0025/ciqual-13126.webp) |
+| `ciqual-13128` | Chayote o chayota, crudo | [WebP](0025/ciqual-13128.webp) |
+| `ciqual-13129` | Compota, todo tipo de frutas, ligera en azúcares, envasada, sección de refrigerados | [WebP](0025/ciqual-13129.webp) |
+| `ciqual-13131` | Aceituna negra, en aceite (al estilo griego) | [WebP](0025/ciqual-13131.webp) |
+| `ciqual-13132` | Arándano azul, ultracongelado, crudo | [WebP](0025/ciqual-13132.webp) |
+| `ciqual-13134` | Macedonia de frutas, cruda | [WebP](0025/ciqual-13134.webp) |
+| `ciqual-13136` | Frambuesa, ultracongelada, cruda | [WebP](0025/ciqual-13136.webp) |
+| `ciqual-13147` | Aceitunas verdes, rellenas (anchoa, pimientos, etc.) | [WebP](0025/ciqual-13147.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
