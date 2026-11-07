@@ -953,6 +953,113 @@ Cien imágenes generadas individualmente con el mismo estilo aprobado: frutas, c
 | `ciqual-9107` | Arroz blanco, precocido, cocido, sin sal añadida | [WebP](0026/ciqual-9107.webp) |
 | `ciqual-9110` | Arroz rojo, cocido, sin sal añadida | [WebP](0026/ciqual-9110.webp) |
 
+## Vigesimoséptima tanda (`0027`) — 100 imágenes
+
+Cien imágenes generadas individualmente con el mismo estilo aprobado: cereales de desayuno, granos, harinas y galletas. Ilustraciones de Gymnasia generadas por IA, no proporcionadas ni validadas por ANSES. Cada ficha conserva su identidad y preparación, con prompts y huellas en [el manifiesto](0027/manifest.json); una imagen no permite demostrar enriquecimiento, contenido en fibra o azúcar, ausencia de gluten ni equivalencia nutricional. Las mezclas y fichas genéricas se representan de forma ilustrativa, no como una receta oficial.
+
+| ID | Alimento | Imagen |
+| --- | --- | --- |
+| `ciqual-32000` | Granos de trigo soplados con miel o caramelo, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32000.webp) |
+| `ciqual-32001` | Cereales de desayuno de chocolate, no rellenos, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32001.webp) |
+| `ciqual-32003` | Cereales de desayuno (valor medio) | [WebP](0027/ciqual-32003.webp) |
+| `ciqual-32004` | Muesli (valor medio) | [WebP](0027/ciqual-32004.webp) |
+| `ciqual-32005` | Copos de maíz naturales, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32005.webp) |
+| `ciqual-32006` | Arroz soplado natural, enriquecido con vitaminas y minerales | [WebP](0027/ciqual-32006.webp) |
+| `ciqual-32008` | Cereales de desayuno ricos en fibra, de chocolate, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32008.webp) |
+| `ciqual-32012` | Arroz soplado de chocolate, no enriquecido con vitaminas y minerales | [WebP](0027/ciqual-32012.webp) |
+| `ciqual-32013` | Cereales de desayuno de chocolate, no rellenos, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32013.webp) |
+| `ciqual-32014` | Copos de maíz naturales, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32014.webp) |
+| `ciqual-32016` | Cereales de desayuno rellenos de chocolate o chocolate-avellanas, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32016.webp) |
+| `ciqual-32017` | Cereales de desayuno rellenos de chocolate o chocolate-avellanas, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32017.webp) |
+| `ciqual-32018` | Cereales de desayuno rellenos de leche o vainilla, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32018.webp) |
+| `ciqual-32022` | Copos de cereales de chocolate, con o sin frutos de cáscara, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32022.webp) |
+| `ciqual-32023` | Copos de cereales con frutas, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32023.webp) |
+| `ciqual-32025` | Copos de cereales con frutos de cáscara, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32025.webp) |
+| `ciqual-32028` | Copos de cereales de chocolate, con o sin frutos de cáscara, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32028.webp) |
+| `ciqual-32029` | Copos de cereales con frutas, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32029.webp) |
+| `ciqual-32030` | Copos de cereales, naturales, azucarados, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32030.webp) |
+| `ciqual-32031` | Cereales de desayuno, enriquecidos con vitaminas y minerales (valor medio) | [WebP](0027/ciqual-32031.webp) |
+| `ciqual-32032` | Cereales de desayuno, no enriquecidos con vitaminas y minerales (valor medio) | [WebP](0027/ciqual-32032.webp) |
+| `ciqual-32033` | Cereales de desayuno ricos en fibra, con frutas o frutos de cáscara, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32033.webp) |
+| `ciqual-32034` | Cereales de desayuno ricos en fibra, con frutas o frutos de cáscara, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32034.webp) |
+| `ciqual-32035` | Cereales de desayuno ricos en fibra, naturales, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32035.webp) |
+| `ciqual-32036` | Cereales de desayuno ricos en fibra, naturales, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32036.webp) |
+| `ciqual-32037` | Cereales de desayuno de chocolate y caramelo, extrusionados, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32037.webp) |
+| `ciqual-32038` | Cereales de desayuno de chocolate y caramelo, extrusionados, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32038.webp) |
+| `ciqual-32039` | Cereales de desayuno rellenos de leche o vainilla, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32039.webp) |
+| `ciqual-32040` | Granos de trigo soplados con miel o caramelo, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32040.webp) |
+| `ciqual-32041` | Mezcla de copos de cereales, natural, no enriquecida con vitaminas y minerales | [WebP](0027/ciqual-32041.webp) |
+| `ciqual-32042` | Copos de cereales, naturales, azucarados, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32042.webp) |
+| `ciqual-32043` | Copos de cereales naturales, sin azúcares añadidos, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32043.webp) |
+| `ciqual-32107` | Copos de maíz glaseados con azúcar, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32107.webp) |
+| `ciqual-32108` | Muesli crujiente con frutas, con o sin frutos de cáscara y/o semillas, no enriquecido con vitaminas y minerales | [WebP](0027/ciqual-32108.webp) |
+| `ciqual-32109` | Muesli crujiente de chocolate, no enriquecido con vitaminas y minerales | [WebP](0027/ciqual-32109.webp) |
+| `ciqual-32110` | Muesli en copos con frutas, frutos de cáscara y/o semillas, enriquecido con vitaminas y minerales | [WebP](0027/ciqual-32110.webp) |
+| `ciqual-32111` | Muesli crujiente con frutas, con o sin frutos de cáscara y/o semillas, enriquecido con vitaminas y minerales | [WebP](0027/ciqual-32111.webp) |
+| `ciqual-32112` | Muesli crujiente de chocolate, enriquecido con vitaminas y minerales | [WebP](0027/ciqual-32112.webp) |
+| `ciqual-32113` | Muesli en copos con frutas, frutos de cáscara y/o semillas, sin azúcares añadidos, no enriquecido | [WebP](0027/ciqual-32113.webp) |
+| `ciqual-32116` | Cereales de desayuno muy ricos en fibra, naturales, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32116.webp) |
+| `ciqual-32121` | Copos de maíz glaseados con azúcar, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32121.webp) |
+| `ciqual-32129` | Bolas de maíz sopladas con miel, no enriquecidas con vitaminas y minerales | [WebP](0027/ciqual-32129.webp) |
+| `ciqual-32130` | Trigo khorasan integral soplado | [WebP](0027/ciqual-32130.webp) |
+| `ciqual-32131` | Arroz soplado con chocolate, enriquecido con vitaminas y minerales | [WebP](0027/ciqual-32131.webp) |
+| `ciqual-32133` | Bolas de maíz sopladas con miel, enriquecidas con vitaminas y minerales | [WebP](0027/ciqual-32133.webp) |
+| `ciqual-32138` | Muesli en copos con frutas, frutos de cáscara y/o semillas, no enriquecido con vitaminas y minerales | [WebP](0027/ciqual-32138.webp) |
+| `ciqual-32139` | Muesli enriquecido con vitaminas y minerales (valor medio) | [WebP](0027/ciqual-32139.webp) |
+| `ciqual-32141` | Muesli no enriquecido con vitaminas y minerales (valor medio) | [WebP](0027/ciqual-32141.webp) |
+| `ciqual-32142` | Cereales de desayuno con miel o caramelo, soplados o extrusionados, enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32142.webp) |
+| `ciqual-32143` | Cereales de desayuno con miel o caramelo, soplados o extrusionados, no enriquecidos con vitaminas y minerales | [WebP](0027/ciqual-32143.webp) |
+| `ciqual-32144` | Musli crujiente con frutos de cáscara y/o semillas únicamente, enriquecido en vitaminas y minerales | [WebP](0027/ciqual-32144.webp) |
+| `ciqual-32145` | Musli crujiente con frutos de cáscara y/o semillas únicamente, no enriquecido en vitaminas y minerales | [WebP](0027/ciqual-32145.webp) |
+| `ciqual-9111` | Arroz salvaje, cocido, sin sal añadida | [WebP](0027/ciqual-9111.webp) |
+| `ciqual-9113` | Arroz semiintegral, cocido, sin sal añadida | [WebP](0027/ciqual-9113.webp) |
+| `ciqual-9124` | Arroz tailandés, cocido, sin sal añadida | [WebP](0027/ciqual-9124.webp) |
+| `ciqual-9125` | Arroz basmati, cocido, sin sal añadida | [WebP](0027/ciqual-9125.webp) |
+| `ciqual-9230` | Palomitas de maíz o maíz inflado, con aceite, salado | [WebP](0027/ciqual-9230.webp) |
+| `ciqual-9231` | Palomitas de maíz o maíz inflado, sin aceite, sin sal | [WebP](0027/ciqual-9231.webp) |
+| `ciqual-9232` | Palomitas de maíz o maíz inflado, con caramelo | [WebP](0027/ciqual-9232.webp) |
+| `ciqual-9313` | Copos de avena hervidos/cocidos en agua | [WebP](0027/ciqual-9313.webp) |
+| `ciqual-9331` | Mijo, cocido, sin sal añadida | [WebP](0027/ciqual-9331.webp) |
+| `ciqual-9437` | Harina de trigo blando o común con levadura incorporada | [WebP](0027/ciqual-9437.webp) |
+| `ciqual-9532` | Harina de centeno T85 | [WebP](0027/ciqual-9532.webp) |
+| `ciqual-9533` | Harina de centeno T130 | [WebP](0027/ciqual-9533.webp) |
+| `ciqual-9550` | Harina de cebada | [WebP](0027/ciqual-9550.webp) |
+| `ciqual-9555` | Harina de mijo | [WebP](0027/ciqual-9555.webp) |
+| `ciqual-9610` | Sémola de trigo duro, cruda | [WebP](0027/ciqual-9610.webp) |
+| `ciqual-9612` | Mezcla de cereales y legumbres secas, crudo | [WebP](0027/ciqual-9612.webp) |
+| `ciqual-9614` | Polenta o sémola de maíz, precocida, para cocinado | [WebP](0027/ciqual-9614.webp) |
+| `ciqual-9641` | Salvado de maíz | [WebP](0027/ciqual-9641.webp) |
+| `ciqual-9643` | Salvado de arroz | [WebP](0027/ciqual-9643.webp) |
+| `ciqual-9660` | Germen de trigo | [WebP](0027/ciqual-9660.webp) |
+| `ciqual-9681` | Grano de cuscús (sémola de trigo duro precocida), para cocinado | [WebP](0027/ciqual-9681.webp) |
+| `ciqual-9685` | Sémola o grano de cuscús integral, cocido, sin sal añadida | [WebP](0027/ciqual-9685.webp) |
+| `ciqual-9686` | Sémola o grano de cuscús semiintegral, cocido, sin sal añadida | [WebP](0027/ciqual-9686.webp) |
+| `ciqual-23027` | Macaron seco | [WebP](0027/ciqual-23027.webp) |
+| `ciqual-23849` | Gofre fino relleno de miel, de caramelo o de azúcar vergeoise, envasado | [WebP](0027/ciqual-23849.webp) |
+| `ciqual-23853` | Gofre crujiente (fino o seco), natural o azucarado, envasado | [WebP](0027/ciqual-23853.webp) |
+| `ciqual-24000` | Galleta seca, sin especificar | [WebP](0027/ciqual-24000.webp) |
+| `ciqual-24001` | Galleta seca natural | [WebP](0027/ciqual-24001.webp) |
+| `ciqual-24002` | Galleta seca con contenido garantizado de vitaminas | [WebP](0027/ciqual-24002.webp) |
+| `ciqual-24003` | Galleta seca con contenido garantizado de vitaminas y minerales | [WebP](0027/ciqual-24003.webp) |
+| `ciqual-24004` | Galleta seca con frutas, hiposódica o con contenido reducido en sal | [WebP](0027/ciqual-24004.webp) |
+| `ciqual-24006` | Galleta seca de soja, enriquecida con vitaminas y minerales | [WebP](0027/ciqual-24006.webp) |
+| `ciqual-24008` | Galleta seca rellena de frutas, ligera en materia grasa | [WebP](0027/ciqual-24008.webp) |
+| `ciqual-24009` | Galleta speculoos | [WebP](0027/ciqual-24009.webp) |
+| `ciqual-24010` | Galleta seca, con materia grasa vegetal | [WebP](0027/ciqual-24010.webp) |
+| `ciqual-24011` | Galleta seca, surtido | [WebP](0027/ciqual-24011.webp) |
+| `ciqual-24012` | Galleta seca de chocolate, sin azúcares añadidos, con edulcorantes, enriquecida con vitaminas | [WebP](0027/ciqual-24012.webp) |
+| `ciqual-24013` | Galleta seca, sin azúcares añadidos, con edulcorante | [WebP](0027/ciqual-24013.webp) |
+| `ciqual-24014` | Galleta seca con tableta de chocolate y relleno de leche | [WebP](0027/ciqual-24014.webp) |
+| `ciqual-24015` | Galleta seca tipo petit beurre | [WebP](0027/ciqual-24015.webp) |
+| `ciqual-24016` | Galleta seca con tableta de chocolate | [WebP](0027/ciqual-24016.webp) |
+| `ciqual-24017` | Galleta seca tipo petit beurre con chocolate (tableta o pepitas) | [WebP](0027/ciqual-24017.webp) |
+| `ciqual-24018` | Galleta seca sin gluten, tipo petit beurre | [WebP](0027/ciqual-24018.webp) |
+| `ciqual-24019` | Galleta seca sin gluten, con chocolate | [WebP](0027/ciqual-24019.webp) |
+| `ciqual-24020` | Galleta seca con cereales integrales | [WebP](0027/ciqual-24020.webp) |
+| `ciqual-24021` | Galleta seca tipo petit beurre de trigo integral | [WebP](0027/ciqual-24021.webp) |
+| `ciqual-24028` | Galleta seca con sésamo, no enriquecida | [WebP](0027/ciqual-24028.webp) |
+| `ciqual-24029` | Galleta seca con sésamo, enriquecida con vitaminas y minerales | [WebP](0027/ciqual-24029.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
