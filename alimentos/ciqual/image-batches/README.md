@@ -632,6 +632,113 @@ Cien imágenes generadas individualmente con el mismo estilo aprobado: verduras 
 | `ciqual-20206` | Col de Bruselas, ultracongelada, cruda | [WebP](0023/ciqual-20206.webp) |
 | `ciqual-20208` | Zanahoria, ultracongelada, cruda | [WebP](0023/ciqual-20208.webp) |
 
+## Vigesimocuarta tanda (`0024`) — 100 imágenes
+
+Cien imágenes generadas individualmente con el mismo estilo aprobado: verduras congeladas, purés y preparaciones cocinadas, legumbres, tomates, hojas frescas y una salchicha vegetal de tofu. Ilustraciones de Gymnasia generadas por IA, no proporcionadas ni validadas por ANSES. Cada ficha conserva su identidad y preparación, con prompts y huellas en [el manifiesto](0024/manifest.json); una imagen no permite distinguir todas las diferencias de formulación, textura o nutrición. Las mezclas genéricas se representan de forma ilustrativa, no como una receta oficial.
+
+| ID | Alimento | Imagen |
+| --- | --- | --- |
+| `ciqual-20211` | Seta shiitake, deshidratada | [WebP](0024/ciqual-20211.webp) |
+| `ciqual-20212` | Seta shiitake, cocinada | [WebP](0024/ciqual-20212.webp) |
+| `ciqual-20214` | Guisantes y zanahorias, ultracongelados, crudos | [WebP](0024/ciqual-20214.webp) |
+| `ciqual-20216` | Guisante caratojo o tirabeque, hervido/cocinado en agua | [WebP](0024/ciqual-20216.webp) |
+| `ciqual-20218` | Col rizada, cruda | [WebP](0024/ciqual-20218.webp) |
+| `ciqual-20219` | Col rizada, cocinada | [WebP](0024/ciqual-20219.webp) |
+| `ciqual-20221` | Col china pé-tsaï, salteada/a la sartén | [WebP](0024/ciqual-20221.webp) |
+| `ciqual-20228` | Champiñón de París o champiñón cultivado, ultracongelado, crudo | [WebP](0024/ciqual-20228.webp) |
+| `ciqual-20230` | Calabacín, pulpa y piel, ultracongelado, crudo | [WebP](0024/ciqual-20230.webp) |
+| `ciqual-20231` | Crosne, ultracongelado, crudo | [WebP](0024/ciqual-20231.webp) |
+| `ciqual-20232` | Alcachofa, fondo, ultracongelado, crudo | [WebP](0024/ciqual-20232.webp) |
+| `ciqual-20233` | Maíz dulce, ultracongelado, crudo | [WebP](0024/ciqual-20233.webp) |
+| `ciqual-20234` | Nabo, ultracongelado, crudo | [WebP](0024/ciqual-20234.webp) |
+| `ciqual-20235` | Cebolla, ultracongelada, cruda | [WebP](0024/ciqual-20235.webp) |
+| `ciqual-20236` | Puerro, ultracongelado, crudo | [WebP](0024/ciqual-20236.webp) |
+| `ciqual-20237` | Salsifí, ultracongelado, crudo | [WebP](0024/ciqual-20237.webp) |
+| `ciqual-20240` | Piperada vasca, envasada | [WebP](0024/ciqual-20240.webp) |
+| `ciqual-20241` | Cardo, cocido | [WebP](0024/ciqual-20241.webp) |
+| `ciqual-20242` | Tomate, pulpa y piel, hervido/cocido en agua | [WebP](0024/ciqual-20242.webp) |
+| `ciqual-20243` | Guisante comtodo o tirabeque, cocido | [WebP](0024/ciqual-20243.webp) |
+| `ciqual-20255` | Chalota, cocida | [WebP](0024/ciqual-20255.webp) |
+| `ciqual-20256` | Tomate, seco, en aceite | [WebP](0024/ciqual-20256.webp) |
+| `ciqual-20257` | Judía verde, puré | [WebP](0024/ciqual-20257.webp) |
+| `ciqual-20258` | Verduras (3-4 tipos en mezcla), puré | [WebP](0024/ciqual-20258.webp) |
+| `ciqual-20259` | Brócoli, puré | [WebP](0024/ciqual-20259.webp) |
+| `ciqual-20260` | Coulis de tomate, en conserva (puré de tomate semirreducido al 11%) | [WebP](0024/ciqual-20260.webp) |
+| `ciqual-20261` | Zanahoria, puré | [WebP](0024/ciqual-20261.webp) |
+| `ciqual-20262` | Salteado de verduras sazonadas sin champiñón, ultracongelado, crudo | [WebP](0024/ciqual-20262.webp) |
+| `ciqual-20263` | Verduras para sopas, ultracongeladas, crudas | [WebP](0024/ciqual-20263.webp) |
+| `ciqual-20264` | Calabacín, puré | [WebP](0024/ciqual-20264.webp) |
+| `ciqual-20265` | Juliana o brunoisa de verduras, ultracongelada, cruda | [WebP](0024/ciqual-20265.webp) |
+| `ciqual-20266` | Verduras para pisto, ultracongeladas | [WebP](0024/ciqual-20266.webp) |
+| `ciqual-20267` | Salteado o jardinera de verduras, ultracongelado, crudo (guisantes, patatas, judías verdes, zanahorias, cebolla) | [WebP](0024/ciqual-20267.webp) |
+| `ciqual-20268` | Tomate, doble concentrado, en conserva | [WebP](0024/ciqual-20268.webp) |
+| `ciqual-20269` | Judía plana, cruda | [WebP](0024/ciqual-20269.webp) |
+| `ciqual-20270` | Espinaca, brotes tiernos para ensalada, cruda | [WebP](0024/ciqual-20270.webp) |
+| `ciqual-20271` | Macedonia de verduras, precocida, para terminar de cocinar, ultracongelada | [WebP](0024/ciqual-20271.webp) |
+| `ciqual-20272` | Mesclun o ensalada, mezcla de brotes tiernos | [WebP](0024/ciqual-20272.webp) |
+| `ciqual-20273` | Salteado de verduras aliñadas al estilo asiático o wok de verduras, ultracongelado, crudo | [WebP](0024/ciqual-20273.webp) |
+| `ciqual-20274` | Salteado de verduras aliñadas asado, meridional o mediterráneo, ultracongelado, crudo | [WebP](0024/ciqual-20274.webp) |
+| `ciqual-20275` | Pimiento rojo, en conserva, escurrido | [WebP](0024/ciqual-20275.webp) |
+| `ciqual-20276` | Tomate redondo, crudo | [WebP](0024/ciqual-20276.webp) |
+| `ciqual-20277` | Espárrago blanco, hervido/cocido en agua | [WebP](0024/ciqual-20277.webp) |
+| `ciqual-20278` | Apio nabo, puré | [WebP](0024/ciqual-20278.webp) |
+| `ciqual-20282` | Espárrago, blanco o morado, pelado, crudo | [WebP](0024/ciqual-20282.webp) |
+| `ciqual-20283` | Salicornia (Salicornia sp.), cruda | [WebP](0024/ciqual-20283.webp) |
+| `ciqual-20284` | Guisantes, puré | [WebP](0024/ciqual-20284.webp) |
+| `ciqual-20288` | Lechuga sucrine, cruda | [WebP](0024/ciqual-20288.webp) |
+| `ciqual-20289` | Tomate, pulpa y piel, asado/cocido al horno | [WebP](0024/ciqual-20289.webp) |
+| `ciqual-20290` | Col romanesco o brócoli romanesco, cocida | [WebP](0024/ciqual-20290.webp) |
+| `ciqual-20291` | Calabaza potimarron, pulpa sin piel, estofada | [WebP](0024/ciqual-20291.webp) |
+| `ciqual-20292` | Calabaza butternut, pulpa sin piel, cocida | [WebP](0024/ciqual-20292.webp) |
+| `ciqual-20293` | Alubia coco, hervida/cocida en agua | [WebP](0024/ciqual-20293.webp) |
+| `ciqual-20295` | Lechuga hoja de roble, cruda | [WebP](0024/ciqual-20295.webp) |
+| `ciqual-20296` | Bredes de col china o bok choy o pak choi, tallos y hojas, cocidas al vapor, procedentes de La Reunión (Brassica rapa subsp. Chinensis) | [WebP](0024/ciqual-20296.webp) |
+| `ciqual-20297` | Chayota o cidra, sin piel, sin hueso, cocida al vapor, procedente de La Reunión (Sechium edule) | [WebP](0024/ciqual-20297.webp) |
+| `ciqual-20298` | Zanahoria, puré preparado con nata, envasado | [WebP](0024/ciqual-20298.webp) |
+| `ciqual-20299` | Espárrago verde, hervido/cocido en agua | [WebP](0024/ciqual-20299.webp) |
+| `ciqual-20300` | Berenjena, pulpa y piel, asada/cocida al horno | [WebP](0024/ciqual-20300.webp) |
+| `ciqual-20301` | Acelga, penca y hoja, hervida/cocida en agua | [WebP](0024/ciqual-20301.webp) |
+| `ciqual-20302` | Brócoli, hervido/cocido en agua, crujiente | [WebP](0024/ciqual-20302.webp) |
+| `ciqual-20303` | Brócoli, hervido/cocido en agua, tierno | [WebP](0024/ciqual-20303.webp) |
+| `ciqual-20305` | Zanahoria, hervida/cocida en agua, crujiente | [WebP](0024/ciqual-20305.webp) |
+| `ciqual-20306` | Zanahoria, hervida/cocida en agua, tierna | [WebP](0024/ciqual-20306.webp) |
+| `ciqual-20308` | Col blanca, hervida/cocida en agua | [WebP](0024/ciqual-20308.webp) |
+| `ciqual-20309` | Col de Bruselas, hervida/cocida en agua | [WebP](0024/ciqual-20309.webp) |
+| `ciqual-20310` | Col roja, estofada | [WebP](0024/ciqual-20310.webp) |
+| `ciqual-20311` | Col verde, hervida/cocida en agua | [WebP](0024/ciqual-20311.webp) |
+| `ciqual-20312` | Coliflor, cocinada al vapor | [WebP](0024/ciqual-20312.webp) |
+| `ciqual-20313` | Calabacín, pulpa y piel, asado o cocinado al horno | [WebP](0024/ciqual-20313.webp) |
+| `ciqual-20314` | Apio rama, estofado | [WebP](0024/ciqual-20314.webp) |
+| `ciqual-20315` | Apio nabo, hervido/cocido en agua | [WebP](0024/ciqual-20315.webp) |
+| `ciqual-20316` | Endibia, asada/cocinada al horno | [WebP](0024/ciqual-20316.webp) |
+| `ciqual-20317` | Hinojo, estofado | [WebP](0024/ciqual-20317.webp) |
+| `ciqual-20318` | Judía amarilla, hervida/cocida en agua | [WebP](0024/ciqual-20318.webp) |
+| `ciqual-20321` | Nabo, hervido/cocido en agua | [WebP](0024/ciqual-20321.webp) |
+| `ciqual-20322` | Cebolla blanca o amarilla, salteada/cocinada a la sartén sin materia grasa | [WebP](0024/ciqual-20322.webp) |
+| `ciqual-20323` | Cebolleta o cebolla fresca, salteada/cocinada a la sartén sin materia grasa | [WebP](0024/ciqual-20323.webp) |
+| `ciqual-20324` | Cebolla roja, salteada/cocinada a la sartén | [WebP](0024/ciqual-20324.webp) |
+| `ciqual-20325` | Chirivía, estofada | [WebP](0024/ciqual-20325.webp) |
+| `ciqual-20328` | Pimiento amarillo, salteado/cocinado a la sartén | [WebP](0024/ciqual-20328.webp) |
+| `ciqual-20329` | Pimiento rojo, salteado/cocinado a la sartén | [WebP](0024/ciqual-20329.webp) |
+| `ciqual-20330` | Pimiento verde, salteado/a la sartén | [WebP](0024/ciqual-20330.webp) |
+| `ciqual-20331` | Calabaza potimarron, pulpa sin piel, hervida o cocida en agua | [WebP](0024/ciqual-20331.webp) |
+| `ciqual-20332` | Calabaza, asada/cocida al horno | [WebP](0024/ciqual-20332.webp) |
+| `ciqual-20333` | Scorzonera, hervida/cocida en agua | [WebP](0024/ciqual-20333.webp) |
+| `ciqual-20335` | Chalota, salteada/a la sartén sin materia grasa | [WebP](0024/ciqual-20335.webp) |
+| `ciqual-20337` | Salchicha vegetal de tofu (apta para veganos), envasada | [WebP](0024/ciqual-20337.webp) |
+| `ciqual-20339` | Col china pak choi o pak choy (hojas verdes parecidas a las acelgas), cocida | [WebP](0024/ciqual-20339.webp) |
+| `ciqual-20343` | Tomate marmande, crudo | [WebP](0024/ciqual-20343.webp) |
+| `ciqual-20344` | Tomate negro de Crimea, crudo | [WebP](0024/ciqual-20344.webp) |
+| `ciqual-20345` | Tomate alargado, crudo | [WebP](0024/ciqual-20345.webp) |
+| `ciqual-20346` | Col rizada kale, cruda | [WebP](0024/ciqual-20346.webp) |
+| `ciqual-20347` | Moringa, vaina, cruda | [WebP](0024/ciqual-20347.webp) |
+| `ciqual-20348` | Moringa, hoja, cruda | [WebP](0024/ciqual-20348.webp) |
+| `ciqual-20349` | Espárrago, hervido/cocido en agua (valor medio) | [WebP](0024/ciqual-20349.webp) |
+| `ciqual-20350` | Brócoli, hervido/cocido en agua (valor medio) | [WebP](0024/ciqual-20350.webp) |
+| `ciqual-20351` | Brócoli, cocido (valor medio) | [WebP](0024/ciqual-20351.webp) |
+| `ciqual-20352` | Zanahoria, hervida/cocida en agua (valor medio) | [WebP](0024/ciqual-20352.webp) |
+| `ciqual-20353` | Zanahoria, cocida (valor medio) | [WebP](0024/ciqual-20353.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
