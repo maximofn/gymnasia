@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:a4042c84fff94cfd0f14c4d9e6b4473d13f03e42d3500c76c0c579bad91fd954",
+  "pageVersion": "sha256:4bc98df9ea58b01c3567b0e43eab57a795c2635a3010e499fa6c24708cc8dfe1",
   "claims": [
     {
       "id": "claim_ce775168303d462f8a8b2454581c60e3",
@@ -197,10 +197,44 @@
           "version": "repo-lines-v1:sha256:f94a650f97e2c55f36b87a3e19f5956ea890e1cf414d4e8fae83c188e60eb6f5:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDdkNGVhNTQ3NTZiZDY2NDY4NjhiNmU2MjUwNmYzNzY4ZDQ1NmE3N2I1Yzg1Y2ViM2IzNjdlZmMwYTIzNTQ1MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ZlNGJjZWQ2MGM4YTdiNGViNjE5MWVkOThmZWY3YTc2YjdjOWQyYWIwZTg5NjFhNWUzNTQ1ZjlkN2Y3ODc5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzBhMjgzZDg0ZTBlYmEwNjk3Mzc5MjJjZjQ0ZTQyNWYxYzY5OTlkMGY4ODk1MTAwMjlkYTA4ZWJkOTg3MDRkYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
         }
       ]
+    },
+    {
+      "id": "claim_ab9cc29258e54268b515379176a92af7",
+      "statement": "La cuota Android de AsyncStorage es compartida por el estado principal, su snapshot de recuperación y otras particiones; el plugin eleva el máximo de 6 MiB a 64 MiB sin reservar espacio, migrar o borrar la base. No evita que un dispositivo realmente lleno produzca un fallo ni el límite por entrada de `CursorWindow`.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/plugins/withAsyncStorageCapacity.cjs#L3-L16",
+          "version": "repo-lines-v1:sha256:65e94ecd95ba3f4eac2a73daa2a891f45c70c71a506158aae22b213608af46bb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzYjAxMTAyMTAwYmNlODJkMTNmMmQ2MzJmNDRiZGE3ZDlmNmEyMTg2MmExZTMxMTYwNjQ2ZTIwNDkyMjNhNGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY3YzU3NjAxM2U2MWM0OTIxZTY5MmM3ZWMwODVjYTBmYmI0ZGExNmM4ODViMzJlODRhOWExMDZmNTFkN2Y0OGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAifQ"
+        },
+        {
+          "resource": "repo://docs/architecture/android-native-config.md#L45-L60",
+          "version": "repo-lines-v1:sha256:67577aeb637e2e16d7b81faa2cca7d3003ed6f9745733503b887d7fa8dc8ca54:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhYTkwNzM2OGI2NzliYzYyZWM1MmY1NjhmNDZjMDdlMGI0M2MxNGVhMmY5ZTYwMzQ2NjZlNDM1NjlkMDY3ZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4NDQxMzY2OTQzNjg1NTZlMzA2NzRmYTRjNTFhNTEyOTU0YjE0NmUwZjE4MDE5NTcyMmY1NGE3Mjc0MGI4ZTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBlN2ViNWY5YzQ3Zjg3MDVlN2YzZDM3OGVkYTNhOWU5ZTE5YjcwZDhkYzE3MGZjNzczMjhmMDI5MTc0NzJmYjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQwN2YyN2M5MTk1MTJmODNlODUzNzVlMGIxZmJkYTZlMzk0ZDk1NjY4MWUwY2EwMWE1M2QxNzU5YzdjZDczNTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e4643363388b475ca41d9e823e87660b",
+      "statement": "La ampliación de cuota requiere actualizar el binario Android manteniendo el mismo paquete; su validación segura conserva los datos de una instalación que alcanzó la cuota, instala la nueva versión encima y comprueba una escritura y persistencia tras reiniciar, sin desinstalar ni borrar datos.",
+      "evidence": [
+        {
+          "resource": "repo://docs/architecture/android-native-config.md#L54-L66",
+          "version": "repo-lines-v1:sha256:1c025d188f7a00e532c0404988329b18acee9a42103bd805959f8cffd238f512:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3OGNhMDY5NjQxZjMwZGY0MjgwODU4YTEyYzY1OTg4Y2ZhYzNlNTdlNWUwNjM0OTRmN2RjYjcxZWFhZTc0YzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ2Yzk1MmYzN2Y0YjE5M2U1MzY1MmNjNDNjYWE0ODZmMThhZTQ5OWNiZTBkZDAwZTEyMWJmYjUwYjY3MmRmYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5MTMwNTBiMmEwMDdmOGFkM2ZjNTQ5ZTZiMzg2M2M2ZTBmMmM2MTQ3OGI0OTYzZDZmYTgyNTE5MWEwYzdhNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjNDM5NWE1ODYwY2MyYWIzNTQ2NTgwYmUyMjhkZWFmMmUyMDMyNjUxYWE2NDNmNWFmOWZmZWFlNWJlZDBlNWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1b37d237b76e437084148565447f4aa5",
+      "statement": "La cuota configurada afecta únicamente al proyecto Android generado: no se aplica a Expo Go ni es comprobable en web; aumentar la capacidad máxima del mismo almacén no cambia por sí solo las categorías de datos, terceros, permisos, protección de copias ni acciones de borrado.",
+      "evidence": [
+        {
+          "resource": "repo://docs/architecture/android-native-config.md#L54-L71",
+          "version": "repo-lines-v1:sha256:702380a9599ee2302d4c205d73372b33d335b7c6f2c16fe326fa01a60adb16d9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM3OGNhMDY5NjQxZjMwZGY0MjgwODU4YTEyYzY1OTg4Y2ZhYzNlNTdlNWUwNjM0OTRmN2RjYjcxZWFhZTc0YzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3OGY5M2UzYzdmZGY1NDgxZjczM2JkNmJkMTExZTgzNTQ3NjQyM2M5MTk2NzQxOTUyMjY0ZWNkZDAzZTA3MDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5MTMwNTBiMmEwMDdmOGFkM2ZjNTQ5ZTZiMzg2M2M2ZTBmMmM2MTQ3OGI0OTYzZDZmYTgyNTE5MWEwYzdhNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhhM2JmOTY5MzQ5ZGVkNDM3ZDkxZWMyZDhjOWE3Y2ZjYWY0OTFjMzE0ZDg4MTMxNzYyM2I4ZjI5MTRkMjA2OTYifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-11-04T15:49:26.600Z"
+    "at": "2026-11-08T14:36:51.071Z"
   }
 }

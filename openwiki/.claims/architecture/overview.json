@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:c112f10f27d7db5e87b170900a40cd27adde9f6a4d10068f8f559519659c694b",
+  "pageVersion": "sha256:2d1fb179a8029cf26ffc793c531e3669d056971d0d45e4a0622f8c0eb48b8509",
   "claims": [
     {
       "id": "claim_f591ee85856647d6bdb6f14c8b44822c",
@@ -479,10 +479,78 @@
           "version": "repo-lines-v1:sha256:eb1a971a74d1766ef8f1f9531d295ba3c774b8cdd9b72ee95279aa0b1ac973b0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkMmFjZGM4OWU1ODRhYWZlNzQ5ZjMyZGM2NzU4MTNmNGEzZjg5NTIwNzkxMmY0MDBmMjIxYTc3ZjQ4NTY1ZDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3M2NhYzMxNzcwMzY5OGVhMjEyMGE4NWZmMzEwNWI1OTFkYmYwOWU0MDkyZDlhNDcyMzI0MTBhMTE4ZGJjMTAifQ"
         }
       ]
+    },
+    {
+      "id": "claim_cc5209d72b7c4308a966b40f2e829e62",
+      "statement": "Los catálogos versionados se publican como artefactos derivados y validados: `sync:catalogs` regenera agregados, y las comprobaciones de catálogo incluyen contratos, integridad y consumo remoto con caché offline; el agregado de alimentos se copia además al baseline integrado para el primer uso sin red.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L73-L102",
+          "version": "repo-lines-v1:sha256:dedb8ee75b35d61cdb95371dd2d59bddee64b2e4db6c148d204c87d7dbdb8a6f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3OGIzYTY3ZjMxN2U0N2U2Njc3MTA4NmYyNzgyMmY5NzVmYWY3YzJiODQ5MmZkYThiMmQxYTk4YjAwZWQ5NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhZGZkM2QzMmY5MDdlNmU5ZWQyZmFiNWFkYTU3YzAxYzg5Nzc5ZjRjNzUyN2MyNzQ4NjJiNTZiMTkzMTEwOTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjY2ViZTU1YjMwNmY2OGJiNmU2OTE0Y2FlNzBhOThlMWU3MmJjOWVkOWRhZjY4NGNjODcxYjI5ODkwNGE3OGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwYWNmMTgzMzk5MTI5NjRjYTNjYWI1M2Y5MDRmNjBlOTYxNWM3MmI5OWY4YmI0ZWMyZGJjMTI3MzNmZGE2MDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0f42e08a94bf45f29900a7a0f447dc88",
+      "statement": "El catálogo actual de ejercicios se genera en `ejercicios/catalog-v1/` como manifiesto, páginas, fragmentos de búsqueda e índices por ID; la publicación rechaza datos o recursos inválidos y el cliente mantiene una instantánea utilizable sin conexión.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L82-L90",
+          "version": "repo-lines-v1:sha256:5832d8ca6aafa7159781f78844d2525cc62d01839dd265f4d4e521fb35b2ee29:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGU3NTljMDAxNGI3NWVkYmJkNmQ2ZTM5OTQ3ZDY4OGVkMDQ3NDljYzY3ZWMyMTUyZTQ2ZTVmMDMxMzRmMzE4OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTgxNzE1OTQzMWVlZWJjODQxODdhYTc4ZDAzNWQ2MTQ5MTRmMDVhYzc4OGIxZWUzMWUxOWUwOTUxNGMwNWIxOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzkwN2EyMjRlZjU3YzMwNTY3ZTI1OWUxY2Y2MTcxOTY5MGNlYzg2NGMwNWNlZjUxNzAzMmVkNjEzYTY1ZjI2ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGY4YmQyYzJjY2ZkMWRiM2YyY2VjODUyODJjMDliYjgzN2EzYTdiYjk5ZmI5NzhlMDc1NDk2OTBlODYzZGQ2YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_cef2c436e47343d096c20dcbbac67136",
+      "statement": "La política sanitaria se genera desde `policy/health-safety/`, mientras que los artefactos de política por canal se firman y promocionan con automatización separada; la app verifica Ed25519 con raíces públicas integradas y los artefactos distribuidos no contienen claves privadas.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L160-L174",
+          "version": "repo-lines-v1:sha256:33f9160f2d76682c67ae8dda91dc6f40ca9c3f7969e40a0be817e39e9a7f109b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlNTRmOTMyYzZjMTBjNDMzZDljNDZjMjdhZGU3YmM3N2VmMDM0MDAwYWIwNDk4YWQ4YzNjNTgzYjQzMTM1ZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyMTRlNWQzNzc5M2NkODQxNzFkMzQxMzlhYjBmODg3MWEzZGY1ZTRmOGQ2NzUzYTQ5MmEzNjk3ZDU1OTU1MGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhZjYxYTI4YTQ2ODNlOTkxZjEzMzMwZmVlNjk3MTRkYmQ0YmNkMDM4ZGJiODdiZDU0ZmU5ZGM1MmJkMzA3NTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyOTI0ZmIwZTMxZTE0OWRkYWJjY2UyZTBjNzQ0OWJlZjllMjI3MDdjYWFmMzM2Zjk2ZWIwYWFjODM4ZTRlOGEifQ"
+        },
+        {
+          "resource": "repo://README.md#L25-L28",
+          "version": "repo-lines-v1:sha256:3e41f34876a22df0079d2178c6ed7759d1739889934d995393b25160d01da1b7:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjMzZjY1NzkzMTllNTMxMTMxM2JiZjcyYzM5MDRkYWRhMzg5YmVmODUyYTVmNmY1NDI4NmQzYzAzNmM0NTAzMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODhlNmNlYzZiOTM2Y2UwMDQ2ZWJjNTViN2E5OGM2NWY5ZTQ1MTUwMWQ2ODYwNDljMjkwMjUwYjFmNWQxZGNkMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjhmZjdiZTM4YzgwZGFjZDU1ZTY0YjIyMDg4YzM3OWE4YWIwYjk1Zjk2ZTVmNTIxNzAzNzVmMGU0ODgwOTFlMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWFlOTc5Y2M0N2EzMjc1ZTIxZGU0YTQ4YjY3YTI2ODU2ZjMzOGU0N2UxN2FlYjZmZDJkMGY0YzlmMDk1OWFkZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4b71ba116b074adaaa2d41912bdc3bdf",
+      "statement": "La política de fronteras de móvil clasifica módulos por capas, prohíbe determinadas dependencias externas por capa y exige entradas públicas para los cruces entre capas; el analizador también informa imports no resolubles, excepciones heredadas sin uso y ciclos locales.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/mobile-boundaries/check.mjs#L185-L310",
+          "version": "repo-lines-v1:sha256:7b0f9f1590456734b4426660d8a7d9038595faaeef1e15b78a50855441b39f73:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiZGU0ZmIxNGFlN2UyMmMwNzE4N2ViOWZhMmM4YTE4OTljNDM4N2YyYjY1ZTgxYWVlOTBmZTE3NDBkMjJjMGFhIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI5NWVmMDFiYzA4ZGJjM2I2M2U0ZTc1ZWEzZDI2YTViOTQxODkxODc3ZTI3YWQ4OTEzMjljODQxMWQ3ZDhkYzRkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5ZGViOGNlNmY0MzU5ZWY4ZTdiM2M3YmMxMTBlMzAzMzU0NjM1YjA5MTYxNjg1YTcwMGQzNWM3ZGFkYzUyMjY2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJjNDdkNjllODEzNTc2ZGE2MjgwNmNkZjkxYTIyMjAxMjg5YWI0ODcyYjAwOTY4NmI0MjVkYWY2OTU5N2ZiOTE0In0"
+        },
+        {
+          "resource": "repo://scripts/mobile-boundaries/policy.json#L13-L65",
+          "version": "repo-lines-v1:sha256:737a31e7eda2a938faa60df8b0ae74d88085611022a4ec25cbea41a1a0bc039d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiZWViZjk1MDI0NjI3YjM5YzY2NGNjZTliZTI5YzQ2MWUwOGRlOWM3MDZlMjY1ZTQ3ZDg1MzI2NjQ1OGNmODEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlNjFlN2U0OWYxNTE1OTQ3YjA0MDA5ZWExN2ZiNGI0ZTUwMjFiOWE1YTA4MWVhMTE5YTdiOWIzM2QzMGYwNjUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFjN2E1MjdlMzNhOTEyMjRkYTZlMDgxMGViMDM0ODI5MzZlYzI2MzZiNjZmMmYyOTI2YzgxNWU0NTg0ZGNiNmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_98b8006b51ec452aac7c5b8a0d195989",
+      "statement": "La fachada `platform` concentra los adaptadores Expo para almacenamiento, secretos, criptografía, red y APIs nativas; para artefactos de catálogo usa IndexedDB en web y archivos acotados en las plataformas nativas.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/platform/index.ts#L30-L90",
+          "version": "repo-lines-v1:sha256:f6ca5aa2f2d901cb4c224908f9ea2d7b0773c9032282d49b06495b033b6cd533:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2ZmU5MjMxMDIxOTRkY2RhNDQ4YzY2YjRiNDU3NGUyMTI5ZDhhZGM1MDYyM2ZlMjU0MmQ0MTJkYjI5MWMyZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjNzU1Zjk3YTU4M2E5MTVhOTE3MjBkN2NmMzkzZWIxMDI2M2FkNmNiYjY3ZTI0MWMzODk4NjZjOTYxZjljNzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlZjFjMzdkZjM0YmNkNzUxMWRmZDUyMGI1ODFkZTY1YTE3YTRiN2M2NDZjNzk0Njk0NzFiMTM2MzIyMGExZGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_865e1b666e38413ab55806f9fea646cf",
+      "statement": "El runtime de estado local serializa los commits de persistencia y solo actualiza la referencia del estado después de que la persistencia haya completado; si un commit falla, la cola se recupera para que una operación posterior pueda ejecutarse.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/persistence/localStoreRuntime.ts#L25-L74",
+          "version": "repo-lines-v1:sha256:0d9b0304d8d9f3c525c17cd5ee9deaa56952d84245a1811b33d7d623a39cf113:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NWM4MDY2ZGNmNzQ5Yjg0NjU5OTE3NzhjNGI5MjQyMTYwZTNlMGJiNzQ5NGRlZTZiZmNkNjRjZTVhNDg1MzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1ZWYwMWJjMDhkYmMzYjYzZTRlNzVlYTNkMjZhNWI5NDE4OTE4NzdlMjdhZDg5MTMyOWM4NDExZDdkOGRjNGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBiYTk0Mzk4NTc2ZmFhOWQ5YjI1NzAxMzljMjM2OTdjZmI1YWY3ZDI1ODA3MTI2MTA0YjcxOTBjZWJlZjk2ZWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-11-06T15:26:57.218Z"
+    "at": "2026-11-08T14:36:51.071Z"
   }
 }

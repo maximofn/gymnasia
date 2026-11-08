@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:e596d3ea392920afa4c68fb6ccf7654cf4edb33df516276cf418bbecd5d71d98",
+  "pageVersion": "sha256:8a44e6b80196b01c12135a2d718fbd5d86eeb7008032998de5cd5d8dd8bce027",
   "claims": [
     {
       "id": "claim_b549c7104ecd4a7d85357931e153c001",
@@ -231,10 +231,100 @@
           "version": "repo-lines-v1:sha256:a38e4f0f17b3c963c99215ba5acd306091ae9ae36f0032d3c39b5118ee241fcc:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2YjgxMTkwNzk0MTI3MzcwMTYyODJiYmMzMTI4YjhiMDdmODA0MTQ1MTBjZTBkNGQ2ZmU2NzJiMzFjMzZjNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmM2Y1MDMwZGVhMTVkMjE0M2YxZTZlMmZmZTYzNzFiZjRmMmVlOTA5MjJlZWEzMTcwMzllYzhlM2E2Y2NlMjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwZWFjMWE2YjVhNmJlZjc2MmNiYjU1MWU0YzQyN2I4NWY3N2FmZjI1OGZhODQ0ZTVkNzY5ZDA1NWJhNTNiZDQifQ"
         }
       ]
+    },
+    {
+      "id": "claim_db3a7447f3174399b032724bccfd63a7",
+      "statement": "La ruta `custom_openai` solicita primero Chat Completions con streaming y solo reintenta una vez sin streaming cuando un error HTTP elegible declara explícitamente que streaming/SSE no es compatible; otros fallos no activan ese fallback.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.test.ts#L88-L98",
+          "version": "repo-lines-v1:sha256:23c6db0588c132fe974d8cef2723b43fcfc84704e19b7b7cb1c1b647fe0a9bfd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViZmE2MWEyYmRmZjI3ZWExZGY0MDI0MzI4M2FjOWZhM2E0MTBjMDgyNmUyZTFkNGExN2NhYmVjNTBlM2NiZDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUwMzg1MmQ0Mzg0YWVmMjQ2NDA1ZTM1ODIwYmU4MzAzODNiZDI3ZjNhNDhmMThlYWQxMjcwYzQ0Mjc5MmE0ODkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc5NzBjYmQ3NzViYzc1ZDc1MDhlMjFkMjEzNTJiNWY3ZWM1MGE5NTUxZjEyOTU3NDU0ZjJhMDE2NjE4YTA5ODYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.ts#L221-L278",
+          "version": "repo-lines-v1:sha256:a62e30f07d8220aeb55347f7d2a26b605d19845bf6f545a15ca80a938862ed64:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyMzRjOGU0YzM5MGM2NDdhYjJjNGRkOTY0MmUxN2IxZWM3NmU4ZjBkZDQ5OTc3YTNhZTc3YTQzNDE3NDA0NzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzOTFlMmM4YmY1NzdhYjVjNmZmOTg5NWVjY2NmOGNjM2I0YjkwMGM3ZTE5N2QyYWVlZjVlMGE0ZDI0YTNkMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.ts#L39-L45",
+          "version": "repo-lines-v1:sha256:997f9194f6a89f2d9b7e9ea7a2ee550129a9562d1ec2b329a07e6e3868d2b78e:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU5MDExNjY4YTVhMjczZGRlOTc4ZmFhMDkyMmJkNjkyZmFmZWE1ZjJhOTVjZWUxNDgyMmRkNzA3MTdmNzE2NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmI1ODBlOTY0ZjgzYTQ3M2Y0M2Q0NDM4NDYyOTQ5ZDY4YjU2MDBmZGE3ODdmMTYzNzQ1ZDAwZGU4OWNiZjM2YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWYxNTRjOGI3YjQwNTc2NTNlODkyOTE3NDI0ZjdlNDQyZmI4NDI3OTM3MGY5MGI4MmI5YjQzNWFlMWRlNjM2MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1b7eb7580a8e492cbfc1b3c9a09cd4f6",
+      "statement": "El parser SSE de `custom_openai` exige `[DONE]`, rechaza datos posteriores e inconsistencias en tool calls, y el cliente limita tamaños de respuesta y sanea la API key de los errores antes de exponerlos.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.ts#L167-L193",
+          "version": "repo-lines-v1:sha256:821fa3317e5bfabea1b5a5ad57f85501fd8ffde2fcf3dbdb3f7b0dd125e90d38:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkMjI0ODNkNTAxZDQyMTJkNzBmNGI4YmFhMzRmYWNiNjVjM2RiZmNiMTJjMjc1Y2NjMDEyZWI2OWFkYWFjMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0MTViNWQ1YTAyYjJkM2I1NDNlZmYwMTU4MjI2ODJhYzAyYTgzMDM1OTk4OTg1NjBmY2IxODU0ZDI0MTVlOGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyMTZiYTZjNjQyYzY5MDM5ZGE2NmQ5NTFlYWY5NmQ3OTBiYzZkYTdjMjA5YTMzMmIxMTU3Zjg0YzlkMjVhMGYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.ts#L237-L268",
+          "version": "repo-lines-v1:sha256:ae45d472cbc3016ec70f8a03814e828a7cd2a00b8e5fecb91ccb1e7f94643628:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyYTFkNGE4YzE3NzcyZjk5ODI4YWQzZjFjZmFmMTFlMjUzYjZjZGM3ODA1NzgxNjdmYzgyMzliNzE2MDI5M2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxZmE3YjUyYjFiNDVkN2MyNjZmZDI1MmU4OWU4NzJjZTliZjUxNzdiN2NjNWU3YzQ3YmUwZmNmOTBjMTU2N2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiMzI3ZDVmNmU4OTdjMDNmNjkzMTIxNjljMDE2NjgxNzk2MWRhMTk3NjVhZmIzYWIxYmExYmQ2OGNiYmNlZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4YTYwMDNlMjZkNWQzMjBhNmZjMzFkZWZmMTk2OTk3NmUzNDk1YzY0MDYyNjc0N2JlZTE5ZWNlMzI5ZWIxZTcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.ts#L90-L164",
+          "version": "repo-lines-v1:sha256:50153e11b0763cbbf2e8e0a624dd363eb1b95458db380c338257ffd848c834aa:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3ZGU3Zjc0ZGRlN2JhY2ZmZjQzYmU4ZWY2MGQxOTYxMjExZDM4M2Q0NDE5NDE1MGMyNDk2YmU1MDE2YjFkNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3M2Y0MjBlZGE0ODc2MWEzOTZjOTM5ZDQxNWM4MzczOWIzMDZhNjc2NWUwZTMyZTAzYWQ3NTM3OGYyYjNiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyYmM0ZWFjYzM3MzMyM2NlZjA3MmRhOGQ5MGU5YzFjMDMzYjZjMDZjMzg3MDUwMTQ5ODI2MmFlZjdhYjFmOWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_acdb01a7fc934abdbe9ccbd3826d928e",
+      "statement": "En el Coach, un servidor compatible que rechaza explícitamente tools produce un error para elegir otro modelo en vez de continuar sin herramientas; argumentos de tool call que no son un objeto JSON generan un resultado de entrada inválida sin ejecutar la herramienta.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.test.ts#L130-L163",
+          "version": "repo-lines-v1:sha256:e5469b1b33d6a5606f3c6be4dd06de05ddce3b9c72b22ed868581fa6c7ec214d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzY2NhOTJlYjAwNzhmYWRiNmEyZWExMmEzYjhhNzViMWVjMDJhZGFkNmIyNWYzZjQwYzkxY2Q0YTM5MzY2YmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkZGEwNDQ5MDkyNDk5YjJhNzQwODBhYWE4MzlmOTM0MTQ4NWFkNDUwMDE0Mjg4YTQ5MDFmYmJkMmIzNmYwZjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyZjQ3OGZlODIyMGMyYWIyMDc1ZmQzZjNiYWU1Y2E3ZWY0NGFlNzRiNmFkYjFjYWFlYWY1YjlhMTYyYTRjZmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ4MTdmYmI3M2M5MmIzNmQ1ZTQ4OTZmZjUxYzFiNThlZWMzMzBiYmU5NjFiYTA1ZmM2MjA1Zjg2N2VhMWJjZjYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolClient.ts#L199-L204",
+          "version": "repo-lines-v1:sha256:25d5bd3c44506fe96b298685b8bb23d37da51b416c76a1857e2d438153bf94c8:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzFkZjdmYjY1MTJmNzgwNzQ1MGRhYmJiMWY4M2JjZDI2OWQ1NWRjMzQ0YmQzOTFhNmUxOTAxYjg1NzFiMmRmYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjI1YzIzNWVkNTlmYjU4ZjAwNzAwMDA5ZjNhMTVlNWI3NjhiZjAyZWVhNDJmNmYwZGEzZjI4OWNjZjFkNDBmOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmNiMGQ2MTkxZDBkMmE4NThiNjFiNDU2NmM1MTgzZWQ3OGE5MDUwMTczNDY1ZDdkMzBlYWUzODliYjMyMDk3ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmU1NjliZTM4ODc2N2M0MjA5NDcxYWQ0NDJkOWE2ZDBhNjNhNTVjNzIxODUzZjg0OTFkMzdhYjRhNTQ5MzhkYyJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolClient.ts#L226-L247",
+          "version": "repo-lines-v1:sha256:77c04096a0f6fb8abf16f7c0526f1d80c0740d22d64307654867baca9b8d3ac1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5NmJhMWQ5ZmVhZTBhZDE1NjFkMzM4MGVlNmNmMTRhYmY0ZDUyMDk1NTg1ZjQ1MDc1YWEyNTU2NTIyMjUzOWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0MjhjNmIyMjA3NTJmYWI0YmU5YjUwMGU4ZTkxYTQzYWNkNzYwMDU1MGIxNzdmNmY5NmUwZWZlNGE2MTViOWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwZWYzYzFhMTdjODdiMTQ4ZWQ0NjE2OGY0NTdjNGNiMjM3OGVmMGIzOTU1MTAxMjAzNjQ3MzVlNDkyYTgwMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk3ZDg2MzJlNTRlOTI5OGFiYjk1ODcyN2UyZDUxNDA4YWJhZjEzNjYwMzUzNzkxMDE0MGFiZjY1YjMwYWI2MTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6555ed2ff3124b739779a1dcdad4fdc8",
+      "statement": "El fallback nativo de Google a XHR bufferizado solo ocurre tras el error de conexión específico de XHR incremental y antes de emitir un delta visible; no cubre errores de parser, timeout o HTTP.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L192-L243",
+          "version": "repo-lines-v1:sha256:ec2c715280829a2972efda99da52b74293518872c18320d1eaa12b1756bc23f4:eyJzZWxlY3RlZExpbmVDb3VudCI6NTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NzA4ZWU4ZTRkMTllZTRkYmY2YzU4Y2JmNGMzY2FmNzMwNGM0YjEwODk2ZTA3MDY0MjVhMzZhMzYyMTc5ZjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1MmRhZTI1MTRkODMyMzRiNzdkMWJhMjczODAxMGVkMTc3MjU4NmRmZGI4MGQ0MTJhNTIxZmM5ZDIxYWJlNzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3NjQ2YTE1YWUwZTRmOWMxYTA0NDZlNDZjNDE5NDkwOWFmY2JlNDdkNjkyNjMxMWZiYmNkNGQxMDRjZGFjYzYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L55-L80",
+          "version": "repo-lines-v1:sha256:49e1408d86ef635806b0e69644821fa5945a2204febcb9a3c944d184f278eb9f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjMDQ1ZTAxZDUxZWVkZjQyYzlhZjRjYmE3NWRlOTNiZGIwOTQwMWNjMDZmMjdkMjUyNmViODJkYzEzMTZmOTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwODBjYTVmMDM1M2VkNTJmMjc1NzZjMzJlY2I0YTMxMGFjN2E4NTEwZDk4NzU1NWVkYjg5OTMwMjNlZmQzNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzZWMxMjU3N2RmZDdkNmQzMjVkMmMwMzFhYmZmNGM5M2FiYzc5NGJiZGU0MGU4NDM1MWYwZWM5NmQ3ZWVjOTkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L83-L141",
+          "version": "repo-lines-v1:sha256:4633a92c6e0ac74361f65a113676fe5ed2f877f7b88f948aa3f05f3c8983aae4:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY4YjRkZDNkNDFkNWJlNmE0ZmEzMjBkMTYxN2IyYjRhYWRkMzI3YjIyZDM5OWNhZTk5YTMwNTU0NmFiNzJmYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0NmM0NTViMjQ2NGMyZDM2ZmRjMDc3NTcwMTZjZmJlODRmZGU2NTUxODNlMjM0OWY1ODM1MDNmMzA1YjliMDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fe61866d0b274394a8aaf4c25070d616",
+      "statement": "Las peticiones Fetch de OpenAI y Google usan `AbortController` para cancelar al superar 120 segundos y traducen ese aborto a un error de timeout; la entrada pública del chat con herramientas no acepta una señal de cancelación de usuario.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/googleStreamTransport.ts#L246-L305",
+          "version": "repo-lines-v1:sha256:97d9f3d6c5ba7b87d9d54c1fe772ebfdb30b0136e90928cc2f033d0c538cfd52:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0NzgxYmVjYWU3NDc4ZjlkOTdkODJlZjYxZWZlMWQ4MDNlM2JkMDhhYmQ2ODJkMDBhNzlmMDBhNDAxYTE3MjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerStreamTransport.ts#L233-L294",
+          "version": "repo-lines-v1:sha256:e453aa2534fe4920cff490a23d723d6ea69d8946fc88cf74b4721f263b0e1070:eyJzZWxlY3RlZExpbmVDb3VudCI6NjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkNzQ4ZDZhMTAxZWRlNjJhOTEwYTA3Y2ZkNGQyYTg5MDkzOGVjYWE2MTQ4MjBmMDNiODExMDhmMGEyYmNkMWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolClient.ts#L63-L74",
+          "version": "repo-lines-v1:sha256:abf6c73bfa5f474dd219ddb465588bbf47641537b6a0edf3caa2e08b79bee9a9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2ZWUzZjY0ZGJlZDhmZTNiNTA0YTllMmQ2NDUyN2M1Mjg3MmJhOTRkMmFhYTU3MGQ0MzZjMWI1MjAxZGE1N2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc1NGJlNDY0YTk1ZWUwNWQyNmNjNzI5OTA4YWI3NjU0MTFhZjNlMjJhY2RiZjE3MjFiZTVjZjMwZWMwNTI2MzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzY2Y5Y2Q4MDVlYjlhMWFkZTFiYTk4N2Y4Y2EyYWQ3MWJhM2JiNzNhNWU1NjU5M2M1YjlhNGI3ODE4NzJjN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1YzVjNGVlNjdiOTM3YmUxNWJkYzM2OTg4OGRlYTg1NjFiZTlkYzEwZTM3OTEwMTI1ZjgzNjFlMGQ2N2FmYTIifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-23T12:54:40.994Z"
+    "at": "2026-11-08T14:36:51.071Z"
   }
 }

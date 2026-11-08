@@ -1,114 +1,126 @@
 ---
-type: observabilidad de runtime
-title: Comportamiento en ejecución y oportunidades
-description: Informe operativo que separa la muestra LangSmith truncada de los límites verificables del runtime móvil y prioriza cambios que mejoran diagnóstico, seguridad de efectos y cobertura de coste.
-tags: [runtime, observability, mobile, agent, tools]
-sources:
-  - id: openwiki-source-0c30fc96b9e7c8b57c35473c
-    resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
-  - id: openwiki-source-dc42304b20e8518ef65b4b63
-    resource: repo://apps/mobile/agent/googleContextBudget.ts
-  - id: openwiki-source-f310c5fb576ae69a7753918c
-    resource: repo://apps/mobile/agent/googleStreamTransport.ts
-  - id: openwiki-source-abc6fea468a7de09acfb0c4f
-    resource: repo://apps/mobile/agent/providerToolClient.ts
-  - id: openwiki-source-b14a4ecd65e83b5561f88e2a
-    resource: repo://apps/mobile/agent/providerToolLoop.ts
-  - id: openwiki-source-31ab0914f32f6c759ba493a0
-    resource: repo://apps/mobile/agent/streamDraftFlusher.ts
-  - id: openwiki-source-1ad5b6a5e6488611c8796fe1
-    resource: repo://apps/mobile/agent/toolBatch.ts
-  - id: openwiki-source-d3be928c369037f29888bc0b
-    resource: repo://apps/mobile/agent/toolExecutor.ts
-  - id: openwiki-source-9e7ddd51c09caf628a81acad
-    resource: repo://apps/mobile/agent/toolOperationLedger.ts
-  - id: openwiki-source-929e8e1df23628a3f3848ff8
-    resource: repo://apps/mobile/App.tsx
-  - id: openwiki-source-ea083ff1c1afd80c588dedd8
-    resource: repo://ops/openwiki-runtime-telemetry.json
-generated: { by: "openwiki/0.6.0", at: "2026-11-06T15:26:57.218Z" }
+type: guía operativa
+title: Comportamiento operativo, trazas y degradación
+description: Diagnóstico local de versión, almacenamiento y configuración de proveedores, con límites explícitos de privacidad y de lo que una comprobación local puede asegurar sobre servicios remotos.
+tags: [runtime, observability, mobile, privacy, providers, storage]
 verified:
   - by: openwiki/0.6.0
-    at: 2026-11-06T15:26:57.218Z
+    at: 2026-11-08T14:36:51.071Z
+sources:
+  - id: openwiki-source-d663aad02875819980c54be4
+    resource: repo://apps/mobile/agent/providerPresentation.ts
+  - id: openwiki-source-e5f74ffc1b3b8c00fd4c6086
+    resource: repo://apps/mobile/agent/providerVerification.test.ts
+  - id: openwiki-source-c80e54251b903682e229caf2
+    resource: repo://apps/mobile/agent/providerVerification.ts
+  - id: openwiki-source-f4cb42639b722f40aa5d0429
+    resource: repo://apps/mobile/controllers/settingsController.ts
+  - id: openwiki-source-7a047b00a95eb325eb147887
+    resource: repo://apps/mobile/environment.ts
+  - id: openwiki-source-f0c30949361dd30d241675c9
+    resource: repo://apps/mobile/platform/index.ts
+  - id: openwiki-source-aaea1399d87505bae662f853
+    resource: repo://apps/mobile/platform/network.ts
+  - id: openwiki-source-f79d8817053cc5b678005d76
+    resource: repo://apps/mobile/platform/trace.test.ts
+  - id: openwiki-source-1d477406340582311e84da48
+    resource: repo://apps/mobile/runtimeEnvironment.ts
+  - id: openwiki-source-b07bed6982772a253ff77116
+    resource: repo://apps/mobile/storage/storageUsage.ts
+  - id: openwiki-source-1d0198c38ac34ff97dd54fc0
+    resource: repo://apps/mobile/trace.ts
+generated: { by: "openwiki/0.6.0", at: "2026-11-08T14:36:51.071Z" }
 ---
 
-# Comportamiento en ejecución y oportunidades
+# Comportamiento operativo, trazas y degradación
 
-Este informe consolida una extracción LangSmith con los controles verificables del chat de `apps/mobile`. La extracción indica dónde investigar, no prueba causalidad; el código indica qué cambios son seguros. Para los contratos completos, véanse [Runtime del agente y herramientas](../agent/runtime.md), [Streaming de proveedores](../agent/provider-streaming.md), [Entrega de políticas](../architecture/policy-delivery.md) y [Build, release y pruebas](build-release-and-testing.md).
+La aplicación es *local-first*: sus funciones principales no requieren un servicio y el backend de incidencias es opcional. Por tanto, un diagnóstico local sirve para identificar el binario, el estado y el almacenamiento del dispositivo; no demuestra conectividad, disponibilidad, latencia ni coste de un proveedor remoto. Las pruebas del agente usan proveedores falsos y no consumen red, claves ni tokens ([`README.md`](repo://README.md#L1-L4), [`README.md`](repo://README.md#L131-L152)).
 
-## Registro: Observado
+Esta página describe qué se puede copiar o interpretar con seguridad desde **Ajustes → Trazas**, y qué debe verificarse aparte. Para configurar proveedores, véase [Configuración de proveedores](../agent/provider-configuration.md); para el flujo del agente, [Runtime del agente](../agent/runtime.md); para persistencia y recuperación, [Estado local y copias de seguridad](../mobile/local-state-and-backup.md).
 
-**Muestra sesgada y cobertura.** La última extracción disponible cubre del 26 de octubre al 2 de noviembre de 2026 y está marcada `truncated`. Tiene 6 roots exitosos, 0 fallidos y 0 desconocidos; los buckets de fallo disponibles también son cero. No hay trazas fallidas, URLs de traza autorizadas ni contenido de runs en el artefacto. Esto no es una tasa de flota ni demuestra disponibilidad: es una ventana truncada y los buckets error, outlier y baseline —si se emplearon al producirla— no son poblaciones comparables.
-
-| Señal agregada de esta extracción | Observado | Límite de interpretación |
-| --- | ---: | --- |
-| Roots | 6; p50 150281 ms; p95 y máximo 184082 ms | No separa proveedor, intento, ronda ni tool. |
-| Modelos | 127; p50 3694 ms; p95 18956 ms; máximo 88227 ms | No atribuye latencia a una causa ni equivale a mensajes de usuario. |
-| Tools | 130; p50 2 ms; p95 224 ms; máximo 865 ms | No identifica handler, lote, argumentos ni efecto. |
-| LLM por root | p50 20; p95 y máximo 30 | La mediana es solo referencia de operación normal de esta extracción, no SLO. |
-| Categorías de tools | 66 `read`, 21 `write`, 43 `other`; 43 nombres desconocidos | `other` no prueba lectura, escritura ni mutación. |
-| Tokens y coste | `unavailable`, cobertura `partial`, 0 llamadas observadas | Los ceros no son valores medidos. |
-
-Todas las duraciones declaradas tienen `unknown: 0`, pero siguen siendo agregados sin relación causal. No se reproducen inputs, outputs, prompts, argumentos, resultados, razonamiento ni identificadores de runs. La configuración sí apunta al proyecto `gymnasia-app-agent` en el endpoint europeo, pero el manifiesto no liga estos agregados a una traza individual ([`openwiki/.langsmith.json`](repo://openwiki/.langsmith.json#L1-L18), [`ops/openwiki-runtime-telemetry.json`](repo://ops/openwiki-runtime-telemetry.json#L1-L88)).
-
-## Registro: Correlacionado con código
+## Flujo de diagnóstico local
 
 ```mermaid
 flowchart TD
-  Send["sendMessage"] --> Lease["adquirir lease de política"]
-  Lease --> Risk{"riesgo bloqueante"}
-  Risk -->|sí| Local["respuesta local"]
-  Risk -->|no| Remote["intento remoto y loop"]
-  Remote --> Batch["lote de tools"]
-  Batch --> Reads["lecturas contiguas hasta cuatro"]
-  Batch --> Barrier["escritura o desconocida como barrera"]
-  Barrier --> Prepare["preparar ledger"]
-  Prepare --> Effect["ejecutar efecto"]
-  Effect --> Record{"registro final"}
-  Record -->|confirmado| Replay["commit o replay"]
-  Record -->|falla| Reconcile["reconciliar dominio"]
-  Reconcile --> Safe["commit o indeterminate"]
+  Start["Abrir Ajustes y Trazas"] --> Trace["Cargar y copiar trazas locales"]
+  Start --> Storage["Medir ocupación bajo demanda"]
+  Trace --> Version["Versión y build del runtime instalado"]
+  Trace --> Context["Entorno y metadatos de política"]
+  Storage --> Privacy["Excluir claves sensibles y desconocidas"]
+  Version --> Triage["Adjuntar diagnóstico mínimo"]
+  Context --> Triage
+  Privacy --> Triage
+  Triage --> Remote["Comprobar proveedor por separado"]
 ```
 
-*Flujo relevante para explicar por qué una llamada o duración agregada no identifica por sí sola un efecto ni una causa.*
+*El flujo separa la evidencia que vive en el dispositivo de una verificación que necesariamente contacta con un servicio remoto.*
 
-- **Turno y reintentos.** `sendMessage` adquiere un único `AgentPolicyLease` antes de clasificar el input; el lease se congela profundamente. Riesgo bloqueante devuelve una respuesta local. La ruta remota conserva el ID del mensaje como `executionId`, permite hasta tres intentos para firmas reconocibles, espera 2 y 4 segundos, y reinicia el borrador; el flusher limita los repintados a 40 ms ([`App.sendMessage`](repo://apps/mobile/App.tsx#L4828-L5078), [`acquireAgentPolicyLease`](repo://apps/mobile/agent/agentPolicyRuntime.ts#L108-L123), [`createSignedAgentPolicyLease`](repo://apps/mobile/agent/agentPolicyRuntime.ts#L126-L171)). Por ello, 127 llamadas LLM no equivalen a 127 mensajes ni prueban duplicación de escritura.
-- **Rondas, transporte y presupuesto.** Los loops admiten diez rondas ejecutables y fuerzan un cierre sin tools al agotarlas. En Google nativo, un fallo de conexión antes de un delta visible puede repetir la generación por XHR buffered; web usa `fetch` con 120 s. Para Coach, la ventana de 20 mensajes se conserva también como máximo de 20 intercambios Google —no el valor genérico de 10— antes de aplicar 512 KiB no-imagen y 19 MB de petición; si el último intercambio aún excede el presupuesto, falla antes de red ([`requestProviderToolChat`](repo://apps/mobile/agent/providerToolClient.ts#L331-L360), [`prepareGoogleInteractionRequest`](repo://apps/mobile/agent/googleContextBudget.ts#L186-L276), [`requestGoogleInteraction`](repo://apps/mobile/agent/googleStreamTransport.ts#L28-L80)). Estas rutas pueden incrementar calls o rechazar una petición sin que el agregado permita distinguirlas.
-- **Lotes y efectos.** `executeToolBatch` solapa solo lecturas conocidas contiguas, con máximo cuatro; una escritura o tool desconocida es barrera. Tras fallo, espera lo ya iniciado y propaga el primer error en orden de proveedor ([`executeToolBatch`](repo://apps/mobile/agent/toolBatch.ts#L4-L64)). Las escrituras se identifican por versión, `executionId`, proveedor, nombre, JSON canónico y `occurrence`, no por `providerCallId`; el coordinador une trabajo en vuelo, hace replay de commit y prepara el ledger antes del handler. Si no puede registrar un commit, reconcilia el dominio y conserva `indeterminate` en vez de repetir ([`ToolOperationCoordinator.execute`](repo://apps/mobile/agent/toolOperationLedger.ts#L479-L671)).
-- **Diagnóstico seguro.** `GoogleContextReport` solo lleva contadores de intercambios, bytes, imágenes retiradas y razones; el callback no bloquea la solicitud ni su error. Es una dimensión segura para agregación, a diferencia del historial o del cuerpo de solicitud ([`GoogleContextReport`](repo://apps/mobile/agent/googleContextBudget.ts#L35-L47), [`requestGoogleInteraction`](repo://apps/mobile/agent/googleStreamTransport.ts#L36-L45)).
+### Trazas: ciclo de vida, versión y privacidad
 
-## Registro: Hipótesis para investigar
+`trace.ts` mantiene hasta 1.000 entradas en memoria y en `AsyncStorage`, dentro del espacio de nombres del entorno activo. Antes de añadir una entrada carga el buffer persistido para no sobrescribir el historial; la persistencia, el log de consola y los fallos de lectura o escritura son de mejor esfuerzo. Cada entrada se imprime además en consola, por lo que sus datos pueden aparecer en `adb logcat` o en los logs de Expo: no se debe añadir a `pushTrace` contenido de conversaciones, claves, tokens ni otros datos personales ([`apps/mobile/trace.ts`](repo://apps/mobile/trace.ts#L15-L20), [`apps/mobile/trace.ts`](repo://apps/mobile/trace.ts#L35-L87)).
 
-Estas hipótesis no describen producción; convierten la muestra truncada en comprobaciones falsables sin capturar contenido.
+El volcado copiable contiene plataforma, versión, build, entorno, canal y metadatos abreviados de política, fecha y número de entradas; después serializa el `data` de cada entrada. **No es un mecanismo de saneamiento.** Que la cabecera sea segura no vuelve seguros los `data` que los llamadores hayan registrado. La acción de copiar usa exactamente ese volcado y la de borrar elimina el buffer y su clave persistida ([`apps/mobile/trace.ts`](repo://apps/mobile/trace.ts#L89-L133), [`apps/mobile/controllers/settingsController.ts`](repo://apps/mobile/controllers/settingsController.ts#L640-L667)).
 
-| Señal o discrepancia | Hipótesis y comprobación | Decisión de cambio |
+La atribución de versión tiene estas reglas:
+
+- En una app nativa instalada, `expo-application` aporta `nativeApplicationVersion` y `nativeBuildVersion`; no se usa `app.json` como prueba del build instalado.
+- En web y Expo Go se muestra la versión de proyecto disponible y el build como `unavailable`, para no atribuir al proyecto la versión del host.
+- Al arrancar se guarda una entrada `App mounted` con la versión y build observados entonces. Un historial superviviente a una actualización conserva así sus arranques anteriores sin relabeling retrospectivo.
+
+Estas reglas están implementadas y cubiertas por pruebas para Android, iOS, web, Expo Go, metadatos nativos ausentes y entradas antiguas ([`apps/mobile/trace.ts`](repo://apps/mobile/trace.ts#L22-L33), [`apps/mobile/trace.ts`](repo://apps/mobile/trace.ts#L99-L133), [`apps/mobile/platform/trace.test.ts`](repo://apps/mobile/platform/trace.test.ts#L53-L126)).
+
+## Entorno y aislamiento de estado
+
+`RUNTIME_ENVIRONMENT` se resuelve al cargar la aplicación desde `Constants.expoConfig.extra`. La configuración debe concordar por completo con una de las variantes `development`, `staging` o `production`: versión de configuración, canal de política, namespace, modo de proveedor, candidato y SHA-256 de política válido. Una configuración ausente, parcial o híbrida lanza un error en vez de continuar con una identidad de entorno ambigua ([`apps/mobile/environment.ts`](repo://apps/mobile/environment.ts#L1-L22), [`apps/mobile/environment.ts`](repo://apps/mobile/environment.ts#L106-L142), [`apps/mobile/runtimeEnvironment.ts`](repo://apps/mobile/runtimeEnvironment.ts#L11-L26)).
+
+Producción conserva las claves de almacenamiento existentes; desarrollo y staging les anteponen su namespace. Las claves de almacenamiento seguro usan un separador distinto. Esta separación evita que los diagnósticos y datos no productivos se mezclen con producción, pero no es cifrado ni sustituto de `SecureStore` ([`apps/mobile/environment.ts`](repo://apps/mobile/environment.ts#L83-L103), [`apps/mobile/agent/environment.test.ts`](repo://apps/mobile/agent/environment.test.ts#L43-L56)).
+
+En desarrollo, el modo por defecto es `fake` y `byok` requiere una elección explícita; staging y producción usan `byok`. La verificación en modo `fake` devuelve éxito local sin tocar la red, por lo que ese resultado solo confirma el fixture, no una cuenta ni un proveedor ([`apps/mobile/environment.ts`](repo://apps/mobile/environment.ts#L66-L80), [`apps/mobile/agent/providerVerification.ts`](repo://apps/mobile/agent/providerVerification.ts#L66-L80), [`apps/mobile/agent/providerVerification.test.ts`](repo://apps/mobile/agent/providerVerification.test.ts#L133-L143)).
+
+## Uso de almacenamiento: medición parcial y segura
+
+**Medir ocupación** se ejecuta bajo demanda desde la pantalla de trazas. La app entrega al medidor el `AsyncStorage` activo, el namespace, las fotos, metadatos de la base y la caché de artefactos; el informe se puede copiar mediante un formateador distinto del volcado de trazas ([`apps/mobile/App.tsx`](repo://apps/mobile/App.tsx#L2729-L2747), [`apps/mobile/controllers/settingsController.ts`](repo://apps/mobile/controllers/settingsController.ts#L619-L639)).
+
+El medidor lee secuencialmente solo claves conocidas del namespace activo y suma bytes UTF-8. Cuenta como excluidas las configuraciones de proveedor, almacenes heredados y cuarentenas que podrían contener credenciales; cuenta las claves desconocidas pero no las abre. Cada lectura tiene un límite de cinco segundos, cede al event loop entre claves y convierte fallos en contadores, por lo que no bloquea indefinidamente ni expone errores o rutas nativas ([`apps/mobile/storage/storageUsage.ts`](repo://apps/mobile/storage/storageUsage.ts#L40-L62), [`apps/mobile/storage/storageUsage.ts`](repo://apps/mobile/storage/storageUsage.ts#L146-L218)).
+
+El informe copiable contiene totales, categorías y estados, pero no valores crudos, nombres de claves, rutas ni errores. Fotos, archivos SQLite y caché pública se informan aparte; los desgloses no se suman al total y las lecturas no son una instantánea atómica. En particular, bytes medidos no equivalen a cuota libre, tamaño físico de SQLite ni uso total del dispositivo ([`apps/mobile/storage/storageUsage.ts`](repo://apps/mobile/storage/storageUsage.ts#L221-L257)).
+
+## Capacidades de plataforma y límites operativos
+
+La composición de servicios de plataforma adapta almacenamiento de artefactos a cada plataforma: IndexedDB en web y archivos privados en nativo. El resto de integraciones —portapapeles, almacenamiento seguro, ficheros, notificaciones, APIs nativas y red— se inyectan como puertos Expo/React Native. La red es un adaptador directo de `fetch`: su presencia no implica que haya red, DNS, TLS válido, cuota, ni que el destino esté disponible ([`apps/mobile/platform/index.ts`](repo://apps/mobile/platform/index.ts#L30-L60), [`apps/mobile/platform/index.ts`](repo://apps/mobile/platform/index.ts#L63-L92), [`apps/mobile/platform/network.ts`](repo://apps/mobile/platform/network.ts#L1-L7)).
+
+La degradación esperada es la siguiente:
+
+| Situación | Comportamiento verificable | No permite concluir |
 | --- | --- | --- |
-| Muchas LLM por root | Separar intento remoto, ronda, cierre y fallback de transporte. | Añadir contadores agregados por proveedor y estado; no usar llamadas LLM como contador de turnos. |
-| Máximo de modelo 88227 ms | Puede incluir espera del proveedor, reintentos o rondas, no una tool concreta. | Medir duración por intento, ronda y cierre antes de cambiar timeout o concurrencia. |
-| 43 tools `other` | La clasificación de telemetría es incompleta, no evidencia de 43 efectos. | Mapear categorías mediante metadatos seguros de efecto y mantener nombres y argumentos fuera de la telemetría. |
-| Escritura seguida de error o repetición | Puede ser unión `inFlight`, replay, reconciliación o incertidumbre; no prueba doble mutación. | Revisar recibo de dominio y `indeterminate`; no introducir reintento ciego. |
-| Rechazo Google sin llamada visible | Puede provenir del presupuesto local. | Registrar solo `GoogleContextReport.outcome` y razones agregadas. |
+| No se puede leer o persistir una traza | El diagnóstico se degrada silenciosamente; el flujo principal no debe depender de ello. | Que el historial esté completo. |
+| No se puede medir una fuente de almacenamiento | El informe conserva `No disponible` o contadores de fallo, sin exponer el error nativo. | Que el tamaño sea cero. |
+| Web o Expo Go | El build instalado de Gymnasia se marca no disponible. | Que el build del host sea el de la app. |
+| Modo `fake` | La comprobación confirma el fixture local sin red. | Conectividad, autenticación, coste o disponibilidad remota. |
+| Estado visual «Conectado» | La presentación muestra el último resultado de comprobación. | Salud continua, capacidad del modelo, saldo o éxito de una conversación posterior. |
 
-## Runtime findings & opportunities
+## Comprobación de proveedores y errores
 
-1. **Alta — recuperar cobertura de tokens y coste.** Es la ausencia más material: `unavailable`, cobertura parcial y ninguna llamada observada impiden priorizar modelo, prompt o presupuesto por coste. Añadir agregados de proveedor, modelo, tokens y coste con cobertura explícita; nunca payloads ni razonamiento.
-2. **Alta — descomponer el conteo de 127 LLM.** El código admite reintento de turno, rondas, cierre y fallback Google. Instrumentar intento, ronda, cierre y fallback permite decidir si reducir tools, cambiar transporte o ajustar reintentos sin confundirlos con mensajes o efectos.
-3. **Media — cerrar el hueco de las 43 `other`.** Categoría desconocida no es un permiso para paralelizar ni para asumir que no hubo mutación. Clasificar desde la definición de efecto y medir barreras y concurrencia máxima por lote.
-4. **Media — hacer observable la incertidumbre durable.** Toda tool nueva con efecto debe tener recibo y reconciliador. Medir estados `prepared`, `committed`, `indeterminate` y fuente de replay como contadores; una incertidumbre requiere revisión del dominio, no una repetición automática.
-5. **Media — atribuir presupuesto Google antes de cambiar límites.** Coach ya eleva el máximo de intercambios a 20, mientras que bytes e imágenes siguen limitando. Antes de ampliar tamaño o timeout, medir razones del reporte para distinguir contexto, imagen y red.
+`verifyProviderConfiguration` es una comprobación puntual de configuración, no un health check continuo. Sin API key devuelve advertencia sin llamada. Con key, consulta un endpoint específico por proveedor: `/v1/models` para OpenAI, el modelo de Google, y una petición mínima a Anthropic; en web puede delegar Anthropic a un proxy. Las credenciales se envían en cabeceras cuando corresponde —no en la URL—, salvo el contrato explícito del proxy que recibe un cuerpo para custodiar la comprobación ([`apps/mobile/agent/providerVerification.ts`](repo://apps/mobile/agent/providerVerification.ts#L66-L116), [`apps/mobile/agent/providerVerification.ts`](repo://apps/mobile/agent/providerVerification.ts#L143-L199), [`apps/mobile/agent/providerVerification.test.ts`](repo://apps/mobile/agent/providerVerification.test.ts#L23-L39)).
 
-## Cambio seguro y validación focalizada
+Los resultados distinguen `success`, `warning` y `error`. Un 404 de Anthropic se interpreta como key verificada con advertencia de modelo no disponible; en un servidor `custom_openai`, que `/models` no exista deja guardar el modelo manualmente y advierte que probarlo aparte puede consumir API. El timeout y los errores de transporte se convierten en un mensaje de error grave. Por ello, al informar una incidencia se debe registrar proveedor, plataforma, tipo de resultado y código o mensaje ya saneado, pero nunca la clave, el cuerpo de petición ni la conversación ([`apps/mobile/agent/providerVerification.ts`](repo://apps/mobile/agent/providerVerification.ts#L84-L95), [`apps/mobile/agent/providerVerification.ts`](repo://apps/mobile/agent/providerVerification.ts#L164-L206), [`apps/mobile/agent/providerPresentation.ts`](repo://apps/mobile/agent/providerPresentation.ts#L50-L59)).
 
-- Mantenga un lease inmutable por turno y el mismo `executionId` a través de sus reintentos.
-- No convierta el presupuesto Google de Coach en el default genérico de diez intercambios; preserve el último intercambio y los límites de bytes.
-- No introduzca paralelismo en escrituras: respete la barrera y el máximo de cuatro lecturas.
-- Tras una mutación irreversible, el handler debe marcar `markEffectCommitted`; para estados no confirmables, entregue recibo y reconciliador. El ledger conserva commits siete días y limita entradas a 256, sin expulsar no resueltas ([`toolOperationLedger.ts`](repo://apps/mobile/agent/toolOperationLedger.ts#L79-L80), [`bounded`](repo://apps/mobile/agent/toolOperationLedger.ts#L290-L307)).
-- Mantenga la instrumentación en dimensiones agregadas: proveedor, intento, ronda, cierre, categoría, duración de lote, estado de commit y razones de presupuesto.
+El badge no inventa una métrica de servicio: «Comprobando» procede del estado local; éxito se presenta como «Conectado», advertencia como «Atención», error como «Error» y los demás estados como «Sin verificar» o «No conectado». Consúmase como feedback de la última operación, no como garantía contractual de conectividad o disponibilidad ([`apps/mobile/agent/providerPresentation.ts`](repo://apps/mobile/agent/providerPresentation.ts#L83-L98)).
 
-Ejecute desde la raíz:
+## Procedimiento mínimo de triage
+
+1. Reproduzca con el entorno y la variante correctos. Confirme `environment`, `policy-channel`, candidato y el prefijo de SHA-256 del volcado; no infiera producción desde una clave o un nombre aislado.
+2. Copie trazas solo tras revisar que sus entradas no incluyan contenido personal. Identifique versión/build desde la cabecera y arranques antiguos desde sus entradas `App mounted`.
+3. Si el problema es capacidad local, use **Medir ocupación** y comparta el informe formateado, no los valores de `AsyncStorage`, SQLite ni ficheros.
+4. Si es un proveedor, distinga falta de key, fixture `fake`, fallo de configuración, modelo no disponible y fallo remoto/timeout. Una prueba puede realizar red y, según proveedor, consumir API.
+5. Para una hipótesis de coste, cuota o indisponibilidad remota, recoja la evidencia autorizada del proveedor y el periodo consultado. No derive esas propiedades de la UI, una traza local o una prueba determinista.
+
+## Validación focalizada
+
+Ejecute desde la raíz los tests que fijan estos contratos locales:
 
 ```bash
-npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/coachContext.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/toolBatch.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts apps/mobile/agent/toolOperationReceipts.test.ts apps/mobile/agent/googleInteractions.test.ts
+npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/platform/trace.test.ts apps/mobile/agent/environment.test.ts apps/mobile/storage/storageUsage.test.ts apps/mobile/storage/storageFileUsage.test.ts apps/mobile/agent/providerVerification.test.ts apps/mobile/agent/providerPresentation.test.ts apps/mobile/platform/index.test.ts apps/mobile/platform/network.test.ts
 ```
 
-Estas pruebas validan límites y recuperación locales; no miden disponibilidad, coste, frecuencia ni latencia de proveedores remotos.
+Estas pruebas validan formatos, aislamiento, degradación y mapeo de errores con mocks. No prueban que una API externa esté disponible, que una petición tenga coste cero o que un proveedor vaya a aceptar una conversación real.
