@@ -1167,6 +1167,113 @@ Generadas individualmente con el estilo aprobado; pendientes de revisión y sin 
 | `ciqual-25103` | Tomate relleno, envasado | [WebP](0028/ciqual-25103.webp) |
 | `ciqual-25106` | Col rellena, envasada | [WebP](0028/ciqual-25106.webp) |
 
+## Vigesimonovena tanda (`0029`) — 100 imágenes
+
+Cien imágenes generadas individualmente con el mismo estilo aprobado: cuscús, platos de pescado y carne, pasta rellena, gratinados, alternativas vegetales, hojaldres y bocadillos. Ilustraciones de Gymnasia generadas por IA, no proporcionadas ni validadas por ANSES. Cada ficha conserva su identidad y preparación, con prompts y huellas en [el manifiesto](0029/manifest.json); una imagen no demuestra formulación, equivalencia nutricional ni aptitud vegana. Los platos genéricos son representativos, no recetas oficiales. Las cien imágenes finales se revisaron visualmente en nueve hojas de contacto, sin necesitar regeneraciones.
+
+| ID | Alimento | Imagen |
+| --- | --- | --- |
+| `ciqual-25107` | Cuscús con pescado | [WebP](0029/ciqual-25107.webp) |
+| `ciqual-25108` | Samosa o pastelito relleno de pasta filo, envasado, cocido | [WebP](0029/ciqual-25108.webp) |
+| `ciqual-25110` | Ravioli chino al vapor de gamba, cocido | [WebP](0029/ciqual-25110.webp) |
+| `ciqual-25111` | Chili con carne, envasado | [WebP](0029/ciqual-25111.webp) |
+| `ciqual-25121` | Gallo al vino | [WebP](0029/ciqual-25121.webp) |
+| `ciqual-25122` | Gratén de pasta con jamón, envasado | [WebP](0029/ciqual-25122.webp) |
+| `ciqual-25123` | Musaka, envasada | [WebP](0029/ciqual-25123.webp) |
+| `ciqual-25124` | Estofado de cordero con verduras | [WebP](0029/ciqual-25124.webp) |
+| `ciqual-25125` | Paupiette de ternera | [WebP](0029/ciqual-25125.webp) |
+| `ciqual-25126` | Paupiette de ave | [WebP](0029/ciqual-25126.webp) |
+| `ciqual-25127` | Cuscús real (con varias carnes), envasado | [WebP](0029/ciqual-25127.webp) |
+| `ciqual-25128` | Pescado blanco a la provenzal o nizarda (salsa de tomate), envasado | [WebP](0029/ciqual-25128.webp) |
+| `ciqual-25131` | Lasaña o canelones de verduras, envasados, cocidos | [WebP](0029/ciqual-25131.webp) |
+| `ciqual-25135` | Pasta a la carbonara (espaguetis, tallarines...), envasada | [WebP](0029/ciqual-25135.webp) |
+| `ciqual-25137` | Tartiflette (patatas, reblochon, taquitos de tocino...), envasada | [WebP](0029/ciqual-25137.webp) |
+| `ciqual-25138` | Cuscús con pollo | [WebP](0029/ciqual-25138.webp) |
+| `ciqual-25139` | Lasaña o canelones de pescado, envasados | [WebP](0029/ciqual-25139.webp) |
+| `ciqual-25140` | Pescado blanco a la florentina (salsa de espinacas), envasado | [WebP](0029/ciqual-25140.webp) |
+| `ciqual-25141` | Pescado blanco a la marinera (salsa de cebolla, vino blanco, mejillones), envasado | [WebP](0029/ciqual-25141.webp) |
+| `ciqual-25142` | Pescado blanco con salsa de mostaza, envasado | [WebP](0029/ciqual-25142.webp) |
+| `ciqual-25143` | Pescado blanco a la parisina (salsa de champiñones), envasado | [WebP](0029/ciqual-25143.webp) |
+| `ciqual-25145` | Pescado blanco al estragón, envasado | [WebP](0029/ciqual-25145.webp) |
+| `ciqual-25146` | Pescado blanco con salsa de acedera, envasado | [WebP](0029/ciqual-25146.webp) |
+| `ciqual-25149` | Pasta fresca rellena (ej.: raviolis, tortelinis, ravioles del Delfinado), de queso, envasada, cocida | [WebP](0029/ciqual-25149.webp) |
+| `ciqual-25150` | Cuscús de verduras, envasado | [WebP](0029/ciqual-25150.webp) |
+| `ciqual-25151` | Hojaldre o empanadilla de pescado y/o marisco, envasado, para cocinar | [WebP](0029/ciqual-25151.webp) |
+| `ciqual-25152` | Cuscús con carne, envasado | [WebP](0029/ciqual-25152.webp) |
+| `ciqual-25154` | Gratén de pescado y puré, brandada de patata o pastel de pescado tipo Parmentier, envasado | [WebP](0029/ciqual-25154.webp) |
+| `ciqual-25155` | Pasta fresca rellena (ej.: raviolis, tortelinis), de queso y verduras, envasada, cocida | [WebP](0029/ciqual-25155.webp) |
+| `ciqual-25157` | Pasta fresca rellena (ej.: raviolis, tortelinis), de vacuno (ej.: boloñesa), envasada, cruda | [WebP](0029/ciqual-25157.webp) |
+| `ciqual-25158` | Pasta fresca rellena (ej.: raviolis, tortelinis), de vacuno (ej.: boloñesa), envasada, cocida | [WebP](0029/ciqual-25158.webp) |
+| `ciqual-25159` | Tajín de cordero, envasado | [WebP](0029/ciqual-25159.webp) |
+| `ciqual-25162` | Gratén de verduras, envasado | [WebP](0029/ciqual-25162.webp) |
+| `ciqual-25163` | Albóndigas de vacuno, cocidas | [WebP](0029/ciqual-25163.webp) |
+| `ciqual-25169` | Especialidad china tipo dumpling al vapor, envasada, cocida | [WebP](0029/ciqual-25169.webp) |
+| `ciqual-25172` | Carne en salsa (valor medio) | [WebP](0029/ciqual-25172.webp) |
+| `ciqual-25173` | Escalope empanado, a la vienesa o a la milanesa, de ternera, cocido | [WebP](0029/ciqual-25173.webp) |
+| `ciqual-25174` | Pollo al curry y a la leche de coco, envasado | [WebP](0029/ciqual-25174.webp) |
+| `ciqual-25175` | Molokhia, plato a base de vacuno y yute, hecho en casa | [WebP](0029/ciqual-25175.webp) |
+| `ciqual-25181` | Pasta fresca rellena (ej.: raviolis, tortelinis, ravioles del Delfinado), de queso, envasada, cruda | [WebP](0029/ciqual-25181.webp) |
+| `ciqual-25182` | Pasta fresca rellena (ej.: raviolis, tortelinis), de queso y verduras, envasada, cruda | [WebP](0029/ciqual-25182.webp) |
+| `ciqual-25183` | Fideos con gambas, envasados, salteados/a la sartén, sin materia grasa añadida | [WebP](0029/ciqual-25183.webp) |
+| `ciqual-25186` | Albóndigas de cerdo y de vacuno (al estilo sueco), envasadas, crudas | [WebP](0029/ciqual-25186.webp) |
+| `ciqual-25187` | Risotto, con verduras, envasado | [WebP](0029/ciqual-25187.webp) |
+| `ciqual-25188` | Risotto, con marisco, envasado | [WebP](0029/ciqual-25188.webp) |
+| `ciqual-25189` | Risotto, con quesos, envasado | [WebP](0029/ciqual-25189.webp) |
+| `ciqual-25190` | Pollo a la vasca, envasado | [WebP](0029/ciqual-25190.webp) |
+| `ciqual-25192` | Raviolis rellenos de verduras, en salsa de tomate, en conserva | [WebP](0029/ciqual-25192.webp) |
+| `ciqual-25193` | Pasta fresca rellena (ej.: raviolis, tortelinis), de verduras, envasada, cocida | [WebP](0029/ciqual-25193.webp) |
+| `ciqual-25194` | Albóndigas de vacuno y de cordero (tipo kefta), envasadas, crudas | [WebP](0029/ciqual-25194.webp) |
+| `ciqual-25195` | Pastel de patata y pato (tipo Parmentier), envasado, para cocinar | [WebP](0029/ciqual-25195.webp) |
+| `ciqual-25196` | Riste de berenjenas (berenjenas, tomates, cebollas), envasada | [WebP](0029/ciqual-25196.webp) |
+| `ciqual-25198` | Pasta en salsa con quesos (espaguetis, tallarines...), envasada | [WebP](0029/ciqual-25198.webp) |
+| `ciqual-25199` | Medallón o tortita de verduras, precocinado, ultracongelado | [WebP](0029/ciqual-25199.webp) |
+| `ciqual-25200` | Cinta de cerdo a la diabla, envasada | [WebP](0029/ciqual-25200.webp) |
+| `ciqual-25201` | Lengua de vacuno en salsa al vino de Madeira, envasada | [WebP](0029/ciqual-25201.webp) |
+| `ciqual-25203` | Pasta fresca rellena (ej.: raviolis, tortelinis), de verduras, envasada, cruda | [WebP](0029/ciqual-25203.webp) |
+| `ciqual-25204` | Tajín de pollo, envasado | [WebP](0029/ciqual-25204.webp) |
+| `ciqual-25205` | Chop suey (cerdo o pollo, verduras), envasado | [WebP](0029/ciqual-25205.webp) |
+| `ciqual-25207` | Cerdo al caramelo, envasado | [WebP](0029/ciqual-25207.webp) |
+| `ciqual-25208` | Medallón o tortita de verduras, precocinado, ultracongelado, cocinado | [WebP](0029/ciqual-25208.webp) |
+| `ciqual-25210` | Salmón relleno, envasado | [WebP](0029/ciqual-25210.webp) |
+| `ciqual-25211` | Albóndigas de vacuno, en salsa de tomate, envasadas | [WebP](0029/ciqual-25211.webp) |
+| `ciqual-25213` | Paupiette de ternera, envasada, asada/cocinada al horno | [WebP](0029/ciqual-25213.webp) |
+| `ciqual-25216` | Pasta fresca rellena (ej.: raviolis, tortelinis), cocida (valor medio) | [WebP](0029/ciqual-25216.webp) |
+| `ciqual-25217` | Hoja de parra rellena de arroz o dolmas, escurrida, envasada | [WebP](0029/ciqual-25217.webp) |
+| `ciqual-25219` | Lasaña o canelones de verduras y queso de cabra, envasados, cocinados | [WebP](0029/ciqual-25219.webp) |
+| `ciqual-25220` | Chucrut cocinado con dados de tocino, sin guarnición, escurrido, cocinado | [WebP](0029/ciqual-25220.webp) |
+| `ciqual-25221` | Albóndigas de vacuno y cordero (tipo kefta), envasadas, cocinadas | [WebP](0029/ciqual-25221.webp) |
+| `ciqual-25222` | Albóndigas de cerdo y vacuno (estilo sueco), envasadas, cocinadas | [WebP](0029/ciqual-25222.webp) |
+| `ciqual-25223` | Bocados o filetes vegetales de soja y trigo (apto para veganos), envasados | [WebP](0029/ciqual-25223.webp) |
+| `ciqual-25224` | Bocados o filetes de soja y trigo (no apto para veganos), envasados | [WebP](0029/ciqual-25224.webp) |
+| `ciqual-25225` | Nuggets o croqueta empanada de trigo (sin soja), envasados | [WebP](0029/ciqual-25225.webp) |
+| `ciqual-25226` | Nuggets o croqueta empanada de soja y trigo (no apto para veganos), envasados | [WebP](0029/ciqual-25226.webp) |
+| `ciqual-25227` | Nuggets o croqueta empanada de soja y trigo (apto para veganos), envasados | [WebP](0029/ciqual-25227.webp) |
+| `ciqual-25228` | Filete empanado de soja y trigo (no apto para veganos) | [WebP](0029/ciqual-25228.webp) |
+| `ciqual-25229` | Filete o bastoncito empanado de soja y trigo (apto para veganos), envasado | [WebP](0029/ciqual-25229.webp) |
+| `ciqual-25230` | Filete empanado de soja, trigo y queso, tipo cordon bleu, envasado | [WebP](0029/ciqual-25230.webp) |
+| `ciqual-25231` | Raviolis rellenos de tofu, en salsa de tomate, envasados | [WebP](0029/ciqual-25231.webp) |
+| `ciqual-25232` | Salchicha vegetal de trigo o seitán, envasada | [WebP](0029/ciqual-25232.webp) |
+| `ciqual-25233` | Medallón de cereales con queso (sin soja), envasado | [WebP](0029/ciqual-25233.webp) |
+| `ciqual-25234` | Medallón de cereales con verduras (sin soja), envasado | [WebP](0029/ciqual-25234.webp) |
+| `ciqual-25238` | Gratín de verduras, casero | [WebP](0029/ciqual-25238.webp) |
+| `ciqual-25242` | Paella (pollo, marisco, chorizo, colín), casera | [WebP](0029/ciqual-25242.webp) |
+| `ciqual-25243` | Fideos asiáticos instantáneos, aromatizados, cocinados | [WebP](0029/ciqual-25243.webp) |
+| `ciqual-25396` | Hojaldre o empanadilla de jamón y queso, envasado | [WebP](0029/ciqual-25396.webp) |
+| `ciqual-25398` | Hojaldre o empanadilla de queso, envasado, para cocinar | [WebP](0029/ciqual-25398.webp) |
+| `ciqual-25399` | Hojaldre o empanadilla de caracoles, envasado | [WebP](0029/ciqual-25399.webp) |
+| `ciqual-25400` | Sándwich mixto (croque-monsieur), jamón, queso y mantequilla, casero | [WebP](0029/ciqual-25400.webp) |
+| `ciqual-25401` | Hojaldre o empanadilla de queso, envasado, cocinado | [WebP](0029/ciqual-25401.webp) |
+| `ciqual-25402` | Hojaldre o empanadilla de carne, envasado | [WebP](0029/ciqual-25402.webp) |
+| `ciqual-25403` | Perrito caliente (hot-dog), envasado | [WebP](0029/ciqual-25403.webp) |
+| `ciqual-25404` | Pizza de queso o pizza margarita, envasada | [WebP](0029/ciqual-25404.webp) |
+| `ciqual-25405` | Quiche lorraine, envasada | [WebP](0029/ciqual-25405.webp) |
+| `ciqual-25409` | Crep o galleta de trigo sarraceno con bechamel y jamón, envasada | [WebP](0029/ciqual-25409.webp) |
+| `ciqual-25410` | Crep o galleta de trigo sarraceno con bechamel, jamón y queso, envasada | [WebP](0029/ciqual-25410.webp) |
+| `ciqual-25411` | Crep o galleta de trigo sarraceno con bechamel y champiñones, envasada, ultracongelada | [WebP](0029/ciqual-25411.webp) |
+| `ciqual-25412` | Volován de carne, ave y quenela | [WebP](0029/ciqual-25412.webp) |
+| `ciqual-25413` | Hamburguesa, de comida rápida | [WebP](0029/ciqual-25413.webp) |
+| `ciqual-25414` | Hamburguesa con queso, de comida rápida | [WebP](0029/ciqual-25414.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
