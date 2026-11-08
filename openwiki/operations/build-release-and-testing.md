@@ -1,7 +1,7 @@
 ---
 type: guía operativa
-title: Build, release y estrategia de validación
-description: Procedimiento operativo para validar, compilar y publicar releases Android con transacciones durables, evidencia verificable y recuperación segura.
+title: Build, publicación y validación
+description: Contratos operativos y comandos verificables para pruebas, catálogos, configuración Android y publicación. Distingue la aprobación y el envío de una release de su disponibilidad efectiva en Google Play.
 tags: [android, release, testing, github-actions, google-play]
 openwiki_generated: true
 sources:
@@ -91,14 +91,14 @@ sources:
     resource: repo://scripts/production-release/vm-contract.test.mjs
   - id: openwiki-source-b368a0060923f31656ab90b3
     resource: repo://scripts/production-release/workflow.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-11-06T15:26:57.218Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-08T14:36:51.071Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-11-06T15:26:57.218Z
+    at: 2026-11-08T14:36:51.071Z
 ---
 
 
-# Build, release y estrategia de validación
+# Build, publicación y validación
 
 ## Principio operativo
 
@@ -146,7 +146,7 @@ npm --workspace apps/mobile exec tsc --noEmit
 
 Asocie cada uno a su riesgo: `expo start` sirve para iterar; `expo run:android` y `expo run:ios` ejercitan un runtime nativo de desarrollo; `build:web` detecta fallos de empaquetado web; y `tsc --noEmit` detecta incompatibilidades estáticas sin ejecutar la app. La exportación genera `apps/mobile/dist`, que reutilizan varias E2E, pero no prueba permisos fusionados, SecureStore, alarmas, notificaciones, intents, audio de fondo ni instalación en un teléfono.
 
-`app.json` define el paquete Android/iOS y la política declarativa de permisos. Declara `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`, y bloquea `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`. Para cambios en plugins Expo, dependencias nativas o permisos, ejecute además los controles de permisos y una compilación/prueba nativa representativa. Véase [Validación de permisos Android publicables](android-permissions.md).
+`app.json` aporta la configuración base y la política declarativa de permisos, pero el paquete Android/iOS efectivo no es fijo: `app.config.ts` exige `APP_ENV` (`development`, `staging` o `production`) y deriva por variante el nombre, identificador, canal de política, namespace de almacenamiento y modo de proveedor. La configuración base declara `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`, y bloquea `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`. Para cambios en plugins Expo, dependencias nativas o permisos, ejecute además los controles de permisos y una compilación/prueba nativa representativa. Véase [Validación de permisos Android publicables](android-permissions.md).
 
 ## Matriz de validación mínima
 

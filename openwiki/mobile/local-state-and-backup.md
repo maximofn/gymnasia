@@ -1,6 +1,6 @@
 ---
 type: referencia de persistencia
-title: Estado local, cachés y respaldo
+title: Estado local, cachés y copias de seguridad
 description: Contrato local-first para hidratar, confirmar, recuperar, respaldar y borrar el estado local de Gymnasia Mobile sin sobrescribir datos no verificables.
 tags: [local-first, persistence, backup, recovery, mobile]
 openwiki_generated: true
@@ -49,14 +49,14 @@ sources:
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-generated: { by: "openwiki/0.6.0", at: "2026-10-29T14:43:04.676Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-08T14:36:51.071Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-10-29T14:43:04.676Z
+    at: 2026-11-08T14:36:51.071Z
 ---
 
 
-# Estado local, cachés y respaldo
+# Estado local, cachés y copias de seguridad
 
 Gymnasia Mobile es **local-first**: el estado de uso se mantiene en React y se persiste en el dispositivo. No se debe interpretar una exportación como una copia gestionada por la aplicación: contiene datos de salud, actividad y conversaciones, y quien la exporta debe custodiarla como información sensible.
 

@@ -1,7 +1,7 @@
 ---
 type: runtime de agente
-title: Runtime del agente y herramientas
-description: Describe cómo el Coach móvil fija su política, limita contexto y rondas de herramientas, y protege efectos de escritura frente a reintentos. Distingue los contratos verificables del runtime de los agregados de telemetría consolidados.
+title: Runtime del agente Coach y ejecución de herramientas
+description: Describe el recorrido de un turno de Coach móvil desde la UI hasta los proveedores, la política, el contexto y las herramientas. Documenta continuaciones de Google, persistencia segura, errores y límites que evitan repetir trabajo incompleto.
 tags: [agent, runtime, tools, mobile, policy, idempotency, langsmith]
 summary: Contratos para modificar con seguridad el turno conversacional y sus efectos locales o externos.
 related:
@@ -10,9 +10,6 @@ related:
   - ../architecture/policy-delivery.md
   - ../mobile/local-state-and-backup.md
   - ../operations/runtime-behavior.md
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-11-06T15:26:57.218Z
 sources:
   - id: openwiki-source-192849a5973afd8b6e55db2c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
@@ -24,6 +21,10 @@ sources:
     resource: repo://apps/mobile/agent/coachContext.ts
   - id: openwiki-source-dc42304b20e8518ef65b4b63
     resource: repo://apps/mobile/agent/googleContextBudget.ts
+  - id: openwiki-source-63dae4a27346d91c6139697b
+    resource: repo://apps/mobile/agent/googleInteractions.test.ts
+  - id: openwiki-source-df22d5c1fa6f9ff9bb908437
+    resource: repo://apps/mobile/agent/googleInteractions.ts
   - id: openwiki-source-c8058179f2f675901a8caa09
     resource: repo://apps/mobile/agent/healthSafety.ts
   - id: openwiki-source-1120d27174dc5514893a227c
@@ -58,10 +59,13 @@ sources:
     resource: repo://apps/mobile/App.tsx
   - id: openwiki-source-ea083ff1c1afd80c588dedd8
     resource: repo://ops/openwiki-runtime-telemetry.json
-generated: { by: "openwiki/0.6.0", at: "2026-11-06T15:26:57.218Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-08T14:36:51.071Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-08T14:36:51.071Z
 ---
 
-# Runtime del agente y herramientas
+# Runtime del agente Coach y ejecución de herramientas
 
 Esta página delimita el turno de Coach en `apps/mobile`: política, selección de contexto, proveedor, tools y efectos durables. El informe consolidado [Comportamiento en ejecución y oportunidades](../operations/runtime-behavior.md) conserva los agregados completos y las oportunidades operativas; este documento solo traduce las señales observadas a límites y pruebas que importan al cambiar el loop o una tool. Ambos documentos se enlazan para que una muestra no sustituya los contratos del código.
 
@@ -131,6 +135,14 @@ Un riesgo `high` o `critical` persiste el mensaje de usuario y una intervención
 Antes de crear la solicitud, `sendMessage` excluye divulgaciones locales y `selectCoachContext` conserva los últimos 20 mensajes para **todos** los proveedores. El prompt de sistema proviene exclusivamente de `systemPromptSelection.content`; `composeAiSystemPrompt` añade transparencia después. La memoria personal no entra en el prompt y solo se accede mediante tools. El saneador de esa memoria es una frontera de forma, no de autorización: sus claves permanecen literales porque las lecturas comparan igualdad exacta.
 
 Para Google, `buildGoogleHistory` transforma esa ventana en pasos y `requestProviderToolChat` fija `maxExchanges` a `COACH_CONTEXT_MESSAGE_LIMIT` (20), en lugar del valor genérico 10. `prepareGoogleInteractionRequest` conserva el intercambio más reciente, elimina datos de imágenes en intercambios anteriores, y después elimina intercambios antiguos hasta cumplir 512 KiB no-imagen y 19 000 000 bytes de solicitud. Si el contexto imprescindible sigue sin caber, lanza `GoogleContextBudgetError` antes de abrir red. `GoogleContextReport` ofrece solo contadores y razones aptos para agregación; no registre cuerpos ni historial.
+
+### Continuación Google: historial local validado, no sesión remota
+
+Google Interactions se usa en modo sin estado: cada solicitud lleva el historial de `GoogleStep` y el contrato incluye `store: false`, sin `previous_interaction_id`. Una respuesta de asistente terminada puede conservar un `GoogleConversationTurn` versión 1 —modelo, pasos e identificadores/uso de interacciones— para reconstruir el contexto en el siguiente turno; no se conserva ni reanuda una llamada pendiente.
+
+Antes de restaurar esos pasos, `isGoogleConversationTurn` exige tipos válidos, `thought.signature`, IDs de `function_call` no repetidos y un `function_result` con el mismo `call_id` y nombre para cada call. Rechaza `user_input` incrustado y cualquier call sin resultado. `buildGoogleHistory` falla si el turno persistido no pasa esa validación y clona los objetos antes de entregarlos al parser o transporte. Así, un historial corrupto o una operación inconclusa no se convierte en trabajo ejecutable al hidratar ni puede ser mutada accidentalmente por una nueva petición.
+
+Durante una continuación de tools, `runGoogleToolLoop` acumula los pasos y resultados locales. Puede aceptar `interactionId` vacío —normal con `store: false`—, pero solo reutiliza una interacción no vacía cuando su representación canónica es idéntica; una identidad contradictoria o un `function_call.id` repetido entre rondas aborta antes de un segundo efecto. El reintento de todo el turno sigue protegido por `executionId`, nombre, argumentos canónicos y `occurrence` en el ledger, aun si Google asigna nuevos IDs de interacción o de call.
 
 ## Reintentos, rondas y lote
 

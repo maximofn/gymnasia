@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:b1fefe48f018ce0b38ba5c8646938017e8de250b03c189895bd9547004e8b85b",
+  "pageVersion": "sha256:229087b3969cb7ca1ef30a2f43d6f09f8d44543caed5472800ce9011f0ea6595",
   "claims": [
     {
       "id": "claim_593d6e5c167c4d37bb621397b1ddd1a3",
@@ -387,10 +387,68 @@
           "version": "repo-lines-v1:sha256:62b2db12ecc25964fd0021bb5c32466e4661c8ea6905713e14a662c5121079f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlNjI1OTM1MWViMTIwMjI1ZTJjZGUwYzlhZjg2ZTg1ODZmMjJlYzMyYzQ5NjVlNDE3MmMwZTA0ZTYxMWVhOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjZGRiYmIyNTAxN2NlNjVmMzQ5MTMxODlkNjc2YmFkZTlmN2I2MDUzYjU4NjQ0ZWE2ZjE4OTg0M2M0ZGU2ZDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2M2ZhMDYwZGJiMjQwODRjMGNjMzRmNTQzNjU0MzU3MmVkNGJhMDU2YmUzOTNmNjhkYjM1NmFkYjA2NDAyNGUifQ"
         }
       ]
+    },
+    {
+      "id": "claim_d68720a46a8644a98034f2388fcf5a0c",
+      "statement": "El proveedor `custom_openai` solo forma los endpoints `models` y `chat/completions` desde una base HTTPS absoluta normalizada, sin credenciales, consulta, fragmento ni separadores de ruta ambiguos; sus solicitudes omiten credenciales HTTP y usan el bearer BYOK.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.ts#L196-L237",
+          "version": "repo-lines-v1:sha256:893e50242ad78ee4ce55ed31d37d1c0c9b21884c9af395086d032d0a2e0ee19c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmY2E2MTgwMzM2YTFhNDBkY2RjZWVlNTYwYWE1NzQzMGFhOGE5NWM3ZjliMTI2ZDBlY2I2NmU5MWI2ZTZmNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyYTFkNGE4YzE3NzcyZjk5ODI4YWQzZjFjZmFmMTFlMjUzYjZjZGM3ODA1NzgxNjdmYzgyMzliNzE2MDI5M2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3MjgwZTY3ODM3YTRjYTNlMzYzNmU5OGMyMjJhNTQxZGMyNjUwYTJhMjhmZjE5YWFlNzJhMjUxNjM0MTBkYTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBjNTU2YWI5NzhiYjYyNTU2N2RmNmRlMjQ3MTNmZDA2YWJhMmVlYzk2YzBmMGJiMzM4MjUzMzhjOWY1Mjg2ZWQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIModels.ts#L31-L60",
+          "version": "repo-lines-v1:sha256:990206800723b8e8f7fff8cd9e38d22e965e4b7af7b8efd25aab0fee3d893536:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1YzU1OWRjZWQyYTNiNTI4OTc4OWVlMGMxM2Q2YmRkZmU3ZTUyM2U1NGRmMDI1Mzc4MzZlNmYxNjM4Yjg1ZTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmNzEwZTg4YjBjOGUwM2VjYzhhM2E1NmJlOTE5ODU1MDY0MDc1ODk5YmQ2NWY5N2FhMDkyM2ZlYmNmMWQxMDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM0ODEwNDI5YWEwYjlhOTE3OTAwODg0MmU4NjZlYjI4N2FlNzMxNWVkZTYwZTFmMTRiZGI5ZjUzN2E5YjRmZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3MjE4YzJhNzBhM2NmN2MzMmNhZGRhZjE2OTdlNGQzMzcwYzIwZGZiNzRiNGMzYzU2N2E4ZjZkZWE3NGNhYWIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIUrl.ts#L1-L27",
+          "version": "repo-lines-v1:sha256:6c28e45ed08bb4fcd0dc0ff0f5b5f56cfc796233a76926ba958db3862866066e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ2YzVlNzgxMmJiYTkwNTcxMzhlYmEwM2FkYzdlMTc0NDc4ZWQzY2JlMTIxYmMwNGM2YzJhODI3YzRiNzIyMzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlZDkxYzQyMzkwOTA5YzFkY2YxNzQ3MWQ2M2I0OTNiYWYzNDJiYWFiZTQwYjk3ZmZmNzZkNGM3YzRjYmI0Y2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3215cd97759e49f49ea2a934fbb9a27d",
+      "statement": "Para un servidor compatible, la ausencia de `/models` mediante 404, 405 o 501 es una capacidad opcional no bloqueante, mientras que el chat intenta SSE y solo retrocede a JSON cuando el error identifica explícitamente que streaming no está soportado.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.ts#L221-L278",
+          "version": "repo-lines-v1:sha256:a62e30f07d8220aeb55347f7d2a26b605d19845bf6f545a15ca80a938862ed64:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYyMzRjOGU0YzM5MGM2NDdhYjJjNGRkOTY0MmUxN2IxZWM3NmU4ZjBkZDQ5OTc3YTNhZTc3YTQzNDE3NDA0NzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzOTFlMmM4YmY1NzdhYjVjNmZmOTg5NWVjY2NmOGNjM2I0YjkwMGM3ZTE5N2QyYWVlZjVlMGE0ZDI0YTNkMDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.ts#L39-L45",
+          "version": "repo-lines-v1:sha256:997f9194f6a89f2d9b7e9ea7a2ee550129a9562d1ec2b329a07e6e3868d2b78e:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU5MDExNjY4YTVhMjczZGRlOTc4ZmFhMDkyMmJkNjkyZmFmZWE1ZjJhOTVjZWUxNDgyMmRkNzA3MTdmNzE2NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmI1ODBlOTY0ZjgzYTQ3M2Y0M2Q0NDM4NDYyOTQ5ZDY4YjU2MDBmZGE3ODdmMTYzNzQ1ZDAwZGU4OWNiZjM2YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWYxNTRjOGI3YjQwNTc2NTNlODkyOTE3NDI0ZjdlNDQyZmI4NDI3OTM3MGY5MGI4MmI5YjQzNWFlMWRlNjM2MiJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIModels.ts#L31-L83",
+          "version": "repo-lines-v1:sha256:72594c60edcf8a1aa3315ff30added3e290575125729c103cb6bca8bbeacb67f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1YzU1OWRjZWQyYTNiNTI4OTc4OWVlMGMxM2Q2YmRkZmU3ZTUyM2U1NGRmMDI1Mzc4MzZlNmYxNjM4Yjg1ZTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyOThlMDEyYTNkNjIwNWNiNzRkNjUzMjdlYWNhN2ZhNmI0OTI5ZTJjZTc4ZmJlYzRhMTFlZjFjYWQxNTdjMWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM0ODEwNDI5YWEwYjlhOTE3OTAwODg0MmU4NjZlYjI4N2FlNzMxNWVkZTYwZTFmMTRiZGI5ZjUzN2E5YjRmZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU2MmRhMjRiNzgzMWUyODhhNzA0NTQ5MDYyZTc3N2E2ZmVmMmNlNjQ5MDIzOWNiZTJlOTFhYTViYzhiZDdlY2YifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_18b1d62b38cf455d88f9c2cb75e0fc8a",
+      "statement": "El cliente de OpenAI compatible limita el tamaño de catálogos y respuestas, sanea la clave de los errores y valida que el stream SSE termine correctamente y no corrompa llamadas de herramientas fragmentadas.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.ts#L167-L193",
+          "version": "repo-lines-v1:sha256:821fa3317e5bfabea1b5a5ad57f85501fd8ffde2fcf3dbdb3f7b0dd125e90d38:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkMjI0ODNkNTAxZDQyMTJkNzBmNGI4YmFhMzRmYWNiNjVjM2RiZmNiMTJjMjc1Y2NjMDEyZWI2OWFkYWFjMjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0MTViNWQ1YTAyYjJkM2I1NDNlZmYwMTU4MjI2ODJhYzAyYTgzMDM1OTk4OTg1NjBmY2IxODU0ZDI0MTVlOGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyMTZiYTZjNjQyYzY5MDM5ZGE2NmQ5NTFlYWY5NmQ3OTBiYzZkYTdjMjA5YTMzMmIxMTU3Zjg0YzlkMjVhMGYifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.ts#L237-L268",
+          "version": "repo-lines-v1:sha256:ae45d472cbc3016ec70f8a03814e828a7cd2a00b8e5fecb91ccb1e7f94643628:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyYTFkNGE4YzE3NzcyZjk5ODI4YWQzZjFjZmFmMTFlMjUzYjZjZGM3ODA1NzgxNjdmYzgyMzliNzE2MDI5M2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxZmE3YjUyYjFiNDVkN2MyNjZmZDI1MmU4OWU4NzJjZTliZjUxNzdiN2NjNWU3YzQ3YmUwZmNmOTBjMTU2N2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiMzI3ZDVmNmU4OTdjMDNmNjkzMTIxNjljMDE2NjgxNzk2MWRhMTk3NjVhZmIzYWIxYmExYmQ2OGNiYmNlZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4YTYwMDNlMjZkNWQzMjBhNmZjMzFkZWZmMTk2OTk3NmUzNDk1YzY0MDYyNjc0N2JlZTE5ZWNlMzI5ZWIxZTcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIChat.ts#L90-L164",
+          "version": "repo-lines-v1:sha256:50153e11b0763cbbf2e8e0a624dd363eb1b95458db380c338257ffd848c834aa:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3ZGU3Zjc0ZGRlN2JhY2ZmZjQzYmU4ZWY2MGQxOTYxMjExZDM4M2Q0NDE5NDE1MGMyNDk2YmU1MDE2YjFkNTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3M2Y0MjBlZGE0ODc2MWEzOTZjOTM5ZDQxNWM4MzczOWIzMDZhNjc2NWUwZTMyZTAzYWQ3NTM3OGYyYjNiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyYmM0ZWFjYzM3MzMyM2NlZjA3MmRhOGQ5MGU5YzFjMDMzYjZjMDZjMzg3MDUwMTQ5ODI2MmFlZjdhYjFmOWUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/customOpenAIModels.ts#L10-L28",
+          "version": "repo-lines-v1:sha256:e65f3b9ef0776392e84034dcec0359211dcf94bb7d170397117f475ae84c94c6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmYzY1MjU0NDVhMzkwNjY0Yjk5Njc4NzI5MTU5MDc5M2ZiMmQxMjk3MGRlOGZiMDk1NTNjMmQzNGE2ZmM1OTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0ODcxMmZhMjZiNTZlMzIxYWI5NzU3NjMwNWE1MDM0MzI1YzRmZjM4YjEwODllY2I3MGU0NTc2NWJkMmMwZGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5NjllYmEyOGM1MWJkM2JkNGFlYzM2MDY1ZDQ0ZWYxZDhiMTY3NWU5ZWQ1MDUwNTAxMjA1OTljNzYwNTY0NzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk1OTZhODNlZGYxYjJlNTI2NzNmZDc2YThmODRjODlmNGU3MzIxNGRkODZjZTYyNzJjNGRjOTE5NmE3NmVkZWQifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-11-08T14:36:51.071Z"
   }
 }
