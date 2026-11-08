@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:683e17c19e3db40db8ba18cae23ce211f497a6543cf508cb201267970289f3e7",
+  "pageVersion": "sha256:c7476452fa1a295e75acf149d5ad7f939b994d974fd7e109643b22c8c82f3511",
   "claims": [
     {
       "id": "claim_bc663f1e35e24138a802a690498f6187",
@@ -395,10 +395,56 @@
           "version": "repo-lines-v1:sha256:0a41cb76d596efa1add38a2cd80d297e91b6c77c4a37c5cf60548e99d665723d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDhjMDA4NmRmMjYwZDlkZTQ5NDQ2NTFjMDEzZDE5MTdiYmE5ZGJlZTc3YjIxMGI2NjA0NjQxMTFmMTU4MTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxOTRlNGU1Yzg5NWYzZTQ5NTdhYTczNWJlYTVkYWUyOGRhZjU4MGI4MDJmMWQ1ZWE2OTUyOTUyMDJkNDlhZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIyZmQ5MGE1YmJhMGI1MjYzZGQzN2M3NGNjYjFjYzJkYThkNDlmMWVhNGVmOWIxMTVlYzZkZjJjNGY3NzcxOTIifQ"
         }
       ]
+    },
+    {
+      "id": "claim_554783e777dd43caa790b12da9cd8b05",
+      "statement": "Las continuaciones de Google son sin estado: la solicitud reconstruye un historial local de `GoogleStep` con `store: false` y sin `previous_interaction_id`; solo un `GoogleConversationTurn` terminado y validado puede persistirse para reconstruir contexto, de modo que una llamada pendiente no se restaura como trabajo ejecutable.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/googleInteractions.test.ts#L215-L257",
+          "version": "repo-lines-v1:sha256:301376e1e85a305c2927f6653ecd41c0059b13486cc3ec3bced2968f2f28517c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUxNzRlYjZhZDQyMThmNGI0YzYyNTcwZGZmOWM5ODcwYmNjYTliNmMyYTVlNjgxNDJjYjc4OGM0MGNlMTUyNjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlkYjQxYzAwOWMxNmFlODViNzYzYmJiOWE3YmQ0OTNhYTIzZWMwMWI5ZTJlNjI2MjIzNDMwODdmMGYzZTczMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc0ZGE3YmU1Njc1YTU0YzQyYTk2ODgyZDk4ZjVlYmU2Nzg4YTcwNGQ3YjBjNjQxZWE4NTQ4Mzk2Zjc2MmRlNzQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/googleInteractions.ts#L19-L34",
+          "version": "repo-lines-v1:sha256:c8edbfb689b165da5a11edc49bef86dc029b6102e1adaf8cddcf2d1e85c650e1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NjE4NTYwOTExODI0YTNkZDFkZWNhNjMxZjcyZGU1NzBmZmE0YjdkNDg3NjBhMTEyYmQzODhkMmZlODg2ZTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxOWIwYTUzM2E3OGVjYjYxOWMzNWFiZThlN2VlZmZiZTViNDFkNjdjODZhNWQyMDE1NTZmNWMwZDE2MGQ5ZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI1MmI0YTY0MWMzZGNiZTQ1OTU3NWNjNDFhYWI2MTUzY2JkNjNkZTk5YzRmZmQxMDlmNTg4ZWEyMTY3N2JkM2QifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/googleInteractions.ts#L62-L108",
+          "version": "repo-lines-v1:sha256:f1ddc3d5e419b972fcacc4e79df9f2d52e9b579ff053d81ff568bbdf6d5f1843:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkYmEwYmVjZTVmNGU3MWY4ZGVjOGI5MzhkZWIzYjEyY2QwY2VlNDUwYzY3ZWVjODBjM2E0YjZmZDI2YTdmNjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyYzFjYWFkYTMxNTkzOTQ4YjlhYzQ0MWVmOGIwMGU2MTc0OWI3ZjMyZjYxODlkMDg1YjBkNDMwODUxYThkYjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_de1fb400765c4c8f8b01380bfb96422f",
+      "statement": "La validación de un turno Google persistido exige firmas de pensamientos, IDs de calls únicos y un resultado con el mismo ID y nombre para cada call; también rechaza entradas de usuario incrustadas y calls pendientes, y el historial se clona antes de usarlo en una solicitud.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/googleInteractions.ts#L62-L108",
+          "version": "repo-lines-v1:sha256:f1ddc3d5e419b972fcacc4e79df9f2d52e9b579ff053d81ff568bbdf6d5f1843:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkYmEwYmVjZTVmNGU3MWY4ZGVjOGI5MzhkZWIzYjEyY2QwY2VlNDUwYzY3ZWVjODBjM2E0YjZmZDI2YTdmNjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyYzFjYWFkYTMxNTkzOTQ4YjlhYzQ0MWVmOGIwMGU2MTc0OWI3ZjMyZjYxODlkMDg1YjBkNDMwODUxYThkYjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_08ea92cdd1b54c768b3ca094ee29b529",
+      "statement": "El loop Google admite IDs de interacción vacíos en modo sin estado, pero detecta una interacción no vacía contradictoria o un ID de tool repetido antes de ejecutar otro efecto; los reintentos equivalentes conservan la deduplicación durable al identificar la operación por `executionId`, proveedor, nombre, argumentos canónicos y ocurrencia, sin el ID nativo del proveedor.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/googleInteractions.test.ts#L196-L277",
+          "version": "repo-lines-v1:sha256:61b60d6bd6569e9ff6b9a86572b90d93665fc934eca44c08c7f35895817ac924:eyJzZWxlY3RlZExpbmVDb3VudCI6ODIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4MWNmMzVhY2UwMzg3MGRjMTM2Y2JiM2MwN2Y1ZDA4MWNhNjQ3MWJmYjZkNzBhNDRjZGY5N2U5YTNjODliNGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3NzJmMjc0M2Q2M2ZiZmIzODAwN2NiYmI0ZTYxZTE3OWE2NDhiN2JhZGJiNjRhZGVhYWZmNTRmMzIyMTQ1NzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlNTI5ZDljMGYwZTg3MzZlYmFlZjUzMjVhYTI4ZTc0ZmMwYjZkZWMzNzNhOGFlZTBkMjZhODQxNjU3ZjkwOTkifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolLoop.ts#L76-L145",
+          "version": "repo-lines-v1:sha256:a38e4f0f17b3c963c99215ba5acd306091ae9ae36f0032d3c39b5118ee241fcc:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM2YjgxMTkwNzk0MTI3MzcwMTYyODJiYmMzMTI4YjhiMDdmODA0MTQ1MTBjZTBkNGQ2ZmU2NzJiMzFjMzZjNDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmM2Y1MDMwZGVhMTVkMjE0M2YxZTZlMmZmZTYzNzFiZjRmMmVlOTA5MjJlZWEzMTcwMzllYzhlM2E2Y2NlMjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwZWFjMWE2YjVhNmJlZjc2MmNiYjU1MWU0YzQyN2I4NWY3N2FmZjI1OGZhODQ0ZTVkNzY5ZDA1NWJhNTNiZDQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts#L150-L170",
+          "version": "repo-lines-v1:sha256:cb0f875e39d2ca838d64b57bf2f9e438b06c327c9478c090c6cf7fb6985c0474:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyYTI5ZWUzMzg3NzNkY2Q0MjljZDQwZGEzMzVjZmJkMDM5MWMxYmM5N2VmMzQ4NmU5NjI0MjIzMjJmMzkzNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkN2NlNmQ2ZjhkMGE4MWQ3ODUxZDViNTQ5ZTJiM2JlMGI2N2YxZWIwYjAyNmRmNWU4OTRhNjU0MDRhZDM0YzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjZTc1OTI1ZjFjZTgwNTY3ODExZTBlN2JiMGU0MjA1MTY4NzljZmU3YTQxYmNjOWZmZjNmMDVlMDM5Mzk1NzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4NWVlNmIzY2M2NWQ3NWVkYzRiMWNjMDI5M2YzMTVkN2M0YzRmNzAxNDIxYmViYmQwMWUxZDQ5OWJkYzRkNjMifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-11-06T15:26:57.218Z"
+    "at": "2026-11-08T14:36:51.071Z"
   }
 }

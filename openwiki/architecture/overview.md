@@ -1,11 +1,8 @@
 ---
 type: arquitectura de sistema
-title: Arquitectura del sistema
-description: Mapa de los dominios ejecutables de Gymnasia, sus integraciones públicas y los límites local-first. Describe los contratos de persistencia, política, catálogos, IA y feedback que deben preservarse al hacer cambios transversales.
+title: Arquitectura local-first y fronteras del sistema
+description: Mapa de la única aplicación Expo, sus datos locales y las integraciones opcionales que cruzan fronteras de confianza. Describe los contratos de persistencia, política, catálogos, IA, feedback y publicación que deben preservarse al hacer cambios transversales.
 tags: [local-first, mobile, web, byok, privacy]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-11-06T15:26:57.218Z
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
@@ -45,6 +42,10 @@ sources:
     resource: repo://apps/mobile/index.js
   - id: openwiki-source-e86fe7b76c693666bc2cb828
     resource: repo://apps/mobile/package.json
+  - id: openwiki-source-2c7bb274ff3842d79f3b5fb9
+    resource: repo://apps/mobile/persistence/localStoreRuntime.ts
+  - id: openwiki-source-f0c30949361dd30d241675c9
+    resource: repo://apps/mobile/platform/index.ts
   - id: openwiki-source-1d477406340582311e84da48
     resource: repo://apps/mobile/runtimeEnvironment.ts
   - id: openwiki-source-1d0198c38ac34ff97dd54fc0
@@ -61,10 +62,13 @@ sources:
     resource: repo://scripts/mobile-boundaries/check.mjs
   - id: openwiki-source-6f9dc1fe6ee9c17751b010df
     resource: repo://scripts/mobile-boundaries/policy.json
-generated: { by: "openwiki/0.6.0", at: "2026-11-06T15:26:57.218Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-08T14:36:51.071Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-08T14:36:51.071Z
 ---
 
-# Arquitectura del sistema
+# Arquitectura local-first y fronteras del sistema
 
 Gymnasia tiene una única superficie de producto: `apps/mobile`. `index.js` registra el mismo `App` de Expo para Android, iOS y web con `react-native-web`. Entrenamientos, dieta, medidas, conversaciones y preferencias se crean y conservan en el dispositivo: no dependen de una cuenta ni de una API de producto de Gymnasia. La red puede enriquecer una función concreta, pero no confirma ni autoriza las mutaciones de esos dominios.
 
@@ -131,6 +135,14 @@ Los catálogos de alimentos, productos comerciales y recetas se obtienen desde s
 El catálogo de ejercicios usa un protocolo distinto: descarga `manifest.json` de `ejercicios/catalog-v1`, valida estrictamente versión de esquema, versión de catálogo, procedencia, paginación y descriptores de páginas y *shards*. Cada descriptor declara un hash SHA-256; la app verifica ese hash al leer de caché o descargar un artefacto. Solo activa un manifiesto remoto después de cargar y validar su primera página. El manifiesto apunta a páginas de fichas, *shards* de búsqueda y un directorio por ID, por lo que buscar, abrir una ficha y resolver IDs no exigen bajar el agregado completo.
 
 La caché de ejercicios conserva un manifiesto activo y, cuando es durable, el anterior. La activación no reemplaza metadatos persistentes si la primera página de la versión nueva no está almacenada y verificada. Al inicializar puede recuperar el activo o el anterior si su primera página sigue siendo válida; al fallar una actualización remota conserva el snapshot disponible y expone `remote_failed`. Los catálogos agregados siguen el mismo principio de no borrar el snapshot anterior ante HTTP inválido, JSON malformado, esquema inválido o fallo de red. Los alimentos personales son otro origen, `local://device`, y no se envían ni se sustituyen por GitHub Raw.
+
+## Publicación de contenido: artefactos, no un servicio de producto
+
+Los directorios de contenido versionado (`alimentos/`, `productos_comerciales/`, `recetas/` y `ejercicios/`) son la fuente que la automatización transforma en artefactos de lectura; no son una API de cuentas ni un almacén de datos de la persona usuaria. Para alimentos, productos y recetas, `all.json` e `index.json` son derivados y no se editan manualmente. `sync:catalogs` valida y regenera los agregados, mientras `check:catalogs`, `test:catalogs` y `test:catalogs:e2e` cubren contratos, integridad y el consumo remoto con caché offline. El generador también copia el agregado de alimentos al baseline integrado que permite el primer uso sin red.
+
+Los ejercicios se publican como `ejercicios/catalog-v1/`: el generador produce un manifiesto, páginas de fichas, *shards* de búsqueda e índices por ID. Rechaza antes de publicar esquemas o referencias inválidas, IDs duplicados, diferencias de mayúsculas, imágenes huérfanas, archivos dañados e imágenes que no sean WebP reales. Por tanto, un cambio de esquema o de pipeline debe actualizar de forma coordinada el generador, los validadores y el lector móvil, y demostrar que un snapshot ya instalado sigue siendo utilizable sin red; no basta con modificar un JSON servido por GitHub.
+
+La política sigue una cadena de publicación diferente: `policy/health-safety/` genera el bloque sanitario y sus fixtures, y `scripts/policy-promotion/` prepara artefactos públicos firmados para los canales. GitHub distribuye esos artefactos, pero la verificación Ed25519 y las raíces públicas están en la app; las claves privadas no pertenecen al bundle ni al repositorio de política público. En consecuencia, publicar no equivale a ejecutar contenido remoto de confianza: el runtime solo puede activar lo que cumple su contrato criptográfico y de canal.
 
 ## Política y llamadas de IA
 
