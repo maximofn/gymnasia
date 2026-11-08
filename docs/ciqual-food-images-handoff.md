@@ -41,28 +41,29 @@ al empezar; este bloque no sustituye al estado real.
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 1.103 de 3.484 |
-| Porcentaje | 31,66 % |
-| Pendientes | 2.381 |
-| Última tanda | `0029`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 424](https://github.com/maximofn/gymnasia/pull/424) |
-| PR abierta para la siguiente fusión | [PR 425](https://github.com/maximofn/gymnasia/pull/425) |
-| Commit de las imágenes de esa PR | `8d1464f36f8eeb3eae80ca58653dff0efe086f52` |
-| Siguiente tanda si no hay trabajo posterior | `0030` |
+| Imágenes registradas | 1.203 de 3.484 |
+| Porcentaje | 34,53 % |
+| Pendientes | 2.281 |
+| Última tanda | `0030`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 425](https://github.com/maximofn/gymnasia/pull/425) |
+| PR abierta para la siguiente fusión | [PR 426](https://github.com/maximofn/gymnasia/pull/426) |
+| Commit de las imágenes de esa PR | `346712998d606c8f7462be18e9b3a4d7c039c640` |
+| Siguiente tanda si no hay trabajo posterior | `0031` |
 
-La PR 424 se actualizó con `main` porque GitHub exigía la rama al día, volvió a
-pasar todos los checks y se fusionó el 8 de noviembre de 2026. La PR 425 conserva
-la nueva tanda y este relevo; queda abierta para la siguiente revisión o «más».
+La PR 425 pasó todos los checks y se fusionó el 8 de noviembre de 2026. La rama
+se actualizó con `main` antes de generar la siguiente tanda. La PR 426 conserva
+la tanda 0030 y este relevo; queda abierta para la siguiente revisión o «más».
 Consultar los checks de su SHA actual: las validaciones locales terminadas no
 sustituyen a CI.
 
-La tanda 0029 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0030 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
 Sus 100 WebP finales se revisaron en nueve hojas de contacto, sin necesitar
-regeneraciones. Incluye cuscús, platos de pescado y carne, pasta rellena,
-gratinados, alternativas vegetales, hojaldres y bocadillos. Se apartó de esta
-selección `ciqual-25164` porque el nombre francés y el español mezclan ternera
-y cerdo; sigue pendiente, sin modificar la ficha oficial.
+regeneraciones. Incluye pizzas, bocadillos, brochetas crudas y cocinadas,
+crêpes, tartas saladas, hojaldres, falafel y rollitos. Los platos genéricos son
+ilustrativos. Sigue pendiente `ciqual-25164`, apartado en la tanda anterior
+porque el nombre francés y el español mezclan ternera y cerdo, sin modificar
+la ficha oficial.
 
 ## Fuentes de alimentos consideradas
 
@@ -95,7 +96,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0029/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0030/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
