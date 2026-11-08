@@ -32,7 +32,7 @@ antes de fusionar. No eludir una aprobación de instrucciones del agente o de bu
 
 ## Estado de referencia
 
-Estado comprobado el **7 de noviembre de 2026**, incluyendo la última tanda
+Estado comprobado el **8 de noviembre de 2026**, incluyendo la última tanda
 generada aunque su PR siga abierta. Volver a consultar GitHub y los manifiestos
 al empezar; este bloque no sustituye al estado real.
 
@@ -41,22 +41,28 @@ al empezar; este bloque no sustituye al estado real.
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 1.003 de 3.484 |
-| Porcentaje | 28,79 % |
-| Pendientes | 2.481 |
-| Última tanda | `0028`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 422](https://github.com/maximofn/gymnasia/pull/422) |
-| PR abierta para la siguiente fusión | [PR 424](https://github.com/maximofn/gymnasia/pull/424) |
-| Commit de las imágenes de esa PR | `3007704103f72bfde3dfbca90262ff8da4134926` |
-| Siguiente tanda si no hay trabajo posterior | `0029` |
+| Imágenes registradas | 1.103 de 3.484 |
+| Porcentaje | 31,66 % |
+| Pendientes | 2.381 |
+| Última tanda | `0029`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 424](https://github.com/maximofn/gymnasia/pull/424) |
+| PR abierta para la siguiente fusión | [PR 425](https://github.com/maximofn/gymnasia/pull/425) |
+| Commit de las imágenes de esa PR | `8d1464f36f8eeb3eae80ca58653dff0efe086f52` |
+| Siguiente tanda si no hay trabajo posterior | `0030` |
 
-La PR 424 tenía todos sus checks correctos antes de añadir este documento;
-consultarlos de nuevo para el SHA actual. El documento se incorpora a esa misma
-PR, por lo que su head cambia y ya no tiene únicamente los 102 archivos de imágenes,
-manifiesto e índice. **Este relevo no ordena fusionarla ni generar otra tanda ahora.**
+La PR 424 se actualizó con `main` porque GitHub exigía la rama al día, volvió a
+pasar todos los checks y se fusionó el 8 de noviembre de 2026. La PR 425 conserva
+la nueva tanda y este relevo; queda abierta para la siguiente revisión o «más».
+Consultar los checks de su SHA actual: las validaciones locales terminadas no
+sustituyen a CI.
 
-La tanda 0028 pasó los 33 tests del catálogo y todas las validaciones indicadas
-más abajo. Sus 100 imágenes se revisaron sin necesitar regeneraciones.
+La tanda 0029 pasó los 33 tests del catálogo, `check:ciqual:images`,
+`check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
+Sus 100 WebP finales se revisaron en nueve hojas de contacto, sin necesitar
+regeneraciones. Incluye cuscús, platos de pescado y carne, pasta rellena,
+gratinados, alternativas vegetales, hojaldres y bocadillos. Se apartó de esta
+selección `ciqual-25164` porque el nombre francés y el español mezclan ternera
+y cerdo; sigue pendiente, sin modificar la ficha oficial.
 
 ## Archivos que hay que leer
 
@@ -68,7 +74,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0028/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0029/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
