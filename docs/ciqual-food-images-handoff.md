@@ -64,6 +64,27 @@ gratinados, alternativas vegetales, hojaldres y bocadillos. Se apartó de esta
 selección `ciqual-25164` porque el nombre francés y el español mezclan ternera
 y cerdo; sigue pendiente, sin modificar la ficha oficial.
 
+## Fuentes de alimentos consideradas
+
+Al inicio de la conversación se propusieron estas seis fuentes. Se eligió
+ANSES-CIQUAL para la integración desarrollada en este flujo; las demás quedaron
+como posibles complementos según el tipo de información necesario.
+
+| Fuente | Uso propuesto |
+| --- | --- |
+| [OpenNutrition](https://www.opennutrition.app/download) | Dataset descargable con alimentos genéricos, preparados y comerciales, nutrientes y procedencia. |
+| [ANSES-CIQUAL](https://ciqual.anses.fr/) | Composición nutricional de alimentos habituales en Europa; es la fuente elegida para el catálogo de este trabajo. |
+| [BEDCA](https://www.bedca.net/) | Base española de composición de alimentos, con nombres en español. |
+| [USDA FoodData Central](https://fdc.nal.usda.gov/download-datasets/) | Nutrientes detallados, pesos de raciones y medidas domésticas; USDA FNDDS se propuso para complementar las raciones habituales. |
+| [Open Food Facts](https://world.openfoodfacts.org/data) | Productos comerciales, marcas, códigos de barras, ingredientes e imágenes de envases. |
+| [Nutrition5k](https://github.com/google-research-datasets/Nutrition5k) | Platos fotografiados con ingredientes, pesos y datos nutricionales; candidato para reconocimiento visual de comidas. |
+
+La combinación propuesta era **CIQUAL/BEDCA para alimentos genéricos, USDA para
+complementar nutrientes y raciones, y Open Food Facts para productos de marca**.
+Las imágenes homogéneas del catálogo seguirían siendo propias. Esta lista no
+significa que todas las fuentes estén integradas ni autoriza nuevas importaciones
+como parte de una orden «más»; ese flujo sigue limitado a las imágenes CIQUAL.
+
 ## Archivos que hay que leer
 
 Aplicar primero las instrucciones `AGENTS.md` disponibles en el nuevo chat y en
