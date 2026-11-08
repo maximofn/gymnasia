@@ -41,32 +41,33 @@ al empezar; este bloque no sustituye al estado real.
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 1.303 de 3.484 |
-| Porcentaje | 37,40 % |
-| Pendientes | 2.181 |
-| Última tanda | `0031`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 426](https://github.com/maximofn/gymnasia/pull/426) |
-| PR abierta para la siguiente fusión | [PR 427](https://github.com/maximofn/gymnasia/pull/427) |
-| Commit de las imágenes de esa PR | `6500fcec38380d3cf56f481c93a99955c97206db` |
-| Siguiente tanda si no hay trabajo posterior | `0032` |
+| Imágenes registradas | 1.403 de 3.484 |
+| Porcentaje | 40,27 % |
+| Pendientes | 2.081 |
+| Última tanda | `0032`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 427](https://github.com/maximofn/gymnasia/pull/427) |
+| PR abierta para la siguiente fusión | [PR 428](https://github.com/maximofn/gymnasia/pull/428) |
+| Commit de las imágenes de esa PR | `b9722161104ac7db4ce0a094780d2b8b216a1a0d` |
+| Siguiente tanda si no hay trabajo posterior | `0033` |
 
-La PR 426 pasó todos los checks y se fusionó el 8 de noviembre de 2026. La rama
-se actualizó con `main` antes de generar la siguiente tanda. La PR 427 conserva
-la tanda 0031 y este relevo; queda abierta para la siguiente revisión o «más».
+La PR 427 pasó todos los checks y se fusionó el 8 de noviembre de 2026. La rama
+se actualizó con `main` antes de generar la siguiente tanda. La PR 428 conserva
+la tanda 0032 y este relevo; queda abierta para la siguiente revisión o «más».
 Consultar los checks de su SHA actual: las validaciones locales terminadas no
 sustituyen a CI.
 
-La tanda 0031 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0032 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Sus 100 WebP finales se revisaron en nueve hojas de contacto. Se regeneró
-`ciqual-25608` porque el tabulé tenía granos demasiado redondos; la salida final
-representa sémola fina y se revisó a tamaño completo. Incluye brochetas cocinadas,
-preparados vegetales, ensaladas, bocadillos, wraps, sopas y caldos. Los platos
-genéricos son ilustrativos. Para `ciqual-25642` se siguieron FR/EN: apio nabo y
-zanahoria en rémoulade, pese a la mención discrepante de remolacha en ES; los
-nombres fuente se conservaron exactos. Sigue pendiente `ciqual-25164`, apartado
-porque el nombre francés y el español mezclan ternera y cerdo, sin modificar
-la ficha oficial. Las imágenes todavía no están integradas en móvil.
+Sus 100 WebP finales se revisaron en nueve hojas de contacto, sin necesitar
+regeneraciones. Incluye sopas, caldos secos y reconstituidos, pescados crudos y
+congelados, ahumados, conservas, huevas y variantes al vapor, al horno, fritas y
+empanadas. Se revisaron además a tamaño completo el empanado crudo congelado y
+la porción de `ciqual-26075`. En esta última ficha, FR/ES se refieren al perro
+del norte y EN dice Atlantic bass; se representó carne cruda siguiendo FR/ES,
+sin alterar los nombres fuente. Los platos genéricos son ilustrativos. Sigue
+pendiente `ciqual-25164`, apartado porque el nombre francés y el español mezclan
+ternera y cerdo, sin modificar la ficha oficial. Las imágenes todavía no están
+integradas en móvil.
 
 ## Fuentes de alimentos consideradas
 
@@ -99,7 +100,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0031/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0032/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
