@@ -1060,6 +1060,113 @@ Cien imágenes generadas individualmente con el mismo estilo aprobado: cereales 
 | `ciqual-24028` | Galleta seca con sésamo, no enriquecida | [WebP](0027/ciqual-24028.webp) |
 | `ciqual-24029` | Galleta seca con sésamo, enriquecida con vitaminas y minerales | [WebP](0027/ciqual-24029.webp) |
 
+## Vigesimoctava tanda (`0028`) — 100 imágenes
+
+Generadas individualmente con el estilo aprobado; pendientes de revisión y sin integración móvil.
+
+| ID | Alimento | Imagen |
+| --- | --- | --- |
+| `ciqual-24031` | Galleta seca sin chocolate, reducida en materia grasa | [WebP](0028/ciqual-24031.webp) |
+| `ciqual-24034` | Galleta seca para desayuno, sin chocolate, no enriquecida | [WebP](0028/ciqual-24034.webp) |
+| `ciqual-24035` | Galleta seca para desayuno, reducida en azúcares | [WebP](0028/ciqual-24035.webp) |
+| `ciqual-24036` | Galleta seca con chocolate, no enriquecida | [WebP](0028/ciqual-24036.webp) |
+| `ciqual-24037` | Galleta seca rellena de pasta o puré de frutas (p. ej. higo) | [WebP](0028/ciqual-24037.webp) |
+| `ciqual-24038` | Galleta seca, tipo sablé, cubierta de chocolate | [WebP](0028/ciqual-24038.webp) |
+| `ciqual-24040` | Galleta seca para desayuno, con chocolate, no enriquecida | [WebP](0028/ciqual-24040.webp) |
+| `ciqual-24041` | Galleta seca para desayuno, de todos los sabores, enriquecida con vitaminas y minerales | [WebP](0028/ciqual-24041.webp) |
+| `ciqual-24042` | Galleta seca con chocolate, enriquecida con vitaminas y minerales | [WebP](0028/ciqual-24042.webp) |
+| `ciqual-24048` | Galleta seca, tipo sablé, galette o palet, distinta de la de mantequilla | [WebP](0028/ciqual-24048.webp) |
+| `ciqual-24049` | Galleta seca, tipo sablé, galette o palet, de mantequilla | [WebP](0028/ciqual-24049.webp) |
+| `ciqual-24050` | Galleta seca, tipo sablé, galette o palet, de mantequilla y chocolate | [WebP](0028/ciqual-24050.webp) |
+| `ciqual-24051` | Bizcocho, cubierto de chocolate, tipo barquita, envasado | [WebP](0028/ciqual-24051.webp) |
+| `ciqual-24052` | Galleta seca (tartaleta), cubierta de chocolate, envasada | [WebP](0028/ciqual-24052.webp) |
+| `ciqual-24054` | Galleta seca, tipo sablé, galette o palet, con frutas | [WebP](0028/ciqual-24054.webp) |
+| `ciqual-24056` | Florentino (galleta seca con chocolate y almendras) | [WebP](0028/ciqual-24056.webp) |
+| `ciqual-24057` | Galleta seca, tipo sablé, rellena de fruta tipo lunette de Romans | [WebP](0028/ciqual-24057.webp) |
+| `ciqual-24061` | Galleta con merengue rellena (chocolate, avellana, coco...), cubierta o con base de chocolate | [WebP](0028/ciqual-24061.webp) |
+| `ciqual-24070` | Galleta seca con coco | [WebP](0028/ciqual-24070.webp) |
+| `ciqual-24071` | Galleta sablé de pastelería, artesanal | [WebP](0028/ciqual-24071.webp) |
+| `ciqual-24224` | Galleta de chocolate rellena tipo sándwich sabor vainilla, redonda, negra y blanca | [WebP](0028/ciqual-24224.webp) |
+| `ciqual-24225` | Galleta seca para merienda rellena tipo sándwich sabor leche o vainilla | [WebP](0028/ciqual-24225.webp) |
+| `ciqual-24230` | Galleta seca para merienda rellena tipo sándwich sabor chocolate, de trigo integral | [WebP](0028/ciqual-24230.webp) |
+| `ciqual-24231` | Galleta seca para merienda rellena tipo sándwich sabor chocolate | [WebP](0028/ciqual-24231.webp) |
+| `ciqual-24240` | Galleta seca para merienda rellena tipo sándwich sabor frutas | [WebP](0028/ciqual-24240.webp) |
+| `ciqual-24300` | Barquillo, abanico, cigarrillo, sin relleno | [WebP](0028/ciqual-24300.webp) |
+| `ciqual-24311` | Barquillo relleno y/o bañado de chocolate | [WebP](0028/ciqual-24311.webp) |
+| `ciqual-24312` | Barquillo relleno, con frutos secos (avellana, almendra, praliné, etc.), con o sin chocolate, envasado | [WebP](0028/ciqual-24312.webp) |
+| `ciqual-24313` | Barquillo, relleno de vainilla | [WebP](0028/ciqual-24313.webp) |
+| `ciqual-24320` | Barquillo relleno, de frutas | [WebP](0028/ciqual-24320.webp) |
+| `ciqual-24370` | Crêpe dentelle natural | [WebP](0028/ciqual-24370.webp) |
+| `ciqual-24371` | Crêpe dentelle, cubierta de chocolate | [WebP](0028/ciqual-24371.webp) |
+| `ciqual-24430` | Bizcocho seco de huevo, bizcotela o melindro | [WebP](0028/ciqual-24430.webp) |
+| `ciqual-24441` | Galleta seca, tipo lengua de gato o cigarrillo ruso | [WebP](0028/ciqual-24441.webp) |
+| `ciqual-24520` | Merengue | [WebP](0028/ciqual-24520.webp) |
+| `ciqual-24614` | Galleta seca crujiente de almendras (ej. canistrelli) | [WebP](0028/ciqual-24614.webp) |
+| `ciqual-24615` | Galleta seca fina o teja, de almendras | [WebP](0028/ciqual-24615.webp) |
+| `ciqual-24616` | Galleta seca fina o teja, sabor limón o naranja | [WebP](0028/ciqual-24616.webp) |
+| `ciqual-24630` | Magdalena, de mantequilla, envasada | [WebP](0028/ciqual-24630.webp) |
+| `ciqual-24631` | Magdalena de chocolate (con baño, pepitas o relleno), envasada | [WebP](0028/ciqual-24631.webp) |
+| `ciqual-24632` | Magdalena corriente, envasada | [WebP](0028/ciqual-24632.webp) |
+| `ciqual-24654` | Galleta seca o galleta fina de avena, cubierta de chocolate | [WebP](0028/ciqual-24654.webp) |
+| `ciqual-24655` | Galleta seca o galleta fina de avena | [WebP](0028/ciqual-24655.webp) |
+| `ciqual-24656` | Cookie con arándanos rojos americanos y chocolate blanco, envasada | [WebP](0028/ciqual-24656.webp) |
+| `ciqual-24657` | Galleta seca, tipo bastoncillo, stick, espiral o trenza, cubierta de chocolate | [WebP](0028/ciqual-24657.webp) |
+| `ciqual-24658` | Galleta seca de hojaldre, tipo palmera u otras, cubierta de chocolate | [WebP](0028/ciqual-24658.webp) |
+| `ciqual-24659` | Galleta seca de hojaldre, tipo palmera u otras, envasada | [WebP](0028/ciqual-24659.webp) |
+| `ciqual-24660` | Galleta seca de hojaldre, tipo palmera u otras, artesanal | [WebP](0028/ciqual-24660.webp) |
+| `ciqual-24663` | Tarta de peras amandine | [WebP](0028/ciqual-24663.webp) |
+| `ciqual-24664` | Pastel de almendra tipo financier, envasado | [WebP](0028/ciqual-24664.webp) |
+| `ciqual-24666` | Hojaldre milhojas | [WebP](0028/ciqual-24666.webp) |
+| `ciqual-24674` | Pastel tierno sin gluten (bizcocho, magdalena...), envasado | [WebP](0028/ciqual-24674.webp) |
+| `ciqual-24675` | Pastel tierno sin gluten (bizcocho, brownie...), de chocolate, envasado | [WebP](0028/ciqual-24675.webp) |
+| `ciqual-24676` | Galleta con chocolate y frutos de cáscara (avellanas, almendras, nueces de pecán...), envasada | [WebP](0028/ciqual-24676.webp) |
+| `ciqual-24678` | Bizcocho (genovesa), bañado con fruta, tipo barquita, envasado | [WebP](0028/ciqual-24678.webp) |
+| `ciqual-24679` | Galleta seca (tartaleta), bañada con fruta, envasada | [WebP](0028/ciqual-24679.webp) |
+| `ciqual-24680` | Bizcocho tierno relleno de naranja y recubierto de glaseado de azúcar | [WebP](0028/ciqual-24680.webp) |
+| `ciqual-24684` | Galleta con chocolate, envasada | [WebP](0028/ciqual-24684.webp) |
+| `ciqual-24685` | Cono u oblea clásico, para helado | [WebP](0028/ciqual-24685.webp) |
+| `ciqual-24686` | Bizcocho (genovesa), relleno de fruta (ej.: naranja, cereza...), bañado de chocolate | [WebP](0028/ciqual-24686.webp) |
+| `ciqual-24687` | Galleta con pepitas de chocolate y coco, envasada | [WebP](0028/ciqual-24687.webp) |
+| `ciqual-24689` | Galleta para bebé | [WebP](0028/ciqual-24689.webp) |
+| `ciqual-24998` | Pescado blanco en salsa, envasado (valor medio) | [WebP](0028/ciqual-24998.webp) |
+| `ciqual-24999` | Postre (valor medio) | [WebP](0028/ciqual-24999.webp) |
+| `ciqual-25001` | Blanquette de ternera, envasada | [WebP](0028/ciqual-25001.webp) |
+| `ciqual-25002` | Cassoulet, en conserva | [WebP](0028/ciqual-25002.webp) |
+| `ciqual-25003` | Chucrut guarnecido, envasado | [WebP](0028/ciqual-25003.webp) |
+| `ciqual-25009` | Pastel de patata y carne (hachis parmentier), envasado | [WebP](0028/ciqual-25009.webp) |
+| `ciqual-25010` | Cerdo salado con lentejas, envasado | [WebP](0028/ciqual-25010.webp) |
+| `ciqual-25013` | Pot-au-feu, envasado | [WebP](0028/ciqual-25013.webp) |
+| `ciqual-25018` | Pisto (ratatouille) cocinado, envasado | [WebP](0028/ciqual-25018.webp) |
+| `ciqual-25019` | Raviolis de vacuno, salsa de tomate, en conserva | [WebP](0028/ciqual-25019.webp) |
+| `ciqual-25020` | Suflé de queso | [WebP](0028/ciqual-25020.webp) |
+| `ciqual-25026` | Espinacas a la nata, envasadas | [WebP](0028/ciqual-25026.webp) |
+| `ciqual-25029` | Cusús con cordero | [WebP](0028/ciqual-25029.webp) |
+| `ciqual-25031` | Paella, envasada | [WebP](0028/ciqual-25031.webp) |
+| `ciqual-25033` | Estofado de vacuno a la borgoñona (boeuf bourguignon), envasado | [WebP](0028/ciqual-25033.webp) |
+| `ciqual-25035` | Salteado de cordero al curry, envasado | [WebP](0028/ciqual-25035.webp) |
+| `ciqual-25037` | Gratén o cazuela de pescado y / o marisco, envasado, crudo | [WebP](0028/ciqual-25037.webp) |
+| `ciqual-25038` | Gratén o cazuela de pescado y / o marisco, envasado, cocido | [WebP](0028/ciqual-25038.webp) |
+| `ciqual-25043` | Cuscús con carne o pollo, con contenido reducido de materia grasa, envasado | [WebP](0028/ciqual-25043.webp) |
+| `ciqual-25052` | Gratén de berenjena, envasado | [WebP](0028/ciqual-25052.webp) |
+| `ciqual-25056` | Gratén dauphinois, envasado | [WebP](0028/ciqual-25056.webp) |
+| `ciqual-25057` | Patatas salteadas precocinadas, con taquitos de tocino o pollo, y otros, sin verduras, envasadas | [WebP](0028/ciqual-25057.webp) |
+| `ciqual-25058` | Pato en salsa (pimienta verde, cazadora, etc.), envasado | [WebP](0028/ciqual-25058.webp) |
+| `ciqual-25063` | Conejo a la mostaza, envasado | [WebP](0028/ciqual-25063.webp) |
+| `ciqual-25065` | Vacuno guisada con zanahorias, envasada | [WebP](0028/ciqual-25065.webp) |
+| `ciqual-25071` | Potaje alvernino (col y cerdo) | [WebP](0028/ciqual-25071.webp) |
+| `ciqual-25073` | Endibia con jamón, envasada | [WebP](0028/ciqual-25073.webp) |
+| `ciqual-25077` | Salmón con salsa de acedera, envasado | [WebP](0028/ciqual-25077.webp) |
+| `ciqual-25081` | Lasaña o canelones de carne (boloñesa), envasados | [WebP](0028/ciqual-25081.webp) |
+| `ciqual-25085` | Pasta a la boloñesa (espaguetis, tallarines...), envasada | [WebP](0028/ciqual-25085.webp) |
+| `ciqual-25086` | Pescado blanco a la burdeos (pan rallado, aceite...), envasado | [WebP](0028/ciqual-25086.webp) |
+| `ciqual-25088` | Arroz cantonés, envasado | [WebP](0028/ciqual-25088.webp) |
+| `ciqual-25089` | Cordón bleu de ave, envasado | [WebP](0028/ciqual-25089.webp) |
+| `ciqual-25098` | Cassoulet con cerdo, en conserva | [WebP](0028/ciqual-25098.webp) |
+| `ciqual-25099` | Cassoulet con pato u oca, en conserva | [WebP](0028/ciqual-25099.webp) |
+| `ciqual-25101` | Gratén de coliflor, envasado | [WebP](0028/ciqual-25101.webp) |
+| `ciqual-25103` | Tomate relleno, envasado | [WebP](0028/ciqual-25103.webp) |
+| `ciqual-25106` | Col rellena, envasada | [WebP](0028/ciqual-25106.webp) |
+
 ## Reanudar sin repetir imágenes
 
 ```bash
