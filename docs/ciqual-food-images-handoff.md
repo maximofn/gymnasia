@@ -32,7 +32,7 @@ antes de fusionar. No eludir una aprobación de instrucciones del agente o de bu
 
 ## Estado de referencia
 
-Estado comprobado el **8 de noviembre de 2026**, incluyendo la última tanda
+Estado comprobado el **9 de noviembre de 2026**, incluyendo la última tanda
 generada aunque su PR siga abierta. Volver a consultar GitHub y los manifiestos
 al empezar; este bloque no sustituye al estado real.
 
@@ -41,31 +41,39 @@ al empezar; este bloque no sustituye al estado real.
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 1.603 de 3.484 |
-| Porcentaje | 46,01 % |
-| Pendientes | 1.881 |
-| Última tanda | `0034`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 429](https://github.com/maximofn/gymnasia/pull/429) |
-| PR abierta para la siguiente fusión | [PR 431](https://github.com/maximofn/gymnasia/pull/431) |
-| Commit de las imágenes de esa PR | `8da3ac34c1f6777106ba1395a1ae6ab7fba1685f` |
-| Siguiente tanda si no hay trabajo posterior | `0035` |
+| Imágenes registradas | 1.703 de 3.484 |
+| Porcentaje | 48,88 % |
+| Pendientes | 1.781 |
+| Última tanda | `0035`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 431](https://github.com/maximofn/gymnasia/pull/431) |
+| PR abierta para la siguiente fusión | [PR 432](https://github.com/maximofn/gymnasia/pull/432) |
+| Commit de las imágenes de esa PR | `a4636a8f12eab719f2b7fe13f7d271ce7192c625` |
+| Siguiente tanda si no hay trabajo posterior | `0036` |
 
-La PR 429 se actualizó con los cambios de `main` ya fusionados y pasó todos los
-checks de su nuevo commit antes de fusionarse el 8 de noviembre de 2026. La rama
-se sincronizó con `main` antes de generar la siguiente tanda. La PR 431 conserva
-la tanda 0034 y este relevo; queda abierta para la siguiente revisión o «más».
+La PR 431 pasó todos los checks y se fusionó el 9 de noviembre de 2026. La rama
+se actualizó con `main` antes de generar la siguiente tanda. La PR 432 conserva
+la tanda 0035 y este relevo; queda abierta para la siguiente revisión o «más».
 Consultar los checks de su SHA actual: las validaciones locales terminadas no
 sustituyen a CI.
 
-La tanda 0034 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0035 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Sus 100 WebP finales se revisaron en nueve hojas de contacto. Se regeneró
-`ciqual-28472` porque conservaba una capa de grasa exterior; la salida final
-muestra piezas magras, deshuesadas y sin corteza para picar, revisadas a tamaño
-completo. Incluye pescados y conservas, ensaladas, ñoquis para cocinar, tartas
-saladas, pizzas y cortes de cerdo crudos y cocinados. En `ciqual-27017` se siguió
-FR/ES para filetes crudos de panga/pez gato ante el inglés discrepante, sin
-alterar nombres fuente. Las preparaciones genéricas son ilustrativas.
+Sus 100 WebP finales se revisaron en nueve hojas de contacto, sin regeneraciones.
+Se inspeccionaron además a tamaño completo `ciqual-30102` y `ciqual-30105` para
+comprobar el interior crudo de las salchichas ahumadas para cocinar. Incluye
+pancetas, jamones cocidos y curados, salchichas crudas y cocinadas, salchichones,
+chorizos, salamis y variantes con queso, frutos secos y pistachos, además de
+picado vegetal y una bebida de soja y zumo de frutas.
+
+Para `ciqual-28811` se siguieron FR/ES y la
+[descripción del Ministerio francés](https://agriculture.gouv.fr/connaissez-vous-vraiment-le-jambon-de-bayonne)
+como jamón salado y seco frente al inglés que añade ahumado, sin alterar nombres
+fuente. El pequeño cierre de madera de las Morteau es parte del producto según
+[su asociación](https://www.saucissedemorteau.com/les-idees-recues/). El queso y
+la panceta del cervelas de Obernai se comprobaron en su
+[ficha comercial](https://www.coursesu.com/p/cervelas-obernois-pierre-schmidt-vpf-2-pieces-280g/1262593.html).
+Las imágenes son ilustrativas y no demuestran visualmente sal, grasa, calidad u
+origen mediante símbolos inventados.
 
 Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
 y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tiburón
@@ -103,7 +111,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0034/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0035/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
