@@ -41,39 +41,43 @@ al empezar; este bloque no sustituye al estado real.
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 1.703 de 3.484 |
-| Porcentaje | 48,88 % |
-| Pendientes | 1.781 |
-| Última tanda | `0035`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 431](https://github.com/maximofn/gymnasia/pull/431) |
-| PR abierta para la siguiente fusión | [PR 432](https://github.com/maximofn/gymnasia/pull/432) |
-| Commit de las imágenes de esa PR | `a4636a8f12eab719f2b7fe13f7d271ce7192c625` |
-| Siguiente tanda si no hay trabajo posterior | `0036` |
+| Imágenes registradas | 1.803 de 3.484 |
+| Porcentaje | 51,75 % |
+| Pendientes | 1.681 |
+| Última tanda | `0036`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 432](https://github.com/maximofn/gymnasia/pull/432) |
+| PR abierta para la siguiente fusión | [PR 433](https://github.com/maximofn/gymnasia/pull/433) |
+| Commit de las imágenes de esa PR | `14fd1db5394e45901100aee57ae4c0818bea30e1` |
+| Siguiente tanda si no hay trabajo posterior | `0037` |
 
-La PR 431 pasó todos los checks y se fusionó el 9 de noviembre de 2026. La rama
-se actualizó con `main` antes de generar la siguiente tanda. La PR 432 conserva
-la tanda 0035 y este relevo; queda abierta para la siguiente revisión o «más».
+La PR 432 pasó todos los checks y se fusionó el 9 de noviembre de 2026. La rama
+se actualizó con `main` antes de generar la siguiente tanda. La PR 433 conserva
+la tanda 0036 y este relevo; queda abierta para la siguiente revisión o «más».
 Consultar los checks de su SHA actual: las validaciones locales terminadas no
 sustituyen a CI.
 
-La tanda 0035 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0036 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Sus 100 WebP finales se revisaron en nueve hojas de contacto, sin regeneraciones.
-Se inspeccionaron además a tamaño completo `ciqual-30102` y `ciqual-30105` para
-comprobar el interior crudo de las salchichas ahumadas para cocinar. Incluye
-pancetas, jamones cocidos y curados, salchichas crudas y cocinadas, salchichones,
-chorizos, salamis y variantes con queso, frutos secos y pistachos, además de
-picado vegetal y una bebida de soja y zumo de frutas.
+Sus 100 WebP finales se revisaron en nueve hojas de contacto. Se regeneró
+`ciqual-31000` porque la galleta parecía bizcocho esponjoso; la salida final
+muestra un interior más compacto y se revisó a tamaño completo. También se
+inspeccionaron a tamaño completo los rellenos de `ciqual-31063`, `ciqual-31080`
+y `ciqual-31084`. La conversión de `ciqual-31054` devolvió una respuesta
+incompleta, pero el archivo y su recibo ya estaban guardados y quedaron
+validados; no se repitió esa generación. Incluye mortadelas, mermeladas, jaleas,
+chocolates y sus rellenos, confitería, jarabes, edulcorantes, barritas de
+cereales, jalea real y polen.
 
-Para `ciqual-28811` se siguieron FR/ES y la
-[descripción del Ministerio francés](https://agriculture.gouv.fr/connaissez-vous-vraiment-le-jambon-de-bayonne)
-como jamón salado y seco frente al inglés que añade ahumado, sin alterar nombres
-fuente. El pequeño cierre de madera de las Morteau es parte del producto según
-[su asociación](https://www.saucissedemorteau.com/les-idees-recues/). El queso y
-la panceta del cervelas de Obernai se comprobaron en su
-[ficha comercial](https://www.coursesu.com/p/cervelas-obernois-pierre-schmidt-vpf-2-pieces-280g/1262593.html).
-Las imágenes son ilustrativas y no demuestran visualmente sal, grasa, calidad u
-origen mediante símbolos inventados.
+Para `ciqual-31036` se siguieron FR/EN: dragée de almendra con cobertura lisa de
+azúcar, ante el español que sugiere garrapiñado. Se consultó el
+[catálogo de Braquier](https://dragees-braquier.fr/documents/drageesbraquier_catalogue_fr.pdf).
+Las capas y forma del calisson se apoyan en
+[Le Roy René](https://www.calisson.com/blog/lorigine-du-calisson-daix-legendes-et-histoire/).
+La apariencia blanquecina y pastosa de la jalea real se comprobó en la
+[descripción física de FAO](https://www.fao.org/4/w0076e/w0076e16.htm), solo para
+su representación. Los nombres fuente se conservaron exactos. Las imágenes son
+ilustrativas y no demuestran azúcar, calorías, porcentajes o fortificación con
+texto ni símbolos inventados.
 
 Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
 y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tiburón
@@ -111,7 +115,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0035/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0036/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
