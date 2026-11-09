@@ -41,43 +41,36 @@ al empezar; este bloque no sustituye al estado real.
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 1.803 de 3.484 |
-| Porcentaje | 51,75 % |
-| Pendientes | 1.681 |
-| Última tanda | `0036`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 432](https://github.com/maximofn/gymnasia/pull/432) |
-| PR abierta para la siguiente fusión | [PR 433](https://github.com/maximofn/gymnasia/pull/433) |
-| Commit de las imágenes de esa PR | `14fd1db5394e45901100aee57ae4c0818bea30e1` |
-| Siguiente tanda si no hay trabajo posterior | `0037` |
+| Imágenes registradas | 1.903 de 3.484 |
+| Porcentaje | 54,62 % |
+| Pendientes | 1.581 |
+| Última tanda | `0037`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 433](https://github.com/maximofn/gymnasia/pull/433) |
+| PR abierta para la siguiente fusión | [PR 434](https://github.com/maximofn/gymnasia/pull/434) |
+| Commit de las imágenes de esa PR | `1e32f627726c5c18bd6330c3c09bf84fe1058453` |
+| Siguiente tanda si no hay trabajo posterior | `0038` |
 
-La PR 432 pasó todos los checks y se fusionó el 9 de noviembre de 2026. La rama
-se actualizó con `main` antes de generar la siguiente tanda. La PR 433 conserva
-la tanda 0036 y este relevo; queda abierta para la siguiente revisión o «más».
+La PR 433 pasó todos los checks y se fusionó el 9 de noviembre de 2026. La rama
+se actualizó con `main` antes de generar la siguiente tanda. La PR 434 conserva
+la tanda 0037 y este relevo; queda abierta para la siguiente revisión o «más».
 Consultar los checks de su SHA actual: las validaciones locales terminadas no
 sustituyen a CI.
 
-La tanda 0036 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0037 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Sus 100 WebP finales se revisaron en nueve hojas de contacto. Se regeneró
-`ciqual-31000` porque la galleta parecía bizcocho esponjoso; la salida final
-muestra un interior más compacto y se revisó a tamaño completo. También se
-inspeccionaron a tamaño completo los rellenos de `ciqual-31063`, `ciqual-31080`
-y `ciqual-31084`. La conversión de `ciqual-31054` devolvió una respuesta
-incompleta, pero el archivo y su recibo ya estaban guardados y quedaron
-validados; no se repitió esa generación. Incluye mortadelas, mermeladas, jaleas,
-chocolates y sus rellenos, confitería, jarabes, edulcorantes, barritas de
-cereales, jalea real y polen.
+Sus 100 WebP finales se revisaron en nueve hojas de contacto, comprobando
+alimento, preparación, piel, hueso, relleno, encuadre y estilo. Se inspeccionaron
+además a tamaño completo las tres bases de pizza crudas (`ciqual-37000`,
+`ciqual-37001` y `ciqual-37002`) y el minibocado relleno `ciqual-38109`.
+No hicieron falta regeneraciones. Incluye barritas y confitería, conejo,
+ancas de rana, cortes y preparaciones de aves, bases de pizza y snacks salados.
 
-Para `ciqual-31036` se siguieron FR/EN: dragée de almendra con cobertura lisa de
-azúcar, ante el español que sugiere garrapiñado. Se consultó el
-[catálogo de Braquier](https://dragees-braquier.fr/documents/drageesbraquier_catalogue_fr.pdf).
-Las capas y forma del calisson se apoyan en
-[Le Roy René](https://www.calisson.com/blog/lorigine-du-calisson-daix-legendes-et-histoire/).
-La apariencia blanquecina y pastosa de la jalea real se comprobó en la
-[descripción física de FAO](https://www.fao.org/4/w0076e/w0076e16.htm), solo para
-su representación. Los nombres fuente se conservaron exactos. Las imágenes son
-ilustrativas y no demuestran azúcar, calorías, porcentajes o fortificación con
-texto ni símbolos inventados.
+El muslo de pato `ciqual-36203` se representó con piel y sin hueso, conforme a
+la ficha. Para `ciqual-31127` se siguieron los nombres FR/EN de nougat blando,
+conservando el nombre español original. Las variantes ecológicas, Label Rouge,
+sin azúcar y reducidas en grasa no llevan sellos, texto ni símbolos inventados:
+una fotografía no demuestra esas propiedades. Los nombres fuente permanecen
+exactos y las preparaciones genéricas son ilustraciones, no recetas oficiales.
 
 Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
 y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tiburón
@@ -115,7 +108,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0036/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0037/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
