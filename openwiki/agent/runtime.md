@@ -1,15 +1,10 @@
 ---
-type: runtime de agente
-title: Runtime del agente Coach y ejecución de herramientas
-description: Describe el recorrido de un turno de Coach móvil desde la UI hasta los proveedores, la política, el contexto y las herramientas. Documenta continuaciones de Google, persistencia segura, errores y límites que evitan repetir trabajo incompleto.
-tags: [agent, runtime, tools, mobile, policy, idempotency, langsmith]
-summary: Contratos para modificar con seguridad el turno conversacional y sus efectos locales o externos.
-related:
-  - ./provider-configuration.md
-  - ./provider-streaming.md
-  - ../architecture/policy-delivery.md
-  - ../mobile/local-state-and-backup.md
-  - ../operations/runtime-behavior.md
+type: "Referencia"
+title: "Runtime del agente Coach y ejecución de herramientas"
+openwiki_generated: true
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-09T17:53:20.799Z
 sources:
   - id: openwiki-source-192849a5973afd8b6e55db2c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
@@ -59,25 +54,23 @@ sources:
     resource: repo://apps/mobile/App.tsx
   - id: openwiki-source-ea083ff1c1afd80c588dedd8
     resource: repo://ops/openwiki-runtime-telemetry.json
-generated: { by: "openwiki/0.6.0", at: "2026-11-08T14:36:51.071Z" }
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-11-08T14:36:51.071Z
+generated: { by: "openwiki/0.6.0", at: "2026-11-09T17:53:20.799Z" }
 ---
+
 
 # Runtime del agente Coach y ejecución de herramientas
 
 Esta página delimita el turno de Coach en `apps/mobile`: política, selección de contexto, proveedor, tools y efectos durables. El informe consolidado [Comportamiento en ejecución y oportunidades](../operations/runtime-behavior.md) conserva los agregados completos y las oportunidades operativas; este documento solo traduce las señales observadas a límites y pruebas que importan al cambiar el loop o una tool. Ambos documentos se enlazan para que una muestra no sustituya los contratos del código.
 
-## Evidencia de runtime: tres registros
+## Señales operativas agregadas, no contratos
 
 ### Observado
 
-**Observado:** el manifiesto operativo vigente sí contiene una muestra de siete días, pero está marcada como truncada y deja tokens y coste como no disponibles con cobertura parcial. No se reproducen aquí sus conteos, percentiles ni categorías: consúltese el [informe consolidado](../operations/runtime-behavior.md). La muestra no incluye contenido de runs, prompts, argumentos, salidas de tools, razonamiento, URLs ni identificadores de traza.
+**Observado:** `ops/openwiki-runtime-telemetry.json` contiene una muestra de siete días marcada como truncada. Para tokens y coste declara `unavailable` y cobertura parcial; por tanto, sus ceros no miden consumo nulo. El archivo expone contadores, categorías y percentiles agregados, no contenido de ejecuciones, prompts, argumentos, resultados de tools, razonamiento, URLs ni identificadores de traza. El [informe consolidado](../operations/runtime-behavior.md) conserva sus valores agregados.
 
-Por su truncamiento y por la selección deliberada de buckets operativos, esa muestra no es una tasa de flota ni prueba de disponibilidad, frecuencia, coste o latencia poblacional. Los ceros en campos no observados no son medidas de cero. Ante una anomalía, úsese el agregado para priorizar una investigación y el contrato siguiente para decidir qué límite o invariante comprobar.
+La muestra no es una tasa de flota ni prueba de disponibilidad, frecuencia, coste o latencia poblacional. Úsela para priorizar una investigación; use los contratos y tests de las secciones siguientes para decidir qué límite o invariante verificar. No infiera una escritura repetida solo a partir de más llamadas de modelo o de una duración de tool.
 
-### Correlacionado con archivo y símbolo
+### Correlación con contratos ejecutables
 
 - **Llamadas de modelo por turno.** Una llamada adicional puede proceder del evaluador sanitario consentido, de hasta tres intentos del turno, de una ronda de continuación, de un cierre al límite de rondas o de un fallback de transporte. `App.sendMessage`, `evaluateHealthSafetyWithProvider` y los loops de `providerToolLoop.ts` son rutas distintas; no atribuir una llamada adicional a una escritura repetida sin correlacionarla.
 - **Presión de contexto.** `selectCoachContext` elige los últimos 20 mensajes antes de adaptar el proveedor. En la rama Google de `requestProviderToolChat`, el símbolo `DEFAULT_GOOGLE_CONTEXT_BUDGET` se sobrescribe a 20 intercambios; `prepareGoogleInteractionRequest` puede aún retirar imágenes antiguas o intercambios completos por bytes y rechaza antes de red si no cabe el último intercambio.
