@@ -86,6 +86,44 @@ y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tibur
 azul. Se apartaron sin modificar las fichas oficiales ni inventar una especie.
 Las imágenes todavía no están integradas en móvil.
 
+## Relevo para un chat nuevo
+
+La tanda `0038` está terminada, revisada, validada y subida en la PR 435. La
+carpeta `0039` todavía no existe y no hay una tanda parcial que reanudar. Esta
+petición de relevo solo actualiza documentación; la siguiente generación empieza
+cuando el mantenedor dé una nueva orden de continuación.
+
+Trabajar en `/Users/macm1/Documents/proyectos/gymnasia`, aunque el nuevo chat se
+abra en otro worktree. Confirmar allí la rama `codex/ciqual-food-image-samples`
+y el estado real antes de escribir. Conservar los archivos no rastreados del
+mantenedor. La rama no tenía cambios rastreados pendientes al preparar este relevo.
+
+Antes de esta actualización documental se comprobaron los cinco checks correctos
+de la PR 435 en el SHA `41cc4b5ce6ffe3119edd05d39c450a52ae91d88d`:
+`catalogs`, `reconcile`, `prompt-policy`, `gymnasia/owner-authorization` y
+`gymnasia/policy-promotion`. La subida de este documento cambia el head; volver a
+consultar los checks de ese nuevo SHA antes de cualquier fusión. La PR queda
+abierta y no se fusiona como parte de esta petición.
+
+Los archivos versionados de `0038` son suficientes para continuar: 100 WebP y
+su manifiesto. Como recuperación opcional, en `/tmp/ciqual-0038/` se conservaron
+`plan.json`, `receipts.jsonl`, `review/notes.json`, `review/regenerations.json`
+y las nueve hojas `review/contact-01.jpg` a `review/contact-09.jpg`. Los recibos
+identifican los PNG originales y los prompts de las cinco regeneraciones. No
+depender de que estos temporales sigan existiendo ni volver a generar la tanda
+terminada si faltan; consultar sus manifiestos y GitHub.
+
+Para evitar el error corregido en esta tanda, `reference_image` en el manifiesto
+lleva una ruta **relativa al repositorio**, por ejemplo
+`alimentos/ciqual/image-samples/ciqual-20587.webp`. La ruta local absoluta puede
+usarse para adjuntar la referencia a la herramienta, pero no debe guardarse como
+valor de ese campo en el manifiesto.
+
+Leer este documento, las skills y los manifiestos de forma selectiva. No cargar
+el historial de este chat, todos los prompts históricos o los PNG originales.
+Revisar las nuevas imágenes en hojas de unas 12 miniaturas y abrir a tamaño
+completo solo los casos dudosos, como describe el flujo de abajo.
+
 ## Fuentes de alimentos consideradas
 
 Al inicio de la conversación se propusieron estas seis fuentes. Se eligió
@@ -350,9 +388,11 @@ cambio de chat sin depender de una conversación larga.
 ## Mensaje para iniciar el chat nuevo
 
 ```text
-Continúa la generación de imágenes CIQUAL de Gymnasia. Lee primero
+Trabaja en /Users/macm1/Documents/proyectos/gymnasia y lee primero
 docs/ciqual-food-images-handoff.md y las instrucciones del repositorio.
-Respeta el estilo aprobado y el flujo documentado. Cuando diga «más», fusiona
+Prepara el contexto sin cargar el historial anterior y espera mi «más» para
+iniciar la siguiente tanda. Respeta el estilo aprobado y el flujo documentado.
+Cuando diga «más», fusiona
 la PR anterior si está lista, genera otras 100 imágenes, revisa todas, abre
 la siguiente PR en la misma rama e informa de generadas, total, pendientes,
 porcentaje, validaciones y enlaces. No integres nada en la app.
