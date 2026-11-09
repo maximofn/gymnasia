@@ -40,54 +40,56 @@ aunque su PR siga abierta. Volver a consultar GitHub y los manifiestos al empeza
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 2.303 de 3.484 |
-| Porcentaje | 66,10 % |
-| Pendientes | 1.181 |
-| Última tanda | `0041`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 437](https://github.com/maximofn/gymnasia/pull/437) |
-| PR abierta para la siguiente fusión | [PR 438](https://github.com/maximofn/gymnasia/pull/438) |
-| Commit de las imágenes de esa PR | `70ee7f3b1f553a6e9d50b3ebd285cb7ba458f6bb` |
-| Siguiente tanda si no hay trabajo posterior | `0042` |
+| Imágenes registradas | 2.403 de 3.484 |
+| Porcentaje | 68,97 % |
+| Pendientes | 1.081 |
+| Última tanda | `0042`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 438](https://github.com/maximofn/gymnasia/pull/438) |
+| PR abierta para la siguiente fusión | [PR 440](https://github.com/maximofn/gymnasia/pull/440) |
+| Commit de las imágenes de esa PR | `1b0df8beb9f17934446e3d4e13029b38e04bb691` |
+| Siguiente tanda si no hay trabajo posterior | `0043` |
 
-La PR 437 pasó sus cinco checks y se fusionó el 9 de noviembre de 2026,
-protegiendo la fusión con el head `08b553077c1e9411e6951155b3b5739802dfcfb0`.
-La rama se actualizó por avance rápido con `main` antes de la tanda 0041.
-La nueva PR queda abierta para la siguiente revisión o «más». Consultar los
-checks de su SHA actual: las validaciones locales no sustituyen a CI.
+La PR 438 estaba retrasada respecto a `main` por una actualización de OpenWiki.
+Se incorporó `main` a la rama sin conflictos y se repitieron sus checks, manteniendo
+el diff de la PR limitado a imágenes y documentación. Se fusionó el 9 de noviembre
+de 2026 con los cinco checks correctos del head actualizado
+`da77fbc4041a0810792cd306172684fc6c521340`, protegido con `--match-head-commit`.
+Después se actualizó la rama por avance rápido. La nueva PR queda abierta para
+la siguiente revisión o «más»; consultar los checks de su SHA actual antes de fusionar.
 
-La tanda 0041 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0042 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Incluye salsas, condimentos, ajo cocinado, edulcorantes, fideos de colores y quesos.
-Se generó una imagen independiente por alimento con el generador integrado de
-Codex, adjuntando una referencia de estilo aprobada en cada llamada. Sus 100
-WebP finales se revisaron en nueve hojas de contacto. No hicieron falta
-regeneraciones. Se inspeccionaron además a tamaño completo: `ciqual-11205`, `ciqual-12028`, `ciqual-12040`, `ciqual-12113`, `ciqual-12519`.
+Incluye 51 quesos, 18 preparados infantiles, 29 frutas tropicales o zumos y dos
+mezclas de frutos secos. Se generó una imagen independiente por alimento con
+Codex integrado y una referencia de estilo aprobada por llamada. Se revisaron
+todos los WebP finales en nueve hojas de contacto, y a tamaño completo: `ciqual-12764`, `ciqual-12839`, `ciqual-13401`, `ciqual-13436`, `ciqual-13437`, `ciqual-13412`.
 
-La rouille sigue los nombres FR/EN de emulsión con ajo, chile y caldo de pescado,
-conservando el nombre español original; el caviar de tomate es un puré, no perlas.
-La boloñesa vegetal lleva proteína de soja. Los ajos asados y a la sartén se
-representan cocinados. Los quesos se sirven sin envases, cajas, discos de marca
-ni guarniciones; la cera exterior se conserva donde la ficha la exige. La feta
-en aceite y la escurrida se distinguen por el líquido visible. El Livarot se
-muestra como una porción cortada, sin las bandas que sujetan la pieza entera.
+Se regeneraron dos imágenes provisionales: `ciqual-12839` para sustituir la punta
+de aguja por el remate pequeño y plano del Pouligny-Saint-Pierre; y `ciqual-13436`
+para retirar bordes rosados que podían interpretarse como piel en la pomarrosa
+pelada. Ambas salidas nuevas se inspeccionaron a tamaño completo y se actualizaron
+sus prompts y hashes. Los prompts iniciales, los motivos y los recibos están
+conservados en el checkpoint de revisión. No se sobrescribieron tandas anteriores.
 
-Las formas y cortezas se contrastaron con fuentes del sector y de las denominaciones:
-[Chaource](https://www.inao.gouv.fr/produit/chaource-22317),
-[Langres](https://www.inao.gouv.fr/node/1557/printable/print),
-[Neufchâtel](https://inao.gouv.fr/produit/neufchatel-13169),
-[Fourme de Montbrison](https://fourme-de-montbrison.fr/ses-caracteristiques/),
-[Boulette d’Avesnes](https://www.produits-laitiers-de-france.com/fromages/boulette-davesnes/)
-y [Gruyère de Francia](https://www.gruyere-france.fr/fromage/).
-El Gruyère francés lleva ojos pequeños, el Langres la depresión superior y la
-Fourme de Montbrison corteza naranja. Son ilustraciones de Gymnasia, no fotografías
-proporcionadas ni validadas por ANSES ni certificaciones de una denominación.
+Las rosetas de Tête de Moine se contrastaron con su
+[sitio oficial](https://www.tetedemoine.ch/it/prodotti); la forma del Pouligny,
+con el [sindicato de productores](https://pouligny-saint-pierre-aop.fr/le-pouligny-saint-pierre)
+y [Androuet](https://androuet.com/fromages/pouligny-saint-pierre/).
+La pomme liane se trató como Passiflora laurifolia, con pulpa clara y semillas,
+según [CIRAD](https://publications.cirad.fr/une_notice.php?dk=535125) y el
+[estudio botánico](https://pmc.ncbi.nlm.nih.gov/articles/PMC5904381/).
+El abricot-pays es mammee o Mammea americana, conforme a
+[FAO](https://ecocrop.apps.fao.org/ecocrop/srv/en/cropView?id=1414), y conserva
+la piel, el deshuesado y el almíbar que documenta cada ficha.
 
-No se inventan símbolos para vitaminas, reducción de grasa, leche cruda,
-pasteurización o producción de granja: esas propiedades no se demuestran en una
-foto. Los nombres fuente FR/EN/ES permanecen exactos, incluido el nombre inglés
-con una errata porcentual de `ciqual-12033`; la imagen se basó en el tipo de queso
-de triple nata descrito por el francés. Las salsas genéricas son ilustrativas,
-no recetas oficiales. Las imágenes todavía no están integradas en móvil.
+Se respetan la carambola filtrada/sin filtrar, las frutas peladas o con piel y
+los huesos o semillas expresos. Los cereales instantáneos siguen secos y las
+bebidas infantiles aparecen ya preparadas, sin biberones, envases ni símbolos
+de edad. Las variantes de leche, grasa, fortificación o cultivo no llevan sellos
+inventados: una imagen no prueba esas propiedades. Los preparados genéricos son
+ilustrativos, no recetas oficiales ni recomendaciones de alimentación infantil.
+Los nombres FR/EN/ES se conservan exactos, incluida la discrepancia de edad en
+`ciqual-13172`, sin representarla con etiquetas. Las imágenes siguen sin integración móvil.
 
 Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
 y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tiburón
@@ -95,8 +97,8 @@ azul. Se apartaron sin modificar las fichas oficiales ni inventar una especie.
 
 ## Relevo para un chat nuevo
 
-La tanda `0041` está terminada, revisada, validada y subida en la PR 438.
-La carpeta `0042` todavía no existe y no hay una tanda parcial que reanudar.
+La tanda `0042` está terminada, revisada, validada y subida en la PR 440.
+La carpeta `0043` todavía no existe y no hay una tanda parcial que reanudar.
 La siguiente generación empieza con una nueva orden de continuación del
 mantenedor; la PR nueva se deja abierta.
 
@@ -104,20 +106,19 @@ Trabajar en `/Users/macm1/Documents/proyectos/gymnasia`, aunque el chat se abra
 en otro worktree. Confirmar allí la rama `codex/ciqual-food-image-samples` y el
 estado real antes de escribir. Conservar los archivos no rastreados del mantenedor.
 
-Los archivos versionados de `0041` son suficientes para continuar: 100 WebP y
-su manifiesto con los prompts exactos. Como recuperación opcional, en
-`/tmp/ciqual-0041/` se conservaron `selection.json`, `plan.json`, `receipts.jsonl`,
-`review/notes.json` y las nueve hojas `review/contact-01.jpg` a
-`review/contact-09.jpg`. Los recibos identifican cada PNG original antes de la
-conversión. No depender de que estos temporales sigan existiendo ni volver a
-generar una tanda terminada si faltan; consultar manifiestos y GitHub.
+Los archivos versionados de `0042` bastan para continuar: 100 WebP y manifiesto
+con prompts exactos. Como recuperación opcional, `/tmp/ciqual-0042/` conserva
+`selection.json`, `plan.json`, `receipts.jsonl`, `review/notes.json` y las nueve
+hojas `review/contact-01.jpg` a `review/contact-09.jpg`. Los originales de las
+hojas corregidas son `review/contact-04-initial.jpg` y `review/contact-08-initial.jpg`.
+Los recibos identifican los PNG y prompts originales y regenerados antes de la
+conversión. No depender de esos temporales ni regenerar tandas terminadas si faltan.
 
 `reference_image` en el manifiesto lleva una ruta **relativa al repositorio**.
 La ruta absoluta se usa para adjuntar la referencia al generador. Los WebP son
-opacos, de 1024 × 1024 y calidad 90. Leer las skills y los manifiestos de forma
-selectiva, sin cargar todos los prompts históricos ni los PNG originales. Revisar
-las nuevas imágenes en hojas de unas 12 miniaturas y abrir a tamaño completo
-solo los casos dudosos, como describe el flujo de abajo.
+opacos, de 1024 × 1024 y calidad 90. Leer skills y manifiestos selectivamente,
+sin cargar todos los prompts históricos ni los PNG originales. Revisar por hojas
+de unas 12 miniaturas y abrir a tamaño completo solo los casos dudosos.
 
 ## Fuentes de alimentos consideradas
 
@@ -150,7 +151,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0041/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0042/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
