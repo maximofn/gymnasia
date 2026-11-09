@@ -40,49 +40,48 @@ aunque su PR siga abierta. Volver a consultar GitHub y los manifiestos al empeza
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 2.503 de 3.484 |
-| Porcentaje | 71,84 % |
-| Pendientes | 981 |
-| Última tanda | `0043`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 440](https://github.com/maximofn/gymnasia/pull/440) |
-| PR abierta para la siguiente fusión | [PR 441](https://github.com/maximofn/gymnasia/pull/441) |
-| Commit de las imágenes de esa PR | `dfbbee721ea6bb8078ba68486218565be34094b7` |
-| Siguiente tanda si no hay trabajo posterior | `0044` |
+| Imágenes registradas | 2.603 de 3.484 |
+| Porcentaje | 74,71 % |
+| Pendientes | 881 |
+| Última tanda | `0044`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 441](https://github.com/maximofn/gymnasia/pull/441) |
+| PR abierta para la siguiente fusión | [PR 442](https://github.com/maximofn/gymnasia/pull/442) |
+| Commit de las imágenes de esa PR | `5a393d4e9416c3bfaae9d17f4e9bd30207f713d9` |
+| Siguiente tanda si no hay trabajo posterior | `0045` |
 
-La PR 440 se fusionó el 9 de noviembre de 2026 con los cinco checks correctos
-del head `0a8f634b5d5236b59188c0532894bebbfec3fd03`, protegido con
+La PR 441 se fusionó el 9 de noviembre de 2026 con los cinco checks correctos
+del head `804322802cdae882da30a1688daab860a2034358`, protegido con
 `--match-head-commit`, tras comprobar que solo incluía imágenes y documentación.
 Después se actualizó la rama por avance rápido. La nueva PR queda abierta para
 la siguiente revisión o «más»; consultar los checks de su SHA actual antes de fusionar.
 
-La tanda 0043 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0044 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Incluye carnes de caza, frutos secos, grasas, aceites y bebidas. Se generó una
-imagen independiente por alimento con Codex integrado y una referencia de estilo
-aprobada por llamada. Se revisaron todos los WebP finales en nueve hojas de contacto,
-y a tamaño completo: `ciqual-14002`, `ciqual-14003`, `ciqual-16150`, `ciqual-18005`, `ciqual-16402`, `ciqual-16403`.
+Incluye bebidas, infusiones, concentrados, polvos solubles y bebidas vegetales.
+Se generó una imagen independiente por alimento con Codex integrado y una referencia
+de estilo aprobada por llamada. Se revisaron todos los WebP finales en nueve hojas
+de contacto, y a tamaño completo: `ciqual-18017`, `ciqual-18076`, `ciqual-18160`, `ciqual-18306`, `ciqual-18347`.
 
-Se regeneraron `ciqual-16402` y `ciqual-16403` para retirar sal suelta que el
-generador había añadido como decoración. Ambas salidas finales se inspeccionaron a
-tamaño completo y se actualizó la tercera hoja; el checkpoint conserva la hoja
-inicial y los prompts originales.
+No fue necesario regenerar imágenes tras la revisión visual.
 No se sobrescribieron tandas anteriores. El checkpoint conserva los recibos con
 los PNG originales y los prompts exactos enviados antes de convertir a WebP.
 
-La representación de la grasa de coco y del aceite de palma refinado se contrastó
-con [EPL](https://www.epl-group.com/en/products/coconut-derivatives/refined-coconut-oil-rbd),
-[Presco](https://www.presco-plc.com/products/rbdo/) y
-[Alpha Palm](https://www.alphapalmoil.com/products.html). Se distinguen el aceite
-de palma refinado claro, la grasa de palmiste y el aceite de palma crudo rojizo.
-La grasa de cerdo cruda se muestra sin fundir; la manteca y las grasas de aves,
-ya fundidas. El café molido, el soluble seco y el café preparado conservan sus
-texturas respectivas. El agua de coco no se representa como leche de coco.
+La limonade francesa se representa como refresco claro con gas, conforme a
+[Lorina](https://www.lorina.com/nos-produits/nos-limonades-artisanales/), y se distingue
+de la citronnade sin gas. El kéfir de agua lleva una efervescencia ligera, según
+[KeVita](https://kevita.com/products), y no se convierte en kéfir de leche.
+La savia de abedul se representa clara y casi incolora según
+[Nordic Koivu](https://nordickoivu.com/en/news-blog/description-composition-and-intended-use-of-birch-sap).
+La bebida de aloe incluye pequeños trozos translúcidos de pulpa, como documenta
+[ALO](https://www.alodrink.co.uk/), sin la piel exterior de la hoja.
 
-Las variantes de sal, grasa, omega-3, esteroles o fortificación no llevan sellos
-inventados: una imagen no prueba esas propiedades. Los aceites no incluyen sus
-semillas, frutos o pescados como decoración. Los nombres FR/EN/ES se conservan
-exactos y las imágenes siguen sin integración móvil. Son ilustraciones propias,
-no proporcionadas ni validadas por ANSES, ni raciones recomendadas.
+Los concentrados permanecen sin diluir y los polvos de café, achicoria, cacao o
+cappuccino siguen secos. Las bebidas preparadas con leche o agua respetan el
+líquido indicado; las bebidas de coco y vegetales no llevan frutos como decoración.
+Las variantes de azúcar, edulcorantes, cafeína, vitaminas o calcio no llevan sellos
+inventados: una imagen no prueba esas propiedades. Los nombres FR/EN/ES se
+conservan exactos. Las imágenes siguen sin integración móvil y son ilustraciones
+propias, no proporcionadas ni validadas por ANSES, ni raciones recomendadas.
 
 Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
 y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tiburón
@@ -90,8 +89,8 @@ azul. Se apartaron sin modificar las fichas oficiales ni inventar una especie.
 
 ## Relevo para un chat nuevo
 
-La tanda `0043` está terminada, revisada, validada y subida en la PR 441.
-La carpeta `0044` todavía no existe y no hay una tanda parcial que reanudar.
+La tanda `0044` está terminada, revisada, validada y subida en la PR 442.
+La carpeta `0045` todavía no existe y no hay una tanda parcial que reanudar.
 La siguiente generación empieza con una nueva orden de continuación del
 mantenedor; la PR nueva se deja abierta.
 
@@ -99,11 +98,10 @@ Trabajar en `/Users/macm1/Documents/proyectos/gymnasia`, aunque el chat se abra
 en otro worktree. Confirmar allí la rama `codex/ciqual-food-image-samples` y el
 estado real antes de escribir. Conservar los archivos no rastreados del mantenedor.
 
-Los archivos versionados de `0043` bastan para continuar: 100 WebP y manifiesto
-con prompts exactos. Como recuperación opcional, `/tmp/ciqual-0043/` conserva
+Los archivos versionados de `0044` bastan para continuar: 100 WebP y manifiesto
+con prompts exactos. Como recuperación opcional, `/tmp/ciqual-0044/` conserva
 `selection.json`, `plan.json`, `receipts.jsonl`, `review/notes.json` y las nueve
-hojas `review/contact-01.jpg` a `review/contact-09.jpg`; la tercera hoja inicial
-se conserva en `review/contact-03-initial.jpg`. Los recibos identifican
+hojas `review/contact-01.jpg` a `review/contact-09.jpg`. Los recibos identifican
 los PNG y prompts antes de la conversión. No depender de esos temporales ni
 regenerar tandas terminadas si faltan.
 
@@ -144,7 +142,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0043/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0044/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
