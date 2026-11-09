@@ -41,54 +41,52 @@ al empezar; este bloque no sustituye al estado real.
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 2.103 de 3.484 |
-| Porcentaje | 60,36 % |
-| Pendientes | 1.381 |
-| Última tanda | `0039`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 435](https://github.com/maximofn/gymnasia/pull/435) |
-| PR abierta para la siguiente fusión | [PR 436](https://github.com/maximofn/gymnasia/pull/436) |
-| Commit de las imágenes de esa PR | `0bacb179cd59d5a2d74d95b6e7ff4da7424c6cae` |
-| Siguiente tanda si no hay trabajo posterior | `0040` |
+| Imágenes registradas | 2.203 de 3.484 |
+| Porcentaje | 63,23 % |
+| Pendientes | 1.281 |
+| Última tanda | `0040`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 436](https://github.com/maximofn/gymnasia/pull/436) |
+| PR abierta para la siguiente fusión | [PR 437](https://github.com/maximofn/gymnasia/pull/437) |
+| Commit de las imágenes de esa PR | `bfd0ba5ddb211988ddf5ec78399a00a474f23bfb` |
+| Siguiente tanda si no hay trabajo posterior | `0041` |
 
-La PR 435 pasó los cinco checks de su SHA actual y se fusionó el 9 de noviembre
-de 2026, protegiendo la fusión con el head `a83add47e37f0ef17394776857d7b352f5244266`.
-La rama se actualizó por avance rápido con `main` antes de la tanda 0039.
+La PR 436 pasó los cinco checks de su SHA actual y se fusionó el 9 de noviembre
+de 2026, protegiendo la fusión con el head `fcdc51f7ba67e60a7313e0a581bba264c0b30d76`.
+La rama se actualizó por avance rápido con `main` antes de la tanda 0040.
 La nueva PR conserva esa tanda y este relevo; queda abierta para la siguiente
 revisión o «más». Consultar los checks de su SHA actual: las validaciones locales
 terminadas no sustituyen a CI.
 
-La tanda 0039 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0040 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Incluye casquería cruda y cocinada, sustitutivos de comida, preparados infantiles,
-molojia, frik, hojas de brick, tubérculos, okra y marisco. Se generó una imagen
-independiente por alimento con el generador integrado de Codex, adjuntando una
-de las dos referencias de estilo aprobadas en cada llamada.
+Incluye marisco, hierbas frescas y secas, sales, especias, extractos, vinagres,
+caldos deshidratados y salsas. Se generó una imagen independiente por alimento
+con el generador integrado de Codex, adjuntando una referencia de estilo aprobada
+en cada llamada. Sus 100 WebP finales se revisaron en nueve hojas de contacto.
 
-Sus 100 WebP finales se revisaron en nueve hojas de contacto. Se inspeccionaron
-a tamaño completo `ciqual-40107`, `ciqual-40108`, `ciqual-10041`, `ciqual-10039`
-y `ciqual-10025`, comprobando también el contraste crudo/cocinado de los dos
-cangrejos. No hicieron falta regeneraciones. El hígado ordinario de ganso y pato
-no se convirtió en foie gras; las langostas no llevan las grandes pinzas del
-bogavante; las vieiras conservan el coral y las gambas congeladas siguen crudas.
+Se inspeccionaron además a tamaño completo: `ciqual-10044`, `ciqual-10048`, `ciqual-10082`, `ciqual-10083`.
+No hicieron falta regeneraciones.
+Los mejillones rellenos conservan la carne cruda y el relleno blando sin costra;
+los mejillones a la marinera llevan cebolla y caldo, y los que van en tomate
+están escurridos y sin concha. Las vieiras crudas no llevan coral. La mezcla
+congelada conserva escarcha y el pulpo cocido muestra carne opaca y piel púrpura.
+Los caldos deshidratados se muestran secos y las salsas ya preparadas, sin pasta,
+carne de acompañamiento, envases, marcas ni guarniciones añadidas.
 
-La lecitina se representó como granulado alimentario de color crema, una forma
-comercial documentada por [Lecithin Pro](https://lecithinpro.com/wp-content/uploads/2024/09/soy-lecithin-granules-france.pdf).
-La molojia se ilustró como polvo de hojas de corète y salsa oscura, con apoyo de
-[Discover Tunisia](https://www.discovertunisia.com/sites/default/files/gastronomie_tunisie.pdf).
-Los platos genéricos y preparados infantiles son representaciones ilustrativas,
-no recetas oficiales ni recomendaciones de alimentación. Una foto no demuestra
-edad de consumo ni propiedades hipocalóricas: no se añadieron textos, símbolos,
-marcas o envases. Los nombres fuente permanecen exactos.
+Las variantes yodadas, fluoradas, reducidas en azúcar o grasa no llevan símbolos
+inventados: una fotografía no demuestra esas propiedades. Las salsas genéricas
+son representaciones ilustrativas, no recetas oficiales de ANSES. Los nombres
+fuente FR/EN/ES permanecen exactos. Las imágenes todavía no están integradas en
+móvil.
 
 Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
 y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tiburón
 azul. Se apartaron sin modificar las fichas oficiales ni inventar una especie.
-Las imágenes todavía no están integradas en móvil.
 
 ## Relevo para un chat nuevo
 
-La tanda `0039` está terminada, revisada, validada y subida en la PR 436. La
-carpeta `0040` todavía no existe y no hay una tanda parcial que reanudar.
+La tanda `0040` está terminada, revisada, validada y subida en la PR 437. La
+carpeta `0041` todavía no existe y no hay una tanda parcial que reanudar.
 La siguiente generación empieza cuando el mantenedor dé una nueva orden de
 continuación; la PR nueva se deja abierta.
 
@@ -97,9 +95,9 @@ abra en otro worktree. Confirmar allí la rama `codex/ciqual-food-image-samples`
 y el estado real antes de escribir. Conservar los archivos no rastreados del
 mantenedor. No confundir un worktree anterior con el estado de esa rama.
 
-Los archivos versionados de `0039` son suficientes para continuar: 100 WebP y
+Los archivos versionados de `0040` son suficientes para continuar: 100 WebP y
 su manifiesto con los prompts exactos. Como recuperación opcional, en
-`/tmp/ciqual-0039/` se conservaron `selection.json`, `plan.json`, `receipts.jsonl`,
+`/tmp/ciqual-0040/` se conservaron `selection.json`, `plan.json`, `receipts.jsonl`,
 `review/notes.json` y las nueve hojas `review/contact-01.jpg` a
 `review/contact-09.jpg`. Los recibos identifican cada PNG original antes de su
 conversión. No depender de que estos temporales sigan existiendo ni volver a
@@ -146,7 +144,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0039/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0040/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
