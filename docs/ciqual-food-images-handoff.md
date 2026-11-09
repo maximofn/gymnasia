@@ -41,45 +41,44 @@ al empezar; este bloque no sustituye al estado real.
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 2.003 de 3.484 |
-| Porcentaje | 57,49 % |
-| Pendientes | 1.481 |
-| Última tanda | `0038`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 434](https://github.com/maximofn/gymnasia/pull/434) |
-| PR abierta para la siguiente fusión | [PR 435](https://github.com/maximofn/gymnasia/pull/435) |
-| Commit de las imágenes de esa PR | `e67692609d3fb2eda4bef0577b62fdb890d6b5c8` |
-| Siguiente tanda si no hay trabajo posterior | `0039` |
+| Imágenes registradas | 2.103 de 3.484 |
+| Porcentaje | 60,36 % |
+| Pendientes | 1.381 |
+| Última tanda | `0039`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 435](https://github.com/maximofn/gymnasia/pull/435) |
+| PR abierta para la siguiente fusión | [PR 436](https://github.com/maximofn/gymnasia/pull/436) |
+| Commit de las imágenes de esa PR | `0bacb179cd59d5a2d74d95b6e7ff4da7424c6cae` |
+| Siguiente tanda si no hay trabajo posterior | `0040` |
 
-La PR 434 pasó todos los checks y se fusionó el 9 de noviembre de 2026. La rama
-se actualizó con `main` antes de generar la siguiente tanda. La PR 435 conserva
-la tanda 0038 y este relevo; queda abierta para la siguiente revisión o «más».
-Consultar los checks de su SHA actual: las validaciones locales terminadas no
-sustituyen a CI.
+La PR 435 pasó los cinco checks de su SHA actual y se fusionó el 9 de noviembre
+de 2026, protegiendo la fusión con el head `a83add47e37f0ef17394776857d7b352f5244266`.
+La rama se actualizó por avance rápido con `main` antes de la tanda 0039.
+La nueva PR conserva esa tanda y este relevo; queda abierta para la siguiente
+revisión o «más». Consultar los checks de su SHA actual: las validaciones locales
+terminadas no sustituyen a CI.
 
-La tanda 0038 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0039 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Incluye snacks salados, postres refrigerados, helados, sorbetes y casquería cruda
-y cocinada. Sus 100 WebP finales se revisaron en nueve hojas de contacto; los
-casos dudosos y las cinco imágenes regeneradas se comprobaron a tamaño completo.
+Incluye casquería cruda y cocinada, sustitutivos de comida, preparados infantiles,
+molojia, frik, hojas de brick, tubérculos, okra y marisco. Se generó una imagen
+independiente por alimento con el generador integrado de Codex, adjuntando una
+de las dos referencias de estilo aprobadas en cada llamada.
 
-Se regeneró `ciqual-38413` para retirar hierbas no especificadas del relleno;
-`ciqual-39509`, `ciqual-39522` y `ciqual-39528` para apoyar los conos de lado
-en vez de equilibrarlos sobre la punta; y `ciqual-39533` para sustituir una
-textura de bizcocho por un interior de helado denso y congelado. Se revisaron
-también a tamaño completo `ciqual-38408`, `ciqual-38501` y `ciqual-39253`.
-Durante la validación se corrigieron las rutas de referencia del manifiesto a
-relativas al repositorio y se repitieron correctamente las dos comprobaciones
-afectadas. Los prompts y los bytes de las imágenes no cambiaron por esa corrección.
+Sus 100 WebP finales se revisaron en nueve hojas de contacto. Se inspeccionaron
+a tamaño completo `ciqual-40107`, `ciqual-40108`, `ciqual-10041`, `ciqual-10039`
+y `ciqual-10025`, comprobando también el contraste crudo/cocinado de los dos
+cangrejos. No hicieron falta regeneraciones. El hígado ordinario de ganso y pato
+no se convirtió en foie gras; las langostas no llevan las grandes pinzas del
+bogavante; las vieiras conservan el coral y las gambas congeladas siguen crudas.
 
-La construcción de las crêpes dentelle saladas se apoyó en
-[Gavottes](https://gavottes.fr/collections/crepes-dentelle-salees); el liégeois de
-frutas, en [Andros](https://www.andros.fr/andros/produits/desserts-fruitiers/liegeois-pomme-fraise-sur-coulis-de-cassis-x4/).
-El vacherin se contrastó con [Picard](https://www.picard.fr/produits/vacherin-vanille-framboise-000000000000066614.html)
-y el nougat helado, con [écomiam](https://www.ecomiam.com/surgeles-nougat-glace-xml-371_441-3129.html).
-Son referencias para representaciones genéricas, sin marcas ni recetas oficiales
-atribuidas a ANSES. Los nombres fuente se conservan exactos. Una foto no demuestra
-contenido reducido en grasa, edulcorantes, fortificación, calidad gourmet o edad
-de consumo; no se añadieron etiquetas ni símbolos para esas propiedades.
+La lecitina se representó como granulado alimentario de color crema, una forma
+comercial documentada por [Lecithin Pro](https://lecithinpro.com/wp-content/uploads/2024/09/soy-lecithin-granules-france.pdf).
+La molojia se ilustró como polvo de hojas de corète y salsa oscura, con apoyo de
+[Discover Tunisia](https://www.discovertunisia.com/sites/default/files/gastronomie_tunisie.pdf).
+Los platos genéricos y preparados infantiles son representaciones ilustrativas,
+no recetas oficiales ni recomendaciones de alimentación. Una foto no demuestra
+edad de consumo ni propiedades hipocalóricas: no se añadieron textos, símbolos,
+marcas o envases. Los nombres fuente permanecen exactos.
 
 Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
 y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tiburón
@@ -88,39 +87,31 @@ Las imágenes todavía no están integradas en móvil.
 
 ## Relevo para un chat nuevo
 
-La tanda `0038` está terminada, revisada, validada y subida en la PR 435. La
-carpeta `0039` todavía no existe y no hay una tanda parcial que reanudar. Esta
-petición de relevo solo actualiza documentación; la siguiente generación empieza
-cuando el mantenedor dé una nueva orden de continuación.
+La tanda `0039` está terminada, revisada, validada y subida en la PR 436. La
+carpeta `0040` todavía no existe y no hay una tanda parcial que reanudar.
+La siguiente generación empieza cuando el mantenedor dé una nueva orden de
+continuación; la PR nueva se deja abierta.
 
 Trabajar en `/Users/macm1/Documents/proyectos/gymnasia`, aunque el nuevo chat se
 abra en otro worktree. Confirmar allí la rama `codex/ciqual-food-image-samples`
 y el estado real antes de escribir. Conservar los archivos no rastreados del
-mantenedor. La rama no tenía cambios rastreados pendientes al preparar este relevo.
+mantenedor. No confundir un worktree anterior con el estado de esa rama.
 
-Antes de esta actualización documental se comprobaron los cinco checks correctos
-de la PR 435 en el SHA `41cc4b5ce6ffe3119edd05d39c450a52ae91d88d`:
-`catalogs`, `reconcile`, `prompt-policy`, `gymnasia/owner-authorization` y
-`gymnasia/policy-promotion`. La subida de este documento cambia el head; volver a
-consultar los checks de ese nuevo SHA antes de cualquier fusión. La PR queda
-abierta y no se fusiona como parte de esta petición.
+Los archivos versionados de `0039` son suficientes para continuar: 100 WebP y
+su manifiesto con los prompts exactos. Como recuperación opcional, en
+`/tmp/ciqual-0039/` se conservaron `selection.json`, `plan.json`, `receipts.jsonl`,
+`review/notes.json` y las nueve hojas `review/contact-01.jpg` a
+`review/contact-09.jpg`. Los recibos identifican cada PNG original antes de su
+conversión. No depender de que estos temporales sigan existiendo ni volver a
+generar una tanda terminada si faltan; consultar sus manifiestos y GitHub.
 
-Los archivos versionados de `0038` son suficientes para continuar: 100 WebP y
-su manifiesto. Como recuperación opcional, en `/tmp/ciqual-0038/` se conservaron
-`plan.json`, `receipts.jsonl`, `review/notes.json`, `review/regenerations.json`
-y las nueve hojas `review/contact-01.jpg` a `review/contact-09.jpg`. Los recibos
-identifican los PNG originales y los prompts de las cinco regeneraciones. No
-depender de que estos temporales sigan existiendo ni volver a generar la tanda
-terminada si faltan; consultar sus manifiestos y GitHub.
-
-Para evitar el error corregido en esta tanda, `reference_image` en el manifiesto
-lleva una ruta **relativa al repositorio**, por ejemplo
-`alimentos/ciqual/image-samples/ciqual-20587.webp`. La ruta local absoluta puede
-usarse para adjuntar la referencia a la herramienta, pero no debe guardarse como
-valor de ese campo en el manifiesto.
+`reference_image` en el manifiesto lleva una ruta **relativa al repositorio**,
+por ejemplo `alimentos/ciqual/image-samples/ciqual-20587.webp`. La ruta local
+absoluta se usa para adjuntar la referencia a la herramienta, sin guardarla como
+valor de ese campo. Los WebP son opacos, de 1024 × 1024 y calidad 90.
 
 Leer este documento, las skills y los manifiestos de forma selectiva. No cargar
-el historial de este chat, todos los prompts históricos o los PNG originales.
+el historial del chat, todos los prompts históricos o los PNG originales.
 Revisar las nuevas imágenes en hojas de unas 12 miniaturas y abrir a tamaño
 completo solo los casos dudosos, como describe el flujo de abajo.
 
@@ -155,7 +146,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0038/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0039/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
