@@ -41,34 +41,36 @@ al empezar; este bloque no sustituye al estado real.
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 1.503 de 3.484 |
-| Porcentaje | 43,14 % |
-| Pendientes | 1.981 |
-| Última tanda | `0033`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 428](https://github.com/maximofn/gymnasia/pull/428) |
-| PR abierta para la siguiente fusión | [PR 429](https://github.com/maximofn/gymnasia/pull/429) |
-| Commit de las imágenes de esa PR | `450db0c28a405ca7dc99d75b384a70ae997f8e24` |
-| Siguiente tanda si no hay trabajo posterior | `0034` |
+| Imágenes registradas | 1.603 de 3.484 |
+| Porcentaje | 46,01 % |
+| Pendientes | 1.881 |
+| Última tanda | `0034`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 429](https://github.com/maximofn/gymnasia/pull/429) |
+| PR abierta para la siguiente fusión | [PR 431](https://github.com/maximofn/gymnasia/pull/431) |
+| Commit de las imágenes de esa PR | `8da3ac34c1f6777106ba1395a1ae6ab7fba1685f` |
+| Siguiente tanda si no hay trabajo posterior | `0035` |
 
-La PR 428 pasó todos los checks y se fusionó el 8 de noviembre de 2026. La rama
-se actualizó con `main` antes de generar la siguiente tanda. La PR 429 conserva
-la tanda 0033 y este relevo; queda abierta para la siguiente revisión o «más».
+La PR 429 se actualizó con los cambios de `main` ya fusionados y pasó todos los
+checks de su nuevo commit antes de fusionarse el 8 de noviembre de 2026. La rama
+se sincronizó con `main` antes de generar la siguiente tanda. La PR 431 conserva
+la tanda 0034 y este relevo; queda abierta para la siguiente revisión o «más».
 Consultar los checks de su SHA actual: las validaciones locales terminadas no
 sustituyen a CI.
 
-La tanda 0033 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0034 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
 Sus 100 WebP finales se revisaron en nueve hojas de contacto. Se regeneró
-`ciqual-26081`: los primeros medallones de rape parecían vieiras y la salida
-final muestra una porción alargada de cola de rape a la plancha, revisada a
-tamaño completo. Incluye pescados crudos, congelados, cocinados, ahumados y en
-conserva, bacalao salado seco, hígado de bacalao, huevas de trucha y surimi
-relleno de queso fresco. Se siguieron FR/EN para el bonito de `ciqual-26101`
-y el pescado de agua dulce de `ciqual-26170` ante discrepancias en ES, sin
-alterar los nombres fuente. Las imágenes son ilustrativas; el origen y la grasa
-no se demuestran con símbolos inventados. Sigue pendiente `ciqual-25164`,
-apartado porque el nombre francés y el español mezclan ternera y cerdo, sin
-modificar la ficha oficial. Las imágenes todavía no están integradas en móvil.
+`ciqual-28472` porque conservaba una capa de grasa exterior; la salida final
+muestra piezas magras, deshuesadas y sin corteza para picar, revisadas a tamaño
+completo. Incluye pescados y conservas, ensaladas, ñoquis para cocinar, tartas
+saladas, pizzas y cortes de cerdo crudos y cocinados. En `ciqual-27017` se siguió
+FR/ES para filetes crudos de panga/pez gato ante el inglés discrepante, sin
+alterar nombres fuente. Las preparaciones genéricas son ilustrativas.
+
+Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
+y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tiburón
+azul. Se apartaron sin modificar las fichas oficiales ni inventar una especie.
+Las imágenes todavía no están integradas en móvil.
 
 ## Fuentes de alimentos consideradas
 
@@ -101,7 +103,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0033/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0034/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
