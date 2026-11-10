@@ -32,7 +32,7 @@ antes de fusionar. No eludir una aprobación de instrucciones del agente o de bu
 
 ## Estado de referencia
 
-Estado comprobado el **9 de noviembre de 2026**, incluyendo la última tanda
+Estado comprobado el **10 de noviembre de 2026**, incluyendo la última tanda
 aunque su PR siga abierta. Volver a consultar GitHub y los manifiestos al empezar.
 
 | Dato | Valor |
@@ -40,48 +40,52 @@ aunque su PR siga abierta. Volver a consultar GitHub y los manifiestos al empeza
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 2.603 de 3.484 |
-| Porcentaje | 74,71 % |
-| Pendientes | 881 |
-| Última tanda | `0044`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 441](https://github.com/maximofn/gymnasia/pull/441) |
-| PR abierta para la siguiente fusión | [PR 442](https://github.com/maximofn/gymnasia/pull/442) |
-| Commit de las imágenes de esa PR | `5a393d4e9416c3bfaae9d17f4e9bd30207f713d9` |
-| Siguiente tanda si no hay trabajo posterior | `0045` |
+| Imágenes registradas | 2.703 de 3.484 |
+| Porcentaje | 77,58 % |
+| Pendientes | 781 |
+| Última tanda | `0045`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 442](https://github.com/maximofn/gymnasia/pull/442) |
+| PR abierta para la siguiente fusión | [PR 443](https://github.com/maximofn/gymnasia/pull/443) |
+| Commit de las imágenes de esa PR | `5adc32bc2fb527f532caeb8f5fdaca83e0a09aa6` |
+| Siguiente tanda si no hay trabajo posterior | `0046` |
 
-La PR 441 se fusionó el 9 de noviembre de 2026 con los cinco checks correctos
-del head `804322802cdae882da30a1688daab860a2034358`, protegido con
+La PR 442 se fusionó el 10 de noviembre de 2026 con los cinco checks correctos
+del head `9118cbb9bbc2d42b41f3ba3953510698d8c4a15c`, protegido con
 `--match-head-commit`, tras comprobar que solo incluía imágenes y documentación.
 Después se actualizó la rama por avance rápido. La nueva PR queda abierta para
 la siguiente revisión o «más»; consultar los checks de su SHA actual antes de fusionar.
 
-La tanda 0044 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0045 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Incluye bebidas, infusiones, concentrados, polvos solubles y bebidas vegetales.
-Se generó una imagen independiente por alimento con Codex integrado y una referencia
-de estilo aprobada por llamada. Se revisaron todos los WebP finales en nueve hojas
-de contacto, y a tamaño completo: `ciqual-18017`, `ciqual-18076`, `ciqual-18160`, `ciqual-18306`, `ciqual-18347`.
+Incluye bebidas vegetales, leches, natas, yogures y quesos frescos. Se generó una
+imagen independiente por alimento con Codex integrado y una referencia de estilo
+aprobada por llamada. Se revisaron todos los WebP finales en nueve hojas de contacto,
+y a tamaño completo: `ciqual-19027`, `ciqual-19411`, `ciqual-19437`, `ciqual-19552`, `ciqual-19638`.
 
-No fue necesario regenerar imágenes tras la revisión visual.
+Se regeneró `ciqual-19027` para sustituir los pliegues demasiado firmes de la leche
+condensada por una superficie viscosa y fluida. La nueva salida se inspeccionó a
+tamaño completo y se actualizó la segunda hoja; el checkpoint conserva la hoja
+inicial y el prompt original.
 No se sobrescribieron tandas anteriores. El checkpoint conserva los recibos con
 los PNG originales y los prompts exactos enviados antes de convertir a WebP.
 
-La limonade francesa se representa como refresco claro con gas, conforme a
-[Lorina](https://www.lorina.com/nos-produits/nos-limonades-artisanales/), y se distingue
-de la citronnade sin gas. El kéfir de agua lleva una efervescencia ligera, según
-[KeVita](https://kevita.com/products), y no se convierte en kéfir de leche.
-La savia de abedul se representa clara y casi incolora según
-[Nordic Koivu](https://nordickoivu.com/en/news-blog/description-composition-and-intended-use-of-birch-sap).
-La bebida de aloe incluye pequeños trozos translúcidos de pulpa, como documenta
-[ALO](https://www.alodrink.co.uk/), sin la piel exterior de la hoja.
+El tono marfil a amarillo pálido y la textura espesa de la nata de Isigny se
+contrastaron con [Isigny Sainte-Mère](https://www.isigny-ste-mere.com/produits/nos-cremes/).
+El queso de cabra empanado se representa antes de dorarlo, como preparación
+pendiente de cocción, conforme a la descripción de
+[Président](https://www.president.ch/fr/products/chevres-chauds-150g/).
+La faisselle conserva su textura de cuajada escurrida y el coulis, según la
+presentación de [Rians](https://rians.com/fr/produits/faisselles-coulis/faisselle-coulis-framboise/).
 
-Los concentrados permanecen sin diluir y los polvos de café, achicoria, cacao o
-cappuccino siguen secos. Las bebidas preparadas con leche o agua respetan el
-líquido indicado; las bebidas de coco y vegetales no llevan frutos como decoración.
-Las variantes de azúcar, edulcorantes, cafeína, vitaminas o calcio no llevan sellos
-inventados: una imagen no prueba esas propiedades. Los nombres FR/EN/ES se
-conservan exactos. Las imágenes siguen sin integración móvil y son ilustraciones
-propias, no proporcionadas ni validadas por ANSES, ni raciones recomendadas.
+Se respetan leche en polvo frente a preparada, leche concentrada sin azúcar frente
+a condensada azucarada, nata fluida, espesa o montada, ingredientes mezclados en el
+yogur y lecho de fruta inferior. Los preparados infantiles se muestran ya líquidos,
+sin biberones, utensilios ni símbolos de edad. Son ilustraciones, no recomendaciones
+de alimentación infantil. Las variantes de especie, grasa, lactosa, azúcar,
+vitaminas, calcio o cultivos no llevan sellos inventados: una imagen no prueba
+esas propiedades. Los nombres FR/EN/ES se conservan exactos. Las imágenes siguen
+sin integración móvil y son ilustraciones propias, no proporcionadas ni validadas
+por ANSES, ni raciones recomendadas.
 
 Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
 y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tiburón
@@ -89,8 +93,8 @@ azul. Se apartaron sin modificar las fichas oficiales ni inventar una especie.
 
 ## Relevo para un chat nuevo
 
-La tanda `0044` está terminada, revisada, validada y subida en la PR 442.
-La carpeta `0045` todavía no existe y no hay una tanda parcial que reanudar.
+La tanda `0045` está terminada, revisada, validada y subida en la PR 443.
+La carpeta `0046` todavía no existe y no hay una tanda parcial que reanudar.
 La siguiente generación empieza con una nueva orden de continuación del
 mantenedor; la PR nueva se deja abierta.
 
@@ -98,10 +102,11 @@ Trabajar en `/Users/macm1/Documents/proyectos/gymnasia`, aunque el chat se abra
 en otro worktree. Confirmar allí la rama `codex/ciqual-food-image-samples` y el
 estado real antes de escribir. Conservar los archivos no rastreados del mantenedor.
 
-Los archivos versionados de `0044` bastan para continuar: 100 WebP y manifiesto
-con prompts exactos. Como recuperación opcional, `/tmp/ciqual-0044/` conserva
+Los archivos versionados de `0045` bastan para continuar: 100 WebP y manifiesto
+con prompts exactos. Como recuperación opcional, `/tmp/ciqual-0045/` conserva
 `selection.json`, `plan.json`, `receipts.jsonl`, `review/notes.json` y las nueve
-hojas `review/contact-01.jpg` a `review/contact-09.jpg`. Los recibos identifican
+hojas `review/contact-01.jpg` a `review/contact-09.jpg`; la segunda hoja inicial
+se conserva en `review/contact-02-initial.jpg`. Los recibos identifican
 los PNG y prompts antes de la conversión. No depender de esos temporales ni
 regenerar tandas terminadas si faltan.
 
@@ -142,7 +147,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0044/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0045/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
