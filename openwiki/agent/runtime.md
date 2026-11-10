@@ -1,10 +1,12 @@
 ---
-type: "Referencia"
-title: "Runtime del agente Coach y ejecución de herramientas"
+type: referencia de runtime
+title: Runtime del agente Coach y observabilidad
+description: Contratos del turno local-first de Coach y límites de sus señales operativas, trazas y telemetría. Distingue mediciones agregadas disponibles de tokens y coste no observables.
+tags: [agent, runtime, observability, telemetry, privacy, mobile]
 openwiki_generated: true
 verified:
   - by: openwiki/0.6.0
-    at: 2026-11-09T17:53:20.799Z
+    at: 2026-11-10T15:53:08.815Z
 sources:
   - id: openwiki-source-192849a5973afd8b6e55db2c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
@@ -38,6 +40,8 @@ sources:
     resource: repo://apps/mobile/agent/toolBatch.test.ts
   - id: openwiki-source-1ad5b6a5e6488611c8796fe1
     resource: repo://apps/mobile/agent/toolBatch.ts
+  - id: openwiki-source-875e06bfac5f11963a3dc5b2
+    resource: repo://apps/mobile/agent/toolBatchDiagnostics.ts
   - id: openwiki-source-ce025f2f0f394ccba9235558
     resource: repo://apps/mobile/agent/toolDefinitions.ts
   - id: openwiki-source-d3be928c369037f29888bc0b
@@ -52,23 +56,31 @@ sources:
     resource: repo://apps/mobile/agent/toolOperationReceipts.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
+  - id: openwiki-source-1d0198c38ac34ff97dd54fc0
+    resource: repo://apps/mobile/trace.ts
   - id: openwiki-source-ea083ff1c1afd80c588dedd8
     resource: repo://ops/openwiki-runtime-telemetry.json
-generated: { by: "openwiki/0.6.0", at: "2026-11-09T17:53:20.799Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-10T15:53:08.815Z" }
 ---
 
 
-# Runtime del agente Coach y ejecución de herramientas
+# Runtime del agente Coach y observabilidad
 
-Esta página delimita el turno de Coach en `apps/mobile`: política, selección de contexto, proveedor, tools y efectos durables. El informe consolidado [Comportamiento en ejecución y oportunidades](../operations/runtime-behavior.md) conserva los agregados completos y las oportunidades operativas; este documento solo traduce las señales observadas a límites y pruebas que importan al cambiar el loop o una tool. Ambos documentos se enlazan para que una muestra no sustituya los contratos del código.
+Esta página delimita el turno de Coach en `apps/mobile`: política, selección de contexto, proveedor, tools y efectos durables, y separa esos contratos de las señales de diagnóstico. El runtime es *local-first*: la ejecución y sus diagnósticos viven en el dispositivo; una traza o una muestra agregada no acredita el comportamiento de un proveedor remoto. Para configuración y streaming, véanse [Configuración de proveedores](provider-configuration.md) y [Streaming de proveedores](provider-streaming.md); el diagnóstico general del dispositivo está en [Comportamiento operativo, trazas y degradación](../operations/runtime-behavior.md).
 
 ## Señales operativas agregadas, no contratos
 
-### Observado
+### Qué mide el manifiesto y qué no mide
 
-**Observado:** `ops/openwiki-runtime-telemetry.json` contiene una muestra de siete días marcada como truncada. Para tokens y coste declara `unavailable` y cobertura parcial; por tanto, sus ceros no miden consumo nulo. El archivo expone contadores, categorías y percentiles agregados, no contenido de ejecuciones, prompts, argumentos, resultados de tools, razonamiento, URLs ni identificadores de traza. El [informe consolidado](../operations/runtime-behavior.md) conserva sus valores agregados.
+**Observado:** `ops/openwiki-runtime-telemetry.json` describe una ventana de siete días marcada como `truncated`. En esa muestra hay contadores de roots, llamadas LLM, categorías de tools y percentiles de duración; no hay una medición completa de población. Tanto `llm.tokens` como `llm.cost` declaran `state: "unavailable"`, `coverage: "partial"` y cero llamadas observadas: los ceros son marcadores de indisponibilidad, **no** tokens consumidos, coste cero, ni un total parcial que pueda extrapolarse. El manifiesto no contiene cuerpos de ejecución, prompts ni argumentos; esto solo caracteriza a ese artefacto agregado, no garantiza que otros diagnósticos locales no los registren.
 
-La muestra no es una tasa de flota ni prueba de disponibilidad, frecuencia, coste o latencia poblacional. Úsela para priorizar una investigación; use los contratos y tests de las secciones siguientes para decidir qué límite o invariante verificar. No infiera una escritura repetida solo a partir de más llamadas de modelo o de una duración de tool.
+Por ello, no use la muestra como tasa de flota ni como prueba de disponibilidad, frecuencia, coste o latencia poblacional. Úsela para priorizar una investigación y use los contratos y pruebas de las secciones siguientes para decidir qué límite o invariante verificar. No infiera una escritura repetida solo a partir de más llamadas de modelo o de una duración de tool.
+
+### Trazas locales: extensión deliberada y frontera de privacidad
+
+`pushTrace` conserva hasta 1.000 entradas en `AsyncStorage` bajo una clave con namespace de entorno, las escribe además en consola y permite exportarlas en texto. El campo `data` acepta `unknown` y se serializa sin saneamiento al persistir, imprimir y exportar. En consecuencia, no equivale a una telemetría central ni a una frontera de redacción: quien añada un emisor debe limitarse a metadatos necesarios y revisar el volcado antes de compartirlo; nunca debe pasar texto de conversación, credenciales, tokens, argumentos o resultados de tools, ni errores que los incorporen.
+
+La instrumentación del lote de tools sí ofrece una extensión acotada: entrega fase, `batchId`, índice, nombre o `unknown`, efecto, conteos y tiempos, y su contrato excluye argumentos, IDs del proveedor, resultados y texto de excepción. Su sink es de mejor esfuerzo: un error de diagnóstico no altera la ejecución. Esto la hace apta para explicar concurrencia y duración locales, no para calcular coste o atribuir contenido a una ejecución.
 
 ### Correlación con contratos ejecutables
 
@@ -87,7 +99,7 @@ La muestra no es una tasa de flota ni prueba de disponibilidad, frecuencia, cost
 | Turno con demasiadas continuaciones | Máximo de diez rondas ejecutables; la call pendiente recibe resultado sintético y se exige un cierre sin tools. | `providerToolClient.roundLimit.test.ts` y `providerToolLoop.test.ts` |
 | Error después de una escritura | `prepared` no se vuelve a ejecutar a ciegas; reconciliar recibo o estado de dominio y conservar `indeterminate` ante duda. | `toolExecutor.test.ts`, `toolOperationLedger.test.ts` y `toolOperationReceipts.test.ts` |
 
-Estas son **hipótesis de diagnóstico**, no afirmaciones sobre la distribución de producción. Instrumentar solo proveedor, intento, ronda, cierre, categoría/estado de tool, duración y estado de commit como agregados; nunca contenido, argumentos, resultados o datos que reconstruyan un run.
+Estas son **hipótesis de diagnóstico**, no afirmaciones sobre la distribución de producción. Si se amplía la instrumentación, limite el esquema a proveedor, intento, ronda, cierre, categoría o estado de tool, duración y estado de commit como agregados. No envíe contenido, argumentos, resultados ni datos que reconstruyan un run; `pushTrace` no impone esta regla por sí mismo.
 
 ## Turno, política y contexto
 
@@ -211,7 +223,7 @@ Las escrituras locales incluyen recibos mínimos con `operationId`, `toolName` y
 Desde la raíz, ejecute el conjunto focalizado:
 
 ```bash
-npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/coachContext.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/toolBatch.test.ts apps/mobile/agent/toolDefinitions.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts apps/mobile/agent/toolOperationReceipts.test.ts apps/mobile/agent/googleInteractions.test.ts
+npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/platform/trace.test.ts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/coachContext.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/toolBatch.test.ts apps/mobile/agent/toolBatchDiagnostics.test.ts apps/mobile/agent/toolDefinitions.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts apps/mobile/agent/toolOperationReceipts.test.ts apps/mobile/agent/googleInteractions.test.ts
 ```
 
-Estas pruebas verifican contratos locales de lease, presupuesto, protocolo, lote, autorización, commit y recuperación; no miden disponibilidad, coste, latencia o frecuencia en producción. Para esas señales y sus cautelas, vuelva al [informe consolidado](../operations/runtime-behavior.md).
+Estas pruebas verifican contratos locales de trazas, lease, presupuesto, protocolo, lote, autorización, commit y recuperación; no miden disponibilidad, tokens, coste, latencia o frecuencia en producción. Para el manejo del volcado local y sus cautelas, vuelva a [Comportamiento operativo, trazas y degradación](../operations/runtime-behavior.md).

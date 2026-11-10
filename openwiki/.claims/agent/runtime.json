@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:0e62f2beb4915820166b98cf7e327c5f26b4759b11c9df4af2657c6685870d41",
+  "pageVersion": "sha256:3f71a397fe567d567cf5f5209d6ec9270ac4db245651c8c72a2bb930d3327d38",
   "claims": [
     {
       "id": "claim_bc663f1e35e24138a802a690498f6187",
@@ -384,15 +384,15 @@
     },
     {
       "id": "claim_4cdc2826ca0248ec897c98c7fe330007",
-      "statement": "El manifiesto operativo vigente describe una muestra de siete días marcada como truncada y declara tokens y coste como `unavailable` con cobertura `partial`; por ello sus agregados deben consultarse como evidencia limitada y no como métricas poblacionales.",
+      "statement": "El manifiesto `openwiki-runtime-telemetry.json` contiene una ventana de siete días marcada como truncada; sus campos `llm.tokens` y `llm.cost` declaran `state: \"unavailable\"`, `coverage: \"partial\"` y cero llamadas observadas, por lo que sus ceros no son mediciones de tokens ni de coste.",
       "evidence": [
         {
-          "resource": "repo://ops/openwiki-runtime-telemetry.json#L4-L13",
-          "version": "repo-lines-v1:sha256:0c5e53116c3aa8ceb64e72fac5a91ec4f4f5568e53c382133e4d7be8b5b91f84:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhMDEzNzc1NzE2YmU0NWU5ZDhjMGExMDgxMTM4NDgwOTNiYTY1NDMzNTJiZGM2YTZlMTE0ODE1ZmYwNGY5ZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVmNzAyMWM4ZDc5YmE3NDdjYzMyMDAyNzJkMTk0ZTkxMWM1MmM0MjM2ZGQ5MGU2YjJhZDhmNzQzYzJjNWNjMDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxMzczYTc4NTA3MjY3NDM4ZmI1ODk3ZDYxNzU4ZmNlNDdiNGNmNDEwYWJiYzE4NDkxMDQ4MGI0Mzg5NTVhNWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ3NGJmNjdkYzQyYWE1OTQxZjJjODZlZjYwYmU0ZTJhYmZjMTkxODM1OTAxNDE0NzZiNmMzOGVlYmMyN2UyYzYifQ"
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L62-L75",
+          "version": "repo-lines-v1:sha256:9aab3b15fae57ee190b2f502b7210bd252adc9cf8b8a5bfe37d119c63b874944:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwMTBmNjA5OTE2NWVlZWM0YmIwMjIzZTcwN2ZiYWFhODY1ODYwYWU3YmExOThmZmFlY2I1ZWJiNmYyMzk1ODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyM2MzODg2YjZmNDUzYjZlZjQ1NWZjY2ZkMTczMTdlMmExNDdlM2JlZTRiYjNmNDZkZjUxNTc1ZTE2ZjllMzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyZDFkODYyZjMwODQ2NjdhYmNjNTFmMTc2OTg1YWQ3NzU1MDYxMTU2YTZkYTMwOTU2ZWI0Y2JhNTk5MjkyMDQifQ"
         },
         {
-          "resource": "repo://ops/openwiki-runtime-telemetry.json#L53-L75",
-          "version": "repo-lines-v1:sha256:0a41cb76d596efa1add38a2cd80d297e91b6c77c4a37c5cf60548e99d665723d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDhjMDA4NmRmMjYwZDlkZTQ5NDQ2NTFjMDEzZDE5MTdiYmE5ZGJlZTc3YjIxMGI2NjA0NjQxMTFmMTU4MTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxOTRlNGU1Yzg5NWYzZTQ5NTdhYTczNWJlYTVkYWUyOGRhZjU4MGI4MDJmMWQ1ZWE2OTUyOTUyMDJkNDlhZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIyZmQ5MGE1YmJhMGI1MjYzZGQzN2M3NGNjYjFjYzJkYThkNDlmMWVhNGVmOWIxMTVlYzZkZjJjNGY3NzcxOTIifQ"
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L9-L13",
+          "version": "repo-lines-v1:sha256:d15f4ad1b5ae8ed4b04d18461bfe2690e21610d24ffca3ef84351363a157b8b9:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjFhMTdiYzVhNDM3MGZmYmI2MTlhZTU1OTE1MGJhOTIwMTFkNmJmYWRkOTE4NjRmMzMyN2NiOTMxOWMwMmQzMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWY3MDIxYzhkNzliYTc0N2NjMzIwMDI3MmQxOTRlOTExYzUyYzQyMzZkZDkwZTZiMmFkOGY3NDNjMmM1Y2MwNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGM3ODYyM2IzMmU3YzdiOTkyNzkwZGE0N2Y5NDIzMzM0MWNhMzU3YzNmN2RjM2Y2ZDg1MGMzZDQ5ODBlMWIxNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDc0YmY2N2RjNDJhYTU5NDFmMmM4NmVmNjBiZTRlMmFiZmMxOTE4MzU5MDE0MTQ3NmI2YzM4ZWViYzI3ZTJjNiJ9"
         }
       ]
     },
@@ -441,10 +441,64 @@
           "version": "repo-lines-v1:sha256:cb0f875e39d2ca838d64b57bf2f9e438b06c327c9478c090c6cf7fb6985c0474:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyYTI5ZWUzMzg3NzNkY2Q0MjljZDQwZGEzMzVjZmJkMDM5MWMxYmM5N2VmMzQ4NmU5NjI0MjIzMjJmMzkzNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkN2NlNmQ2ZjhkMGE4MWQ3ODUxZDViNTQ5ZTJiM2JlMGI2N2YxZWIwYjAyNmRmNWU4OTRhNjU0MDRhZDM0YzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjZTc1OTI1ZjFjZTgwNTY3ODExZTBlN2JiMGU0MjA1MTY4NzljZmU3YTQxYmNjOWZmZjNmMDVlMDM5Mzk1NzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4NWVlNmIzY2M2NWQ3NWVkYzRiMWNjMDI5M2YzMTVkN2M0YzRmNzAxNDIxYmViYmQwMWUxZDQ5OWJkYzRkNjMifQ"
         }
       ]
+    },
+    {
+      "id": "claim_3811c4363de6425f82b353c64d4665b6",
+      "statement": "El manifiesto `openwiki-runtime-telemetry.json` es una muestra truncada de siete días con contadores de roots, llamadas LLM, categorías de tools y percentiles de duración; sus campos de tokens y coste están marcados como `unavailable` con cobertura `partial` y cero llamadas observadas, por lo que esos ceros no son mediciones de consumo o coste.",
+      "evidence": [
+        {
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L30-L75",
+          "version": "repo-lines-v1:sha256:06439861aa935855adcfd45dced333473c20d4c721e11a0296174d1a780832d1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZjI3NWQ3YjdmYzllZmI0ZDY4ODZlODFhOGNjZWIxOTI5NTg3ZDc2ZmQzZjNmZjY3MGUxODhjNGQwOTUzNTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyMzUyZjg2NmQyNzM0YmYzODVjM2Q5YjMzNWNiOGRlMjdiNzk1ZTBiZjgyOGFmYjg0MGFkNGYxOTY3NzQ3ZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyZDFkODYyZjMwODQ2NjdhYmNjNTFmMTc2OTg1YWQ3NzU1MDYxMTU2YTZkYTMwOTU2ZWI0Y2JhNTk5MjkyMDQifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L77-L87",
+          "version": "repo-lines-v1:sha256:5add2c143038fbbe8bf927d50d2cbd202ed4da82a8683fa74cb8688f1e315736:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExNWRkNTMwYjc3OWE0ZmJkYWM1NjA1NzAxZWIyYjA1OWQ3ZGJkZGNkMWY0MWFiYWYwMTM1N2NmMGNhYTQ4ZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3MGMxMmM5MTkzOTgxYmYxOGNjMTVlMDAwNjQ3MjI0OGFmNDBhZjk3YzYxYzlkMmU3NGE1YWMzNWE0M2U1MWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmNzM5YTA2YzFjYmIxMjQ0ZTMzNjNkMzhiY2Y5ZmE1MGNlODRmZWQzOTljMjE5M2EzYzdmMDhkNTk5MThiMmEifQ"
+        },
+        {
+          "resource": "repo://ops/openwiki-runtime-telemetry.json#L9-L13",
+          "version": "repo-lines-v1:sha256:d15f4ad1b5ae8ed4b04d18461bfe2690e21610d24ffca3ef84351363a157b8b9:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjFhMTdiYzVhNDM3MGZmYmI2MTlhZTU1OTE1MGJhOTIwMTFkNmJmYWRkOTE4NjRmMzMyN2NiOTMxOWMwMmQzMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWY3MDIxYzhkNzliYTc0N2NjMzIwMDI3MmQxOTRlOTExYzUyYzQyMzZkZDkwZTZiMmFkOGY3NDNjMmM1Y2MwNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGM3ODYyM2IzMmU3YzdiOTkyNzkwZGE0N2Y5NDIzMzM0MWNhMzU3YzNmN2RjM2Y2ZDg1MGMzZDQ5ODBlMWIxNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDc0YmY2N2RjNDJhYTU5NDFmMmM4NmVmNjBiZTRlMmFiZmMxOTE4MzU5MDE0MTQ3NmI2YzM4ZWViYzI3ZTJjNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4522b77d143043c6873425f7b886dd80",
+      "statement": "Las trazas de depuración son locales: `pushTrace` mantiene como máximo 1.000 entradas en un buffer persistido en `AsyncStorage`, las emite también a consola y exporta el campo `data` mediante JSON sin una capa de saneamiento; por ello los emisores no deben incluir contenido sensible y el volcado debe revisarse antes de compartirse.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/trace.ts#L106-L133",
+          "version": "repo-lines-v1:sha256:b721d723deead0a54e29b86a275a3666cbcb9167a41b55d12c711fe5c44f379e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3ODMwNWVjMTA2NjkzYWRiNjFmNThkMWM5NzNkNTdmZjY4NTJmYjA0Zjk2YTgyYTNiYmFmYzI2ZmNlMTA5MmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY0MDQxMzI1NjgxMGJlZjA2OWY3N2RjY2ZiNzA1YzE1N2ExOGU5ZTM3Mjc1M2M4NzE3MzI4MjRkZjBjZTExZDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/trace.ts#L35-L87",
+          "version": "repo-lines-v1:sha256:305c202d48d0df0eeaba78f6ff1c99fe6761274e3a05dd0fb6f1b10c94ea21c7:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkN2ZjZWYwNDE2ZjVlNDQ5NjcwM2YxMGYzMDEwMzc0MWY5Zjk3OGQ1OWRhYjU1YWMzOGVmNWM2YWFkNjNiOWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQzYWJjNzAwNTQ2OTE2OTFmZjJmOWRlNWI4NzljMmYyZWYyODdiOWY0ZTZlZDMyOWJmMmU5OGFiZWZiYjRkZjcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/trace.ts#L8-L20",
+          "version": "repo-lines-v1:sha256:717b9b5dc29cfc0172e073c8c8b8737d81c2b2288ab00b010039e12b1e353287:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NGRjOWJlMGM1NDcyNTRhNWViMTIyM2NlMzYxYjkzOGU5ZmI5ODA5Mjg1ZWJkN2Y4NGQ4NjhhNWY5ODIyNDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiNWE5YWE3ZTkxNGQ5MmQ2NzAxMmUxZDMyZDA2ODU5MWIxNmYzODZmNTRiODc2ZmJlNjc0MmVlMjMyOGUzZmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU4M2EwMDBmNzdlZDU4MDIzOGVjNmQ1MzQ1Njg2YTRhMDE0M2NjODFhNWQ1ZTNmM2ZkMmQ4MDRiNzBlMmJlOGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmZGMwZTk1MzU3ZDZkMTVmNmYyNjc5NDI1YTU3YThjOWM5ODc5MDU0ZDc5YjczZDc2MjQwNzUyNDVkODQ4ODcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8376f773c9e94674a6b2ae1eb56a21c5",
+      "statement": "La telemetría del lote de tools está diseñada como diagnóstico local acotado: sus eventos incluyen fase, identidad de lote, índice, nombre o `unknown`, efecto, conteos y tiempos, excluyen argumentos, IDs del proveedor, resultados y texto de excepción, y un fallo del sink no modifica la ejecución del lote.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/toolBatchDiagnostics.ts#L3-L30",
+          "version": "repo-lines-v1:sha256:24cb1842d9f1c3e5e59da23130ace5f76ed365816b85b66ea75ea6ea7d9608d6:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhNGIxZGYxODk0Y2VlYTY2NjZjMWNmYjg5YzcyMzI2MDI5NGI2ZjI4NDljNWM5ODdkMTQ5NzcxZWI5NDIyMzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyMzE0ODNkOTYyODUzNzg3YTI0Y2MwMDE4ZDk4MDdjMDE2MTI2NTMwZWRiNTYyZDZhNGFjMDAwYzk2NTRiOTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxOTA3ZjRiOThjMzA0YjMyNDNiMzljYjc5MWM1OWMwNzg2NGU5MzhhNjljMzczYmE3ZjMzOTJmNzhiMTMzN2EifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolBatchDiagnostics.ts#L40-L62",
+          "version": "repo-lines-v1:sha256:31a9bea75359216b70d1dffc72409d785dfae50f157293010569db49867913c5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdkMGVkY2QxM2UwOGU5MzA1YmU3MTRhNDFiNTU1YTdkYjlhNWUwMWE3NDQ2OTdjZjI4ZTJhNWY1NDJjNDljZjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMjI0OWU0ZGVhMWRjYTEwNmM1MWQyNmFmNTdkNGMzYWYwYzZiNjA4NWQzOTBlZmM1ZjFkNGVmZTlhZTQyYjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmYjdiN2U1NTVmZjBhY2ViMzBkOTc1MjlmOWMxMzNjNmQzYWEzYzk2YmEwODA5MDc5YzQ2M2Y0M2IzMzhiOTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY4ZTdjOWMzOWYzZmJkZWNiM2VkZjgxMWM0YTNiZGM4MDczM2UwNTMyMjlmMGVlMGFmZDdmMTZjNzVkOGYwMWUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolBatchDiagnostics.ts#L64-L96",
+          "version": "repo-lines-v1:sha256:ab4e9cece8e1dcdfe8ac446591e42f56a4cca068dd7d9394a7db1938822883cf:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5NWZhMGYxMTE3YjVlYTQwNDM0MTQwZGRlMWEzNDBjNzIwZGRiZjMyNjIxMmUxOTE4MzhkNGIxNTZkMzE2YmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4Yzk3NjAwZTU0YTkxY2I3ZjQ2ZjMxZDAzMTg2NmQ0YzlhNWI3OGI1NGRmYzlkNGE2NjExMGYxMTUxMzRiOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-11-09T17:53:20.799Z"
+    "at": "2026-11-10T15:53:08.815Z"
   }
 }
