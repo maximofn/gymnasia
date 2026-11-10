@@ -1,0 +1,1064 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0053",
+  "status": "pending-review",
+  "generated_on": "2026-11-10",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-1000",
+      "names": {
+        "fr": "Pastis",
+        "en": "Pastis (anise-flavoured spirit)",
+        "es": "Pastís (bebida espirituosa anisada)"
+      },
+      "source_sha256": "f290bcd20467ddf71213b8e2157b158f2b23f91fc17b560c8b32315574dce8f1",
+      "image": "ciqual-1000.webp",
+      "sha256": "5c85f86fbe0316f2c0191b606837dadc2b577131f3a6897c90b1d87f876f1551",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: UNDILUTED PASTIS anise-flavoured spirit, translucent clear golden-yellow to amber liquid, NOT cloudy diluted pastis and no water added, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1001",
+      "names": {
+        "fr": "Eau de vie de fruits",
+        "en": "Fruit brandy or eau-de-vie",
+        "es": "Aguardiente de fruta"
+      },
+      "source_sha256": "fac15e7223ae2ef1acfb94401079034904b7997ac7f7112a41c583909e3f5684",
+      "image": "ciqual-1001.webp",
+      "sha256": "90144ccb453a2e40aeecc5ca50344e496e3238df95b0fb60ef437a951aa20c73",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: representative FRUIT EAU-DE-VIE or fruit brandy, clear colourless distilled fruit spirit, no exact fruit or brand recipe claimed, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1002",
+      "names": {
+        "fr": "Gin",
+        "en": "Gin",
+        "es": "Ginebra"
+      },
+      "source_sha256": "bacc13d79981be47f254db45a9b950faa85eb8965de2a3ebce813c5da2c19329",
+      "image": "ciqual-1002.webp",
+      "sha256": "9cb3b022b87dde52ec3b90ca9c6d9cba1b966245a41c41022f5aefce369fd141",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: plain GIN, clear colourless spirit, not a gin-and-tonic cocktail, no juniper berries or botanical garnish, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1003",
+      "names": {
+        "fr": "Liqueur",
+        "en": "Liqueur",
+        "es": "Licor"
+      },
+      "source_sha256": "402bebe308c10d930c3b7b86921358b6de6622fb878d1a4aa9fdbc2a6f169611",
+      "image": "ciqual-1003.webp",
+      "sha256": "b48dafeabd4fcb3369b34029c3b6d43872ca4c4dfe4e475b517d1a94bfc163db",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: representative LIQUEUR of the generic category, translucent clear warm amber liquid, no cream, particular fruit recipe or brand claimed, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1004",
+      "names": {
+        "fr": "Rhum",
+        "en": "Rum",
+        "es": "Ron"
+      },
+      "source_sha256": "9fd20d40a671cd98f00763f04ffa34e4e1af73572367c1c2323b0248b24a5ee9",
+      "image": "ciqual-1004.webp",
+      "sha256": "5bb9c1ea1b84ec49fce9901d767cb2c89e379433c7c7b79927d0c013f10dd238",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: plain RUM, representative translucent golden-amber aged-rum option, no exact brand or mandatory colour claimed, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1005",
+      "names": {
+        "fr": "Whisky",
+        "en": "Whisky",
+        "es": "Whisky"
+      },
+      "source_sha256": "d49d65c7ac5c65805eb93faf98c634e4efaebc2e58d9dd13c1e63be8de032d7a",
+      "image": "ciqual-1005.webp",
+      "sha256": "5d9ac2dc5380e18b5a4af404a9a57a6a51263dfffa8e8bc3aaf34376f3514ba2",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: plain WHISKY, translucent clear golden-amber spirit, no smoking glass or ice, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1006",
+      "names": {
+        "fr": "Vin doux",
+        "en": "Wine, sweet",
+        "es": "Vino dulce"
+      },
+      "source_sha256": "cabb72ae0bb8c54b14f698c9058ffefcad7c8cbdb38e54b7ac6a9b761abc7d31",
+      "image": "ciqual-1006.webp",
+      "sha256": "db61715c8f1e6b7a6ab0fa013acbbcd765d1cbd6b0b002a46fa0a45821ab0c3a",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SWEET WINE, representative clear golden honey-coloured wine option, no exact grape variety claimed, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1007",
+      "names": {
+        "fr": "Apéritif à base de vin ou vermouth",
+        "en": "Wine-based aperitif",
+        "es": "Aperitivo a base de vino o vermú"
+      },
+      "source_sha256": "0facbf3fa1f0a5e6c89e99c6ff5b5b3a1100dc9fc768a0fc32f311eba7515a96",
+      "image": "ciqual-1007.webp",
+      "sha256": "f9f4397326e26633abebeb5c2974af3949a7426090c1e7a57642fef6eaa24345",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: wine-based APERITIF OR VERMOUTH, representative translucent reddish-amber vermouth option, no fixed spice recipe or brand claimed, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1008",
+      "names": {
+        "fr": "Vodka",
+        "en": "Vodka",
+        "es": "Vodka"
+      },
+      "source_sha256": "a0b8cc3b17c20097c72579fb9e4f147e9ac70b4b1bb3211b8f2d3fef4bdc3ee0",
+      "image": "ciqual-1008.webp",
+      "sha256": "4b89c613750edfe4233a46bc829b4a3dd1f73c9cda5c9f4684b33fb6dd1ddee5",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: plain VODKA, clear colourless spirit, no frozen glass, frost coating or ice, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1010",
+      "names": {
+        "fr": "Pastis, prêt à boire (1+ 5)",
+        "en": "Anise spirit, diluted (1+5)",
+        "es": "Pastis, listo para beber (1+5)"
+      },
+      "source_sha256": "40a048d5c3aee3fa9b7c008115239c395aa63a51df288382c336faa2f0e42230",
+      "image": "ciqual-1010.webp",
+      "sha256": "c5ab7507f778cbcc873b827e1e4b44bde8953c405d8cf0f9f025cadd11eebf1d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: PASTIS READY TO DRINK diluted ONE PART pastis to FIVE PARTS WATER, homogeneous pale milky straw-yellow anise drink with natural louche cloudiness, NOT a transparent undiluted amber spirit, no numbers or measuring marks, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1011",
+      "names": {
+        "fr": "Apéritif anisé sans alcool, à diluer",
+        "en": "Pastis, alcohol-free, to be diluted",
+        "es": "Aperitivo anisado sin alcohol, para diluir"
+      },
+      "source_sha256": "f2b1a7dde8d7138df66ea8282a6cb0e27b64c0a8c5556ffe0cd2f81b7531d080",
+      "image": "ciqual-1011.webp",
+      "sha256": "1fed266ffff2ccad967687b4720fd9c0cc5269d52b302f190ad9907cf876e80a",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: ALCOHOL-FREE ANISE APERITIF CONCENTRATE TO BE DILUTED, representative clear intense golden-yellow liquid in its undiluted concentrate state, no water addition or ready-to-drink milky dilution, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1012",
+      "names": {
+        "fr": "Cocktail à base de rhum",
+        "en": "Cocktail, rum-based",
+        "es": "Cóctel a base de ron"
+      },
+      "source_sha256": "e897ddb075048305b18a7723e6e58a315e5c4a58814c08d022a9a6c92815df27",
+      "image": "ciqual-1012.webp",
+      "sha256": "264edd698daab063f4b9543b7b418052fae49b685db494d971c3114c63204ad6",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: representative RUM-BASED COCKTAIL, smooth translucent warm golden-orange mixed liquid, no exact unnamed mixer recipe claimed, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1013",
+      "names": {
+        "fr": "Cocktail à base de whisky",
+        "en": "Cocktail, whisky-based",
+        "es": "Cóctel a base de whisky"
+      },
+      "source_sha256": "e166a767756a682a245d2f66a39d7686a3da85d894ea6cff91bb5f28bb4dcca7",
+      "image": "ciqual-1013.webp",
+      "sha256": "f8095d101da126c0e4cf856cc905e209b4c65f384f343752846a8de573a5e5bb",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: representative WHISKY-BASED COCKTAIL, smooth translucent amber-brown mixed liquid, no exact unnamed mixer recipe claimed, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1014",
+      "names": {
+        "fr": "Alcool pur",
+        "en": "Pure alcohol",
+        "es": "Alcohol puro"
+      },
+      "source_sha256": "3b6bfeb63f7b7465c6c8d67a8e89f6cea94c85b9411a71e2b2111483df659372",
+      "image": "ciqual-1014.webp",
+      "sha256": "084bff89a9067e6a6f0cbe88e20deb58d847faf05d253234f85e28a095e67be4",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: PURE ETHYL ALCOHOL represented as a plain clear colourless FOOD-CATALOG liquid, no laboratory bottle, hazard symbol, flame or drinking recommendation, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1015",
+      "names": {
+        "fr": "Marsala",
+        "en": "Marsala wine",
+        "es": "Marsala"
+      },
+      "source_sha256": "17298c170d76c21c3201071b57c3940720b6357bc64f2ec93a19848b575e3006",
+      "image": "ciqual-1015.webp",
+      "sha256": "b63e1de359a75f40845b9262bc7bc3fbb59eecd9b165f3b53d78ad38634035b5",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: MARSALA wine, translucent clear warm tawny amber-brown fortified wine, no grapes or raisins, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1016",
+      "names": {
+        "fr": "Marsala aux oeufs",
+        "en": "Marsala with eggs",
+        "es": "Marsala al huevo"
+      },
+      "source_sha256": "fc538d0bd4ad044ec6e2c499e16aac3428bdb17901440b28f71ad6a14c39feb3",
+      "image": "ciqual-1016.webp",
+      "sha256": "5f085ada67de9dc50dd70ee6df47149e4dea1ffbcca83973515a51e5848206e4",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: MARSALA WITH EGG, representative deep warm amber-brown egg-enriched fortified-wine liquid with a slight soft haze, not a white milk eggnog or dessert custard, no whole egg, egg yolk floating on top, cream or cinnamon, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1017",
+      "names": {
+        "fr": "Sangria, faite maison",
+        "en": "Sangria",
+        "es": "Sangría, casera"
+      },
+      "source_sha256": "c229bf1e985340d57d0789de16b2716809f7913ab19f3dd2308bacd2b5990a2d",
+      "image": "ciqual-1017.webp",
+      "sha256": "34f28b1eb030bc0b6ba55433c77a89cd40dc84d52b57af05c337dc9c1a7befb8",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: HOMEMADE SANGRIA, deep red wine-based liquid with a FEW SMALL orange and apple pieces immersed INSIDE as integral representative sangria ingredients, no fruit wheel attached to the rim, fruit pile beside the glass, straw, ice or mint sprig, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1018",
+      "names": {
+        "fr": "Kir (vin blanc, crème de cassis)",
+        "en": "Kir (white wine with blackcurrant liqueur)",
+        "es": "Kir (vino blanco, crema de casis)"
+      },
+      "source_sha256": "5ea34fa20791c2340a45661966e77cc61f2ecf43bbfb6b6f2f8eaf0421f483c7",
+      "image": "ciqual-1018.webp",
+      "sha256": "d0ca2d1801495f60fbba299d8ca0c08334cbd988e032655ba3a8f17c2b886045",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: KIR made from WHITE WINE AND BLACKCURRANT LIQUEUR, smooth still translucent ruby-magenta liquid, no champagne bubbles or fruit garnish, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1019",
+      "names": {
+        "fr": "Kir royal (champagne, crème de cassis)",
+        "en": "Kir royal (champagne with blackcurrant liqueur)",
+        "es": "Kir royal (champán, crema de casis)"
+      },
+      "source_sha256": "5b823c244cd6a4acc1594da65d404b193152e06c48e448e630faace1af4586ce",
+      "image": "ciqual-1019.webp",
+      "sha256": "c46246be34804f7076f00fbb9e20d359cbf43c7f0cf878d6df3ae1e510d05ece",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: KIR ROYAL made from CHAMPAGNE AND BLACKCURRANT LIQUEUR, translucent rose-ruby sparkling liquid, only the drink in one small plain narrow transparent sparkling-wine glass with a simple stem and foot, complete glass visible, delicate rising bubbles and no heavy beer foam head, no fruit, ice, bottle, cork, label, gold decoration or garnish.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1021",
+      "names": {
+        "fr": "Crème de cassis",
+        "en": "Blackcurrant liqueur",
+        "es": "Crema de casis"
+      },
+      "source_sha256": "c5182fa5c9b751cf880b62b9cf33dd068ba0e06ac73c0da6e2c19b132b3baf18",
+      "image": "ciqual-1021.webp",
+      "sha256": "59ce8842dc60d71014c79a2eb2e0d55bb8460c9209d680d5a2cbf1ca26b044ec",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: CREME DE CASSIS or blackcurrant liqueur, smooth translucent very deep purple-burgundy liquid, not dairy cream, no floating currants, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1022",
+      "names": {
+        "fr": "Cocktail type punch, 16% alcool, préemballé",
+        "en": "Cocktail, punch type, 16% alcohol, prepacked",
+        "es": "Cóctel tipo ponche, 16% alcohol, envasado"
+      },
+      "source_sha256": "775192bbf1266b89c6be5feb8f1402cd0ba5f46b14569509aae78f0ec19fd441",
+      "image": "ciqual-1022.webp",
+      "sha256": "f4701b158f20f2e708ff28860119b31c4103b5db0d00d023b6d266914934961b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: prepacked-style PUNCH-TYPE COCKTAIL at the source category 16 percent alcohol shown without packaging, representative smooth reddish-orange blended liquid, no numeric label or exact fruit recipe claimed, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1023",
+      "names": {
+        "fr": "Eau de vie de vin type armagnac ou cognac",
+        "en": "Brandy, Armagnac or Cognac type",
+        "es": "Aguardiente de vino tipo armañac o coñac"
+      },
+      "source_sha256": "d4bc6c205db5a5fa1613e15a955a18dfc11a9d4660b0bfb4e1ad265d2b41b009",
+      "image": "ciqual-1023.webp",
+      "sha256": "96c22dbd1324e8cc38a99bfb2e958becb55d4858b6ed86f159e6f4c377ca1b45",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: ARMAGNAC-OR-COGNAC-TYPE wine brandy, translucent warm amber-brown distilled grape spirit, no grapes or brand identity, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1024",
+      "names": {
+        "fr": "Eau de vie type calvados",
+        "en": "Apple brandy, Calvados type",
+        "es": "Aguardiente tipo calvados"
+      },
+      "source_sha256": "14a07c2ffa5497a40e5b58e0be97680a468b15fa62c0cf71057a29ced894f0f7",
+      "image": "ciqual-1024.webp",
+      "sha256": "0d3162b9f035b0b126b8344fbe9ea1787142b3d1a0f28099c049c163c00d14a0",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: CALVADOS-TYPE apple brandy, translucent clear warm golden-amber spirit, not apple juice or cloudy cider, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-1026",
+      "names": {
+        "fr": "Saké ou alcool de riz",
+        "en": "Sake or rice wine",
+        "es": "Sake o alcohol de arroz"
+      },
+      "source_sha256": "11801f2a2aeee286750a8b5b4b9ddf03288ad17628980a1ddb90fcdbe8a88c3b",
+      "image": "ciqual-1026.webp",
+      "sha256": "ee7743b262643052c7ca81189f0a30eca04261d667072407f9a73c447331c02b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SAKE OR RICE WINE, representative clear nearly colourless faint straw-tinted liquid, no rice grains, ceramic cup, sake bottle or cultural symbols, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-2374",
+      "names": {
+        "fr": "Nectar d'ananas",
+        "en": "Pineapple nectar",
+        "es": "Néctar de piña"
+      },
+      "source_sha256": "420da484b42c4159f575a20e9e3c65d98f240df06667af7b4eb6d1a2d050edfe",
+      "image": "ciqual-2374.webp",
+      "sha256": "64a74baf13165a8516a708bed75be808c686cd2ceaf19253ddddee0e155961dc",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: PINEAPPLE NECTAR, naturally cloudy smooth pale golden-yellow fruit liquid, no pineapple pieces, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-2375",
+      "names": {
+        "fr": "Nectar d'orange",
+        "en": "Orange nectar",
+        "es": "Néctar de naranja"
+      },
+      "source_sha256": "a023e21a933187d0b77380eade05dcfc1d0a13d7d7ea8e2477a951444bd94f8b",
+      "image": "ciqual-2375.webp",
+      "sha256": "d0f30748433140a242aa3bbbbd249e9d13be912cf6d0533169b3f0c65a3c65fd",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: ORANGE NECTAR, smooth opaque rich orange fruit liquid, no milk or orange segments, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-2377",
+      "names": {
+        "fr": "Jus d'orange sanguine, pur jus",
+        "en": "Blood orange juice, pure juice",
+        "es": "Zumo de naranja sanguina, zumo puro"
+      },
+      "source_sha256": "c58298c197fc3af825c818c09ebfed9f266be833eeabc3d4b88fa0f63219b40b",
+      "image": "ciqual-2377.webp",
+      "sha256": "05be1107a3c2d0a0a11fc2ad891371f2e6c3d2bcea83f0df6bd8d16aaa30e4a3",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: pure BLOOD ORANGE JUICE, naturally cloudy deep red-orange liquid, no fruit slices, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-2381",
+      "names": {
+        "fr": "Jus de canneberge ou cranberry",
+        "en": "Cranberry juice",
+        "es": "Zumo de arándano rojo o cranberry"
+      },
+      "source_sha256": "76dc5a0b538f1041e90ae61154498310447523d0ba138ebf7aed26faae444f7a",
+      "image": "ciqual-2381.webp",
+      "sha256": "a45bf1b45aeb19825b282fe188a4ed8ac989461d0b4785ae64c99fce0384d67a",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: CRANBERRY JUICE, translucent natural ruby-red liquid, no cranberries or leaves, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-2500",
+      "names": {
+        "fr": "Smoothie, sans précision sur la teneur en fruits et les ingrédients autres que fruits",
+        "en": "Smoothie, no precision on fruit content and other ingredients",
+        "es": "Batido de frutas (smoothie), sin precisión sobre el contenido de fruta y los ingredientes distintos de la fruta"
+      },
+      "source_sha256": "51af5932b1dd28534114dd99688a60cce893c13f522e8b05e1fedafef683d0ce",
+      "image": "ciqual-2500.webp",
+      "sha256": "6ada4b21a12aaa728b220ff9e824ff799bcddcb7268d062ecf060c9c8414f022",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: representative FRUIT SMOOTHIE with unspecified fruit content and other ingredients, smooth thick opaque muted peach-orange blended fruit liquid, no specific official recipe or unlisted dairy ingredient claimed, no whipped cream or visible fruit chunks, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-3000",
+      "names": {
+        "fr": "Lait 1er âge, poudre soluble (préparation pour nourrissons)",
+        "en": "Baby milk, infant formula, powder",
+        "es": "Leche de primera etapa (1), en polvo soluble (preparado para lactantes)"
+      },
+      "source_sha256": "09811e7e14158b33956790b0f2bc7477cd07dba9ef04d00527340b5833b48133",
+      "image": "ciqual-3000.webp",
+      "sha256": "9d654aa311cf976aebce2c5a28992885e5f94c2d31f7ad1644f00e47dcee547b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: INFANT FORMULA FIRST-AGE MILK IN SOLUBLE POWDER FORM, a small compact low mound of very fine pale cream milk-formula powder, dry loose texture with tiny natural clumps, absolutely NOT reconstituted liquid, no scoop, measuring marks, bottle, tin, baby, age number, infant symbols, milk splash or garnish.\nServe only the specified subject in one small plain dark ceramic bowl.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-3002",
+      "names": {
+        "fr": "Lait 2e âge, poudre soluble (préparation de suite)",
+        "en": "Baby milk, follow-on formula, powder",
+        "es": "Leche de segunda etapa (2), en polvo soluble (preparado de continuación)"
+      },
+      "source_sha256": "5216bee171d9af74e2971881837d52a1a9935e013e046d854ef1d48875be9547",
+      "image": "ciqual-3002.webp",
+      "sha256": "3b0ac5b01d8a3ab5ae975281cd39568f4bd6f25011701700b1e3bce54c8609c2",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: FOLLOW-ON SECOND-AGE MILK IN SOLUBLE POWDER FORM, a small compact low mound of very fine pale ivory-cream milk-formula powder, dry loose texture with tiny natural clumps, absolutely NOT reconstituted liquid, no scoop, measuring marks, bottle, tin, baby, age number, infant symbols, milk splash or garnish.\nServe only the specified subject in one small plain dark ceramic bowl.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-5000",
+      "names": {
+        "fr": "Bière brune",
+        "en": "Beer, dark",
+        "es": "Cerveza negra"
+      },
+      "source_sha256": "1dbd22dca347fef5101f2e8b8d3b8ba3d7505b8f510aca59489e760b9587d950",
+      "image": "ciqual-5000.webp",
+      "sha256": "c372d75c34ed43ea8459c236ea1bf291e5e44ba9a8bf41e64a4e65bd9fd1e42e",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: DARK BEER, translucent very deep mahogany-brown liquid with ruby-brown edge highlights, realistic fine beer bubbles and a modest natural off-white foam head contained below the rim, no overflow, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5001",
+      "names": {
+        "fr": "Bière \"coeur de marché\" (4-5° alcool)",
+        "en": "Beer, regular (4-5° alcohol)",
+        "es": "Cerveza estándar (4-5° alcohol)"
+      },
+      "source_sha256": "303a312c1ff7cefeb85ed519e70afa3d314bd93819baad10bd4f6b9bde41725c",
+      "image": "ciqual-5001.webp",
+      "sha256": "3f803f9aa154c1de9d77aa41e14ec26ef5224c5ae58cef8fc719e37b47709b0d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: REGULAR BEER of the 4-5 percent alcohol source category, clear natural golden-amber liquid, no percent label, realistic fine beer bubbles and a modest natural off-white foam head contained below the rim, no overflow, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5002",
+      "names": {
+        "fr": "Bière forte (>8° alcool)",
+        "en": "Beer, strong (>8° alcohol)",
+        "es": "Cerveza fuerte (>8° alcohol)"
+      },
+      "source_sha256": "08a488341aaedc6125290aabf1ac502532c2827e7afd4323dc9231df6704c370",
+      "image": "ciqual-5002.webp",
+      "sha256": "1dc0d25efe291b384ef21df75f0bdab58429c908cb65ffa4bde1c565c4d65a06",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: STRONG BEER above 8 percent alcohol source category, representative rich clear amber beer, no label or visual strength badge, realistic fine beer bubbles and a modest natural off-white foam head contained below the rim, no overflow, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5003",
+      "names": {
+        "fr": "Cidre (aliment moyen)",
+        "en": "Cider (average)",
+        "es": "Sidra (valor medio)"
+      },
+      "source_sha256": "e97b2ef694edd977fe707d904ad25b2d2a6aab82b208b8d0d8f8ea1e8901b5d6",
+      "image": "ciqual-5003.webp",
+      "sha256": "5c6cf4f7877762d9a65507eed2be3802f23f28bcb8d58306985b244ebb1adea4",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: representative average CIDER, clear pale golden apple-cider liquid, faint natural tiny carbonation bubbles, no large beer foam head, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5004",
+      "names": {
+        "fr": "Panaché (limonade et bière)",
+        "en": "Shandy (beer + lemonade)",
+        "es": "Clara de cerveza (limonada y cerveza)"
+      },
+      "source_sha256": "f3edd1a913844b644b59805647c65e46c3cc1b115289ebcca0c29291fcc262df",
+      "image": "ciqual-5004.webp",
+      "sha256": "d010129cf55b79bcf582d8f3dfb74f1d1fa432292e4d2d59b1cb579c1c673bbf",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SHANDY made of BEER AND LEMONADE, pale slightly hazy straw-gold liquid, no lemon slice, realistic fine beer bubbles and a modest natural off-white foam head contained below the rim, no overflow, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5005",
+      "names": {
+        "fr": "Panaché préemballé (<1° alc.), aromatisé ou non",
+        "en": "Shandy, prepacked (<1° alcohol), flavoured or plain",
+        "es": "Clara de cerveza envasada (<1° alcohol), aromatizada o sin aromatizar"
+      },
+      "source_sha256": "f966a917902f3475bc924a4b72b856d4f28f0470ffe7c38f9270656867dd041a",
+      "image": "ciqual-5005.webp",
+      "sha256": "0860b2275b5cc06236c66a596bf4e41b9d9e79d8f8fef381e60061eedf7ba566",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: prepacked-style SHANDY below 1 percent alcohol, choose the plain option, pale slightly hazy golden beer-and-lemonade liquid, shown without packaging and no numerical label, realistic fine beer bubbles and a modest natural off-white foam head contained below the rim, no overflow, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5006",
+      "names": {
+        "fr": "Cidre brut",
+        "en": "Cider, dry",
+        "es": "Sidra seca"
+      },
+      "source_sha256": "04b23e6c78280c68ca2458ee69dd7b6285db7925c67f444ff5d46bc3f20c0e11",
+      "image": "ciqual-5006.webp",
+      "sha256": "18738217245ba68a32ef782560c1a7964772159e3bd99ea140f1e0ac2c03ac45",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: DRY CIDER, clear pale gold apple-cider liquid, no sugar crystals or dryness symbols, faint natural tiny carbonation bubbles, no large beer foam head, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5007",
+      "names": {
+        "fr": "Cidre doux",
+        "en": "Cider, sweet",
+        "es": "Sidra dulce"
+      },
+      "source_sha256": "b0126d1ff3054833cb36d8d9356f5466f163ba79bf45dd05002f20f69107fb5a",
+      "image": "ciqual-5007.webp",
+      "sha256": "0e007810c7fe5586e39bb01edaf34ab663cdac5034016dd645cd13e1f0f2081f",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SWEET CIDER, clear honey-gold apple-cider liquid, no added sugar pile or sweetness symbols, faint natural tiny carbonation bubbles, no large beer foam head, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5008",
+      "names": {
+        "fr": "Bière faiblement alcoolisée (3° alcool)",
+        "en": "Beer, low alcohol-content (3° alcohol)",
+        "es": "Cerveza baja en alcohol (3° alcohol)"
+      },
+      "source_sha256": "59a78a63e33774371b8a4fac931d67b22c7e6a709cd47b84c7b8de1aa97e39e9",
+      "image": "ciqual-5008.webp",
+      "sha256": "26de4d9fb8b8372020e15bce5ae176cd9615578baf76be366a1ea1557cfec1a6",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: LOW-ALCOHOL BEER of the 3 percent alcohol source category, natural clear pale golden beer, no label or visual strength badge, realistic fine beer bubbles and a modest natural off-white foam head contained below the rim, no overflow, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5009",
+      "names": {
+        "fr": "Bière blanche",
+        "en": "Beer, white",
+        "es": "Cerveza de trigo"
+      },
+      "source_sha256": "0671423b6af939d446d6b9c7fafaba0ddbdf91980c4502843287ce81a5b7b566",
+      "image": "ciqual-5009.webp",
+      "sha256": "fbfe6c450ea44f47b17e6cb424c5ce1af54f5f140136ff85da21b400fe461a6b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: WHEAT OR WHITE BEER, naturally cloudy pale straw-yellow liquid, no wheat-stalk garnish, lemon slice or seed pile, realistic fine beer bubbles and a modest natural off-white foam head contained below the rim, no overflow, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5010",
+      "names": {
+        "fr": "Bière \"spéciale\" (5-6° alcool)",
+        "en": "Beer, special (5-6° alcohol)",
+        "es": "Cerveza especial (5-6° alcohol)"
+      },
+      "source_sha256": "c6acf9bb95563425fbc64fd54616aa0f4c5392a67df37dfb5405bb9c8fc0c2b4",
+      "image": "ciqual-5010.webp",
+      "sha256": "4e6f16b4cb962bbab922bb017ba620714f9af5672aca6f2ce59db05222f78bbf",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SPECIAL BEER of the 5-6 percent alcohol source category, representative natural clear warm golden-amber beer, no numeric label, realistic fine beer bubbles and a modest natural off-white foam head contained below the rim, no overflow, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5011",
+      "names": {
+        "fr": "Bière \"de spécialités\" ou d'abbaye, régionales ou d'une brasserie (degré d'alcool variable)",
+        "en": "Beer, from an abbey or brewery (variable alcohol content)",
+        "es": "Cerveza de especialidad o de abadía, regional o de cervecería (grado alcohólico variable)"
+      },
+      "source_sha256": "16ccfea8fba192e626c2c38707c70a71e4cb41d5e372e711be406f8fba671931",
+      "image": "ciqual-5011.webp",
+      "sha256": "bde313afa1a26eb95980e55dde066df7052b2a3654b7d83e1912a5e37904550a",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SPECIALITY OR ABBEY-STYLE BEER, representative rich clear copper-amber liquid, no monastic imagery, labels or exact official beer-style recipe claimed, realistic fine beer bubbles and a modest natural off-white foam head contained below the rim, no overflow, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5020",
+      "names": {
+        "fr": "Cidre traditionnel",
+        "en": "Cider, traditionnal",
+        "es": "Sidra tradicional"
+      },
+      "source_sha256": "8355a6d70370cd81491042550963bb5fb4067e00b9e5ef57a0ef661a983e7e8f",
+      "image": "ciqual-5020.webp",
+      "sha256": "32dacc839d7b5fb4a3e713f2a106399ab20d6919a93cdc1ed6772aa567658d08",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: TRADITIONAL CIDER, representative gently cloudy golden-amber apple-cider liquid, faint natural tiny carbonation bubbles, no large beer foam head, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5021",
+      "names": {
+        "fr": "Cidre bouché demi-sec",
+        "en": "Cider, half-dry",
+        "es": "Sidra bouché semiseca"
+      },
+      "source_sha256": "8636907a553f5d5f4fa770f2c39e800eeb52e8b71b7e479a973c10f0c88ad658",
+      "image": "ciqual-5021.webp",
+      "sha256": "d475372a93c0089009344472594168e2973ed27c081b3a2a03776b1786a9fdc2",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: BOTTLED HALF-DRY CIDER shown without bottle, clear natural gold liquid, no cork, sugar or numeric label, faint natural tiny carbonation bubbles, no large beer foam head, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5022",
+      "names": {
+        "fr": "Cidre aromatisé aux fruits",
+        "en": "Cider, fruit-flavoured",
+        "es": "Sidra aromatizada con frutas"
+      },
+      "source_sha256": "ab9c7797ca91612246c355ae17978ab697e5227469a036f27ebea2a6a4a7c464",
+      "image": "ciqual-5022.webp",
+      "sha256": "d81f780adfa51f40dec75176261b0fad220e35c93c91fd8e090b25a70675facc",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: FRUIT-FLAVOURED CIDER, representative faint rosy-golden apple-cider liquid, no exact unnamed added-fruit recipe claimed, faint natural tiny carbonation bubbles, no large beer foam head, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5029",
+      "names": {
+        "fr": "Bière sans alcool, sucrée, aromatisée ou au jus de fruits",
+        "en": "Beer, alcohol-free, sweetened, flavoured or with fruit juice",
+        "es": "Cerveza sin alcohol, azucarada, aromatizada o con zumo de frutas"
+      },
+      "source_sha256": "904be2c549b1a3c206698507115f6c42f6e3db3aaf47d7ffa480cf09016979c3",
+      "image": "ciqual-5029.webp",
+      "sha256": "fc1aba5b9acb1eef5220066dcc5d0e8caf8ca01e6f746f16d93a83982b008a2a",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: ALCOHOL-FREE SWEETENED BEER flavoured or with fruit juice, representative pale golden lightly hazy liquid, no whole fruit, sweetener packets or alcohol-free symbols, realistic fine beer bubbles and a modest natural off-white foam head contained below the rim, no overflow, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5030",
+      "names": {
+        "fr": "Bière sans alcool (<1,2° alcool) et sans sucres ajoutés, aromatisée ou non",
+        "en": "Beer, alcohol-free (<1,2° alcohol), without added sugars, flavoured or unflavoured",
+        "es": "Cerveza sin alcohol (<1,2° de alcohol) y sin azúcares añadidos, aromatizada o no"
+      },
+      "source_sha256": "59500dfdd18af8ff789be280f45543f55dcf76fdbaf44790a38d6280cd23670c",
+      "image": "ciqual-5030.webp",
+      "sha256": "412f0134c32abb17f6c094296fdcc14ca1aec474a82974ca939a57c255c143e1",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: ALCOHOL-FREE BEER below 1.2 percent alcohol WITHOUT ADDED SUGARS, choose the plain unflavoured option, pale clear golden beer, no sugar crystals, numerical label or health badge, realistic fine beer bubbles and a modest natural off-white foam head contained below the rim, no overflow, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5100",
+      "names": {
+        "fr": "Pétillant de fruits",
+        "en": "Sparkling fruit wine",
+        "es": "Bebida espumosa de fruta"
+      },
+      "source_sha256": "9e474bdec2b587d32bb8e872462c1f84954fc9c8518100e68125a518c67fe888",
+      "image": "ciqual-5100.webp",
+      "sha256": "7039a1d2f839cfdbfa3fb5cb365c2cf5ee18a7079b82c92f30891ba7f214590e",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: representative SPARKLING FRUIT BEVERAGE OR FRUIT WINE, clear pale golden sparkling liquid, no exact fruit or fermentation recipe claimed, only the drink in one small plain narrow transparent sparkling-wine glass with a simple stem and foot, complete glass visible, delicate rising bubbles and no heavy beer foam head, no fruit, ice, bottle, cork, label, gold decoration or garnish.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5201",
+      "names": {
+        "fr": "Vin blanc mousseux",
+        "en": "Wine, white, sparkling",
+        "es": "Vino blanco espumoso"
+      },
+      "source_sha256": "f81b969133097f897cdf1d5d27180103e4fd326c143b9f938bba8957dfb16030",
+      "image": "ciqual-5201.webp",
+      "sha256": "46b00d0f45eb4aa7a204702abbfc168ed44ce8dab79d62a21f7696230cc2ac8d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: WHITE SPARKLING WINE, clear pale straw-gold wine, only the drink in one small plain narrow transparent sparkling-wine glass with a simple stem and foot, complete glass visible, delicate rising bubbles and no heavy beer foam head, no fruit, ice, bottle, cork, label, gold decoration or garnish.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5207",
+      "names": {
+        "fr": "Champagne",
+        "en": "Champagne",
+        "es": "Champán"
+      },
+      "source_sha256": "958945fd98a42a105a050d1498f5df6490db860d03b6c1d60e37c9da378afffe",
+      "image": "ciqual-5207.webp",
+      "sha256": "013021909d709f4a6b70b8cd2dec627fc01aeb07fd8e897978ac9079f3e1d732",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: CHAMPAGNE, clear pale golden sparkling wine, no branded bottle, label or cork, only the drink in one small plain narrow transparent sparkling-wine glass with a simple stem and foot, complete glass visible, delicate rising bubbles and no heavy beer foam head, no fruit, ice, bottle, cork, label, gold decoration or garnish.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5209",
+      "names": {
+        "fr": "Vin blanc mousseux aromatisé",
+        "en": "Wine, white, sparkling, flavoured",
+        "es": "Vino blanco espumoso aromatizado"
+      },
+      "source_sha256": "210b4f41df748d7218f9baf95a8c27caa6c5dc78d9b752d3a9c734ef6c764ae0",
+      "image": "ciqual-5209.webp",
+      "sha256": "34c62059643d71851fc233ab3dd613abee49e5fd7406f095648adf6404f153e1",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: FLAVOURED WHITE SPARKLING WINE, representative clear pale golden sparkling liquid, no exact unlisted flavour recipe claimed, only the drink in one small plain narrow transparent sparkling-wine glass with a simple stem and foot, complete glass visible, delicate rising bubbles and no heavy beer foam head, no fruit, ice, bottle, cork, label, gold decoration or garnish.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5210",
+      "names": {
+        "fr": "Vin (aliment moyen)",
+        "en": "Wine (average)",
+        "es": "Vino (valor medio)"
+      },
+      "source_sha256": "99f9bbdcc0860e186ce7d2aac9b2fd4ab132c1c1c294368889211649933fc6af",
+      "image": "ciqual-5210.webp",
+      "sha256": "ae280d0477a6b92e329c867bcc18ee7f0bdfc22975e95dde2b85af4d0b443f81",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: representative average WINE, choose a clear deep ruby-red still wine, no exact grape variety or official style recipe claimed, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5214",
+      "names": {
+        "fr": "Vin rouge",
+        "en": "Wine, red",
+        "es": "Vino tinto"
+      },
+      "source_sha256": "24ad9c2c9e5b548f44b06335d5cdd25a76974b704edb1132af95d675b11e8a1c",
+      "image": "ciqual-5214.webp",
+      "sha256": "7c486bd04389c15707abd04e9fcc08ee4ce2d093e1575d672f8d65d58c33253c",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: RED WINE, translucent deep ruby-burgundy still liquid, no foam or bubbles, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5215",
+      "names": {
+        "fr": "Vin blanc sec",
+        "en": "Wine, white, dry",
+        "es": "Vino blanco seco"
+      },
+      "source_sha256": "8e1886464c31a7cf9020ee1e08594d34c81fd7622d2b2be200fb9e08409c1f53",
+      "image": "ciqual-5215.webp",
+      "sha256": "bdd92e53f1116dab0f2affc7f83298aa7fb0167300854e58d75f41ae526e60b7",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: DRY WHITE WINE, clear very pale straw-gold still liquid, no sweetness symbols or bubbles, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5216",
+      "names": {
+        "fr": "Vin rosé",
+        "en": "Wine, rose",
+        "es": "Vino rosado"
+      },
+      "source_sha256": "8a4a7fc91e4d3329387517818468231c7ed00b163dc3a4160b151ae190b4a44a",
+      "image": "ciqual-5216.webp",
+      "sha256": "87e2da29e95cabe0ed65be83122f277e0ae2bdbb159409549b8af451e4187704",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: ROSE WINE, clear pale salmon-rose still liquid, no fruit or petals, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-5217",
+      "names": {
+        "fr": "Vin cuisiné (alcool évaporé)",
+        "en": "Wine, cooked (alcohol evaporated)",
+        "es": "Vino cocinado (alcohol evaporado)"
+      },
+      "source_sha256": "431980d227b69474c7f65cca2c2b050b65e54e10503f7d894c287951506568fe",
+      "image": "ciqual-5217.webp",
+      "sha256": "807a644484146e4acaa012a93d30e039e96213c69654617aa86a109050464d5d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: COOKED WINE LIQUID of the source category alcohol evaporated, a small shallow amount of still burgundy-brown reduced cooking-wine liquid in a plain dark ceramic bowl, no drinking glass, meat, vegetables, starch, herbs, flame, steam symbols or claim that absence of alcohol can be visually proved.\nServe only the specified subject in one small plain dark ceramic bowl.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-5219",
+      "names": {
+        "fr": "Alcool fort (type rhum), cuisiné (alcool évaporé)",
+        "en": "Rum, cooked (alohol evaporated)",
+        "es": "Bebida espirituosa (tipo ron), cocinada (alcohol evaporado)"
+      },
+      "source_sha256": "17075edba2bb793088d27d3e52e91a067f1863b42f90a94a244a75a1599edcf8",
+      "image": "ciqual-5219.webp",
+      "sha256": "58c002006f11dbde442d047ae58ce968694dd586ee723ec4fb0cd84a8e9cf36b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: COOKED STRONG SPIRIT of the rum-type source category alcohol evaporated, a small shallow amount of still translucent amber-gold reduced cooking-spirit liquid in a plain dark ceramic bowl, no drinking glass, flame, flambé, fruit, cake, herbs or claim that absence of alcohol can be visually proved.\nServe only the specified subject in one small plain dark ceramic bowl.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-11084",
+      "names": {
+        "fr": "Agar (algue), frais, cru",
+        "en": "Seaweed, agar, raw",
+        "es": "Agar (alga), fresco, crudo"
+      },
+      "source_sha256": "e2f53a7a608c1a7b08874090df356f17fb4ebffa15e5d3c1897802aedb0436a3",
+      "image": "ciqual-11084.webp",
+      "sha256": "b3f47f3bb7977147a881adffa688e07e810a80b9adc3d99a337c0a948d0ea121",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: FRESH RAW AGAR SEAWEED with scientific name EUCHEUMA SP., compact small tangle of moist cartilaginous translucent reddish-brown seaweed with cylindrical irregularly branching slightly knobbly fronds, realistic fresh edible red seaweed, NOT Gelidium powder, agar jelly cubes, gelatin sheets, cooked salad, kelp ribbons or dessert, no shells, sand, rice, sesame, dressing or garnish.\nServe only the specified subject in one small plain dark ceramic bowl.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-11085",
+      "names": {
+        "fr": "Agar (algue), séché",
+        "en": "Seaweed, agar, dried",
+        "es": "Agar (alga), seco"
+      },
+      "source_sha256": "f55b5fdee694e4c542312dc07f2a5a429b959511f7ad388edd92fb2419ad9f4c",
+      "image": "ciqual-11085.webp",
+      "sha256": "932f9f6b9c0e61c0290616694a3dac569ac0b4a0592c72fd16b4f9f3b609c77c",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: DRIED AGAR SEAWEED with scientific name GELIDIUM AMANSII, compact small tangle of dry brittle slender finely branching reddish-brown to muted tan seaweed fronds, shrivelled crisp dehydrated texture, NOT wet fresh Eucheuma, white agar powder, gelatin sheets, dessert jelly or wide kelp ribbons, no shells, sand, rice, sesame or garnish.\nServe only the specified subject in one small plain dark ceramic bowl.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-13523",
+      "names": {
+        "fr": "Datte du désert, chair et peau, sans noyau, crue",
+        "en": "Desert date, flesh and skin, pitted, raw",
+        "es": "Dátil del desierto, pulpa y piel, sin hueso, crudo"
+      },
+      "source_sha256": "9cf04e762dc7b3a49b5cc02c950bafad54374d92473cdf2265b0670e62034e7f",
+      "image": "ciqual-13523.webp",
+      "sha256": "9f9510068a5fc22d201d1bf9fbf8ce401b79c53d63a5e197dede882eac062447",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: RAW DESERT DATE flesh and skin WITHOUT STONE, BALANITES AEGYPTIACA, four small oblong pitted fruit halves in one compact group, thin naturally yellow-tan to pale brown skin, sticky ochre-brown to olive-brown flesh and clearly EMPTY elongated stone cavities, all stones removed, not large wrinkled palm dates, no pits, leaves, bark, seed kernel, syrup or garnish.\nPlace only the specified food directly on the dark matte surface, no plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-13547",
+      "names": {
+        "fr": "Kaki de brousse, fruit, cru",
+        "en": "Persimmon, from bush, fruit, raw",
+        "es": "Caqui de monte, fruta, crudo"
+      },
+      "source_sha256": "b3611022ab8086ab743fef6d67daab48b025094757fd2d52d3db70875a8cae68",
+      "image": "ciqual-13547.webp",
+      "sha256": "f758ad7a2d4a5e646d20773d8c112351cda742c6c7a887095b5d21295ada7dd5",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: RAW BUSH PERSIMMON fruit, DIOSPYROS MESPILIFORMIS, three small round yellow to orange-yellow berry-sized fruits with small integral brown calyx cups whose lobes curl back, one cut half reveals soft pale yellow-orange flesh and a few small brown seeds naturally INSIDE, not a large flattened Asian persimmon, no detached seeds, leaves, branch, scale ruler or garnish.\nPlace only the specified food directly on the dark matte surface, no plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76086",
+      "names": {
+        "fr": "Eau minérale Montcalm, embouteillée, plate, très faiblement minéralisée (Auzat, 09)",
+        "en": "Mineral still water (Montcalm), bottled, very lightly mineralized",
+        "es": "Agua mineral Montcalm, embotellada, sin gas, muy débilmente mineralizada (Auzat, 09)"
+      },
+      "source_sha256": "c06a55d007131347086fffee045d111c90eaf9e64c18c4170a5f15a33685868e",
+      "image": "ciqual-76086.webp",
+      "sha256": "e526668c20eb0173950bae7451eebc8bd887cd773ba0bf4143514d5532cc49d2",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: STILL BOTTLED MINERAL WATER shown without its bottle, absolutely still smooth liquid surface with NO rising carbonation bubbles or foam, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76087",
+      "names": {
+        "fr": "Eau minérale Montclar, embouteillée, plate, faiblement minéralisée (Montclar, 04)",
+        "en": "Mineral still water (Montclar), bottled, lightly mineralized",
+        "es": "Agua mineral Montclar, embotellada, sin gas, débilmente mineralizada (Montclar, 04)"
+      },
+      "source_sha256": "896e12ca55b0970e225ca472ea4218fa46504982f3d16a374f6bbaffeb22890b",
+      "image": "ciqual-76087.webp",
+      "sha256": "3d7552a5556517323cfb162367de7521a79fa8d1841159056e1ae1755a95f70b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: STILL BOTTLED MINERAL WATER shown without its bottle, absolutely still smooth liquid surface with NO rising carbonation bubbles or foam, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76088",
+      "names": {
+        "fr": "Eau minérale Nessel, embouteillée, gazeuse, moyennement minéralisée (Soultzmatt, 68)",
+        "en": "Mineral sparkling water (Nessel), bottled, averagely mineralized",
+        "es": "Agua mineral Nessel, embotellada, con gas, medianamente mineralizada (Soultzmatt, 68)"
+      },
+      "source_sha256": "b868e2b769d6ee98897965da8aa3761d884c3645b713a2d90412686a70369be2",
+      "image": "ciqual-76088.webp",
+      "sha256": "396dce8980f8f12a6a8a3ca2aa541b860ad80cf21bc964c2e615e48ec9bec310",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SPARKLING BOTTLED MINERAL WATER shown without its bottle, delicate clearly visible tiny rising carbonation bubbles and a few tiny bubbles attached to the glass, no beer foam head, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76089",
+      "names": {
+        "fr": "Eau minérale Ogeu, embouteillée, gazeuse, faiblement minéralisée (Ogeu-les-Bains, 64)",
+        "en": "Mineral sparkling water (Ogeu), bottled, lightly mineralized",
+        "es": "Agua mineral Ogeu, embotellada, con gas, débilmente mineralizada (Ogeu-les-Bains, 64)"
+      },
+      "source_sha256": "cb374f8b3a975a355944d1ef47c3eb158ae6192d485635a03a831b0e4e145788",
+      "image": "ciqual-76089.webp",
+      "sha256": "85233bec99a2714f356f120eaa20d8181a1dd0157f0057533974a1fd268f33a3",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SPARKLING BOTTLED MINERAL WATER shown without its bottle, delicate clearly visible tiny rising carbonation bubbles and a few tiny bubbles attached to the glass, no beer foam head, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76090",
+      "names": {
+        "fr": "Eau minérale Ogeu, embouteillée, plate, faiblement minéralisée (Ogeu-les-Bains, 64)",
+        "en": "Mineral still water (Ogeu), bottled, lightly mineralized",
+        "es": "Agua mineral Ogeu, embotellada, sin gas, débilmente mineralizada (Ogeu-les-Bains, 64)"
+      },
+      "source_sha256": "39321e2ed91274be35311b97be6a1efe06792c0571aeaf7f34131f6027c87583",
+      "image": "ciqual-76090.webp",
+      "sha256": "2a1b35f11b5effb7272f58c022989142292fb44ec9e457b84f699c4f51a4bbe7",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: STILL BOTTLED MINERAL WATER shown without its bottle, absolutely still smooth liquid surface with NO rising carbonation bubbles or foam, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76091",
+      "names": {
+        "fr": "Eau minérale Prince Noir, embouteillée, plate, riche en sels minéraux (St-Antonin-Noble-Val, 82)",
+        "en": "Mineral still water (Prince Noir), bottled, strongly mineralized",
+        "es": "Agua mineral Prince Noir, embotellada, sin gas, rica en sales minerales (St-Antonin-Noble-Val, 82)"
+      },
+      "source_sha256": "619eeadcff2175f67a19deea711f1cd638140b2a4940c6960cc323f16da7014f",
+      "image": "ciqual-76091.webp",
+      "sha256": "6322ad6fa56c5067845b027c37a42118c146b1174e2dc61db0a392bcd3b04c54",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: STILL BOTTLED MINERAL WATER shown without its bottle, absolutely still smooth liquid surface with NO rising carbonation bubbles or foam, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76092",
+      "names": {
+        "fr": "Eau minérale St-Alban, embouteillée, gazeuse, moyennement minéralisée (St-Alban, 42)",
+        "en": "Mineral sparkling water (St-Alban), bottled, averagely mineralized",
+        "es": "Agua mineral St-Alban, embotellada, con gas, medianamente mineralizada (St-Alban, 42)"
+      },
+      "source_sha256": "65c15a563f5866c07106c182ebc1555b8f894837d1b047bc890a49e9dc8c2569",
+      "image": "ciqual-76092.webp",
+      "sha256": "a05b305866d23970b0ba385abc7345b942ebe698100e54a1564909a42ab5a744",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SPARKLING BOTTLED MINERAL WATER shown without its bottle, delicate clearly visible tiny rising carbonation bubbles and a few tiny bubbles attached to the glass, no beer foam head, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76093",
+      "names": {
+        "fr": "Eau minérale St-Géron, embouteillée, gazeuse, moyennement minéralisée (St-Géron, 43)",
+        "en": "Mineral sparkling water (St-Géron), bottled, averagely mineralized",
+        "es": "Agua mineral St-Géron, embotellada, con gas, medianamente mineralizada (St-Géron, 43)"
+      },
+      "source_sha256": "d40253ecdb72d43da551a868f48158e786e7876d658e92e51c37c8e08dd28f00",
+      "image": "ciqual-76093.webp",
+      "sha256": "b1ca1dc9bddf91aecb04d7fd44a428674a0220325352eae0675247c0b32d4187",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SPARKLING BOTTLED MINERAL WATER shown without its bottle, delicate clearly visible tiny rising carbonation bubbles and a few tiny bubbles attached to the glass, no beer foam head, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76094",
+      "names": {
+        "fr": "Eau minérale St-Michel-de-Mourcairol, embouteillée, gazeuse, moyennement minéralisée (Les Aires, 34)",
+        "en": "Mineral sparkling water (St-Michel-de-Mourcairol), bottled, averagely mineralized",
+        "es": "Agua mineral St-Michel-de-Mourcairol, embotellada, con gas, medianamente mineralizada (Les Aires, 34)"
+      },
+      "source_sha256": "4f7f4c90c3393829ef6d4bf78d0829299f28478ffb598259b10569987bdba987",
+      "image": "ciqual-76094.webp",
+      "sha256": "81b0800ce1a6cb20c6089a8f8e0df43770107afa4ca5dcd9790f744343a2d264",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SPARKLING BOTTLED MINERAL WATER shown without its bottle, delicate clearly visible tiny rising carbonation bubbles and a few tiny bubbles attached to the glass, no beer foam head, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76095",
+      "names": {
+        "fr": "Eau minérale Treignac, embouteillée, plate, très faiblement minéralisée (Treignac, 19)",
+        "en": "Mineral still water (Treignac), bottled, very lightly mineralized",
+        "es": "Agua mineral Treignac, embotellada, sin gas, muy débilmente mineralizada (Treignac, 19)"
+      },
+      "source_sha256": "eedd22d7e632c80912c785f6ea855a12ca6aace328904de5317b94bb705f2499",
+      "image": "ciqual-76095.webp",
+      "sha256": "0d2858a738f0b2debe83546e15f703d99196f356fff778112d43b908cef5c3ec",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: STILL BOTTLED MINERAL WATER shown without its bottle, absolutely still smooth liquid surface with NO rising carbonation bubbles or foam, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76096",
+      "names": {
+        "fr": "Eau minérale Vals, embouteillée, gazeuse, moyennement minéralisée (Vals-les-Bains, 07)",
+        "en": "Mineral sparkling water (Vals), bottled, averagely mineralized",
+        "es": "Agua mineral Vals, embotellada, con gas, medianamente mineralizada (Vals-les-Bains, 07)"
+      },
+      "source_sha256": "8d4e7a28ac3b401bf19db21c48af9cf55165416f6e43f69c7d6527b584a831ff",
+      "image": "ciqual-76096.webp",
+      "sha256": "c7aff2e689475527d6ad66fb4e22e47358d67704bfa61e538117bc00904f3ec0",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: SPARKLING BOTTLED MINERAL WATER shown without its bottle, delicate clearly visible tiny rising carbonation bubbles and a few tiny bubbles attached to the glass, no beer foam head, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76097",
+      "names": {
+        "fr": "Eau minérale Vauban, embouteillée, plate, moyennement minéralisée (St-Amand-les-Eaux, 59)",
+        "en": "Mineral still water (Vauban), bottled, averagely mineralized",
+        "es": "Agua mineral Vauban, embotellada, sin gas, medianamente mineralizada (St-Amand-les-Eaux, 59)"
+      },
+      "source_sha256": "b33119b08719529d5909c0834a2913470aa178df4a046e87ffbbfb14d171f8be",
+      "image": "ciqual-76097.webp",
+      "sha256": "a725632e1b44a4c18c8238063f72a9df4a49f10d363390b4559870f5824b123f",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: STILL BOTTLED MINERAL WATER shown without its bottle, absolutely still smooth liquid surface with NO rising carbonation bubbles or foam, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76101",
+      "names": {
+        "fr": "Eau minérale Mont-Blanc, embouteillée, plate, faiblement minéralisée (Italie)",
+        "en": "Mineral still water (Montblanc), bottled, lightly mineralized",
+        "es": "Agua mineral Mont-Blanc, embotellada, sin gas, débilmente mineralizada (Italia)"
+      },
+      "source_sha256": "25e925e51ab8253a4a4ce6d9ad6c428046dd91ab3a5e9b2784326dd1ac2444f1",
+      "image": "ciqual-76101.webp",
+      "sha256": "2d62440e6ff0aef528f3be9be7c44d2e0316bbe126aed1f334515148713e389a",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: STILL BOTTLED MINERAL WATER shown without its bottle, absolutely still smooth liquid surface with NO rising carbonation bubbles or foam, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76102",
+      "names": {
+        "fr": "Eau minérale Eden (La Goa), embouteillée, plate, faiblement minéralisée (Suisse)",
+        "en": "Mineral still water (Eden La Goa), bottled, lightly mineralized",
+        "es": "Agua mineral Eden (La Goa), embotellada, sin gas, débilmente mineralizada (Suiza)"
+      },
+      "source_sha256": "a258532681d8f8268cb97e3635c52b8db6f708a423309ff94a39a7c2053cf222",
+      "image": "ciqual-76102.webp",
+      "sha256": "7caa12796e657b51d8b613ef4915cf9107b5ed0876f2947892fe3a0aa69c1603",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: STILL BOTTLED MINERAL WATER shown without its bottle, absolutely still smooth liquid surface with NO rising carbonation bubbles or foam, mineral level and source remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-76103",
+      "names": {
+        "fr": "Eau minérale Velleminfroy, embouteillée, gazeuse ou plate, riche en sels minéraux (Chatenois, 70)",
+        "en": "Mineral water (Velleminfroy), bottled, strongly mineralized",
+        "es": "Agua mineral Velleminfroy, embotellada, con gas o sin gas, rica en sales minerales (Chatenois, 70)"
+      },
+      "source_sha256": "cf86438a3703e1c59b951dee80191fcd89b52d3df21cc1abd7dfc1fc3b2fef27",
+      "image": "ciqual-76103.webp",
+      "sha256": "7747253bfb7330c85d8be8457676684e60fd4f365a644d2cf9cbde0f67170d59",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: BOTTLED MINERAL WATER in the source sparkling-or-still category, choose the STILL OPTION with a smooth quiet surface and NO rising carbonation bubbles or foam, source and mineral level remain metadata only, absolutely colourless clear water, no fruit, flavour-colour, sediment, decorative mineral crystals, brand imagery or labels, only the liquid in one short plain unbranded transparent tumbler, entire glass visible, no ice, fruit pieces, citrus peel, sugar rim, straw, bottle, carton, logo, utensil or garnish unless an integral ingredient is explicitly named in this subject.\nOnly the single plain transparent glass and its specified liquid on the dark matte surface, no bowl, plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-96778",
+      "names": {
+        "fr": "Pâte à pizza, préemballée, cuite",
+        "en": "Pizza dough, prepacked, cooked",
+        "es": "Masa de pizza, envasada, cocida"
+      },
+      "source_sha256": "28d217fc4a83d2821ec2ae8aac72bd942aa885cbcd894dd421c8bbc6c226b047",
+      "image": "ciqual-96778.webp",
+      "sha256": "44bd38dd62d44660882c56308fa46fd30309074a09dbd28de45200e7de611a0c",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: COOKED PREPACKED PIZZA DOUGH shown unwrapped as one small completely PLAIN BAKED ROUND PIZZA BASE, pale golden baked flatbread with a lightly puffed golden rim and fine baked brown spots, completely EMPTY with NO tomato, cheese, herbs, vegetables, meat, flour dusting, rolling pin, cardboard, paper or garnish, not raw white dough.\nPlace only the specified food directly on the dark matte surface, no plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-96781",
+      "names": {
+        "fr": "Amidon de riz",
+        "en": "Rice starch",
+        "es": "Almidón de arroz"
+      },
+      "source_sha256": "8ed9f0ef5fc0a4d77aa353ac88b1ae1879d9122cb6dd7a3253ce57f6a3937b21",
+      "image": "ciqual-96781.webp",
+      "sha256": "9df773a022edeb6f7a9d4dfd086fe54cdea74110e7a288c059bcbb74b50ba971",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: dry RICE STARCH, small compact low mound of very fine bright white silky starch powder with tiny natural soft clumps, not rice grains, rice flakes, cooked rice, flour bag or wet porridge, no scoop, liquid or garnish.\nServe only the specified subject in one small plain dark ceramic bowl.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-26241",
+      "names": {
+        "fr": "Empereur, filet, sans peau, cru",
+        "en": "Blue shark, fillet, without skin, raw",
+        "es": "Tiburón azul o tintorera (Prionace glauca), filete, sin piel, crudo"
+      },
+      "source_sha256": "e88e205cdbd78a78fd18a4ab62a47babb10047e1afd9f50f883696a97e115cbe",
+      "image": "ciqual-26241.webp",
+      "sha256": "5930f0317bbb5a4586232c84641ee45d55780b05f6141a26ab683f2048e19253",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: one RAW SKINLESS EMPEREUR OR ROUGHY FILLET of HOPLOSTETHUS SPP., the scientific genus documented in the original food record, compact elongated tapered pearly ivory-white moist fish flesh with fine natural muscle flakes and a faint pinkish seam, NO skin, scales, bones, fin, whole fish, shark steak, breading, cooked sear marks, lemon, herbs, ice or garnish.\nPlace only the specified food directly on the dark matte surface, no plate or props.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-25164",
+      "names": {
+        "fr": "Osso buco de veau à la milanaise (jarret de porc , légumes, vin blanc)",
+        "en": "Osso buco from veal (with vegetables and white wine), homemade",
+        "es": "Ossobuco de ternera a la milanesa (jarrete de cerdo, verduras, vino blanco)"
+      },
+      "source_sha256": "76a25b74b6bc9c1b2c73b3a0f6faeb132401494cb345f61914c8811768f5afa8",
+      "image": "ciqual-25164.webp",
+      "sha256": "c8dce4f1e77bc055348ea021908d2dbd729223e5fa49d1424c34488d62569861",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph.\nImage 1 is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture and quiet premium framing. Do not reproduce its food.\nSubject: MILANESE-STYLE OSSOBUCO represented as BRAISED VEAL SHANK WITH VEGETABLES AND WHITE WINE, one compact thick cross-cut cooked veal shank with its round central marrow bone and tender grey-brown meat fibres in a little light amber white-wine braising sauce with a few small cooked carrot, onion and celery pieces incorporated, representative vegetable selection, NOT pork hock with crackling, no risotto, rice, polenta, potato, gremolata herb garnish, wine glass or side dish.\nServe only the specified subject in one small plain dark ceramic bowl.\nEntire food and container visible, centered, occupying roughly 55-65% of the square frame, generous dark negative space. Elevated front 3/4 for solids and glasses; high 3/4 or overhead for bowls. Recognizable silhouette at 48x48 pixels. Respect raw versus cooked, dry versus reconstituted, diluted versus concentrated and all specified ingredients. No text, lettering, logos, watermark, hands, utensils, wrappers or packaging. No added garnish, toppings, sauces or ingredients beyond the specified subject. Opaque dark background, square 1:1, 1024x1024. Illustrative Gymnasia image, not provided or validated by ANSES. Generic categories are representative illustrations, not official fixed recipes. The visible quantity is not a recommended serving.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    }
+  ]
+}
