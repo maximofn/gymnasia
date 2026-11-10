@@ -40,59 +40,63 @@ aunque su PR siga abierta. Volver a consultar GitHub y los manifiestos al empeza
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 3.103 de 3.484 |
-| Porcentaje | 89,06 % |
-| Pendientes | 381 |
-| Última tanda | `0049`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 446](https://github.com/maximofn/gymnasia/pull/446) |
-| PR abierta para la siguiente fusión | [PR 447](https://github.com/maximofn/gymnasia/pull/447) |
-| Commit de las imágenes de esa PR | `afc211ae62d175f83fe4dbd05ae6f22992c6c7d1` |
-| Siguiente tanda si no hay trabajo posterior | `0050` |
+| Imágenes registradas | 3.203 de 3.484 |
+| Porcentaje | 91,93 % |
+| Pendientes | 281 |
+| Última tanda | `0050`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 447](https://github.com/maximofn/gymnasia/pull/447) |
+| PR abierta para la siguiente fusión | [PR 448](https://github.com/maximofn/gymnasia/pull/448) |
+| Commit de las imágenes de esa PR | `6e7a161c7a1ae17df7eebbc04dd5141f0c2f5efb` |
+| Siguiente tanda si no hay trabajo posterior | `0051` |
 
-La PR 446 se fusionó el 10 de noviembre de 2026 con los cinco checks correctos
-del head `e519ae8ef1415c29555eae07e754761d13cda1be`, protegido con
+La PR 447 se fusionó el 10 de noviembre de 2026 con los cinco checks correctos
+del head `195ad14cffa803bcd063001393ed99961f2ee7c9`, protegido con
 `--match-head-commit`, tras comprobar que solo incluía imágenes y documentación.
 Después se actualizó la rama por avance rápido. La nueva PR queda abierta para
 la siguiente revisión o «más»; consultar los checks de su SHA actual antes de fusionar.
 
-La tanda 0049 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0050 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Incluye 33 piezas de crepería y pastelería y 67 aguas minerales. Se generó una
-imagen independiente por alimento con Codex integrado y una referencia de estilo
-aprobada por llamada. Se revisaron todos los WebP finales en nueve hojas de contacto,
-y a tamaño completo: `ciqual-23804`, `ciqual-76000`, `ciqual-76002`.
+Incluye cortes de vacuno, ternera y caballo, carnes de valor medio y ocho panes.
+Se generó una imagen independiente por alimento con Codex integrado y una
+referencia de estilo aprobada por llamada. Se revisaron todos los WebP finales
+en nueve hojas de contacto,
+y a tamaño completo: `ciqual-6001`, `ciqual-6522`, `ciqual-6582`, `ciqual-6580`.
 
 Las 100 salidas iniciales pasaron la revisión visual; no fue necesario regenerar
 imágenes.
 No se sobrescribieron tandas anteriores. El checkpoint conserva los recibos con
 los PNG originales y los prompts exactos enviados antes de convertir a WebP.
 
-Los pasteles vascos de crema y cereza siguen las variantes del
-[Musée du Gâteau Basque](https://www.legateaubasque.com/la-recette-du-gateau-basque-traditionnel/).
-El Creusois mantiene la avellana incorporada, conforme a
-[Maison Jacquemart](https://maisonjacquemart.com/nos-gateaux/la-patisserie/le-moelleux-creusois-aux-noisettes/).
-El gofre de chocolate se representa con cobertura como variante ilustrativa,
-contrastada con un [fabricante](https://www.lotusbakeries.fr/produits/tendre-gaufre-au-chocolat),
-sin marca ni envase y sin atribuir una receta fija a CIQUAL.
+Se respetan cortes crudos y cocinados, hueso y parte magra, piezas y picados,
+hervido, estofado, parrilla o sartén y asado. Las carnes para bourguignon o
+pot-au-feu se representan solas, no como el plato completo. Los panes precocidos
+mantienen su corteza pálida y las biscotes su textura seca y tostada. No se añaden
+guarniciones, salsas, verduras, hierbas ni ingredientes de hamburguesa.
 
-Se respetan creps vacíos y rellenos, bolitas de cereales dentro del chocolate,
-pancakes con y sin relleno, gofres con y sin cobertura, donuts sin relleno o con
-mermelada o chocolate, fruta y frutos de cáscara incorporados, espirales rellenas,
-pepitas y capas de chocolate y leche con su cobertura cuando corresponde.
-`ciqual-23801` es un crep flexible de sarraceno según FR/EN, pese a galleta en ES.
-El metadato ARCHIVE de `ciqual-23881` se conserva en el nombre y no se dibuja.
+Côte con hueso y entrecôte deshuesada siguen la descripción de
+[INTERBEV](https://www.la-viande.fr/sites/default/files/documentheque/connaitre_choisir_cuisiner_la_viande_de_boeuf_recettes.pdf).
+Hampe y onglet mantienen forma y fibras largas de [los cortes del boucher](https://www.la-viande.fr/cuisine-achat/cuisiner-viande/cuisiner-boeuf/morceaux-boucher).
+Jarret se interpreta como jarrete o morcillo según FR/ES; carré de ternera
+conserva las costillas conforme a [INTERBEV](https://www.la-viande.fr/cuisine-achat/cuisiner-viande/cuisiner-veau/morceaux/cotes-veau).
 
-Cada agua tiene una llamada independiente y un único vaso transparente liso,
-sin botella, etiqueta ni marca. Se representan 34 sin gas y 27 con gas según
-la ficha. En las seis que permiten con gas o sin gas (`ciqual-76010`,
-`ciqual-76032`, `ciqual-76043`, `ciqual-76059`, `ciqual-76074`, `ciqual-76076`)
-se elige la opción sin gas como representación. La mineralización, procedencia y
-marca no se inventan con colores, cristales, símbolos o envases. No se añaden
-hielo, cítricos, hierbas ni adornos.
+`ciqual-6522`, `ciqual-6523` y `ciqual-6524` representan noix de veau como músculo
+de la cara interna del muslo según [INTERBEV](https://www.la-viande.fr/cuisine-achat/cuisiner-viande/cuisiner-veau/morceaux/noix-noix-patissiere-sous-noix)
+y FR/ES, distinto del filet de `ciqual-6530` y `ciqual-6531`. La traducción inglesa
+tenderloin de las tres fichas noix se conserva sin darla por verificada. No se
+cambian los nombres oficiales ni la fuente nutricional.
+
+La cabeza cocida de `ciqual-6582` se muestra deshuesada, enrollada y cortada,
+como presentación culinaria documentada en la [descripción de casquería](https://www.economie.gouv.fr/files/files/directions_services/daj/media-document/abats.pdf)
+y una [preparación de INTERBEV](https://www.la-viande.fr/recettes/produits-tripiers/tournedos-tete-veau-marmelade-tiede-lentilles-vinaigre-balsamique),
+sin acompañamientos ni cara de animal. La pata cruda se contrastó con
+[Triperie Française](https://triperiefrancaise.fr/fiche_Pied-de-veau_47_Veau.html), sin copiar
+sus guarniciones. Las imágenes no son instrucciones de cocción.
 
 Los nombres FR/EN/ES quedan exactos. Son ilustraciones propias, no proporcionadas
 ni validadas por ANSES; la cantidad visible no representa 100 g ni una ración
-recomendada y el aspecto no acredita propiedades, mineralización, origen o marca.
+recomendada y el aspecto no acredita porcentaje de grasa, especie, ausencia de
+gluten u origen.
 Siguen sin integración móvil. No cambian fichas, nutrientes, traducciones ni código.
 
 Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
@@ -101,8 +105,8 @@ azul. Se apartaron sin modificar las fichas oficiales ni inventar una especie.
 
 ## Relevo para un chat nuevo
 
-La tanda `0049` está terminada, revisada, validada y subida en la PR 447.
-La carpeta `0050` todavía no existe y no hay una tanda parcial que reanudar.
+La tanda `0050` está terminada, revisada, validada y subida en la PR 448.
+La carpeta `0051` todavía no existe y no hay una tanda parcial que reanudar.
 La siguiente generación empieza con una nueva orden de continuación del
 mantenedor; la PR nueva se deja abierta.
 
@@ -110,8 +114,8 @@ Trabajar en `/Users/macm1/Documents/proyectos/gymnasia`, aunque el chat se abra
 en otro worktree. Confirmar allí la rama `codex/ciqual-food-image-samples` y el
 estado real antes de escribir. Conservar los archivos no rastreados del mantenedor.
 
-Los archivos versionados de `0049` bastan para continuar: 100 WebP y manifiesto
-con prompts exactos. Como recuperación opcional, `/tmp/ciqual-0049/` conserva
+Los archivos versionados de `0050` bastan para continuar: 100 WebP y manifiesto
+con prompts exactos. Como recuperación opcional, `/tmp/ciqual-0050/` conserva
 `selection.json`, `plan.json`, `receipts.jsonl`, `review/notes.json` y las nueve
 hojas `review/contact-01.jpg` a `review/contact-09.jpg`. Los recibos identifican
 los PNG y prompts antes de la conversión. No depender de esos temporales ni
@@ -154,7 +158,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0049/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0050/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
