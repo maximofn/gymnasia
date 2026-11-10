@@ -40,60 +40,58 @@ aunque su PR siga abierta. Volver a consultar GitHub y los manifiestos al empeza
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 2.903 de 3.484 |
-| Porcentaje | 83,32 % |
-| Pendientes | 581 |
-| Última tanda | `0047`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 444](https://github.com/maximofn/gymnasia/pull/444) |
-| PR abierta para la siguiente fusión | [PR 445](https://github.com/maximofn/gymnasia/pull/445) |
-| Commit de las imágenes de esa PR | `9593aad3e7eb01e6a49a6f43d65a06cdaf31f607` |
-| Siguiente tanda si no hay trabajo posterior | `0048` |
+| Imágenes registradas | 3.003 de 3.484 |
+| Porcentaje | 86,19 % |
+| Pendientes | 481 |
+| Última tanda | `0048`, con 100 imágenes revisadas |
+| PR anterior fusionada | [PR 445](https://github.com/maximofn/gymnasia/pull/445) |
+| PR abierta para la siguiente fusión | [PR 446](https://github.com/maximofn/gymnasia/pull/446) |
+| Commit de las imágenes de esa PR | `853121b024e5a61a92974b511e3437599ab9821d` |
+| Siguiente tanda si no hay trabajo posterior | `0049` |
 
-La PR 444 se fusionó el 10 de noviembre de 2026 con los cinco checks correctos
-del head `65554f78184068b08697f224084c9464013ed232`, protegido con
+La PR 445 se fusionó el 10 de noviembre de 2026 con los cinco checks correctos
+del head `ddd4fdc0a1f8e08cc0c6b902559d1d5bdaa66e92`, protegido con
 `--match-head-commit`, tras comprobar que solo incluía imágenes y documentación.
 Después se actualizó la rama por avance rápido. La nueva PR queda abierta para
 la siguiente revisión o «más»; consultar los checks de su SHA actual antes de fusionar.
 
-La tanda 0047 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0048 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Incluye vegetales de Martinica, soja, algas y cortes de ovino. Se generó una
-imagen independiente por alimento con Codex integrado y una referencia de estilo
-aprobada por llamada. Se revisaron todos los WebP finales en nueve hojas de contacto,
-y a tamaño completo: `ciqual-20803`, `ciqual-20826`, `ciqual-20982`, `ciqual-20999`, `ciqual-20989`.
+Incluye huevos y preparaciones, pastelería, masas y tres carnes pendientes.
+Se generó una imagen independiente por alimento con Codex integrado y una referencia
+de estilo aprobada por llamada. Se revisaron todos los WebP finales en nueve hojas
+de contacto, y a tamaño completo: `ciqual-23005`, `ciqual-23008`, `ciqual-23424`, `ciqual-23474`, `ciqual-23472`, `ciqual-23480`, `ciqual-23680`, `ciqual-23684`.
 
-Se regeneró `ciqual-20999` porque la Alaria provisional se parecía a hojas
-terrestres. La salida final muestra cintas largas de kelp con nervio central
-continuo; se inspeccionó a tamaño completo y se actualizó la sexta hoja. El
-checkpoint conserva la hoja inicial y el prompt original.
+Las 100 salidas iniciales pasaron la revisión visual; no fue necesario regenerar
+imágenes.
 No se sobrescribieron tandas anteriores. El checkpoint conserva los recibos con
 los PNG originales y los prompts exactos enviados antes de convertir a WebP.
 
-Macabo y dachine se representan como pulpas de cormos, no como col de hojas,
-conforme a [IRD](https://horizon.documentation.ird.fr/exl-doc/pleins_textes/pleins_textes_5/b_fdi_14-15/17656.pdf).
-Para `ciqual-20826` se adoptó la interpretación regional de topinambour tropical
-(Calathea allouia) a partir de [FREDON Martinique](https://www.biodiversite-martinique.fr/sites/default/files/fredon_ndeg01_-_agro-ecologie_en_martinique_quelles_associations_de_cultures_pour_la_martinique_2013.pdf).
-Es una inferencia por el contexto de Martinica, frente al inglés Jerusalem
-artichoke; la traducción de especie no se da por verificada ni se cambia la ficha.
-En `ciqual-20821` se siguen los gombos enteros al vapor de FR/ES, sin añadir el
-líquido de conserva que sugiere el inglés discrepante.
+Paris-Brest mantiene choux y crema praliné con mantequilla, conforme a
+[Elle & Vire Professionnel](https://www.elle-et-vire.com/int/fr/pro/recettes/paris-brest/).
+Las capas de Joconde, crema de café y ganache del Ópera se contrastaron con
+[Première Moisson](https://premieremoisson.com/fr/produits/patisseries/patisseries-individuelles/opera1).
+El kouign-amann sigue plegado y caramelizado de masa, mantequilla y azúcar, como
+explica [Bretagne Culture Diversité](https://www.bcd.bzh/expo-pci/assets/recettes/Recettes-FR.pdf).
+Las cornes de gazelle llevan relleno de almendra y azúcar glas de la ficha,
+contrastados con [L’atelier des Chefs](https://www.atelierdeschefs.fr/recettes/3085/corne-de-gazelle/).
+No se incorporan decoraciones opcionales de esas recetas.
 
-La espirulina fresca mantiene su forma de pasta, como documenta el
-[productor](https://www.spirulinedusoleil.fr/fr/actualites/2-pate-de-spiruline-fraiche.html).
-La criste marine se representa como planta costera de hojas carnosas, según el
-[Parc national des Calanques](https://calanques-parcnational.fr/explorer-comprendre/flore/flore-vasculaire/fenouil-de-mer),
-y no como una lámina de alga pese al prefijo inglés Seaweed. Las algas siguen
-las identidades de [CEVA](https://www.ceva-algues.com/en/document/nutritional-data-sheets-on-algae/)
-y los rasgos de [MarLIN](https://www.marlin.ac.uk/species/detail/1291), manteniendo
-el estado seco, las láminas, filamentos, nervios o vesículas según corresponda.
+`ciqual-22509` usa cebollino de FR/ES frente al inglés genérico herbs.
+`ciqual-23024` representa el macaron francés de dos conchas rellenas, distinto
+del rocher de coco `ciqual-23033`. `ciqual-23456` representa el chou relleno de
+chantilly explícito en FR/EN, sin añadir la estructura de otra variante de
+Saint-Honoré. Para el éclair se elige chocolate como sabor ilustrativo: FR/EN
+no fijan el sabor y ES lo menciona. No se modifican los nombres de origen.
 
-Se respetan piel, semillas, escurrido, pulpa rallada, orden de congelación y cocción,
-polvos, pastas, tofu y tempeh, así como hueso, parte magra y preparación de cada
-corte de ovino. No se añaden salsas, especias o guarniciones. Los nombres FR/EN/ES
-se conservan exactos; las propiedades, variedades y procedencias no se demuestran
-con símbolos inventados. Las imágenes siguen sin integración móvil y son
-ilustraciones propias, no proporcionadas ni validadas por ANSES ni raciones
-recomendadas.
+Se distinguen claras y yemas líquidas, cocidas y en polvo; huevos de distintas
+especies enteros y crudos; masas crudas, congeladas y cocidas; profiteroles con
+helado frente a crema pastelera; galettes con manzana frente a frangipane;
+brownies con y sin frutos de cáscara. No se añaden coberturas o rellenos ajenos.
+Las imágenes son ilustrativas: la cantidad visible no representa 100 g ni una
+ración recomendada, y el aspecto no certifica especie, origen o propiedades
+nutricionales. Siguen sin integración móvil y no están proporcionadas ni validadas
+por ANSES. No cambian fichas, nutrientes, traducciones ni código móvil.
 
 Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
 y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tiburón
@@ -101,8 +99,8 @@ azul. Se apartaron sin modificar las fichas oficiales ni inventar una especie.
 
 ## Relevo para un chat nuevo
 
-La tanda `0047` está terminada, revisada, validada y subida en la PR 445.
-La carpeta `0048` todavía no existe y no hay una tanda parcial que reanudar.
+La tanda `0048` está terminada, revisada, validada y subida en la PR 446.
+La carpeta `0049` todavía no existe y no hay una tanda parcial que reanudar.
 La siguiente generación empieza con una nueva orden de continuación del
 mantenedor; la PR nueva se deja abierta.
 
@@ -110,11 +108,10 @@ Trabajar en `/Users/macm1/Documents/proyectos/gymnasia`, aunque el chat se abra
 en otro worktree. Confirmar allí la rama `codex/ciqual-food-image-samples` y el
 estado real antes de escribir. Conservar los archivos no rastreados del mantenedor.
 
-Los archivos versionados de `0047` bastan para continuar: 100 WebP y manifiesto
-con prompts exactos. Como recuperación opcional, `/tmp/ciqual-0047/` conserva
+Los archivos versionados de `0048` bastan para continuar: 100 WebP y manifiesto
+con prompts exactos. Como recuperación opcional, `/tmp/ciqual-0048/` conserva
 `selection.json`, `plan.json`, `receipts.jsonl`, `review/notes.json` y las nueve
-hojas `review/contact-01.jpg` a `review/contact-09.jpg`; la sexta hoja inicial
-se conserva en `review/contact-06-initial.jpg`. Los recibos identifican
+hojas `review/contact-01.jpg` a `review/contact-09.jpg`. Los recibos identifican
 los PNG y prompts antes de la conversión. No depender de esos temporales ni
 regenerar tandas terminadas si faltan.
 
@@ -155,7 +152,7 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0047/manifest.json),
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0048/manifest.json),
   que conserva los prompts exactos de los últimos 100 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
