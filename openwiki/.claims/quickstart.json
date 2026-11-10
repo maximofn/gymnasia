@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:92489d4205bba4401c91a1b6af35cff4fb59b9508eb6cb9c8aa3e6dbd85d180a",
+  "pageVersion": "sha256:dac8be77e4ab8037bdb042dc7dae4e8a1e8f0dbd9381f7c42916e7b32ebb6b7a",
   "claims": [
     {
       "id": "claim_546dc48f876c41c98cff85c957a00442",
@@ -161,26 +161,14 @@
       "statement": "La evidencia operativa disponible del runtime del agente es una muestra marcada como truncada y con tokens y coste no disponibles y cobertura parcial; debe orientar investigación junto con los contratos y pruebas focalizadas, no representar tasas de flota ni sustituirlas.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/agent/providerToolLoop.ts",
-          "version": "repo-file-v1:sha256:d871e53403c0eff6b51a2607317136e2536e7562374893b4f785e13cdd6138f6"
-        },
-        {
-          "resource": "repo://apps/mobile/agent/toolOperationLedger.ts",
-          "version": "repo-file-v1:sha256:76e5595680425b4da4fc47c222059fb1980a7cff8baab3a2d1dfe8a02e86a538"
-        },
-        {
-          "resource": "repo://ops/openwiki-runtime-telemetry.json#L53-L75",
-          "version": "repo-lines-v1:sha256:0a41cb76d596efa1add38a2cd80d297e91b6c77c4a37c5cf60548e99d665723d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkMDhjMDA4NmRmMjYwZDlkZTQ5NDQ2NTFjMDEzZDE5MTdiYmE5ZGJlZTc3YjIxMGI2NjA0NjQxMTFmMTU4MTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxOTRlNGU1Yzg5NWYzZTQ5NTdhYTczNWJlYTVkYWUyOGRhZjU4MGI4MDJmMWQ1ZWE2OTUyOTUyMDJkNDlhZWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIyZmQ5MGE1YmJhMGI1MjYzZGQzN2M3NGNjYjFjYzJkYThkNDlmMWVhNGVmOWIxMTVlYzZkZjJjNGY3NzcxOTIifQ"
-        },
-        {
-          "resource": "repo://ops/openwiki-runtime-telemetry.json#L9-L13",
-          "version": "repo-lines-v1:sha256:c6ff8438b06f0d2c0cc9cb8a32ea015b8d4cee10b0a970d1900e80119300b29b:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjFhMTdiYzVhNDM3MGZmYmI2MTlhZTU1OTE1MGJhOTIwMTFkNmJmYWRkOTE4NjRmMzMyN2NiOTMxOWMwMmQzMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWY3MDIxYzhkNzliYTc0N2NjMzIwMDI3MmQxOTRlOTExYzUyYzQyMzZkZDkwZTZiMmFkOGY3NDNjMmM1Y2MwNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWMwZTJlNThkNjRlYWZmNjM0YTdmNzk1NDM2Y2M1YjU0YThlYmQ4NDg4OWJjMzJlYzNmZWVjZDNjZmM2YWY5MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDc0YmY2N2RjNDJhYTU5NDFmMmM4NmVmNjBiZTRlMmFiZmMxOTE4MzU5MDE0MTQ3NmI2YzM4ZWViYzI3ZTJjNiJ9"
+          "resource": "repo://ops/openwiki-runtime-telemetry.json",
+          "version": "repo-file-v1:sha256:e0fc5470d3cd6341f56869c9570c1215be4f0d085da9d2142150887d006663ca"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-11-06T15:26:57.218Z"
+    "at": "2026-11-10T15:53:08.815Z"
   }
 }

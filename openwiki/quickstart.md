@@ -1,17 +1,13 @@
 ---
 type: guía de enrutamiento de cambios
-title: Guía de inicio para cambios seguros
-description: Ruta breve para localizar el dominio responsable de un cambio en Gymnasia y escoger la validación mínima correspondiente. Incluye la investigación cautelosa de comportamiento real del agente sin confundir una muestra con cobertura de flota.
+title: Guía de inicio y mapa de cambio
+description: Ruta breve para localizar el dominio responsable de un cambio en Gymnasia y escoger la validación mínima correspondiente. Delimita el uso de la telemetría del agente frente a contratos y pruebas ejecutables.
 tags: [quickstart, change-routing, mobile, operations, local-first, agent, runtime]
 sources:
   - id: openwiki-source-88e87a6a49f8c4bba044cff2
     resource: repo://apps/anthropic_proxy/README.md
   - id: openwiki-source-45602fc0f28e2e3187ce8790
     resource: repo://apps/feedback-worker/README.md
-  - id: openwiki-source-b14a4ecd65e83b5561f88e2a
-    resource: repo://apps/mobile/agent/providerToolLoop.ts
-  - id: openwiki-source-9e7ddd51c09caf628a81acad
-    resource: repo://apps/mobile/agent/toolOperationLedger.ts
   - id: openwiki-source-12bdb95b5f863aab1ff9964a
     resource: repo://apps/mobile/index.js
   - id: openwiki-source-e86fe7b76c693666bc2cb828
@@ -26,13 +22,13 @@ sources:
     resource: repo://scripts/catalogs/generate.mjs
   - id: openwiki-source-92ee27e969d35b12e4aae573
     resource: repo://scripts/data-inventory/check.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-11-06T15:26:57.218Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-10T15:53:08.815Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-11-06T15:26:57.218Z
+    at: 2026-11-10T15:53:08.815Z
 ---
 
-# Guía de inicio para cambios seguros
+# Guía de inicio y mapa de cambio
 
 Gymnasia tiene una única aplicación de producto en `apps/mobile`, ejecutable con Expo en Android, iOS y web. Es local-first: el dispositivo conserva el estado de entrenamiento, dieta, mediciones, conversaciones, preferencias y configuración BYOK; no hay una API de producto ni sincronización central obligatoria. Antes de añadir red, identidad o una dependencia remota, lea [Arquitectura del sistema](architecture/overview.md).
 
@@ -91,7 +87,7 @@ La exportación web y las pruebas deterministas no prueban capacidades nativas. 
 
 ### Investigar el runtime del agente
 
-Para una pregunta de comportamiento, latencia, coste, errores o uso real, siga primero [Runtime del agente y herramientas](agent/runtime.md) para distinguir turnos, reintentos, rondas, presupuesto y efectos; consulte después el [informe consolidado de runtime](operations/runtime-behavior.md) para la señal agregada y sus hipótesis. La evidencia disponible es una muestra truncada: sirve para priorizar investigación, **no** sustituye pruebas focalizadas ni representa tasas de flota, disponibilidad, frecuencia, coste o latencia poblacional. No atribuya una llamada o duración agregada a un mensaje, una tool o una escritura sin contrastarla con el control de flujo y el contrato del dominio.
+Para una pregunta de comportamiento, latencia, coste, errores o uso real, siga primero [Runtime del agente y herramientas](agent/runtime.md) para distinguir turnos, reintentos, rondas, presupuesto y efectos; consulte después el [informe consolidado de runtime](operations/runtime-behavior.md) para la señal agregada y sus hipótesis. La evidencia disponible es una muestra con ventana truncada; los campos de tokens y coste figuran como no disponibles y con cobertura parcial. Sirve para priorizar investigación, **no** sustituye contratos ni pruebas focalizadas, ni representa tasas de flota, disponibilidad, frecuencia, coste o latencia poblacional. No atribuya una llamada o duración agregada a un mensaje, una tool o una escritura sin contrastarla con el control de flujo y el contrato del dominio.
 
 Para modificaciones de privacidad, no basta con que la UI funcione: actualice y compruebe el inventario de datos cuando cambien claves locales, hosts HTTPS o permisos, y añada el check legal o la E2E de privacidad/borrado si cambia la experiencia o el contenido publicado. Para contenido, `check:*` detecta *drift* sin escribir; use `sync:catalogs` solo cuando deba materializar y revisar artefactos derivados. `check:catalogs` valida todos los dominios; para materializar una salida limitada, use `node scripts/catalogs/generate.mjs --write --domain <dominio>`.
 
