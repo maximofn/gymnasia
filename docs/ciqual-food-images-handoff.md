@@ -35,103 +35,108 @@ antes de fusionar. No eludir una aprobación de instrucciones del agente o de bu
 Estado comprobado el **10 de noviembre de 2026**, incluyendo la última tanda
 aunque su PR siga abierta. Volver a consultar GitHub y los manifiestos al empezar.
 
+**La generación del catálogo está completa: 3.484 imágenes registradas, cero pendientes.**
+Las imágenes siguen sin integración móvil. La última PR queda abierta para revisión.
+
 | Dato | Valor |
 | --- | --- |
 | Repositorio local | `/Users/macm1/Documents/proyectos/gymnasia` |
 | GitHub | `maximofn/gymnasia` |
 | Rama que se conserva | `codex/ciqual-food-image-samples` |
-| Imágenes registradas | 3.403 de 3.484 |
-| Porcentaje | 97,68 % |
-| Pendientes | 81 |
-| Última tanda | `0052`, con 100 imágenes revisadas |
-| PR anterior fusionada | [PR 449](https://github.com/maximofn/gymnasia/pull/449) |
-| PR abierta para la siguiente fusión | [PR 450](https://github.com/maximofn/gymnasia/pull/450) |
-| Commit de las imágenes de esa PR | `be9de216122f5fa12cd1d179a85d5b80e1845740` |
-| Siguiente tanda si no hay trabajo posterior | `0053` |
+| Imágenes registradas | 3.484 de 3.484 |
+| Porcentaje | 100,00 % |
+| Pendientes | 0 |
+| Última tanda | `0053`, con 81 imágenes revisadas |
+| PR anterior fusionada | [PR 450](https://github.com/maximofn/gymnasia/pull/450) |
+| PR abierta para la siguiente fusión | [PR 451](https://github.com/maximofn/gymnasia/pull/451) |
+| Commit de las imágenes de esa PR | `da9c12c482eae6fb62008c13dce41eb49ab8d780` |
+| Siguiente tanda | No hay alimentos pendientes |
 
-La PR 449 se fusionó el 10 de noviembre de 2026 con los cinco checks correctos
-del head `e88383edec8d21c4b96cb4a97d61bc436888c6cc`, protegido con
+La PR 450 se fusionó el 10 de noviembre de 2026 con los cinco checks correctos
+del head `7a415a34d6e5c4d26ea209abba5ee3545867336c`, protegido con
 `--match-head-commit`, tras comprobar que solo incluía imágenes y documentación.
 Después se actualizó la rama por avance rápido. La nueva PR queda abierta para
 la siguiente revisión o «más»; consultar los checks de su SHA actual antes de fusionar.
 
-La tanda 0052 pasó los 33 tests del catálogo, `check:ciqual:images`,
+La tanda 0053 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
-Incluye 36 alimentos de charcutería y quenelles, 8 alternativas vegetales o
-productos mixtos y 56 zumos y néctares. Se generó una imagen independiente por
-alimento con Codex integrado y una referencia de estilo aprobada por llamada.
+Se generó una imagen independiente por alimento con Codex integrado y una
+referencia de estilo aprobada por llamada.
 
-Se revisaron los 100 WebP finales en nueve hojas de contacto y, a tamaño completo:
-`ciqual-8328`, `ciqual-8501`, `ciqual-2014`.
+Se revisaron los 81 WebP finales en siete hojas de contacto y, a tamaño completo:
+`ciqual-1010`, `ciqual-11084`, `ciqual-13523`, `ciqual-96778`, `ciqual-26241`,
+`ciqual-25164`.
 
-Las 100 salidas iniciales pasaron la revisión visual; no fue necesario regenerar
-imágenes. El checkpoint conserva los recibos, prompts exactos y PNG originales
-registrados antes de convertir a WebP.
+Las 81 salidas iniciales pasaron la revisión visual; no fue necesario regenerar
+imágenes. El checkpoint conserva los recibos, los prompts exactos y los PNG originales
+registrados antes de convertir a WebP. No se sobrescribieron tandas anteriores.
 
-Se distinguen foie gras crudo en lóbulos y bloque emulsionado, patés, galantina,
-roulade, preparaciones en gelatina y piezas en costra. El jamón en costra mantiene un
-interior de jamón, distinto del paté en costra. Las ensaladas llevan salsa sin añadir
-una cama de verduras. Museau se representa como charcutería cocida y prensada,
-conforme a la [ficha descriptiva de
-charcutería](https://www.leporc.com/assets/fiche_techniques_charcuterie_a4_rhd_hd_v2.pdf),
-no como hocico entero; no se afirma vigencia normativa de esa ficha.
+Se distinguen pastis sin diluir, pastis diluido 1+5 y aperitivo anisado sin alcohol
+para diluir; Marsala al huevo ámbar, contrastado con [Cantine
+Lombardo](https://www.cantinelombardo.it/prodotto/cremovo/), sin convertirlo en crema
+láctea; kir quieto frente a kir royal espumoso. Cerveza, sidra, espumosos, bebidas sin
+gas y aguas con/sin gas conservan sus diferencias de espuma, turbidez y burbujas.
+Velleminfroy se representa en su opción sin gas. Los cócteles, licores, bebidas medias
+y smoothie son opciones ilustrativas, no recetas oficiales. La fruta de la sangría
+queda dentro como ingrediente, sin guarniciones exteriores.
 
-La andouille es la preparación francesa [cocida y habitualmente
-ahumada](https://www.leporc.com/viandes-et-charcuteries/andouille). Guémené muestra
-[anillos
-concéntricos](https://andouille-guemene.com/content/7-l-andouille-de-guemene),
-mientras Vire sigue su [montaje de tripas y
-estómagos](https://www.andouillerie.fr/nos-produits/andouille-de-vire.html), distinto
-de Guémené. Se respetan los productos para cocinar, los recalentados o dorados y las
-quenelles con salsa frente a las preparadas para cocinar, sin marcas ni guarniciones.
+Las fórmulas infantiles permanecen en polvo, sin biberones, cacitos, edades dibujadas
+ni instrucciones de alimentación. Vino y ron cocinados se muestran como líquidos de
+cocina en cuenco, sin llamas; su imagen no certifica evaporación completa del alcohol.
+La masa de pizza está cocida y completamente vacía; el almidón de arroz es polvo, no
+granos ni arroz cocido.
 
-`ciqual-8373` se interpreta como roulade de charcutería con pistachos incorporados
-según FR y el contexto, contrastada con [un
-productor](https://www.valmau.fr/produit/roulade-aux-pistaches-en-tranches/); el EN
-rolled escalope se conserva sin darlo por verificado. No se convierte en escalope a la
-parrilla con queso o salsa.
+Se consultaron los nombres científicos de las propias fichas: `ciqual-11084` es
+Eucheuma sp. fresco, de [ramas
+cartilaginosas](https://www.fao.org/4/x5819e/x5819e06.htm); `ciqual-11085`, Gelidium
+amansii seco, se distingue por sus [ramas finas
+desecadas](https://www.fao.org/4/y4765e/y4765e05.htm). Se representan algas, sin
+sustituirlas por agar en polvo, hojas de gelatina o postres.
 
-Las alternativas vegetales se separan de `ciqual-1032`, `ciqual-1033` y `ciqual-1034`,
-que contienen vacuno, pollo o ave junto con soja. El producto de queso alternativo sin
-soja se representa en lonchas, una de las opciones FR/ES. Para el burger sin estado
-explícito se elige una presentación sin cocinar y para los nuggets una cobertura
-prefrita; son elecciones ilustrativas del producto envasado, no nuevas condiciones
-oficiales.
+El dátil del desierto sigue [Balanites
+aegyptiaca](https://apps.worldagroforestry.org/treedb2/AFTPDFS/Balanites_aegyptiaca.PDF):
+piel y pulpa crudas, sin hueso, distinto de un dátil de palmera seco. El caqui de
+monte sigue [Diospyros
+mespiliformis](https://apps.worldagroforestry.org/usefultrees/pdflib/Diospyros_mespiliformis_ETH.pdf):
+frutos pequeños redondeados con cáliz y semillas internas, distinto de un kaki
+asiático grande.
 
-Los 56 zumos y néctares se presentan solos en vasos transparentes sencillos, sin fruta
-suelta, hielo, pajitas, envases ni símbolos nutricionales. Se respetan frutas y bases
-declaradas; colores y pulpado son ilustrativos. Las categorías medias y multifruta, la
-galantina genérica, el boudin medio y las salsas sin receta detallada no se presentan
-como recetas oficiales.
+Quedan resueltas las dos imágenes antes apartadas. El mantenedor delegó el criterio:
+`ciqual-25164` se representa con ternera por coincidencia de los títulos principales
+FR/EN/ES, con jarrete de corte transversal, verduras y vino blanco, sin risotto ni
+guarnición. La mención contradictoria jarret de porc permanece intacta y no se
+presenta como corregida o verificada. Para `ciqual-26241`, el campo oficial
+scientific_name Hoplostethus spp. respalda empereur, concordante con
+[IFREMER](https://archimer.ifremer.fr/doc/00848/95951/103899.pdf); se genera un filete
+crudo sin piel. Las traducciones EN/ES que dicen tiburón azul se conservan
+discrepantes, sin validarlas.
 
 Los nombres FR/EN/ES quedan exactos. Son ilustraciones propias generadas por IA, no
 proporcionadas ni validadas por ANSES. La cantidad visible no representa 100 g ni una
-ración recomendada. La imagen no acredita especie, origen, calidad, contenido de soja,
-sal, azúcar, vitaminas, edulcorantes ni procedencia de concentrado. Siguen sin
+ración recomendada. La imagen no acredita especie, origen, composición, minerales,
+azúcar, edad de fórmula infantil, graduación o ausencia de alcohol. Siguen sin
 integración móvil; no cambian fichas, nutrientes, traducciones ni código.
-
-Siguen pendientes `ciqual-25164`, cuyo francés y español mezclan ternera y cerdo,
-y `ciqual-26241`, cuyo francés dice Empereur mientras EN/ES se refieren a tiburón
-azul. Se apartaron sin modificar las fichas oficiales ni inventar una especie.
-No se sobrescribieron tandas anteriores.
 
 ## Relevo para un chat nuevo
 
-La tanda `0052` está terminada, revisada, validada y subida en la PR 450.
-La carpeta `0053` todavía no existe y no hay una tanda parcial que reanudar.
-La siguiente generación empieza con una nueva orden de continuación del
-mantenedor; la PR nueva se deja abierta. Quedan 81 alimentos pendientes;
-si en la próxima orden quedan menos de 100, completar solo los pendientes
-según las reglas de selección y discrepancias documentadas en este relevo.
+La tanda `0053` está terminada, revisada, validada y subida en la PR 451.
+No quedan alimentos pendientes ni una tanda parcial que reanudar. La carpeta
+`0054` no existe y no hay que generar variantes para rellenar una nueva tanda.
+
+Una nueva orden «más» permite revisar y, si corresponde por sus checks, fusionar
+la última PR de imágenes conforme al flujo anterior. Con cero pendientes, informar
+del catálogo completo. La integración móvil, publicación de versiones o importación
+de otros catálogos requieren una petición independiente: no están autorizadas
+por esta continuación de imágenes.
 
 Trabajar en `/Users/macm1/Documents/proyectos/gymnasia`, aunque el chat se abra
 en otro worktree. Confirmar allí la rama `codex/ciqual-food-image-samples` y el
 estado real antes de escribir. Conservar los archivos no rastreados del mantenedor.
 
-Los archivos versionados de `0052` bastan para continuar: 100 WebP y manifiesto
-con prompts exactos. Como recuperación opcional, `/tmp/ciqual-0052/` conserva
-`selection.json`, `plan.json`, `receipts.jsonl`, `review/notes.json` y las nueve
-hojas `review/contact-01.jpg` a `review/contact-09.jpg`. Los recibos identifican
+Los archivos versionados de `0053` bastan para continuar: 81 WebP y manifiesto
+con prompts exactos. Como recuperación opcional, `/tmp/ciqual-0053/` conserva
+`selection.json`, `plan.json`, `receipts.jsonl`, `review/notes.json` y las siete
+hojas `review/contact-01.jpg` a `review/contact-07.jpg`. Los recibos identifican
 los PNG y prompts antes de la conversión. No depender de esos temporales ni
 regenerar tandas terminadas si faltan.
 
@@ -140,6 +145,10 @@ La ruta absoluta se usa para adjuntar la referencia al generador. Los WebP son
 opacos, de 1024 × 1024 y calidad 90. Leer skills y manifiestos selectivamente,
 sin cargar todos los prompts históricos ni los PNG originales. Revisar por hojas
 de unas 12 miniaturas y abrir a tamaño completo solo los casos dudosos.
+
+Ante discrepancias de especie, consultar también `scientific_name` en la ficha
+oficial antes de dar la identificación por irresoluble. Es lo que permitió
+resolver empereur sin modificar ninguna traducción ni dato nutricional.
 
 ## Fuentes de alimentos consideradas
 
@@ -172,8 +181,8 @@ el repositorio. Leer las skills completas que correspondan a la sesión:
 - [Flujo de tandas e índice](../alimentos/ciqual/image-batches/README.md).
 - [Muestras y aprobación del estilo](../alimentos/ciqual/image-samples/README.md).
 - [Manifiesto de muestras aprobadas](../alimentos/ciqual/image-samples/manifest.json).
-- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0052/manifest.json),
-  que conserva los prompts exactos de los últimos 100 alimentos.
+- [Manifiesto de la última tanda](../alimentos/ciqual/image-batches/0053/manifest.json),
+  que conserva los prompts exactos de los últimos 81 alimentos.
 
 No es necesario cargar la conversación anterior. Los manifiestos versionados,
 los archivos y GitHub son el estado de trabajo. No confiar en variables de una
