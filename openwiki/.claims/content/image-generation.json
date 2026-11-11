@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:f14efa33da5ad7e20f982bd9cd258e654f89e241c214dc3de05b0ae7871f1ddc",
+  "pageVersion": "sha256:0b40f224cfb9d5f736217bbda37b0545d5da130e417c41f4afd5d43c5d501dcd",
   "claims": [
     {
       "id": "claim_66d0c82672314fee91a840404965688b",
@@ -134,19 +134,19 @@
     },
     {
       "id": "claim_058a6ad550ca4e9aa79e789c4c19d397",
-      "statement": "Los comandos `check:catalogs`, `test:catalogs` y `test:catalogs:e2e` son las comprobaciones focalizadas para cambios de catálogo. Los unitarios cubren agregados estables, artefactos paginados obsoletos, contratos de imágenes, rutas y rollback. El E2E exporta el cliente web y usa fixtures controladas para verificar consumo, búsqueda, vínculos por ID, caché y migración sin red, carga tardía y estados degradados; devuelve además fixtures WebP a las solicitudes de imagen, pero no afirma que un componente haya renderizado una imagen concreta ni su apariencia.",
+      "statement": "Los comandos `check:catalogs`, `test:catalogs` y `test:catalogs:e2e` son comprobaciones focalizadas para cambios de catálogo. El E2E exporta el cliente web y usa fixtures controladas para consumo, búsqueda, vínculos por ID, caché y estados degradados; para CIQUAL además verifica en catálogo, detalle, búsqueda y dieta la URI esperada, que el `img` cargó con ancho natural 1024, la atribución, la persistencia y el fallback sin red. Esto prueba integración web de URI y carga, no la calidad estética o biomecánica de la imagen.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/scripts/catalogs.e2e.mjs#L120-L222",
-          "version": "repo-lines-v1:sha256:fcbb68d47b5912aa5ebe49a27e53114ea3eff2e6b36b1b0a64b7bdb45762d67b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI2YTc0MDljZjgyZWE2MTVlMWJkOTBhMzkzNGY1NWZkY2ExYWU2YTNlZDBmMjE0YTViODJiMWMyZTNiZjcyZTQyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MjA0MGUwOTVhOTRlMmFkYTc0ZTQyMWYzNzE4NzUxYTkxYTgxMGJmZDY2ZjQ4ZjRlOTM5YzdiNzQ4MGViNjcwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI3NTc1MjFkMTVjNGIwZTdjOGJhYWQwYTgyYzVmODliZjQ0NTVlZDIxYTFhNTg1NTFlNTlhZmUyMDM4MDA0OGMyIn0"
+          "resource": "repo://apps/mobile/scripts/catalogs.e2e.mjs#L181-L234",
+          "version": "repo-lines-v1:sha256:987aa8ba9d88a387438f79655da2d6dad3789480d66bbf3b3859d03662f0808b:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3YjdmOGZiMDljNjJkNzIyZGFiNGI0MzY0Yjc0MjRiNGQzMGRjZmQ0MTYwMjBmOTlmNTBiMjY0MGMzNWQ3YzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc1NzUyMWQxNWM0YjBlN2M4YmFhZDBhODJjNWY4OWJmNDQ1NWVkMjFhMWE1ODU1MWU1OWFmZTIwMzgwMDQ4YzIifQ"
         },
         {
-          "resource": "repo://apps/mobile/scripts/catalogs.e2e.mjs#L470-L739",
-          "version": "repo-lines-v1:sha256:e53236524cb1c3e7e927a907a1fc57f0aebe8db907983c430385dbfc726de799:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJlZjgwNWYwNTg0NjZmZDM0ZTdlMGFmM2I0MjFiMWU2ZjE0MzJhYzI3MTU3YTlhM2M0MWM2YmQzYzZlNTg3MzM5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNjdmM2ZlNGI4ZjdkZmM2Y2Q3YTc4MDFmZGMzNjkzYWRjMzlhYmI0NDJjNzIzZTBhNzM1NzkxMDFhZTVhMmNiIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MCwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1In0"
+          "resource": "repo://apps/mobile/scripts/catalogs.e2e.mjs#L482-L556",
+          "version": "repo-lines-v1:sha256:671a1a017fdda2a2f8ed551d99882c4c2792f3b5897092c6cea915322a145f7d:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3MjdhYzQ5OTQ0NmY2MTYyMTMzZGM2NTFmNWFkZmQ4OTcyNzdiZDQ1NTBmOTcxYWIzOTU5NGMwNWFiZTllNDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI2N2YzZmU0YjhmN2RmYzZjZDdhNzgwMWZkYzM2OTNhZGMzOWFiYjQ0MmM3MjNlMGE3MzU3OTEwMWFlNWEyY2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhlM2Y1ZmZmZTBmZWQzMzQzYTM0NTE3YzUxMjIyNDdiODE1YjBhMzI0NDAwZjYzNTA1ZDIwYzc5ZWM1MmU0MTYifQ"
         },
         {
-          "resource": "repo://package.json#L59-L62",
-          "version": "repo-lines-v1:sha256:869d21a5f3992311f5a827a0d4100a4a2b3839106467f9c9d1d80da1db3ece46:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjI3ODUyNjkzNmRhZDEyMGFlNTQ1Zjg0ZmE0MmQ1MTU4OTY0MTY0YjcxMjdmZjA4MmNiYzJlMmMwZjYxMGQ1ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWQ5ODc4ZTQ3NDdmZWFjZmY0ZmU1OTVhNjVhOTg3MmQ0NTJkMDQ5MzFlYmVhYzBjMGE1ZTYwYzI4MjA5MzFmNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGJjYTU5YjJmZDQzZWYxZWVlMmYwZmFiZjQ0NzhhNGFlNzNiOTVjMWQ4ZTM1NjUzY2ZmMGYyZWU1NmZkY2JmMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGRkODhiYTZhZmRiYmVhYTVjNDk2ODE1MTg2NmRlMGYxZWM4MDU5M2JlZTRmNjg4OTE0ZTUzYjcyOWE1MzE1ZCJ9"
+          "resource": "repo://package.json#L59-L73",
+          "version": "repo-lines-v1:sha256:3ebbe6891e8f76c9c207df7816d11718c3a3b700eeb5148f93b44988c6beef10:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyNzg1MjY5MzZkYWQxMjBhZTU0NWY4NGZhNDJkNTE1ODk2NDE2NGI3MTI3ZmYwODJjYmMyZTJjMGY2MTBkNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4Nzk2MmRhOTM0NTcwYmUwOTNhZjM5ZjVhNjAxNWE0OGMwYTlkN2FmOTBhOWUzMmM2OGQ0MDhjMmVhNzdiZWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiY2E1OWIyZmQ0M2VmMWVlZTJmMGZhYmY0NDc4YTRhZTczYjk1YzFkOGUzNTY1M2NmZjBmMmVlNTZmZGNiZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5MTFkMGI5ZmQzYWM5YzQxNjY5Yjc0ZGM3Y2JhODUzMGZiMzcxOWQwYTE2MmNhOGJiNzc1NjY4M2YzMTQ2MDUifQ"
         },
         {
           "resource": "repo://scripts/catalogs/catalogs.test.mjs#L95-L276",
@@ -156,21 +156,61 @@
     },
     {
       "id": "claim_55036afeb85040a3a490b4fe614894cb",
-      "statement": "El cliente móvil resuelve las imágenes de catálogo contra la rama `main` de `raw.githubusercontent.com`: para alimentos elige el directorio según `sourceId` y devuelve `null` para fuentes personales y CIQUAL, mientras que para ejercicios antepone `ejercicios` a la ruta relativa de la variante de género. Por ello las fichas deben conservar nombres y rutas relativas compatibles con ese resolvedor, no URLs absolutas.",
+      "statement": "El cliente móvil resuelve las imágenes contra la rama `main` de `raw.githubusercontent.com`. Para alimentos personales devuelve `null`; para CIQUAL usa el ID para consultar el índice generado y compone una ruta bajo `alimentos/ciqual`, y para las demás fuentes elige el directorio por `sourceId`. Los ejercicios se resuelven bajo `ejercicios` a partir de la ruta relativa de la variante de género, por lo que las fichas curadas deben conservar referencias relativas y CIQUAL debe conservar su índice editorial por ID.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/catalogs/imageUris.ts#L1-L23",
-          "version": "repo-lines-v1:sha256:55d49f715025da04740bbdbca414846fc86a71e9e22f6cc176b3a0896eae9187:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRkNTE2ZjczZDk2NGQyZjc0Y2ZiM2NjMWQ4NDliNmY3MWE3NDBhZjdmMzM4NWExZTFkODIxMGRjYTBlYzMwZjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://apps/mobile/catalogs/imageUris.ts#L1-L33",
+          "version": "repo-lines-v1:sha256:52834d77fde4c64c519e88f0ee00f9fdc232af71f4ec5a38e23d2d3ebdf4dab6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRkNTE2ZjczZDk2NGQyZjc0Y2ZiM2NjMWQ4NDliNmY3MWE3NDBhZjdmMzM4NWExZTFkODIxMGRjYTBlYzMwZjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         },
         {
-          "resource": "repo://apps/mobile/catalogs/types.ts#L37-L80",
-          "version": "repo-lines-v1:sha256:763d2c6c364d6c8440e3d98a1a13fbd132ae902fb3391f87bd4dae3b535b18f2:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZTgzMWY4M2VmNmVkYjI0NDU3MDFmYjk5YmNkZDU1MDI0Mzc5OTU1YmQwNmNhOWE4ZjUyZDQ5N2JjODVmNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFhMWQxYTYzMzkwMjI5Yzc5ODM0N2U4M2EwNDA1NDQxYzk0MDAwMzUyODRhZDE2OGMxYmY2Y2RmMWQ3MGEzNzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxNmZkMjM1ZmFlZmMwNmFiNTJlNjJjNzljMDE1NjQ5YzYzNTMzMDRjYjRmOTBmODllNmVjODA0MjM2ZjMwYWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyZGJlZjU3YTlhMjIwMDAyOTM2MjYyYWE4NzQzYjhlMDBiNGFjODE0YjdmYmEzODhlMzRiZmZkOTRlNmVmNTcifQ"
+          "resource": "repo://scripts/catalogs/ciqual-mobile-images.mjs#L42-L45",
+          "version": "repo-lines-v1:sha256:476ef8ea90a560419ea3d8048940a9a742c8308ce7e32210ff91d947a011f6ff:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGRiNTk4ZTEwNmNlOWNkODljMWEyMTRkOThlMzQyN2YwMDE1ZjBlNDY1YjE1MWQ4Y2Q3ZWEyN2NhMWMwMTJiYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDYxNTQ5OTM4NGQyY2U1NDZkZWY4NzMyMjg0YWQxYzJlZTgzMjc1NDRiODIyNzA2NjQxY2ViYmM0YjkxYmJmMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDFkNzYwMGE5NGI4YjJlMTI5ZmJiMjQxZmU0NzY1NzM3NWExZTEwMDU5ODAxMWJlMGQxZjBmZjRlYWI0ZTc2OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjRiYzQwZjJhMTA0ZGQ4MjkwYjIwOGQzODFlZTMwZWRlNDhiODZkMDA2Mzk4MWY0Y2QxYzNlNDM1YjA0ZjA3MyJ9"
+        },
+        {
+          "resource": "repo://scripts/catalogs/ciqual-mobile-images.mjs#L8-L18",
+          "version": "repo-lines-v1:sha256:9fcec287a47397585052578b9d2607bceac07b34508ed0f6c56e97f47c5fce52:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1N2RhOTk5YjRhZjY1YTU5MzYwZWEwMDgyZTQ4YmJhNTVkZTBiOWJjZjIxY2E3ZjM4ZTRkNWNjYjc0ZDEzYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlZDZhNTY1YzA4MWFhOWU3YmIwNzFiNzQ5MTM2ZDU2OTliNjUxYWEwZDcxMDAyNmU4YjRlYjgzNDc1ZDc2OGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzNTVkNjc1MDg3ZmExZmFmNDE3NzJjNTJiNjI3ZTg5ZjI4MjI0OTdkNmE2OThkNTcwNzUwOGEzYmY0YjI5YzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlNTZlYzg4MjkwOGU5YmJiMzdiMTZiN2ZjYTMzZjE1ODY5ZDMxY2NiNmY4MThjN2I2ZWRiYTRiYzYzODAxYWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c2f42a6999404f3a93799eb1ac9d6404",
+      "statement": "El flujo de publicación de imágenes CIQUAL exige una muestra de estilo aprobada, manifiestos de tanda con IDs únicos, archivos declarados, referencia aprobada y SHA-256 correcto; el índice móvil exige además cobertura exacta de todos los alimentos y vuelve a comprobar los hashes antes de escribir el artefacto generado.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/catalogs/ciqual-image-batches.mjs#L7-L41",
+          "version": "repo-lines-v1:sha256:051a947f30bc000df4dce19d82eb08598904132419f26c13ed62eaa425bafc4d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmZjlhYzE0ODIxNmEwMTFiYTQ0M2Q3MTI0OWJlZDBmYTI3ZWFiOTMzZDI5ZjNiNDk2ZjFmNTdkYTFjYmE3MmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA4OTk1Y2E0NGM3ODdiZWM0MTI0OWNjZDAyYzdhODJlNzZjOTk4MDA1Y2IxNjM3MjUxNTAzZjMwYTNkMTYyMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgxNGUyNWFmNWYxOWI2MDE4NWYyMDRjZGU4NTA3MjRmNjc1ODA2NmM0YzVmZmQzMWNmMDlhNGQ0NjZhOWQwNTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0YmM0MGYyYTEwNGRkODI5MGIyMDhkMzgxZWUzMGVkZTQ4Yjg2ZDAwNjM5ODFmNGNkMWMzZTQzNWIwNGYwNzMifQ"
+        },
+        {
+          "resource": "repo://scripts/catalogs/ciqual-mobile-images.mjs#L21-L45",
+          "version": "repo-lines-v1:sha256:43c04a170b09f8a5e2c41dfa11483cecc3acb2b9e0c3036bee64f242add98411:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiOTIwODk1NGNjMzg4NWZhYmM0MGU4MDM2ZDBhNDUyNGQ4MGI0MDg1ZjJiMmRmNzUzNzU2NTAyYTBhMjEyNzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ2MTU0OTkzODRkMmNlNTQ2ZGVmODczMjI4NGFkMWMyZWU4MzI3NTQ0YjgyMjcwNjY0MWNlYmJjNGI5MWJiZjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1YzhlYmZkNzAxNjViNjRhY2ZlZmJlOTZmNjY3NDg1ZmJlNDIzMzMyN2I0NWRjNzc0YzhmMDlhZTA3N2Y0YmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0YmM0MGYyYTEwNGRkODI5MGIyMDhkMzgxZWUzMGVkZTQ4Yjg2ZDAwNjM5ODFmNGNkMWMzZTQzNWIwNGYwNzMifQ"
+        },
+        {
+          "resource": "repo://scripts/catalogs/ciqual-mobile-images.mjs#L8-L18",
+          "version": "repo-lines-v1:sha256:9fcec287a47397585052578b9d2607bceac07b34508ed0f6c56e97f47c5fce52:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1N2RhOTk5YjRhZjY1YTU5MzYwZWEwMDgyZTQ4YmJhNTVkZTBiOWJjZjIxY2E3ZjM4ZTRkNWNjYjc0ZDEzYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlZDZhNTY1YzA4MWFhOWU3YmIwNzFiNzQ5MTM2ZDU2OTliNjUxYWEwZDcxMDAyNmU4YjRlYjgzNDc1ZDc2OGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkzNTVkNjc1MDg3ZmExZmFmNDE3NzJjNTJiNjI3ZTg5ZjI4MjI0OTdkNmE2OThkNTcwNzUwOGEzYmY0YjI5YzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlNTZlYzg4MjkwOGU5YmJiMzdiMTZiN2ZjYTMzZjE1ODY5ZDMxY2NiNmY4MThjN2I2ZWRiYTRiYzYzODAxYWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0fa301bda95645cf86ab8ef9ec8ccef7",
+      "statement": "`Thumbnail` es responsable solo de degradar una carga de imagen: muestra el fallback si no recibe URI o si esa URI produce `onError`; la selección de URI y fallback pertenece al wrapper de dominio. Las comidas CIQUAL antiguas sin `image_uri` pueden resolver la imagen por el ID de su `catalog_link` al mostrarse, sin alterar sus datos guardados.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/components/Thumbnail.tsx#L6-L16",
+          "version": "repo-lines-v1:sha256:64342054449e46bceed8e2fc2b1b1136d06d92a8205376b4bc7138a73152e3b1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3NmU1MzMyNGJmYTQ5YjNhY2FjNTRhMGM5YTU2ZTJjMjQzMjAyZGEyNGEwMGQ2YmUwYjJjZTllY2QyNWQ3ODMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4ODc3ZGJjNmIyZmU4MmFkZmJmYTY2NDhmMmU0MTY1N2MyNjY2MDZhMmVlM2U5NGRjZTE5NGVkZGMzMDc2MGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZiNDgyOGJmNjdhNzBmYmNjZjQzMWE0MTIyZWI4NDNlN2I0MTI3OWZjOGFlNmQzNzYxYmJiODU4MmJhY2Q3ZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/diet/catalogModel.ts#L12-L19",
+          "version": "repo-lines-v1:sha256:d2c906f705c8bdbd74d0943365368af7a22b94570d8e478b5e96908713ad2775:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjIxNjUwMWU0MjM3MTU4ZWI5Njk1NmYxOTNkZDI1NTY5MGRiNDIyMGFhNzcwNzQyMWIyMjlhYzk0NDE1MDY5OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWEwODIxMGQ0NzdlZWYxOTA3YjJhOGY4NWIzNjJkMDhiMGM3NmMzOTUxZTUzYWM3ZGI0OGRkZWFhNTUxOTVlOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzYxYzczZGIzNDlhZGI5OGZhZjMzNjNmNDJkNzBlZGY5MWNhODEzNTVkMjFlZjg2OGE2YzlhMTYwODNiYTg2ZiJ9"
+        },
+        {
+          "resource": "repo://apps/mobile/diet/catalogModel.ts#L29-L47",
+          "version": "repo-lines-v1:sha256:e6c344d574c6feea3b18e24144a5e9b25bb490cb8f360400cb07ebaa5b1628bd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwNDk3OWE3YzNjNjEzMjVlMDhiNzRkMDNmODFiMGUxYjdmMDEzNzFkM2I2ZDU2YmNmZjBiNTc3ZDJhYjI0Y2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2MTY0MzViMDhjNDkwZTMzOTgyN2Q1ZTBmNGZjYTk0MzYwZTExNjAyNTRiOTU1YTBkODFjOTg3MWI3ZWNmMmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-10-29T14:43:04.676Z"
+    "at": "2026-11-11T15:41:01.947Z"
   }
 }
