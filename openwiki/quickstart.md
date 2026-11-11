@@ -1,9 +1,14 @@
 ---
-type: guía de enrutamiento de cambios
-title: Guía de inicio y mapa de cambio
-description: Ruta breve para localizar el dominio responsable de un cambio en Gymnasia y escoger la validación mínima correspondiente. Delimita el uso de la telemetría del agente frente a contratos y pruebas ejecutables.
-tags: [quickstart, change-routing, mobile, operations, local-first, agent, runtime]
+type: guía de contribución
+title: Inicio rápido para contribuir en Gymnasia
+description: Punto de entrada para instalar y ejecutar Gymnasia, localizar el subsistema responsable de un cambio y elegir una validación proporcional. Distingue los comandos y contratos ejecutables de planes, tableros e informes históricos.
+tags: [quickstart, contribution, mobile, testing, local-first]
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-11T15:41:01.947Z
 sources:
+  - id: openwiki-source-338e77d1d6cb373155f08ceb
+    resource: repo://.github/workflows/agent-tests.yml
   - id: openwiki-source-88e87a6a49f8c4bba044cff2
     resource: repo://apps/anthropic_proxy/README.md
   - id: openwiki-source-45602fc0f28e2e3187ce8790
@@ -12,8 +17,8 @@ sources:
     resource: repo://apps/mobile/index.js
   - id: openwiki-source-e86fe7b76c693666bc2cb828
     resource: repo://apps/mobile/package.json
-  - id: openwiki-source-ea083ff1c1afd80c588dedd8
-    resource: repo://ops/openwiki-runtime-telemetry.json
+  - id: openwiki-source-bd210931c947e300164b7a63
+    resource: repo://apps/mobile/scripts/catalogs.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
@@ -22,28 +27,25 @@ sources:
     resource: repo://scripts/catalogs/generate.mjs
   - id: openwiki-source-92ee27e969d35b12e4aae573
     resource: repo://scripts/data-inventory/check.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-11-10T15:53:08.815Z" }
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-11-10T15:53:08.815Z
+generated: { by: "openwiki/0.6.0", at: "2026-11-11T15:41:01.947Z" }
 ---
 
-# Guía de inicio y mapa de cambio
+# Inicio rápido para contribuir en Gymnasia
 
-Gymnasia tiene una única aplicación de producto en `apps/mobile`, ejecutable con Expo en Android, iOS y web. Es local-first: el dispositivo conserva el estado de entrenamiento, dieta, mediciones, conversaciones, preferencias y configuración BYOK; no hay una API de producto ni sincronización central obligatoria. Antes de añadir red, identidad o una dependencia remota, lea [Arquitectura del sistema](architecture/overview.md).
+Gymnasia tiene una única aplicación de producto: `apps/mobile`, una aplicación Expo para Android, iOS y web. Es *local-first*: el dispositivo posee entrenamiento, dieta, mediciones, conversaciones, preferencias y la configuración BYOK; no hay una API de producto ni una sincronización central obligatoria. Antes de introducir red, identidad o una dependencia remota, consulte [Arquitectura local-first y fronteras del sistema](architecture/overview.md).
 
-Esta página enruta el trabajo; no sustituye el contrato, los invariantes ni los fallos descritos por la página de cada dominio. El código y sus pruebas ejecutables prevalecen sobre planes históricos.
+Esta página es un mapa de entrada. El código, los scripts y las pruebas ejecutables son la fuente de verdad para el comportamiento actual. El tablero `arquitectura-agente/`, los documentos de roadmap y los informes de runtime pueden orientar una investigación, pero no crean un contrato ni sustituyen una prueba focalizada.
 
-## Arranque local
+## Preparar el entorno y arrancar
 
-El repositorio usa *workspaces* npm. Desde una instalación limpia, use el lockfile y arranque el workspace móvil:
+El repositorio usa *workspaces* npm y CI instala el lockfile con `npm ci`. Desde la raíz:
 
 ```bash
 npm ci
 npm run dev:mobile
 ```
 
-La entrada `apps/mobile/index.js` registra `App` mediante `registerRootComponent`. Para abrir superficies de desarrollo, exportar web o comprobar tipos:
+La entrada `apps/mobile/index.js` registra `App` mediante `registerRootComponent`. Los scripts del workspace fijan `APP_ENV=development` para sus destinos de desarrollo:
 
 ```bash
 npm --workspace apps/mobile run web
@@ -59,43 +61,59 @@ Para Expo Go en un dispositivo físico, reenvíe los argumentos a Expo con el se
 npm --workspace apps/mobile run start -- --tunnel --clear
 ```
 
-## Mapa compacto de tareas
+`build:web` y el tipado son señales iniciales útiles, no evidencia de que funcionen permisos, almacenamiento seguro, notificaciones, audio, instalación o actualización nativos. Para esos cambios, siga [Compilación, publicación y validación](operations/build-release-and-testing.md) y pruebe una build/dispositivo representativo.
 
-| Si cambia… | Lea primero | Validación mínima inicial |
+## Mapa de tareas
+
+| Si cambia… | Empiece por | Validación inicial |
 | --- | --- | --- |
-| Fronteras local-first, variante, dependencia de red o responsabilidad entre capas | [Arquitectura del sistema](architecture/overview.md) | `npm --workspace apps/mobile exec tsc --noEmit`, `npm test` y `npm run check:mobile-boundaries`. |
-| Estado local, claves, copias, recuperación, borrado o privacidad de datos | [Estado local, cachés y respaldo](mobile/local-state-and-backup.md) y [Arquitectura del sistema](architecture/overview.md) | `npm test`; añada `npm run check:data-inventory && npm run test:data-inventory` y la E2E de borrado, recuperación o privacidad que cubra el cambio. |
-| Shell Expo, navegación, pantallas o diferencia web/móvil | [Shell y navegación móvil](mobile/application-shell.md) | typecheck, `npm --workspace apps/mobile run build:web` y `npm run test:shell:e2e` si afecta el recorrido. |
-| Entrenamiento, series, historial o ejecución de ejercicios | [Entrenamiento móvil](mobile/training.md) | `npm test` y la E2E de entrenamiento específica afectada. |
-| Dieta, alimento personal, catálogo nutricional o estimación asistida | [Dieta, catálogo y estimación de alimentos](mobile/diet-and-food-estimation.md) | `npm run test:diet:e2e`; añada pruebas del agente si una *tool* interviene. |
-| Catálogos fuente, CIQUAL, agregados, imágenes o consumidor offline | [Repositorios de contenido y catálogos](content/repositories.md) y [Generación y uso de imágenes de catálogo](content/image-generation.md) | `npm run check:catalogs && npm run test:catalogs && npm run test:catalogs:e2e`; sume los checks CIQUAL si modifica su importación o proyección móvil. |
-| Conversación, herramientas, confirmaciones, reintentos o contexto de política | [Runtime del agente y herramientas](agent/runtime.md) | Ejecute sus pruebas focalizadas; añada `npm test` y `npm run test:agent:e2e` si cambia el recorrido web. |
-| Comportamiento, latencia, coste, errores o uso real del agente | [Runtime del agente y herramientas](agent/runtime.md) y [Comportamiento en ejecución y oportunidades](operations/runtime-behavior.md) | Use el informe consolidado para localizar la señal y el runtime para comprobar el límite/código implicado; ejecute la prueba focalizada del contrato que vaya a cambiar. |
-| Clave BYOK, proveedor, modelo, streaming o continuación | [Configuración de proveedores](agent/provider-configuration.md) y [Streaming y continuaciones](agent/provider-streaming.md) | pruebas del adaptador y la E2E del agente afectada. |
-| Prompt, regla sanitaria, artefacto firmado o promoción de política | [Arquitectura del sistema](architecture/overview.md) | `npm run check:health-safety`, `npm run test:health-safety`, los checks de política aplicables y la autorización requerida. |
-| Permiso, plugin Expo, configuración nativa, notificación, build o release | [Build, release y pruebas](operations/build-release-and-testing.md) | guard rails de Android aplicables, typecheck, export y una build/prueba nativa representativa. |
-| Proxy CORS de Anthropic en depuración web | [Proxy de Anthropic](services/anthropic-proxy.md) | `npm run check:anthropic-proxy && npm run test:proxy`. |
-| Feedback remoto opcional | [Worker de feedback](services/feedback-worker.md) | `npm --workspace apps/feedback-worker run test` y el contrato cliente afectado. |
-| Tablero, conciliación con Linear o despliegue Vercel | [Tablero de arquitectura](services/architecture-board.md) | `npm run test:linear && npm run test:board-automation && npm run test:board && npm run test:board:e2e`. |
-| Automatización de esta wiki | [Automatización de OpenWiki](operations/openwiki-automation.md) | `npm run test:openwiki`. |
+| Fronteras local-first, variantes, red o dependencia entre capas | [Arquitectura local-first](architecture/overview.md) | `npm --workspace apps/mobile exec tsc --noEmit`, `npm test` y `npm run check:mobile-boundaries` |
+| Persistencia, claves, backup, recuperación, borrado o privacidad | [Arquitectura local-first](architecture/overview.md) | `npm test`; añada `npm run check:data-inventory && npm run test:data-inventory` y la E2E de recuperación, borrado o privacidad aplicable |
+| Shell Expo, navegación, pantallas o diferencia web/móvil | [Shell y navegación móvil](mobile/application-shell.md) | typecheck, `npm --workspace apps/mobile run build:web` y `npm run test:shell:e2e` si cambia el recorrido |
+| Entrenamiento, series, historial o ejecución de ejercicios | [Entrenamiento móvil](mobile/training.md) | `npm test` y la E2E de entrenamiento concreta (`test:train:*:e2e`) |
+| Dieta, alimento personal, catálogo nutricional o estimación | [Dieta, catálogo y estimación de alimentos](mobile/diet-and-food-estimation.md) | `npm run test:diet:e2e`; sume pruebas del agente si interviene una *tool* |
+| Catálogos fuente, BLS, CIQUAL, imágenes o consumidores offline | [Catálogos nutricionales y de ejercicios](content/repositories.md) | `npm run check:catalogs && npm run test:catalogs && npm run test:catalogs:e2e`; añada checks BLS/CIQUAL y de proyección móvil según el artefacto modificado |
+| Conversación, herramientas, confirmaciones, proveedores o streaming | [Runtime del agente y herramientas](agent/runtime.md) | prueba focalizada del contrato y `npm run test:agent:e2e` si cambia el recorrido web |
+| Prompt, reglas sanitarias, bundle firmado o promoción de política | [Arquitectura local-first](architecture/overview.md) | `npm run check:health-safety && npm run test:health-safety`; sume los checks de política y la autorización exigida |
+| Permiso, plugin Expo, configuración nativa, notificación, build o release | [Compilación, publicación y validación](operations/build-release-and-testing.md) | checks de permisos/configuración nativa, typecheck y una build/prueba nativa representativa |
+| Proxy CORS de Anthropic para depuración web | [Arquitectura local-first](architecture/overview.md) | `npm run check:anthropic-proxy && npm run test:proxy` |
+| Feedback opcional | [Arquitectura local-first](architecture/overview.md) | `npm --workspace apps/feedback-worker run test` |
+| Automatización de esta wiki | [Automatización de OpenWiki](operations/openwiki-automation.md) | `npm run test:openwiki` |
 
-## Seleccionar evidencia sin sobreafirmar cobertura
+## Elegir la evidencia correcta
 
-`npm test` encadena la suite determinista móvil, los checks/tests del *dev store* y los límites arquitectónicos móviles. Las E2E de agente, catálogos, entrenamiento, dieta, recuperación, borrado, privacidad y shell son scripts separados: ejecute la que cubre el flujo modificado, además de los checks del dominio.
+`npm test` ejecuta la suite determinista móvil, los checks/tests del *dev store* y los límites arquitectónicos móviles. No ejecuta las E2E web. Agente, catálogos, entrenamiento, dieta, recuperación, borrado, privacidad y shell tienen scripts E2E separados; ejecute el que cubra el flujo afectado además de los checks de su dominio.
 
-La exportación web y las pruebas deterministas no prueban capacidades nativas. Un cambio de permisos, plugins, notificaciones, recursos, instalación o distribución requiere los controles específicos y una comprobación nativa —preferiblemente en dispositivo—. Del mismo modo, una E2E web valida el recorrido controlado y sus dobles, no un proveedor externo ni Android/iOS.
+Las E2E web exportan y ejercitan un recorrido controlado con navegador, fixtures e interceptaciones. Acreditan ese contrato cliente, no la disponibilidad de un proveedor externo ni Android/iOS. Las evaluaciones con LLM también están separadas de la CI determinista: no las presente como requisito habitual para arrancar o validar un cambio local.
 
-### Investigar el runtime del agente
+Cuando modifique claves locales, destinos HTTPS o permisos, el inventario debe seguir describiendo lo detectado por el código:
 
-Para una pregunta de comportamiento, latencia, coste, errores o uso real, siga primero [Runtime del agente y herramientas](agent/runtime.md) para distinguir turnos, reintentos, rondas, presupuesto y efectos; consulte después el [informe consolidado de runtime](operations/runtime-behavior.md) para la señal agregada y sus hipótesis. La evidencia disponible es una muestra con ventana truncada; los campos de tokens y coste figuran como no disponibles y con cobertura parcial. Sirve para priorizar investigación, **no** sustituye contratos ni pruebas focalizadas, ni representa tasas de flota, disponibilidad, frecuencia, coste o latencia poblacional. No atribuya una llamada o duración agregada a un mensaje, una tool o una escritura sin contrastarla con el control de flujo y el contrato del dominio.
+```bash
+npm run check:data-inventory
+npm run test:data-inventory
+```
 
-Para modificaciones de privacidad, no basta con que la UI funcione: actualice y compruebe el inventario de datos cuando cambien claves locales, hosts HTTPS o permisos, y añada el check legal o la E2E de privacidad/borrado si cambia la experiencia o el contenido publicado. Para contenido, `check:*` detecta *drift* sin escribir; use `sync:catalogs` solo cuando deba materializar y revisar artefactos derivados. `check:catalogs` valida todos los dominios; para materializar una salida limitada, use `node scripts/catalogs/generate.mjs --write --domain <dominio>`.
+Para texto legal o una experiencia de privacidad publicada, añada `npm run check:legal && npm run test:legal` y, cuando proceda, `npm run test:privacy:e2e`.
 
-## Límites que deben sobrevivir al cambio
+### Catálogos: comprobar antes de escribir
 
-- El Worker de feedback es una excepción remota limitada: crea incidencias privadas de GitHub y no es un backend de producto. Si no está configurado o falla, la aplicación debe seguir siendo utilizable.
-- El proxy de Anthropic solo ayuda a depurar web en loopback; no convierta esa ruta en infraestructura publicada.
-- Catálogos y política son entradas remotas que se validan y pueden usar caché o *fallback*; no son sincronización de datos personales.
-- No interprete `arquitectura-agente/` como runtime de la aplicación: es un tablero estático separado.
+Los `check:*` detectan *drift* sin materializar artefactos. `check:catalogs` valida todos los dominios y no acepta una selección de dominio; `sync:catalogs` escribe todas las salidas. Para regenerar y revisar una salida limitada use el generador directamente:
 
-Para el detalle de cada garantía y las pruebas que la acreditan, siga el enlace del dominio de la tabla antes de editar.
+```bash
+npm run check:catalogs
+npm run test:catalogs
+npm run test:catalogs:e2e
+npm run sync:catalogs
+node scripts/catalogs/generate.mjs --write --domain alimentos
+```
+
+BLS y CIQUAL tienen importadores y checks independientes. Una modificación de CIQUAL o de imágenes no queda cubierta solo por el generador común: siga la matriz de [catálogos](content/repositories.md) para ejecutar `check:ciqual`, `check:ciqual:images`, `check:ciqual:mobile` y, si corresponde, el check de BLS o la sincronización explícita de imágenes móviles.
+
+## Límites que no deben cambiarse por accidente
+
+- `apps/feedback-worker` es un canal remoto opcional que crea incidencias privadas de GitHub; no es un backend de producto. La app debe continuar utilizable si falta configuración o el canal falla.
+- El proxy de Anthropic solo sirve para depuración web en loopback. No lo convierta en infraestructura desplegada ni en una dependencia de la app publicada.
+- Catálogos y política son entradas remotas validadas y cacheables; no son sincronización de datos personales. Mantenga sus comprobaciones de esquema, procedencia, integridad y *fallback*.
+- `arquitectura-agente/` es un tablero estático independiente, no el runtime de la aplicación. De la misma forma, una señal agregada de telemetría sirve para priorizar investigación, pero debe contrastarse con el control de flujo, el contrato y las pruebas del dominio antes de afirmar comportamiento ejecutable.
+
+Antes de editar, siga la página enlazada del dominio: ahí están los invariantes, los fallos esperados y la prueba que demuestra el contrato concreto.

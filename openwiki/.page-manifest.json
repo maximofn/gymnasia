@@ -16,18 +16,18 @@
       "completedRunId": "56c1fac1-f03d-4266-b723-22128d98190c"
     },
     "/openwiki/agent/runtime.md": {
+      "gitHead": "1558f2de7899f2acce2cc9da4fb23ee8c647d5ae",
+      "sourceFingerprint": "sha256:c6cc41e5b183a7d9834bd55dec3f531c656f4ee70db3aef3701c89af4490e504",
       "pageVersion": "sha256:3f71a397fe567d567cf5f5209d6ec9270ac4db245651c8c72a2bb930d3327d38",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "34c6aae8-59c0-4b7f-9adb-e9207b8383a7",
-      "gitHead": "1558f2de7899f2acce2cc9da4fb23ee8c647d5ae",
-      "sourceFingerprint": "sha256:c6cc41e5b183a7d9834bd55dec3f531c656f4ee70db3aef3701c89af4490e504"
+      "completedRunId": "34c6aae8-59c0-4b7f-9adb-e9207b8383a7"
     },
     "/openwiki/architecture/overview.md": {
-      "gitHead": "84decef8cb7986312dd4bfa664860794c2f77c68",
-      "sourceFingerprint": "sha256:46402eaf4d5f5cc9ea7a956062aff058abc7452c128e35021a6dc197d863e864",
-      "pageVersion": "sha256:2d1fb179a8029cf26ffc793c531e3669d056971d0d45e4a0622f8c0eb48b8509",
+      "pageVersion": "sha256:0392e94a36c5746c844cdadfefde57542627648f820aa439539a6bcfd88dcb78",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "56c1fac1-f03d-4266-b723-22128d98190c"
+      "completedRunId": "56c1fac1-f03d-4266-b723-22128d98190c",
+      "gitHead": "84decef8cb7986312dd4bfa664860794c2f77c68",
+      "sourceFingerprint": "sha256:46402eaf4d5f5cc9ea7a956062aff058abc7452c128e35021a6dc197d863e864"
     },
     "/openwiki/architecture/policy-delivery.md": {
       "gitHead": "426596a5f1466047a8f25a4a754f68aef3120c0a",
@@ -37,18 +37,18 @@
       "completedRunId": "d11a484c-50f3-4224-a128-bb385eddd58f"
     },
     "/openwiki/content/image-generation.md": {
-      "gitHead": "426596a5f1466047a8f25a4a754f68aef3120c0a",
-      "sourceFingerprint": "sha256:3721bbeba9c34b0d4e6a6bbe6823e9bbc8d69605c305f805b2c0901c619d32e2",
-      "pageVersion": "sha256:f14efa33da5ad7e20f982bd9cd258e654f89e241c214dc3de05b0ae7871f1ddc",
+      "pageVersion": "sha256:0b40f224cfb9d5f736217bbda37b0545d5da130e417c41f4afd5d43c5d501dcd",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "cfbdb69d-edf8-41a8-ad8d-8b7e6dcad5eb"
+      "completedRunId": "b29ff7d9-5e6f-4812-999a-4ac62b8a5a91",
+      "gitHead": "d900d03a847e15010204dbd75bf8cfd291acfcbe",
+      "sourceFingerprint": "sha256:860a8d651333cafc4339e30faece9fe2ccb584591ca8bc829a5e2246445b4f3a"
     },
     "/openwiki/content/repositories.md": {
-      "gitHead": "2dcd9401b440716cceb6c44a4e675db1f347023a",
-      "sourceFingerprint": "sha256:8ccde1b8ec40e9c1947f7c51f7a0f7900ea8f688f739894418ae0772f5809939",
-      "pageVersion": "sha256:b78f85746af104cc801381377d2f18529db6daac06f1ca180128147eba606f25",
+      "pageVersion": "sha256:18dbd67ed5ede42619d5fdbab784d72bb54310b7f9b347b336c54669576bc761",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "10133f7f-9558-4465-8189-8ef1ba68e89c"
+      "completedRunId": "b29ff7d9-5e6f-4812-999a-4ac62b8a5a91",
+      "gitHead": "d900d03a847e15010204dbd75bf8cfd291acfcbe",
+      "sourceFingerprint": "sha256:860a8d651333cafc4339e30faece9fe2ccb584591ca8bc829a5e2246445b4f3a"
     },
     "/openwiki/integrations/vivagym-and-updates.md": {
       "gitHead": "ee1833182e2abe92dcf48d35ed20f88bb3e89073",
@@ -65,11 +65,11 @@
       "completedRunId": "cfbdb69d-edf8-41a8-ad8d-8b7e6dcad5eb"
     },
     "/openwiki/mobile/diet-and-food-estimation.md": {
-      "gitHead": "426596a5f1466047a8f25a4a754f68aef3120c0a",
-      "sourceFingerprint": "sha256:3721bbeba9c34b0d4e6a6bbe6823e9bbc8d69605c305f805b2c0901c619d32e2",
-      "pageVersion": "sha256:47d42dd72288313b4fa72f1cc0f6fe7d0bacc2803fd66d6df1e54e7ee9c42dac",
+      "pageVersion": "sha256:c2e2d04f26516b18ff0cde8b9f07318d6a59b97c2c50570b26c83f7ac8124b6b",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "cfbdb69d-edf8-41a8-ad8d-8b7e6dcad5eb"
+      "completedRunId": "b29ff7d9-5e6f-4812-999a-4ac62b8a5a91",
+      "gitHead": "d900d03a847e15010204dbd75bf8cfd291acfcbe",
+      "sourceFingerprint": "sha256:860a8d651333cafc4339e30faece9fe2ccb584591ca8bc829a5e2246445b4f3a"
     },
     "/openwiki/mobile/local-state-and-backup.md": {
       "gitHead": "84decef8cb7986312dd4bfa664860794c2f77c68",
@@ -107,11 +107,11 @@
       "completedRunId": "56c1fac1-f03d-4266-b723-22128d98190c"
     },
     "/openwiki/operations/build-release-and-testing.md": {
-      "gitHead": "84decef8cb7986312dd4bfa664860794c2f77c68",
-      "sourceFingerprint": "sha256:46402eaf4d5f5cc9ea7a956062aff058abc7452c128e35021a6dc197d863e864",
-      "pageVersion": "sha256:ab6f14d53bfab8f8e3b00e564a09dceb3c409a802886db0aced563a52efeee65",
+      "pageVersion": "sha256:a1b0b00c665a5ba3db3bf5c27ad5c92248ddeb8eaa088a3b2257af4945aa1888",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "56c1fac1-f03d-4266-b723-22128d98190c"
+      "completedRunId": "b29ff7d9-5e6f-4812-999a-4ac62b8a5a91",
+      "gitHead": "d900d03a847e15010204dbd75bf8cfd291acfcbe",
+      "sourceFingerprint": "sha256:860a8d651333cafc4339e30faece9fe2ccb584591ca8bc829a5e2246445b4f3a"
     },
     "/openwiki/operations/openwiki-automation.md": {
       "gitHead": "426596a5f1466047a8f25a4a754f68aef3120c0a",
@@ -135,11 +135,11 @@
       "completedRunId": "56c1fac1-f03d-4266-b723-22128d98190c"
     },
     "/openwiki/quickstart.md": {
-      "pageVersion": "sha256:dac8be77e4ab8037bdb042dc7dae4e8a1e8f0dbd9381f7c42916e7b32ebb6b7a",
+      "pageVersion": "sha256:3b8bf2e064c600bb91dd02939b8c4f98f35cc77f00460b7b1e29948a016b1993",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "34c6aae8-59c0-4b7f-9adb-e9207b8383a7",
-      "gitHead": "1558f2de7899f2acce2cc9da4fb23ee8c647d5ae",
-      "sourceFingerprint": "sha256:c6cc41e5b183a7d9834bd55dec3f531c656f4ee70db3aef3701c89af4490e504"
+      "completedRunId": "b29ff7d9-5e6f-4812-999a-4ac62b8a5a91",
+      "gitHead": "d900d03a847e15010204dbd75bf8cfd291acfcbe",
+      "sourceFingerprint": "sha256:860a8d651333cafc4339e30faece9fe2ccb584591ca8bc829a5e2246445b4f3a"
     },
     "/openwiki/services/anthropic-proxy.md": {
       "gitHead": "426596a5f1466047a8f25a4a754f68aef3120c0a",
