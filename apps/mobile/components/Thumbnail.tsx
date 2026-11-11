@@ -11,7 +11,7 @@ type ThumbnailProps = Omit<ImageProps, "source"> & {
 
 /** Domain wrappers choose the URI and fallback; this component owns image failure only. */
 export function Thumbnail({ uri, size = 36, fallback, style, onError, ...props }: ThumbnailProps) {
-  const [failed, setFailed] = useState(false);
-  if (!uri || failed) return <>{fallback}</>;
-  return <Image {...props} source={{ uri }} onError={(event) => { setFailed(true); onError?.(event); }} style={[{ width: size, height: size, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }, style]} />;
+  const [failedUri, setFailedUri] = useState<string | null>(null);
+  if (!uri || failedUri === uri) return <>{fallback}</>;
+  return <Image {...props} source={{ uri }} onError={(event) => { setFailedUri(uri); onError?.(event); }} style={[{ width: size, height: size, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }, style]} />;
 }

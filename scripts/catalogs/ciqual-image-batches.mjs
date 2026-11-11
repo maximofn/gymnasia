@@ -50,5 +50,5 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   "Uso: node scripts/catalogs/ciqual-image-batches.mjs --check | --next <1..50>. Solo lectura, no genera ni publica.");
   const result = await checkCiqualImageBatches(fileURLToPath(new URL("../../", import.meta.url)));
   if (nextMode) console.log(JSON.stringify(result.pending.slice(0, count).map(({ id, names }) => ({ id, names })), null, 2));
-  else console.log(`Imágenes CIQUAL verificadas: ${result.generated}/${result.total}; pendientes ${result.pending.length}; tandas ${result.batches.join(", ")}. Sin integración móvil.`);
+  else console.log(`Imágenes CIQUAL verificadas: ${result.generated}/${result.total}; pendientes ${result.pending.length}; tandas ${result.batches.join(", ")}.`);
 }

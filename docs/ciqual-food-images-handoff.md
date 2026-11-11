@@ -1,5 +1,17 @@
 # Relevo del catálogo de imágenes de alimentos CIQUAL
 
+**Actualización del 11 de noviembre de 2026:** el mantenedor ha solicitado por
+separado integrar las imágenes en catálogo, búsqueda y dieta. La implementación
+y su QA están en `codex/ciqual-mobile-images`, que incluye también la tanda 0053
+de la PR 451. Consultar su PR actual antes de continuar: este relevo describe el
+flujo anterior de generación y sus menciones de «sin integración móvil» son el
+estado previo a ese cambio. La integración requiere una fusión aprobada
+expresamente porque inicia una build Android; «más» no autoriza esa fusión.
+El funcionamiento implementado se describe en
+[`alimentos/ciqual/README.md`](../alimentos/ciqual/README.md#integración-móvil-local)
+y las pruebas en
+[`docs/testing/evidence/ciqual-food-images.md`](testing/evidence/ciqual-food-images.md).
+
 Este es el punto de entrada para continuar en un chat nuevo sin recuperar el
 historial ni sus imágenes. **La generación está terminada: 3.484 de 3.484 imágenes,
 100,00 %, cero pendientes.** Solo queda la revisión o fusión de la última PR si

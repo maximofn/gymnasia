@@ -1,5 +1,6 @@
 import { RecordCard } from "../components/RecordCard";
 import { CIQUAL_ATTRIBUTION } from "../catalogs/ciqual";
+import { CIQUAL_IMAGE_ATTRIBUTION } from "../catalogs/imageUris";
 import { formatFoodNutrient, formatFoodServing, hasCompleteFoodNutrition } from "../catalogs/foodNutrition";
 import { normalizeCatalogName } from "../catalogs/matching";
 import { NoticeFrame } from "../components/NoticeFrame";
@@ -2054,10 +2055,11 @@ function SettingsFoodThumbnail({ food }: { food: FoodCatalogSettingsModel["foods
 }
 
 function FoodCatalogDetail({ food, testID, onClose, showTitle = false }: { food: FoodCatalogSettingsModel["foods"][number]; testID: string; onClose?: () => void; showTitle?: boolean }) {
+  const imageUri = foodCatalogImageUri(food);
   return (
     <View testID={testID} style={{ backgroundColor: mobileTheme.color.bgSurface, borderRadius: 12, padding: 16, gap: 12, marginTop: showTitle ? 0 : 6, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle }}>
       {showTitle ? <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}><Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18, flex: 1 }}>{food.name}</Text><Pressable onPress={onClose} style={{ padding: 4 }}><Feather name="x" size={20} color={mobileTheme.color.textSecondary} /></Pressable></View> : null}
-      {showTitle && food.image ? <Image source={{ uri: foodCatalogImageUri(food)! }} style={{ width: "100%", height: 160, borderRadius: 8 }} resizeMode="contain" /> : null}
+      {(showTitle || food.ciqual) && imageUri ? <Thumbnail key={imageUri} uri={imageUri} size={160} style={{ width: "100%" }} resizeMode="contain" accessibilityLabel={`Imagen de ${food.name}`} fallback={null} /> : null}
       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Por 100g</Text>
       <View style={{ flexDirection: "row", gap: 8 }}>
         {[{ label: "Calorías", value: formatFoodNutrient(food, "calories_per_100g"), unit: "kcal", color: "#FF6B6B" }, { label: "Proteína", value: formatFoodNutrient(food, "protein_per_100g"), unit: "g", color: "#4ECDC4" }, { label: "Carbos", value: formatFoodNutrient(food, "carbs_per_100g"), unit: "g", color: "#FFE66D" }, { label: "Grasa", value: formatFoodNutrient(food, "fat_per_100g"), unit: "g", color: "#FF8A5C" }].map((macro) => <View key={macro.label} style={{ flex: 1, backgroundColor: `${macro.color}15`, borderRadius: 8, padding: 8, alignItems: "center", gap: 2 }}><Text style={{ color: macro.color, fontSize: macro.value.length > 8 ? 11 : 16, fontWeight: "700" }}>{macro.value}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.unit}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.label}</Text></View>)}
@@ -2066,7 +2068,8 @@ function FoodCatalogDetail({ food, testID, onClose, showTitle = false }: { food:
       {food.serving_size_g !== null && food.serving_size_g > 0 ? <View style={{ backgroundColor: "#ffffff08", borderRadius: 8, padding: 10, gap: 4 }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>{showTitle ? `Ración típica (${food.serving_size_g}g)` : "Ración típica"}</Text>{!showTitle ? <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{food.serving_description || `${food.serving_size_g}g`}</Text> : null}<Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{formatFoodServing(food)}</Text></View> : null}
       {food.ciqual ? (
         <View style={{ gap: 6 }}>
-          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{food.serving_description}. Sin imagen ni ración doméstica documentada.</Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{food.serving_description}. Sin ración doméstica documentada.</Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{CIQUAL_IMAGE_ATTRIBUTION}</Text>
           {!hasCompleteFoodNutrition(food) ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Datos incompletos: para registrar este alimento en la dieta tendrás que completar los valores manualmente. «No disponible», trazas y límites no equivalen a cero.</Text> : null}
           <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>ANSES-CIQUAL {food.ciqual.version} · {food.id} · Licence Ouverte 2.0</Text>
           <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>Original francés: {food.ciqual.names.fr}</Text>
