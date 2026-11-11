@@ -9,14 +9,15 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**200/7.140 imágenes registradas; 6.940 pendientes; 2,80 %.**
+**300/7.140 imágenes registradas; 6.840 pendientes; 4,20 %.**
 
-Las tandas `0001` y `0002` contienen 100 imágenes cada una, generadas con Codex
-integrado y revisadas visualmente. Las PRs quedan abiertas; `pending-review` no
-equivale a aprobación del mantenedor. No hay integración móvil.
+Las tandas `0001`, `0002` y `0003` contienen 100 imágenes cada una, generadas con
+Codex integrado y revisadas visualmente. Consultar GitHub para el estado de sus
+PRs; `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
 - [Tanda 0001: manifiesto y prompts](0001/manifest.json).
 - [Tanda 0002: manifiesto y prompts](0002/manifest.json).
+- [Tanda 0003: manifiesto y prompts](0003/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -269,3 +270,133 @@ Las nueve hojas revisan todos los WebP finales:
 | [bls-C118100](0002/bls-C118100.webp) | Quinoa tricolore, roh | Quinoa tricolore, raw |
 | [bls-C118122](0002/bls-C118122.webp) | Quinoa tricolore, gekocht | Quinoa tricolore, boiled |
 | [bls-C119100](0002/bls-C119100.webp) | Bulgur (Hartweizen) roh | Bulgur (durum wheat) raw |
+
+## Tanda 0003: cereales y productos de molienda
+
+100 imágenes nuevas de cereales crudos y cocidos, copos, harinas, almidón,
+salvado, sémolas y grano partido. Una imagen independiente por código, incluso
+cuando la diferencia entre tipos de harina no se aprecia en una miniatura.
+Sin textos que simulen grados de molienda ni ingredientes añadidos.
+
+Se contrastó el sentido de los términos de molienda con el
+[Bayerischer Müllerbund](https://www.muellerbund.de/muellereiprodukte/mehle-aus-weizen-roggen-dinkel/)
+y la identificación de Grünkern con el
+[BZfE](https://www.bzfe.de/presse/pressemeldungen-archiv/getreide-abc-dinkel).
+Son apoyos para la interpretación editorial, no fuentes de imágenes. En
+`bls-C341000`, el grano seco es una inferencia de la propia ficha BLS
+(11,192 g de agua y 336 kcal por 100 g), conservada sin modificar.
+
+Las nueve hojas muestran todos los WebP finales revisados:
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0003-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0003-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0003-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0003-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0003-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0003-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0003-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0003-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0003-09.jpg)
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-C119132](0003/bls-C119132.webp) | Bulgur (Hartweizen) gekocht | Bulgur (durum wheat) boiled |
+| [bls-C119200](0003/bls-C119200.webp) | Couscous (Hartweizen) roh | Couscous (durum wheat) raw |
+| [bls-C119232](0003/bls-C119232.webp) | Couscous (Hartweizen) gekocht | Couscous (durum wheat) boiled |
+| [bls-C121000](0003/bls-C121000.webp) | Roggen ganzes Korn, roh | Rye whole grain, raw |
+| [bls-C121032](0003/bls-C121032.webp) | Roggen ganzes Korn, gekocht | Rye whole grain, boiled |
+| [bls-C123000](0003/bls-C123000.webp) | Roggen Flocken | Rye flakes |
+| [bls-C123032](0003/bls-C123032.webp) | Roggen Flocken, gekocht | Rye flakes, boiled |
+| [bls-C126000](0003/bls-C126000.webp) | Roggen Grieß | Rye semolina |
+| [bls-C130032](0003/bls-C130032.webp) | Hafer ganzes Korn, gekocht | Oat whole grain, boiled |
+| [bls-C131000](0003/bls-C131000.webp) | Hafer ganzes Korn, roh | Oat whole grain, raw |
+| [bls-C133000](0003/bls-C133000.webp) | Hafer Flocken | Oat flakes |
+| [bls-C133032](0003/bls-C133032.webp) | Hafer Flocken, gekocht | Oat flakes, boiled |
+| [bls-C136000](0003/bls-C136000.webp) | Hafer Grieß | Oat semolina |
+| [bls-C137000](0003/bls-C137000.webp) | Hafer Grütze | Oat groats |
+| [bls-C137032](0003/bls-C137032.webp) | Hafer Grütze, gekocht | Oat groats, boiled |
+| [bls-C138000](0003/bls-C138000.webp) | Hafer Kleie | Oat bran flakes |
+| [bls-C141000](0003/bls-C141000.webp) | Gerste ganzes Korn, roh | Barley whole grain, raw |
+| [bls-C141032](0003/bls-C141032.webp) | Gerste ganzes Korn, gekocht | Barley whole grain, boiled |
+| [bls-C143000](0003/bls-C143000.webp) | Gerste Flocken | Barley flakes |
+| [bls-C143032](0003/bls-C143032.webp) | Gerste Flocken, gekocht | Barley flakes, boiled |
+| [bls-C146000](0003/bls-C146000.webp) | Gerste Grieß | Barley semolina |
+| [bls-C147000](0003/bls-C147000.webp) | Gerste Grütze | Barley groats |
+| [bls-C147032](0003/bls-C147032.webp) | Gerste Grütze, gekocht | Barley groats, boiled |
+| [bls-C148000](0003/bls-C148000.webp) | Gerste Graupen | Pearl barley |
+| [bls-C148032](0003/bls-C148032.webp) | Gerste Graupen, gekocht | Pearl barley, boiled |
+| [bls-C211000](0003/bls-C211000.webp) | Weizen Vollkornmehl | Wheat wholemeal flour |
+| [bls-C211100](0003/bls-C211100.webp) | Weizen Vollkornschrot | Wheat coarse meal |
+| [bls-C211132](0003/bls-C211132.webp) | Weizen Vollkornschrot, gekocht | Wheat coarse meal, boiled |
+| [bls-C212000](0003/bls-C212000.webp) | Weizen Backschrot, Type 1700 | Wheat coarse meal, Type 1700 |
+| [bls-C212032](0003/bls-C212032.webp) | Weizen Backschrot, Type 1700, gekocht | Wheat coarse meal, Type 1700, boiled |
+| [bls-C213100](0003/bls-C213100.webp) | Weizen Mehl, Type 812 | Wheat flour, Type 812 |
+| [bls-C213200](0003/bls-C213200.webp) | Weizen Mehl, Type 1050 | Wheat flour, Type 1050 |
+| [bls-C213500](0003/bls-C213500.webp) | Weizen Mehl, Type 1600 | Wheat flour, Type 1600 |
+| [bls-C214100](0003/bls-C214100.webp) | Weizen Mehl, Type 405 | Wheat flour, Type 405 |
+| [bls-C214200](0003/bls-C214200.webp) | Weizen Mehl, Type 550 | Wheat flour, Type 550 |
+| [bls-C215000](0003/bls-C215000.webp) | Weizen Dunst | Wheat middlings (dunst) |
+| [bls-C216000](0003/bls-C216000.webp) | Weizen Stärke | Wheat starch |
+| [bls-C217000](0003/bls-C217000.webp) | Weizen Kleie | Wheat bran |
+| [bls-C218000](0003/bls-C218000.webp) | Weichweizen Grieß | Soft wheat semolina |
+| [bls-C218032](0003/bls-C218032.webp) | Weichweizen Grieß, gekocht | Soft wheat semolina, boiled |
+| [bls-C219000](0003/bls-C219000.webp) | Hartweizen Vollkornmehl | Durum wheat wholemeal flour |
+| [bls-C219100](0003/bls-C219100.webp) | Hartweizen Vollkorngrieß | Durum wheat wholemeal semolina |
+| [bls-C219132](0003/bls-C219132.webp) | Hartweizen Vollkorngrieß, gekocht | Durum wheat wholemeal semolina, boiled |
+| [bls-C219200](0003/bls-C219200.webp) | Hartweizen ganzes Korn, roh | Durum wheat whole grain, raw |
+| [bls-C219232](0003/bls-C219232.webp) | Hartweizen ganzes Korn, gekocht | Durum wheat whole grain, boiled |
+| [bls-C219300](0003/bls-C219300.webp) | Hartweizen Grieß | Durum wheat semolina |
+| [bls-C219332](0003/bls-C219332.webp) | Hartweizen Grieß, gekocht | Durum wheat semolina, boiled |
+| [bls-C221000](0003/bls-C221000.webp) | Roggen Vollkornmehl | Rye wholemeal flour |
+| [bls-C221100](0003/bls-C221100.webp) | Roggen Vollkornschrot | Rye coarse meal |
+| [bls-C221132](0003/bls-C221132.webp) | Roggen Vollkornschrot, gekocht | Rye coarse meal, boiled |
+| [bls-C222000](0003/bls-C222000.webp) | Roggen Backschrot, Type 1800 | Rye coarse meal, Type 1800 |
+| [bls-C222032](0003/bls-C222032.webp) | Roggen Backschrot, Type 1800, gekocht | Rye coarse meal, Type 1800, boiled |
+| [bls-C223100](0003/bls-C223100.webp) | Roggen Mehl, Type 815 | Rye flour, Type 815 |
+| [bls-C223200](0003/bls-C223200.webp) | Roggen Mehl, Type 997 | Rye flour, Type 997 |
+| [bls-C223300](0003/bls-C223300.webp) | Roggen Mehl, Type 1150 | Rye flour, Type 1150 |
+| [bls-C223400](0003/bls-C223400.webp) | Roggen Mehl, Type 1370 | Rye flour, Type 1370 |
+| [bls-C223600](0003/bls-C223600.webp) | Roggen Mehl, Type 1740 | Rye flour, Type 1740 |
+| [bls-C232000](0003/bls-C232000.webp) | Hafer Schrot | Oat coarse meal |
+| [bls-C232032](0003/bls-C232032.webp) | Hafer Schrot, gekocht | Oat coarse meal, boiled |
+| [bls-C233000](0003/bls-C233000.webp) | Hafer Mehl | Oat flour |
+| [bls-C234000](0003/bls-C234000.webp) | Dinkel Mehl, Type 630 | Spelt flour, Type 630 |
+| [bls-C234100](0003/bls-C234100.webp) | Dinkel Mehl, Type 812 | Spelt flour, Type 812 |
+| [bls-C234200](0003/bls-C234200.webp) | Dinkel Mehl, Type 1050 | Spelt flour, Type 1050 |
+| [bls-C235000](0003/bls-C235000.webp) | Dinkel Vollkornmehl | Spelt wholemeal flour |
+| [bls-C235100](0003/bls-C235100.webp) | Dinkel Vollkornschrot | Spelt coarse meal |
+| [bls-C235132](0003/bls-C235132.webp) | Dinkel Vollkornschrot, gekocht | Spelt coarse meal, boiled |
+| [bls-C236000](0003/bls-C236000.webp) | Dinkel ganzes Korn, roh | Spelt whole grain, raw |
+| [bls-C236032](0003/bls-C236032.webp) | Dinkel ganzes Korn, gekocht | Spelt whole grain, boiled |
+| [bls-C236100](0003/bls-C236100.webp) | Dinkel Flocken | Spelt flakes |
+| [bls-C237000](0003/bls-C237000.webp) | Dinkel Kleie | Spelt bran |
+| [bls-C238000](0003/bls-C238000.webp) | Dinkel Grieß | Spelt semolina |
+| [bls-C238032](0003/bls-C238032.webp) | Dinkel Grieß, gekocht | Spelt semolina, boiled |
+| [bls-C240000](0003/bls-C240000.webp) | Emmer Vollkornmehl | Emmer wheat wholemeal flour |
+| [bls-C240100](0003/bls-C240100.webp) | Emmer ganzes Korn, roh | Emmer wheat whole grain, raw |
+| [bls-C240132](0003/bls-C240132.webp) | Emmer ganzes Korn, gekocht | Emmer wheat whole grain, boiled |
+| [bls-C240200](0003/bls-C240200.webp) | Emmer Flocken | Emmer wheat flakes |
+| [bls-C241000](0003/bls-C241000.webp) | Einkorn Vollkornmehl | Einkorn wheat wholemeal flour |
+| [bls-C241100](0003/bls-C241100.webp) | Einkorn ganzes Korn, roh | Einkorn wheat whole grain, raw |
+| [bls-C241132](0003/bls-C241132.webp) | Einkorn ganzes Korn, gekocht | Einkorn wheat whole grain, boiled |
+| [bls-C241200](0003/bls-C241200.webp) | Einkorn Flocken | Einkorn wheat flakes |
+| [bls-C242000](0003/bls-C242000.webp) | Gerste Schrot | Barley coarse meal |
+| [bls-C242032](0003/bls-C242032.webp) | Gerste Schrot, gekocht | Barley coarse meal, boiled |
+| [bls-C243000](0003/bls-C243000.webp) | Gerste Mehl | Barley flour |
+| [bls-C311000](0003/bls-C311000.webp) | Grünkern ganzes Korn, roh | Green spelt whole grain, raw |
+| [bls-C311032](0003/bls-C311032.webp) | Grünkern ganzes Korn, gekocht | Green spelt whole grain, boiled |
+| [bls-C317000](0003/bls-C317000.webp) | Grünkern Grütze | Green spelt groats |
+| [bls-C317032](0003/bls-C317032.webp) | Grünkern Grütze, gekocht | Green spelt groats, boiled |
+| [bls-C320032](0003/bls-C320032.webp) | Buchweizen gekocht | Buckwheat boiled |
+| [bls-C322000](0003/bls-C322000.webp) | Buchweizen roh | Buckwheat raw |
+| [bls-C326000](0003/bls-C326000.webp) | Buchweizen Grieß | Buckwheat semolina |
+| [bls-C326032](0003/bls-C326032.webp) | Buchweizen Grieß, gekocht | Buckwheat semolina, boiled |
+| [bls-C327000](0003/bls-C327000.webp) | Buchweizen Grütze | Buckwheat groats |
+| [bls-C327032](0003/bls-C327032.webp) | Buchweizen Grütze, gekocht | Buckwheat groats, boiled |
+| [bls-C332000](0003/bls-C332000.webp) | Hirse roh | Millet raw |
+| [bls-C333100](0003/bls-C333100.webp) | Hirse Flocken | Millet wholegrain flakes |
+| [bls-C333132](0003/bls-C333132.webp) | Hirse Flocken, gekocht | Millet wholegrain flakes, boiled |
+| [bls-C334032](0003/bls-C334032.webp) | Hirse gekocht | Millet boiled |
+| [bls-C335000](0003/bls-C335000.webp) | Amaranth roh | Amaranth raw |
+| [bls-C335032](0003/bls-C335032.webp) | Amaranth gekocht | Amaranth boiled |
+| [bls-C341000](0003/bls-C341000.webp) | Mais roh | Maize raw |
