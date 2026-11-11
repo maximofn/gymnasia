@@ -5,11 +5,18 @@ BLS permanece independiente de la app. Sus datos y erratas se fusionaron en la
 permite generar imágenes con el enfoque visual y editorial de CIQUAL; no integra
 BLS en móvil ni publica una versión.
 
-## Estado de la primera tanda (11 de noviembre de 2026)
+## Estado acumulado (11 de noviembre de 2026)
 
-- Tanda `0001`: **100 imágenes nuevas generadas y revisadas de 7.140**.
-- Progreso: **1,40 %; 7.040 pendientes**. El catálogo completo aún no tiene imágenes.
-- Imágenes y prompts: `alimentos/bls/image-batches/0001/manifest.json`.
+- Tandas `0001` y `0002`: **200/7.140 imágenes generadas y revisadas**.
+- Progreso: **2,80 %; 6.940 pendientes**. El catálogo completo aún no tiene imágenes.
+- Última entrega: tanda `0002`, 100 imágenes nuevas de panes, crujientes y cereales;
+  manifiesto y prompts en `alimentos/bls/image-batches/0002/manifest.json`.
+- Las nueve hojas `docs/testing/assets/bls-food-images-0002-*.jpg` muestran todos
+  los WebP finales de esta tanda. Se abrieron además `bls-B6A1500.webp`
+  (queso y zanahoria horneados), `bls-B723100.webp` (sal visible retirada) y
+  `bls-C118122.webp` (quinoa tricolor cocida) a tamaño completo. No hicieron falta
+  regeneraciones.
+- Primera tanda: `alimentos/bls/image-batches/0001/manifest.json`.
 - Revisión: nueve hojas de contacto en `docs/testing/assets/bls-food-images-0001-*.jpg`;
   se abrió además `bls-B122000.webp` a tamaño completo para comprobar el grano grueso.
 - Todas las imágenes iniciales pasaron la revisión visual; no hubo regeneraciones.
@@ -18,7 +25,12 @@ BLS en móvil ni publica una versión.
 
 ## Flujo
 
-- Rama: `codex/bls-food-images`. Tandas de hasta 100 imágenes nuevas, una por
+- Rama actual: `codex/bls-food-images-0002`, basada en `codex/bls-food-images`
+  (PR 456, primera tanda, aún abierta al preparar la segunda). La nueva PR se
+  abre contra esa rama para que el diff muestre solo la tanda `0002`. Consultar
+  ambas PR antes de continuar; si se fusiona la primera, cambiar la base de la
+  segunda a `main` y comprobar de nuevo su diff y sus checks.
+- Tandas de hasta 100 imágenes nuevas, una por
   código pendiente, con PR revisable. Consultar GitHub al empezar; este documento
   no autoriza fusionar una PR. Conservar el trabajo y los archivos del mantenedor.
 - Worktree inicial: `/tmp/gymnasia-bls-import-20261111`. Si falta, recuperar la
@@ -75,8 +87,8 @@ composición, propiedades nutricionales ni una ración de 100 g.
    aprobación del mantenedor.
 
 Cada carpeta numerada admite solo WebP y `manifest.json`. Guardar planes,
-recibos, notas y hojas de contacto fuera de ella. En la tanda inicial, los
-checkpoints viven en `/tmp/gymnasia-bls-images-0001/`: `plan.json`, un
+recibos, notas y hojas de contacto fuera de ella. Los checkpoints de cada
+tanda viven en `/tmp/gymnasia-bls-images-NNNN/` (`0001` y `0002`): `plan.json`, un
 `bls-CODIGO.receipt.json` por alimento y `review/notes.json`, con hashes revisados.
 Los temporales son recuperación opcional; WebP, manifiesto, prompts y vistas
 revisables de la PR son los entregables duraderos.
@@ -114,3 +126,12 @@ salidas en bloques pequeños (por ejemplo cuatro imágenes), mantener recibos
 antes de convertir y usar hojas de contacto para revisar. Si el visor falla,
 comprobar archivos y recibos antes de repetir una llamada: un fallo de presentación
 no significa que falte la imagen.
+
+## CI observado en la primera tanda
+
+La PR 456 seguía abierta al comenzar la tanda `0002`. Sus comprobaciones
+`catalogs` y `board` no completaron la instalación de dependencias de Chromium
+por fallos de resolución DNS de los servidores Ubuntu, incluso tras reintentar.
+Los checks locales de la primera tanda sí pasaron. Consultar GitHub para el
+estado actual; no desactivar comprobaciones ni tratar estos fallos como una
+aprobación para fusionar. La segunda tanda tampoco autoriza la fusión.
