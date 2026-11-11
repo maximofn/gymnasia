@@ -59,6 +59,9 @@
     "sync:catalogs": "node scripts/catalogs/generate.mjs --write",
     "check:catalogs": "node scripts/catalogs/generate.mjs --check",
     "test:catalogs": "node --test scripts/catalogs/*.test.mjs",
+    "import:bls": "node scripts/catalogs/import-bls.mjs --write",
+    "check:bls": "node scripts/catalogs/import-bls.mjs --check",
+    "test:bls": "node --test scripts/catalogs/bls.test.mjs",
     "import:ciqual": "node scripts/catalogs/import-ciqual.mjs --write",
     "check:ciqual": "node scripts/catalogs/import-ciqual.mjs --check",
     "check:ciqual:images": "node scripts/catalogs/ciqual-image-batches.mjs --check",
@@ -94,6 +97,7 @@
   "devDependencies": {
     "ajv": "^8.17.1",
     "fast-check": "^4.9.0",
+    "fflate": "0.8.3",
     "playwright": "^1.58.2",
     "sax": "1.4.4",
     "sharp": "^0.35.4",

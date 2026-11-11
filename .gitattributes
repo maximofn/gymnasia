@@ -1,1 +1,11 @@
 apps/feedback-worker/src/index.ts text diff
+
+# BLS data is reproducible from the pinned original XLSX; review the importer and source pins.
+alimentos/bls/foods/*.json linguist-generated
+alimentos/bls/pages/*.json linguist-generated
+alimentos/bls/index.json linguist-generated
+alimentos/bls/pages.json linguist-generated
+alimentos/bls/nutrients.json linguist-generated
+alimentos/bls/references.json linguist-generated
+alimentos/bls/known-issues.json linguist-generated
+alimentos/bls/manifest.json linguist-generated

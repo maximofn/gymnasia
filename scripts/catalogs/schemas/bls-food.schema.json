@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "kind", "names", "source", "source_note", "source_warning_ids", "nutrition_profiles"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "id": {"type": "string", "pattern": "^bls-[A-Z][A-Z0-9]{6}$"},
+    "kind": {"const": "generic"},
+    "names": {
+      "type": "object", "additionalProperties": false, "required": ["de", "en"],
+      "properties": {"de": {"type": "string", "minLength": 1}, "en": {"type": "string", "minLength": 1}}
+    },
+    "source": {
+      "type": "object", "additionalProperties": false, "required": ["dataset_id", "food_code", "worksheet_row"],
+      "properties": {"dataset_id": {"const": "mri-bls-4.0-2025"}, "food_code": {"type": "string", "pattern": "^[A-Z][A-Z0-9]{6}$"}, "worksheet_row": {"type": "integer", "minimum": 2}}
+    },
+    "source_note": {"type": ["string", "null"]},
+    "source_warning_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^bls-errata-"}},
+    "nutrition_profiles": {
+      "type": "array", "minItems": 1, "maxItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["id", "basis", "nutrients"],
+        "properties": {
+          "id": {"const": "bls-4.0"},
+          "basis": {"const": {"amount": 100, "unit": "g", "portion": "edible"}},
+          "nutrients": {
+            "type": "object", "minProperties": 1,
+            "patternProperties": {"^bls-[A-Z][A-Z0-9:]*$": {"$ref": "#/definitions/measurement"}},
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "measurement": {
+      "type": "object", "additionalProperties": false,
+      "required": ["value", "qualifier", "source_value", "source_type", "source_origin", "source_ref"],
+      "properties": {
+        "value": {"type": ["number", "null"]},
+        "qualifier": {"enum": ["reported", "logical_zero", "missing", "trace", "below_detection", "below_quantification", "below_detection_or_quantification", "less_than", "inconsistent_origin"]},
+        "limit": {"type": "number"},
+        "source_value": {"type": ["string", "null"]},
+        "source_type": {"enum": ["n", "s", "inlineStr", null]},
+        "source_origin": {"type": ["string", "null"]},
+        "source_ref": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^bls-ref-[a-f0-9]{64}$"}]}
+      }
+    }
+  }
+}

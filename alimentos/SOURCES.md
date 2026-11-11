@@ -1,5 +1,23 @@
 # Fuentes del catálogo de alimentos
 
+## MRI-BLS 4.0 (2025)
+
+La entrega [`bls/`](bls/README.md) procede del Max Rubner-Institut:
+**Max Rubner-Institut (2025): Bundeslebensmittelschlüssel (BLS), Version 4.0 —
+Deutsche Nährstoffdatenbank. Karlsruhe. DOI: 10.25826/Data20251217-134202-0.**
+
+Datos bajo [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), declarada en
+la [página oficial de descarga](https://www.blsdb.de/download). Ver
+[`bls/LICENSE.md`](bls/LICENSE.md). Las contribuciones de reorganización de datos
+de Gymnasia se comparten bajo la misma licencia, conservando la atribución del
+MRI y sin implicar su respaldo. Los XLSX originales y sus hashes se conservan.
+
+La transformación a JSON organiza las fichas, añade IDs estables, índices,
+páginas, calificadores explícitos y un índice editorial de erratas. No recalcula
+nutrientes, no imputa ausencias, no traduce nombres ni aplica correcciones de
+BLS 4.1. Los datos se ofrecen sin garantías; las 747 fichas afectadas por el
+erratum oficial de agosto de 2026 llevan avisos. No se integra todavía en la app.
+
 ## ANSES-CIQUAL 2025
 
 La importación de la tabla oficial de composición de alimentos se conserva en
