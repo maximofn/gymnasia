@@ -1,6 +1,8 @@
 # QA: imágenes CIQUAL en catálogo, búsqueda y dieta
 
 Fecha: 2026-11-11. Rama: `codex/ciqual-mobile-images`.
+Versión preparada: 1.55.0 mediante `prepare:production-version`, conforme al
+incremento menor exigido por CI para esta función. No se ha lanzado una build.
 
 La integración enlaza 3.484 imágenes editoriales mediante un índice generado
 desde las muestras y las 53 tandas, incluida la última entrega de la PR 451.
@@ -43,6 +45,9 @@ queda completa con `contain` y las atribuciones se leen sin desbordamiento.
   `npm run check:catalogs`, `npm run check:ciqual`,
   `npm run check:ciqual:mobile`, `npm run check:legal` y `git diff --check`:
   correctos.
+- `npm run check:production-version -- --base origin/main --published-versions v1.54.1`,
+  `npm run check:android-native-config` y `npm run check:android-permissions`:
+  correctos con la versión preparada 1.55.0.
 - `CATALOG_E2E_CIQUAL_ONLY=1 CATALOG_E2E_SCREENSHOT_DIR=/tmp/ciqual-images-qa npm run test:catalogs:e2e`:
   correcto; exportación con caché limpia y WebP originales servidos desde el
   checkout para comprobar el contenido que publicará la rama.
