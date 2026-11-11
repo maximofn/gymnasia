@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, writeFile, rm, mkdir, symlink } from "node:fs/promises";
+import { mkdtemp, readFile, writeFile, rm, realpath, symlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { resolve, join } from "node:path";
 import { execFileSync, spawnSync } from "node:child_process";
 import test from "node:test";
@@ -10,7 +11,7 @@ import { syntheticResponses, syntheticValues, syntheticFetch } from "./__fixture
 
 const options = (calls = [], hook) => ({ fetchImpl: syntheticFetch(calls, hook), intervalMs: 0, sleep: async () => {}, now: () => "2026-01-01T00:00:00.000Z" });
 async function temporary(t) {
-  const path = await mkdtemp("/private/tmp/bedca-test-");
+  const path = await mkdtemp(join(await realpath(tmpdir()), "bedca-test-"));
   t.after(() => rm(path, { recursive: true, force: true }));
   return path;
 }
