@@ -1,9 +1,15 @@
-# Continuar la generación de imágenes de alimentos CIQUAL
+# Relevo del catálogo de imágenes de alimentos CIQUAL
 
 Este es el punto de entrada para continuar en un chat nuevo sin recuperar el
-historial ni sus imágenes. El trabajo consiste en generar ilustraciones de los
-3.484 alimentos ANSES-CIQUAL de Gymnasia, con el estilo ya aprobado, en tandas
-de 100 y con una PR por tanda. Las imágenes todavía no están integradas en la app.
+historial ni sus imágenes. **La generación está terminada: 3.484 de 3.484 imágenes,
+100,00 %, cero pendientes.** Solo queda la revisión o fusión de la última PR si
+el mantenedor pide continuar con ese cierre. Las imágenes todavía no están
+integradas en la app.
+
+Leer primero «Estado de referencia» y «Relevo para un chat nuevo». El flujo de
+generación se conserva como referencia; el catálogo completo no necesita otra
+tanda. No cargar todos los manifiestos históricos, prompts o PNG para preparar
+la nueva sesión.
 
 ## Qué significa más
 
@@ -13,10 +19,12 @@ continuación. Aceptar también «mas» y diferencias de mayúsculas:
 1. Consultar la PR anterior de la rama de imágenes y sus checks actuales.
 2. Si está abierta y todos los checks requeridos están correctos, fusionarla.
    No pedir otra confirmación rutinaria para esa tanda de imágenes ya autorizada.
-3. Actualizar la misma rama y generar **100 imágenes nuevas**, una por alimento
-   pendiente, con el mismo estilo. No son 100 variantes de una misma imagen.
-4. Revisar las 100, corregir las que fallen, validar, crear un commit, subirlo
-   y abrir la siguiente PR contra `main`, en la misma rama.
+3. Actualizar la misma rama y consultar el inventario. **Si hay cero pendientes,
+   informar del catálogo completo y terminar este flujo sin crear otra tanda.**
+   Si quedan alimentos, generar hasta **100 imágenes nuevas**, una por pendiente,
+   con el mismo estilo. No son variantes de una misma imagen.
+4. Revisar todas las imágenes de la tanda, corregir las que fallen, validar,
+   crear un commit, subirlo y abrir la siguiente PR contra `main`, en la misma rama.
 5. **Dejar la nueva PR abierta** para la siguiente revisión o el siguiente «más».
    Informar del proceso y del progreso acumulado con porcentaje.
 
@@ -32,7 +40,7 @@ antes de fusionar. No eludir una aprobación de instrucciones del agente o de bu
 
 ## Estado de referencia
 
-Estado comprobado el **10 de noviembre de 2026**, incluyendo la última tanda
+Estado comprobado el **11 de noviembre de 2026**, incluyendo la última tanda
 aunque su PR siga abierta. Volver a consultar GitHub y los manifiestos al empezar.
 
 **La generación del catálogo está completa: 3.484 imágenes registradas, cero pendientes.**
@@ -57,6 +65,17 @@ del head `7a415a34d6e5c4d26ea209abba5ee3545867336c`, protegido con
 `--match-head-commit`, tras comprobar que solo incluía imágenes y documentación.
 Después se actualizó la rama por avance rápido. La nueva PR queda abierta para
 la siguiente revisión o «más»; consultar los checks de su SHA actual antes de fusionar.
+
+El 11 de noviembre se comprobó que la PR 451 sigue **abierta**, con 84 archivos:
+las 81 imágenes y su manifiesto, el índice y este relevo. Los cinco checks del head
+`1297e612ed58a43a5316523242f7df3a3b11d455` estaban correctos. GitHub indicaba
+`BEHIND` y `MERGEABLE`: `main` había avanzado hasta
+`fad504065547d71b48780e46ebe08a822f555459`.
+Esta actualización documental genera otro head y puede reiniciar los checks;
+reconsultar siempre el SHA y sus resultados actuales antes de una futura fusión.
+El validador de imágenes se volvió a ejecutar el 11 de noviembre y confirmó
+3.484/3.484, cero pendientes. Esta actualización solo modifica este documento;
+`git diff --check` también pasó.
 
 La tanda 0053 pasó los 33 tests del catálogo, `check:ciqual:images`,
 `check:catalogs`, `check:ciqual`, `check:ciqual:mobile` y `git diff --check`.
@@ -128,6 +147,16 @@ la última PR de imágenes conforme al flujo anterior. Con cero pendientes, info
 del catálogo completo. La integración móvil, publicación de versiones o importación
 de otros catálogos requieren una petición independiente: no están autorizadas
 por esta continuación de imágenes.
+
+La petición que cerró esta sesión fue actualizar este documento para cambiar de
+chat, no una nueva orden de generación o fusión. En el chat nuevo, preparar el
+contexto y esperar la siguiente instrucción del mantenedor.
+
+Si una futura orden «más» encuentra la PR detrás de `main`, actualizar primero las
+referencias con `git fetch origin main` y después integrar `origin/main` en la rama
+de imágenes mediante una fusión normal, resolviendo conflictos sin perder cambios. Revisar de nuevo las rutas de
+la PR y esperar los checks del nuevo SHA antes de fusionarla con protección del
+head. Conservar la rama; no usar force-push, `--admin` o `--auto` para saltar controles.
 
 Trabajar en `/Users/macm1/Documents/proyectos/gymnasia`, aunque el chat se abra
 en otro worktree. Confirmar allí la rama `codex/ciqual-food-image-samples` y el
@@ -416,10 +445,13 @@ cambio de chat sin depender de una conversación larga.
 ```text
 Trabaja en /Users/macm1/Documents/proyectos/gymnasia y lee primero
 docs/ciqual-food-images-handoff.md y las instrucciones del repositorio.
-Prepara el contexto sin cargar el historial anterior y espera mi «más» para
-iniciar la siguiente tanda. Respeta el estilo aprobado y el flujo documentado.
-Cuando diga «más», fusiona
-la PR anterior si está lista, genera otras 100 imágenes, revisa todas, abre
-la siguiente PR en la misma rama e informa de generadas, total, pendientes,
-porcentaje, validaciones y enlaces. No integres nada en la app.
+Prepara el contexto sin cargar el historial anterior ni todas sus imágenes,
+y espera mi siguiente instrucción.
+
+La generación CIQUAL está completa: 3.484/3.484 imágenes, cero pendientes.
+La última PR conocida es la 451; consulta su estado y SHA actuales. El relevo
+explica el cierre pendiente y cómo actualizar la rama si está detrás de main.
+Una orden «más» permite cerrar esa PR si cumple los controles, pero con cero
+pendientes no debe generar otra tanda. La integración móvil requiere una
+petición independiente.
 ```
