@@ -142,7 +142,7 @@ npm run import:bedca -- --download # captura o reanuda; genera solo en .local/
 npm run import:bedca              # reconstruye desde la misma captura, sin red
 npm run check:bedca               # comprueba hashes e igualdad exacta, sin red
 npm run test:bedca                # pruebas con datos inventados, sin red
-npm run check:bedca:publication   # impide versionar datos bajo alimentos/bedca/
+npm run check:bedca:publication   # detecta datos BEDCA añadidos a Git
 ```
 
 Las condiciones de reutilización siguen pendientes: los datos reales no se

@@ -134,7 +134,8 @@ en los diccionarios se conservan con diagnóstico, sin inventar una equivalencia
 
 Una respuesta `<food/>` permanece en el índice como `availability: "empty"`,
 sin nutrientes inventados. Las referencias con diferentes textos para un mismo
-ID conservan todas sus variantes.
+ID conservan todas sus variantes. La ausencia de una fila de componente no crea
+una medición ficticia: se distingue de una fila presente cuyo valor está vacío.
 
 ## Artefactos locales y controles
 
@@ -148,10 +149,13 @@ completa. La copia anterior se restaura si falla el cambio. Nunca se limpia una
 carpeta que tenga archivos ajenos o no cumpla su manifiesto. El check de
 reproducción compara todos los archivos con una reconstrucción desde el snapshot.
 
-CI ejecuta las pruebas sin red y rechaza cualquier archivo de datos versionado
+Ejecutar `npm run check:bedca:publication` antes de cada commit y push. CI repite
+la comprobación y rechaza cualquier archivo de datos versionado
 bajo `alimentos/bedca/`, aunque se haya añadido forzando `.gitignore`. Solo permite
 este documento y `.gitignore`. No se suben capturas reales como fixtures ni se
 adjuntan los datos a la PR, artifacts, releases o logs.
+Esta comprobación detecta archivos en el índice de Git; no puede retirar datos
+que alguien haya enviado a un remoto saltándose el control previo.
 
 Revisión de privacidad: las consultas solo descargan datos públicos durante el
 mantenimiento. No leen datos personales ni claves, no llaman a IA y no añaden
