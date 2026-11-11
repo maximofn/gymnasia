@@ -1,0 +1,3594 @@
+[
+  {
+    "id": "bls-ENERCJ",
+    "source_code": "ENERCJ",
+    "source_index": 1,
+    "names": {
+      "de": "Energie (Kilojoule)",
+      "en": "Energy (kilojoule)"
+    },
+    "unit": "kJ",
+    "source_fields": {
+      "Index": "1",
+      "Nährstoffcode / Component code": "ENERCJ",
+      "Nährstoffbezeichnung": "Energie (Kilojoule)",
+      "Component name": "Energy (kilojoule)",
+      "Einheit / Unit": "kJ",
+      "Nährstoffgruppe": "Energie",
+      "Component group": "Energy",
+      "Formeln / Formula": "ENERCJ[kJ] = 17*PROT625[g] + 17*(CHO[g] - POLYL[g]) + 37*FAT[g] + 29*ALC[g] + 13*OA[g] + 10*POLYL[g] + 8*OLSAC[g] + 8*FIBT[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "ENERCJ Energie (Kilojoule) [kJ/100g]",
+      "ENERCJ Datenherkunft",
+      "ENERCJ Referenz"
+    ],
+    "effective_formula": "ENERCJ[kJ] = PROT625[g]*17 + FAT[g]*37 + (CHO[g] - POLYL[g])*17 + FIBT[g]*8 + ALC[g]*29 + OA[g]*13 + POLYL[g]*10",
+    "formula_correction_id": "bls-correction-formula-ENERCJ"
+  },
+  {
+    "id": "bls-ENERCC",
+    "source_code": "ENERCC",
+    "source_index": 2,
+    "names": {
+      "de": "Energie (Kilokalorien)",
+      "en": "Energy (kilocalorie)"
+    },
+    "unit": "kcal",
+    "source_fields": {
+      "Index": "2",
+      "Nährstoffcode / Component code": "ENERCC",
+      "Nährstoffbezeichnung": "Energie (Kilokalorien)",
+      "Component name": "Energy (kilocalorie)",
+      "Einheit / Unit": "kcal",
+      "Nährstoffgruppe": "Energie",
+      "Component group": "Energy",
+      "Formeln / Formula": "ENERCC[kcal] = 4*PROT625[g] + 4*(CHO[g] - POLYL[g]) + 9*FAT[g] + 7*ALC[g] + 3*OA[g] + 2.4*POLYL[g] + 2*OLSAC[g] + 2*FIBT[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "ENERCC Energie (Kilokalorien) [kcal/100g]",
+      "ENERCC Datenherkunft",
+      "ENERCC Referenz"
+    ],
+    "effective_formula": "ENERCC[kcal] = PROT625[g]*4 + FAT[g]*9 + (CHO[g] - POLYL[g])*4 + FIBT[g]*2 + ALC[g]*7 + OA[g]*3 + POLYL[g]*2.4",
+    "formula_correction_id": "bls-correction-formula-ENERCC"
+  },
+  {
+    "id": "bls-WATER",
+    "source_code": "WATER",
+    "source_index": 3,
+    "names": {
+      "de": "Wasser",
+      "en": "Water"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "3",
+      "Nährstoffcode / Component code": "WATER",
+      "Nährstoffbezeichnung": "Wasser",
+      "Component name": "Water",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Makronährstoffe",
+      "Component group": "Proximate composition",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "WATER Wasser [g/100g]",
+      "WATER Datenherkunft",
+      "WATER Referenz"
+    ]
+  },
+  {
+    "id": "bls-PROT625",
+    "source_code": "PROT625",
+    "source_index": 4,
+    "names": {
+      "de": "Protein (Nx6,25)",
+      "en": "Protein (Nx6.25)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "4",
+      "Nährstoffcode / Component code": "PROT625",
+      "Nährstoffbezeichnung": "Protein (Nx6,25)",
+      "Component name": "Protein (Nx6.25)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Makronährstoffe",
+      "Component group": "Proximate composition",
+      "Formeln / Formula": "PROT625[g]=NT[g]*6.25",
+      "Formelanwendung / Formula application": "teilweise berechnet / partially calculated"
+    },
+    "source_columns": [
+      "PROT625 Protein (Nx6,25) [g/100g]",
+      "PROT625 Datenherkunft",
+      "PROT625 Referenz"
+    ]
+  },
+  {
+    "id": "bls-FAT",
+    "source_code": "FAT",
+    "source_index": 5,
+    "names": {
+      "de": "Fett",
+      "en": "Fat"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "5",
+      "Nährstoffcode / Component code": "FAT",
+      "Nährstoffbezeichnung": "Fett",
+      "Component name": "Fat",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Makronährstoffe",
+      "Component group": "Proximate composition",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FAT Fett [g/100g]",
+      "FAT Datenherkunft",
+      "FAT Referenz"
+    ]
+  },
+  {
+    "id": "bls-CHO",
+    "source_code": "CHO",
+    "source_index": 6,
+    "names": {
+      "de": "Kohlenhydrate, verfügbar",
+      "en": "Carbohydrate, available"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "6",
+      "Nährstoffcode / Component code": "CHO",
+      "Nährstoffbezeichnung": "Kohlenhydrate, verfügbar",
+      "Component name": "Carbohydrate, available",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Makronährstoffe; Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Proximate composition; Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "CHO[g] = SUGAR[g] + STARCH[g] + OLSAC[g] + POLYL[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "CHO Kohlenhydrate, verfügbar [g/100g]",
+      "CHO Datenherkunft",
+      "CHO Referenz"
+    ]
+  },
+  {
+    "id": "bls-FIBT",
+    "source_code": "FIBT",
+    "source_index": 7,
+    "names": {
+      "de": "Ballaststoffe, gesamt",
+      "en": "Fibre, dietary, total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "7",
+      "Nährstoffcode / Component code": "FIBT",
+      "Nährstoffbezeichnung": "Ballaststoffe, gesamt",
+      "Component name": "Fibre, dietary, total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Makronährstoffe; Ballaststoffe",
+      "Component group": "Proximate composition; Dietary fibres",
+      "Formeln / Formula": "FIBT[g]=FIBHMW[g]+FIBLMW[g] OR\r\nFIBT[g]=FIBINS[g]+FIBSOL[g]+FIBLMW",
+      "Formelanwendung / Formula application": "teilweise berechnet / partially calculated"
+    },
+    "source_columns": [
+      "FIBT Ballaststoffe, gesamt [g/100g]",
+      "FIBT Datenherkunft",
+      "FIBT Referenz"
+    ]
+  },
+  {
+    "id": "bls-ALC",
+    "source_code": "ALC",
+    "source_index": 8,
+    "names": {
+      "de": "Alkohol (Ethanol)",
+      "en": "Alcohol (Ethanol)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "8",
+      "Nährstoffcode / Component code": "ALC",
+      "Nährstoffbezeichnung": "Alkohol (Ethanol)",
+      "Component name": "Alcohol (Ethanol)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Makronährstoffe",
+      "Component group": "Proximate composition",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "ALC Alkohol (Ethanol) [g/100g]",
+      "ALC Datenherkunft",
+      "ALC Referenz"
+    ]
+  },
+  {
+    "id": "bls-OA",
+    "source_code": "OA",
+    "source_index": 9,
+    "names": {
+      "de": "Organische Säuren, gesamt",
+      "en": "Organic acids, total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "9",
+      "Nährstoffcode / Component code": "OA",
+      "Nährstoffbezeichnung": "Organische Säuren, gesamt",
+      "Component name": "Organic acids, total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Makronährstoffe; Organische Säuren",
+      "Component group": "Proximate composition; Organic acids",
+      "Formeln / Formula": "OA[g]=MALAC[g]+ACEAC[g]+LACAC[g]+TARAC[g]+CITAC[g]",
+      "Formelanwendung / Formula application": "teilweise berechnet / partially calculated"
+    },
+    "source_columns": [
+      "OA Organische Säuren, gesamt [g/100g]",
+      "OA Datenherkunft",
+      "OA Referenz"
+    ]
+  },
+  {
+    "id": "bls-ASH",
+    "source_code": "ASH",
+    "source_index": 10,
+    "names": {
+      "de": "Rohasche",
+      "en": "Ash"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "10",
+      "Nährstoffcode / Component code": "ASH",
+      "Nährstoffbezeichnung": "Rohasche",
+      "Component name": "Ash",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Makronährstoffe",
+      "Component group": "Proximate composition",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "ASH Rohasche [g/100g]",
+      "ASH Datenherkunft",
+      "ASH Referenz"
+    ]
+  },
+  {
+    "id": "bls-VITA",
+    "source_code": "VITA",
+    "source_index": 11,
+    "names": {
+      "de": "Vitamin A, Retinol-Äquivalent (RE)",
+      "en": "Vitamin A, retinol equivalents (RE)"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "11",
+      "Nährstoffcode / Component code": "VITA",
+      "Nährstoffbezeichnung": "Vitamin A, Retinol-Äquivalent (RE)",
+      "Component name": "Vitamin A, retinol equivalents (RE)",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "VITA[µg]= RETOL[µg] + 1/6*CARTB[µg]+ 1/12*(CAROTPAXB[µg])",
+      "Formelanwendung / Formula application": "teilweise berechnet / partially calculated"
+    },
+    "source_columns": [
+      "VITA Vitamin A, Retinol-Äquivalent (RE) [µg/100g]",
+      "VITA Datenherkunft",
+      "VITA Referenz"
+    ]
+  },
+  {
+    "id": "bls-VITAA",
+    "source_code": "VITAA",
+    "source_index": 12,
+    "names": {
+      "de": "Vitamin A, Retinol-Aktivitäts-Äquivalent (RAE)",
+      "en": "Vitamin A, retinol activity equivalents (RAE)"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "12",
+      "Nährstoffcode / Component code": "VITAA",
+      "Nährstoffbezeichnung": "Vitamin A, Retinol-Aktivitäts-Äquivalent (RAE)",
+      "Component name": "Vitamin A, retinol activity equivalents (RAE)",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "VITAA[µg]= RETOL[µg] + 1/12*CARTB[µg]+ 1/24*(CAROTPAXB[µg])",
+      "Formelanwendung / Formula application": "teilweise berechnet / partially calculated"
+    },
+    "source_columns": [
+      "VITAA Vitamin A, Retinol-Aktivitäts-Äquivalent (RAE) [µg/100g]",
+      "VITAA Datenherkunft",
+      "VITAA Referenz"
+    ]
+  },
+  {
+    "id": "bls-RETOL",
+    "source_code": "RETOL",
+    "source_index": 13,
+    "names": {
+      "de": "Retinol",
+      "en": "Retinol"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "13",
+      "Nährstoffcode / Component code": "RETOL",
+      "Nährstoffbezeichnung": "Retinol",
+      "Component name": "Retinol",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "RETOL Retinol [µg/100g]",
+      "RETOL Datenherkunft",
+      "RETOL Referenz"
+    ]
+  },
+  {
+    "id": "bls-CARTB",
+    "source_code": "CARTB",
+    "source_index": 14,
+    "names": {
+      "de": "Beta‑Carotin",
+      "en": "Beta-carotene"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "14",
+      "Nährstoffcode / Component code": "CARTB",
+      "Nährstoffbezeichnung": "Beta‑Carotin",
+      "Component name": "Beta-carotene",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "CARTB Beta‑Carotin [µg/100g]",
+      "CARTB Datenherkunft",
+      "CARTB Referenz"
+    ]
+  },
+  {
+    "id": "bls-CAROTPAXB",
+    "source_code": "CAROTPAXB",
+    "source_index": 15,
+    "names": {
+      "de": "Carotinoide, außer Beta-Carotin",
+      "en": "Carotenoids, excluding beta-carotene"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "15",
+      "Nährstoffcode / Component code": "CAROTPAXB",
+      "Nährstoffbezeichnung": "Carotinoide, außer Beta-Carotin",
+      "Component name": "Carotenoids, excluding beta-carotene",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "CAROTPAXB Carotinoide, außer Beta-Carotin [µg/100g]",
+      "CAROTPAXB Datenherkunft",
+      "CAROTPAXB Referenz"
+    ]
+  },
+  {
+    "id": "bls-VITD",
+    "source_code": "VITD",
+    "source_index": 16,
+    "names": {
+      "de": "Vitamin D",
+      "en": "Vitamin D"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "16",
+      "Nährstoffcode / Component code": "VITD",
+      "Nährstoffbezeichnung": "Vitamin D",
+      "Component name": "Vitamin D",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "VITD[µg]=ERGCAL[µg]+CHOCAL[µg]",
+      "Formelanwendung / Formula application": "teilweise berechnet / partially calculated"
+    },
+    "source_columns": [
+      "VITD Vitamin D [µg/100g]",
+      "VITD Datenherkunft",
+      "VITD Referenz"
+    ]
+  },
+  {
+    "id": "bls-CHOCAL",
+    "source_code": "CHOCAL",
+    "source_index": 17,
+    "names": {
+      "de": "Vitamin D3 (Cholecalciferol)",
+      "en": "Vitamin D3 (cholecalciferol)"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "17",
+      "Nährstoffcode / Component code": "CHOCAL",
+      "Nährstoffbezeichnung": "Vitamin D3 (Cholecalciferol)",
+      "Component name": "Vitamin D3 (cholecalciferol)",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "CHOCAL Vitamin D3 (Cholecalciferol) [µg/100g]",
+      "CHOCAL Datenherkunft",
+      "CHOCAL Referenz"
+    ]
+  },
+  {
+    "id": "bls-ERGCAL",
+    "source_code": "ERGCAL",
+    "source_index": 18,
+    "names": {
+      "de": "Vitamin D2 (Ergocalciferol)",
+      "en": "Vitamin D2 (ergocalciferol)"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "18",
+      "Nährstoffcode / Component code": "ERGCAL",
+      "Nährstoffbezeichnung": "Vitamin D2 (Ergocalciferol)",
+      "Component name": "Vitamin D2 (ergocalciferol)",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "ERGCAL Vitamin D2 (Ergocalciferol) [µg/100g]",
+      "ERGCAL Datenherkunft",
+      "ERGCAL Referenz"
+    ]
+  },
+  {
+    "id": "bls-VITE",
+    "source_code": "VITE",
+    "source_index": 19,
+    "names": {
+      "de": "Vitamin E (Alpha-Tocopherol)",
+      "en": "Vitamin E (alpha-tocopherol)"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "19",
+      "Nährstoffcode / Component code": "VITE",
+      "Nährstoffbezeichnung": "Vitamin E (Alpha-Tocopherol)",
+      "Component name": "Vitamin E (alpha-tocopherol)",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "VITE[mg] = TOCPHA[mg]",
+      "Formelanwendung / Formula application": null
+    },
+    "source_columns": [
+      "VITE Vitamin E (Alpha-Tocopherol) [mg/100g]",
+      "VITE Datenherkunft",
+      "VITE Referenz"
+    ]
+  },
+  {
+    "id": "bls-TOCPHA",
+    "source_code": "TOCPHA",
+    "source_index": 20,
+    "names": {
+      "de": "Alpha‑Tocopherol",
+      "en": "Alpha-tocopherol"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "20",
+      "Nährstoffcode / Component code": "TOCPHA",
+      "Nährstoffbezeichnung": "Alpha‑Tocopherol",
+      "Component name": "Alpha-tocopherol",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "TOCPHA Alpha‑Tocopherol [mg/100g]",
+      "TOCPHA Datenherkunft",
+      "TOCPHA Referenz"
+    ]
+  },
+  {
+    "id": "bls-TOCPHB",
+    "source_code": "TOCPHB",
+    "source_index": 21,
+    "names": {
+      "de": "Beta-Tocopherol",
+      "en": "Beta-tocopherol"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "21",
+      "Nährstoffcode / Component code": "TOCPHB",
+      "Nährstoffbezeichnung": "Beta-Tocopherol",
+      "Component name": "Beta-tocopherol",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "TOCPHB Beta-Tocopherol [mg/100g]",
+      "TOCPHB Datenherkunft",
+      "TOCPHB Referenz"
+    ]
+  },
+  {
+    "id": "bls-TOCPHG",
+    "source_code": "TOCPHG",
+    "source_index": 22,
+    "names": {
+      "de": "Gamma-Tocopherol",
+      "en": "Gamma-tocopherol"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "22",
+      "Nährstoffcode / Component code": "TOCPHG",
+      "Nährstoffbezeichnung": "Gamma-Tocopherol",
+      "Component name": "Gamma-tocopherol",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "TOCPHG Gamma-Tocopherol [mg/100g]",
+      "TOCPHG Datenherkunft",
+      "TOCPHG Referenz"
+    ]
+  },
+  {
+    "id": "bls-TOCPHD",
+    "source_code": "TOCPHD",
+    "source_index": 23,
+    "names": {
+      "de": "Delta-Tocopherol",
+      "en": "Delta-tocopherol"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "23",
+      "Nährstoffcode / Component code": "TOCPHD",
+      "Nährstoffbezeichnung": "Delta-Tocopherol",
+      "Component name": "Delta-tocopherol",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "TOCPHD Delta-Tocopherol [mg/100g]",
+      "TOCPHD Datenherkunft",
+      "TOCPHD Referenz"
+    ]
+  },
+  {
+    "id": "bls-TOCTRA",
+    "source_code": "TOCTRA",
+    "source_index": 24,
+    "names": {
+      "de": "Alpha-Tocotrienol",
+      "en": "Alpha-tocotrienol"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "24",
+      "Nährstoffcode / Component code": "TOCTRA",
+      "Nährstoffbezeichnung": "Alpha-Tocotrienol",
+      "Component name": "Alpha-tocotrienol",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "TOCTRA Alpha-Tocotrienol [mg/100g]",
+      "TOCTRA Datenherkunft",
+      "TOCTRA Referenz"
+    ]
+  },
+  {
+    "id": "bls-VITK",
+    "source_code": "VITK",
+    "source_index": 25,
+    "names": {
+      "de": "Vitamin K",
+      "en": "Vitamin K"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "25",
+      "Nährstoffcode / Component code": "VITK",
+      "Nährstoffbezeichnung": "Vitamin K",
+      "Component name": "Vitamin K",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "VITK[µg] = VITK1[µg] + VITK2[µg]",
+      "Formelanwendung / Formula application": "teilweise berechnet / partially calculated"
+    },
+    "source_columns": [
+      "VITK Vitamin K [µg/100g]",
+      "VITK Datenherkunft",
+      "VITK Referenz"
+    ]
+  },
+  {
+    "id": "bls-VITK1",
+    "source_code": "VITK1",
+    "source_index": 26,
+    "names": {
+      "de": "Vitamin K1 (Phyllochinon)",
+      "en": "Vitamin K1 (phylloquinone)"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "26",
+      "Nährstoffcode / Component code": "VITK1",
+      "Nährstoffbezeichnung": "Vitamin K1 (Phyllochinon)",
+      "Component name": "Vitamin K1 (phylloquinone)",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "VITK1 Vitamin K1 (Phyllochinon) [µg/100g]",
+      "VITK1 Datenherkunft",
+      "VITK1 Referenz"
+    ]
+  },
+  {
+    "id": "bls-VITK2",
+    "source_code": "VITK2",
+    "source_index": 27,
+    "names": {
+      "de": "Vitamin K2 (Menachinone)",
+      "en": "Vitamin K2 (menaquinone)"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "27",
+      "Nährstoffcode / Component code": "VITK2",
+      "Nährstoffbezeichnung": "Vitamin K2 (Menachinone)",
+      "Component name": "Vitamin K2 (menaquinone)",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Fettlösliche Vitamine",
+      "Component group": "Fat-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "VITK2 Vitamin K2 (Menachinone) [µg/100g]",
+      "VITK2 Datenherkunft",
+      "VITK2 Referenz"
+    ]
+  },
+  {
+    "id": "bls-THIA",
+    "source_code": "THIA",
+    "source_index": 28,
+    "names": {
+      "de": "Vitamin B1 (Thiamin)",
+      "en": "Vitamin B1 (thiamine)"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "28",
+      "Nährstoffcode / Component code": "THIA",
+      "Nährstoffbezeichnung": "Vitamin B1 (Thiamin)",
+      "Component name": "Vitamin B1 (thiamine)",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "THIA Vitamin B1 (Thiamin) [mg/100g]",
+      "THIA Datenherkunft",
+      "THIA Referenz"
+    ]
+  },
+  {
+    "id": "bls-RIBF",
+    "source_code": "RIBF",
+    "source_index": 29,
+    "names": {
+      "de": "Vitamin B2 (Riboflavin)",
+      "en": "Vitamin B2 (riboflavin)"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "29",
+      "Nährstoffcode / Component code": "RIBF",
+      "Nährstoffbezeichnung": "Vitamin B2 (Riboflavin)",
+      "Component name": "Vitamin B2 (riboflavin)",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "RIBF Vitamin B2 (Riboflavin) [mg/100g]",
+      "RIBF Datenherkunft",
+      "RIBF Referenz"
+    ]
+  },
+  {
+    "id": "bls-NIAEQ",
+    "source_code": "NIAEQ",
+    "source_index": 30,
+    "names": {
+      "de": "Niacin-Äquivalent",
+      "en": "Niacin equivalents"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "30",
+      "Nährstoffcode / Component code": "NIAEQ",
+      "Nährstoffbezeichnung": "Niacin-Äquivalent",
+      "Component name": "Niacin equivalents",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "NIAEQ[mg]=NIA[mg]+TRP[g]*1000/60",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "NIAEQ Niacin-Äquivalent [mg/100g]",
+      "NIAEQ Datenherkunft",
+      "NIAEQ Referenz"
+    ]
+  },
+  {
+    "id": "bls-NIA",
+    "source_code": "NIA",
+    "source_index": 31,
+    "names": {
+      "de": "Niacin",
+      "en": "Niacin"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "31",
+      "Nährstoffcode / Component code": "NIA",
+      "Nährstoffbezeichnung": "Niacin",
+      "Component name": "Niacin",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "NIA Niacin [mg/100g]",
+      "NIA Datenherkunft",
+      "NIA Referenz"
+    ]
+  },
+  {
+    "id": "bls-PANTAC",
+    "source_code": "PANTAC",
+    "source_index": 32,
+    "names": {
+      "de": "Pantothensäure",
+      "en": "Pantothenic acid"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "32",
+      "Nährstoffcode / Component code": "PANTAC",
+      "Nährstoffbezeichnung": "Pantothensäure",
+      "Component name": "Pantothenic acid",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "PANTAC Pantothensäure [mg/100g]",
+      "PANTAC Datenherkunft",
+      "PANTAC Referenz"
+    ]
+  },
+  {
+    "id": "bls-VITB6",
+    "source_code": "VITB6",
+    "source_index": 33,
+    "names": {
+      "de": "Vitamin B6",
+      "en": "Vitamin B6"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "33",
+      "Nährstoffcode / Component code": "VITB6",
+      "Nährstoffbezeichnung": "Vitamin B6",
+      "Component name": "Vitamin B6",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "VITB6 Vitamin B6 [µg/100g]",
+      "VITB6 Datenherkunft",
+      "VITB6 Referenz"
+    ]
+  },
+  {
+    "id": "bls-BIOT",
+    "source_code": "BIOT",
+    "source_index": 34,
+    "names": {
+      "de": "Biotin ",
+      "en": "Biotin"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "34",
+      "Nährstoffcode / Component code": "BIOT",
+      "Nährstoffbezeichnung": "Biotin ",
+      "Component name": "Biotin",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "BIOT Biotin [µg/100g]",
+      "BIOT Datenherkunft",
+      "BIOT Referenz"
+    ]
+  },
+  {
+    "id": "bls-FOL",
+    "source_code": "FOL",
+    "source_index": 35,
+    "names": {
+      "de": "Folat-Äquivalent",
+      "en": "Folate equivalent"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "35",
+      "Nährstoffcode / Component code": "FOL",
+      "Nährstoffbezeichnung": "Folat-Äquivalent",
+      "Component name": "Folate equivalent",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "FOL[µg] = FOLFD[µg] + 1.7*FOLAC[µg]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "FOL Folat-Äquivalent [µg/100g]",
+      "FOL Datenherkunft",
+      "FOL Referenz"
+    ]
+  },
+  {
+    "id": "bls-FOLFD",
+    "source_code": "FOLFD",
+    "source_index": 36,
+    "names": {
+      "de": "Folat",
+      "en": "Folate"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "36",
+      "Nährstoffcode / Component code": "FOLFD",
+      "Nährstoffbezeichnung": "Folat",
+      "Component name": "Folate",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FOLFD Folat [µg/100g]",
+      "FOLFD Datenherkunft",
+      "FOLFD Referenz"
+    ]
+  },
+  {
+    "id": "bls-FOLAC",
+    "source_code": "FOLAC",
+    "source_index": 37,
+    "names": {
+      "de": "Folsäure, synthetisch",
+      "en": "Folic acid, synthetic"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "37",
+      "Nährstoffcode / Component code": "FOLAC",
+      "Nährstoffbezeichnung": "Folsäure, synthetisch",
+      "Component name": "Folic acid, synthetic",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FOLAC Folsäure, synthetisch [µg/100g]",
+      "FOLAC Datenherkunft",
+      "FOLAC Referenz"
+    ]
+  },
+  {
+    "id": "bls-VITB12",
+    "source_code": "VITB12",
+    "source_index": 38,
+    "names": {
+      "de": "Vitamin B12 (Cobalamine)",
+      "en": "Vitamin B12 (cobalamin)"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "38",
+      "Nährstoffcode / Component code": "VITB12",
+      "Nährstoffbezeichnung": "Vitamin B12 (Cobalamine)",
+      "Component name": "Vitamin B12 (cobalamin)",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "VITB12 Vitamin B12 (Cobalamine) [µg/100g]",
+      "VITB12 Datenherkunft",
+      "VITB12 Referenz"
+    ]
+  },
+  {
+    "id": "bls-VITC",
+    "source_code": "VITC",
+    "source_index": 39,
+    "names": {
+      "de": "Vitamin C",
+      "en": "Vitamin C"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "39",
+      "Nährstoffcode / Component code": "VITC",
+      "Nährstoffbezeichnung": "Vitamin C",
+      "Component name": "Vitamin C",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Wasserlösliche Vitamine",
+      "Component group": "Water-soluble vitamins",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "VITC Vitamin C [mg/100g]",
+      "VITC Datenherkunft",
+      "VITC Referenz"
+    ]
+  },
+  {
+    "id": "bls-NACL",
+    "source_code": "NACL",
+    "source_index": 40,
+    "names": {
+      "de": "Salz (Natriumchlorid)",
+      "en": "Salt (sodium chloride)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "40",
+      "Nährstoffcode / Component code": "NACL",
+      "Nährstoffbezeichnung": "Salz (Natriumchlorid)",
+      "Component name": "Salt (sodium chloride)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "NACL[g] = NA[g]*2.5",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "NACL Salz (Natriumchlorid) [g/100g]",
+      "NACL Datenherkunft",
+      "NACL Referenz"
+    ]
+  },
+  {
+    "id": "bls-NA",
+    "source_code": "NA",
+    "source_index": 41,
+    "names": {
+      "de": "Natrium",
+      "en": "Sodium"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "41",
+      "Nährstoffcode / Component code": "NA",
+      "Nährstoffbezeichnung": "Natrium",
+      "Component name": "Sodium",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "NA Natrium [mg/100g]",
+      "NA Datenherkunft",
+      "NA Referenz"
+    ]
+  },
+  {
+    "id": "bls-CLD",
+    "source_code": "CLD",
+    "source_index": 42,
+    "names": {
+      "de": "Chlorid",
+      "en": "Chloride"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "42",
+      "Nährstoffcode / Component code": "CLD",
+      "Nährstoffbezeichnung": "Chlorid",
+      "Component name": "Chloride",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "CLD Chlorid [mg/100g]",
+      "CLD Datenherkunft",
+      "CLD Referenz"
+    ]
+  },
+  {
+    "id": "bls-K",
+    "source_code": "K",
+    "source_index": 43,
+    "names": {
+      "de": "Kalium",
+      "en": "Potassium"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "43",
+      "Nährstoffcode / Component code": "K",
+      "Nährstoffbezeichnung": "Kalium",
+      "Component name": "Potassium",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "K Kalium [mg/100g]",
+      "K Datenherkunft",
+      "K Referenz"
+    ]
+  },
+  {
+    "id": "bls-CA",
+    "source_code": "CA",
+    "source_index": 44,
+    "names": {
+      "de": "Calcium",
+      "en": "Calcium"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "44",
+      "Nährstoffcode / Component code": "CA",
+      "Nährstoffbezeichnung": "Calcium",
+      "Component name": "Calcium",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "CA Calcium [mg/100g]",
+      "CA Datenherkunft",
+      "CA Referenz"
+    ]
+  },
+  {
+    "id": "bls-MG",
+    "source_code": "MG",
+    "source_index": 45,
+    "names": {
+      "de": "Magnesium",
+      "en": "Magnesium"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "45",
+      "Nährstoffcode / Component code": "MG",
+      "Nährstoffbezeichnung": "Magnesium",
+      "Component name": "Magnesium",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "MG Magnesium [mg/100g]",
+      "MG Datenherkunft",
+      "MG Referenz"
+    ]
+  },
+  {
+    "id": "bls-P",
+    "source_code": "P",
+    "source_index": 46,
+    "names": {
+      "de": "Phosphor",
+      "en": "Phosphorus"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "46",
+      "Nährstoffcode / Component code": "P",
+      "Nährstoffbezeichnung": "Phosphor",
+      "Component name": "Phosphorus",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "P Phosphor [mg/100g]",
+      "P Datenherkunft",
+      "P Referenz"
+    ]
+  },
+  {
+    "id": "bls-S",
+    "source_code": "S",
+    "source_index": 47,
+    "names": {
+      "de": "Schwefel",
+      "en": "Sulphur"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "47",
+      "Nährstoffcode / Component code": "S",
+      "Nährstoffbezeichnung": "Schwefel",
+      "Component name": "Sulphur",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "S Schwefel [mg/100g]",
+      "S Datenherkunft",
+      "S Referenz"
+    ]
+  },
+  {
+    "id": "bls-FE",
+    "source_code": "FE",
+    "source_index": 48,
+    "names": {
+      "de": "Eisen",
+      "en": "Iron"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "48",
+      "Nährstoffcode / Component code": "FE",
+      "Nährstoffbezeichnung": "Eisen",
+      "Component name": "Iron",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FE Eisen [mg/100g]",
+      "FE Datenherkunft",
+      "FE Referenz"
+    ]
+  },
+  {
+    "id": "bls-ZN",
+    "source_code": "ZN",
+    "source_index": 49,
+    "names": {
+      "de": "Zink",
+      "en": "Zinc"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "49",
+      "Nährstoffcode / Component code": "ZN",
+      "Nährstoffbezeichnung": "Zink",
+      "Component name": "Zinc",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "ZN Zink [mg/100g]",
+      "ZN Datenherkunft",
+      "ZN Referenz"
+    ]
+  },
+  {
+    "id": "bls-ID",
+    "source_code": "ID",
+    "source_index": 50,
+    "names": {
+      "de": "Iodid",
+      "en": "Iodide"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "50",
+      "Nährstoffcode / Component code": "ID",
+      "Nährstoffbezeichnung": "Iodid",
+      "Component name": "Iodide",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "ID Iodid [µg/100g]",
+      "ID Datenherkunft",
+      "ID Referenz"
+    ]
+  },
+  {
+    "id": "bls-CU",
+    "source_code": "CU",
+    "source_index": 51,
+    "names": {
+      "de": "Kupfer",
+      "en": "Copper"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "51",
+      "Nährstoffcode / Component code": "CU",
+      "Nährstoffbezeichnung": "Kupfer",
+      "Component name": "Copper",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "CU Kupfer [µg/100g]",
+      "CU Datenherkunft",
+      "CU Referenz"
+    ]
+  },
+  {
+    "id": "bls-MN",
+    "source_code": "MN",
+    "source_index": 52,
+    "names": {
+      "de": "Mangan",
+      "en": "Manganese"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "52",
+      "Nährstoffcode / Component code": "MN",
+      "Nährstoffbezeichnung": "Mangan",
+      "Component name": "Manganese",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "MN Mangan [µg/100g]",
+      "MN Datenherkunft",
+      "MN Referenz"
+    ]
+  },
+  {
+    "id": "bls-FD",
+    "source_code": "FD",
+    "source_index": 53,
+    "names": {
+      "de": "Fluorid",
+      "en": "Fluoride"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "53",
+      "Nährstoffcode / Component code": "FD",
+      "Nährstoffbezeichnung": "Fluorid",
+      "Component name": "Fluoride",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FD Fluorid [µg/100g]",
+      "FD Datenherkunft",
+      "FD Referenz"
+    ]
+  },
+  {
+    "id": "bls-CR",
+    "source_code": "CR",
+    "source_index": 54,
+    "names": {
+      "de": "Chrom",
+      "en": "Chromium"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "54",
+      "Nährstoffcode / Component code": "CR",
+      "Nährstoffbezeichnung": "Chrom",
+      "Component name": "Chromium",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "CR Chrom [µg/100g]",
+      "CR Datenherkunft",
+      "CR Referenz"
+    ]
+  },
+  {
+    "id": "bls-MO",
+    "source_code": "MO",
+    "source_index": 55,
+    "names": {
+      "de": "Molybdän",
+      "en": "Molybdenum"
+    },
+    "unit": "ug",
+    "source_fields": {
+      "Index": "55",
+      "Nährstoffcode / Component code": "MO",
+      "Nährstoffbezeichnung": "Molybdän",
+      "Component name": "Molybdenum",
+      "Einheit / Unit": "µg",
+      "Nährstoffgruppe": "Elemente",
+      "Component group": "Elements",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "MO Molybdän [µg/100g]",
+      "MO Datenherkunft",
+      "MO Referenz"
+    ]
+  },
+  {
+    "id": "bls-ACEAC",
+    "source_code": "ACEAC",
+    "source_index": 56,
+    "names": {
+      "de": "Essigsäure",
+      "en": "Acetic acid"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "56",
+      "Nährstoffcode / Component code": "ACEAC",
+      "Nährstoffbezeichnung": "Essigsäure",
+      "Component name": "Acetic acid",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Organische Säuren",
+      "Component group": "Organic acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "ACEAC Essigsäure [g/100g]",
+      "ACEAC Datenherkunft",
+      "ACEAC Referenz"
+    ]
+  },
+  {
+    "id": "bls-CITAC",
+    "source_code": "CITAC",
+    "source_index": 57,
+    "names": {
+      "de": "Zitronensäure",
+      "en": "Citric acid"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "57",
+      "Nährstoffcode / Component code": "CITAC",
+      "Nährstoffbezeichnung": "Zitronensäure",
+      "Component name": "Citric acid",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Organische Säuren",
+      "Component group": "Organic acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "CITAC Zitronensäure [g/100g]",
+      "CITAC Datenherkunft",
+      "CITAC Referenz"
+    ]
+  },
+  {
+    "id": "bls-LACAC",
+    "source_code": "LACAC",
+    "source_index": 58,
+    "names": {
+      "de": "Milchsäure",
+      "en": "Lactic acid"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "58",
+      "Nährstoffcode / Component code": "LACAC",
+      "Nährstoffbezeichnung": "Milchsäure",
+      "Component name": "Lactic acid",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Organische Säuren",
+      "Component group": "Organic acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "LACAC Milchsäure [g/100g]",
+      "LACAC Datenherkunft",
+      "LACAC Referenz"
+    ]
+  },
+  {
+    "id": "bls-MALAC",
+    "source_code": "MALAC",
+    "source_index": 59,
+    "names": {
+      "de": "Äpfelsäure",
+      "en": "Malic acid"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "59",
+      "Nährstoffcode / Component code": "MALAC",
+      "Nährstoffbezeichnung": "Äpfelsäure",
+      "Component name": "Malic acid",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Organische Säuren",
+      "Component group": "Organic acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "MALAC Äpfelsäure [g/100g]",
+      "MALAC Datenherkunft",
+      "MALAC Referenz"
+    ]
+  },
+  {
+    "id": "bls-TARAC",
+    "source_code": "TARAC",
+    "source_index": 60,
+    "names": {
+      "de": "Weinsäure",
+      "en": "Tartaric acid"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "60",
+      "Nährstoffcode / Component code": "TARAC",
+      "Nährstoffbezeichnung": "Weinsäure",
+      "Component name": "Tartaric acid",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Organische Säuren",
+      "Component group": "Organic acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "TARAC Weinsäure [g/100g]",
+      "TARAC Datenherkunft",
+      "TARAC Referenz"
+    ]
+  },
+  {
+    "id": "bls-POLYL",
+    "source_code": "POLYL",
+    "source_index": 61,
+    "names": {
+      "de": "Zuckeralkohole, gesamt",
+      "en": "Polyols, total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "61",
+      "Nährstoffcode / Component code": "POLYL",
+      "Nährstoffbezeichnung": "Zuckeralkohole, gesamt",
+      "Component name": "Polyols, total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Makronährstoffe; Zuckeralkohole",
+      "Component group": "Proximate composition; Polyols",
+      "Formeln / Formula": "POLYL[g]=MANTL[g]+SORTL[g]+XYLTL[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "POLYL Zuckeralkohole, gesamt [g/100g]",
+      "POLYL Datenherkunft",
+      "POLYL Referenz"
+    ]
+  },
+  {
+    "id": "bls-MANTL",
+    "source_code": "MANTL",
+    "source_index": 62,
+    "names": {
+      "de": "Mannit",
+      "en": "Mannitol"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "62",
+      "Nährstoffcode / Component code": "MANTL",
+      "Nährstoffbezeichnung": "Mannit",
+      "Component name": "Mannitol",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Zuckeralkohole",
+      "Component group": "Polyols",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "MANTL Mannit [g/100g]",
+      "MANTL Datenherkunft",
+      "MANTL Referenz"
+    ]
+  },
+  {
+    "id": "bls-SORTL",
+    "source_code": "SORTL",
+    "source_index": 63,
+    "names": {
+      "de": "Sorbit",
+      "en": "Sorbitol"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "63",
+      "Nährstoffcode / Component code": "SORTL",
+      "Nährstoffbezeichnung": "Sorbit",
+      "Component name": "Sorbitol",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Zuckeralkohole",
+      "Component group": "Polyols",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "SORTL Sorbit [g/100g]",
+      "SORTL Datenherkunft",
+      "SORTL Referenz"
+    ]
+  },
+  {
+    "id": "bls-XYLTL",
+    "source_code": "XYLTL",
+    "source_index": 64,
+    "names": {
+      "de": "Xylit",
+      "en": "Xylitol"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "64",
+      "Nährstoffcode / Component code": "XYLTL",
+      "Nährstoffbezeichnung": "Xylit",
+      "Component name": "Xylitol",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Zuckeralkohole",
+      "Component group": "Polyols",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "XYLTL Xylit [g/100g]",
+      "XYLTL Datenherkunft",
+      "XYLTL Referenz"
+    ]
+  },
+  {
+    "id": "bls-MNSAC",
+    "source_code": "MNSAC",
+    "source_index": 65,
+    "names": {
+      "de": "Monosaccharide, gesamt",
+      "en": "Monosaccharides, total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "65",
+      "Nährstoffcode / Component code": "MNSAC",
+      "Nährstoffbezeichnung": "Monosaccharide, gesamt",
+      "Component name": "Monosaccharides, total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "MNSAC[g] = FRUS[g] + GALS[g] + GLUS[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "MNSAC Monosaccharide, gesamt [g/100g]",
+      "MNSAC Datenherkunft",
+      "MNSAC Referenz"
+    ]
+  },
+  {
+    "id": "bls-GLUS",
+    "source_code": "GLUS",
+    "source_index": 66,
+    "names": {
+      "de": "Glucose ",
+      "en": "Glucose"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "66",
+      "Nährstoffcode / Component code": "GLUS",
+      "Nährstoffbezeichnung": "Glucose ",
+      "Component name": "Glucose",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "GLUS Glucose [g/100g]",
+      "GLUS Datenherkunft",
+      "GLUS Referenz"
+    ]
+  },
+  {
+    "id": "bls-FRUS",
+    "source_code": "FRUS",
+    "source_index": 67,
+    "names": {
+      "de": "Fructose",
+      "en": "Fructose"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "67",
+      "Nährstoffcode / Component code": "FRUS",
+      "Nährstoffbezeichnung": "Fructose",
+      "Component name": "Fructose",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FRUS Fructose [g/100g]",
+      "FRUS Datenherkunft",
+      "FRUS Referenz"
+    ]
+  },
+  {
+    "id": "bls-GALS",
+    "source_code": "GALS",
+    "source_index": 68,
+    "names": {
+      "de": "Galactose",
+      "en": "Galactose"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "68",
+      "Nährstoffcode / Component code": "GALS",
+      "Nährstoffbezeichnung": "Galactose",
+      "Component name": "Galactose",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "GALS Galactose [g/100g]",
+      "GALS Datenherkunft",
+      "GALS Referenz"
+    ]
+  },
+  {
+    "id": "bls-DISAC",
+    "source_code": "DISAC",
+    "source_index": 69,
+    "names": {
+      "de": "Disaccharide, gesamt",
+      "en": "Disaccharides, total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "69",
+      "Nährstoffcode / Component code": "DISAC",
+      "Nährstoffbezeichnung": "Disaccharide, gesamt",
+      "Component name": "Disaccharides, total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "DISAC[g] = LACS[g] + MALS[g] + SUCS[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "DISAC Disaccharide, gesamt [g/100g]",
+      "DISAC Datenherkunft",
+      "DISAC Referenz"
+    ]
+  },
+  {
+    "id": "bls-SUCS",
+    "source_code": "SUCS",
+    "source_index": 70,
+    "names": {
+      "de": "Saccharose ",
+      "en": "Sucrose"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "70",
+      "Nährstoffcode / Component code": "SUCS",
+      "Nährstoffbezeichnung": "Saccharose ",
+      "Component name": "Sucrose",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "SUCS Saccharose [g/100g]",
+      "SUCS Datenherkunft",
+      "SUCS Referenz"
+    ]
+  },
+  {
+    "id": "bls-MALS",
+    "source_code": "MALS",
+    "source_index": 71,
+    "names": {
+      "de": "Maltose ",
+      "en": "Maltose"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "71",
+      "Nährstoffcode / Component code": "MALS",
+      "Nährstoffbezeichnung": "Maltose ",
+      "Component name": "Maltose",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "MALS Maltose [g/100g]",
+      "MALS Datenherkunft",
+      "MALS Referenz"
+    ]
+  },
+  {
+    "id": "bls-LACS",
+    "source_code": "LACS",
+    "source_index": 72,
+    "names": {
+      "de": "Lactose ",
+      "en": "Lactose"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "72",
+      "Nährstoffcode / Component code": "LACS",
+      "Nährstoffbezeichnung": "Lactose ",
+      "Component name": "Lactose",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "LACS Lactose [g/100g]",
+      "LACS Datenherkunft",
+      "LACS Referenz"
+    ]
+  },
+  {
+    "id": "bls-SUGAR",
+    "source_code": "SUGAR",
+    "source_index": 73,
+    "names": {
+      "de": "Zucker (Mono- und Disaccharide), gesamt",
+      "en": "Sugars (mono- and disaccharides), total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "73",
+      "Nährstoffcode / Component code": "SUGAR",
+      "Nährstoffbezeichnung": "Zucker (Mono- und Disaccharide), gesamt",
+      "Component name": "Sugars (mono- and disaccharides), total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "SUGAR[g]=MNSAC[g]+DISAC[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "SUGAR Zucker (Mono- und Disaccharide), gesamt [g/100g]",
+      "SUGAR Datenherkunft",
+      "SUGAR Referenz"
+    ]
+  },
+  {
+    "id": "bls-OLSAC",
+    "source_code": "OLSAC",
+    "source_index": 74,
+    "names": {
+      "de": "Oligosaccharide, verfügbar",
+      "en": "Oligosaccharides, available"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "74",
+      "Nährstoffcode / Component code": "OLSAC",
+      "Nährstoffbezeichnung": "Oligosaccharide, verfügbar",
+      "Component name": "Oligosaccharides, available",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "OLSAC Oligosaccharide, verfügbar [g/100g]",
+      "OLSAC Datenherkunft",
+      "OLSAC Referenz"
+    ]
+  },
+  {
+    "id": "bls-STARCH",
+    "source_code": "STARCH",
+    "source_index": 75,
+    "names": {
+      "de": "Stärke (Stärke, Glykogen, Dextrine)",
+      "en": "Starch (starch, glycogen, dextrins)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "75",
+      "Nährstoffcode / Component code": "STARCH",
+      "Nährstoffbezeichnung": "Stärke (Stärke, Glykogen, Dextrine)",
+      "Component name": "Starch (starch, glycogen, dextrins)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Kohlenhydrate (ohne Ballaststoffe)",
+      "Component group": "Carbohydrates (without dietary fibre)",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "STARCH Stärke (Stärke, Glykogen, Dextrine) [g/100g]",
+      "STARCH Datenherkunft",
+      "STARCH Referenz"
+    ]
+  },
+  {
+    "id": "bls-FIBLMW",
+    "source_code": "FIBLMW",
+    "source_index": 76,
+    "names": {
+      "de": "Ballaststoffe, niedermolekular",
+      "en": "Fibre, low molecular weight"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "76",
+      "Nährstoffcode / Component code": "FIBLMW",
+      "Nährstoffbezeichnung": "Ballaststoffe, niedermolekular",
+      "Component name": "Fibre, low molecular weight",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Ballaststoffe",
+      "Component group": "Dietary fibres",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FIBLMW Ballaststoffe, niedermolekular [g/100g]",
+      "FIBLMW Datenherkunft",
+      "FIBLMW Referenz"
+    ]
+  },
+  {
+    "id": "bls-FIBHMW",
+    "source_code": "FIBHMW",
+    "source_index": 77,
+    "names": {
+      "de": "Ballaststoffe, hochmolekular",
+      "en": "Fibre, high molecular weight"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "77",
+      "Nährstoffcode / Component code": "FIBHMW",
+      "Nährstoffbezeichnung": "Ballaststoffe, hochmolekular",
+      "Component name": "Fibre, high molecular weight",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Ballaststoffe",
+      "Component group": "Dietary fibres",
+      "Formeln / Formula": "FIBHMW[g]=FIBHMWS[g]+FIBHMWI[g] OR\r\nFIBHMW[g]=FIBINS[g]+FIBSOL[g]",
+      "Formelanwendung / Formula application": "teilweise berechnet / partially calculated"
+    },
+    "source_columns": [
+      "FIBHMW Ballaststoffe, hochmolekular [g/100g]",
+      "FIBHMW Datenherkunft",
+      "FIBHMW Referenz"
+    ]
+  },
+  {
+    "id": "bls-FIBINS",
+    "source_code": "FIBINS",
+    "source_index": 78,
+    "names": {
+      "de": "Ballaststoffe, wasserunlöslich",
+      "en": "Fibre, water-insoluble"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "78",
+      "Nährstoffcode / Component code": "FIBINS",
+      "Nährstoffbezeichnung": "Ballaststoffe, wasserunlöslich",
+      "Component name": "Fibre, water-insoluble",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Ballaststoffe",
+      "Component group": "Dietary fibres",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FIBINS Ballaststoffe, wasserunlöslich [g/100g]",
+      "FIBINS Datenherkunft",
+      "FIBINS Referenz"
+    ]
+  },
+  {
+    "id": "bls-FIBSOL",
+    "source_code": "FIBSOL",
+    "source_index": 79,
+    "names": {
+      "de": "Ballaststoffe, wasserlöslich",
+      "en": "Fibre, water-soluble"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "79",
+      "Nährstoffcode / Component code": "FIBSOL",
+      "Nährstoffbezeichnung": "Ballaststoffe, wasserlöslich",
+      "Component name": "Fibre, water-soluble",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Ballaststoffe",
+      "Component group": "Dietary fibres",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FIBSOL Ballaststoffe, wasserlöslich [g/100g]",
+      "FIBSOL Datenherkunft",
+      "FIBSOL Referenz"
+    ]
+  },
+  {
+    "id": "bls-FIBHMWS",
+    "source_code": "FIBHMWS",
+    "source_index": 80,
+    "names": {
+      "de": "Ballaststoffe, hochmolekular, wasserlöslich",
+      "en": "Fibre, high molecular weight, water-soluble"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "80",
+      "Nährstoffcode / Component code": "FIBHMWS",
+      "Nährstoffbezeichnung": "Ballaststoffe, hochmolekular, wasserlöslich",
+      "Component name": "Fibre, high molecular weight, water-soluble",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Ballaststoffe",
+      "Component group": "Dietary fibres",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FIBHMWS Ballaststoffe, hochmolekular, wasserlöslich [g/100g]",
+      "FIBHMWS Datenherkunft",
+      "FIBHMWS Referenz"
+    ]
+  },
+  {
+    "id": "bls-FIBHMWI",
+    "source_code": "FIBHMWI",
+    "source_index": 81,
+    "names": {
+      "de": "Ballaststoffe, hochmolekular, wasserunlöslich",
+      "en": "Fibre, high molecular weight, water-insoluble"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "81",
+      "Nährstoffcode / Component code": "FIBHMWI",
+      "Nährstoffbezeichnung": "Ballaststoffe, hochmolekular, wasserunlöslich",
+      "Component name": "Fibre, high molecular weight, water-insoluble",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Ballaststoffe",
+      "Component group": "Dietary fibres",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FIBHMWI Ballaststoffe, hochmolekular, wasserunlöslich [g/100g]",
+      "FIBHMWI Datenherkunft",
+      "FIBHMWI Referenz"
+    ]
+  },
+  {
+    "id": "bls-FASAT",
+    "source_code": "FASAT",
+    "source_index": 82,
+    "names": {
+      "de": "Fettsäuren, gesättigt, gesamt",
+      "en": "Fatty acids, saturated, total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "82",
+      "Nährstoffcode / Component code": "FASAT",
+      "Nährstoffbezeichnung": "Fettsäuren, gesättigt, gesamt",
+      "Component name": "Fatty acids, saturated, total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "FASAT[g]=F4:0[g]+F6:0[g]+F8:0[g]+F10:0[g]+F12:0[g]+F14:0[g]+F15:0[g]+F16:0[g]+F17:0[g]+F18:0[g]+F20:0[g]+F22:0[g]+F24:0[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "FASAT Fettsäuren, gesättigt, gesamt [g/100g]",
+      "FASAT Datenherkunft",
+      "FASAT Referenz"
+    ]
+  },
+  {
+    "id": "bls-F4:0",
+    "source_code": "F4:0",
+    "source_index": 83,
+    "names": {
+      "de": "Fettsäure C4:0 (Buttersäure)",
+      "en": "Fatty acid C4:0 (butyric acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "83",
+      "Nährstoffcode / Component code": "F4:0",
+      "Nährstoffbezeichnung": "Fettsäure C4:0 (Buttersäure)",
+      "Component name": "Fatty acid C4:0 (butyric acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F4:0 Fettsäure C4:0 (Buttersäure) [g/100g]",
+      "F4:0 Datenherkunft",
+      "F4:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F6:0",
+    "source_code": "F6:0",
+    "source_index": 84,
+    "names": {
+      "de": "Fettsäure C6:0 (Capronsäure)",
+      "en": "Fatty acid C6:0 (caproic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "84",
+      "Nährstoffcode / Component code": "F6:0",
+      "Nährstoffbezeichnung": "Fettsäure C6:0 (Capronsäure)",
+      "Component name": "Fatty acid C6:0 (caproic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F6:0 Fettsäure C6:0 (Capronsäure) [g/100g]",
+      "F6:0 Datenherkunft",
+      "F6:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F8:0",
+    "source_code": "F8:0",
+    "source_index": 85,
+    "names": {
+      "de": "Fettsäure C8:0 (Caprylsäure)",
+      "en": "Fatty acid C8:0 (caprylic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "85",
+      "Nährstoffcode / Component code": "F8:0",
+      "Nährstoffbezeichnung": "Fettsäure C8:0 (Caprylsäure)",
+      "Component name": "Fatty acid C8:0 (caprylic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F8:0 Fettsäure C8:0 (Caprylsäure) [g/100g]",
+      "F8:0 Datenherkunft",
+      "F8:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F10:0",
+    "source_code": "F10:0",
+    "source_index": 86,
+    "names": {
+      "de": "Fettsäure C10:0 (Caprinsäure)",
+      "en": "Fatty acid C10:0 (capric acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "86",
+      "Nährstoffcode / Component code": "F10:0",
+      "Nährstoffbezeichnung": "Fettsäure C10:0 (Caprinsäure)",
+      "Component name": "Fatty acid C10:0 (capric acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F10:0 Fettsäure C10:0 (Caprinsäure) [g/100g]",
+      "F10:0 Datenherkunft",
+      "F10:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F12:0",
+    "source_code": "F12:0",
+    "source_index": 87,
+    "names": {
+      "de": "Fettsäure C12:0 (Laurinsäure)",
+      "en": "Fatty acid C12:0 (lauric acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "87",
+      "Nährstoffcode / Component code": "F12:0",
+      "Nährstoffbezeichnung": "Fettsäure C12:0 (Laurinsäure)",
+      "Component name": "Fatty acid C12:0 (lauric acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F12:0 Fettsäure C12:0 (Laurinsäure) [g/100g]",
+      "F12:0 Datenherkunft",
+      "F12:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F14:0",
+    "source_code": "F14:0",
+    "source_index": 88,
+    "names": {
+      "de": "Fettsäure C14:0 (Myristinsäure)",
+      "en": "Fatty acid C14:0 (myristic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "88",
+      "Nährstoffcode / Component code": "F14:0",
+      "Nährstoffbezeichnung": "Fettsäure C14:0 (Myristinsäure)",
+      "Component name": "Fatty acid C14:0 (myristic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F14:0 Fettsäure C14:0 (Myristinsäure) [g/100g]",
+      "F14:0 Datenherkunft",
+      "F14:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F15:0",
+    "source_code": "F15:0",
+    "source_index": 89,
+    "names": {
+      "de": "Fettsäure C15:0 (Pentadecylsäure)",
+      "en": "Fatty acid C15:0 (pentadecylic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "89",
+      "Nährstoffcode / Component code": "F15:0",
+      "Nährstoffbezeichnung": "Fettsäure C15:0 (Pentadecylsäure)",
+      "Component name": "Fatty acid C15:0 (pentadecylic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F15:0 Fettsäure C15:0 (Pentadecylsäure) [g/100g]",
+      "F15:0 Datenherkunft",
+      "F15:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F16:0",
+    "source_code": "F16:0",
+    "source_index": 90,
+    "names": {
+      "de": "Fettsäure C16:0 (Palmitinsäure)",
+      "en": "Fatty acid C16:0 (palmitic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "90",
+      "Nährstoffcode / Component code": "F16:0",
+      "Nährstoffbezeichnung": "Fettsäure C16:0 (Palmitinsäure)",
+      "Component name": "Fatty acid C16:0 (palmitic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F16:0 Fettsäure C16:0 (Palmitinsäure) [g/100g]",
+      "F16:0 Datenherkunft",
+      "F16:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F17:0",
+    "source_code": "F17:0",
+    "source_index": 91,
+    "names": {
+      "de": "Fettsäure C17:0 (Margarinsäure)",
+      "en": "Fatty acid C17:0 (margaric acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "91",
+      "Nährstoffcode / Component code": "F17:0",
+      "Nährstoffbezeichnung": "Fettsäure C17:0 (Margarinsäure)",
+      "Component name": "Fatty acid C17:0 (margaric acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F17:0 Fettsäure C17:0 (Margarinsäure) [g/100g]",
+      "F17:0 Datenherkunft",
+      "F17:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F18:0",
+    "source_code": "F18:0",
+    "source_index": 92,
+    "names": {
+      "de": "Fettsäure C18:0 (Stearinsäure)",
+      "en": "Fatty acid C18:0 (stearic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "92",
+      "Nährstoffcode / Component code": "F18:0",
+      "Nährstoffbezeichnung": "Fettsäure C18:0 (Stearinsäure)",
+      "Component name": "Fatty acid C18:0 (stearic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F18:0 Fettsäure C18:0 (Stearinsäure) [g/100g]",
+      "F18:0 Datenherkunft",
+      "F18:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F20:0",
+    "source_code": "F20:0",
+    "source_index": 93,
+    "names": {
+      "de": "Fettsäure C20:0 (Arachinsäure)",
+      "en": "Fatty acid C20:0 (arachidic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "93",
+      "Nährstoffcode / Component code": "F20:0",
+      "Nährstoffbezeichnung": "Fettsäure C20:0 (Arachinsäure)",
+      "Component name": "Fatty acid C20:0 (arachidic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F20:0 Fettsäure C20:0 (Arachinsäure) [g/100g]",
+      "F20:0 Datenherkunft",
+      "F20:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F22:0",
+    "source_code": "F22:0",
+    "source_index": 94,
+    "names": {
+      "de": "Fettsäure C22:0 (Behensäure)",
+      "en": "Fatty acid C22:0 (behenic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "94",
+      "Nährstoffcode / Component code": "F22:0",
+      "Nährstoffbezeichnung": "Fettsäure C22:0 (Behensäure)",
+      "Component name": "Fatty acid C22:0 (behenic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F22:0 Fettsäure C22:0 (Behensäure) [g/100g]",
+      "F22:0 Datenherkunft",
+      "F22:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F24:0",
+    "source_code": "F24:0",
+    "source_index": 95,
+    "names": {
+      "de": "Fettsäure C24:0 (Lignocerinsäure)",
+      "en": "Fatty acid C24:0 (lignoceric acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "95",
+      "Nährstoffcode / Component code": "F24:0",
+      "Nährstoffbezeichnung": "Fettsäure C24:0 (Lignocerinsäure)",
+      "Component name": "Fatty acid C24:0 (lignoceric acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F24:0 Fettsäure C24:0 (Lignocerinsäure) [g/100g]",
+      "F24:0 Datenherkunft",
+      "F24:0 Referenz"
+    ]
+  },
+  {
+    "id": "bls-FAMS",
+    "source_code": "FAMS",
+    "source_index": 96,
+    "names": {
+      "de": "Fettsäure, einfach ungesättigt, gesamt",
+      "en": "Fatty acids, monounsaturated, total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "96",
+      "Nährstoffcode / Component code": "FAMS",
+      "Nährstoffbezeichnung": "Fettsäure, einfach ungesättigt, gesamt",
+      "Component name": "Fatty acids, monounsaturated, total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "FAMS[g]=F14:1CN5[g]+F16:1CN7[g]+F18:1CN7[g]+F18:1CN9[g]+F20:1CN9[g]+F22:1CN9[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "FAMS Fettsäure, einfach ungesättigt, gesamt [g/100g]",
+      "FAMS Datenherkunft",
+      "FAMS Referenz"
+    ]
+  },
+  {
+    "id": "bls-F14:1CN5",
+    "source_code": "F14:1CN5",
+    "source_index": 97,
+    "names": {
+      "de": "Fettsäure C14:1 n-5 cis (Myristoleinsäure)",
+      "en": "Fatty acid C14:1 n-5 cis (myristoleic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "97",
+      "Nährstoffcode / Component code": "F14:1CN5",
+      "Nährstoffbezeichnung": "Fettsäure C14:1 n-5 cis (Myristoleinsäure)",
+      "Component name": "Fatty acid C14:1 n-5 cis (myristoleic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F14:1CN5 Fettsäure C14:1 n-5 cis (Myristoleinsäure) [g/100g]",
+      "F14:1CN5 Datenherkunft",
+      "F14:1CN5 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F16:1CN7",
+    "source_code": "F16:1CN7",
+    "source_index": 98,
+    "names": {
+      "de": "Fettsäure C16:1 n-7 cis (Palmitoleinsäure)",
+      "en": "Fatty acid C16:1 n-7 cis (palmitoleic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "98",
+      "Nährstoffcode / Component code": "F16:1CN7",
+      "Nährstoffbezeichnung": "Fettsäure C16:1 n-7 cis (Palmitoleinsäure)",
+      "Component name": "Fatty acid C16:1 n-7 cis (palmitoleic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F16:1CN7 Fettsäure C16:1 n-7 cis (Palmitoleinsäure) [g/100g]",
+      "F16:1CN7 Datenherkunft",
+      "F16:1CN7 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F18:1CN7",
+    "source_code": "F18:1CN7",
+    "source_index": 99,
+    "names": {
+      "de": "Fettsäure C18:1 n-7 cis (Vaccensäure)",
+      "en": "Fatty acid C18:1 n-7 cis (vaccenic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "99",
+      "Nährstoffcode / Component code": "F18:1CN7",
+      "Nährstoffbezeichnung": "Fettsäure C18:1 n-7 cis (Vaccensäure)",
+      "Component name": "Fatty acid C18:1 n-7 cis (vaccenic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F18:1CN7 Fettsäure C18:1 n-7 cis (Vaccensäure) [g/100g]",
+      "F18:1CN7 Datenherkunft",
+      "F18:1CN7 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F18:1CN9",
+    "source_code": "F18:1CN9",
+    "source_index": 100,
+    "names": {
+      "de": "Fettsäure C18:1 n-9 cis (Ölsäure)",
+      "en": "Fatty acid C18:1 n-9 cis (oleic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "100",
+      "Nährstoffcode / Component code": "F18:1CN9",
+      "Nährstoffbezeichnung": "Fettsäure C18:1 n-9 cis (Ölsäure)",
+      "Component name": "Fatty acid C18:1 n-9 cis (oleic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F18:1CN9 Fettsäure C18:1 n-9 cis (Ölsäure) [g/100g]",
+      "F18:1CN9 Datenherkunft",
+      "F18:1CN9 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F20:1CN9",
+    "source_code": "F20:1CN9",
+    "source_index": 101,
+    "names": {
+      "de": "Fettsäure C20:1 n-9 cis (Gondosäure)",
+      "en": "Fatty acid C20:1 n-9 cis (gondoic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "101",
+      "Nährstoffcode / Component code": "F20:1CN9",
+      "Nährstoffbezeichnung": "Fettsäure C20:1 n-9 cis (Gondosäure)",
+      "Component name": "Fatty acid C20:1 n-9 cis (gondoic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F20:1CN9 Fettsäure C20:1 n-9 cis (Gondosäure) [g/100g]",
+      "F20:1CN9 Datenherkunft",
+      "F20:1CN9 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F22:1CN9",
+    "source_code": "F22:1CN9",
+    "source_index": 102,
+    "names": {
+      "de": "Fettsäure C22:1 n-9 cis (Erucasäure)",
+      "en": "Fatty acid C22:1 n-9 cis (erucic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "102",
+      "Nährstoffcode / Component code": "F22:1CN9",
+      "Nährstoffbezeichnung": "Fettsäure C22:1 n-9 cis (Erucasäure)",
+      "Component name": "Fatty acid C22:1 n-9 cis (erucic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F22:1CN9 Fettsäure C22:1 n-9 cis (Erucasäure) [g/100g]",
+      "F22:1CN9 Datenherkunft",
+      "F22:1CN9 Referenz"
+    ]
+  },
+  {
+    "id": "bls-FAPU",
+    "source_code": "FAPU",
+    "source_index": 103,
+    "names": {
+      "de": "Fettsäuren, mehrfach ungesättigt, gesamt",
+      "en": "Fatty acids, polyunsaturated, total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "103",
+      "Nährstoffcode / Component code": "FAPU",
+      "Nährstoffbezeichnung": "Fettsäuren, mehrfach ungesättigt, gesamt",
+      "Component name": "Fatty acids, polyunsaturated, total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "FAPU[g]=F18:2C9T11[g]+F18:2CN6[g]+F20:2CN6[g]+F18:3CN3[g]+F18:3CN6[g]+F20:3CN6[g]+F18:4CN3[g]+F20:4CN6[g]+F20:5CN3[g]+F22:5CN3[g]+F22:6CN3[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "FAPU Fettsäuren, mehrfach ungesättigt, gesamt [g/100g]",
+      "FAPU Datenherkunft",
+      "FAPU Referenz"
+    ]
+  },
+  {
+    "id": "bls-FAPUN3",
+    "source_code": "FAPUN3",
+    "source_index": 104,
+    "names": {
+      "de": "Fettsäuren, mehrfach ungesättigt n-3 (Omega-3), gesamt",
+      "en": "Fatty acids, polyunsaturated, n-3 (omega-3), total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "104",
+      "Nährstoffcode / Component code": "FAPUN3",
+      "Nährstoffbezeichnung": "Fettsäuren, mehrfach ungesättigt n-3 (Omega-3), gesamt",
+      "Component name": "Fatty acids, polyunsaturated, n-3 (omega-3), total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "FAPUN3[g]=F18:3CN3[g]+F18:4CN3[g]+F20:5CN3[g]+F22:5CN3[g]+F22:6CN3[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "FAPUN3 Fettsäuren, mehrfach ungesättigt n-3 (Omega-3), gesamt [g/100g]",
+      "FAPUN3 Datenherkunft",
+      "FAPUN3 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F18:3CN3",
+    "source_code": "F18:3CN3",
+    "source_index": 105,
+    "names": {
+      "de": "Fettsäure C18:3 n-3 all-cis (Alpha-Linolensäure)",
+      "en": "Fatty acid C18:3 n-3 all-cis (alpha-linolenic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "105",
+      "Nährstoffcode / Component code": "F18:3CN3",
+      "Nährstoffbezeichnung": "Fettsäure C18:3 n-3 all-cis (Alpha-Linolensäure)",
+      "Component name": "Fatty acid C18:3 n-3 all-cis (alpha-linolenic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F18:3CN3 Fettsäure C18:3 n-3 all-cis (Alpha-Linolensäure) [g/100g]",
+      "F18:3CN3 Datenherkunft",
+      "F18:3CN3 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F18:4CN3",
+    "source_code": "F18:4CN3",
+    "source_index": 106,
+    "names": {
+      "de": "Fettsäure C18:4 n-3 all-cis (Stearidonsäure)",
+      "en": "Fatty acid C18:4 n-3 all-cis (stearidonic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "106",
+      "Nährstoffcode / Component code": "F18:4CN3",
+      "Nährstoffbezeichnung": "Fettsäure C18:4 n-3 all-cis (Stearidonsäure)",
+      "Component name": "Fatty acid C18:4 n-3 all-cis (stearidonic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F18:4CN3 Fettsäure C18:4 n-3 all-cis (Stearidonsäure) [g/100g]",
+      "F18:4CN3 Datenherkunft",
+      "F18:4CN3 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F20:5CN3",
+    "source_code": "F20:5CN3",
+    "source_index": 107,
+    "names": {
+      "de": "Fettsäure C20:5 n-3 all-cis (Eicosapentaensäure)",
+      "en": "Fatty acid C20:5 n-3 all-cis (eicosapentanoic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "107",
+      "Nährstoffcode / Component code": "F20:5CN3",
+      "Nährstoffbezeichnung": "Fettsäure C20:5 n-3 all-cis (Eicosapentaensäure)",
+      "Component name": "Fatty acid C20:5 n-3 all-cis (eicosapentanoic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F20:5CN3 Fettsäure C20:5 n-3 all-cis (Eicosapentaensäure) [g/100g]",
+      "F20:5CN3 Datenherkunft",
+      "F20:5CN3 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F22:5CN3",
+    "source_code": "F22:5CN3",
+    "source_index": 108,
+    "names": {
+      "de": "Fettsäure C22:5 n-3 all-cis (Docosapentaensäure)",
+      "en": "Fatty acid C22:5 n-3 all-cis (docosapentanoic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "108",
+      "Nährstoffcode / Component code": "F22:5CN3",
+      "Nährstoffbezeichnung": "Fettsäure C22:5 n-3 all-cis (Docosapentaensäure)",
+      "Component name": "Fatty acid C22:5 n-3 all-cis (docosapentanoic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F22:5CN3 Fettsäure C22:5 n-3 all-cis (Docosapentaensäure) [g/100g]",
+      "F22:5CN3 Datenherkunft",
+      "F22:5CN3 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F22:6CN3",
+    "source_code": "F22:6CN3",
+    "source_index": 109,
+    "names": {
+      "de": "Fettsäure C22:6 n-3 all-cis (Docosahexaensäure)",
+      "en": "Fatty acid C22:6 n-3 all-cis (docosahexanoic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "109",
+      "Nährstoffcode / Component code": "F22:6CN3",
+      "Nährstoffbezeichnung": "Fettsäure C22:6 n-3 all-cis (Docosahexaensäure)",
+      "Component name": "Fatty acid C22:6 n-3 all-cis (docosahexanoic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F22:6CN3 Fettsäure C22:6 n-3 all-cis (Docosahexaensäure) [g/100g]",
+      "F22:6CN3 Datenherkunft",
+      "F22:6CN3 Referenz"
+    ]
+  },
+  {
+    "id": "bls-FAPUN6",
+    "source_code": "FAPUN6",
+    "source_index": 110,
+    "names": {
+      "de": "Fettsäuren, mehrfach ungesättigt n-6 (Omega-6), gesamt",
+      "en": "Fatty acids, polyunsaturated, n-6 (omega-6), total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "110",
+      "Nährstoffcode / Component code": "FAPUN6",
+      "Nährstoffbezeichnung": "Fettsäuren, mehrfach ungesättigt n-6 (Omega-6), gesamt",
+      "Component name": "Fatty acids, polyunsaturated, n-6 (omega-6), total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "FAPUN6[g]=F18:2CN6[g]+F18:3CN6[g]+F20:2CN6[g]+F20:3CN6[g]+F20:4CN6[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "FAPUN6 Fettsäuren, mehrfach ungesättigt n-6 (Omega-6), gesamt [g/100g]",
+      "FAPUN6 Datenherkunft",
+      "FAPUN6 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F18:2CN6",
+    "source_code": "F18:2CN6",
+    "source_index": 111,
+    "names": {
+      "de": "Fettsäure C18:2 n-6 cis, cis (Linolsäure)",
+      "en": "Fatty acid C18:2 n-6 cis,cis (linoleic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "111",
+      "Nährstoffcode / Component code": "F18:2CN6",
+      "Nährstoffbezeichnung": "Fettsäure C18:2 n-6 cis, cis (Linolsäure)",
+      "Component name": "Fatty acid C18:2 n-6 cis,cis (linoleic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F18:2CN6 Fettsäure C18:2 n-6 cis, cis (Linolsäure) [g/100g]",
+      "F18:2CN6 Datenherkunft",
+      "F18:2CN6 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F18:2C9T11",
+    "source_code": "F18:2C9T11",
+    "source_index": 112,
+    "names": {
+      "de": "Fettsäure C18:2 n-7 cis 9, trans 11 (konjugierte Linolsäure)",
+      "en": "Fatty acid C18:2 conjugated, cis 9,trans 11 (conjugated linoleic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "112",
+      "Nährstoffcode / Component code": "F18:2C9T11",
+      "Nährstoffbezeichnung": "Fettsäure C18:2 n-7 cis 9, trans 11 (konjugierte Linolsäure)",
+      "Component name": "Fatty acid C18:2 conjugated, cis 9,trans 11 (conjugated linoleic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F18:2C9T11 Fettsäure C18:2 n-7 cis 9, trans 11 (konjugierte Linolsäure) [g/100g]",
+      "F18:2C9T11 Datenherkunft",
+      "F18:2C9T11 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F18:3CN6",
+    "source_code": "F18:3CN6",
+    "source_index": 113,
+    "names": {
+      "de": "Fettsäure C18:3 n-6 all-cis (Gamma-Linolensäure)",
+      "en": "Fatty acid C18:3 n-6 all-cis (gamma-linolenic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "113",
+      "Nährstoffcode / Component code": "F18:3CN6",
+      "Nährstoffbezeichnung": "Fettsäure C18:3 n-6 all-cis (Gamma-Linolensäure)",
+      "Component name": "Fatty acid C18:3 n-6 all-cis (gamma-linolenic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F18:3CN6 Fettsäure C18:3 n-6 all-cis (Gamma-Linolensäure) [g/100g]",
+      "F18:3CN6 Datenherkunft",
+      "F18:3CN6 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F20:2CN6",
+    "source_code": "F20:2CN6",
+    "source_index": 114,
+    "names": {
+      "de": "Fettsäure C20:2 n-6 all-cis (Eicosadiensäure)",
+      "en": "Fatty acid C20:2 n-6 cis,cis (eicosadienoic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "114",
+      "Nährstoffcode / Component code": "F20:2CN6",
+      "Nährstoffbezeichnung": "Fettsäure C20:2 n-6 all-cis (Eicosadiensäure)",
+      "Component name": "Fatty acid C20:2 n-6 cis,cis (eicosadienoic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F20:2CN6 Fettsäure C20:2 n-6 all-cis (Eicosadiensäure) [g/100g]",
+      "F20:2CN6 Datenherkunft",
+      "F20:2CN6 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F20:3CN6",
+    "source_code": "F20:3CN6",
+    "source_index": 115,
+    "names": {
+      "de": "Fettsäure C20:3 n-6 all-cis (Dihomogamma-Linolensäure)",
+      "en": "Fatty acid C20:3 n-6 all-cis (dihomo-gamma-linolenic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "115",
+      "Nährstoffcode / Component code": "F20:3CN6",
+      "Nährstoffbezeichnung": "Fettsäure C20:3 n-6 all-cis (Dihomogamma-Linolensäure)",
+      "Component name": "Fatty acid C20:3 n-6 all-cis (dihomo-gamma-linolenic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F20:3CN6 Fettsäure C20:3 n-6 all-cis (Dihomogamma-Linolensäure) [g/100g]",
+      "F20:3CN6 Datenherkunft",
+      "F20:3CN6 Referenz"
+    ]
+  },
+  {
+    "id": "bls-F20:4CN6",
+    "source_code": "F20:4CN6",
+    "source_index": 116,
+    "names": {
+      "de": "Fettsäure C20:4 n-6 all-cis (Arachidonsäure)",
+      "en": "Fatty acid C20:4 n-6 all-cis (arachidonic acid)"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "116",
+      "Nährstoffcode / Component code": "F20:4CN6",
+      "Nährstoffbezeichnung": "Fettsäure C20:4 n-6 all-cis (Arachidonsäure)",
+      "Component name": "Fatty acid C20:4 n-6 all-cis (arachidonic acid)",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "F20:4CN6 Fettsäure C20:4 n-6 all-cis (Arachidonsäure) [g/100g]",
+      "F20:4CN6 Datenherkunft",
+      "F20:4CN6 Referenz"
+    ]
+  },
+  {
+    "id": "bls-FAX",
+    "source_code": "FAX",
+    "source_index": 117,
+    "names": {
+      "de": "Fettsäuren, sonstige",
+      "en": "Fatty acids, others"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "117",
+      "Nährstoffcode / Component code": "FAX",
+      "Nährstoffbezeichnung": "Fettsäuren, sonstige",
+      "Component name": "Fatty acids, others",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Fettsäuren",
+      "Component group": "Fatty acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "FAX Fettsäuren, sonstige [g/100g]",
+      "FAX Datenherkunft",
+      "FAX Referenz"
+    ]
+  },
+  {
+    "id": "bls-CHORL",
+    "source_code": "CHORL",
+    "source_index": 118,
+    "names": {
+      "de": "Cholesterin",
+      "en": "Cholesterol"
+    },
+    "unit": "mg",
+    "source_fields": {
+      "Index": "118",
+      "Nährstoffcode / Component code": "CHORL",
+      "Nährstoffbezeichnung": "Cholesterin",
+      "Component name": "Cholesterol",
+      "Einheit / Unit": "mg",
+      "Nährstoffgruppe": "Sonstige Nährstoffe",
+      "Component group": "Other components",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "CHORL Cholesterin [mg/100g]",
+      "CHORL Datenherkunft",
+      "CHORL Referenz"
+    ]
+  },
+  {
+    "id": "bls-AAE9",
+    "source_code": "AAE9",
+    "source_index": 119,
+    "names": {
+      "de": "Aminosäuren, unentbehrlich, gesamt",
+      "en": "Amino acids, essential, total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "119",
+      "Nährstoffcode / Component code": "AAE9",
+      "Nährstoffbezeichnung": "Aminosäuren, unentbehrlich, gesamt",
+      "Component name": "Amino acids, essential, total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "AAE9[g] = ILE[g] + LEU[g] + LYS[g] + MET[g] + PHE[g] + THR[g] + TRP[g] + VAL[g]+HIS[g]",
+      "Formelanwendung / Formula application": "immer berechnet / always calculated"
+    },
+    "source_columns": [
+      "AAE9 Aminosäuren, unentbehrlich, gesamt [g/100g]",
+      "AAE9 Datenherkunft",
+      "AAE9 Referenz"
+    ]
+  },
+  {
+    "id": "bls-ALA",
+    "source_code": "ALA",
+    "source_index": 120,
+    "names": {
+      "de": "Alanin",
+      "en": "Alanine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "120",
+      "Nährstoffcode / Component code": "ALA",
+      "Nährstoffbezeichnung": "Alanin",
+      "Component name": "Alanine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "ALA Alanin [g/100g]",
+      "ALA Datenherkunft",
+      "ALA Referenz"
+    ]
+  },
+  {
+    "id": "bls-ARG",
+    "source_code": "ARG",
+    "source_index": 121,
+    "names": {
+      "de": "Arginin",
+      "en": "Arginine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "121",
+      "Nährstoffcode / Component code": "ARG",
+      "Nährstoffbezeichnung": "Arginin",
+      "Component name": "Arginine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "ARG Arginin [g/100g]",
+      "ARG Datenherkunft",
+      "ARG Referenz"
+    ]
+  },
+  {
+    "id": "bls-ASP",
+    "source_code": "ASP",
+    "source_index": 122,
+    "names": {
+      "de": "Asparaginsäure, inklusive Asparagin",
+      "en": "Aspartic acid, including asparagine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "122",
+      "Nährstoffcode / Component code": "ASP",
+      "Nährstoffbezeichnung": "Asparaginsäure, inklusive Asparagin",
+      "Component name": "Aspartic acid, including asparagine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "ASP Asparaginsäure, inklusive Asparagin [g/100g]",
+      "ASP Datenherkunft",
+      "ASP Referenz"
+    ]
+  },
+  {
+    "id": "bls-CYSTE",
+    "source_code": "CYSTE",
+    "source_index": 123,
+    "names": {
+      "de": "Cystein",
+      "en": "Cysteine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "123",
+      "Nährstoffcode / Component code": "CYSTE",
+      "Nährstoffbezeichnung": "Cystein",
+      "Component name": "Cysteine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "CYSTE Cystein [g/100g]",
+      "CYSTE Datenherkunft",
+      "CYSTE Referenz"
+    ]
+  },
+  {
+    "id": "bls-GLU",
+    "source_code": "GLU",
+    "source_index": 124,
+    "names": {
+      "de": "Glutaminsäure, inklusive Glutamin",
+      "en": "Glutamic acid, including glutamine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "124",
+      "Nährstoffcode / Component code": "GLU",
+      "Nährstoffbezeichnung": "Glutaminsäure, inklusive Glutamin",
+      "Component name": "Glutamic acid, including glutamine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "GLU Glutaminsäure, inklusive Glutamin [g/100g]",
+      "GLU Datenherkunft",
+      "GLU Referenz"
+    ]
+  },
+  {
+    "id": "bls-GLY",
+    "source_code": "GLY",
+    "source_index": 125,
+    "names": {
+      "de": "Glycin",
+      "en": "Glycine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "125",
+      "Nährstoffcode / Component code": "GLY",
+      "Nährstoffbezeichnung": "Glycin",
+      "Component name": "Glycine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "GLY Glycin [g/100g]",
+      "GLY Datenherkunft",
+      "GLY Referenz"
+    ]
+  },
+  {
+    "id": "bls-HIS",
+    "source_code": "HIS",
+    "source_index": 126,
+    "names": {
+      "de": "Histidin",
+      "en": "Histidine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "126",
+      "Nährstoffcode / Component code": "HIS",
+      "Nährstoffbezeichnung": "Histidin",
+      "Component name": "Histidine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "HIS Histidin [g/100g]",
+      "HIS Datenherkunft",
+      "HIS Referenz"
+    ]
+  },
+  {
+    "id": "bls-ILE",
+    "source_code": "ILE",
+    "source_index": 127,
+    "names": {
+      "de": "Isoleucin",
+      "en": "Isoleucine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "127",
+      "Nährstoffcode / Component code": "ILE",
+      "Nährstoffbezeichnung": "Isoleucin",
+      "Component name": "Isoleucine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "ILE Isoleucin [g/100g]",
+      "ILE Datenherkunft",
+      "ILE Referenz"
+    ]
+  },
+  {
+    "id": "bls-LEU",
+    "source_code": "LEU",
+    "source_index": 128,
+    "names": {
+      "de": "Leucin",
+      "en": "Leucine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "128",
+      "Nährstoffcode / Component code": "LEU",
+      "Nährstoffbezeichnung": "Leucin",
+      "Component name": "Leucine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "LEU Leucin [g/100g]",
+      "LEU Datenherkunft",
+      "LEU Referenz"
+    ]
+  },
+  {
+    "id": "bls-LYS",
+    "source_code": "LYS",
+    "source_index": 129,
+    "names": {
+      "de": "Lysin",
+      "en": "Lysine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "129",
+      "Nährstoffcode / Component code": "LYS",
+      "Nährstoffbezeichnung": "Lysin",
+      "Component name": "Lysine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "LYS Lysin [g/100g]",
+      "LYS Datenherkunft",
+      "LYS Referenz"
+    ]
+  },
+  {
+    "id": "bls-MET",
+    "source_code": "MET",
+    "source_index": 130,
+    "names": {
+      "de": "Methionin",
+      "en": "Methionine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "130",
+      "Nährstoffcode / Component code": "MET",
+      "Nährstoffbezeichnung": "Methionin",
+      "Component name": "Methionine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "MET Methionin [g/100g]",
+      "MET Datenherkunft",
+      "MET Referenz"
+    ]
+  },
+  {
+    "id": "bls-PHE",
+    "source_code": "PHE",
+    "source_index": 131,
+    "names": {
+      "de": "Phenylalanin",
+      "en": "Phenylalanine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "131",
+      "Nährstoffcode / Component code": "PHE",
+      "Nährstoffbezeichnung": "Phenylalanin",
+      "Component name": "Phenylalanine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "PHE Phenylalanin [g/100g]",
+      "PHE Datenherkunft",
+      "PHE Referenz"
+    ]
+  },
+  {
+    "id": "bls-PRO",
+    "source_code": "PRO",
+    "source_index": 132,
+    "names": {
+      "de": "Prolin",
+      "en": "Proline"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "132",
+      "Nährstoffcode / Component code": "PRO",
+      "Nährstoffbezeichnung": "Prolin",
+      "Component name": "Proline",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "PRO Prolin [g/100g]",
+      "PRO Datenherkunft",
+      "PRO Referenz"
+    ]
+  },
+  {
+    "id": "bls-SER",
+    "source_code": "SER",
+    "source_index": 133,
+    "names": {
+      "de": "Serin",
+      "en": "Serine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "133",
+      "Nährstoffcode / Component code": "SER",
+      "Nährstoffbezeichnung": "Serin",
+      "Component name": "Serine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "SER Serin [g/100g]",
+      "SER Datenherkunft",
+      "SER Referenz"
+    ]
+  },
+  {
+    "id": "bls-THR",
+    "source_code": "THR",
+    "source_index": 134,
+    "names": {
+      "de": "Threonin",
+      "en": "Threonine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "134",
+      "Nährstoffcode / Component code": "THR",
+      "Nährstoffbezeichnung": "Threonin",
+      "Component name": "Threonine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "THR Threonin [g/100g]",
+      "THR Datenherkunft",
+      "THR Referenz"
+    ]
+  },
+  {
+    "id": "bls-TRP",
+    "source_code": "TRP",
+    "source_index": 135,
+    "names": {
+      "de": "Tryptophan",
+      "en": "Tryptophan"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "135",
+      "Nährstoffcode / Component code": "TRP",
+      "Nährstoffbezeichnung": "Tryptophan",
+      "Component name": "Tryptophan",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "TRP Tryptophan [g/100g]",
+      "TRP Datenherkunft",
+      "TRP Referenz"
+    ]
+  },
+  {
+    "id": "bls-TYR",
+    "source_code": "TYR",
+    "source_index": 136,
+    "names": {
+      "de": "Tyrosin",
+      "en": "Tyrosine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "136",
+      "Nährstoffcode / Component code": "TYR",
+      "Nährstoffbezeichnung": "Tyrosin",
+      "Component name": "Tyrosine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "TYR Tyrosin [g/100g]",
+      "TYR Datenherkunft",
+      "TYR Referenz"
+    ]
+  },
+  {
+    "id": "bls-VAL",
+    "source_code": "VAL",
+    "source_index": 137,
+    "names": {
+      "de": "Valin",
+      "en": "Valine"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "137",
+      "Nährstoffcode / Component code": "VAL",
+      "Nährstoffbezeichnung": "Valin",
+      "Component name": "Valine",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Aminosäuren",
+      "Component group": "Amino acids",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "VAL Valin [g/100g]",
+      "VAL Datenherkunft",
+      "VAL Referenz"
+    ]
+  },
+  {
+    "id": "bls-NT",
+    "source_code": "NT",
+    "source_index": 138,
+    "names": {
+      "de": "Stickstoff, gesamt",
+      "en": "Nitrogen, total"
+    },
+    "unit": "g",
+    "source_fields": {
+      "Index": "138",
+      "Nährstoffcode / Component code": "NT",
+      "Nährstoffbezeichnung": "Stickstoff, gesamt",
+      "Component name": "Nitrogen, total",
+      "Einheit / Unit": "g",
+      "Nährstoffgruppe": "Sonstige Nährstoffe",
+      "Component group": "Other components",
+      "Formeln / Formula": "",
+      "Formelanwendung / Formula application": ""
+    },
+    "source_columns": [
+      "NT Stickstoff, gesamt [g/100g]",
+      "NT Datenherkunft",
+      "NT Referenz"
+    ]
+  }
+]
