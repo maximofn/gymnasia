@@ -34,3 +34,8 @@ los valores para cálculos. Las marcas y logotipos del MRI no se incluyen.
 
 Esta licencia describe los datos originales y su reorganización; no atribuye al
 MRI las demás fichas, imágenes o el código del repositorio.
+
+Las imágenes editoriales de `image-batches/` son ilustraciones generadas por IA
+para Gymnasia, no proporcionadas ni validadas por Max Rubner-Institut. Su
+atribución, referencias y prompts se registran por tanda; este aviso de licencia
+de los datos no atribuye al MRI esas imágenes ni las presenta como oficiales.

@@ -62,6 +62,8 @@
     "import:bls": "node scripts/catalogs/import-bls.mjs --write",
     "check:bls": "node scripts/catalogs/import-bls.mjs --check",
     "test:bls": "node --test scripts/catalogs/bls*.test.mjs",
+    "check:bls:images": "node scripts/catalogs/bls-image-batches.mjs --check",
+    "next:bls:images": "node scripts/catalogs/bls-image-batches.mjs --next",
     "import:ciqual": "node scripts/catalogs/import-ciqual.mjs --write",
     "check:ciqual": "node scripts/catalogs/import-ciqual.mjs --check",
     "check:ciqual:images": "node scripts/catalogs/ciqual-image-batches.mjs --check",

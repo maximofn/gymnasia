@@ -79,6 +79,7 @@ jobs:
           npm run check:ciqual:mobile
           npm run check:ciqual:images
           npm run check:bls
+          npm run check:bls:images
 
       - name: Run catalog regression tests
         run: npm run test:catalogs

@@ -279,7 +279,7 @@ async function generatedFiles(root, prefix = "") {
     assert.ok(!(await lstat(join(root, prefix))).isSymbolicLink(), "Directorio BLS enlazado");
     for (const entry of await readdir(join(root, prefix), { withFileTypes: true })) {
       const path = prefix + entry.name;
-      if (!prefix && ["source", ".source", "README.md", "LICENSE.md", ".gitignore"].includes(entry.name)) continue;
+      if (!prefix && ["source", ".source", "image-batches", "README.md", "LICENSE.md", ".gitignore"].includes(entry.name)) continue;
       assert.ok(!entry.isSymbolicLink(), `Symlink de salida BLS: ${path}`);
       if (entry.isDirectory()) paths.push(...await generatedFiles(root, `${path}/`));
       else paths.push(path);
