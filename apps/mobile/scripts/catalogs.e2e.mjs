@@ -26,6 +26,12 @@ const fixtureExerciseName = "Sentadilla Catálogo E2E";
 const screenshotDir = process.env.CATALOG_E2E_SCREENSHOT_DIR || "";
 const ciqualFoods = JSON.parse(readFileSync(join(repositoryRoot, "apps/mobile/catalogs/generated/ciqualBaseline.generated.json"), "utf8")).foods;
 const ciqualRice = ciqualFoods.find((food) => food.id === "ciqual-9100");
+const ciqualLatest = ciqualFoods.find((food) => food.id === "ciqual-1010");
+const ciqualImageIndex = JSON.parse(readFileSync(join(repositoryRoot, "apps/mobile/catalogs/generated/ciqualImages.generated.json"), "utf8"));
+const ciqualImageUrl = (food) => `https://raw.githubusercontent.com/maximofn/gymnasia/main/alimentos/ciqual/${ciqualImageIndex.images[food.id]}`;
+const ciqualImageFiles = new Map(Object.values(ciqualImageIndex.images).map((path) => [
+  `/maximofn/gymnasia/main/alimentos/ciqual/${path}`, join(repositoryRoot, "alimentos/ciqual", path),
+]));
 const ciqualIncomplete = ciqualFoods.find((food) => food.calories_per_100g !== null && food.ciqual.qualifiers.fat_per_100g.qualifier === "missing");
 
 if (screenshotDir) mkdirSync(screenshotDir, { recursive: true });
@@ -212,6 +218,12 @@ async function installRoutes(page, networkState) {
       return route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
     }
     if (pathname.endsWith(".webp")) {
+      if (pathname.includes("/alimentos/ciqual/")) {
+        const file = ciqualImageFiles.get(pathname);
+        return file
+          ? route.fulfill({ status: 200, contentType: "image/webp", body: readFileSync(file) })
+          : route.fulfill({ status: 404, body: "Imagen CIQUAL sin registrar" });
+      }
       return route.fulfill({
         status: 200,
         contentType: "image/webp",
@@ -467,11 +479,89 @@ async function expectCiqualOffline(page) {
   await page.unroute("**/v1/responses*");
 }
 
+async function expectCiqualImages() {
+  log("Verificando imágenes reales de CIQUAL en catálogo, búsqueda, dieta e historial");
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const networkState = { offline: false };
+  const page = await preparePage(context, networkState);
+  const expectImage = async (scope, food) => {
+    const image = scope.locator("img").filter({ visible: true }).first();
+    await image.waitFor({ state: "visible" });
+    await page.waitForFunction(({ url }) => Array.from(document.images).some((image) => image.src === url && image.complete && image.naturalWidth === 1024), { url: ciqualImageUrl(food) });
+    assert.equal(await image.getAttribute("src"), ciqualImageUrl(food));
+    assert.equal(await image.evaluate((image) => image.naturalWidth), 1024);
+  };
+  try {
+    await openApp(page);
+    await page.getByTestId("nav-tab-settings").click();
+    await page.getByTestId("settings-tab-foods").click();
+    const catalogSearch = page.locator('input[placeholder="Buscar alimento..."]');
+    await catalogSearch.fill(ciqualLatest.name);
+    await expectImage(page.getByTestId(`food-catalog-row-anses_ciqual_2025-${ciqualLatest.id}`), ciqualLatest);
+    await catalogSearch.fill(ciqualRice.name);
+    const row = page.getByTestId(`food-catalog-row-anses_ciqual_2025-${ciqualRice.id}`);
+    await expectImage(row, ciqualRice);
+    await row.click();
+    const detail = page.getByTestId("shell-layer-settings-food-detail");
+    await expectImage(detail, ciqualRice);
+    await detail.getByText(/Imágenes ilustrativas generadas por IA/).waitFor({ state: "visible" });
+    if (screenshotDir) {
+      await page.screenshot({ path: join(screenshotDir, "ciqual-images-catalog-390.png"), fullPage: true });
+      await page.setViewportSize({ width: 960, height: 900 });
+      await page.screenshot({ path: join(screenshotDir, "ciqual-images-catalog-960.png"), fullPage: true });
+      await page.setViewportSize({ width: 390, height: 844 });
+    }
+    await page.getByTestId("nav-tab-diet").click();
+    const search = page.locator('input[placeholder="Buscar alimento..."]').first();
+    await search.fill(ciqualRice.name);
+    const result = page.getByText(ciqualRice.name, { exact: true });
+    await expectImage(result.locator("..").locator(".."), ciqualRice);
+    if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "ciqual-images-search-390.png"), fullPage: true });
+    await result.click();
+    await page.getByTestId("selected-food-grams-input").fill("150");
+    await page.getByTestId("save-selected-food").click();
+    const mealRow = page.getByTestId(/^diet-item-row-/).filter({ hasText: ciqualRice.name });
+    await expectImage(mealRow, ciqualRice);
+    if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "ciqual-images-diet-390.png"), fullPage: true });
+    const saved = await page.evaluate((key) => Object.values(JSON.parse(localStorage.getItem(key)).dietByDate).flatMap((day) => day.meals.flatMap((meal) => meal.items)), storageKey);
+    assert.equal(saved[0].image_uri, ciqualImageUrl(ciqualRice));
+    assert.equal(saved[0].calories_kcal, 525);
+
+    // Simula una comida guardada antes de integrar las imágenes; conserva sus totales.
+    await page.evaluate((key) => {
+      const store = JSON.parse(localStorage.getItem(key));
+      for (const day of Object.values(store.dietByDate)) for (const meal of day.meals) for (const item of meal.items) item.image_uri = null;
+      localStorage.setItem(key, JSON.stringify(store));
+    }, storageKey);
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.getByTestId("nav-tab-diet").click();
+    await expectImage(page.getByTestId(/^diet-item-row-/).filter({ hasText: ciqualRice.name }), ciqualRice);
+    const restored = await page.evaluate((key) => Object.values(JSON.parse(localStorage.getItem(key)).dietByDate).flatMap((day) => day.meals.flatMap((meal) => meal.items)), storageKey);
+    assert.deepEqual(restored, saved.map((item) => ({ ...item, image_uri: null })));
+
+    log("Verificando sustitución de imágenes sin red y conservación de los datos");
+    networkState.offline = true;
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.getByTestId("nav-tab-diet").click();
+    const offlineMeal = page.getByTestId(/^diet-item-row-/).filter({ hasText: ciqualRice.name });
+    await offlineMeal.waitFor({ state: "visible" });
+    await page.waitForFunction(() => !Array.from(document.images).some((image) => image.src.includes("/alimentos/ciqual/")));
+    await search.fill(ciqualRice.name);
+    await page.getByText(ciqualRice.name, { exact: true }).last().click();
+    await page.getByTestId("selected-food-grams-input").fill("100");
+    await page.getByTestId("save-selected-food").click();
+    await page.waitForFunction((key) => Object.values(JSON.parse(localStorage.getItem(key)).dietByDate).some((day) => day.meals.some((meal) => meal.items.length === 2)), storageKey);
+  } finally {
+    await context.close();
+  }
+}
+
 exportDevelopmentBundle();
 const server = await startServer();
 const browser = await chromium.launch({ headless: process.env.CATALOG_E2E_HEADLESS !== "0" });
 
 try {
+  await expectCiqualImages();
   if (process.env.CATALOG_E2E_CIQUAL_ONLY === "1") {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const page = await preparePage(context, { offline: true }, {}, true);
@@ -733,6 +823,7 @@ try {
 
   log("Runtime local-first, identidad y estados degradados verificados");
   }
+  log("Catálogos E2E completados correctamente, incluidas imágenes CIQUAL");
 } finally {
   await browser.close();
   await new Promise((resolve) => server.close(resolve));

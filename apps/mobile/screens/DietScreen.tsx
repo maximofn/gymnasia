@@ -13,6 +13,7 @@ import { formatFoodNutrient } from "../catalogs/foodNutrition";
 import type { DietScreenActions, DietScreenModel } from "../controllers/dietController";
 import type { DietMealCategory } from "../diet/nutritionContract";
 import { dateFromISO, formatNutritionNumber } from "../diet/model";
+import { dietItemImageUri } from "../diet/catalogModel";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import { mobileTheme } from "../theme";
 
@@ -252,9 +253,9 @@ export const DietMealsScreen = memo(function DietMealsScreen({
                 ) : meal.items.map((item) => {
                   const menuOpen = model.itemMenu?.meal_id === meal.id && model.itemMenu.item_id === item.id;
                   return (
-                    <View key={item.id} style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
+                    <View key={item.id} testID={`diet-item-row-${item.id}`} style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
                       <View style={{ flexDirection: "row", gap: 8, flex: 1 }}>
-                        <DietItemThumbnail uri={item.image_uri} dotColor={meta.dot} />
+                        <DietItemThumbnail uri={dietItemImageUri(item)} dotColor={meta.dot} />
                         <View style={{ flex: 1 }}>
                           <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }}>{item.title}</Text>
                           <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, marginTop: 1 }}>

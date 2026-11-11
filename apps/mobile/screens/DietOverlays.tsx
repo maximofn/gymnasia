@@ -11,6 +11,7 @@ import type { ChatMessage } from "../agent/chatModel";
 import { foodCatalogImageUri } from "../catalogs/sources";
 import type { FoodCatalogEntry } from "../catalogs/types";
 import { formatDietDayHeader, formatNutritionNumber, isoDateFromDate } from "../diet/model";
+import { dietItemImageUri } from "../diet/catalogModel";
 import type { DietMealCategory } from "../diet/nutritionContract";
 import type { DietResolutionActions, DietResolutionModel } from "../controllers/dietController";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
@@ -130,7 +131,7 @@ function DietCopyConfirmation({ confirmation, selectedDate, onConfirm, onCancel 
         <ScrollView style={{ maxHeight: 240, width: "100%" }} contentContainerStyle={{ gap: 8 }}>
           {confirmation.items.map((item) => (
             <View key={item.id} style={{ flexDirection: "row", alignItems: "center", gap: 10, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: 12, backgroundColor: mobileTheme.color.bgApp, paddingHorizontal: 10, paddingVertical: 8 }}>
-              <DietItemThumbnail uri={item.image_uri} dotColor={meta.dot} />
+              <DietItemThumbnail uri={dietItemImageUri(item)} dotColor={meta.dot} />
               <View style={{ flex: 1 }}>
                 <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }} numberOfLines={1}>{item.title}</Text>
                 <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, marginTop: 1 }}>{item.grams > 0 ? `${formatNutritionNumber(item.grams)} g · ` : ""}{formatNutritionNumber(item.calories_kcal)} kcal</Text>

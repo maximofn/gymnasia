@@ -1,5 +1,5 @@
 import { matchFoodCatalog } from "../catalogs/matching";
-import { foodCatalogImageUri } from "../catalogs/imageUris";
+import { ciqualFoodImageUri, foodCatalogImageUri } from "../catalogs/imageUris";
 import {
   catalogRef,
   linkedCatalog,
@@ -8,6 +8,15 @@ import {
 } from "../catalogs/types";
 import type { DietItem } from "./model";
 import { hasCompleteFoodNutrition } from "../catalogs/foodNutrition";
+
+/** Las comidas anteriores a las imágenes conservan su instantánea nutricional. */
+export function dietItemImageUri(item: Pick<DietItem, "image_uri" | "catalog_link">): string | null {
+  if (item.image_uri) return item.image_uri;
+  const link = item.catalog_link;
+  return link?.status === "linked" && link.ref.sourceId === "anses_ciqual_2025"
+    ? ciqualFoodImageUri(link.ref.itemId)
+    : null;
+}
 
 export function findDietFoodInCatalog(
   name: string,

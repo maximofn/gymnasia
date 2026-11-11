@@ -3,8 +3,8 @@ import fc from "fast-check";
 import { CIQUAL_FOODS, CIQUAL_SOURCE } from "./ciqual";
 import { formatFoodNutrient, hasCompleteFoodNutrition } from "./foodNutrition";
 import { missingCatalogNutritionIssues } from "../diet/nutritionContract";
-import { foodCatalogImageUri } from "./imageUris";
-import { dietItemFromCatalog, findDietFoodInCatalog } from "../diet/catalogModel";
+import { ciqualFoodImageUri, foodCatalogImageUri } from "./imageUris";
+import { dietItemFromCatalog, dietItemImageUri, findDietFoodInCatalog } from "../diet/catalogModel";
 import { normalizeCatalogLink } from "./migrations";
 import { catalogRef, linkedCatalog } from "./types";
 import { createAgentToolExecutor, type ToolStore } from "../agent/toolExecutor";
@@ -19,14 +19,31 @@ describe("CIQUAL local y sus consumidores", () => {
     expect(missingCatalogNutritionIssues(fields)).toEqual([expect.objectContaining({ field: "fat_g", code: "required" })]);
     expect(missingCatalogNutritionIssues({ ...fields, fat_g: "0" })).toEqual([]);
   });
-  it("incluye 3.484 alimentos sin inventar imágenes ni raciones", () => {
+  it("enlaza las 3.484 imágenes editoriales sin inventar raciones", () => {
     expect(CIQUAL_FOODS).toHaveLength(3484);
     expect(CIQUAL_FOODS.filter(hasCompleteFoodNutrition)).toHaveLength(3006);
     expect(CIQUAL_SOURCE.provenance.licenseLabel).toContain("Licence Ouverte 2.0");
     for (const food of CIQUAL_FOODS) {
       expect(food.serving_size_g).toBeNull();
-      expect(foodCatalogImageUri(food)).toBeNull();
+      expect(foodCatalogImageUri(food)).toMatch(new RegExp(`/alimentos/ciqual/(?:image-samples|image-batches/\\d{4})/${food.id}\\.webp$`));
     }
+  });
+  it("resuelve muestras, tandas y la última entrega, sin aceptar IDs ni rutas inventadas", () => {
+    expect(ciqualFoodImageUri("ciqual-9100")).toContain("/image-samples/ciqual-9100.webp");
+    expect(ciqualFoodImageUri("ciqual-1010")).toContain("/image-batches/0053/ciqual-1010.webp");
+    expect(ciqualFoodImageUri("ciqual-999999999")).toBeNull();
+    expect(ciqualFoodImageUri("constructor")).toBeNull();
+    expect(ciqualFoodImageUri("../image.webp")).toBeNull();
+    expect(foodCatalogImageUri({ ...rice, id: "missing", image: "../image.webp" })).toBeNull();
+  });
+  it("muestra imágenes en comidas antiguas por referencia sin alterar sus valores", () => {
+    const item = { ...dietItemFromCatalog(rice, 150, "old-meal", "selection"), image_uri: null };
+    const before = structuredClone(item);
+    expect(dietItemImageUri(item)).toBe(foodCatalogImageUri(rice));
+    expect(item).toEqual(before);
+    expect(dietItemImageUri({ image_uri: "https://example.com/original.webp", catalog_link: item.catalog_link })).toBe("https://example.com/original.webp");
+    expect(dietItemImageUri({ catalog_link: { schemaVersion: 1, status: "unresolved", reason: "manual" } })).toBeNull();
+    expect(dietItemImageUri({ catalog_link: linkedCatalog(catalogRef("gymnasia_foods", rice.id), "selection") })).toBeNull();
   });
   it("conserva referencias al normalizar datos o backups", () => {
     const link = linkedCatalog(catalogRef(rice.sourceId, rice.id), "selection");
@@ -35,6 +52,7 @@ describe("CIQUAL local y sus consumidores", () => {
   it("escala los valores exactos por gramos y bloquea fichas incompletas", () => {
     fc.assert(fc.property(fc.integer({ min: 1, max: 5000 }), (grams) => {
       const item = dietItemFromCatalog(rice, grams, "test", "selection");
+      expect(item.image_uri).toBe(foodCatalogImageUri(rice));
       expect(item.calories_kcal).toBe(Math.round(350 * grams / 100 * 10) / 10);
       expect(item.catalog_link).toMatchObject({ ref: { sourceId: "anses_ciqual_2025", itemId: "ciqual-9100" } });
     }));

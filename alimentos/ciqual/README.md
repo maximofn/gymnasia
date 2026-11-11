@@ -184,20 +184,36 @@ La CI verifica que la proyección corresponde exactamente a la fuente. La
 actualización integrada llega con una nueva versión de la app, no depende de un
 backend ni crea una caché adicional de CIQUAL.
 
-Las raciones domésticas, imágenes, alérgenos y otras
+Las raciones domésticas, alérgenos y otras
 características que CIQUAL no documenta quedan sin completar. Los 100 g son la
 base de referencia nutricional, no una ración recomendada.
 
-Las [muestras de imágenes de Gymnasia](image-samples/README.md) se mantienen
-aparte: son ilustraciones generadas por IA con estilo aprobado, no material
-de ANSES. No alteran las fichas oficiales ni la proyección móvil. Los prompts,
-referencias y comprobaciones de integridad están en ese directorio.
-La generación continúa en [tandas numeradas](image-batches/README.md), con
-recuento de pendientes y sin repetir los IDs ya ilustrados.
+Las [imágenes de Gymnasia](image-batches/README.md) son ilustraciones generadas
+por IA con estilo aprobado, no proporcionadas ni validadas por ANSES. Las 3.484
+están enlazadas en la app mediante un índice editorial separado de los datos
+nutricionales: `apps/mobile/catalogs/generated/ciqualImages.generated.json`.
+El generador comprueba IDs, nombres, cobertura completa, duplicados y los SHA-256
+de los WebP contra sus manifiestos. Los prompts y referencias siguen en cada
+tanda y en las [muestras aprobadas](image-samples/README.md).
+
+```bash
+npm run sync:ciqual:images:mobile
+npm run check:ciqual:images:mobile # También incluido en check:ciqual:mobile
+```
+
+El catálogo, las búsquedas y las comidas nuevas muestran las imágenes desde el
+repositorio público de GitHub, igual que los otros catálogos. Solo se solicitan
+las imágenes mostradas, no las 3.484 al arrancar; no se empaquetan todos los WebP
+en el APK/AAB. Si falta red o una imagen falla, se muestra el recurso sustituto
+y la consulta y el registro de alimentos siguen funcionando sin conexión.
+La caché de imágenes depende de la plataforma; no se garantiza disponibilidad
+de todas las imágenes sin red. Las comidas antiguas vinculadas a CIQUAL resuelven
+su imagen por ID al mostrarse, sin migrar ni modificar sus valores guardados.
 
 Revisión de privacidad: el importador descarga exclusivamente datos públicos
-durante el mantenimiento del repositorio. La integración no introduce conexiones,
-claves de almacenamiento ni permisos. Las referencias y las instantáneas siguen
+durante el mantenimiento del repositorio. Las imágenes usan el destino de GitHub
+ya inventariado, sin credenciales, claves de almacenamiento ni permisos nuevos.
+Las referencias y las instantáneas siguen
 el contrato histórico de dieta, y los resultados públicos de las tools siguen el
 flujo existente de Coach. Revisión registrada en el inventario de datos: no cambia
 el tratamiento personal ni requiere una nueva versión de la política publicada.
