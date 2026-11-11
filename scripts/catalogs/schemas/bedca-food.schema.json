@@ -20,10 +20,10 @@
       "basis": {"enum": [null, {"amount": 100, "unit": "g", "portion": "edible"}]},
       "measurements": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["component_id", "unit", "value_type", "source_position", "source_value", "value", "qualifier", "source_fields"], "properties": {
         "component_id": {"type": "string", "pattern": "^bedca-[0-9]+$"}, "unit": {"type": "string"}, "value_type": {"type": "string"}, "source_position": {"type": "integer", "minimum": 0}, "source_value": {"type": "string"}, "value": {"type": ["number", "null"]},
-        "qualifier": {"enum": ["reported", "logical_zero", "regulatory_zero", "unknown_type", "trace", "missing", "undecidable", "below_detection", "less_than", "greater_than"]},
+        "qualifier": {"enum": ["reported", "logical_zero", "regulatory_zero", "unknown_type", "trace", "missing", "undecidable", "below_detection", "less_than", "greater_than", "inconsistent_type"]},
         "limit": {"type": "number"}, "source_fields": {"$ref": "#/definitions/fields"}
       }, "allOf": [
-        {"if": {"properties": {"qualifier": {"enum": ["trace", "missing", "undecidable", "below_detection", "less_than", "greater_than"]}}}, "then": {"properties": {"value": {"type": "null"}}}},
+        {"if": {"properties": {"qualifier": {"enum": ["trace", "missing", "undecidable", "below_detection", "less_than", "greater_than", "inconsistent_type"]}}}, "then": {"properties": {"value": {"type": "null"}}}},
         {"if": {"properties": {"qualifier": {"enum": ["reported", "logical_zero", "regulatory_zero", "unknown_type"]}}}, "then": {"properties": {"value": {"type": "number"}, "limit": false}}},
         {"if": {"properties": {"qualifier": {"enum": ["less_than", "greater_than"]}}}, "then": {"required": ["limit"]}}
       ]}}

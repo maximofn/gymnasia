@@ -53,8 +53,8 @@ test("valores: distingue trazas, límites, ceros lógicos/reguladores, indetermi
   assert.equal(parseBedcaValue("0.2", "LT").limit, 0.2);
   assert.equal(parseBedcaValue("0.2", "MT").qualifier, "greater_than");
   assert.equal(parseBedcaValue("< 0,2", "AR").qualifier, "less_than");
-  assert.throws(() => parseBedcaValue(">0.2", "LT"), /contradictorio/);
-  assert.throws(() => parseBedcaValue("1", "LZ"), /otro valor/);
+  assert.equal(parseBedcaValue(">0.2", "LT").qualifier, "inconsistent_type");
+  assert.equal(parseBedcaValue("4.20", "LZ").value, null);
   for (const raw of ["NaN", "Infinity", "1/2", "1.0 extra", "1e999", "1.2.3"]) assert.throws(() => parseBedcaValue(raw, "AR"));
 });
 
@@ -170,6 +170,21 @@ test("conversión: discrepancias de identidad y componentes/tipos desconocidos n
     const changed = structuredClone(snapshot); mutate(changed);
     assert.throws(() => convertBedcaSnapshot(changed), pattern);
   }
+});
+
+test("regresión: una cantidad con tipo cero contradictorio se conserva sin corregirla ni usarla como cantidad exacta", async (t) => {
+  const { snapshot } = await capture(t);
+  const measurement = snapshot.details.get("900000001").values[0];
+  measurement.value_type = "LZ";
+  measurement.best_location = "4.20"; // Valor inventado; no copia una medición real.
+  const catalog = convertBedcaSnapshot(snapshot);
+  const result = catalog.foods[0].nutrition_profiles[0].measurements[0];
+  assert.equal(result.qualifier, "inconsistent_type");
+  assert.equal(result.value, null);
+  assert.equal(result.source_value, "4.20");
+  assert.equal(result.value_type, "LZ");
+  assert.deepEqual(result.source_fields, measurement);
+  assert.deepEqual(catalog.diagnostics, [{ code: "inconsistent_value_type", food_id: "bedca-900000001", position: 0 }]);
 });
 
 test("importación: salida reproducible, validación offline y protección de archivos ajenos", async (t) => {

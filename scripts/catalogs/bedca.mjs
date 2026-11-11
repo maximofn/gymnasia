@@ -22,12 +22,12 @@ export function parseBedcaValue(raw, type) {
   assert.ok(match, `Notación BEDCA no reconocida: ${JSON.stringify(text)}`);
   const value = Number(match[2].replace(",", "."));
   assert.ok(Number.isFinite(value), "Valor BEDCA no finito");
+  if ((type === "BL" && match[1] === ">") || (type === "LT" && match[1] === ">") || (type === "MT" && match[1] === "<")) return { ...source, value: null, qualifier: "inconsistent_type" };
   if (type === "BL") return { ...source, value: null, qualifier: "below_detection", limit: value };
-  assert.ok(!(type === "LT" && match[1] === ">") && !(type === "MT" && match[1] === "<"), "Límite BEDCA contradictorio");
   if (type === "LT" || match[1] === "<") return { ...source, value: null, qualifier: "less_than", limit: value };
   if (type === "MT" || match[1] === ">") return { ...source, value: null, qualifier: "greater_than", limit: value };
   if (type === "LZ" || type === "RZ") {
-    assert.equal(value, 0, "Un cero lógico o regulador BEDCA contiene otro valor");
+    if (value !== 0) return { ...source, value: null, qualifier: "inconsistent_type" };
     return { ...source, value: 0, qualifier: type === "LZ" ? "logical_zero" : "regulatory_zero" };
   }
   return { ...source, value, qualifier: type === "X" ? "unknown_type" : "reported" };
@@ -130,6 +130,7 @@ export function convertBedcaSnapshot(snapshot) {
       observedUnits.get(measurement.c_id).add(measurement.v_unit);
       if (!knownExpressions.has(measurement.moex) || !knownExpressions.has(measurement.mu_id)) diagnostics.push({ code: "unlisted_expression", food_id: `bedca-${indexRow.f_id}`, position });
       if (!knownUnits.has(measurement.u_id)) diagnostics.push({ code: "unlisted_unit", food_id: `bedca-${indexRow.f_id}`, position });
+      if (value.qualifier === "inconsistent_type") diagnostics.push({ code: "inconsistent_value_type", food_id: `bedca-${indexRow.f_id}`, position });
       if (value.value !== null && value.value < 0) diagnostics.push({ code: "negative_source_value", food_id: `bedca-${indexRow.f_id}`, position });
       if (measurement.ref_id) {
         if (!references.has(measurement.ref_id)) references.set(measurement.ref_id, new Map());

@@ -122,6 +122,7 @@ conserva la diferencia entre media, mediana, estimación y otros métodos:
 | `MT` o `>` | `greater_than`, cantidad `null` y límite separado |
 | `BL` | `below_detection`, cantidad `null`, límite si está documentado |
 | `LZ` / `RZ` | Cero lógico / regulador, conservados como calificadores propios |
+| Tipo de cero con una cantidad distinta de cero, o límites contradictorios | `inconsistent_type`, cantidad `null` y diagnóstico; texto y tipo originales intactos |
 | `UD` | `undecidable`, cantidad `null` |
 | `X` con número | `unknown_type`, número con tipo de valor desconocido explícito |
 | Cadena vacía o `-` | `missing`, cantidad `null` |
@@ -131,6 +132,8 @@ no documentado o una discrepancia entre índice y ficha detienen la importación
 Los negativos presentes en la fuente se conservan y señalan en diagnósticos;
 no se corrigen silenciosamente. Los códigos de unidad o expresión no encontrados
 en los diccionarios se conservan con diagnóstico, sin inventar una equivalencia.
+Una contradicción entre el tipo y la cantidad se conserva como dato de origen
+inconsistente: no se sustituye por cero ni se utiliza como cantidad exacta.
 
 Una respuesta `<food/>` permanece en el índice como `availability: "empty"`,
 sin nutrientes inventados. Las referencias con diferentes textos para un mismo
