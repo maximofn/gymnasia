@@ -17,10 +17,15 @@ restricciones que impidan los usos autorizados por esa licencia.
 
 **Cambios de Gymnasia:** organización determinista de los XLSX en JSON, IDs con
 prefijo `bls-`, índices y páginas, unidades de microgramos representadas como `ug`,
-interpretación explícita de ausencias/trazas/límites y un índice editorial de las
-erratas oficiales. Los números, nombres y referencias originales se conservan;
-no se recalculan nutrientes ni se aplican correcciones de BLS 4.1. Esta copia no
-es una publicación oficial del MRI ni implica su respaldo a Gymnasia.
+interpretación explícita de ausencias/trazas/límites y aplicación trazable de las
+erratas oficiales de agosto de 2026. Se sustituyen los valores y marcadores
+publicados, se retira el término energético OLSAC duplicado sobre los valores ya
+redondeados y se invalidan cantidades afectadas sin sustituto verificable. Las
+cantidades efectivas pueden diferir del Excel; los originales completos se
+conservan en los XLSX y en el diario `corrections.json`. Las fórmulas originales
+se conservan junto a las corregidas. No es una publicación oficial de BLS 4.1 ni
+implica respaldo del MRI a Gymnasia. Véanse el README, el perfil de erratas y las
+limitaciones pendientes antes de usar estos datos para cálculos.
 
 Los datos se suministran tal como están, sin garantías de exactitud, integridad
 o adecuación para una finalidad concreta, conforme a la sección 5 de CC BY 4.0.

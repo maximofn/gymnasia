@@ -60,7 +60,11 @@
     "url": "https://www.blsdb.de/assets/uploads/Erratum_BLS_4_0_DE.pdf",
     "sha256": "ae021760436f1b6af09fd1df46e93b64d94e415f0a3b665e1d901cdee4ddd8c3",
     "edition": "2026-08",
-    "index_sha256": "2c125216a1bef0185957b4e0246d26bb54aa02038da27b66397ba81b5bc2ce7e",
-    "corrections_applied": false
+    "index_sha256": "d95ce666b5d688e76a2d37d94a65bf488cd0867001dbad899b92a401c198fdcb",
+    "plan_sha256": "e1441e78e4e3ba7184a9c892fcbe74e6c43c327e5200a2a810216c99b215bc18",
+    "application_profile": "gymnasia-bls4-errata-202608-v1",
+    "application_policy": "official_values_and_markers; published_energy_term_removal; explicit_pending_invalidations",
+    "name": "Erratum_BLS_4_0_DE.pdf",
+    "bytes": 767250
   }
 }

@@ -16,7 +16,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `apps/anthropic_proxy`: Proxy CORS para Anthropic (solo necesario cuando se ejecuta la app en el navegador del ordenador para depurar; en movil no se usa). Ver su `README.md`
 - `alimentos/`: Repositorio de alimentos (JSONs con datos nutricionales)
 - `alimentos/ciqual/`: Catálogo ANSES-CIQUAL 2025 con 3.484 fichas y 74 componentes; fuente, contrato e importación en [`alimentos/ciqual/README.md`](alimentos/ciqual/README.md)
-- `alimentos/bls/`: Catálogo MRI-BLS 4.0 con 7.140 fichas y 138 componentes bajo CC BY 4.0, XLSX oficiales, importación reproducible y avisos de erratas; todavía sin integración móvil. Ver [`alimentos/bls/README.md`](alimentos/bls/README.md).
+- `alimentos/bls/`: Catálogo MRI-BLS 4.0 con 7.140 fichas y 138 componentes bajo CC BY 4.0, XLSX oficiales, importación reproducible y erratas con originales y trazabilidad; todavía sin integración móvil. Ver [`alimentos/bls/README.md`](alimentos/bls/README.md).
 - `productos_comerciales/`: Repositorio de productos comerciales (JSONs con datos nutricionales)
 - `recetas/`: Repositorio de recetas (JSONs con datos nutricionales)
 - `ejercicios/`: Repositorio de ejercicios (JSONs + imagenes generadas)
@@ -132,7 +132,9 @@ npm run check:ciqual:mobile         # comprueba que la app consume esos mismos d
 El catálogo de [BLS 4.0](alimentos/bls/README.md) se mantiene separado de los
 catálogos móviles. Se reconstruye sin conexión desde los dos XLSX oficiales
 versionados y fijados por SHA-256. Conserva valores, procedencia y referencias,
-con un índice de las erratas oficiales sin aplicarlas silenciosamente.
+con correcciones oficiales, energía derivada e invalidaciones pendientes
+identificadas en un diario que conserva cada original y su evidencia. No es una
+entrega oficial BLS 4.1; véanse las limitaciones en su README.
 
 ```bash
 npm run import:bls  # genera fichas, páginas, diccionarios y manifiesto

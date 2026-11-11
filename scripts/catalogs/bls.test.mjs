@@ -8,7 +8,7 @@ import { zipSync, strToU8 } from "fflate";
 import fc from "fast-check";
 import { workbook, componentRows, foodRows } from "./__fixtures__/bls/synthetic.mjs";
 import { readBlsWorkbook, unzipBls } from "./bls-xlsx.mjs";
-import { blsRoot, blsSource, sha256, readBlsComponents, createBlsConverter, parseBlsValue, loadBlsSource, createBlsArtifacts, writeBlsArtifacts, checkBlsArtifacts, downloadBlsSource, assertBlsDirectories } from "./bls.mjs";
+import { blsRoot, blsSource, sha256, readBlsComponents, createBlsConverter, parseBlsValue, loadBlsOriginalSource, loadBlsSource, createBlsArtifacts, writeBlsArtifacts, checkBlsArtifacts, downloadBlsSource, assertBlsDirectories } from "./bls.mjs";
 
 async function temporary(t) {
   const root = await mkdtemp(join(tmpdir(), "gymnasia-bls-test-"));
@@ -202,22 +202,68 @@ test("el CLI BLS rechaza parámetros ambiguos, checks con red y directorios sola
   assert.throws(() => assertBlsDirectories("/tmp/source", "/tmp/source"));
 });
 
+test("el PDF de erratas se descarga con hash fijado, se reutiliza offline y rechaza alteraciones", async (t) => {
+  const root = await temporary(t);
+  const bytes = Buffer.from("synthetic official erratum");
+  const definition = { files: [], errata: { name: "erratum.pdf", url: "https://www.blsdb.de/erratum.pdf", sha256: sha256(bytes) } };
+  let calls = 0;
+  await downloadBlsSource(root, async (url) => { calls++; assert.equal(url, definition.errata.url); return new Response(bytes); }, definition);
+  assert.equal(calls, 1);
+  await downloadBlsSource(root, () => { throw new Error("No network"); }, definition);
+  await writeFile(join(root, "erratum.pdf"), "tampered");
+  await assert.rejects(() => downloadBlsSource(root, () => { throw new Error("No network"); }, definition), /alterado/);
+  const empty = await temporary(t);
+  await assert.rejects(() => downloadBlsSource(empty, async () => new Response("wrong document"), definition), /SHA-256 del erratum/);
+});
+
 test("la entrega BLS completa se reconstruye sin red desde los XLSX oficiales fijados", { timeout: 240000 }, async (t) => {
   const source = await loadBlsSource();
   const counts = await checkBlsArtifacts(source);
   assert.equal(counts.foods, 7140);
   assert.equal(counts.nutrients, 138);
   assert.equal(counts.measurements, 985320);
-  assert.equal(counts.qualifiers.missing, 110142);
+  assert.equal(counts.qualifiers.missing, 110100);
   assert.equal(counts.foods_with_warnings, 747);
   assert.equal(counts.qualifiers.trace, 1806);
   assert.equal(counts.qualifiers.below_detection_or_quantification, 392);
   const rows = new Map(source.foods.map((food) => [food.source.food_code, food]));
-  assert.equal(rows.get("M111100").nutrition_profiles[0].nutrients["bls-RETOL"].value, 414);
+  assert.equal(rows.get("M111100").nutrition_profiles[0].nutrients["bls-RETOL"].value, 2.4);
   assert.ok(rows.get("M111100").source_warning_ids.includes("bls-errata-202608-milk_retinol"));
-  assert.equal(rows.get("G322132").nutrition_profiles[0].nutrients["bls-ZN"].qualifier, "missing");
+  assert.equal(rows.get("G322132").nutrition_profiles[0].nutrients["bls-ZN"].qualifier, "below_quantification");
   assert.ok(rows.get("G322132").source_warning_ids.includes("bls-errata-202608-zinc_limits"));
   assert.ok(rows.get("T104100").source_warning_ids.includes("bls-errata-202608-anchovy_fat_energy"));
+  assert.equal(rows.get("T104100").nutrition_profiles[0].nutrients["bls-FAT"].value, null);
+  assert.deepEqual(source.errataApplication.counts, { applied: 69, derived: 822, pending: 950, measurement_changes: 1839, formula_changes: 2 });
+  assert.equal(counts.qualifiers.recomputed, 822);
+  assert.equal(counts.qualifiers.invalidated_by_erratum, 950);
+  const raw = await loadBlsOriginalSource();
+  const journal = new Map(source.corrections.map((entry) => [entry.id, entry]));
+  let compared = 0;
+  for (const food of raw.foods) {
+    const effective = rows.get(food.source.food_code);
+    assert.deepEqual(effective.source, food.source);
+    assert.deepEqual(effective.names, food.names);
+    assert.equal(effective.source_note, food.source_note);
+    for (const [code, original] of Object.entries(food.nutrition_profiles[0].nutrients)) {
+      const corrected = effective.nutrition_profiles[0].nutrients[code];
+      if (corrected.correction_id) {
+        assert.deepEqual(journal.get(corrected.correction_id).original, original);
+        for (const key of ["source_value", "source_type", "source_origin", "source_ref"]) assert.equal(corrected[key], original[key]);
+      } else assert.deepEqual(corrected, original);
+      compared++;
+    }
+  }
+  assert.equal(compared, 985320);
+  for (let i = 0; i < raw.nutrients.length; i++) assert.deepEqual(source.nutrients[i].source_fields, raw.nutrients[i].source_fields);
+  for (const ref of raw.references) assert.deepEqual(source.references.find((item) => item.id === ref.id), ref);
+  const manifest = JSON.parse(await readFile(join(blsRoot, "manifest.json")));
+  assert.equal(manifest.original_counts.qualifiers.missing, 110142);
+  assert.equal(manifest.original_counts.references, 2164);
+  const fattyAcids = raw.nutrients.filter((component) => component.source_fields["Component group"] === "Fatty acids").map((component) => component.source_code);
+  assert.equal(fattyAcids.length, 36);
+  assert.deepEqual(source.knownIssues.issues.find((issue) => issue.id.endsWith("anchovy_fat_energy")).component_codes, ["FAT", "ENERCJ", "ENERCC", ...fattyAcids]);
+  const byIssue = Object.groupBy(source.corrections.filter((entry) => entry.kind === "measurement"), (entry) => entry.issue_id);
+  assert.deepEqual(Object.values(byIssue).map((entries) => entries.length).sort((a, b) => a - b), [6, 21, 22, 53, 118, 134, 663, 822]);
   assert.equal(blsSource.license.id, "CC-BY-4.0");
   await downloadBlsSource(join(blsRoot, "source"), () => { throw new Error("No network in CI"); });
   const bad = await mkdtemp(join(tmpdir(), "gymnasia-bls-bad-"));

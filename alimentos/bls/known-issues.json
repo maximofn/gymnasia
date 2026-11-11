@@ -4,8 +4,7 @@
   "source_url": "https://www.blsdb.de/assets/uploads/Erratum_BLS_4_0_DE.pdf",
   "source_sha256": "ae021760436f1b6af09fd1df46e93b64d94e415f0a3b665e1d901cdee4ddd8c3",
   "edition": "2026-08",
-  "corrections_applied": false,
-  "method": "Índice editorial de códigos y componentes afectados, transcrito de secciones y anexos del erratum oficial. No modifica los valores originales de BLS 4.0.",
+  "method": "Índice editorial de códigos y componentes afectados, transcrito del erratum oficial. Las correcciones, derivaciones e invalidaciones se aplican mediante bls-errata-plan.json y quedan en corrections.json. El perfil graso de la sección 6.4 se mapea al grupo Fatty acids del diccionario oficial; esa selección de componentes es editorial.",
   "issues": [
     {
       "id": "bls-errata-202608-milk_retinol",
@@ -204,7 +203,7 @@
     },
     {
       "id": "bls-errata-202608-oligosaccharide_energy",
-      "summary_es": "Energía sobreestimada por doble cómputo de oligosacáridos; no recalculada.",
+      "summary_es": "Energía sobreestimada por doble cómputo de oligosacáridos; retirar el término duplicado según la sección 3.5.",
       "sections": "3; 7.4",
       "component_codes": [
         "ENERCJ",
@@ -689,7 +688,7 @@
     },
     {
       "id": "bls-errata-202608-zinc_limits",
-      "summary_es": "Celda de zinc vacía que el erratum identifica como límite analítico; original conservado como ausente.",
+      "summary_es": "Celdas de zinc vacías que el erratum identifica como límites analíticos.",
       "sections": "4.3; tabla 4",
       "component_codes": [
         "ZN"
@@ -833,12 +832,48 @@
     },
     {
       "id": "bls-errata-202608-anchovy_fat_energy",
-      "summary_es": "Grasa y energía de Sardelle roh y derivados pendientes de revisión; no recalculadas.",
+      "summary_es": "Grasa, energía y perfil de ácidos grasos de Sardelle roh y derivados afectados; sin cifra final oficial publicada.",
       "sections": "6; 7.7",
       "component_codes": [
         "FAT",
         "ENERCJ",
-        "ENERCC"
+        "ENERCC",
+        "FASAT",
+        "F4:0",
+        "F6:0",
+        "F8:0",
+        "F10:0",
+        "F12:0",
+        "F14:0",
+        "F15:0",
+        "F16:0",
+        "F17:0",
+        "F18:0",
+        "F20:0",
+        "F22:0",
+        "F24:0",
+        "FAMS",
+        "F14:1CN5",
+        "F16:1CN7",
+        "F18:1CN7",
+        "F18:1CN9",
+        "F20:1CN9",
+        "F22:1CN9",
+        "FAPU",
+        "FAPUN3",
+        "F18:3CN3",
+        "F18:4CN3",
+        "F20:5CN3",
+        "F22:5CN3",
+        "F22:6CN3",
+        "FAPUN6",
+        "F18:2CN6",
+        "F18:2C9T11",
+        "F18:3CN6",
+        "F20:2CN6",
+        "F20:3CN6",
+        "F20:4CN6",
+        "FAX"
       ],
       "food_codes": [
         "T104100",
@@ -860,5 +895,36 @@
         "X915233"
       ]
     }
-  ]
+  ],
+  "index_only": true,
+  "application": {
+    "profile_id": "gymnasia-bls4-errata-202608-v1",
+    "plan_sha256": "e1441e78e4e3ba7184a9c892fcbe74e6c43c327e5200a2a810216c99b215bc18",
+    "document_sha256": "ae021760436f1b6af09fd1df46e93b64d94e415f0a3b665e1d901cdee4ddd8c3",
+    "status": "applied_with_explicit_pending_values",
+    "counts": {
+      "applied": 69,
+      "derived": 822,
+      "pending": 950,
+      "measurement_changes": 1839,
+      "formula_changes": 2
+    },
+    "added_reference_ids": [
+      "bls-ref-d7969a96cbd283ee464dde4cc61eff6c626d02d0c0dbacfcd26f8d5dea76dd37"
+    ],
+    "original_reference_count": 2164,
+    "remaining_scope": [
+      {
+        "issue_id": "bls-errata-202608-zinc_limits",
+        "scope": "unlisted_dependent_recipes",
+        "reason": "La sección 4.3 anuncia revisar recetas que utilicen los ingredientes de zinc afectados, pero no enumera sus códigos ni publica el grafo de ingredientes. Este plan no atribuye afectación ni cifras nuevas a registros no identificados."
+      },
+      {
+        "issue_id": "bls-errata-202608-phenylalanine_zero",
+        "scope": "other_amino_acids_review",
+        "reason": "La sección 5.3 anuncia revisar otros aminoácidos, sin publicar una lista adicional ni valores de sustitución. Se conserva esa revisión pendiente sin declarar corregidos esos componentes."
+      }
+    ],
+    "not_an_official_bls_4_1_release": true
+  }
 }

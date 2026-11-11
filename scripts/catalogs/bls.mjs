@@ -5,6 +5,9 @@ import { dirname, join, resolve, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import Ajv from "ajv";
 import { readBlsWorkbook, unzipBls } from "./bls-xlsx.mjs";
+import { parseBlsValue } from "./bls-values.mjs";
+import { applyBlsErrata, validateBlsErrata } from "./bls-errata.mjs";
+export { parseBlsValue } from "./bls-values.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 export const blsRoot = resolve(here, "../../alimentos/bls");
@@ -15,28 +18,6 @@ export const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex"
 export const json = (value) => `${JSON.stringify(value, null, 2)}\n`;
 const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 const valueAt = (row, column) => row.get(column)?.value ?? null;
-const origins = new Set(["Analyse", "Rezeptberechnung", "Musterberechnung", "Literatur", "Aggregation", "Labelangabe", "Nährstoffdatenbank", "Übernommener Wert", "Reskalierung", "Logische Null", "Logische Annahme", "Spuren", "Formelberechnung", "-"]);
-
-export function parseBlsValue(raw, origin) {
-  assert.ok(raw === null || typeof raw === "string", "Valor BLS no textual");
-  assert.ok(origin === null || origins.has(origin), `Origen BLS no documentado: ${origin}`);
-  const text = raw?.trim() ?? "";
-  if (text === "" || text === "-") return { value: null, qualifier: "missing" };
-  if (text === "TR") return { value: null, qualifier: "trace" };
-  if (text === "<LOD") return { value: null, qualifier: "below_detection" };
-  if (text === "<LOQ") return { value: null, qualifier: "below_quantification" };
-  if (text === "<LOD or <LOQ") return { value: null, qualifier: "below_detection_or_quantification" };
-  const match = /^(<\s*)?(-?(?:\d+(?:[.,]\d+)?|[.,]\d+)(?:[eE][+-]?\d+)?)$/.exec(text);
-  assert.ok(match, `Notación BLS desconocida: ${JSON.stringify(text)}`);
-  const value = Number(match[2].replace(",", "."));
-  assert.ok(Number.isFinite(value), "Valor BLS no finito");
-  if (origin === "Logische Null") return value === 0 && !match[1]
-    ? { value: 0, qualifier: "logical_zero" } : { value: null, qualifier: "inconsistent_origin" };
-  if (match[1]) return { value: null, qualifier: "less_than", limit: value };
-  if (origin === "Spuren") return { value: null, qualifier: "trace" };
-  return { value, qualifier: "reported" };
-}
-
 const componentHeaders = ["Index", "Nährstoffcode / Component code", "Nährstoffbezeichnung", "Component name", "Einheit / Unit", "Nährstoffgruppe", "Component group", "Formeln / Formula", "Formelanwendung / Formula application"];
 
 export function readBlsComponents(bytes) {
@@ -130,7 +111,7 @@ export function createBlsConverter(components, knownIssues = { issues: [] }) {
   } };
 }
 
-export async function loadBlsSource(sourceDirectory = join(blsRoot, "source")) {
+export async function loadBlsOriginalSource(sourceDirectory = join(blsRoot, "source")) {
   const bytes = {};
   for (const file of blsSource.files) {
     assert.ok(!(await lstat(join(sourceDirectory, file.name))).isSymbolicLink(), "Symlink de fuente BLS no permitido");
@@ -147,6 +128,19 @@ export async function loadBlsSource(sourceDirectory = join(blsRoot, "source")) {
   const catalog = converter.finish();
   assert.equal(catalog.foods.length, blsSource.expected_foods);
   return catalog;
+}
+
+export async function loadBlsSource(sourceDirectory = join(blsRoot, "source")) {
+  const catalog = await loadBlsOriginalSource(sourceDirectory);
+  assert.ok(!(await lstat(join(sourceDirectory, blsSource.errata.name))).isSymbolicLink(), "Symlink de erratum BLS no permitido");
+  assert.equal(sha256(await readFile(join(sourceDirectory, blsSource.errata.name))), blsSource.errata.sha256, "SHA-256 del erratum BLS alterado");
+  const planBytes = await readFile(join(here, "bls-errata-plan.json"));
+  assert.equal(sha256(planBytes), blsSource.errata.plan_sha256, "Plan de correcciones BLS alterado");
+  const plan = JSON.parse(planBytes);
+  assert.equal(planBytes.toString("utf8"), json(plan), "Plan BLS no canónico");
+  const corrected = applyBlsErrata(catalog, plan);
+  corrected.errataPlan = plan;
+  return corrected;
 }
 
 async function atomicWrite(path, bytes) {
@@ -176,7 +170,19 @@ export async function downloadBlsSource(sourceDirectory, fetchImpl = fetch, defi
     try { assert.equal(sha256(await readFile(join(sourceDirectory, file.name))), file.sha256, `Fuente BLS existente alterada: ${file.name}`); }
     catch (error) { if (error.code !== "ENOENT") throw error; complete = false; }
   }
-  if (complete) return;
+  let erratum;
+  if (definition.errata?.name) {
+    try { assert.equal(sha256(await readFile(join(sourceDirectory, definition.errata.name))), definition.errata.sha256, "Erratum BLS existente alterado"); }
+    catch (error) {
+      if (error.code !== "ENOENT") throw error;
+      erratum = await fetchBytes(definition.errata.url, fetchImpl, 2 * 1024 * 1024);
+      assert.equal(sha256(erratum), definition.errata.sha256, "SHA-256 del erratum BLS distinto de la publicación fijada");
+    }
+  }
+  if (complete) {
+    if (erratum) await atomicWrite(join(sourceDirectory, definition.errata.name), erratum);
+    return;
+  }
   const page = (await fetchBytes(definition.download_page, fetchImpl, 1024 * 1024)).toString("utf8");
   // MRI encodes even '/', '_' and '.' as numeric HTML entities in hrefs.
   const decodeAttribute = (text) => text.replace(/&(#x[0-9a-f]+|#\d+|amp|quot|apos|lt|gt);/gi, (_, entity) => {
@@ -196,10 +202,13 @@ export async function downloadBlsSource(sourceDirectory, fetchImpl = fetch, defi
   assert.deepEqual(Object.keys(archive).filter((path) => !path.endsWith("/")).sort(), definition.archive.entries.map((entry) => entry.path).sort(), "Contenido ZIP BLS desconocido");
   for (const file of definition.files) assert.equal(sha256(archive[`${definition.archive.folder}/${file.name}`]), file.sha256, "Pin XLSX BLS incoherente");
   for (const file of definition.files) await atomicWrite(join(sourceDirectory, file.name), archive[`${definition.archive.folder}/${file.name}`]);
+  if (erratum) await atomicWrite(join(sourceDirectory, definition.errata.name), erratum);
 }
 
 export function createBlsArtifacts(catalog) {
+  if (catalog.errataApplication) validateBlsErrata(catalog, catalog.errataPlan);
   const artifacts = new Map();
+  const corrections = new Map((catalog.corrections ?? []).map((entry) => [entry.id, entry]));
   const counts = { foods: catalog.foods.length, nutrients: catalog.nutrients.length, references: catalog.references.length, measurements: 0, qualifiers: {}, origins: {}, foods_with_warnings: 0 };
   const nutrientIds = new Set(catalog.nutrients.map((nutrient) => nutrient.id));
   const referenceIds = new Set(catalog.references.map((reference) => reference.id));
@@ -217,7 +226,10 @@ export function createBlsArtifacts(catalog) {
     const values = food.nutrition_profiles[0].nutrients;
     assert.deepEqual(Object.keys(values), [...nutrientIds], `Componentes BLS incompletos: ${food.id}`);
     for (const value of Object.values(values)) {
-      assert.deepEqual(parseBlsValue(value.source_value, value.source_origin), Object.fromEntries(["value", "qualifier", "limit"].filter((key) => Object.hasOwn(value, key)).map((key) => [key, value[key]])), "Interpretación BLS alterada");
+      const original = value.correction_id ? corrections.get(value.correction_id)?.original : value;
+      assert.ok(original, "Original de corrección BLS ausente");
+      assert.deepEqual(parseBlsValue(original.source_value, original.source_origin), Object.fromEntries(["value", "qualifier", "limit"].filter((key) => Object.hasOwn(original, key)).map((key) => [key, original[key]])), "Interpretación original BLS alterada");
+      if (value.correction_id) assert.ok(referenceIds.has(value.effective_ref), "Referencia efectiva BLS rota");
       assert.ok(value.source_ref === null || referenceIds.has(value.source_ref), "Referencia BLS rota");
       counts.measurements++;
       counts.qualifiers[value.qualifier] = (counts.qualifiers[value.qualifier] ?? 0) + 1;
@@ -227,7 +239,7 @@ export function createBlsArtifacts(catalog) {
     for (const id of food.source_warning_ids) assert.ok(issueIds.has(id), "Aviso BLS desconocido");
     if (food.source_warning_ids.length) counts.foods_with_warnings++;
     artifacts.set(`foods/${food.id}.json`, `${JSON.stringify(food)}\n`);
-    index.push({ id: food.id, names: food.names, source: food.source, source_warning_ids: food.source_warning_ids, path: `foods/${food.id}.json` });
+    index.push({ id: food.id, names: food.names, source: food.source, source_warning_ids: food.source_warning_ids, ...(food.schema_version === 2 ? { errata_profile_id: food.errata_profile_id, errata_status: food.errata_status, correction_ids: food.correction_ids } : {}), path: `foods/${food.id}.json` });
   }
   const pages = [];
   for (let start = 0; start < catalog.foods.length; start += 100) {
@@ -240,9 +252,20 @@ export function createBlsArtifacts(catalog) {
   artifacts.set("pages.json", json(pages));
   artifacts.set("nutrients.json", json(catalog.nutrients));
   artifacts.set("references.json", json(catalog.references));
-  artifacts.set("known-issues.json", json(catalog.knownIssues));
+  artifacts.set("known-issues.json", json({ ...catalog.knownIssues, ...(catalog.errataApplication ? { application: catalog.errataApplication } : {}) }));
+  if (catalog.corrections) artifacts.set("corrections.json", json({ schema_version: 1, application: catalog.errataApplication, bibliography: catalog.errataPlan.bibliography, entries: catalog.corrections }));
+  const originalCounts = structuredClone(counts);
+  if (catalog.corrections) {
+    originalCounts.references = catalog.errataApplication.original_reference_count;
+    for (const entry of catalog.corrections) if (entry.kind === "measurement" && entry.original.qualifier !== entry.result.qualifier) {
+      originalCounts.qualifiers[entry.result.qualifier]--;
+      originalCounts.qualifiers[entry.original.qualifier] = (originalCounts.qualifiers[entry.original.qualifier] ?? 0) + 1;
+    }
+    for (const key of Object.keys(originalCounts.qualifiers)) if (originalCounts.qualifiers[key] === 0) delete originalCounts.qualifiers[key];
+  }
   artifacts.set("manifest.json", json({
-    schema_version: 1, source: blsSource, transformations: ["XLSX a JSON; textos originales y léxico numérico conservados", "Microgramos normalizados como ug; sin convertir cantidades ni bases", "Calificadores explícitos; sin imputación ni recálculo", "Índice de erratas separado; no se aplican correcciones de BLS 4.1"],
+    schema_version: catalog.errataApplication ? 2 : 1, source: blsSource, transformations: ["XLSX originales inmutables; textos y léxico numérico conservados", "Microgramos normalizados como ug; sin convertir cantidades ni bases", ...(catalog.errataApplication ? ["Correcciones oficiales y derivaciones energéticas identificadas en corrections.json", "Valores afectados sin sustitución verificable invalidados; originales completos en el diario; no es BLS 4.1 oficial"] : ["Conversión original sin aplicar erratas"])],
+    ...(catalog.errataApplication ? { errata_application: catalog.errataApplication, original_counts: originalCounts } : {}),
     localization: { official: ["de", "en"], spanish: "not_provided" },
     counts, nutrient_roles: { energy_kj: "bls-ENERCJ", energy_kcal: "bls-ENERCC", protein_crude_n625: "bls-PROT625", carbs_available: "bls-CHO", fat: "bls-FAT", fiber: "bls-FIBT" },
     files: Object.fromEntries([...artifacts].map(([path, bytes]) => [path, { bytes: Buffer.byteLength(bytes), sha256: sha256(bytes) }])),

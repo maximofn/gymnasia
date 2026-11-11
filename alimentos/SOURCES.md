@@ -13,10 +13,15 @@ de Gymnasia se comparten bajo la misma licencia, conservando la atribución del
 MRI y sin implicar su respaldo. Los XLSX originales y sus hashes se conservan.
 
 La transformación a JSON organiza las fichas, añade IDs estables, índices,
-páginas, calificadores explícitos y un índice editorial de erratas. No recalcula
-nutrientes, no imputa ausencias, no traduce nombres ni aplica correcciones de
-BLS 4.1. Los datos se ofrecen sin garantías; las 747 fichas afectadas por el
-erratum oficial de agosto de 2026 llevan avisos. No se integra todavía en la app.
+páginas y calificadores explícitos. Aplica las sustituciones y marcadores del
+[erratum oficial de agosto de 2026](https://www.blsdb.de/assets/uploads/Erratum_BLS_4_0_DE.pdf),
+deriva la energía retirando el término OLSAC duplicado de los valores publicados
+e invalida cantidades afectadas sin sustituto verificable. Los originales y la
+trazabilidad de cada cambio se conservan en `bls/corrections.json`, junto a su
+método, estado y evidencia. Son transformaciones de Gymnasia sobre BLS 4.0; no
+constituyen BLS 4.1 oficial. Hay 950 cantidades pendientes y dos ámbitos de
+revisión sin objetivos enumerados; véase el README. No se traduce ni se integra
+todavía en la app. Los datos se ofrecen sin garantías.
 
 ## ANSES-CIQUAL 2025
 

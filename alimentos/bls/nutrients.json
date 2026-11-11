@@ -23,7 +23,9 @@
       "ENERCJ Energie (Kilojoule) [kJ/100g]",
       "ENERCJ Datenherkunft",
       "ENERCJ Referenz"
-    ]
+    ],
+    "effective_formula": "ENERCJ[kJ] = PROT625[g]*17 + FAT[g]*37 + (CHO[g] - POLYL[g])*17 + FIBT[g]*8 + ALC[g]*29 + OA[g]*13 + POLYL[g]*10",
+    "formula_correction_id": "bls-correction-formula-ENERCJ"
   },
   {
     "id": "bls-ENERCC",
@@ -49,7 +51,9 @@
       "ENERCC Energie (Kilokalorien) [kcal/100g]",
       "ENERCC Datenherkunft",
       "ENERCC Referenz"
-    ]
+    ],
+    "effective_formula": "ENERCC[kcal] = PROT625[g]*4 + FAT[g]*9 + (CHO[g] - POLYL[g])*4 + FIBT[g]*2 + ALC[g]*7 + OA[g]*3 + POLYL[g]*2.4",
+    "formula_correction_id": "bls-correction-formula-ENERCC"
   },
   {
     "id": "bls-WATER",

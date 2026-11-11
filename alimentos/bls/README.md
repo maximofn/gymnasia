@@ -29,9 +29,9 @@ No hacen falta Python, Excel, proveedor de IA, claves, base de datos ni backend.
 El importador usa `fflate` 0.8.3 para leer ZIP y SAX estricto para OOXML, sin
 ejecutar las fórmulas de Excel o del diccionario ni abrir enlaces de las citas.
 
-Los XLSX originales se versionan en `source/` para garantizar la reproducción
-offline aunque cambie el servidor. Cada uno se comprueba por SHA-256 antes de
-parsearlo. No se descargan dependencias o datos durante el check ni en CI.
+Los XLSX originales y el PDF de erratas de agosto de 2026 se versionan en `source/` para garantizar la reproducción
+offline aunque cambie el servidor. Cada fuente se comprueba por SHA-256 antes de
+aplicar el plan de correcciones. No se descargan dependencias o datos durante el check ni en CI.
 
 Para recuperar una copia oficial nueva en una carpeta vacía y comprobarla contra
 la entrega publicada:
@@ -43,10 +43,11 @@ npm run check:bls -- --source-dir /tmp/bls-source --output-dir /tmp/bls-output
 
 `--download` obtiene un enlace temporal de la página oficial, limita la respuesta
 y comprueba el hash del ZIP completo y de sus tres entradas antes de escribir los
-dos XLSX. El PDF incluido en el ZIP se verifica, pero no se copia al catálogo.
+dos XLSX. Descarga también el PDF de erratas separado, fijado por su propio hash.
+El PDF de documentación incluido en el ZIP se verifica, pero no se copia al catálogo.
 No guarda tokens temporales, cookies, credenciales o fechas de ejecución en los
 artefactos. Una fuente existente alterada falla sin sustituirla. Si los dos XLSX
-ya son válidos, no consulta la red. No hay un flag para aceptar otra publicación:
+y el PDF de erratas ya son válidos, no consulta la red. No hay un flag para aceptar otra publicación:
 actualizar versión y hashes exige una revisión explícita del código y los datos.
 
 La fuente está fijada en `scripts/catalogs/bls-source.json`: ZIP, entradas, DOI,
@@ -57,20 +58,21 @@ verificada; no constituyen una firma oficial del editor.
 
 | Ruta | Contenido |
 | --- | --- |
-| `source/*.xlsx` | Los dos libros originales, sin modificaciones |
+| `source/*.xlsx`, `source/Erratum_BLS_4_0_DE.pdf` | Fuentes oficiales inmutables, verificadas por SHA-256 |
 | `foods/bls-<código>.json` | Una ficha completa por alimento |
 | `index.json` | IDs, nombres, fila de origen, avisos y ruta de cada ficha |
 | `pages.json`, `pages/NNNN.json` | Agregado completo en 72 páginas de hasta 100 fichas |
-| `nutrients.json` | 138 componentes, unidades, etiquetas, grupos y fórmulas originales |
-| `references.json` | 2.164 cadenas distintas de referencia; incluye el marcador `-` con cita nula |
-| `known-issues.json` | Índice editorial de las erratas oficiales, sin aplicar correcciones |
-| `manifest.json` | Fuente, licencia, transformaciones, contadores, roles y hashes de salida |
+| `nutrients.json` | 138 componentes, unidades, etiquetas, grupos, fórmulas originales y fórmulas energéticas corregidas |
+| `references.json` | 2.164 cadenas originales más la cita del erratum; incluye el marcador `-` con cita nula |
+| `known-issues.json` | Índice de afectados y resumen de aplicación del plan |
+| `corrections.json` | Diario de 1.841 cambios: original, resultado, método, evidencia y estado |
+| `manifest.json` | Fuente, licencia, perfil de erratas, contadores originales/efectivos y hashes de salida |
 
 El agregado se pagina para evitar un único JSON superior al límite de archivos de
 GitHub. Recorrer `pages.json` en su orden y concatenar los arrays da las mismas
 fichas ordenadas por ID que `foods/`. No se necesita un servidor de paginación.
 
-Las fichas son JSON compactos generados; no se editan manualmente. El esquema es
+Las fichas son JSON compactos generados; no se editan manualmente. El contrato de salida es la versión 2 de
 `scripts/catalogs/schemas/bls-food.schema.json`. El check también verifica que no
 falten ni sobren archivos de salida. El writer prepara cada archivo temporal y
 lo renombra; escribe el manifiesto al final. Una interrupción puede dejar una
@@ -94,8 +96,8 @@ Se niega a borrar archivos ajenos y a seguir symlinks de salida.
   ausente no se confunde con `-` o con cadena vacía. Los bytes originales de ambos
   libros permiten recuperar además estilos y demás representación OOXML.
 - La única normalización de unidad es `µg` a `ug`; la etiqueta y unidad originales
-  permanecen en el diccionario. No se convierten cantidades, no se redondean ni se
-  recalculan kcal. La base es **100 g comestibles**, también para bebidas; no 100 ml.
+  permanecen en el diccionario. No se convierten cantidades entre unidades. Las derivaciones
+  energéticas se identifican expresamente en el diario. La base es **100 g comestibles**, también para bebidas; no 100 ml.
 - `PROT625` es proteína calculada con N × 6,25; `CHO` son hidratos disponibles. Los
   roles del manifiesto no los equiparan automáticamente con proteínas Jones u
   otros métodos de otras bases de datos.
@@ -117,7 +119,7 @@ origen o una notación desconocidos detienen la importación. `reported` no sign
 «medido en laboratorio»: en esta copia hay muchas mediciones obtenidas mediante
 recetas, fórmulas u otros procedimientos, identificados en `source_origin`.
 
-## Erratas: original 4.0, sin correcciones silenciosas
+## Erratas aplicadas con originales y trazabilidad
 
 El [erratum oficial de agosto de 2026](https://www.blsdb.de/assets/uploads/Erratum_BLS_4_0_DE.pdf)
 documenta correcciones que el editor prevé incorporar a BLS 4.1. Incluye vitaminas
@@ -131,16 +133,79 @@ solapamientos. Se transcribieron las listas de los anexos 7.1–7.7 y la tabla 4
 los contadores de cada lista coinciden con el documento. Es un índice editorial
 de Gymnasia, no una nueva tabla oficial de composición.
 
-Cada ficha e índice enlaza sus `source_warning_ids`. `corrections_applied` es
-`false`: los valores de los XLSX siguen intactos. Por ejemplo, los seis límites
-de zinc que el erratum describe siguen ausentes en el Excel original, y se
-señalan como tales con el aviso específico. Los 53 vacíos de zinc restantes se
-señalan por separado. No se inventan cifras, no se interpreta un cero aparente de
-fenilalanina como certeza de ausencia ni se recalculan recetas afectadas.
+El perfil `gymnasia-bls4-errata-202608-v1` aplica las reglas declaradas en
+`scripts/catalogs/bls-errata-plan.json`, fijadas por hash en la fuente. Cada ficha
+e índice enlaza sus `source_warning_ids`, `correction_ids`, `errata_profile_id` y
+`errata_status` (`unaffected`, `corrected`, `partial` o `pending`).
 
-**Esta es una reproducción de BLS 4.0 con avisos, no un catálogo corregido.** Antes
-de integrarlo en los cálculos de la app se debe acordar y verificar cómo aplicar
-las erratas o actualizar a una entrega oficial que las incorpore.
+| Tratamiento | Cambios de medición |
+| --- | ---: |
+| Sustituciones numéricas oficiales de las tablas 1–3 | 8 |
+| Límites simbólicos de zinc de la tabla 4 | 6 |
+| Marcador de ausencia de zinc, sin inventar cantidades | 53 |
+| Energía derivada al retirar el término OLSAC duplicado | 822 |
+| Cantidades invalidadas pendientes de sustituto verificable | 950 |
+
+Además se registran dos correcciones de las fórmulas de energía del diccionario:
+**1.839 mediciones y dos fórmulas**, con estados `applied` (69, incluidas las dos
+fórmulas), `derived` (822) y `pending` (950).
+
+En las mediciones, `value`, `qualifier` y `limit` representan el resultado efectivo.
+Los campos `source_value`, `source_type`, `source_origin` y `source_ref` conservan
+**exactamente el original**, incluso cuando difiere del valor efectivo. Una
+medición corregida añade `effective_source_value`, `effective_origin`,
+`effective_ref` y `correction_id`. La referencia efectiva enlaza el erratum;
+`corrections.json` conserva también la bibliografía específica de la sustitución.
+El diario guarda la medición original completa, resultado, unidad, método, estado,
+sección, tabla cuando existe, páginas PDF (numeración desde 1), páginas impresas,
+URL y SHA-256 del documento. El calcio original de las almendras es 84,864 mg en
+Excel; el PDF lo muestra redondeado a 84,9. Se conservan ambos en el diario.
+
+Las fórmulas originales permanecen en `source_fields`; `effective_formula` y
+`formula_correction_id` identifican la corrección. No se ejecutan cadenas de
+fórmula. Para los 411 alimentos afectados se calcula por separado:
+
+- kJ efectivos = kJ publicados − 8 × OLSAC publicados en g.
+- kcal efectivas = kcal publicadas − 2 × OLSAC publicados en g.
+
+Es una **derivación algebraica de Gymnasia sobre cifras ya publicadas y
+redondeadas**, marcada `recomputed`, no el recálculo oficial de BLS 4.1 con insumos
+sin redondear. Se usa aritmética decimal sobre la representación decimal canónica
+de los números interpretados, conservando aparte el léxico OOXML original. No se
+redondea otra vez ni se imputan ceros a otros macronutrientes desconocidos. El
+diario identifica todos los insumos, coeficientes, resultado decimal y esta
+limitación de precisión. Una entrada energética o de OLSAC desconocida impediría
+la derivación.
+
+El PDF no publica cantidades suficientes para resolver numéricamente:
+
+- 169 mediciones de recetas dependientes de las leches o almendras, sin pesos de
+  ingredientes, rendimientos y factores de retención reproducibles.
+- 118 ceros aparentes de fenilalanina, sin correspondencia individual con cifra,
+  traza o ausencia.
+- 663 mediciones de anchoa y 16 derivados: grasa, las dos energías y los 36
+  componentes del grupo oficial de ácidos grasos. El editor anuncia revisar todo
+  ese perfil y sigue investigando el valor final de grasa. El mapeo de esa
+  revisión al grupo `Fatty acids` del diccionario es una selección editorial
+  explícita; el PDF no enumera los componentes uno por uno.
+
+Estas 950 cantidades quedan como `value: null`, `qualifier:
+invalidated_by_erratum`, con motivo pendiente y original recuperable. No se
+estiman proporciones de recetas, fenilalanina desde proteína, un punto medio de
+grasa ni un perfil graso escalado. El intervalo orientativo 2,3–6,3 g de grasa
+solo se documenta para T104100; no sustituye una cantidad ni se propaga como
+intervalo a las recetas.
+
+`remaining_scope` conserva dos revisiones anunciadas sin listado completo de
+objetivos: recetas adicionales dependientes del zinc y otros aminoácidos. No se
+declaran resueltas ni se asignan valores a alimentos no enumerados.
+
+**Es BLS 4.0 con una proyección explícita de erratas de Gymnasia, no una entrega
+oficial BLS 4.1 ni una resolución numérica completa de las erratas.**
+Los contadores `counts.qualifiers` son efectivos; `original_counts` reconstruye
+los contadores originales. `counts.origins` sigue describiendo `source_origin`,
+no los orígenes efectivos. La validación restaura desde el diario y vuelve a
+aplicar el plan: rechaza alteraciones y evita aplicar dos veces la resta energética.
 
 ## Alcance y pruebas
 
@@ -153,7 +218,10 @@ fuente/salida, XML truncado y DTD, fórmulas de Excel rechazadas, integridad de
 ZIP, unidades, referencias, errores HTTP, reutilización sin red, calificadores,
 propiedades numéricas y protección de archivos ajenos. Una prueba adicional
 reconstruye la entrega completa desde los XLSX versionados y compara todas las
-salidas. CI ejecuta `check:bls` y `test:catalogs` sin red ni claves para estos checks.
+salidas. Comprueba las 985.320 mediciones contra la conversión original,
+la conservación de fuentes y referencias, las ocho familias de erratas, límites,
+invalidaciones, aritmética decimal, idempotencia y manipulación del diario.
+CI ejecuta `check:bls` y `test:catalogs` sin red ni claves para estos checks.
 
 Revisión de privacidad: solo se descargan datos públicos durante mantenimiento.
 No se leen claves ni datos de usuarios, no hay llamadas a IA y la app no se
