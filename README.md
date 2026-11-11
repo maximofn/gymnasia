@@ -16,6 +16,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `apps/anthropic_proxy`: Proxy CORS para Anthropic (solo necesario cuando se ejecuta la app en el navegador del ordenador para depurar; en movil no se usa). Ver su `README.md`
 - `alimentos/`: Repositorio de alimentos (JSONs con datos nutricionales)
 - `alimentos/ciqual/`: Catálogo ANSES-CIQUAL 2025 con 3.484 fichas y 74 componentes; fuente, contrato e importación en [`alimentos/ciqual/README.md`](alimentos/ciqual/README.md)
+- `alimentos/bedca/`: Documentación del importador BEDCA. Sus XML y JSON reales permanecen en `.local/`, ignorada por Git, sin integración móvil ni redistribución mientras se aclaran las condiciones de uso. Ver [`alimentos/bedca/README.md`](alimentos/bedca/README.md).
 - `productos_comerciales/`: Repositorio de productos comerciales (JSONs con datos nutricionales)
 - `recetas/`: Repositorio de recetas (JSONs con datos nutricionales)
 - `ejercicios/`: Repositorio de ejercicios (JSONs + imagenes generadas)
@@ -127,6 +128,28 @@ npm run check:ciqual                # verifica los 3.484 alimentos sin red
 npm run sync:ciqual:mobile          # regenera la proyección integrada tras cambios
 npm run check:ciqual:mobile         # comprueba que la app consume esos mismos datos
 ```
+
+## Captura e importación BEDCA exclusivamente local
+
+El importador consulta la interfaz XML pública de BEDCA de forma secuencial y
+reanudable, conserva las peticiones y respuestas con SHA-256 y genera fichas,
+índices, diccionarios y manifiesto sin completar ni recalcular nutrientes.
+La captura se fija por sus hashes; no es una edición oficial descargable ni
+una instantánea transaccional del servidor. No necesita claves ni proveedores IA.
+
+```bash
+npm run import:bedca -- --download # captura o reanuda; genera solo en .local/
+npm run import:bedca              # reconstruye desde la misma captura, sin red
+npm run check:bedca               # comprueba hashes e igualdad exacta, sin red
+npm run test:bedca                # pruebas con datos inventados, sin red
+npm run check:bedca:publication   # detecta datos BEDCA añadidos a Git
+```
+
+Las condiciones de reutilización siguen pendientes: los datos reales no se
+incluyen en Git, artifacts de CI ni en la app. CI solo comprueba el código con
+fixtures sintéticas y la protección de publicación. La documentación del
+[importador BEDCA](alimentos/bedca/README.md) explica el formato y cómo fijar la
+huella de una captura concreta para reproducirla.
 
 ## Tests del agente
 

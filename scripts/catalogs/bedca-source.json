@@ -1,0 +1,15 @@
+{
+  "id": "aesan-bedca-v1",
+  "version": "1.0 (2010)",
+  "homepage": "https://www.bedca.net/bdpub/",
+  "endpoint": "https://www.bedca.net/bdpub/procquery.php",
+  "attribution": "AESAN/BEDCA Base de Datos Española de Composición de Alimentos v1.0 (2010)",
+  "license": {
+    "status": "pending",
+    "redistribution": "blocked",
+    "url": "https://www.bedca.net/bdpub/UsoBD.pdf"
+  },
+  "interval_ms": 2500,
+  "timeout_ms": 30000,
+  "max_response_bytes": 8388608
+}

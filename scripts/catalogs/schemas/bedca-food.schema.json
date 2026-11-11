@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ficha BEDCA local, no autorizada para redistribución",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "id", "kind", "names", "scientific_name", "source", "availability", "edible_fraction", "source_index", "source_fields", "nutrition_profiles"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "id": {"type": "string", "pattern": "^bedca-[0-9]+$"},
+    "kind": {"const": "generic"},
+    "names": {"type": "object", "additionalProperties": false, "required": ["es", "en"], "properties": {"es": {"type": "string", "minLength": 1}, "en": {"type": ["string", "null"]}}},
+    "scientific_name": {"type": ["string", "null"]},
+    "source": {"type": "object", "additionalProperties": false, "required": ["dataset_id", "food_code", "origin"], "properties": {"dataset_id": {"const": "aesan-bedca-v1"}, "food_code": {"type": "string", "pattern": "^[0-9]+$"}, "origin": {"type": "string"}}},
+    "availability": {"enum": ["available", "empty"]},
+    "edible_fraction": {"type": "object", "additionalProperties": false, "required": ["value", "source_value"], "properties": {"value": {"type": "number", "minimum": 0, "maximum": 1}, "source_value": {"type": "string"}}},
+    "source_index": {"$ref": "#/definitions/fields"},
+    "source_fields": {"$ref": "#/definitions/fields"},
+    "nutrition_profiles": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "expression_code", "basis", "measurements"], "properties": {
+      "id": {"type": "string"}, "expression_code": {"type": "string"},
+      "basis": {"enum": [null, {"amount": 100, "unit": "g", "portion": "edible"}]},
+      "measurements": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["component_id", "unit", "value_type", "source_position", "source_value", "value", "qualifier", "source_fields"], "properties": {
+        "component_id": {"type": "string", "pattern": "^bedca-[0-9]+$"}, "unit": {"type": "string"}, "value_type": {"type": "string"}, "source_position": {"type": "integer", "minimum": 0}, "source_value": {"type": "string"}, "value": {"type": ["number", "null"]},
+        "qualifier": {"enum": ["reported", "logical_zero", "regulatory_zero", "unknown_type", "trace", "missing", "undecidable", "below_detection", "less_than", "greater_than", "inconsistent_type"]},
+        "limit": {"type": "number"}, "source_fields": {"$ref": "#/definitions/fields"}
+      }, "allOf": [
+        {"if": {"properties": {"qualifier": {"enum": ["trace", "missing", "undecidable", "below_detection", "less_than", "greater_than", "inconsistent_type"]}}}, "then": {"properties": {"value": {"type": "null"}}}},
+        {"if": {"properties": {"qualifier": {"enum": ["reported", "logical_zero", "regulatory_zero", "unknown_type"]}}}, "then": {"properties": {"value": {"type": "number"}, "limit": false}}},
+        {"if": {"properties": {"qualifier": {"enum": ["less_than", "greater_than"]}}}, "then": {"required": ["limit"]}}
+      ]}}
+    }}}
+  },
+  "definitions": {"fields": {"type": "object", "additionalProperties": {"type": "string"}}}
+}
