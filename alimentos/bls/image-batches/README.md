@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**400/7.140 imágenes registradas; 6.740 pendientes; 5,60 %.**
+**500/7.140 imágenes registradas; 6.640 pendientes; 7,00 %.**
 
-Las tandas `0001`, `0002`, `0003` y `0004` contienen 100 imágenes cada una,
+Las tandas `0001`, `0002`, `0003`, `0004` y `0005` contienen 100 imágenes cada una,
 generadas con Codex integrado y revisadas visualmente. Consultar GitHub para el
 estado de sus PRs; `pending-review` no equivale a aprobación del mantenedor.
 No hay integración móvil.
@@ -20,6 +20,7 @@ No hay integración móvil.
 - [Tanda 0002: manifiesto y prompts](0002/manifest.json).
 - [Tanda 0003: manifiesto y prompts](0003/manifest.json).
 - [Tanda 0004: manifiesto y prompts](0004/manifest.json).
+- [Tanda 0005: manifiesto y prompts](0005/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -538,3 +539,150 @@ Las nueve hojas muestran todos los WebP finales revisados:
 | [bls-C534600](0004/bls-C534600.webp) | Cerealien extrudiert, gesüßt, divers gefüllt, angereichert mit Vitaminen und Mineralstoffen | Extruded cereals sweetened, variously filled, fortified with vitamins and minerals |
 | [bls-C537000](0004/bls-C537000.webp) | Weizenpops/Weizen gepufft, gesüßt | Wheat pops/wheat puffed, sweetened |
 | [bls-C538000](0004/bls-C538000.webp) | Müslimischung mit Trockenfrüchten, gesüßt | Muesli mix with dried fruit, sweetened |
+
+## Tanda 0005: bebidas vegetales, masas y repostería
+
+100 imágenes nuevas de cereales y aperitivos, extracto de malta, gluten seco,
+sustitutos de carne hidratados, fideos de arroz, bebidas vegetales, biscotes,
+masas crudas y horneadas, bases de bizcocho y tartas. Una imagen independiente
+por código, con nombres DE/EN literales y atribución de origen en el manifiesto.
+
+Las bebidas se muestran en vaso sin envase ni marca. La fortificación y las
+propiedades invisibles no se representan con símbolos. Las variantes aromatizadas
+sin sabor especificado mantienen una apariencia neutra. El extracto de malta
+se interpreta como jarabe por los 24,2 g de agua por 100 g de la ficha BLS; el
+gluten y su mezcla seca se muestran como polvo (8,2 y 8 g de agua), y los
+sustitutos hidratados como piezas. Estas inferencias visuales no cambian las fichas.
+
+Las masas respetan su estado crudo u horneado. Las bases no llevan relleno ni
+cobertura; los rollos de bizcocho sin rellenar muestran solo masa enrollada.
+En los pasteles se distinguen la masa quebrada, la masa batida y la masa con
+levadura, así como fruta, crumble, glaseado, crema y merengue cuando corresponden.
+La tarta de queso y manzana sin base no tiene corteza de galleta ni masa.
+
+Para interpretar nombres concretos se consultaron el
+[Spiegeleikuchen de la cocina de Dr. Oetker](https://www.oetker.de/rezepte/r/spiegeleikuchen),
+con albaricoque sobre crema; su
+[Holländer-Kirsch-Torte](https://www.oetker.de/rezepte/r/hollaender-kirsch-torte),
+con hojaldre, cereza y nata; y el material formativo de la asociación de panadería
+sobre [masa de almendrado (Makronenmasse)](https://www.back-dir-deine-zukunft.de/fileadmin/Dokumente/AzubiCampus_Skripte_DE/Makronenmasse.pdf).
+Son apoyos de interpretación editorial, no fuentes de imágenes ni recetas
+atribuidas a BLS. La Makronentorte usa una representación genérica de masa de
+almendra sobre masa quebrada, sin añadir frutas ni macarons franceses de colores.
+
+Los 100 WebP finales se revisaron en nueve hojas; seis casos se abrieron también
+a tamaño completo. No se necesitaron regeneraciones en esta tanda. Los prompts
+y hashes finales se conservan en el manifiesto.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0005-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0005-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0005-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0005-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0005-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0005-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0005-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0005-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0005-09.jpg)
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-C539100](0005/bls-C539100.webp) | Cerealien aus Vollkornweizenschrot, gesüßt, ungefüllt, Natur/Frucht/Schokolade | Wholemeal wheat cereals sweetened, unfilled, basic/fruit/chocolate |
+| [bls-C539200](0005/bls-C539200.webp) | Cerealien aus Vollkornweizenschrot, gesüßt, ungefüllt, Natur/Frucht/Schokolade, angereichert mit Vitaminen und Mineralstoffen | Wholemeal wheat cereals sweetened, unfilled, basic/fruit/chocolate, fortified with vitamins and minerals |
+| [bls-C546000](0005/bls-C546000.webp) | Tortillachips (Nachos) | Tortilla chips (Nachos) |
+| [bls-C549000](0005/bls-C549000.webp) | Gerstenmalzextrakt | Barley malt extract |
+| [bls-C551000](0005/bls-C551000.webp) | Weizenkleber/Weizengluten | Gluten (from wheat) |
+| [bls-C552000](0005/bls-C552000.webp) | Mehrkornflocken | Multigrain flakes |
+| [bls-C556000](0005/bls-C556000.webp) | Weizenglutenfertigmischung, Trockenprodukt | Wheat gluten mix, dried product |
+| [bls-C557000](0005/bls-C557000.webp) | Fleischersatz gluten-, milch- und sojahaltig | Meat substitute containing gluten, milk and soya |
+| [bls-C558000](0005/bls-C558000.webp) | Fleischersatz glutenhaltig (Seitan) | Meat substitute containing gluten (seitan) |
+| [bls-C559000](0005/bls-C559000.webp) | Reisnudeln roh | Rice noodles raw |
+| [bls-C559032](0005/bls-C559032.webp) | Reisnudeln gekocht | Rice noodles boiled |
+| [bls-C650000](0005/bls-C650000.webp) | Reisdrink ungesüßt | Rice drink unsweetened |
+| [bls-C650200](0005/bls-C650200.webp) | Reisdrink ungesüßt, angereichert mit Vitaminen und Calcium | Rice drink unsweetened, fortified with vitamins and calcium |
+| [bls-C660000](0005/bls-C660000.webp) | Haferdrink ungesüßt | Oat drink unsweetened |
+| [bls-C660200](0005/bls-C660200.webp) | Haferdrink ungesüßt, angereichert mit Vitaminen, Calcium und Jod | Oat drink unsweetened, fortified with vitamins, calcium and iodine |
+| [bls-C660300](0005/bls-C660300.webp) | Haferdrink gesüßt, aromatisiert | Oat drink sweetened, flavoured |
+| [bls-C660500](0005/bls-C660500.webp) | Haferdrink gesüßt, aromatisiert, angereichert mit Vitaminen, Calcium und Jod | Oat drink sweetened, flavoured, fortified with vitamins, calcium and iodine |
+| [bls-D011000](0005/bls-D011000.webp) | Backerbsen | Soup pearls |
+| [bls-D024000](0005/bls-D024000.webp) | Dinkelzwieback ungesüßt | Spelt rusk unsweetened |
+| [bls-D025000](0005/bls-D025000.webp) | Vollkornzwieback ungesüßt | Wholemeal rusk unsweetened |
+| [bls-D026000](0005/bls-D026000.webp) | Vollkornzwieback | Wholemeal rusk |
+| [bls-D032000](0005/bls-D032000.webp) | Nährzwieback | Fortified rusk |
+| [bls-D034000](0005/bls-D034000.webp) | Schokozwieback | Chocolate rusk |
+| [bls-D035000](0005/bls-D035000.webp) | Kokoszwieback | Coconut rusk |
+| [bls-D036000](0005/bls-D036000.webp) | Butterzwieback | Butter rusk |
+| [bls-D038000](0005/bls-D038000.webp) | Zwieback eifrei | Rusk egg-free |
+| [bls-D039000](0005/bls-D039000.webp) | Zwieback glutenfrei | Rusk gluten-free |
+| [bls-D041000](0005/bls-D041000.webp) | Erdnussflips | Peanut puffs |
+| [bls-D050000](0005/bls-D050000.webp) | Cracker | Crackers |
+| [bls-D064000](0005/bls-D064000.webp) | Salzbrezeln/Salzstangen (Laugendauergebäck) | Salted pretzels/pretzel sticks (snack) |
+| [bls-D071000](0005/bls-D071000.webp) | Ausbackteig (mit Milch) gesüßt, roh | Frying batter (with milk) sweetened, raw |
+| [bls-D072000](0005/bls-D072000.webp) | Blätterteig eifrei, roh | Puff pastry egg-free, raw |
+| [bls-D072062](0005/bls-D072062.webp) | Blätterteig eifrei, gebacken | Puff pastry egg-free, baked |
+| [bls-D073000](0005/bls-D073000.webp) | Brandmasse/Brandteig, roh | Choux pastry raw |
+| [bls-D076000](0005/bls-D076000.webp) | Ausbackteig (mit Bier) ungesüßt, roh | Frying batter (with beer) unsweetened, raw |
+| [bls-D077002](0005/bls-D077002.webp) | Biskuitboden | Sponge cake base |
+| [bls-D079000](0005/bls-D079000.webp) | Pizzateig (mit Hefe) roh | Pizza dough with yeast, raw |
+| [bls-D079062](0005/bls-D079062.webp) | Pizzateig (mit Hefe) gebacken | Pizza dough with yeast, baked |
+| [bls-D083000](0005/bls-D083000.webp) | Sachertortenboden | Sacher cake base |
+| [bls-D085000](0005/bls-D085000.webp) | Wiener Tortenboden (hell) | Viennese sponge cake base (light) |
+| [bls-D086000](0005/bls-D086000.webp) | Biskuitrolle/Biskuitroulade, ungefüllt | Sponge cake roll unfilled |
+| [bls-D087000](0005/bls-D087000.webp) | Schokobiskuitboden | Chocolate sponge cake base |
+| [bls-D088000](0005/bls-D088000.webp) | Wiener Tortenboden kakaohaltig (dunkel) | Viennese sponge cake base containing cocoa (dark) |
+| [bls-D089000](0005/bls-D089000.webp) | Schokobiskuitrolle/Schokobiskuitroulade, ungefüllt | Chocolate sponge cake roll unfilled |
+| [bls-D096000](0005/bls-D096000.webp) | Zwiebelkuchen mit Speck (Hefeteig) | Onion cake (yeast dough) with bacon |
+| [bls-D0A1000](0005/bls-D0A1000.webp) | Buchweizen-Wasserbiskuitboden | Buckwheat water sponge cake base |
+| [bls-D0A2000](0005/bls-D0A2000.webp) | Mandelbiskuitboden | Almond sponge cake base |
+| [bls-D0A2100](0005/bls-D0A2100.webp) | Schoko-Mandelbiskuitboden | Chocolate-almond sponge cake base |
+| [bls-D0A2200](0005/bls-D0A2200.webp) | Mandelboden (mit Eiklar zubereitet) | Almond cake base (prepared with egg white) |
+| [bls-D0A3000](0005/bls-D0A3000.webp) | Nussbiskuitboden | Nut sponge cake base |
+| [bls-D0A3100](0005/bls-D0A3100.webp) | Nuss-Wasserbiskuitboden | Nut water sponge cake base |
+| [bls-D0A3200](0005/bls-D0A3200.webp) | Nussboden (mit Eiklar zubereitet) | Nut cake base (prepared with egg white) |
+| [bls-D0A4000](0005/bls-D0A4000.webp) | Wasserbiskuitboden | Water sponge cake base |
+| [bls-D0A4100](0005/bls-D0A4100.webp) | Schoko-Wasserbiskuitboden | Chocolate water sponge cake base |
+| [bls-D0A5000](0005/bls-D0A5000.webp) | Hefeteig (einfacher) gebacken | Yeast dough (simple) baked |
+| [bls-D0A5100](0005/bls-D0A5100.webp) | Hefeteig (feiner) gebacken | Yeast dough (fine) baked |
+| [bls-D0A6000](0005/bls-D0A6000.webp) | Kuchenboden/Tortenboden (Mürbeteig, einfacher) | Cake base/torte base (shortcrust pastry, simple) |
+| [bls-D0A6100](0005/bls-D0A6100.webp) | Kuchenboden/Tortenboden, kakaohaltig (Mürbeteig, einfacher) | Cake base/torte base, containing cocoa (shortcrust pastry, simple) |
+| [bls-D0A7000](0005/bls-D0A7000.webp) | Kuchenboden/Tortenboden (Rührmasse) | Cake base/torte base (cake batter) |
+| [bls-D0A8000](0005/bls-D0A8000.webp) | Quicheboden (Mürbeteig) | Quiche base (shortcrust pastry) |
+| [bls-D130100](0005/bls-D130100.webp) | Apfelkuchen (Sandmasse) | Apple pie (sand cake batter) |
+| [bls-D131200](0005/bls-D131200.webp) | Apfelkuchen (Rührmasse) | Apple pie (cake batter) |
+| [bls-D132100](0005/bls-D132100.webp) | Spiegeleierkuchen (Rührmasse) | Apricot cheese cake (cake batter) |
+| [bls-D181300](0005/bls-D181300.webp) | Apfelkuchen gedeckt (Mürbeteig) | Covered apple sheet cake (shortcrust pastry) |
+| [bls-D187200](0005/bls-D187200.webp) | Apfel-Streuselkuchen (Mürbeteig) | Apple crumble tart (shortcrust pastry) |
+| [bls-D187300](0005/bls-D187300.webp) | Apfel-Streuselkuchen (Rührmasse) | Apple crumble tart (cake batter) |
+| [bls-D188400](0005/bls-D188400.webp) | Apfelkuchen gedeckt mit Mandelbelag (Mürbeteig) | Apple cake with bee sting cake topping (shortcrust pastry) |
+| [bls-D1A1000](0005/bls-D1A1000.webp) | Apfel-Streuselkuchen (Hefeteig) | Apple crumble cake (yeast dough) |
+| [bls-D1A1100](0005/bls-D1A1100.webp) | Apfelkuchen mit Puddingcreme (Hefeteig) | Apple cake with pudding (yeast dough) |
+| [bls-D1A1200](0005/bls-D1A1200.webp) | Rhabarber-Streuselkuchen (Hefeteig) | Rhubarb crumble cake (yeast dough) |
+| [bls-D1A1300](0005/bls-D1A1300.webp) | Zwetschgen-Streuselkuchen (Hefeteig) | Blue plum crumble cake (yeast dough) |
+| [bls-D1A2000](0005/bls-D1A2000.webp) | Aprikosenkuchen (Mürbeteig) mit Rahmguss | Apricot cake (shortcrust pastry) with cream topping |
+| [bls-D1A2100](0005/bls-D1A2100.webp) | Kirsch-Streuselkuchen (Mürbeteig) | Cherry crumble cake (shortcrust pastry) |
+| [bls-D1A2200](0005/bls-D1A2200.webp) | Kuchenboden (Mürbeteig) belegt mit Früchten, Pudding und Klarguss | Shortcrust pastry base with fruit, pudding and gelatin glaze |
+| [bls-D1A2300](0005/bls-D1A2300.webp) | Rhabarber-Streuselkuchen (Mürbeteig) | Rhubarb crumble cake (shortcrust pastry) |
+| [bls-D1A3000](0005/bls-D1A3000.webp) | Apfelkuchen (Quark-Öl-Teig) | Apple cake (quark oil dough) |
+| [bls-D1A3100](0005/bls-D1A3100.webp) | Zwetschgenkuchen (Quark-Öl-Teig) | Blue plum cake (quark oil dough) |
+| [bls-D1A4000](0005/bls-D1A4000.webp) | Apfelkuchen vegan (Rührmasse) | Apple cake vegan (cake batter) |
+| [bls-D1A4100](0005/bls-D1A4100.webp) | Kuchenboden (Rührmasse) belegt mit Früchten, Pudding und Klarguss | Cake base with fruit, pudding and gelatin glaze |
+| [bls-D1A4200](0005/bls-D1A4200.webp) | Stachelbeerkuchen (Rührmasse) mit Baiser | Gooseberry cake (cake batter) with meringue |
+| [bls-D200300](0005/bls-D200300.webp) | Erdbeerkuchen (Rührmasse) mit Klarguss | Strawberry cake (cake batter) with gelatin glaze |
+| [bls-D208700](0005/bls-D208700.webp) | Apfel-Quarktorte (ohne Boden) | Apple cheese torte (without cake base) |
+| [bls-D237100](0005/bls-D237100.webp) | Rhabarberkuchen (Rührmasse) mit Baiser | Rhubarb cake (cake batter) with meringue |
+| [bls-D238500](0005/bls-D238500.webp) | Aprikosen-Nuss-Torte (Rührmasse) | Apricot torte with nuts (cake batter) |
+| [bls-D281100](0005/bls-D281100.webp) | Kirschtorte (Mürbeteig und Rührmasse) | Cherry torte (shortcrust pastry and cake batter) |
+| [bls-D283000](0005/bls-D283000.webp) | Pfirsichtörtchen (Mürbeteig) mit Klarguss und Sahne | Peach tartlet (shortcrust pastry) with gelatin glaze and whipped cream |
+| [bls-D288100](0005/bls-D288100.webp) | Pfirsichtorte (Mürbeteig) mit Klarguss | Peach torte (shortcrust pastry) with gelatin glaze |
+| [bls-D288200](0005/bls-D288200.webp) | Apfeltorte gedeckt (Mürbeteig) | Covered apple torte (shortcrust pastry) |
+| [bls-D288300](0005/bls-D288300.webp) | Apfel-Mohntorte (Mürbeteig) | Poppy seed apple torte (shortcrust pastry) |
+| [bls-D2A1000](0005/bls-D2A1000.webp) | Himbeertörtchen (Mürbeteig) mit Sahne und Mandelblättchen | Raspberry tartlet (shortcrust pastry) with whipped cream and almond flakes |
+| [bls-D2A2000](0005/bls-D2A2000.webp) | Johannisbeertorte mit Baiser/Träublestorte (Mürbeteig) | Red currant torte (shortcrust pastry) with meringue |
+| [bls-D300200](0005/bls-D300200.webp) | Sachertorte (Rührmasse) | Sacher torte (cake batter) |
+| [bls-D300400](0005/bls-D300400.webp) | Nuss-Sahnetorte (Biskuit) | Nut cream torte (sponge cake) |
+| [bls-D300500](0005/bls-D300500.webp) | Linzer Torte (Mürbeteig) | Linzer torte (shortcrust pastry) |
+| [bls-D300600](0005/bls-D300600.webp) | Schwarzwälder Kirschtorte (Schokobiskuit) mit Alkohol | Black forest torte (chocolate sponge cake) with alcohol |
+| [bls-D301000](0005/bls-D301000.webp) | Marzipan-Walnuss-Sahnetorte (Biskuit und Mürbeteig) | Marzipan walnut torte (sponge cake and shortcrust pastry) |
+| [bls-D301300](0005/bls-D301300.webp) | Französische Schokoladentorte (Rührmasse) | French chocolate torte (cake batter) |
+| [bls-D302100](0005/bls-D302100.webp) | Makronentorte (Mürbeteig) | Macaroon torte (shortcrust pastry) |
+| [bls-D302200](0005/bls-D302200.webp) | Baiser-Schokosahnetorte (Mürbeteig) | Meringue chocolate cream torte (shortcrust pastry) |
+| [bls-D305000](0005/bls-D305000.webp) | Holländische Kirsch-Sahneschnitten/Kirsch-Sahnetorte (Blätterteig) | Dutch cherry cream torte/squares (puff pastry) |
