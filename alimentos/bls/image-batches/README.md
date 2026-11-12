@@ -9,15 +9,17 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**300/7.140 imágenes registradas; 6.840 pendientes; 4,20 %.**
+**400/7.140 imágenes registradas; 6.740 pendientes; 5,60 %.**
 
-Las tandas `0001`, `0002` y `0003` contienen 100 imágenes cada una, generadas con
-Codex integrado y revisadas visualmente. Consultar GitHub para el estado de sus
-PRs; `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
+Las tandas `0001`, `0002`, `0003` y `0004` contienen 100 imágenes cada una,
+generadas con Codex integrado y revisadas visualmente. Consultar GitHub para el
+estado de sus PRs; `pending-review` no equivale a aprobación del mantenedor.
+No hay integración móvil.
 
 - [Tanda 0001: manifiesto y prompts](0001/manifest.json).
 - [Tanda 0002: manifiesto y prompts](0002/manifest.json).
 - [Tanda 0003: manifiesto y prompts](0003/manifest.json).
+- [Tanda 0004: manifiesto y prompts](0004/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -400,3 +402,139 @@ Las nueve hojas muestran todos los WebP finales revisados:
 | [bls-C335000](0003/bls-C335000.webp) | Amaranth roh | Amaranth raw |
 | [bls-C335032](0003/bls-C335032.webp) | Amaranth gekocht | Amaranth boiled |
 | [bls-C341000](0003/bls-C341000.webp) | Mais roh | Maize raw |
+
+## Tanda 0004: arroz, harinas y cereales de desayuno
+
+100 imágenes nuevas de maíz, arroz, productos de molienda, muesli, cornflakes,
+polenta, cereales inflados, chocolate con arroz y tortitas de arroz y maíz.
+Cada código tiene su propia imagen y conserva ambos nombres oficiales completos.
+Las diferencias invisibles de fortificación, gluten, sal o grado de molienda
+no se representan con etiquetas ni símbolos.
+
+Los mueslis se muestran como mezcla seca, sin leche ni yogur. La fruta seca,
+los frutos secos, el chocolate, el glaseado y los rellenos solo aparecen cuando
+corresponden al nombre. Para las categorías con varios sabores o rellenos se
+usó una representación genérica de la categoría, sin afirmar una receta exacta.
+Las tortitas son discos de cereal inflado; las variantes de polenta respetan
+el estado cocido, horneado o dorado en sartén sin grasa adicional.
+
+Se regeneraron dos imágenes durante la revisión: `bls-C413000` para representar
+la harina fina de Grünkern, y `bls-C512000` para eliminar fruta seca de una mezcla
+que la excluye expresamente. El manifiesto conserva los motivos, la resolución,
+el prompt anterior y el SHA-256 del PNG anterior en `review.corrections`; cada
+entrada de `images` contiene el prompt y el hash de la imagen final revisada.
+
+Las nueve hojas muestran todos los WebP finales revisados:
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0004-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0004-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0004-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0004-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0004-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0004-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0004-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0004-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0004-09.jpg)
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-C341032](0004/bls-C341032.webp) | Mais gekocht | Maize boiled |
+| [bls-C341162](0004/bls-C341162.webp) | Mais gekocht, gebacken | Maize boiled, baked |
+| [bls-C346000](0004/bls-C346000.webp) | Mais Grieß | Maize semolina |
+| [bls-C346032](0004/bls-C346032.webp) | Mais Grieß, gekocht | Maize semolina, boiled |
+| [bls-C347000](0004/bls-C347000.webp) | Mais Grütze | Maize grits |
+| [bls-C347032](0004/bls-C347032.webp) | Mais Grütze, gekocht | Maize grits, boiled |
+| [bls-C350042](0004/bls-C350042.webp) | Reis poliert, geschmort ohne Fett | White rice braised without fat |
+| [bls-C350222](0004/bls-C350222.webp) | Reis poliert, gedämpft | White rice steamed |
+| [bls-C351000](0004/bls-C351000.webp) | Reis unpoliert, roh | Brown rice raw |
+| [bls-C351032](0004/bls-C351032.webp) | Reis unpoliert, gekocht | Brown rice boiled |
+| [bls-C351082](0004/bls-C351082.webp) | Reis unpoliert, gekocht, gebraten ohne Fett (Pfanne) | Brown rice boiled, fried without fat (pan) |
+| [bls-C352000](0004/bls-C352000.webp) | Reis poliert, roh | White rice raw |
+| [bls-C352032](0004/bls-C352032.webp) | Reis poliert, gekocht | White rice boiled |
+| [bls-C352082](0004/bls-C352082.webp) | Reis poliert, gekocht, gebraten ohne Fett (Pfanne) | White rice boiled, fried without fat (pan) |
+| [bls-C353100](0004/bls-C353100.webp) | Wildreis roh | Wild rice raw |
+| [bls-C353132](0004/bls-C353132.webp) | Wildreis gekocht | Wild rice boiled |
+| [bls-C353182](0004/bls-C353182.webp) | Wildreis gekocht, gebraten ohne Fett (Pfanne) | Wild rice boiled, fried without fat (pan) |
+| [bls-C354100](0004/bls-C354100.webp) | Reismischung mit Wildreis, roh | Rice mix with wild rice, raw |
+| [bls-C354132](0004/bls-C354132.webp) | Reismischung mit Wildreis, gekocht | Rice mix with wild rice, boiled |
+| [bls-C356000](0004/bls-C356000.webp) | Reis Grieß | Rice semolina |
+| [bls-C356032](0004/bls-C356032.webp) | Reis Grieß, gekocht | Rice grits, boiled |
+| [bls-C359000](0004/bls-C359000.webp) | Reis parboiled, poliert, roh | Rice parboiled, raw |
+| [bls-C359032](0004/bls-C359032.webp) | Reis parboiled, poliert, gekocht | Rice parboiled, boiled |
+| [bls-C359042](0004/bls-C359042.webp) | Reis parboiled, poliert, geschmort ohne Fett | Rice parboiled, braised without fat |
+| [bls-C359082](0004/bls-C359082.webp) | Reis parboiled, poliert, gekocht, gebraten ohne Fett (Pfanne) | Rice parboiled, boiled, fried without fat (pan) |
+| [bls-C412000](0004/bls-C412000.webp) | Grünkern Vollkornschrot | Green spelt coarse meal |
+| [bls-C412032](0004/bls-C412032.webp) | Grünkern Vollkornschrot, gekocht | Green spelt coarse meal, boiled |
+| [bls-C412182](0004/bls-C412182.webp) | Grünkern Vollkornschrot gekocht, gebraten ohne Fett (Pfanne) | Green spelt coarse meal, boiled, fried without fat (pan) |
+| [bls-C413000](0004/bls-C413000.webp) | Grünkern Vollkornmehl | Green spelt flour |
+| [bls-C414000](0004/bls-C414000.webp) | Mehlmischung eiweißarm, glutenfrei, natriumarm | Flour mix low protein, gluten-free, low sodium |
+| [bls-C414100](0004/bls-C414100.webp) | Mehlmischung glutenfrei | Flour mix gluten-free |
+| [bls-C415000](0004/bls-C415000.webp) | Mehlmischung für Brot glutenfrei | Flour mix for bread gluten-free |
+| [bls-C416000](0004/bls-C416000.webp) | Mehlmischung für Kuchen glutenfrei | Flour mix for cake gluten-free |
+| [bls-C421000](0004/bls-C421000.webp) | Buchweizen Vollkornmehl | Buckwheat wholemeal flour |
+| [bls-C422000](0004/bls-C422000.webp) | Buchweizen Schrot | Buckwheat coarse meal |
+| [bls-C422032](0004/bls-C422032.webp) | Buchweizen Schrot, gekocht | Buckwheat coarse meal, boiled |
+| [bls-C424000](0004/bls-C424000.webp) | Buchweizen Mehl | Buckwheat flour |
+| [bls-C432000](0004/bls-C432000.webp) | Hirse Schrot | Millet coarse meal |
+| [bls-C432032](0004/bls-C432032.webp) | Hirse Schrot, gekocht | Millet coarse meal, boiled |
+| [bls-C433000](0004/bls-C433000.webp) | Hirse Mehl | Millet flour |
+| [bls-C433100](0004/bls-C433100.webp) | Braunhirse Mehl | Brown millet flour |
+| [bls-C443000](0004/bls-C443000.webp) | Mais Mehl | Maize flour |
+| [bls-C446000](0004/bls-C446000.webp) | Mais Stärke | Maize starch |
+| [bls-C453000](0004/bls-C453000.webp) | Reis Mehl | Rice flour |
+| [bls-C456000](0004/bls-C456000.webp) | Reis Stärke | Rice starch |
+| [bls-C457000](0004/bls-C457000.webp) | Reis Kleie | Rice bran |
+| [bls-C492000](0004/bls-C492000.webp) | Mehrkornschrot | Grain mix coarse meal |
+| [bls-C492032](0004/bls-C492032.webp) | Mehrkornschrot gekocht | Grain mix coarse meal, boiled |
+| [bls-C492062](0004/bls-C492062.webp) | Mehrkornschrot gekocht, gebacken | Grain mix coarse meal, boiled, baked |
+| [bls-C492082](0004/bls-C492082.webp) | Mehrkornschrot gekocht, gebraten ohne Fett (Pfanne) | Grain mix coarse meal, boiled, fried without fat (pan) |
+| [bls-C512000](0004/bls-C512000.webp) | Müsli Basismischung (ohne Trockenfrüchte) ungesüßt | Muesli basic mix (without dried fruit) unsweetened |
+| [bls-C512300](0004/bls-C512300.webp) | Müslimischung mit Trockenfrüchten, ungesüßt | Muesli mix with dried fruit, unsweetened |
+| [bls-C512600](0004/bls-C512600.webp) | Müslimischung Bircher Art (mit Trockenfrüchten und Nüssen) ungesüßt | Muesli mix Bircher style (with dried fruit and nuts) unsweetened |
+| [bls-C512700](0004/bls-C512700.webp) | Müslimischung mit Trockenfrüchten, glutenfrei, gesüßt | Muesli mix with dried fruit, gluten-free, sweetened |
+| [bls-C512800](0004/bls-C512800.webp) | Müslimischung mit Schokolade, glutenfrei, gesüßt | Muesli mix with chocolate, gluten-free, sweetenend |
+| [bls-C513300](0004/bls-C513300.webp) | Müslimischung mit Schokolade, gesüßt | Muesli mix with chocolate, sweetened |
+| [bls-C514200](0004/bls-C514200.webp) | Knuspermüslimischung, klassisch, gesüßt | Crunchy muesli mix, classic, sweetened |
+| [bls-C514300](0004/bls-C514300.webp) | Knuspermüslimischung, klassisch, gesüßt, angereichert mit Vitaminen und Mineralstoffen | Crunchy muesli mix, classic, sweetened, fortified with vitamins and minerals |
+| [bls-C514400](0004/bls-C514400.webp) | Knuspermüslimischung mit Trockenfrüchten, gesüßt | Crunchy muesli mix with dried fruit, sweetened |
+| [bls-C514500](0004/bls-C514500.webp) | Knuspermüslimischung mit Trockenfrüchten, gesüßt, angereichert mit Vitaminen und Mineralstoffen | Crunchy muesli mix with dried fruit, sweetened, fortified with vitamins and minerals |
+| [bls-C514600](0004/bls-C514600.webp) | Knuspermüslimischung mit Schokolade, gesüßt | Crunchy muesli mix with chocolate, sweetened |
+| [bls-C514700](0004/bls-C514700.webp) | Knuspermüslimischung mit Schokolade, gesüßt, angereichert mit Vitaminen und Mineralstoffen | Crunchy muesli mix with chocolate, sweetened, fortified with vitamins and minerals |
+| [bls-C515000](0004/bls-C515000.webp) | Cornflakes gesüßt | Cornflakes sweetened |
+| [bls-C515100](0004/bls-C515100.webp) | Cornflakes gesüßt, angereichert mit Vitaminen | Cornflakes sweetened, fortified with vitamins |
+| [bls-C515200](0004/bls-C515200.webp) | Cornflakes gesüßt, mit Zuckerglasur und Erdnüssen, angereichert mit Vitaminen und Mineralstoffen | Cornflakes sweetened, sugar frosted, with peanuts, fortified with vitamins and minerals |
+| [bls-C515300](0004/bls-C515300.webp) | Cornflakes gesüßt, mit Zuckerglasur und Erdnüssen | Cornflakes sweetened, sugar frosted, with peanuts |
+| [bls-C515400](0004/bls-C515400.webp) | Cornflakes ungesüßt | Cornflakes unsweetened |
+| [bls-C515600](0004/bls-C515600.webp) | Cornflakes gesüßt, mit Zuckerglasur | Cornflakes sweetened, sugar frosted |
+| [bls-C518000](0004/bls-C518000.webp) | Popcorn gesalzen | Popcorn salty |
+| [bls-C519000](0004/bls-C519000.webp) | Popcorn gesüßt | Popcorn sweet |
+| [bls-C522000](0004/bls-C522000.webp) | Getreideflakes gesüßt | Cereal flakes sweetened |
+| [bls-C522100](0004/bls-C522100.webp) | Getreideflakes gesüßt, angereichert mit Vitaminen und Mineralstoffen | Cereal flakes sweetened, fortified with vitamins and minerals |
+| [bls-C522200](0004/bls-C522200.webp) | Getreideflakes gesüßt, mit Trockenfrüchten | Cereal flakes sweetened, with dried fruit |
+| [bls-C522300](0004/bls-C522300.webp) | Getreideflakes gesüßt, mit Trockenfrüchten, angereichert mit Vitaminen und Mineralstoffen | Cereal flakes sweetened, with dried fruit, fortified with vitamins and minerals |
+| [bls-C522400](0004/bls-C522400.webp) | Getreideflakes gesüßt, mit Nüssen | Cereal flakes sweetened, with nuts |
+| [bls-C522500](0004/bls-C522500.webp) | Getreideflakes gesüßt, mit Nüssen, angereichert mit Vitaminen und Mineralstoffen | Cereal flakes sweetened, with nuts, fortified with vitamins and minerals |
+| [bls-C522600](0004/bls-C522600.webp) | Getreideflakes gesüßt, mit Schokolade | Cereal flakes sweetened, with chocolate |
+| [bls-C522700](0004/bls-C522700.webp) | Getreideflakes gesüßt, mit Schokolade, angereichert mit Vitaminen und Mineralstoffen | Cereal flakes sweetened, with chocolate, fortified with vitamins and minerals |
+| [bls-C526000](0004/bls-C526000.webp) | Polenta (Maisgrieß mit Wasser, Fett und Salz) gekocht | Polenta (Maize semolina prepared with water, fat and salt) boiled |
+| [bls-C526062](0004/bls-C526062.webp) | Polenta (Maisgrieß mit Wasser, Fett und Salz) gekocht, gebacken | Polenta (Maize semolina prepared with water, fat and salt) boiled, baked |
+| [bls-C526082](0004/bls-C526082.webp) | Polenta (Maisgrieß mit Wasser, Fett und Salz) gekocht, gebraten ohne Fett (Pfanne) | Polenta (Maize semolina prepared with water, fat and salt) boiled, fried without fat (pan) |
+| [bls-C530100](0004/bls-C530100.webp) | Amaranth gepufft, ungesüßt | Amaranth puffed, unsweetened |
+| [bls-C530200](0004/bls-C530200.webp) | Quinoa gepufft, ungesüßt | Quinoa puffed, unsweetened |
+| [bls-C531000](0004/bls-C531000.webp) | Weizen gepufft, ungesüßt | Wheat puffed, unsweetened |
+| [bls-C532000](0004/bls-C532000.webp) | Reis gepufft, ungesüßt | Rice puffed, unsweetened |
+| [bls-C532100](0004/bls-C532100.webp) | Vollmilchschokolade mit Puffreis und Crispies | Whole milk chocolate with puffed rice and crispies |
+| [bls-C532200](0004/bls-C532200.webp) | Weiße Schokolade mit Puffreis und Crispies | White chocolate with puffed rice and crispies |
+| [bls-C532700](0004/bls-C532700.webp) | Reiswaffeln ungesalzen | Puffed rice waffles unsalted |
+| [bls-C532800](0004/bls-C532800.webp) | Reiswaffeln gesalzen | Puffed rice waffles salted |
+| [bls-C532900](0004/bls-C532900.webp) | Reiswaffeln schokoliert | Puffed rice waffles chocolate coated |
+| [bls-C533000](0004/bls-C533000.webp) | Popcorn ungesüßt | Popcorn unsweetened |
+| [bls-C533100](0004/bls-C533100.webp) | Maiswaffeln gesalzen | Puffed maize waffles salted |
+| [bls-C534100](0004/bls-C534100.webp) | Cerealien extrudiert, gesüßt, ungefüllt, mit Zimtgeschmack | Extruded cereals sweetened, unfilled, cinnamon flavoured |
+| [bls-C534200](0004/bls-C534200.webp) | Cerealien extrudiert, gesüßt, ungefüllt, mit Zimtgeschmack, angereichert mit Vitaminen und Mineralstoffen | Extruded cereals sweetened, unfilled, cinnamon flavoured, fortified with vitamins and minerals |
+| [bls-C534300](0004/bls-C534300.webp) | Cerealien extrudiert, gesüßt, ungefüllt, mit Frucht-/Honig-/Karamell-/Schokogeschmack | Extruded cereals sweetened, unfilled, fruit/honey/caramel/chocolate flavoured |
+| [bls-C534400](0004/bls-C534400.webp) | Cerealien extrudiert, gesüßt, ungefüllt, mit Frucht-/Honig-/Karamell-/Schokogeschmack, angereichert mit Vitaminen und Mineralstoffen | Extruded cereals sweetened, unfilled, fruit/honey/caramel/chocolate flavoured, fortified with vitamins and minerals |
+| [bls-C534500](0004/bls-C534500.webp) | Cerealien extrudiert, gesüßt, divers gefüllt | Extruded cereals sweetened, variously filled |
+| [bls-C534600](0004/bls-C534600.webp) | Cerealien extrudiert, gesüßt, divers gefüllt, angereichert mit Vitaminen und Mineralstoffen | Extruded cereals sweetened, variously filled, fortified with vitamins and minerals |
+| [bls-C537000](0004/bls-C537000.webp) | Weizenpops/Weizen gepufft, gesüßt | Wheat pops/wheat puffed, sweetened |
+| [bls-C538000](0004/bls-C538000.webp) | Müslimischung mit Trockenfrüchten, gesüßt | Muesli mix with dried fruit, sweetened |

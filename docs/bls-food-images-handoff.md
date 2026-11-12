@@ -5,28 +5,30 @@ BLS permanece independiente de la app. Sus datos y erratas se fusionaron en la
 permite generar imágenes con el enfoque visual y editorial de CIQUAL; no integra
 BLS en móvil ni publica una versión.
 
-## Estado acumulado (11 de noviembre de 2026)
+## Estado acumulado (12 de noviembre de 2026)
 
-- Tandas `0001`, `0002` y `0003`: **300/7.140 imágenes generadas y revisadas**.
-- Progreso: **4,20 %; 6.840 pendientes**. El catálogo completo aún no tiene imágenes.
-- Última entrega: tanda `0003`, 100 imágenes nuevas de cereales y productos de molienda;
-  manifiesto y prompts en `alimentos/bls/image-batches/0003/manifest.json`.
+- Tandas `0001`, `0002`, `0003` y `0004`: **400/7.140 imágenes generadas y revisadas**.
+- Progreso: **5,60 %; 6.740 pendientes**. El catálogo completo aún no tiene imágenes.
+- Última entrega: tanda `0004`, 100 imágenes nuevas de arroz, productos de molienda
+  y cereales de desayuno; manifiesto y prompts en
+  `alimentos/bls/image-batches/0004/manifest.json`.
 - Nueve hojas de revisión por tanda en `docs/testing/assets/bls-food-images-NNNN-*.jpg`.
-- Casos de la tanda `0003` abiertos a tamaño completo: `bls-C215000.webp`, `bls-C311000.webp`, `bls-C335032.webp`, `bls-C341000.webp`.
-- Regeneraciones de la tanda `0003`: 0. Los hashes revisados se conservan
-  en el manifiesto y las hojas muestran todos los WebP finales.
-- Primera tanda: [PR 456](https://github.com/maximofn/gymnasia/pull/456),
-  `alimentos/bls/image-batches/0001/manifest.json`. Segunda tanda:
-  [PR 458](https://github.com/maximofn/gymnasia/pull/458),
-  `alimentos/bls/image-batches/0002/manifest.json`. Ambas seguían abiertas al
-  comenzar la tercera; los checks de la segunda ya estaban superados.
+- Casos de la tanda `0004` abiertos a tamaño completo: `bls-C413000.webp`, `bls-C512000.webp`, `bls-C532100.webp`, `bls-C532900.webp`, `bls-C534500.webp`.
+- Regeneraciones de la tanda `0004`: 2. Se afinó la textura de la harina
+  `bls-C413000` y se retiró la fruta seca de `bls-C512000`, cuyo nombre la excluye.
+  El manifiesto conserva motivos, resolución, prompts anteriores y hashes de
+  PNG anteriores en `review.corrections`, además de prompts y hashes finales.
+- Tandas anteriores: [PR 456](https://github.com/maximofn/gymnasia/pull/456),
+  [PR 458](https://github.com/maximofn/gymnasia/pull/458) y
+  [PR 459](https://github.com/maximofn/gymnasia/pull/459). La tercera seguía
+  abierta al comenzar la cuarta, con sus checks superados.
 - Consultar GitHub para el estado actual. No hay integración móvil ni nueva versión.
 
 ## Flujo
 
-- Rama actual: `codex/bls-food-images-0003`, basada en `codex/bls-food-images-0002`
-  (PR 458, segunda tanda). Abrir la PR contra esa rama para mostrar solo la tanda
-  `0003`. Consultar las PRs antes de continuar; si cambia o se fusiona una base,
+- Rama actual: `codex/bls-food-images-0004`, basada en `codex/bls-food-images-0003`
+  (PR 459, tercera tanda). Abrir la PR contra esa rama para mostrar solo la tanda
+  `0004`. Consultar las PRs antes de continuar; si cambia o se fusiona una base,
   actualizar la base correspondiente y comprobar de nuevo diff y checks.
 - Tandas de hasta 100 imágenes nuevas, una por
   código pendiente, con PR revisable. Consultar GitHub al empezar; este documento
@@ -86,7 +88,7 @@ composición, propiedades nutricionales ni una ración de 100 g.
 
 Cada carpeta numerada admite solo WebP y `manifest.json`. Guardar planes,
 recibos, notas y hojas de contacto fuera de ella. Los checkpoints de cada
-tanda viven en `/tmp/gymnasia-bls-images-NNNN/` (`0001`, `0002` y `0003`): `plan.json`, un
+tanda viven en `/tmp/gymnasia-bls-images-NNNN/` (`0001`, `0002`, `0003` y `0004`): `plan.json`, un
 `bls-CODIGO.receipt.json` por alimento y `review/notes.json`, con hashes revisados.
 Los temporales son recuperación opcional; WebP, manifiesto, prompts y vistas
 revisables de la PR son los entregables duraderos.
