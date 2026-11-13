@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**800/7.140 imágenes registradas; 6.340 pendientes; 11,20 %.**
+**900/7.140 imágenes registradas; 6.240 pendientes; 12,61 %.**
 
-Las tandas `0001` a `0008` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0009` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -23,6 +23,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0006: manifiesto y prompts](0006/manifest.json).
 - [Tanda 0007: manifiesto y prompts](0007/manifest.json).
 - [Tanda 0008: manifiesto y prompts](0008/manifest.json).
+- [Tanda 0009: manifiesto y prompts](0009/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -1132,3 +1133,143 @@ El estado sigue siendo `pending-review` hasta la revisión del mantenedor.
 | [bls-D7A3000](0008/bls-D7A3000.webp) | Scones (britisches Kleingebäck) | Scones (British) |
 | [bls-D7A3100](0008/bls-D7A3100.webp) | Muffins vegan (Rührmasse) | Muffins vegan (cake batter) |
 | [bls-D7A4000](0008/bls-D7A4000.webp) | Käsewindbeutel (Brandmasse) gefüllt mit Frischkäsezubereitung | Salty cheese puff (choux pastry) filled with cream cheese |
+
+## Tanda 0009: bollería, masas integrales y huevos
+
+100 imágenes nuevas desde `bls-D7A5000` hasta `bls-E113100`: bollería de
+levadura, Berliner con distintos rellenos, Plunder, galletas rellenas y bañadas,
+masas y repostería integrales, huevos de codorniz y gallina, claras y yemas.
+Cada alimento tiene su propia generación integrada de Codex. El manifiesto
+conserva nombres oficiales DE/EN literales, prompt exacto, referencia, huella
+de nombres y SHA-256 del WebP final.
+
+Se distinguen las masas crudas, mates y sin corteza, de sus variantes horneadas.
+La bollería de levadura tiene miga de bollo; Plunder y hojaldre tienen capas
+laminadas. Los Berliner vacíos se muestran sin relleno y los rellenos, con corte.
+Las variantes integrales muestran salvado; no se usan símbolos para propiedades
+invisibles. Claras y yemas aparecen separadas cuando lo indica el nombre, y
+polvo fino y yema seca en escamas tienen texturas diferentes.
+
+Como apoyo editorial se consultaron [Franzbrötchen](https://www.oetker.de/rezepte/r/franzbroetchen)
+y [Kalter Hund](https://www.oetker.de/rezepte/r/kalter-hund) de Dr. Oetker y
+[Friesenkekse de Diamant](https://www.diamant-zucker.de/alle-rezepte/backen/kekse/friesenkekse).
+Estas recetas orientan formas genéricas; no sustituyen los nombres BLS ni
+acreditan ingredientes, alérgenos, composición o una ración de 100 g. No se
+copiaron sus fotografías. Las referencias CIQUAL se usan solo para el estilo.
+
+Revisión: todos los WebP finales en nueve láminas; 10 casos a tamaño completo.
+Correcciones registradas: 0. El estado sigue siendo `pending-review`
+hasta la revisión del mantenedor. BLS permanece fuera de la app.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0009-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0009-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0009-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0009-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0009-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0009-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0009-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0009-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0009-09.jpg)
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-D7A5000](0009/bls-D7A5000.webp) | Apfeltaschen (Hefeteig) | Turnover (yeast dough) filled with apples |
+| [bls-D7A5100](0009/bls-D7A5100.webp) | Nuss-Schnecken (Hefeteig) | Danish swirl (yeast dough) with nuts |
+| [bls-D7A5200](0009/bls-D7A5200.webp) | Puddingschnecken (Hefeteig) | Danish swirl (yeast dough) with pudding |
+| [bls-D7A5300](0009/bls-D7A5300.webp) | Zimtschnecken (Hefeteig) | Danish swirl (yeast dough) with cinnamon |
+| [bls-D7A5400](0009/bls-D7A5400.webp) | Milchbrötchen (Hefeteig) | Milk roll (yeast dough) |
+| [bls-D7A5500](0009/bls-D7A5500.webp) | Rosinenbrötchen (Hefeteig) | Roll with raisins (yeast dough) |
+| [bls-D7A5600](0009/bls-D7A5600.webp) | Schokobrötchen (Hefeteig) | Roll with chocolate chips (yeast dough) |
+| [bls-D7A6000](0009/bls-D7A6000.webp) | Berliner/Pfannkuchen/Krapfen (Hefeteig) frittiert, ungefüllt | "Berliner" doughnut (yeast dough) deep-fried, unfilled |
+| [bls-D7A6100](0009/bls-D7A6100.webp) | Berliner/Pfannkuchen/Krapfen (Hefeteig) frittiert, gefüllt mit Eierlikörcreme | "Berliner" doughnut (yeast dough) deep-fried, filled with egg liqueur cream |
+| [bls-D7A6200](0009/bls-D7A6200.webp) | Berliner/Pfannkuchen/Krapfen (Hefeteig) frittiert, gefüllt mit Konfitüre | "Berliner" doughnut (yeast dough) deep-fried, filled with jam |
+| [bls-D7A6300](0009/bls-D7A6300.webp) | Berliner/Pfannkuchen/Krapfen (Hefeteig) frittiert, gefüllt mit Nuss-Nougat-Creme | "Berliner" doughnut (yeast dough) deep-fried, filled with nut nougat cream |
+| [bls-D7A6400](0009/bls-D7A6400.webp) | Berliner/Pfannkuchen/Krapfen (Hefeteig) frittiert, gefüllt mit Pflaumenmus | "Berliner" doughnut (yeast dough) deep-fried, filled with plum jam |
+| [bls-D7A6500](0009/bls-D7A6500.webp) | Berliner/Pfannkuchen/Krapfen (Hefeteig) frittiert, gefüllt mit Pudding | "Berliner" doughnut (yeast dough) deep-fried, filled with pudding |
+| [bls-D7A6600](0009/bls-D7A6600.webp) | Quarkbällchen (Hefeteig) frittiert | Quark balls (yeast dough) deep-fried |
+| [bls-D7A6700](0009/bls-D7A6700.webp) | Langos (Hefeteig) frittiert, ungefüllt | Langos (yeast dough) deep-fried, unfilled |
+| [bls-D7A7000](0009/bls-D7A7000.webp) | Plunderteig roh | Danish pastry raw |
+| [bls-D7A7100](0009/bls-D7A7100.webp) | Plunderteig gebacken | Danish pastry baked |
+| [bls-D7A7200](0009/bls-D7A7200.webp) | Franzbrötchen (Plunderteig) | "Franzbrötchen" Danish pastry, filled with cinnamon-sugar |
+| [bls-D7A7300](0009/bls-D7A7300.webp) | Mohn-Plunder | Danish pastry with poppy seeds |
+| [bls-D7A7400](0009/bls-D7A7400.webp) | Pudding-Plunder | Danish pastry with pudding |
+| [bls-D7A7410](0009/bls-D7A7410.webp) | Pudding-Frucht-Plunder | Danish pastry with pudding and fruit |
+| [bls-D7A7420](0009/bls-D7A7420.webp) | Pudding-Plunder belegt mit Früchten und Klarguss | Danish pastry with pudding, fruit and gelatin glaze |
+| [bls-D7A7430](0009/bls-D7A7430.webp) | Pudding-Plunder belegt mit Früchten, Klarguss und Sahne | Danish pastry with pudding, fruit, gelatin glaze and whipped cream |
+| [bls-D7A7500](0009/bls-D7A7500.webp) | Quark-Plunder | Danish pastry with quark |
+| [bls-D7A7510](0009/bls-D7A7510.webp) | Quark-Frucht-Plunder | Danish pastry with quark and fruit |
+| [bls-D7A7600](0009/bls-D7A7600.webp) | Schoko-Plunder | Danish pastry with chocolate |
+| [bls-D7A7700](0009/bls-D7A7700.webp) | Kalter Hund (Kekskuchen ohne Backen) | "Kalter Hund" biscuits cake without baking |
+| [bls-D7A7800](0009/bls-D7A7800.webp) | Apfeltasche (Blätterteig) | Turnover (puff pastry) filled with apples |
+| [bls-D7A7810](0009/bls-D7A7810.webp) | Kirschtasche (Blätterteig) | Turnover (puff pastry) filled with cherries |
+| [bls-D7B1000](0009/bls-D7B1000.webp) | Buttergebäck (Mürbeteig) mit Cremefüllung | Butter biscuits (shortcrust pastry) with cream filling |
+| [bls-D7B1100](0009/bls-D7B1100.webp) | Buttergebäck kakaohaltig (Mürbeteig) | Butter biscuits containing cocoa (shortcrust pastry) |
+| [bls-D7B2000](0009/bls-D7B2000.webp) | Butterkekse/Butterplätzchen (Mürbeteig) mit Nougatfüllung | Shortbread biscuits with nougat filling |
+| [bls-D7B2100](0009/bls-D7B2100.webp) | Butterkekse/Butterplätzchen (Mürbeteig) mit Nougatfüllung, schokoliert | Shortbread biscuits with nougat filling and chocolate icing |
+| [bls-D7B3000](0009/bls-D7B3000.webp) | Butterkekse/Butterplätzchen, kakaohaltig (Mürbeteig) | Shortbread biscuits, containing cocoa |
+| [bls-D7B3100](0009/bls-D7B3100.webp) | Butterkekse/Butterplätzchen, kakaohaltig (Mürbeteig) mit Nougatfüllung | Shortbread biscuits, containing cocoa, with nougat filling |
+| [bls-D7B3200](0009/bls-D7B3200.webp) | Butterkekse/Butterplätzchen, kakaohaltig (Mürbeteig) mit Nougatfüllung, schokoliert | Shortbread biscuits, containing cocoa, with nougat filling and chocolate icing |
+| [bls-D7B4000](0009/bls-D7B4000.webp) | Friesenkekse (Mürbeteig) | "Friesenkekse" biscuits (shortrcrust pastry) |
+| [bls-D7B5000](0009/bls-D7B5000.webp) | Kekse/Plätzchen, kakaohaltig (Rührmasse) | Biscuits, containig cocoa (cake batter) |
+| [bls-D7B5100](0009/bls-D7B5100.webp) | Kekse/Plätzchen, kakaohaltig (Rührmasse) schokoliert | Biscuits, containig cocoa (cake batter) with chocolate icing |
+| [bls-D7B5200](0009/bls-D7B5200.webp) | Kekse/Plätzchen, kakaohaltig (Rührmasse) mit Nougatfüllung | Biscuits, containig cocoa (cake batter) with nougat filling |
+| [bls-D7B5300](0009/bls-D7B5300.webp) | Kekse/Plätzchen, kakaohaltig (Rührmasse) mit Nougatfüllung, schokoliert | Biscuits, containig cocoa (cake batter) with nougat filling and chocolate icing |
+| [bls-D7B6000](0009/bls-D7B6000.webp) | Mürbchen (Mürbeteig) schokoliert | Shortcrust pastry biscuit with chocolate icing |
+| [bls-D7B6100](0009/bls-D7B6100.webp) | Mürbchen (Mürbeteig) mit Nougatfüllung | Shortcrust pastry biscuit with nougat filling |
+| [bls-D7B6200](0009/bls-D7B6200.webp) | Mürbchen (Mürbeteig) mit Nougatfüllung, schokoliert | Shortcrust pastry biscuit with nougat filling and chocolate icing |
+| [bls-D7B7000](0009/bls-D7B7000.webp) | Nuss-Spritzgebäck (Rührmasse) schokoliert | Nut spritz biscuits (cake batter) with chocolate icing |
+| [bls-D7B7100](0009/bls-D7B7100.webp) | Nuss-Spritzgebäck (Rührmasse) mit Nougatfüllung | Nut spritz biscuits (cake batter) with nougat filling |
+| [bls-D7B7200](0009/bls-D7B7200.webp) | Nuss-Spritzgebäck (Rührmasse) mit Nougatfüllung, schokoliert | Nut spritz biscuits (cake batter) with nougat filling and chocolate icing |
+| [bls-D7B8000](0009/bls-D7B8000.webp) | Spritzgebäck (Rührmasse) | Spritz biscuits (cake batter) |
+| [bls-D7B8100](0009/bls-D7B8100.webp) | Spritzgebäck (Rührmasse) schokoliert | Spritz biscuits (cake batter) with chocolate icing |
+| [bls-D7B8200](0009/bls-D7B8200.webp) | Spritzgebäck (Rührmasse) mit Nougatfüllung | Spritz biscuits (cake batter) with nougat filling |
+| [bls-D7B8300](0009/bls-D7B8300.webp) | Spritzgebäck (Rührmasse) mit Nougatfüllung, schokoliert | Spritz biscuits (cake batter) with nougat filling and chocolate icing |
+| [bls-D9A1000](0009/bls-D9A1000.webp) | Vollkornblätterteig eifrei, roh | Wholemeal puff pastry egg-free, raw |
+| [bls-D9A1100](0009/bls-D9A1100.webp) | Vollkornblätterteig eifrei, gebacken | Wholemeal puff pastry egg-free, baked |
+| [bls-D9A2000](0009/bls-D9A2000.webp) | Vollkornhefeteig süß roh | Wholemeal yeast dough, sweetened, raw |
+| [bls-D9A2100](0009/bls-D9A2100.webp) | Vollkornhefeteig süß gebacken | Wholemeal yeast dough, sweetened, baked |
+| [bls-D9A2200](0009/bls-D9A2200.webp) | Apfel-Streuselkuchen (Vollkornhefeteig) | Wholemeal apple crumble cake (yeast dough) |
+| [bls-D9A2300](0009/bls-D9A2300.webp) | Käsekuchen (Vollkornhefeteig) | Wholemeal cheesecake (yeast dough) |
+| [bls-D9A2400](0009/bls-D9A2400.webp) | Stollen (Vollkornhefeteig) | Wholemeal yeast stollen |
+| [bls-D9A2500](0009/bls-D9A2500.webp) | Vollkornhefezopf | Wholemeal braided yeast bread |
+| [bls-D9A3000](0009/bls-D9A3000.webp) | Vollkornmürbeteig süß roh | Wholemeal shortcrust pastry, sweetened, raw |
+| [bls-D9A3100](0009/bls-D9A3100.webp) | Vollkornmürbeteig süß gebacken | Wholemeal shortcrust pastry, sweetened, baked |
+| [bls-D9A3200](0009/bls-D9A3200.webp) | Apfelkuchen gedeckt (Vollkornmürbeteig) | Wholemeal apple pie (shortcrust pastry) |
+| [bls-D9A3300](0009/bls-D9A3300.webp) | Käsekuchen (Vollkornmürbeteig) | Wholemeal cheesecake (shortcrust pastry) |
+| [bls-D9A4000](0009/bls-D9A4000.webp) | Vollkornplunderteig roh | Wholemeal Danish pastry dough, raw |
+| [bls-D9A4100](0009/bls-D9A4100.webp) | Vollkornplunderteig gebacken | Wholemeal Danish pastry dough, baked |
+| [bls-D9A4200](0009/bls-D9A4200.webp) | Marzipan-Vollkornplunder | Wholemeal Danish pastry with marzipan |
+| [bls-D9A4300](0009/bls-D9A4300.webp) | Mohn-Vollkornplunder | Wholemeal Danish pastry with poppy seed |
+| [bls-D9A4400](0009/bls-D9A4400.webp) | Pudding-Vollkornplunder | Wholemeal Danish pastry with pudding |
+| [bls-D9A4500](0009/bls-D9A4500.webp) | Pudding-Frucht-Vollkornplunder | Wholemeal Danish pastry with pudding and fruit |
+| [bls-D9A4600](0009/bls-D9A4600.webp) | Pudding-Vollkornplunder belegt mit Früchten und Klarguss | Wholemeal Danish pastry with pudding, fruit and gelatin glaze |
+| [bls-D9A4700](0009/bls-D9A4700.webp) | Quark-Vollkornplunder | Wholemeal Danish pastry with quark |
+| [bls-D9A4800](0009/bls-D9A4800.webp) | Quark-Frucht-Vollkornplunder | Wholemeal Danish pastry with quark and fruit |
+| [bls-D9A4900](0009/bls-D9A4900.webp) | Vollkorncroissant (Plunderteig) | Wholemeal Danish pastry croissant |
+| [bls-D9A5000](0009/bls-D9A5000.webp) | Vollkornhaselnusskuchen (Rührmasse) | Wholemeal hazelnut cake (cake batter) |
+| [bls-D9A5100](0009/bls-D9A5100.webp) | Vollkorn-Marmorkuchen (Rührmasse) | Wholemeal marble cake (cake batter) |
+| [bls-D9A5200](0009/bls-D9A5200.webp) | Vollkornsandkuchen (Rührmasse) | Wholemeal sand cake |
+| [bls-D9A5300](0009/bls-D9A5300.webp) | Vollkorn-Schoko-Mandelkuchen (Rührmasse) | Wholemeal chocolate almond cake (cake batter) |
+| [bls-D9B1000](0009/bls-D9B1000.webp) | Butterkekse/Butterplätzchen, kakaohaltig (Vollkornmürbeteig) | Wholemeal shortbread biscuits, containing cocoa |
+| [bls-D9B1100](0009/bls-D9B1100.webp) | Butterkekse/Butterplätzchen, kakaohaltig (Vollkornmürbeteig) mit Nougatfüllung | Wholemeal shortbread biscuits, containing cocoa, with nougat filling |
+| [bls-D9B1200](0009/bls-D9B1200.webp) | Kekse/Plätzchen (Vollkornmürbeteig) mit Nougatfüllung | Wholemeal biscuits (shortcrust pastry) with nougat filling |
+| [bls-D9B1300](0009/bls-D9B1300.webp) | Kekse/Plätzchen (Vollkornmürbeteig) mit Nougatfüllung, schokoliert | Wholemeal biscuits (shortcrust pastry) with nougat filling and chocolate icing |
+| [bls-D9B1400](0009/bls-D9B1400.webp) | Müslikekse/Müsliplätzchen (Vollkornmürbeteig) schokoliert | Wholemeal muesli biscuits (shortcrust pastry) with chocolate icing |
+| [bls-D9B1500](0009/bls-D9B1500.webp) | Schoko-Müslikekse/Schoko-Müsliplätzchen (Vollkornmürbeteig) | Wholemeal chocolate muesli biscuits (shortcrust pastry) |
+| [bls-E101132](0009/bls-E101132.webp) | Wachtelei gekocht | Quail egg boiled |
+| [bls-E105182](0009/bls-E105182.webp) | Wachtelei gebraten ohne Fett (Pfanne) | Quail egg fried without fat (pan) |
+| [bls-E106100](0009/bls-E106100.webp) | Wachtelei roh | Quail egg raw |
+| [bls-E107122](0009/bls-E107122.webp) | Hühnerei pochiert | Chicken egg poached |
+| [bls-E108122](0009/bls-E108122.webp) | Hühnerei Eiklar, pochiert | Chicken egg white, poached |
+| [bls-E111100](0009/bls-E111100.webp) | Hühnerei roh | Chicken egg raw |
+| [bls-E111132](0009/bls-E111132.webp) | Hühnerei gekocht | Chicken egg boiled |
+| [bls-E111162](0009/bls-E111162.webp) | Hühnerei gebacken | Chicken egg baked |
+| [bls-E111182](0009/bls-E111182.webp) | Hühnerei gebraten ohne Fett (Pfanne) | Chicken egg fried without fat (pan) |
+| [bls-E111500](0009/bls-E111500.webp) | Hühnerei Pulver | Chicken egg powder |
+| [bls-E112100](0009/bls-E112100.webp) | Hühnerei Eigelb, roh | Chicken egg yolk, raw |
+| [bls-E112132](0009/bls-E112132.webp) | Hühnerei Eigelb, gekocht | Chicken egg yolk, boiled |
+| [bls-E112162](0009/bls-E112162.webp) | Hühnerei Eigelb, gebacken | Chicken egg yolk, baked |
+| [bls-E112182](0009/bls-E112182.webp) | Hühnerei Eigelb, gebraten ohne Fett (Pfanne) | Chicken egg yolk, fried without fat (pan) |
+| [bls-E112400](0009/bls-E112400.webp) | Hühnerei Eigelb, getrocknet | Chicken egg yolk, dried |
+| [bls-E112500](0009/bls-E112500.webp) | Hühnerei Eigelb, Pulver | Chicken egg yolk, powder |
+| [bls-E113100](0009/bls-E113100.webp) | Hühnerei Eiklar, roh | Chicken egg white, raw |
