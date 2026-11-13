@@ -9,18 +9,18 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**500/7.140 imágenes registradas; 6.640 pendientes; 7,00 %.**
+**600/7.140 imágenes registradas; 6.540 pendientes; 8,40 %.**
 
-Las tandas `0001`, `0002`, `0003`, `0004` y `0005` contienen 100 imágenes cada una,
-generadas con Codex integrado y revisadas visualmente. Consultar GitHub para el
-estado de sus PRs; `pending-review` no equivale a aprobación del mantenedor.
-No hay integración móvil.
+Las tandas `0001` a `0006` contienen 100 imágenes cada una, generadas con Codex
+integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
+`pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
 - [Tanda 0001: manifiesto y prompts](0001/manifest.json).
 - [Tanda 0002: manifiesto y prompts](0002/manifest.json).
 - [Tanda 0003: manifiesto y prompts](0003/manifest.json).
 - [Tanda 0004: manifiesto y prompts](0004/manifest.json).
 - [Tanda 0005: manifiesto y prompts](0005/manifest.json).
+- [Tanda 0006: manifiesto y prompts](0006/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -686,3 +686,155 @@ y hashes finales se conservan en el manifiesto.
 | [bls-D302100](0005/bls-D302100.webp) | Makronentorte (Mürbeteig) | Macaroon torte (shortcrust pastry) |
 | [bls-D302200](0005/bls-D302200.webp) | Baiser-Schokosahnetorte (Mürbeteig) | Meringue chocolate cream torte (shortcrust pastry) |
 | [bls-D305000](0005/bls-D305000.webp) | Holländische Kirsch-Sahneschnitten/Kirsch-Sahnetorte (Blätterteig) | Dutch cherry cream torte/squares (puff pastry) |
+
+## Tanda 0006: tartas, bizcochos y bollería
+
+100 imágenes nuevas, una por código pendiente, de tartas de nata y mantequilla,
+rollos de bizcocho rellenos, tartas de fruta, chocolate y queso, muffins, masas
+crudas, bizcochos, barquillos, stollen y bollería de levadura o quark y aceite.
+Los nombres oficiales DE/EN se conservan literales y cada imagen tiene su prompt,
+referencia de estilo, huella del nombre de origen y SHA-256 en el manifiesto.
+
+Las representaciones respetan el tipo de masa, el estado crudo u horneado y los
+rellenos y coberturas indicados. El pastel de melocotón sin crema lleva solo
+fruta y glaseado sobre el bizcocho; la base de masa quebrada permanece vacía.
+La tarta de queso sin hornear tiene superficie clara sin dorado. Los muffins
+ingleses son panes planos dorados en sartén. Las dos masas crudas se muestran
+en cuenco. La nata, el quark, los frutos secos y el alcohol incorporados no se
+acompañan de ingredientes sueltos, botellas o símbolos.
+
+Para interpretar especialidades se consultaron fuentes de sus elaboradores o
+recetarios: la [Herrentorte de Trölsch](https://www.troelsch.de/produkte/herrentorte/),
+con capas claras, crema de vino y cobertura de chocolate; la
+[Zuger Kirschtorte de Treichler](https://www.treichler-zuger-kirschtorte.ch/onlineshop/zuger-kirschtorten-gga/),
+con almendrado Japonais, bizcocho y crema al kirsch, sin cerezas rojas añadidas;
+la [Prinzregententorte del recetario de Baviera](https://www.genusserbe.bayern.de/350579/index.php),
+con capas finas de bizcocho y crema de chocolate; y la
+[elaboración del Baumkuchen del obrador de Salzwedel](https://www.salzwedelerbaumkuchen.de/herstellung),
+con capas alrededor del eje. La versión editorial de Ottilienkuchen toma como
+apoyo la [receta de Nami-Nami](https://nami-nami.ee/retsept/24261/ottilienkuchen),
+con almendra, chocolate y pequeños trozos de cítricos confitados incorporados.
+Son apoyos para una ilustración genérica, no recetas ni imágenes atribuidas a
+BLS, ni una prueba de ingredientes exactos, alérgenos o raciones. No se copiaron
+fotografías de esas fuentes. Las únicas referencias visuales son las muestras
+aprobadas de CIQUAL, utilizadas solo para el estilo.
+
+Los 100 WebP finales se revisaron en nueve hojas de contacto y ocho casos se
+abrieron también a tamaño completo. Hubo una regeneración: `bls-D431500`
+(Baumkuchen), cuya primera salida combinaba anillos con estratos laterales
+incoherentes. La salida final muestra una rodaja anular baja con los anillos en
+su cara de corte. El manifiesto conserva el motivo, la resolución, el prompt
+anterior y el SHA-256 del PNG anterior; los originales de Codex se conservan.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0006-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0006-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0006-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0006-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0006-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0006-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0006-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0006-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0006-09.jpg)
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-D306000](0006/bls-D306000.webp) | Flocken-Sahnetorte (Brandmasse und Mürbeteig) | Cream torte (choux and shortcrust pastry) |
+| [bls-D307000](0006/bls-D307000.webp) | Herrentorte (Mürbeteig und Wiener Boden hell) mit Apfel-Weincreme | Dark chocolate torte (shortcrust pastry and Viennese sponge cake light) with apple wine-cream |
+| [bls-D310300](0006/bls-D310300.webp) | Käsesahnetorte (Wasserbiskuit) | Cheese cream torte (sponge cake) |
+| [bls-D310400](0006/bls-D310400.webp) | Biskuitrolle/Biskuitroulade, mit Konfitüre | Sponge cake roll, filled with jam |
+| [bls-D310600](0006/bls-D310600.webp) | Biskuitrolle/Biskuitroulade, mit Joghurtsahne | Sponge cake roll, filled with yogurt-cream |
+| [bls-D310700](0006/bls-D310700.webp) | Biskuitrolle/Biskuitroulade, mit Zitronensahnecreme | Sponge cake roll, filled with lemon-cream |
+| [bls-D310800](0006/bls-D310800.webp) | Biskuitrolle/Biskuitroulade, mit Erdbeersahnecreme | Sponge cake roll, filled with strawberry-cream |
+| [bls-D310900](0006/bls-D310900.webp) | Biskuitrolle/Biskuitroulade, mit Mandarinensahnecreme | Sponge cake roll, filled with mandarin-cream |
+| [bls-D311200](0006/bls-D311200.webp) | Buttercremetorte (Biskuit) | Butter cream torte (sponge cake) |
+| [bls-D312300](0006/bls-D312300.webp) | Aprikosen-Sahnetorte (Wasserbiskuit) | Apricot cream torte (sponge cake) |
+| [bls-D312500](0006/bls-D312500.webp) | Zuger Kirschtorte (Biskuit und Nussboden) mit Alkohol | "Zuger Kirschtorte" cherry torte (sponge cake and nut sponge cake) with alcohol |
+| [bls-D312600](0006/bls-D312600.webp) | Buchweizentorte (Wasserbiskuit) mit Heidelbeersahnecreme | Buckwheat flour torte (water sponge cake) with blueberry-cream |
+| [bls-D312700](0006/bls-D312700.webp) | Möhren-Nusstorte/Rüblitorte (Biskuit) | Carrot nut cake (sponge cake) |
+| [bls-D312800](0006/bls-D312800.webp) | Mokkasahnetorte (Wasserbiskuit) mit Alkohol | Mocha cream torte (water sponge cake) with alcohol |
+| [bls-D312900](0006/bls-D312900.webp) | Trüffeltorte (Schoko-Wasserbiskuit) | Truffle torte (chocolate water sponge cake) |
+| [bls-D313100](0006/bls-D313100.webp) | Mokkacreme-Marzipan-Torte (Wasserbiskuit) | Mocha-cream marzipan torte (water sponge cake) |
+| [bls-D313300](0006/bls-D313300.webp) | Erdbeersahnetorte (Wasserbiskuit) | Strawberry cream torte (water sponge cake) |
+| [bls-D313400](0006/bls-D313400.webp) | Schokosahnetorte (Schoko-Wasserbiskuit) | Chocolate cream torte (chocolate water sponge cake) |
+| [bls-D313500](0006/bls-D313500.webp) | Zitronensahnetorte (Wasserbiskuit) | Lemon cream torte (water sponge cake) |
+| [bls-D313600](0006/bls-D313600.webp) | Orangencremetorte (Wiener Boden dunkel) mit Schokosahne | Orange cream torte (Viennese sponge cake dark) with chocolate-cream |
+| [bls-D314200](0006/bls-D314200.webp) | Mokkabuttercremetorte (Biskuit) mit Alkohol | Mocha butter cream torte (sponge cake) with alcohol |
+| [bls-D314300](0006/bls-D314300.webp) | Schokobuttercremetorte (Biskuit) | Chocolate butter cream torte (sponge cake) |
+| [bls-D314400](0006/bls-D314400.webp) | Buttercremetorte (Schokobiskuit) mit Canacheüberzug | Butter cream torte (chocolate sponge cake) with chocolate icing |
+| [bls-D314500](0006/bls-D314500.webp) | Schokoladentorte (Rührmasse) mit Canacheüberzug | Chocolate torte (cake batter) with chocolate icing |
+| [bls-D314600](0006/bls-D314600.webp) | Pfirsichtorte (Biskuit) mit Klarguss (ohne Sahne/Creme) | Peach torte (sponge cake) with gelatin glaze (without cream) |
+| [bls-D320100](0006/bls-D320100.webp) | Buttercremetorte (Wiener Boden hell) | Butter cream torte (Viennese sponge cake light) |
+| [bls-D321000](0006/bls-D321000.webp) | Joghurtsahnetorte (Biskuit und Mürbeteig) | Yogurt cream torte (sponge cake and shortcrust pastry) |
+| [bls-D330100](0006/bls-D330100.webp) | Buttercremetorte (Rührmasse) | Butter cream torte (cake batter) |
+| [bls-D330300](0006/bls-D330300.webp) | Schokoladentorte (Rührmasse) | Chocolate torte (cake batter) |
+| [bls-D330400](0006/bls-D330400.webp) | Prinzregententorte (Biskuit) | "Prinzregententorte" torte (sponge cake) |
+| [bls-D330500](0006/bls-D330500.webp) | Schokoladen-Nusstorte (Rührmasse) | Chocolate nut torte (cake batter) |
+| [bls-D340100](0006/bls-D340100.webp) | Buttercremetorte (Sandmasse) | Butter cream torte (sand cake batter) |
+| [bls-D340200](0006/bls-D340200.webp) | Traubentorte (Sandmasse) mit Vanillecreme und Klarguss | Grape torte (sand cake batter) with vanilla cream and gelatin glaze |
+| [bls-D380200](0006/bls-D380200.webp) | Käsetorte (Mürbeteig) | Cheese torte (shortcrust pastry) |
+| [bls-D380900](0006/bls-D380900.webp) | Kuchenboden/Tortenboden (Mürbeteig, feiner) | Cake base/torte base (shortcrust pastry, fine) |
+| [bls-D3A1000](0006/bls-D3A1000.webp) | Biskuitrolle/Biskuitroulade, mit Himbeersahnecreme | Sponge cake roll, filled with raspberry-cream |
+| [bls-D3A2000](0006/bls-D3A2000.webp) | Erdbeer-Charlotte mit Joghurtsahne (Biskuit) | Strawberry Charlotte Royale Cake (sponge cake) |
+| [bls-D3A3000](0006/bls-D3A3000.webp) | Erdbeer-Sahnecremetorte (Wasserbiskuit) | Strawberry-cream torte (water sponge cake) |
+| [bls-D3A4000](0006/bls-D3A4000.webp) | Nussbiskuitrolle/Nussbiskuitroulade, mit Himbeeren und Sahne | Nut sponge cake roll, filled with raspberries and whipped cream |
+| [bls-D3A5000](0006/bls-D3A5000.webp) | Schwarz-Weiß-Buttercremetorte (Wasserbiskuit) | Black-and-white chequerboard torte (water sponge cake) |
+| [bls-D3A6000](0006/bls-D3A6000.webp) | Frischkäse-Torte (ohne Backen) | Cheesecake (without baking) |
+| [bls-D3A7000](0006/bls-D3A7000.webp) | Eierlikörtorte (Schoko-Mandelbiskuit) | Egg liqueur torte (chocolate-almond sponge cake) |
+| [bls-D400400](0006/bls-D400400.webp) | Schokoladen-Muffins (Rührmasse) | Chocolate muffins (cake batter) |
+| [bls-D400700](0006/bls-D400700.webp) | Englische Muffins/Toasties (Hefeteig) gebraten ohne Fett (Pfanne) | English muffins/toasties (yeast dough) fried without fat (pan) |
+| [bls-D400800](0006/bls-D400800.webp) | Heidelbeer-Muffins (Rührmasse) | Blueberry muffins (cake batter) |
+| [bls-D401100](0006/bls-D401100.webp) | Kartoffelkuchen (Rührmasse) | Potato cake (cake batter) |
+| [bls-D401400](0006/bls-D401400.webp) | Honigkuchen | Gingerbread cake |
+| [bls-D410100](0006/bls-D410100.webp) | Biskuitschnitte mit Vanillebuttercreme | Sponge cake square with vanilla butter cream |
+| [bls-D410300](0006/bls-D410300.webp) | Baumstamm/Bismarckeiche (Wasserbiskuit) mit Mokkabuttercreme | "Bismarck-Eiche" chocolate log cake (water sponge cake) with mocha butter cream |
+| [bls-D411100](0006/bls-D411100.webp) | Mandarinen-Omelettes (Wiener Boden hell) mit Sahne | Viennese sponge cake roll filled with whipped cream and mandarins |
+| [bls-D411200](0006/bls-D411200.webp) | Rehrücken (Wiener Boden hell) | Mock saddle of venison cake (Viennese sponge cake light) |
+| [bls-D420000](0006/bls-D420000.webp) | Feines Früchtebrot (mit Roggenbrotteig zubereitet) | Fruitcake (prepared with rye bread dough) |
+| [bls-D421000](0006/bls-D421000.webp) | Sandmasse/Sandteig, roh | Sand cake batter raw |
+| [bls-D422000](0006/bls-D422000.webp) | Rührmasse/Rührteig, roh | Cake batter raw |
+| [bls-D422600](0006/bls-D422600.webp) | Kuchen aus Rührmasse/Rührkuchen | Pound cake (cake batter) |
+| [bls-D430400](0006/bls-D430400.webp) | Napfkuchen mit Sultaninen und Zitronat (Rührmasse) | Ring cake with sultanas and candied lemon peel (cake batter) |
+| [bls-D430500](0006/bls-D430500.webp) | Nusskuchen (Rührmasse) | Nut cake (cake batter) |
+| [bls-D430600](0006/bls-D430600.webp) | Rosinenkuchen (Rührmasse) | Raisin cake (cake batter) |
+| [bls-D431100](0006/bls-D431100.webp) | Marmorkuchen (Rührmasse) | Marble cake (cake batter) |
+| [bls-D431200](0006/bls-D431200.webp) | Mandelkuchen (Rührmasse) | Almond cake (cake batter) |
+| [bls-D431300](0006/bls-D431300.webp) | Makronenkuchen (Rührmasse) | Macaroon cake (cake batter) |
+| [bls-D431400](0006/bls-D431400.webp) | Donauwellen (Rührmasse) | "Donau-Wellen" cake (cake batter) |
+| [bls-D431500](0006/bls-D431500.webp) | Baumkuchen/Grillkuchen/Schichtkuchen (Rührmasse) | Layer cake (cake batter) |
+| [bls-D431700](0006/bls-D431700.webp) | Orangenkuchen (Rührmasse) | Orange cake (cake batter) |
+| [bls-D431800](0006/bls-D431800.webp) | Ananas-Marzipan-Kuchen (Rührmasse) | Pineapple marzipan cake (cake batter) |
+| [bls-D431900](0006/bls-D431900.webp) | Ottilienkuchen (Rührmasse) | "Ottilienkuchen" cake (cake batter) |
+| [bls-D432100](0006/bls-D432100.webp) | Rehrücken gebacken (Sandmasse) | Mock saddle of venison cake (sand cake batter) |
+| [bls-D432200](0006/bls-D432200.webp) | Eiserkuchen (Rührmasse) | Hollow wafer sticks (cake batter) |
+| [bls-D432300](0006/bls-D432300.webp) | Früchtekuchen (ohne Fett zubereitet) | Fruitcake (prepared without fat) |
+| [bls-D432400](0006/bls-D432400.webp) | Quarkstollen (Rührmasse) | Quark stollen (cake batter) |
+| [bls-D433200](0006/bls-D433200.webp) | Quarknapfkuchen (Rührmasse) | Quark ring cake (cake batter) |
+| [bls-D433300](0006/bls-D433300.webp) | Schokoladenkuchen (Rührmasse) | Chocolate cake (cake batter) |
+| [bls-D433400](0006/bls-D433400.webp) | Gewürzkuchen (Rührmasse) | Spice cake (cake batter) |
+| [bls-D433600](0006/bls-D433600.webp) | Baumstamm (Rührmasse) mit Schokobuttercreme | Log cake (cake batter) filled with chocolate butter cream |
+| [bls-D440300](0006/bls-D440300.webp) | Kuchen aus Sandmasse/Sandkuchen | Sand cake |
+| [bls-D440500](0006/bls-D440500.webp) | Nusskuchen (Sandmasse) | Nut cake (sand cake batter) |
+| [bls-D440700](0006/bls-D440700.webp) | Englischer Kuchen (Sandmasse) mit Alkohol | English cake (sand cake batter) with alcohol |
+| [bls-D440800](0006/bls-D440800.webp) | Königskuchen (Rührmasse) mit Alkohol | Candied fruit cake (cake batter) with alcohol |
+| [bls-D441300](0006/bls-D441300.webp) | Frankfurter Kranz (Sandmasse) | Frankfurt crown cake (sand cake batter) |
+| [bls-D441400](0006/bls-D441400.webp) | Wiener Sandtorte | Viennese sand torte |
+| [bls-D461200](0006/bls-D461200.webp) | Käsekuchen/Quarkkuchen (Hefeteig) | Cheesecake (yeast dough) |
+| [bls-D461300](0006/bls-D461300.webp) | Bienenstich (Hefeteig) | Bee sting cake (yeast dough) |
+| [bls-D461400](0006/bls-D461400.webp) | Gugelhupf mit Rosinen (Hefeteig) | Ring cake with raisins (yeast dough) |
+| [bls-D461500](0006/bls-D461500.webp) | Streuselkuchen (Hefeteig) | Crumb cake (yeast dough) |
+| [bls-D461602](0006/bls-D461602.webp) | Brioches (Hefeteig) ungefüllt | Brioches (yeast dough) without filling |
+| [bls-D461700](0006/bls-D461700.webp) | Butterkuchen/Zuckerkuchen (Hefeteig) | German butter cake (yeast dough) |
+| [bls-D462700](0006/bls-D462700.webp) | Mandelkuchen (Hefeteig) | Almond cake (yeast dough) |
+| [bls-D462800](0006/bls-D462800.webp) | Schneckennudeln/Rosenkuchen (Hefeteig) | Yeast rose cake |
+| [bls-D463100](0006/bls-D463100.webp) | Dresdner Stollen (Hefeteig) mit Alkohol | Dresden stollen (yeast dough) with alcohol |
+| [bls-D463500](0006/bls-D463500.webp) | Mohnstollen/Mohnstriezel (Hefeteig) | Poppy seed stollen (yeast dough) |
+| [bls-D463700](0006/bls-D463700.webp) | Marzipanstollen (Hefeteig) | Marzipan stollen (yeast dough) |
+| [bls-D464200](0006/bls-D464200.webp) | Nusskranz (Hefeteig) | Nut ring cake (yeast dough) |
+| [bls-D464300](0006/bls-D464300.webp) | Mandelkranz (Hefeteig) | Almond ring cake (yeast dough) |
+| [bls-D465300](0006/bls-D465300.webp) | Thüringer Obstkuchen (Hefeteig) | Thuringian fruit flan (yeast dough) |
+| [bls-D466100](0006/bls-D466100.webp) | Apfelkuchen gedeckt (Hefeteig) | Apple pie (yeast dough) |
+| [bls-D470100](0006/bls-D470100.webp) | Käsekuchen/Quarkkuchen (Quark-Öl-Teig) | Cheesecake (quark oil dough) |
+| [bls-D470200](0006/bls-D470200.webp) | Nusskranz (Quark-Öl-Teig) | Nut ring cake (quark oil dough) |
+| [bls-D470300](0006/bls-D470300.webp) | Butterkuchen/Zuckerkuchen (Quark-Öl-Teig) | German butter cake (quark oil dough) |
+| [bls-D471600](0006/bls-D471600.webp) | Gerollte Marzipan-Nuss-Schnitten (Quark-Öl-Teig) | Swiss roll, filled with marzipan and nuts (quark oil dough) |
+| [bls-D471700](0006/bls-D471700.webp) | Quarktaschen (Quark-Öl-Teig) | Turnover (quark oil dough) filled with quark |
