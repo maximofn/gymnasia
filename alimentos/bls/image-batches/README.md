@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**600/7.140 imágenes registradas; 6.540 pendientes; 8,40 %.**
+**700/7.140 imágenes registradas; 6.440 pendientes; 9,80 %.**
 
-Las tandas `0001` a `0006` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0007` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -21,6 +21,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0004: manifiesto y prompts](0004/manifest.json).
 - [Tanda 0005: manifiesto y prompts](0005/manifest.json).
 - [Tanda 0006: manifiesto y prompts](0006/manifest.json).
+- [Tanda 0007: manifiesto y prompts](0007/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -838,3 +839,149 @@ anterior y el SHA-256 del PNG anterior; los originales de Codex se conservan.
 | [bls-D470300](0006/bls-D470300.webp) | Butterkuchen/Zuckerkuchen (Quark-Öl-Teig) | German butter cake (quark oil dough) |
 | [bls-D471600](0006/bls-D471600.webp) | Gerollte Marzipan-Nuss-Schnitten (Quark-Öl-Teig) | Swiss roll, filled with marzipan and nuts (quark oil dough) |
 | [bls-D471700](0006/bls-D471700.webp) | Quarktaschen (Quark-Öl-Teig) | Turnover (quark oil dough) filled with quark |
+
+## Tanda 0007: strudel, gofres, galletas y panes de especias
+
+100 imágenes nuevas, una por código pendiente, desde `bls-D477100` hasta
+`bls-D6A6000`: tartas de queso, bizcochos, strudel, merengues, galletas sin
+gluten, gofres dulces y salados, barquillos, Lebkuchen, pastas de almendra y coco
+y especialidades con chocolate. Los nombres DE/EN se conservan literales.
+El manifiesto contiene el prompt exacto, la referencia de estilo y su hash,
+la huella del nombre de origen y el SHA-256 del WebP de cada alimento.
+
+Se distinguen masa quebrada, hojaldre, masa fina de strudel y masa de quark y
+aceite. El hojaldre de quark incorpora el quark a la masa; la tarta sin base
+carece de corteza inferior. La Eierschecke muestra base de levadura, quark y
+capa de crema de huevo. Los conos están vacíos y los gofres no llevan toppings
+añadidos. Las letras de Russisch-Brot son la forma del propio alimento, sin
+formar palabras ni llevar texto impreso. Las obleas son discos comestibles.
+Las Makronen tienen textura rugosa; los Baumkuchenspitzen muestran capas finas
+curvadas en el corte y las florentinas, almendra caramelizada y base de chocolate.
+
+Como apoyo editorial se consultaron fuentes de sus elaboradores o recetarios:
+la [Eierschecke de Groschupf](https://baeckerei-groschupf.de/produkte/details/eierschecke),
+el [Mazarinkuchen del recetario de GU](https://www.kuechengoetter.de/rezepte/download/Mazarinkuchen-10637.pdf),
+los [Wespennester de Dr. Oetker](https://www.oetker.de/rezepte/r/wespennester),
+los [Dominosteine de Dr. Quendt](https://www.dr-quendt.de/produkte/dominosteine/),
+los [Basler Läckerli de su fabricante](https://www.laeckerli-huus.ch/de/content/ueber-uns/portrait)
+y las [florentinas de Confiserie Bosch](https://www.confiserie-bosch.de/product/florentiner-zb-125g/).
+Son referencias para ilustraciones genéricas, no recetas oficiales BLS ni una
+garantía de ingredientes, alérgenos o cantidades. No se copiaron sus fotografías.
+La muestra aprobada de CIQUAL se adjuntó únicamente como referencia de estilo.
+
+Revisión: los 100 WebP finales en nueve hojas y nueve casos a tamaño completo.
+No fue necesaria ninguna regeneración. El estado sigue siendo
+`pending-review` hasta la revisión del mantenedor. No hay integración móvil.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0007-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0007-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0007-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0007-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0007-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0007-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0007-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0007-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0007-09.jpg)
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-D477100](0007/bls-D477100.webp) | Schinkenhörnchen (Quark-Öl-Teig) | Ham rolls (quark oil dough) |
+| [bls-D480200](0007/bls-D480200.webp) | Käsekuchen/Quarkkuchen (Mürbeteig) | Cheesecake (shortcrust pastry) |
+| [bls-D480300](0007/bls-D480300.webp) | Käsekuchen mit Streuseln (Mürbeteig) | Cheesecake with crumbles (shortcrust pastry) |
+| [bls-D482200](0007/bls-D482200.webp) | Zwetschgenkuchen (Mürbeteig) | Blue plum tart (shortcrust pastry) |
+| [bls-D483200](0007/bls-D483200.webp) | Haselnusszopf (Mürbeteig) | Braided hazelnut bread (shortcrust pastry) |
+| [bls-D483400](0007/bls-D483400.webp) | Apfelstrudel (Mürbeteig) | Apple strudel (shortcrust pastry) |
+| [bls-D490100](0007/bls-D490100.webp) | Quarkblätterteig gebacken | Puff pastry with quark, baked |
+| [bls-D490300](0007/bls-D490300.webp) | Blätterteig (mit Ei) gebacken | Puff pastry with egg, baked |
+| [bls-D490500](0007/bls-D490500.webp) | Französische Apfeltarte (Blätterteig) | French apple tart (puff pastry) |
+| [bls-D4A1000](0007/bls-D4A1000.webp) | Apfelstrudel (Blätterteig) | Apple strudel (puff pastry) |
+| [bls-D4A1100](0007/bls-D4A1100.webp) | Kirschstrudel (Blätterteig) | Cherry strudel (puff pastry) |
+| [bls-D4A2000](0007/bls-D4A2000.webp) | Brownies | Brownies |
+| [bls-D4A3000](0007/bls-D4A3000.webp) | Käsekuchen ohne Boden | Cheesecake (without cake base) |
+| [bls-D4A4000](0007/bls-D4A4000.webp) | Kürbis-Mandel-Kuchen (Biskuitmasse) | Pumpkin almond cake (sponge cake) |
+| [bls-D4A5100](0007/bls-D4A5100.webp) | Schwedischer Mandel-Marzipan-Kuchen/Mazarinkuchen (Mürbeteig) | Swedish almond marzipan cake (shortcrust pastry) |
+| [bls-D4A6000](0007/bls-D4A6000.webp) | Eierschecke (Hefeteig) | "Eierschecke" cheesecake (yeast dough) with egg cream |
+| [bls-D4A6100](0007/bls-D4A6100.webp) | Hefezopf mit Sultaninen | Braided yeast bread with sultanas |
+| [bls-D4A6200](0007/bls-D4A6200.webp) | Mohnstollen (Hefemürbteig) | Poppy seed stollen (shortcrust pastry with yeast) |
+| [bls-D4A6300](0007/bls-D4A6300.webp) | Thüringer Mohnkuchen (Hefeteig) | Thuringian poppy seed cake (yeast dough) |
+| [bls-D4A7000](0007/bls-D4A7000.webp) | Käse-Schinken-Hörnchen (Quark-Öl-Teig) | Cheese-ham crescent (quark oil dough) |
+| [bls-D4A7100](0007/bls-D4A7100.webp) | Mandarinen-Schmand-Kuchen (Quark-Öl-Teig) | Mandarin heavy sour cream cake (quark oil dough) |
+| [bls-D4A7200](0007/bls-D4A7200.webp) | Mohnkranz (Quark-Öl-Teig) | Poppy seed ring cake (quark oil dough) |
+| [bls-D4A8000](0007/bls-D4A8000.webp) | Ananas-Kranz gefüllt (Rührmasse) | Filled pineapple ring cake (cake batter) |
+| [bls-D4A8100](0007/bls-D4A8100.webp) | Kokoskuchen (Rührmasse) | Coconut cake (cake batter) |
+| [bls-D4A8200](0007/bls-D4A8200.webp) | Kürbis-Kuchen (Rührmasse) | Pumpkin cake (cake batter) |
+| [bls-D4A8300](0007/bls-D4A8300.webp) | Marmorkuchen mit Kirschen (Rührmasse) | Marble cake (cake batter) with cherries |
+| [bls-D4A8400](0007/bls-D4A8400.webp) | Möhren-Nuss-Kuchen (Rührmasse) | Carrot nut cake (cake batter) |
+| [bls-D4A8500](0007/bls-D4A8500.webp) | Nusskuchen vegan (Rührmasse) | Nut cake vegan (cake batter) |
+| [bls-D4A8600](0007/bls-D4A8600.webp) | Rotweinkuchen (Rührmasse) | Red wine cake (cake batter) |
+| [bls-D4A8700](0007/bls-D4A8700.webp) | Zitronenkuchen (Rührmasse) | Lemon cake (cake batter) |
+| [bls-D4A8800](0007/bls-D4A8800.webp) | Zitronenkuchen vegan (Rührmasse) | Lemon cake vegan (cake batter) |
+| [bls-D540100](0007/bls-D540100.webp) | Wiener Apfelstrudel (Strudelteig) | Viennese apple strudel (strudel dough) |
+| [bls-D540200](0007/bls-D540200.webp) | Apfelstrudel (Strudelteig) | Apple strudel (strudel dough) |
+| [bls-D540300](0007/bls-D540300.webp) | Kirschstrudel (Strudelteig) | Cherry strudel (strudel dough) |
+| [bls-D540400](0007/bls-D540400.webp) | Quarkstrudel (Strudelteig) | Quark strudel (strudel dough) |
+| [bls-D610100](0007/bls-D610100.webp) | Russisch-Brot (Eiklarmasse) | Russian bread letter-shaped biscuits (meringue) |
+| [bls-D610200](0007/bls-D610200.webp) | Baiser | Meringue |
+| [bls-D610300](0007/bls-D610300.webp) | Schokoladenbaiser | Chocolate meringue |
+| [bls-D610500](0007/bls-D610500.webp) | Zimtsterne (Eiklarmasse) | Cinnamon stars (meringue) |
+| [bls-D610600](0007/bls-D610600.webp) | Zuckerlis (Eiklarmasse) | "Zuckerlis" almond meringue |
+| [bls-D610700](0007/bls-D610700.webp) | Wespennester (Eiklarmasse) | "Wasp nests" almond meringue |
+| [bls-D610800](0007/bls-D610800.webp) | Baiser mit Schoko-Nougatfüllung | Meringue with chocolate-nougat filling |
+| [bls-D611000](0007/bls-D611000.webp) | Maiskekse glutenfrei | Maize biscuits gluten-free |
+| [bls-D612000](0007/bls-D612000.webp) | Schokokekse glutenfrei | Chocolate biscuits gluten-free |
+| [bls-D613000](0007/bls-D613000.webp) | Zitronenkekse glutenfrei | Lemon biscuits gluten-free |
+| [bls-D614000](0007/bls-D614000.webp) | Müslikekse glutenfrei | Muesli biscuits gluten-free |
+| [bls-D615000](0007/bls-D615000.webp) | Löffelbiskuits glutenfrei | Sponge fingers gluten-free |
+| [bls-D616000](0007/bls-D616000.webp) | Haselnussplätzchen glutenfrei | Hazelnut biscuits gluten-free |
+| [bls-D617000](0007/bls-D617000.webp) | Waffeln (Rührmasse) glutenfrei  | Waffles (cake batter) gluten-free |
+| [bls-D618000](0007/bls-D618000.webp) | Gewürzplätzchen glutenfrei | Spiced biscuits gluten-free |
+| [bls-D621000](0007/bls-D621000.webp) | Waffeln, einfache (Rührmasse) | Waffles (cake batter) |
+| [bls-D621100](0007/bls-D621100.webp) | Eiswaffeln/Waffelhörnchen (Rührmasse) | Ice cream cones |
+| [bls-D621200](0007/bls-D621200.webp) | Waffelkekse | Waffle biscuits |
+| [bls-D621300](0007/bls-D621300.webp) | Waffelkekse schokoliert | Waffle biscuits with chocolate icing |
+| [bls-D621800](0007/bls-D621800.webp) | Sahnewaffeln (Rührmasse) | Cream waffle (cake batter) |
+| [bls-D623000](0007/bls-D623000.webp) | Marmorwaffeln (Rührmasse) | Marble waffles (cake batter) |
+| [bls-D623100](0007/bls-D623100.webp) | Sandwaffeln (Rührmasse) | Waffles (sand cake batter) |
+| [bls-D623200](0007/bls-D623200.webp) | Apfelwaffeln (Rührmasse) | Apple waffles (cake batter) |
+| [bls-D623400](0007/bls-D623400.webp) | Schinkenwaffeln (Rührmasse) | Ham waffles (cake batter) |
+| [bls-D623500](0007/bls-D623500.webp) | Käsewaffeln salzig (Rührmasse) | Cheese waffles salted (cake batter) |
+| [bls-D630400](0007/bls-D630400.webp) | Butterkekse/Butterplätzchen (Mürbeteig) | Shortbread biscuits |
+| [bls-D630500](0007/bls-D630500.webp) | Butterkekse/Butterplätzchen (Mürbeteig) schokoliert | Shortbread biscuits, with chocolate icing |
+| [bls-D630600](0007/bls-D630600.webp) | Doppelkekse mit Kakaocremefüllung | Shortcake biscuits sandwiched with cocoa-cream filling |
+| [bls-D630700](0007/bls-D630700.webp) | Waffelkekse mit Nougatfüllung | Wafer biscuits with nougat filling |
+| [bls-D630800](0007/bls-D630800.webp) | Waffelkekse mit Nuss-Nougatcremefüllung, schokoliert | Waffle biscuits with chocolate nut filling and chocolate icing |
+| [bls-D650100](0007/bls-D650100.webp) | Dominosteine | Domino dices (petit fours) |
+| [bls-D650200](0007/bls-D650200.webp) | Weiße Lebkuchen | White gingerbread |
+| [bls-D650400](0007/bls-D650400.webp) | Elisenlebkuchen | Elisen gingerbread (with at least 25 % almonds and hazelnuts) |
+| [bls-D650500](0007/bls-D650500.webp) | Feine Oblaten-Lebkuchen | Gingerbread on baking wafers |
+| [bls-D650600](0007/bls-D650600.webp) | Lebkuchen schokoliert | Chocolate gingerbread |
+| [bls-D651300](0007/bls-D651300.webp) | Printen | "Printen" brown gingerbread biscuits |
+| [bls-D651400](0007/bls-D651400.webp) | Nussprinten schokoliert | Nut printen with chocolate icing |
+| [bls-D651500](0007/bls-D651500.webp) | Printen schokoliert | Chocolate printen |
+| [bls-D651700](0007/bls-D651700.webp) | Backoblaten | Round baking wafers |
+| [bls-D652300](0007/bls-D652300.webp) | Pfeffernüsse | "Pfeffernusse" spiced gingerbread biscuits with sugar icing |
+| [bls-D652400](0007/bls-D652400.webp) | Nürnberger Lebkuchen | Nuremberg gingerbread |
+| [bls-D653100](0007/bls-D653100.webp) | Liegnitzer | "Liegnitzer" filled gingerbread with chocolate icing |
+| [bls-D655100](0007/bls-D655100.webp) | Feiner Honigkuchen | Fine gingerbread cake |
+| [bls-D655200](0007/bls-D655200.webp) | Ostpreußischer Honigkuchen | East-Prussian gingerbread cake |
+| [bls-D655400](0007/bls-D655400.webp) | Dicker Honigkuchen | Thick gingerbread cake |
+| [bls-D655500](0007/bls-D655500.webp) | Pfefferkuchen | Spiced gingerbread |
+| [bls-D655600](0007/bls-D655600.webp) | Sirupkuchen | Syrup cake |
+| [bls-D657100](0007/bls-D657100.webp) | Kathrinchen (Honigteigplätzchen) | "Kathrinchen" honey gingerbread biscuits |
+| [bls-D657200](0007/bls-D657200.webp) | Honigkuchenplätzchen | Gingerbread cake biscuits |
+| [bls-D657300](0007/bls-D657300.webp) | Pflastersteine | "Pflastersteine" thick convex gingerbread biscuits |
+| [bls-D657400](0007/bls-D657400.webp) | Honigkuchenhäufchen | Gingerbread cake mounds |
+| [bls-D660100](0007/bls-D660100.webp) | Makronen/Mandelmakronen | Macaroons |
+| [bls-D660200](0007/bls-D660200.webp) | Marzipanmakronen | Marzipan macaroons |
+| [bls-D660300](0007/bls-D660300.webp) | Kokosmakronen | Coconut macaroons |
+| [bls-D660500](0007/bls-D660500.webp) | Kokosmakronen schokoliert | Chocolate coconut macaroons |
+| [bls-D660600](0007/bls-D660600.webp) | Schokoladen-Haselnussmakronen | Chocolate hazelnut macaroons |
+| [bls-D660700](0007/bls-D660700.webp) | Haselnussmakronen | Hazelnut macaroons |
+| [bls-D660800](0007/bls-D660800.webp) | Schokoladen-Makronen | Chocolate macaroons |
+| [bls-D661100](0007/bls-D661100.webp) | Marzipan-Monde | Marzipan moons |
+| [bls-D6A1000](0007/bls-D6A1000.webp) | Basler Leckerli | Basler Leckerli (hard spice biscuit) |
+| [bls-D6A2000](0007/bls-D6A2000.webp) | Baumkuchenspitzen | Spit cake tips |
+| [bls-D6A3000](0007/bls-D6A3000.webp) | Braune Lebkuchen unglasiert | Brown gingerbread without icing |
+| [bls-D6A4000](0007/bls-D6A4000.webp) | Florentiner (Mandelmasse) | Florentine biscuits (almond mass) |
+| [bls-D6A5000](0007/bls-D6A5000.webp) | Honigkuchen schokoliert | Gingerbread cake with chocolate icing |
+| [bls-D6A6000](0007/bls-D6A6000.webp) | Lebkuchen mit Fruchtfüllung, schokoliert | Gingerbread with fruit filling and chocolate icing |

@@ -7,30 +7,28 @@ BLS en móvil ni publica una versión.
 
 ## Estado acumulado (13 de noviembre de 2026)
 
-- Tandas `0001` a `0006`: **600/7.140 imágenes generadas y revisadas**.
-- Progreso: **8,40 %; 6.540 pendientes**. El catálogo completo aún no tiene imágenes.
-- Última entrega: tanda `0006`, 100 imágenes nuevas de tartas, bizcochos y
-  bollería; manifiesto y prompts en
-  `alimentos/bls/image-batches/0006/manifest.json`.
+- Tandas `0001` a `0007`: **700/7.140 imágenes generadas y revisadas**.
+- Progreso: **9,80 %; 6.440 pendientes**. El catálogo completo aún no tiene imágenes.
+- Última entrega: tanda `0007`, 100 imágenes nuevas de strudel, gofres,
+  galletas, merengues, tartas y panes de especias; manifiesto y prompts en
+  `alimentos/bls/image-batches/0007/manifest.json`.
 - Nueve hojas de revisión por tanda en `docs/testing/assets/bls-food-images-NNNN-*.jpg`.
-- Casos de la tanda `0006` abiertos a tamaño completo: `bls-D431500.webp`, `bls-D312500.webp`, `bls-D330400.webp`, `bls-D380900.webp`, `bls-D3A2000.webp`, `bls-D3A5000.webp`, `bls-D411100.webp`, `bls-D431300.webp`.
-- Regeneraciones de la tanda `0006`: 1 (`bls-D431500`, Baumkuchen). Su primer
-  intento mezclaba anillos concéntricos con estratos laterales incoherentes.
-  Se regeneró como rodaja anular baja; el prompt y hash del PNG anterior se
-  conservan en `review.corrections`. Las 100 salidas finales están revisadas.
+- Casos de la tanda `0007` abiertos a tamaño completo: `bls-D477100.webp`, `bls-D4A3000.webp`, `bls-D4A6000.webp`, `bls-D540100.webp`, `bls-D610100.webp`, `bls-D650100.webp`, `bls-D651700.webp`, `bls-D6A2000.webp`, `bls-D6A4000.webp`.
+- Regeneraciones de la tanda `0007`: ninguna. Las 100 salidas finales están revisadas.
 - Tandas anteriores: [PR 456](https://github.com/maximofn/gymnasia/pull/456),
   [PR 458](https://github.com/maximofn/gymnasia/pull/458),
   [PR 459](https://github.com/maximofn/gymnasia/pull/459),
-  [PR 460](https://github.com/maximofn/gymnasia/pull/460) y
-  [PR 461](https://github.com/maximofn/gymnasia/pull/461). La quinta seguía
-  abierta al comenzar la sexta, con `catalogs` y `prompt-policy` superados.
+  [PR 460](https://github.com/maximofn/gymnasia/pull/460),
+  [PR 461](https://github.com/maximofn/gymnasia/pull/461) y
+  [PR 464](https://github.com/maximofn/gymnasia/pull/464). La sexta seguía
+  abierta al comenzar la séptima, con `catalogs` y `prompt-policy` superados.
 - Consultar GitHub para el estado actual. No hay integración móvil ni nueva versión.
 
 ## Flujo
 
-- Rama actual: `codex/bls-food-images-0006`, basada en `codex/bls-food-images-0005`
-  (PR 461, quinta tanda). Abrir la PR contra esa rama para mostrar solo la tanda
-  `0006`. Consultar las PRs antes de continuar; si cambia o se fusiona una base,
+- Rama actual: `codex/bls-food-images-0007`, basada en `codex/bls-food-images-0006`
+  (PR 464, sexta tanda). Abrir la PR contra esa rama para mostrar solo la tanda
+  `0007`. Consultar las PRs antes de continuar; si cambia o se fusiona una base,
   actualizar la base correspondiente y comprobar de nuevo diff y checks.
 - Tandas de hasta 100 imágenes nuevas, una por
   código pendiente, con PR revisable. Consultar GitHub al empezar; este documento
@@ -90,7 +88,7 @@ composición, propiedades nutricionales ni una ración de 100 g.
 
 Cada carpeta numerada admite solo WebP y `manifest.json`. Guardar planes,
 recibos, notas y hojas de contacto fuera de ella. Los checkpoints de cada
-tanda viven en `/tmp/gymnasia-bls-images-NNNN/` (`0001` a `0006`): `plan.json`, un
+tanda viven en `/tmp/gymnasia-bls-images-NNNN/` (`0001` a `0007`): `plan.json`, un
 `bls-CODIGO.receipt.json` por alimento y `review/notes.json`, con hashes revisados.
 Los temporales son recuperación opcional; WebP, manifiesto, prompts y vistas
 revisables de la PR son los entregables duraderos.
