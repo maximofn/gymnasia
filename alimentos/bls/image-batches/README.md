@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**700/7.140 imágenes registradas; 6.440 pendientes; 9,80 %.**
+**800/7.140 imágenes registradas; 6.340 pendientes; 11,20 %.**
 
-Las tandas `0001` a `0007` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0008` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -22,6 +22,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0005: manifiesto y prompts](0005/manifest.json).
 - [Tanda 0006: manifiesto y prompts](0006/manifest.json).
 - [Tanda 0007: manifiesto y prompts](0007/manifest.json).
+- [Tanda 0008: manifiesto y prompts](0008/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -985,3 +986,149 @@ No fue necesaria ninguna regeneración. El estado sigue siendo
 | [bls-D6A4000](0007/bls-D6A4000.webp) | Florentiner (Mandelmasse) | Florentine biscuits (almond mass) |
 | [bls-D6A5000](0007/bls-D6A5000.webp) | Honigkuchen schokoliert | Gingerbread cake with chocolate icing |
 | [bls-D6A6000](0007/bls-D6A6000.webp) | Lebkuchen mit Fruchtfüllung, schokoliert | Gingerbread with fruit filling and chocolate icing |
+
+## Tanda 0008: galletas, choux y bollería
+
+100 imágenes nuevas desde `bls-D6A7000` hasta `bls-D7A4000`: galletas de avena,
+almendra y bizcocho; fruta rebozada, choux, pastas de masa quebrada, bollería
+de levadura y hojaldre, cruasanes rellenos, cookies, scones y muffins.
+Se conservan los nombres oficiales DE/EN y se registra cada prompt exacto,
+referencia, huella de nombre y SHA-256 de la imagen final. Cada alimento tiene
+su propia generación integrada de Codex.
+
+Las variantes sin relleno se muestran vacías; las rellenas presentan el corte.
+Se distinguen las masas quebrada, choux, levadura, hojaldre y hojaldre de levadura.
+No se representan propiedades invisibles como gluten, proteína o veganismo
+mediante símbolos. El aspecto es ilustrativo: no acredita una receta BLS,
+alérgenos, composición exacta ni una ración de 100 g. No hay integración móvil.
+
+Apoyo editorial para las formas menos conocidas: [Zedernbrot](https://www.oetker.de/rezepte/r/zedernbrot),
+[Springerle](https://www.oetker.de/rezepte/r/springerle),
+[Flockentorte](https://www.oetker.de/rezepte/r/flockentorte) y
+[Heidesand](https://www.oetker.de/rezepte/r/heidesand) de Dr. Oetker;
+[Raspeli de su autor](https://www.kochbar.de/rezept/453496/Raspeli.html),
+[Dreispitze de su autora](https://www.chefkoch.de/rezepte/3597641541005149/Haselnuss-Dreispitze-fuer-den-Adventskaffee.html) y
+[Hobelspäne de Kaufland](https://filiale.kaufland.de/rezepte/rezeptsuche/rezept.hobelspaene.r_id%3DDE_KO-R-24-25.html).
+Estas fuentes sirven para una interpretación visual genérica, no para sustituir
+los nombres oficiales ni trasladar ingredientes de recetas externas al catálogo.
+No se copiaron sus fotografías. La muestra CIQUAL es solo referencia de estilo.
+
+Revisión: todos los WebP finales en nueve hojas y nueve casos a tamaño completo.
+Se regeneraron el cuerno de frutos secos `bls-D740500` y la espiral con crumble
+`bls-D750200`: las primeras salidas parecían hojaldre y las finales muestran
+miga de bollo y corteza lisa, acordes con la masa de levadura de sus nombres.
+Los prompts anteriores y los hashes de sus PNG constan en el manifiesto.
+El estado sigue siendo `pending-review` hasta la revisión del mantenedor.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0008-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0008-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0008-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0008-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0008-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0008-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0008-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0008-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0008-09.jpg)
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-D6A7000](0008/bls-D6A7000.webp) | Mandelbrot (mit Eiklar, ohne Fett zubereitet) | Almond bread (prepared with egg white, without fat) |
+| [bls-D6A8000](0008/bls-D6A8000.webp) | Biskuitboden glutenfrei | Sponge cake base gluten-free |
+| [bls-D6A9000](0008/bls-D6A9000.webp) | Englischer Teekuchen glutenfrei | English tea cake gluten-free |
+| [bls-D701400](0008/bls-D701400.webp) | Zedernbrot | "Zedernbrot" lemon almond biscuits |
+| [bls-D701500](0008/bls-D701500.webp) | Raspeli | "Raspeli" meringue with cocoa powder and coconut |
+| [bls-D701600](0008/bls-D701600.webp) | Haferflockenplätzchen | Oatmeal biscuits |
+| [bls-D701700](0008/bls-D701700.webp) | Haferflocken-Nussplätzchen | Oatmeal-nut biscuits |
+| [bls-D701800](0008/bls-D701800.webp) | Springerle | "Springerle" anise biscuits |
+| [bls-D702000](0008/bls-D702000.webp) | Baklava | "Baklava" filled puff pastry |
+| [bls-D705200](0008/bls-D705200.webp) | Aprikosen im Ausbackteig frittiert | Apricots in frying batter deep-fried |
+| [bls-D705300](0008/bls-D705300.webp) | Apfelküchlein/Apfelringe im Ausbackteig, frittiert | Apple slices in frying batter, deep-fried |
+| [bls-D705400](0008/bls-D705400.webp) | Bananen im Ausbackteig frittiert | Bananas in frying batter deep-fried |
+| [bls-D710100](0008/bls-D710100.webp) | Schokoladen-Biskuitplätzchen | Chocolate sponge biscuits |
+| [bls-D710200](0008/bls-D710200.webp) | Löffelbiskuits | Sponge fingers |
+| [bls-D710300](0008/bls-D710300.webp) | Biskuitplätzchen | Small sponge biscuits |
+| [bls-D710500](0008/bls-D710500.webp) | Anisplätzchen (Biskuitmasse) | Anise sponge biscuits |
+| [bls-D710700](0008/bls-D710700.webp) | Schokoladen-Biskuitplätzchen mit Nougatfüllung | Chocolate sponge biscuits with nougat filling |
+| [bls-D710800](0008/bls-D710800.webp) | Schokoladen-Haselnuss-Cookies | Chocolate-hazelnut cookies |
+| [bls-D711100](0008/bls-D711100.webp) | Orangenbiskuitplätzchen | Orange sponge biscuits |
+| [bls-D712000](0008/bls-D712000.webp) | Kekse/Plätzchen, eiweißarm | Biscuits low protein |
+| [bls-D720200](0008/bls-D720200.webp) | Sahne-Windbeutel (Brandmasse) | Cream puff (choux pastry) |
+| [bls-D720300](0008/bls-D720300.webp) | Sahne-Eclairs (Brandmasse) | Cream éclairs (choux pastry) |
+| [bls-D720400](0008/bls-D720400.webp) | Brandmasse/Brandteig, gebacken | Choux pastry baked |
+| [bls-D720500](0008/bls-D720500.webp) | Sahne-Windbeutel (Brandmasse) mit Kirschen | Cream puff (choux pastry) filled with cherries |
+| [bls-D720600](0008/bls-D720600.webp) | Flockentorte (Brandmasse und Mürbeteig) | "Flockentorte" layer torte (choux pastry) |
+| [bls-D720700](0008/bls-D720700.webp) | Preiselbeer-Stracciatella-Sahne-Kranz (Brandmasse) | Lingonberry-stracciatella-cream ring cake (choux pastry) |
+| [bls-D720800](0008/bls-D720800.webp) | Käsewindbeutel salzig (Brandmasse) ungefüllt | Cheese puffs salted (choux pastry) unfilled |
+| [bls-D721100](0008/bls-D721100.webp) | Eberswalder Spritzkuchen (Brandmasse) frittiert | "Eberswalder" french crullers (choux pastry) deep-fried |
+| [bls-D730300](0008/bls-D730300.webp) | Spritzgebäck mit Mandeln (Rührmasse) | Spritz biscuits with almonds (cake batter) |
+| [bls-D730600](0008/bls-D730600.webp) | Spekulatius (Mürbeteig) | "Spekulatius" spiced almond biscuits (shortcrust pastry) |
+| [bls-D730700](0008/bls-D730700.webp) | Käseplätzchen salzig (Mürbeteig) | Shortcake cheese biscuits salted |
+| [bls-D730800](0008/bls-D730800.webp) | Teegebäck (Mürbeteig) | Tea biscuits (shortcrust pastry) |
+| [bls-D730900](0008/bls-D730900.webp) | Fettgebäck (Mürbeteig) frittiert | Pastries (shortcrust pastry) deep-fried |
+| [bls-D731200](0008/bls-D731200.webp) | Apple-Pie (Mürbeteig) | Apple pie (shortcrust pastry) |
+| [bls-D732100](0008/bls-D732100.webp) | Vanille-Mürbchen (Mürbeteig) | Vanilla shortcrust pastry biscuit |
+| [bls-D733100](0008/bls-D733100.webp) | Nusstaler (Mürbeteig) | Nut rounds (shortcrust pastry) |
+| [bls-D733200](0008/bls-D733200.webp) | Streuselplätzchen (Mürbeteig) | Crumble biscuits (shortcrust pastry) |
+| [bls-D733500](0008/bls-D733500.webp) | Schwarz-Weiß-Gebäck (Mürbeteig) | Black-and-white chequerboard biscuits (shortcrust pastry) |
+| [bls-D733600](0008/bls-D733600.webp) | Nussecken (Mürbeteig) | Nut triangles (shortcrust pastry) |
+| [bls-D733800](0008/bls-D733800.webp) | Mandelgebäck (Mürbeteig) | Almond biscuits (shortcrust pastry) |
+| [bls-D734600](0008/bls-D734600.webp) | Buttergebäck (Mürbeteig) | Butter biscuits (shortcrust pastry) |
+| [bls-D734700](0008/bls-D734700.webp) | Husarenkrapfen (Mürbeteig) | "Husaren" biscuits (shortcrust pastry) filled with jam |
+| [bls-D734800](0008/bls-D734800.webp) | Haselnusskugeln (Mürbeteig) | Hazelnut balls (shortcrust pastry) |
+| [bls-D734900](0008/bls-D734900.webp) | Nussstangen (Mürbeteig) | Nut sticks (shortcrust pastry) |
+| [bls-D735100](0008/bls-D735100.webp) | Spitzbuben (Mürbeteig) | "Spitzbuben" sandwich biscuit (shortcrust pastry) filled with jam |
+| [bls-D735200](0008/bls-D735200.webp) | Orangentäschchen (Mürbeteig) | Small orange turnovers (shortcrust pastry) |
+| [bls-D735300](0008/bls-D735300.webp) | Haselnuss-Dreispitz (Mürbeteig) | "Dreispitz" hazelnut biscuits (shortcrust pastry) |
+| [bls-D736100](0008/bls-D736100.webp) | Käseknusperchen salzig (Mürbeteig) | Crispy cheese biscuits salted (shortcrust pastry) |
+| [bls-D740100](0008/bls-D740100.webp) | Mandel-Marzipan-Donuts (Hefeteig) frittiert | Almond-marzipan doughnuts (yeast dough) deep-fried |
+| [bls-D740400](0008/bls-D740400.webp) | Kartoffelhörnchen (Mürbeteig) | Potato crescent roll (shortcrust pastry) |
+| [bls-D740500](0008/bls-D740500.webp) | Nusshörnchen (Hefeteig) | Nut crescent roll (yeast dough) |
+| [bls-D740600](0008/bls-D740600.webp) | Wiener Hörnchen (Hefeteig) | Viennese crescent roll (yeast dough) |
+| [bls-D741000](0008/bls-D741000.webp) | Donut (Hefeteig) frittiert, mit Schokoladenglasur | Doughnut (yeast dough) deep-fried, with chocolate icing |
+| [bls-D741400](0008/bls-D741400.webp) | Buchteln (Hefeteig) | "Buchteln" baked yeast buns |
+| [bls-D741600](0008/bls-D741600.webp) | Donut (Hefeteig) frittiert | Doughnut (yeast dough) deep-fried |
+| [bls-D750100](0008/bls-D750100.webp) | Amerikaner (Rührmasse) | "Amerikaner" moist shortbread biscuit (cake batter) with sugar icing |
+| [bls-D750200](0008/bls-D750200.webp) | Streuselschnecken (Hefeteig) | Danish swirl (yeast dough) with crumbles |
+| [bls-D750300](0008/bls-D750300.webp) | Ausgezogene Nudeln/Knienudeln (Hefeteig) frittiert | Bavarian doughnuts (yeast dough) deep-fried |
+| [bls-D750600](0008/bls-D750600.webp) | Heidesand (Mürbeteig) | "Heidesand" biscuits (shortcrust pastry) |
+| [bls-D750700](0008/bls-D750700.webp) | Marzipanstangen (Rührmasse) | Marzipan sticks (cake batter) |
+| [bls-D751100](0008/bls-D751100.webp) | Hobelspäne/Räderkuchen (Rührmasse) frittiert | "Hobelspäne" pastry (cake batter) deep-fried |
+| [bls-D752100](0008/bls-D752100.webp) | Rosinen-Mandel-Schnecken (Hefeteig) | Danish swirl (yeast dough) with raisins and almonds |
+| [bls-D753100](0008/bls-D753100.webp) | Nuss-Spritzgebäck (Rührmasse) | Nut spritz biscuits (cake batter) |
+| [bls-D753200](0008/bls-D753200.webp) | Kokosschnitten (Rührmasse) | Coconut square (cake batter) |
+| [bls-D753500](0008/bls-D753500.webp) | Vanillehörnchen/Vanillekipferl (Mürbeteig) | Vanilla crescents (shortcrust pastry) |
+| [bls-D753600](0008/bls-D753600.webp) | Mandel-Zitronen-Herzen (ohne Fett und Mehl) | Heart-shaped almond lemon biscuits (without fat and flour) |
+| [bls-D754100](0008/bls-D754100.webp) | Rheinische Mutzen (Nudelteig) frittiert | "Rheinische Mutzen" pastry (pasta dough) deep-fried |
+| [bls-D755200](0008/bls-D755200.webp) | Mandelkränzchen (Rührmasse) | Almond ring cake (cake batter) |
+| [bls-D755300](0008/bls-D755300.webp) | Mandelhörnchen (Rührmasse) | Almond crescent roll (cake batter) |
+| [bls-D770100](0008/bls-D770100.webp) | Mohnschnecken (Blätterteig) | Danish swirl (puff pastry) with poppy seeds |
+| [bls-D770200](0008/bls-D770200.webp) | Käsegebäck salzig (Quarkmürbeteig) | Cheese pastry salted (shortcrust pastry with quark) |
+| [bls-D770300](0008/bls-D770300.webp) | Schweineohren/Schweinsohren (Blätterteig) | Pig ear pastry (puff pastry) |
+| [bls-D770400](0008/bls-D770400.webp) | Feingebäck (Blätterteig) schokoliert | Fine pastry (puff pastry) with chocolate icing |
+| [bls-D770800](0008/bls-D770800.webp) | Kaffeegebäck (Quarkblätterteig) | Coffee pastry (puff pastry with quark) |
+| [bls-D771100](0008/bls-D771100.webp) | Erdbeer-Sahneschnitten (Blätterteig) | Strawberry-cream square (puff pastry) |
+| [bls-D771200](0008/bls-D771200.webp) | Aprikosenteilchen (Blätterteig) | Apricot pastry (puff pastry) |
+| [bls-D771300](0008/bls-D771300.webp) | Pasteten (Blätterteig) mit Himbeersahne | Raspberry cream in vol-au-vent (puff pastry) |
+| [bls-D771400](0008/bls-D771400.webp) | Schuhsohlen (Blätterteig) mit Mokkasahne | Oblong mocha-cream filled pastry (puff pastry) |
+| [bls-D771500](0008/bls-D771500.webp) | Hörnchen (Blätterteig) | Crescent roll (puff pastry) |
+| [bls-D771600](0008/bls-D771600.webp) | Croissant (Hefeblätterteig/Plunderteig) | Danish pastry croissant |
+| [bls-D771700](0008/bls-D771700.webp) | Croissant (Hefeblätterteig/Plunderteig) gefüllt mit Nuss-Nougat-Creme | Danish pastry croissant, filled with nut nougat cream |
+| [bls-D771800](0008/bls-D771800.webp) | Croissant (Hefeblätterteig/Plunderteig) gefüllt mit Marzipan | Danish pastry croissant, filled with marzipan |
+| [bls-D771900](0008/bls-D771900.webp) | Brötchen (Blätterteig) | Puff pastry roll |
+| [bls-D772100](0008/bls-D772100.webp) | Schinkenhörnchen (Quarkblätterteig) | Ham crescent (puff pastry) |
+| [bls-D780300](0008/bls-D780300.webp) | Nuss-Plunder | Hazelnut Danish pastry |
+| [bls-D780500](0008/bls-D780500.webp) | Marzipan-Plunder | Danish pastry with marzipan |
+| [bls-D790100](0008/bls-D790100.webp) | Kekse/Plätzchen, salzig (Vollkornmürbeteig) | Wholemeal biscuits, salted |
+| [bls-D790300](0008/bls-D790300.webp) | Kekse/Plätzchen (Vollkornmürbeteig) schokoliert | Wholemeal biscuits with chocolate icing |
+| [bls-D790700](0008/bls-D790700.webp) | Kekse/Plätzchen (Vollkornmürbeteig) | Wholemeal biscuits |
+| [bls-D793100](0008/bls-D793100.webp) | Müslikekse (Vollkornmürbeteig) | Wholemeal muesli biscuits (shortcrust pastry) |
+| [bls-D7A1000](0008/bls-D7A1000.webp) | Biskuitplätzchen mit Fruchtfüllung schokoliert | Sponge cake biscuits with fruit filling and chocolate icing |
+| [bls-D7A1100](0008/bls-D7A1100.webp) | Biskuitplätzchen mit Nougatfüllung | Sponge cake biscuits with nougat filling |
+| [bls-D7A1200](0008/bls-D7A1200.webp) | Biskuitplätzchen schokoliert | Sponge cake biscuits with chocolate icing |
+| [bls-D7A2000](0008/bls-D7A2000.webp) | Cookies mit Schokoladenstückchen | Chocolate chip cookies |
+| [bls-D7A2100](0008/bls-D7A2100.webp) | Schokoladen-Mandel-Cookies vegan | Chocolate almond cookies vegan |
+| [bls-D7A2200](0008/bls-D7A2200.webp) | Erdnussplätzchen (Mürbeteig) | Peanut biscuits (shortcrust pastry) |
+| [bls-D7A2300](0008/bls-D7A2300.webp) | Schokoladenbrezeln (Mürbeteig) | Chocolate pretzels (shortcrust pastry) |
+| [bls-D7A3000](0008/bls-D7A3000.webp) | Scones (britisches Kleingebäck) | Scones (British) |
+| [bls-D7A3100](0008/bls-D7A3100.webp) | Muffins vegan (Rührmasse) | Muffins vegan (cake batter) |
+| [bls-D7A4000](0008/bls-D7A4000.webp) | Käsewindbeutel (Brandmasse) gefüllt mit Frischkäsezubereitung | Salty cheese puff (choux pastry) filled with cream cheese |
