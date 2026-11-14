@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**1.000/7.140 imágenes registradas; 6.140 pendientes; 14,01 %.**
+**1.100/7.140 imágenes registradas; 6.040 pendientes; 15,41 %.**
 
-Las tandas `0001` a `0010` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0011` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -25,6 +25,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0008: manifiesto y prompts](0008/manifest.json).
 - [Tanda 0009: manifiesto y prompts](0009/manifest.json).
 - [Tanda 0010: manifiesto y prompts](0010/manifest.json).
+- [Tanda 0011: manifiesto y prompts](0011/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -1418,3 +1419,146 @@ hasta la revisión del mantenedor. BLS permanece fuera de la app.
 | [bls-F033600](0010/bls-F033600.webp) | Smoothie gelb (Früchte) | Smoothie of yellow fruits |
 | [bls-F034600](0010/bls-F034600.webp) | Smoothie grün (Früchte/Gemüse) | Smoothie of green fruits and vegetables |
 | [bls-F081100](0010/bls-F081100.webp) | Rhabarber roh | Rhubarb raw |
+
+## Tanda 0011: frutas, conservas y zumos
+
+100 imágenes nuevas desde `bls-F081600` hasta `bls-F303902`: ruibarbo, mezclas
+de fruta, manzana, pera, membrillo, níspero europeo, albaricoque, nectarina,
+melocotón, cerezas, ciruelas y bayas, con sus variantes y bebidas. Cada código
+tiene su propia generación integrada de Codex. El manifiesto conserva los
+nombres oficiales DE/EN literales, el prompt exacto, la referencia y las huellas
+de nombres y WebP.
+
+La fruta cruda mantiene su textura firme; la cocida aparece blanda y sin dorado.
+Las variantes secas tienen superficie deshidratada y arrugada; las conservas
+escurridas no muestran un charco de líquido ni su envase. Las manzanas peladas
+no tienen piel; las no peladas mantienen su borde de piel cuando se cortan.
+Los zumos y néctares se muestran en un vaso sencillo, sin fruta decorativa.
+Los edulcorantes, las vitaminas y la presencia o ausencia de azúcar en las
+conservas no se identifican con símbolos ni ingredientes añadidos. La mezcla
+cruda azucarada sí admite una capa ligera de azúcar. Las variantes parecidas
+se generaron de forma independiente.
+
+Para evitar confundir `Mispel` con el níspero japonés se consultó la
+[ficha de Mespilus germanica de RHS](https://www.rhs.org.uk/plants/11088/mespilus-germanica-f/details):
+se representa el fruto marrón del níspero europeo, con su cáliz abierto. Es una
+orientación editorial, no una validación de BLS; no se copiaron fotografías.
+Las referencias CIQUAL se usan solo para el estilo. Ninguna imagen acredita
+receta, ingredientes exactos, alérgenos, composición o una ración de 100 g.
+
+Revisión: todos los WebP finales en nueve láminas; 13 casos a tamaño completo.
+Correcciones registradas: 3. El estado sigue siendo `pending-review`
+hasta la revisión del mantenedor. BLS permanece fuera de la app.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0011-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0011-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0011-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0011-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0011-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0011-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0011-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0011-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0011-09.jpg)
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-F081600](0011/bls-F081600.webp) | Rhabarbersaft | Rhubarb juice |
+| [bls-F081902](0011/bls-F081902.webp) | Rhabarber gezuckert, Konserve, abgetropft | Rhubarb sugared, canned, drained |
+| [bls-F083902](0011/bls-F083902.webp) | Rhabarber ungesüßt, Konserve, abgetropft | Rhubarb unsweetened, canned, drained |
+| [bls-F090100](0011/bls-F090100.webp) | Fruchtmischung gezuckert, roh | Mixed fruit sugared, raw |
+| [bls-F090400](0011/bls-F090400.webp) | Fruchtmischung getrocknet (Trockenfrucht-Mix) | Mixed fruit dried |
+| [bls-F090902](0011/bls-F090902.webp) | Fruchtmischung/Fruchtcocktail, gezuckert, Konserve, abgetropft | Fruit mix/fruit cocktail, sugared, canned, drained |
+| [bls-F091100](0011/bls-F091100.webp) | Fruchtmischung ungesüßt, roh | Mixed fruit unsweetened |
+| [bls-F091902](0011/bls-F091902.webp) | Fruchtmischung/Fruchtcocktail, in Fruchtsaft, Konserve, abgetropft | Fruit mix/fruit cocktail, in juice, canned, drained |
+| [bls-F092100](0011/bls-F092100.webp) | Beerenmischung mit Sauerkirschen, ungesüßt, roh | Berry mix with sour cherries, unsweetened, raw |
+| [bls-F092152](0011/bls-F092152.webp) | Beerenmischung mit Sauerkirschen, ungesüßt, gedünstet | Berry mix with sour cherries, unsweetened, stewed |
+| [bls-F092902](0011/bls-F092902.webp) | Fruchtmischung/Fruchtcocktail, mit Süßungsmitteln, Konserve, abgetropft | Fruit mix/fruit cocktail, with artificial sweeteners, canned, drained |
+| [bls-F093902](0011/bls-F093902.webp) | Fruchtmischung/Fruchtcocktail, ungesüßt, Konserve, abgetropft | Fruit mix/fruit cocktail, unsweetened, canned, drained |
+| [bls-F110100](0011/bls-F110100.webp) | Apfel roh | Apple raw |
+| [bls-F110152](0011/bls-F110152.webp) | Apfel gedünstet | Apple stewed |
+| [bls-F110400](0011/bls-F110400.webp) | Apfel getrocknet | Apple dried |
+| [bls-F110600](0011/bls-F110600.webp) | Apfelsaft | Apple juice |
+| [bls-F110700](0011/bls-F110700.webp) | Apfelnektar | Apple nectar |
+| [bls-F112600](0011/bls-F112600.webp) | Apfelsaft angereichert mit Vitamin C | Apple juice fortified with vitamin C |
+| [bls-F116600](0011/bls-F116600.webp) | Apfelnektar mit Süßungsmitteln | Apple nectar with artificial sweeteners |
+| [bls-F119902](0011/bls-F119902.webp) | Apfel ungesüßt, Konserve, abgetropft | Apple unsweetened, canned, drained |
+| [bls-F120100](0011/bls-F120100.webp) | Apfel geschält, roh | Apple peeled, raw |
+| [bls-F120152](0011/bls-F120152.webp) | Apfel geschält, gedünstet | Apple peeled, stewed |
+| [bls-F120400](0011/bls-F120400.webp) | Apfel geschält, getrocknet | Apple peeled, dried |
+| [bls-F130100](0011/bls-F130100.webp) | Birne roh | Pear raw |
+| [bls-F130152](0011/bls-F130152.webp) | Birne gedünstet | Pear stewed |
+| [bls-F130400](0011/bls-F130400.webp) | Birne getrocknet | Pear dried |
+| [bls-F130600](0011/bls-F130600.webp) | Birnensaft | Pear juice |
+| [bls-F130902](0011/bls-F130902.webp) | Birne gezuckert, Konserve, abgetropft | Pear sugared, canned, drained |
+| [bls-F131902](0011/bls-F131902.webp) | Birne ungesüßt, Konserve, abgetropft | Pear unsweetened, canned, drained |
+| [bls-F133902](0011/bls-F133902.webp) | Birne mit Süßungsmitteln, Konserve, abgetropft | Pear with artificial sweeteners, canned, drained |
+| [bls-F134902](0011/bls-F134902.webp) | Birne in Fruchtsaft, Konserve, abgetropft | Pear in juice, canned, drained |
+| [bls-F140100](0011/bls-F140100.webp) | Quitte roh | Quince raw |
+| [bls-F140132](0011/bls-F140132.webp) | Quitte gekocht | Quince boiled |
+| [bls-F140152](0011/bls-F140152.webp) | Quitte gedünstet | Quince stewed |
+| [bls-F140600](0011/bls-F140600.webp) | Quittensaft | Quince juice |
+| [bls-F150100](0011/bls-F150100.webp) | Mispel roh | Medlar raw |
+| [bls-F201100](0011/bls-F201100.webp) | Aprikose roh | Apricot raw |
+| [bls-F201152](0011/bls-F201152.webp) | Aprikose gedünstet | Apricot stewed |
+| [bls-F201400](0011/bls-F201400.webp) | Aprikose getrocknet | Apricot dried |
+| [bls-F201600](0011/bls-F201600.webp) | Aprikosensaft | Apricot juice |
+| [bls-F201902](0011/bls-F201902.webp) | Aprikose gezuckert, Konserve, abgetropft | Apricot sugared, canned, drained |
+| [bls-F202100](0011/bls-F202100.webp) | Nektarine roh | Nectarine raw |
+| [bls-F202152](0011/bls-F202152.webp) | Nektarine gedünstet | Nectarine stewed |
+| [bls-F203100](0011/bls-F203100.webp) | Pfirsich roh | Peach raw |
+| [bls-F203152](0011/bls-F203152.webp) | Pfirsich gedünstet | Peach stewed |
+| [bls-F203400](0011/bls-F203400.webp) | Pfirsich getrocknet | Peach dried |
+| [bls-F203700](0011/bls-F203700.webp) | Pfirsichnektar | Peach nectar |
+| [bls-F203902](0011/bls-F203902.webp) | Pfirsich gezuckert, Konserve, abgetropft | Peach sugared, canned, drained |
+| [bls-F206902](0011/bls-F206902.webp) | Pfirsich in Fruchtsaft, Konserve, abgetropft | Peach in juice, canned, drained |
+| [bls-F207902](0011/bls-F207902.webp) | Pfirsich mit Süßungsmitteln, Konserve, abgetropft | Peach with artificial sweeteners, canned, drained |
+| [bls-F208902](0011/bls-F208902.webp) | Pfirsich ungesüßt, Konserve, abgetropft | Peach unsweetened, canned, drained |
+| [bls-F210902](0011/bls-F210902.webp) | Süßkirsche ungesüßt, Konserve, abgetropft | Sweet cherry unsweetened, canned, drained |
+| [bls-F211100](0011/bls-F211100.webp) | Süßkirsche roh | Sweet cherry raw |
+| [bls-F211152](0011/bls-F211152.webp) | Süßkirsche gedünstet | Sweet cherry stewed |
+| [bls-F211400](0011/bls-F211400.webp) | Süßkirsche getrocknet | Sweet cherry dried |
+| [bls-F211600](0011/bls-F211600.webp) | Süßkirschsaft | Sweet cherry juice |
+| [bls-F211902](0011/bls-F211902.webp) | Süßkirsche gezuckert, Konserve, abgetropft | Sweet cherry sugared, canned, drained |
+| [bls-F212100](0011/bls-F212100.webp) | Sauerkirsche roh | Sour cherry raw |
+| [bls-F212152](0011/bls-F212152.webp) | Sauerkirsche gedünstet | Sour cherry stewed |
+| [bls-F212600](0011/bls-F212600.webp) | Sauerkirschsaft | Sour cherry juice |
+| [bls-F212700](0011/bls-F212700.webp) | Sauerkirschnektar | Sour cherry nectar |
+| [bls-F212902](0011/bls-F212902.webp) | Sauerkirsche gezuckert, Konserve, abgetropft | Sour cherry sugared, canned, drained |
+| [bls-F213902](0011/bls-F213902.webp) | Sauerkirsche ungesüßt, Konserve, abgetropft | Sour cherry unsweetened, canned, drained |
+| [bls-F217902](0011/bls-F217902.webp) | Sauerkirsche mit Süßungsmitteln, Konserve, abgetropft | Sour cherry with artificial sweeteners, canned, drained |
+| [bls-F220100](0011/bls-F220100.webp) | Pflaume roh | Plum raw |
+| [bls-F220152](0011/bls-F220152.webp) | Pflaume gedünstet | Plum stewed |
+| [bls-F220400](0011/bls-F220400.webp) | Pflaume getrocknet | Plum dried (prunes) |
+| [bls-F220600](0011/bls-F220600.webp) | Pflaumensaft | Plum juice |
+| [bls-F220902](0011/bls-F220902.webp) | Pflaume gezuckert, Konserve, abgetropft | Plum sugared, canned, drained |
+| [bls-F223100](0011/bls-F223100.webp) | Zwetschge roh | Blue plum raw |
+| [bls-F223152](0011/bls-F223152.webp) | Zwetschge gedünstet | Blue plum stewed |
+| [bls-F224100](0011/bls-F224100.webp) | Mirabelle roh | Mirabelle plum raw |
+| [bls-F224152](0011/bls-F224152.webp) | Mirabelle gedünstet | Mirabelle plum stewed |
+| [bls-F224902](0011/bls-F224902.webp) | Mirabelle gezuckert, Konserve, abgetropft | Mirabelle plum sugared, canned, drained |
+| [bls-F225100](0011/bls-F225100.webp) | Reineclaude roh | Greengage raw |
+| [bls-F225152](0011/bls-F225152.webp) | Reineclaude gedünstet | Greengage stewed |
+| [bls-F227902](0011/bls-F227902.webp) | Pflaume mit Süßungsmitteln, Konserve, abgetropft | Plum with artificial sweeteners, canned, drained |
+| [bls-F22A902](0011/bls-F22A902.webp) | Pflaume ungesüßt, Konserve, abgetropft | Plum unsweetened, canned, drained |
+| [bls-F22B902](0011/bls-F22B902.webp) | Mirabelle mit Süßungsmitteln, Konserve, abgetropft | Mirabelle plum with artificial sweeteners, canned, drained |
+| [bls-F22C902](0011/bls-F22C902.webp) | Mirabelle ungesüßt, Konserve, abgetropft | Mirabelle plum unsweetened, canned, drained |
+| [bls-F240902](0011/bls-F240902.webp) | Süßkirsche mit Süßungsmitteln, Konserve, abgetropft | Sweet cherry with artificial sweeteners, canned, drained |
+| [bls-F2A1902](0011/bls-F2A1902.webp) | Aprikose in Fruchtsaft, Konserve, abgetropft | Apricot in juice, canned, drained |
+| [bls-F2A2700](0011/bls-F2A2700.webp) | Sauerkirschnektar mit Süßungsmitteln | Sour cherry nectar with artificial sweeteners |
+| [bls-F2B1902](0011/bls-F2B1902.webp) | Aprikose mit Süßungsmitteln, Konserve, abgetropft | Apricot with artificial sweeteners, canned, drained |
+| [bls-F2C1902](0011/bls-F2C1902.webp) | Aprikose ungesüßt, Konserve, abgetropft | Apricot unsweetened, canned, drained |
+| [bls-F301100](0011/bls-F301100.webp) | Erdbeere roh | Strawberry raw |
+| [bls-F301152](0011/bls-F301152.webp) | Erdbeere gedünstet | Strawberry stewed |
+| [bls-F301400](0011/bls-F301400.webp) | Erdbeere getrocknet | Strawberry dried |
+| [bls-F301600](0011/bls-F301600.webp) | Erdbeersaft | Strawberry juice |
+| [bls-F301902](0011/bls-F301902.webp) | Erdbeere gezuckert, Konserve, abgetropft | Strawberry sugared, canned, drained |
+| [bls-F302100](0011/bls-F302100.webp) | Himbeere roh | Raspberry raw |
+| [bls-F302152](0011/bls-F302152.webp) | Himbeere gedünstet | Raspberry stewed |
+| [bls-F302400](0011/bls-F302400.webp) | Himbeere getrocknet | Raspberry dried |
+| [bls-F302600](0011/bls-F302600.webp) | Himbeersaft | Raspberry juice |
+| [bls-F302902](0011/bls-F302902.webp) | Himbeere gezuckert, Konserve, abgetropft | Raspberry sugared, canned, drained |
+| [bls-F303100](0011/bls-F303100.webp) | Brombeere roh | Blackberry raw |
+| [bls-F303152](0011/bls-F303152.webp) | Brombeere gedünstet | Blackberry stewed |
+| [bls-F303400](0011/bls-F303400.webp) | Brombeere getrocknet | Blackberry dried |
+| [bls-F303600](0011/bls-F303600.webp) | Brombeersaft | Blackberry juice |
+| [bls-F303902](0011/bls-F303902.webp) | Brombeere gezuckert, Konserve, abgetropft | Blackberry sugared, canned, drained |
