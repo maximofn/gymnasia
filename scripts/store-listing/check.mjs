@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, "../..");
 const manifestPath = join(repoRoot, "docs/store/google-play/listing.es.json");
-const appPath = join(repoRoot, "apps/mobile/App.tsx");
+const appPath = join(repoRoot, "apps/mobile/screens/ChatScreen.tsx");
 const privacyEsPath = join(repoRoot, "docs/legal/privacy-policy.es.md");
 const privacyEnPath = join(repoRoot, "docs/legal/privacy-policy.en.md");
 const declarationsPath = join(repoRoot, "docs/legal/play-declarations.md");

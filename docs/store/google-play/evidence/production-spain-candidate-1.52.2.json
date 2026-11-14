@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "kind": "SpainLaunchCandidateVerificationV1",
+  "verifiedAt": "2026-10-18T12:30:25.122Z",
+  "result": "passed",
+  "releaseUrl": "https://github.com/maximofn/gymnasia/releases/tag/v1.52.2",
+  "immutable": true,
+  "version": "1.52.2",
+  "versionCode": "89",
+  "commit": "1a5eae4a502cff72e70025d93e764dcdd95aef1c",
+  "sha256": "dcd2c433509897498f634cb6055fa305b5eb07b61e8a2de7da3c09cf1d893044",
+  "size": 69025004,
+  "sourceGateCount": 20,
+  "sourceGateAuditedAt": "2026-10-14T05:04:36.483Z",
+  "googleReceiptObservedAt": "2026-10-14T05:32:10.651Z",
+  "googleReceiptTrack": "alpha",
+  "limits": [
+    "La verificación local no vuelve a ejecutar los gates históricos.",
+    "El recibo de Google corresponde al 14 de octubre; el estado actual de Play se contrasta por separado.",
+    "No acredita instalación ni disponibilidad pública."
+  ]
+}

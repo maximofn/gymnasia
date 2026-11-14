@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   readPngMetadata,
+  runCheck,
   scanForbiddenText,
   validateComplianceCopy,
   validateManifest,
@@ -104,4 +105,8 @@ test("rechaza textos alternativos que superan los 140 caracteres oficiales", () 
   });
   assert.ok(errors.includes("el alt text del icono supera 140 caracteres"));
   assert.ok(errors.includes("el alt text de la feature graphic supera 140 caracteres"));
+});
+
+test("valida la ficha contra la pantalla real de Coach tras separar App.tsx", () => {
+  assert.equal(runCheck(), 0);
 });

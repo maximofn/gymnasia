@@ -1,0 +1,30 @@
+{
+  "observedAt": "2026-10-18T12:31:44.627754+00:00",
+  "source": "https://www.tmdn.org/tmview/api/search/results",
+  "results": [
+    {
+      "term": "gymnasia",
+      "status": "unavailable",
+      "errorType": "RemoteDisconnected"
+    }
+  ],
+  "scope": "Comprobación preliminar de la cadena literal; no sustituye una revisión de signos similares ni una decisión jurídica.",
+  "browserVerification": {
+    "date": "2026-10-18",
+    "criterion": "contains",
+    "offices": [
+      "ES",
+      "EM"
+    ],
+    "statusFilter": "all",
+    "classFilter": "all",
+    "gymnasia": "No se encontraron filas",
+    "controlTerm": "gimnasio",
+    "controlTotalResults": 86,
+    "evidence": [
+      "trademark-gymnasia-2026-10-18.png",
+      "trademark-control-2026-10-18.png"
+    ],
+    "limits": "Actualiza solo la consulta literal y su control; no repite la búsqueda de signos similares ni revisa otros territorios."
+  }
+}
