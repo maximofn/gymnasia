@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**1.100/7.140 imágenes registradas; 6.040 pendientes; 15,41 %.**
+**1.200/7.140 imágenes registradas; 5.940 pendientes; 16,81 %.**
 
-Las tandas `0001` a `0011` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0012` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -26,6 +26,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0009: manifiesto y prompts](0009/manifest.json).
 - [Tanda 0010: manifiesto y prompts](0010/manifest.json).
 - [Tanda 0011: manifiesto y prompts](0011/manifest.json).
+- [Tanda 0012: manifiesto y prompts](0012/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -1562,3 +1563,154 @@ hasta la revisión del mantenedor. BLS permanece fuera de la app.
 | [bls-F303400](0011/bls-F303400.webp) | Brombeere getrocknet | Blackberry dried |
 | [bls-F303600](0011/bls-F303600.webp) | Brombeersaft | Blackberry juice |
 | [bls-F303902](0011/bls-F303902.webp) | Brombeere gezuckert, Konserve, abgetropft | Blackberry sugared, canned, drained |
+
+## Tanda 0012: bayas, uvas y frutas tropicales
+
+100 imágenes nuevas desde `bls-F304100` hasta `bls-F529100`: arándanos,
+grosellas, uvas, moras híbridas y otras bayas; piña, aguacate, plátano, dátil,
+higo, granada, kaki, maracuyá, acerola, guayaba, kiwi, lichi, mango, papaya,
+lulo, fruta del pan, chirimoya y níspero japonés, con sus variantes. Cada código
+tiene su propia generación integrada de Codex. El manifiesto conserva los
+nombres oficiales DE/EN literales, prompts exactos y huellas de nombres,
+referencias y WebP finales.
+
+Las bayas crudas conservan su forma firme y su color natural; las cocinadas
+aparecen blandas. Las conservas escurridas se muestran sin líquido acumulado.
+Las conservas de arándano rojo con pectina presentan una textura de gel con fruta.
+Los zumos y néctares aparecen en un vaso sencillo, sin fruta decorativa.
+La fruta deshidratada de esta tanda tiene una textura arrugada;
+el plátano seco no se representa como chips fritos. Se distingue el dátil
+fresco y carnoso de la variante seca. Los edulcorantes y el hierro añadido
+no se representan mediante partículas, símbolos, envases ni ingredientes.
+Las variantes semejantes, incluidas las silvestres, se generan por separado;
+la imagen no demuestra la variedad ni las propiedades invisibles de una ficha.
+
+Fuentes editoriales consultadas para evitar confusiones, sin copiar fotografías
+ni modificar los nombres oficiales de BLS:
+
+- [RHS: moras y bayas híbridas](https://www.rhs.org.uk/fruit/blackberries-and-hybrid-berries/grow-your-own): loganberry rojo oscuro y boysenberry oscuro.
+- [Flora de Irlanda del Norte: Rubus chamaemorus](https://www.habitas.org.uk/flora/species.asp?item=3317): fruto naranja de la mora de los pantanos.
+- [RHS: Sorbus aucuparia Edulis](https://www.rhs.org.uk/plants/43982/sorbus-aucuparia-edulis/details): frutos naranja rojizo.
+- [FAO Ecocrop: Solanum quitoense](https://ecocrop.apps.fao.org/ecocrop/srv/en/cropView?id=1968): lulo de exterior naranja y pulpa verde.
+- [Universidad de Florida: loquat](https://ask.ifas.ufl.edu/publication/MG050): pulpa clara, amarilla o naranja y semillas marrones; se representa el níspero japonés amarillo-naranja.
+
+Las referencias CIQUAL se usan solo para el estilo. Son ilustraciones de
+Gymnasia, no proporcionadas ni validadas por Max Rubner-Institut. No prueban
+receta, ingredientes exactos, alérgenos, composición ni una ración de 100 g.
+
+Revisión: todos los WebP finales en nueve láminas; 14 casos a tamaño completo.
+Correcciones registradas: 0. El estado sigue siendo `pending-review`
+hasta la revisión del mantenedor. BLS permanece fuera de la app.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0012-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0012-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0012-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0012-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0012-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0012-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0012-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0012-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0012-09.jpg)
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-F304100](0012/bls-F304100.webp) | Heidelbeere roh | Blueberry raw |
+| [bls-F304152](0012/bls-F304152.webp) | Heidelbeere gedünstet | Blueberry stewed |
+| [bls-F304600](0012/bls-F304600.webp) | Heidelbeersaft | Blueberry juice |
+| [bls-F304902](0012/bls-F304902.webp) | Heidelbeere gezuckert, Konserve, abgetropft | Blueberry sugared, canned, drained |
+| [bls-F305100](0012/bls-F305100.webp) | Stachelbeere roh | Gooseberry raw |
+| [bls-F305152](0012/bls-F305152.webp) | Stachelbeere gedünstet | Gooseberry stewed |
+| [bls-F305902](0012/bls-F305902.webp) | Stachelbeere gezuckert, Konserve, abgetropft | Gooseberry sugared, canned, drained |
+| [bls-F306100](0012/bls-F306100.webp) | Loganbeere roh | Loganberry raw |
+| [bls-F307100](0012/bls-F307100.webp) | Boysenbeere roh | Boysenberry raw |
+| [bls-F310100](0012/bls-F310100.webp) | Weintraube roh | Grape raw |
+| [bls-F310600](0012/bls-F310600.webp) | Traubensaft | Grape juice |
+| [bls-F311100](0012/bls-F311100.webp) | Weintraube rot, roh | Grape red, raw |
+| [bls-F311600](0012/bls-F311600.webp) | Traubensaft rot | Grape red juice |
+| [bls-F312100](0012/bls-F312100.webp) | Weintraube weiß, roh | Grape white, raw |
+| [bls-F312600](0012/bls-F312600.webp) | Traubensaft weiß | Grape white juice |
+| [bls-F313902](0012/bls-F313902.webp) | Weintraube weiß, ungesüßt, Konserve, abgetropft | Grape white, unsweetened, canned, drained |
+| [bls-F317600](0012/bls-F317600.webp) | Traubensaft angereichert mit Eisen | Grape juice fortified with iron |
+| [bls-F321100](0012/bls-F321100.webp) | Johannisbeere rot, roh | Red currant raw |
+| [bls-F321152](0012/bls-F321152.webp) | Johannisbeere rot, gedünstet | Red currant stewed |
+| [bls-F321600](0012/bls-F321600.webp) | Johannisbeersaft rot | Red currant juice |
+| [bls-F321902](0012/bls-F321902.webp) | Johannisbeere rot, gezuckert, Konserve, abgetropft | Red currant sugared, canned, drained |
+| [bls-F322100](0012/bls-F322100.webp) | Johannisbeere weiß, roh | White currant raw |
+| [bls-F323100](0012/bls-F323100.webp) | Johannisbeere schwarz roh | Black currant raw |
+| [bls-F323152](0012/bls-F323152.webp) | Johannisbeere schwarz gedünstet | Black currant stewed |
+| [bls-F323600](0012/bls-F323600.webp) | Johannisbeersaft schwarz | Black currant juice |
+| [bls-F323700](0012/bls-F323700.webp) | Johannisbeernektar schwarz | Black currant nectar |
+| [bls-F323902](0012/bls-F323902.webp) | Johannisbeere schwarz, gezuckert, Konserve, abgetropft | Black currant sugared, canned, drained |
+| [bls-F324902](0012/bls-F324902.webp) | Johannisbeere rot, ungesüßt, Konserve, abgetropft | Red currant unsweetened, canned, drained |
+| [bls-F331100](0012/bls-F331100.webp) | Maulbeere roh | Mulberry raw |
+| [bls-F331600](0012/bls-F331600.webp) | Maulbeersaft | Mulberry juice |
+| [bls-F340902](0012/bls-F340902.webp) | Erdbeere ungesüßt, Konserve, abgetropft | Strawberry unsweetened, canned, drained |
+| [bls-F341902](0012/bls-F341902.webp) | Erdbeere mit Süßungsmitteln, Konserve, abgetropft | Strawberry with artificial sweeteners, canned, drained |
+| [bls-F3A2902](0012/bls-F3A2902.webp) | Himbeere mit Süßungsmitteln, Konserve, abgetropft | Raspberry with artificial sweeteners, canned, drained |
+| [bls-F3A3700](0012/bls-F3A3700.webp) | Johannisbeernektar schwarz, mit Süßungsmitteln | Black currant nectar with artificial sweeteners |
+| [bls-F3A3902](0012/bls-F3A3902.webp) | Brombeere ungesüßt, Konserve, abgetropft | Blackberry unsweetened, canned, drained |
+| [bls-F3A4902](0012/bls-F3A4902.webp) | Heidelbeere mit Süßungsmitteln, Konserve, abgetropft | Blueberry with artificial sweeteners, canned, drained |
+| [bls-F3A5902](0012/bls-F3A5902.webp) | Stachelbeere mit Süßungsmitteln, Konserve, abgetropft | Gooseberry with artificial sweeteners, canned, drained |
+| [bls-F3B2902](0012/bls-F3B2902.webp) | Himbeere ungesüßt, Konserve, abgetropft | Raspberry unsweetened, canned, drained |
+| [bls-F3B4902](0012/bls-F3B4902.webp) | Heidelbeere ungesüßt, Konserve, abgetropft | Blueberry unsweetened, canned, drained |
+| [bls-F3B5902](0012/bls-F3B5902.webp) | Stachelbeere ungesüßt, Konserve, abgetropft | Gooseberry unsweetened, canned, drained |
+| [bls-F401100](0012/bls-F401100.webp) | Preiselbeere roh | Lingonberry raw |
+| [bls-F401600](0012/bls-F401600.webp) | Preiselbeersaft | Lingonberry juice |
+| [bls-F401902](0012/bls-F401902.webp) | Preiselbeere gezuckert, Konserve, abgetropft | Lingonberry sugared, canned, drained |
+| [bls-F402100](0012/bls-F402100.webp) | Hagebutte roh | Rose hip raw |
+| [bls-F403100](0012/bls-F403100.webp) | Schlehe roh | Sloe raw |
+| [bls-F403600](0012/bls-F403600.webp) | Schlehensaft | Sloe fruit juice |
+| [bls-F404100](0012/bls-F404100.webp) | Eberesche süß, roh | Sweet rowanberry raw |
+| [bls-F405100](0012/bls-F405100.webp) | Sanddornbeere roh | Sea buckthorn berry raw |
+| [bls-F405600](0012/bls-F405600.webp) | Sanddornsaft | Sea buckthorn berry juice |
+| [bls-F406100](0012/bls-F406100.webp) | Holunderbeere roh | Elderberry raw |
+| [bls-F406600](0012/bls-F406600.webp) | Holundersaft | Elderberry juice |
+| [bls-F407100](0012/bls-F407100.webp) | Moosbeere roh | Small cranberry raw |
+| [bls-F408000](0012/bls-F408000.webp) | Moltebeere roh | Cloudberry raw |
+| [bls-F409100](0012/bls-F409100.webp) | Wald-Erdbeere roh | Wild strawberry raw |
+| [bls-F411100](0012/bls-F411100.webp) | Wald-Himbeere roh | Wild raspberry raw |
+| [bls-F413100](0012/bls-F413100.webp) | Wald-Brombeere roh | Wild blackberry raw |
+| [bls-F414400](0012/bls-F414400.webp) | Cranberries getrocknet, gezuckert | Cranberries dried, sugared |
+| [bls-F4A1900](0012/bls-F4A1900.webp) | Preiselbeere gezuckert (mit Pektin) Konserve | Lingonberry sugared (with pectine) canned |
+| [bls-F4B1900](0012/bls-F4B1900.webp) | Preiselbeere mit einer Zuckerart und Süßungsmitteln (mit Pektin) Konserve | Lingonberry with sugar and artificial sweeteners (with pectine) canned |
+| [bls-F501100](0012/bls-F501100.webp) | Ananas roh | Pineapple raw |
+| [bls-F501152](0012/bls-F501152.webp) | Ananas gedünstet | Pineapple stewed |
+| [bls-F501400](0012/bls-F501400.webp) | Ananas getrocknet | Pineapple dried |
+| [bls-F501600](0012/bls-F501600.webp) | Ananassaft | Pineapple juice |
+| [bls-F501902](0012/bls-F501902.webp) | Ananas gezuckert, Konserve, abgetropft | Pineapple sugared, canned, drained |
+| [bls-F502100](0012/bls-F502100.webp) | Avocado roh | Avocado raw |
+| [bls-F503100](0012/bls-F503100.webp) | Banane roh | Banana raw |
+| [bls-F503400](0012/bls-F503400.webp) | Banane getrocknet | Banana dried |
+| [bls-F503700](0012/bls-F503700.webp) | Bananennektar | Banana nectar |
+| [bls-F504100](0012/bls-F504100.webp) | Dattel roh | Date raw |
+| [bls-F504400](0012/bls-F504400.webp) | Dattel getrocknet | Date dried |
+| [bls-F505100](0012/bls-F505100.webp) | Feige roh | Fig raw |
+| [bls-F505400](0012/bls-F505400.webp) | Feige getrocknet | Fig dried |
+| [bls-F505902](0012/bls-F505902.webp) | Feige gezuckert, Konserve, abgetropft | Fig sugared, canned, drained |
+| [bls-F506100](0012/bls-F506100.webp) | Granatapfel roh | Pomegranate raw |
+| [bls-F507100](0012/bls-F507100.webp) | Kaki roh | Persimmon raw |
+| [bls-F507600](0012/bls-F507600.webp) | Kakisaft | Persimmon juice |
+| [bls-F508100](0012/bls-F508100.webp) | Maracuja/Passionsfrucht, roh | Passion fruit raw |
+| [bls-F508600](0012/bls-F508600.webp) | Maracujasaft/Passionsfruchtsaft | Passion fruit juice |
+| [bls-F508700](0012/bls-F508700.webp) | Maracujanektar/Passionsfruchtnektar | Passion fruit nectar |
+| [bls-F511100](0012/bls-F511100.webp) | Acerola roh | Acerola raw |
+| [bls-F511600](0012/bls-F511600.webp) | Acerolasaft | Acerola juice |
+| [bls-F513100](0012/bls-F513100.webp) | Guave roh | Guava raw |
+| [bls-F514100](0012/bls-F514100.webp) | Kiwi roh | Kiwi fruit raw |
+| [bls-F514152](0012/bls-F514152.webp) | Kiwi gedünstet | Kiwi stewed |
+| [bls-F514600](0012/bls-F514600.webp) | Kiwisaft | Kiwi fruit juice |
+| [bls-F515100](0012/bls-F515100.webp) | Litschi roh | Lychee raw |
+| [bls-F515600](0012/bls-F515600.webp) | Litschisaft | Lychee juice |
+| [bls-F515902](0012/bls-F515902.webp) | Litschi gezuckert, Konserve, abgetropft | Lychee sugared, canned, drained |
+| [bls-F516100](0012/bls-F516100.webp) | Mango roh | Mango raw |
+| [bls-F516400](0012/bls-F516400.webp) | Mango getrocknet | Mango dried |
+| [bls-F516600](0012/bls-F516600.webp) | Mangosaft | Mango juice |
+| [bls-F516700](0012/bls-F516700.webp) | Mangonektar | Mango nectar |
+| [bls-F516902](0012/bls-F516902.webp) | Mango gezuckert, Konserve, abgetropft | Mango sugared, canned, drained |
+| [bls-F517100](0012/bls-F517100.webp) | Papaya roh | Papaya raw |
+| [bls-F517400](0012/bls-F517400.webp) | Papaya getrocknet | Papaya dried |
+| [bls-F517902](0012/bls-F517902.webp) | Papaya gezuckert, Konserve, abgetropft | Papaya sugared, canned, drained |
+| [bls-F522100](0012/bls-F522100.webp) | Lulo/Naranjilla, roh | Naranjilla raw |
+| [bls-F523100](0012/bls-F523100.webp) | Brotfrucht roh | Breadfruit raw |
+| [bls-F524100](0012/bls-F524100.webp) | Cherimoya roh | Cherimoya raw |
+| [bls-F529100](0012/bls-F529100.webp) | Japanische Wollmispel/Loquat, roh | Japanese medlar/loquat, raw |
