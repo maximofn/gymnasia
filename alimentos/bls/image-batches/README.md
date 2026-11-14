@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**900/7.140 imágenes registradas; 6.240 pendientes; 12,61 %.**
+**1.000/7.140 imágenes registradas; 6.140 pendientes; 14,01 %.**
 
-Las tandas `0001` a `0009` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0010` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -24,6 +24,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0007: manifiesto y prompts](0007/manifest.json).
 - [Tanda 0008: manifiesto y prompts](0008/manifest.json).
 - [Tanda 0009: manifiesto y prompts](0009/manifest.json).
+- [Tanda 0010: manifiesto y prompts](0010/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -1273,3 +1274,147 @@ hasta la revisión del mantenedor. BLS permanece fuera de la app.
 | [bls-E112400](0009/bls-E112400.webp) | Hühnerei Eigelb, getrocknet | Chicken egg yolk, dried |
 | [bls-E112500](0009/bls-E112500.webp) | Hühnerei Eigelb, Pulver | Chicken egg yolk, powder |
 | [bls-E113100](0009/bls-E113100.webp) | Hühnerei Eiklar, roh | Chicken egg white, raw |
+
+## Tanda 0010: huevos, pastas, Knödel, zumos y ruibarbo
+
+100 imágenes nuevas desde `bls-E113132` hasta `bls-F081100`: claras, huevos de
+pato, oca y pavo, pastas secas y frescas, ravioli y tortellini, Schupfnudeln,
+Knödel, zumos, néctares, smoothies y ruibarbo crudo. Cada código tiene su propia
+generación integrada de Codex. El manifiesto conserva nombres oficiales DE/EN
+literales, prompt exacto, referencia y huellas de nombres y WebP.
+
+Las pastas secas tienen bordes firmes y mates; las frescas crudas son flexibles
+y mates; las cocidas están hidratadas. El horneado se distingue por bordes secos
+y tostados y el paso por sartén por sus zonas de contacto doradas. No se añade
+queso ni salsa a los alimentos que no los nombran. Los ravioli de conserva sí
+muestran su salsa de tomate. Los rellenos se ven en cortes. Los Knödel crudos,
+secos, rehidratados y cocinados conservan su estado; las claras aparecen sin yema.
+
+Los zumos, néctares y smoothies se muestran en un vaso sencillo, sin envases,
+frutas decorativas ni símbolos para vitaminas, minerales o edulcorantes. Estas
+propiedades y la ausencia de huevo o gluten no se pueden verificar en la imagen.
+Cada variante visualmente parecida se ha generado de forma independiente.
+
+Como apoyo editorial de las formas se consultaron [Schupfnudeln de Küchengötter](https://www.kuechengoetter.de/rezepte/schupfnudeln-63452),
+[Böhmische Knödel de REWE](https://www.rewe.de/rezepte/boehmische-knoedel/) y
+[Grießklößchen de Dr. Oetker Professional](https://www.oetker-professional.de/produkte/suppeneinlagen/suppeneinlagen-vegetarisch/griesskloesschen-tiefgefroren-1-39-275055).
+Son orientación editorial, no la receta de las fichas BLS; no se copiaron sus
+fotografías. Las referencias CIQUAL se usan solo para el estilo. Ninguna imagen
+acredita ingredientes, alérgenos, composición o una ración de 100 g.
+
+Revisión: todos los WebP finales en nueve láminas; 10 casos a tamaño completo.
+Correcciones registradas: 0. El estado sigue siendo `pending-review`
+hasta la revisión del mantenedor. BLS permanece fuera de la app.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0010-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0010-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0010-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0010-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0010-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0010-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0010-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0010-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0010-09.jpg)
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-E113132](0010/bls-E113132.webp) | Hühnerei Eiklar, gekocht | Chicken egg white, boiled |
+| [bls-E113162](0010/bls-E113162.webp) | Hühnerei Eiklar, gebacken | Chicken egg white, baked |
+| [bls-E113182](0010/bls-E113182.webp) | Hühnerei Eiklar, gebraten ohne Fett (Pfanne) | Chicken egg white, fried without fat (pan) |
+| [bls-E113400](0010/bls-E113400.webp) | Hühnerei Eiklar, getrocknet | Chicken egg white, dried |
+| [bls-E113500](0010/bls-E113500.webp) | Hühnerei Eiklar, Pulver | Chicken egg white, powder |
+| [bls-E131100](0010/bls-E131100.webp) | Entenei roh | Duck egg raw |
+| [bls-E131132](0010/bls-E131132.webp) | Entenei gekocht | Duck egg boiled |
+| [bls-E141100](0010/bls-E141100.webp) | Gänseei roh | Goose egg raw |
+| [bls-E141132](0010/bls-E141132.webp) | Gänseei gekocht | Goose egg boiled |
+| [bls-E151100](0010/bls-E151100.webp) | Putenei roh | Turkey egg raw |
+| [bls-E151132](0010/bls-E151132.webp) | Putenei gekocht | Turkey egg boiled |
+| [bls-E401000](0010/bls-E401000.webp) | Teigwaren eifrei, roh | Pasta egg-free, raw |
+| [bls-E401032](0010/bls-E401032.webp) | Teigwaren eifrei, gekocht | Pasta egg-free, boiled |
+| [bls-E401062](0010/bls-E401062.webp) | Teigwaren eifrei, gekocht, gebacken | Pasta egg-free, boiled, baked |
+| [bls-E401082](0010/bls-E401082.webp) | Teigwaren eifrei, gekocht, gebraten ohne Fett (Pfanne) | Pasta egg-free, boiled, fried without fat (pan) |
+| [bls-E430062](0010/bls-E430062.webp) | Eierteigwaren gekocht, gebacken | Egg pasta boiled, baked |
+| [bls-E430082](0010/bls-E430082.webp) | Eierteigwaren gekocht, gebraten ohne Fett (Pfanne) | Egg pasta boiled, fried without fat (pan) |
+| [bls-E432000](0010/bls-E432000.webp) | Eierteigwaren roh | Egg pasta raw |
+| [bls-E432032](0010/bls-E432032.webp) | Eierteigwaren gekocht | Egg pasta boiled |
+| [bls-E438000](0010/bls-E438000.webp) | Eier-Frischteigwaren roh | Fresh egg pasta raw |
+| [bls-E438032](0010/bls-E438032.webp) | Eier-Frischteigwaren gekocht | Fresh egg pasta boiled |
+| [bls-E438062](0010/bls-E438062.webp) | Eier-Frischteigwaren gekocht, gebacken | Fresh egg pasta boiled, baked |
+| [bls-E438082](0010/bls-E438082.webp) | Eier-Frischteigwaren gekocht, gebraten ohne Fett (Pfanne) | Fresh egg pasta boiled, fried without fat (pan) |
+| [bls-E470000](0010/bls-E470000.webp) | Eier-Frischteigwaren Ravioli (Gemüsefüllung) roh | Fresh egg pasta Ravioli (vegetable filling) raw |
+| [bls-E470032](0010/bls-E470032.webp) | Eier-Frischteigwaren Ravioli (Gemüsefüllung) gekocht | Fresh egg pasta Ravioli (vegetable filling) boiled |
+| [bls-E470042](0010/bls-E470042.webp) | Eier-Frischteigwaren Ravioli (Gemüsefüllung) gedämpft | Fresh egg pasta Ravioli (vegetable filling) steamed |
+| [bls-E470082](0010/bls-E470082.webp) | Eier-Frischteigwaren Ravioli (Gemüsefüllung) gekocht, gebraten ohne Fett (Pfanne) | Fresh egg pasta Ravioli (vegetable filling) boiled, fried without fat (pan) |
+| [bls-E470162](0010/bls-E470162.webp) | Eier-Frischteigwaren Ravioli (Gemüsefüllung) gekocht, gebacken | Fresh egg pasta Ravioli (vegetable filling) boiled, baked |
+| [bls-E500032](0010/bls-E500032.webp) | Vollkornteigwaren eifrei, gekocht | Wholemeal pasta egg-free, boiled |
+| [bls-E500062](0010/bls-E500062.webp) | Vollkornteigwaren eifrei, gekocht, gebacken | Wholemeal pasta egg-free, boiled, baked |
+| [bls-E500082](0010/bls-E500082.webp) | Vollkornteigwaren eifrei, gekocht, gebraten ohne Fett (Pfanne) | Wholemeal pasta egg-free, boiled, fried without fat (pan) |
+| [bls-E510000](0010/bls-E510000.webp) | Vollkornteigwaren eifrei, roh | Wholemeal pasta egg-free, raw |
+| [bls-E530000](0010/bls-E530000.webp) | Vollkorneierteigwaren roh | Wholemeal egg pasta raw |
+| [bls-E530032](0010/bls-E530032.webp) | Vollkorneierteigwaren gekocht | Wholemeal egg pasta boiled |
+| [bls-E530062](0010/bls-E530062.webp) | Vollkorneierteigwaren gekocht, gebacken | Wholemeal egg pasta boiled, baked |
+| [bls-E530082](0010/bls-E530082.webp) | Vollkorneierteigwaren gekocht, gebraten ohne Fett (Pfanne) | Wholemeal egg pasta boiled, fried without fat (pan) |
+| [bls-E603000](0010/bls-E603000.webp) | Eier-Frischteigwaren Ravioli (Fleischfüllung) roh | Fresh egg pasta Ravioli (meat filling) raw |
+| [bls-E603022](0010/bls-E603022.webp) | Eier-Frischteigwaren Ravioli (Fleischfüllung) gedämpft | Fresh egg pasta Ravioli (meat filling) steamed |
+| [bls-E603032](0010/bls-E603032.webp) | Eier-Frischteigwaren Ravioli (Fleischfüllung) gekocht | Fresh egg pasta Ravioli (meat filling) boiled |
+| [bls-E603062](0010/bls-E603062.webp) | Eier-Frischteigwaren Ravioli (Fleischfüllung) gekocht, gebacken | Fresh egg pasta Ravioli (meat filling) boiled, baked |
+| [bls-E603082](0010/bls-E603082.webp) | Eier-Frischteigwaren Ravioli (Fleischfüllung) gekocht, gebraten ohne Fett (Pfanne) | Fresh egg pasta Ravioli (meat filling) boiled, fried without fat (pan) |
+| [bls-E604300](0010/bls-E604300.webp) | Eierteigwaren mit Weizenkeimen, roh | Egg pasta with wheat germ, raw |
+| [bls-E604332](0010/bls-E604332.webp) | Eierteigwaren mit Weizenkeimen, gekocht | Egg pasta with wheat germ, boiled |
+| [bls-E605000](0010/bls-E605000.webp) | Kartoffel-Schupfnudeln roh | Potato noodles (Schupfnudeln) raw |
+| [bls-E605032](0010/bls-E605032.webp) | Kartoffel-Schupfnudeln gekocht | Potato noodles (Schupfnudeln) boiled |
+| [bls-E605062](0010/bls-E605062.webp) | Kartoffel-Schupfnudeln gekocht, gebacken | Potato noodles (Schupfnudeln) boiled, baked |
+| [bls-E605082](0010/bls-E605082.webp) | Kartoffel-Schupfnudeln gekocht, gebraten ohne Fett (Pfanne) | Potato noodles (Schupfnudeln) boiled, fried without fat (pan) |
+| [bls-E605200](0010/bls-E605200.webp) | Schupfnudeln schwäbisch, roh | Finger-shaped pasta Swabian style, raw |
+| [bls-E605232](0010/bls-E605232.webp) | Schupfnudeln schwäbisch, gekocht | Finger-shaped pasta Swabian style, boiled |
+| [bls-E605300](0010/bls-E605300.webp) | Schupfnudeln eifrei, roh | Finger-shaped pasta egg-free, raw |
+| [bls-E605332](0010/bls-E605332.webp) | Schupfnudeln eifrei, gekocht | Finger-shaped pasta egg-free, boiled |
+| [bls-E606000](0010/bls-E606000.webp) | Semmelknödel roh | White bread dumplings raw |
+| [bls-E606022](0010/bls-E606022.webp) | Semmelknödel gedämpft | White bread dumplings steamed |
+| [bls-E606032](0010/bls-E606032.webp) | Semmelknödel gekocht | White bread dumplings boiled |
+| [bls-E606062](0010/bls-E606062.webp) | Semmelknödel gekocht, gebacken | White bread dumplings boiled, baked |
+| [bls-E606082](0010/bls-E606082.webp) | Semmelknödel gekocht, gebraten ohne Fett (Pfanne) | White bread dumplings boiled, fried without fat (pan) |
+| [bls-E606200](0010/bls-E606200.webp) | Semmelknödel getrocknet | White bread dumplings dried |
+| [bls-E606232](0010/bls-E606232.webp) | Semmelknödel getrocknet, gekocht | White bread dumplings dried, boiled |
+| [bls-E606282](0010/bls-E606282.webp) | Semmelknödel getrocknet, gekocht, gebraten ohne Fett (Pfanne) | White bread dumplings dried, boiled, fried without fat (pan) |
+| [bls-E607000](0010/bls-E607000.webp) | Grießklößchen roh | Semolina dumplings raw |
+| [bls-E607032](0010/bls-E607032.webp) | Grießklößchen gekocht | Semolina dumplings boiled |
+| [bls-E607100](0010/bls-E607100.webp) | Grießklößchen getrocknet | Semolina dumplings dried |
+| [bls-E607132](0010/bls-E607132.webp) | Grießklößchen getrocknet, gekocht | Semolina dumplings dried, boiled |
+| [bls-E607182](0010/bls-E607182.webp) | Grießklößchen getrocknet, gekocht, gebraten ohne Fett (Pfanne) | Semolina dumplings dried, boiled, fried without fat (pan) |
+| [bls-E608000](0010/bls-E608000.webp) | Böhmische Knödel roh | Bohemian dumplings raw |
+| [bls-E608032](0010/bls-E608032.webp) | Böhmische Knödel gekocht | Bohemian dumplings boiled |
+| [bls-E608082](0010/bls-E608082.webp) | Böhmische Knödel gekocht, gebraten ohne Fett (Pfanne) | Bohemian dumplings boiled, fried without fat (pan) |
+| [bls-E609100](0010/bls-E609100.webp) | Eierteigwaren Tortelloni (Ricotta-Spinat-Füllung) getrocknet | Egg pasta Tortelloni (ricotta and spinach filling) dried |
+| [bls-E609132](0010/bls-E609132.webp) | Eierteigwaren Tortelloni (Ricotta-Spinat-Füllung) getrocknet, gekocht | Egg pasta Tortelloni (ricotta and spinach filling) dried, boiled |
+| [bls-E609200](0010/bls-E609200.webp) | Eierteigwaren Tortellini (Fleischfüllung) getrocknet | Egg pasta Tortellini (meat filling) dried |
+| [bls-E609232](0010/bls-E609232.webp) | Eierteigwaren Tortellini (Fleischfüllung) getrocknet, gekocht | Egg pasta Tortellini (meat filling) dried, boiled |
+| [bls-E612000](0010/bls-E612000.webp) | Teigwaren eifrei, glutenfrei, roh | Pasta egg-free, gluten-free, raw |
+| [bls-E612032](0010/bls-E612032.webp) | Teigwaren eifrei, glutenfrei, gekocht | Pasta egg-free, gluten-free, boiled |
+| [bls-E612100](0010/bls-E612100.webp) | Eierteigwaren glutenfrei, roh | Egg pasta gluten-free, raw |
+| [bls-E612132](0010/bls-E612132.webp) | Eierteigwaren glutenfrei, gekocht | Egg pasta gluten-free, boiled |
+| [bls-E632000](0010/bls-E632000.webp) | Dinkelteigwaren eifrei, roh | Spelt pasta egg-free, raw |
+| [bls-E632032](0010/bls-E632032.webp) | Dinkelteigwaren eifrei, gekocht | Spelt pasta egg-free, boiled |
+| [bls-E632100](0010/bls-E632100.webp) | Dinkeleierteigwaren roh | Spelt egg pasta raw |
+| [bls-E632132](0010/bls-E632132.webp) | Dinkeleierteigwaren gekocht | Spelt egg pasta boiled |
+| [bls-E632200](0010/bls-E632200.webp) | Dinkelvollkornteigwaren eifrei, roh | Wholemeal spelt pasta egg-free, raw |
+| [bls-E632232](0010/bls-E632232.webp) | Dinkelvollkornteigwaren eifrei, gekocht | Wholemeal spelt pasta egg-free, boiled |
+| [bls-E632300](0010/bls-E632300.webp) | Dinkelvollkorneierteigwaren roh | Wholemeal spelt egg pasta raw |
+| [bls-E632332](0010/bls-E632332.webp) | Dinkelvollkorneierteigwaren gekocht | Wholemeal spelt egg pasta boiled |
+| [bls-E811000](0010/bls-E811000.webp) | Frischteigwaren eifrei, roh | Fresh pasta egg-free, raw |
+| [bls-E811032](0010/bls-E811032.webp) | Frischteigwaren eifrei, gekocht | Fresh pasta egg-free, boiled |
+| [bls-E901000](0010/bls-E901000.webp) | Teigwaren eifrei, Ravioli (Fleischfüllung) in Tomatensoße, Konserve | Pasta egg-free, Ravioli (meat filling) in tomato sauce, canned |
+| [bls-E911000](0010/bls-E911000.webp) | Teigwaren eifrei, Ravioli (Gemüsefüllung) in Tomatensoße, Konserve | Pasta egg-free, Ravioli (vegetable filling) in tomato sauce, canned |
+| [bls-F010600](0010/bls-F010600.webp) | Mehrfruchtsaft | Multi-fruit juice |
+| [bls-F012700](0010/bls-F012700.webp) | Mehrfruchtnektar | Mixed fruit nectar |
+| [bls-F013700](0010/bls-F013700.webp) | Mehrfruchtnektar mit Süßungsmitteln | Mixed fruit nectar with artificial sweeteners |
+| [bls-F014600](0010/bls-F014600.webp) | Mehrfruchtsaft angereichert mit Vitaminen (Multivitaminsaft) | Multi-fruit juice fortified with vitamins (multivitamin juice) |
+| [bls-F016600](0010/bls-F016600.webp) | Mehrfruchtsaft angereichert mit Vitaminen und Mineralstoffen | Multi-fruit juice fortified with vitamins and minerals |
+| [bls-F020600](0010/bls-F020600.webp) | Roter Mehrfruchtsaft | Red multi-fruit juice |
+| [bls-F021600](0010/bls-F021600.webp) | Roter Mehrfruchtsaft angereichert mit Vitaminen (Roter Multivitaminsaft) | Red multi-fruit juice fortified with vitamins (red multivitamin juice) |
+| [bls-F022700](0010/bls-F022700.webp) | Mehrfruchtnektar, angereichert mit Vitaminen (Multivitaminnektar) | Mixed fruit nectar, fortified with vitamins (multivitamin nectar) |
+| [bls-F023700](0010/bls-F023700.webp) | Mehrfruchtnektar mit Süßungsmitteln, angereichert mit Vitaminen (Multivitaminnektar) | Mixed fruit nectar with artificial sweeteners, fortified with vitamins (multivitamin nectar) |
+| [bls-F032600](0010/bls-F032600.webp) | Smoothie purpur (Früchte) | Smoothie of purple fruits |
+| [bls-F033600](0010/bls-F033600.webp) | Smoothie gelb (Früchte) | Smoothie of yellow fruits |
+| [bls-F034600](0010/bls-F034600.webp) | Smoothie grün (Früchte/Gemüse) | Smoothie of green fruits and vegetables |
+| [bls-F081100](0010/bls-F081100.webp) | Rhabarber roh | Rhubarb raw |
