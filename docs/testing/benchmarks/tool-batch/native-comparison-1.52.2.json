@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "source": "User-supplied Android tool timing events; absolute timestamps, batch IDs and unrelated events omitted.",
+  "measurementDate": "2026-10-14",
+  "reportedDevice": "Huawei P30",
+  "platform": "android",
+  "appVersion": "1.52.2",
+  "policyCandidate": "policy-v2026.08.3-ba9dc95f307b",
+  "policyBundleSha256": "892af3ad3a0d7adb46fd19769a0c3de50e145bf60dc6e551abf0690e343fbf59",
+  "measurementScope": "Tool batch wall time; initial and final LLM generation excluded.",
+  "controls": {
+    "provider": null,
+    "model": null,
+    "cacheState": "not recorded",
+    "argumentsRecorded": false,
+    "resultsRecorded": false,
+    "samplingOrder": "three Staging batches followed by three Production batches",
+    "interleaved": false,
+    "firstSamplesKnownToBeCold": false
+  },
+  "staging": {
+    "buildVersion": "1",
+    "environment": "staging",
+    "policySource": "bundled",
+    "policySequence": 2,
+    "maxConcurrentReads": 1,
+    "sourceCommit": "48768b300a5de86ea1417c93710905623d24152f",
+    "batches": [
+      {
+        "sample": 1,
+        "durationMs": 5381.6052069664,
+        "totalToolDurationMs": 5380.267186641693,
+        "startOffsetsMs": [
+          0.1635417938232422,
+          2211.6578121185303,
+          3794.3572912216187
+        ],
+        "finishOffsetsMs": [
+          2211.3395829200745,
+          3793.9776039123535,
+          5381.128644943237
+        ],
+        "toolDurationsMs": [
+          2211.176041126251,
+          1582.3197917938232,
+          1586.7713537216187
+        ],
+        "toolName": "search_exercises",
+        "effect": "read",
+        "toolCount": 3,
+        "startedCount": 3,
+        "returnedCount": 3,
+        "thrownCount": 0,
+        "peakActiveTools": 1,
+        "outcome": "returned"
+      },
+      {
+        "sample": 2,
+        "durationMs": 2785.361979007721,
+        "totalToolDurationMs": 2783.879686832428,
+        "startOffsetsMs": [
+          0.12135505676269531,
+          952.424479007721,
+          1861.3328127861023
+        ],
+        "finishOffsetsMs": [
+          951.9859380722046,
+          1860.8520827293396,
+          2784.9203128814697
+        ],
+        "toolDurationsMs": [
+          951.8645830154419,
+          908.4276037216187,
+          923.5875000953674
+        ],
+        "toolName": "search_exercises",
+        "effect": "read",
+        "toolCount": 3,
+        "startedCount": 3,
+        "returnedCount": 3,
+        "thrownCount": 0,
+        "peakActiveTools": 1,
+        "outcome": "returned"
+      },
+      {
+        "sample": 3,
+        "durationMs": 2688.8656249046326,
+        "totalToolDurationMs": 2687.0859384536743,
+        "startOffsetsMs": [
+          0.1677079200744629,
+          960.9833326339722,
+          1814.2921867370605
+        ],
+        "finishOffsetsMs": [
+          960.4473958015442,
+          1813.75,
+          2688.3317699432373
+        ],
+        "toolDurationsMs": [
+          960.2796878814697,
+          852.7666673660278,
+          874.0395832061768
+        ],
+        "toolName": "search_exercises",
+        "effect": "read",
+        "toolCount": 3,
+        "startedCount": 3,
+        "returnedCount": 3,
+        "thrownCount": 0,
+        "peakActiveTools": 1,
+        "outcome": "returned"
+      }
+    ]
+  },
+  "production": {
+    "buildVersion": "89",
+    "environment": "production",
+    "policySource": "bundled",
+    "policySequence": 4,
+    "maxConcurrentReads": 4,
+    "sourceCommit": "1a5eae4a502cff72e70025d93e764dcdd95aef1c",
+    "batches": [
+      {
+        "sample": 1,
+        "durationMs": 2637.908854007721,
+        "totalToolDurationMs": 5903.646874904633,
+        "startOffsetsMs": [
+          0.3833332061767578,
+          31.60781192779541,
+          42.819790840148926
+        ],
+        "finishOffsetsMs": [
+          2637.473436832428,
+          1843.4614582061768,
+          1497.522915840149
+        ],
+        "toolDurationsMs": [
+          2637.090103626251,
+          1811.8536462783813,
+          1454.703125
+        ],
+        "toolName": "search_exercises",
+        "effect": "read",
+        "toolCount": 3,
+        "startedCount": 3,
+        "returnedCount": 3,
+        "thrownCount": 0,
+        "peakActiveTools": 3,
+        "outcome": "returned"
+      },
+      {
+        "sample": 2,
+        "durationMs": 3309.1963539123535,
+        "totalToolDurationMs": 6435.314061641693,
+        "startOffsetsMs": [
+          0.21927118301391602,
+          18.02135419845581,
+          27.327084064483643
+        ],
+        "finishOffsetsMs": [
+          1413.3786458969116,
+          1758.796875,
+          3308.706250190735
+        ],
+        "toolDurationsMs": [
+          1413.1593747138977,
+          1740.7755208015442,
+          3281.379166126251
+        ],
+        "toolName": "search_exercises",
+        "effect": "read",
+        "toolCount": 3,
+        "startedCount": 3,
+        "returnedCount": 3,
+        "thrownCount": 0,
+        "peakActiveTools": 3,
+        "outcome": "returned"
+      },
+      {
+        "sample": 3,
+        "durationMs": 2512.567186832428,
+        "totalToolDurationMs": 5541.20051908493,
+        "startOffsetsMs": [
+          0.12708377838134766,
+          10.168749809265137,
+          19.573437690734863
+        ],
+        "finishOffsetsMs": [
+          2512.059374809265,
+          1344.2895827293396,
+          1714.720832824707
+        ],
+        "toolDurationsMs": [
+          2511.932291030884,
+          1334.1208329200745,
+          1695.1473951339722
+        ],
+        "toolName": "search_exercises",
+        "effect": "read",
+        "toolCount": 3,
+        "startedCount": 3,
+        "returnedCount": 3,
+        "thrownCount": 0,
+        "peakActiveTools": 3,
+        "outcome": "returned"
+      }
+    ]
+  },
+  "summary": {
+    "allSamples": {
+      "sampleCountPerVariant": 3,
+      "serialMedianMs": 2785.361979007721,
+      "parallelMedianMs": 2637.908854007721,
+      "parallelMedianReductionPercent": 5.2938586119614435
+    },
+    "excludingFirstObservedSample": {
+      "reason": "Sensitivity analysis, not a verified cache classification.",
+      "sampleCountPerVariant": 2,
+      "serialMeanMs": 2737.1138019561768,
+      "parallelMeanMs": 2910.8817703723907,
+      "parallelMeanIncreasePercent": 6.348583982588685
+    },
+    "nativeConcurrencyConfirmed": true,
+    "consistentLatencyImprovementDemonstrated": false
+  }
+}

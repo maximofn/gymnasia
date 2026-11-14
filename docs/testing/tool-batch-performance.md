@@ -151,9 +151,9 @@ Los paquetes distintos permiten conservar ambos APK instalados. Cada app tiene
 su propio almacenamiento; la comparación necesita datos y consultas equivalentes.
 Compilar y verificar los artefactos no añade una medición de rendimiento nativo.
 
-## Medición nativa pendiente
+## Cómo ampliar la medición nativa
 
-Comparar los APK release Staging anterior y Producción nueva en el mismo
+Comparar los APK release Staging en serie y Producción en paralelo en el mismo
 dispositivo, con consultas y datos equivalentes y alternando las variantes.
 Separar caché de catálogo fría/caliente y latencia del modelo. Registrar al
 menos 30 repeticiones útiles por variante, mediana, p95, errores y resultados.
@@ -204,7 +204,7 @@ llevar exactamente esta misma instrumentación para que su coste sea comparable.
 La prueba del 14 de octubre de 2026 en un Huawei P30 detectó dos problemas antes
 de poder medir el rendimiento. El APK Staging incorporaba el prompt y sus
 metadatos, pero no `signedPolicySnapshot.generated.ts` con el paquete firmado;
-Coach bloqueaba la consulta. Staging necesita una compilación corregida que
+Coach bloqueaba la consulta. Staging necesitaba una compilación corregida que
 prepare y verifique los cuatro módulos de la política ya aprobada.
 
 En Producción, el panel podía seguir mostrando «Sin trazas todavía» al volver
@@ -212,8 +212,9 @@ desde Coach: su controlador consideraba activo el apartado Trazas aunque la
 pestaña principal fuese Coach. Los eventos se guardaban, pero el panel no los
 volvía a cargar. En esa APK, el botón ↻ permite recuperarlos. La regresión web
 ahora borra las trazas, ejecuta una tool y exige ver `batch_finished` al volver
-a Ajustes sin pulsar recargar. No hay todavía una comparación de tiempos del
-teléfono; la respuesta del modelo por sí sola no acredita las llamadas reales.
+a Ajustes sin pulsar recargar. Al detectar estas incidencias aún no había una
+comparación de tiempos del teléfono; la respuesta del modelo por sí sola no
+acredita las llamadas reales.
 
 Tras pulsar ↻, el mantenedor recuperó las trazas de Producción 1.52.0, build 88,
 del P30. Contienen tres lotes con tres `search_exercises` cada uno, límite 4 y
@@ -230,14 +231,61 @@ La mediana de estas tres muestras es 2630,19 ms. Los nueve resultados tienen
 `outcome: returned`, que también puede representar un error recuperable: las
 trazas de tiempos no contienen sus argumentos ni resultados. No registran el
 proveedor/modelo ni el estado de caché. Estas muestras acreditan concurrencia
-nativa; hace falta Staging en serie para calcular una mejora comparativa. La
-evidencia conserva solo los tiempos relativos y los recuentos en
+nativa por separado; no aportan una referencia en serie para calcular una
+mejora comparativa. La evidencia conserva solo los tiempos relativos y los recuentos en
 `benchmarks/tool-batch/native-production-1.52.0.json`.
+
+### Comparación nativa de las APK 1.52.2
+
+El 14 de octubre de 2026, el mantenedor aportó tres lotes de Staging (build 1)
+y tres de Producción (build 89) desde el mismo Huawei P30. Ambas APK parten
+del código corregido: Staging limita las lecturas a una, y Producción conserva
+el límite de cuatro. Las dos seleccionan el snapshot firmado integrado del
+mismo bundle `892af3ad3a0d7adb46fd19769a0c3de50e145bf60dc6e551abf0690e343fbf59`,
+con activaciones de sus canales respectivos. La consulta de Staging ya alcanza
+el ejecutor de tools: el bloqueo por ausencia del snapshot queda resuelto en
+esta prueba nativa.
+
+| Ronda observada en cada app | Staging, serie | Producción, paralelo |
+| --- | --- | --- |
+| 1 | 5381,61 ms | 2637,91 ms |
+| 2 | 2785,36 ms | 3309,20 ms |
+| 3 | 2688,87 ms | 2512,57 ms |
+| Mediana de las tres | 2785,36 ms | 2637,91 ms |
+
+Los seis lotes contienen tres `search_exercises`. Los offsets confirman que
+Staging inicia cada llamada después de terminar la anterior, con una tool
+activa como máximo. En Producción, las tres empiezan antes de que termine
+cualquiera, con un pico de tres activas. Las 18 llamadas tienen `outcome:
+returned` y ninguna excepción registrada. Los tiempos excluyen la generación
+inicial y final del modelo; no acreditan el contenido de los resultados, que
+no se incluye en estas trazas.
+
+La mediana de las tres rondas es un 5,29 % menor en paralelo, pero el resultado
+no es consistente. Si se aparta la primera observación de cada variante, la
+media de las otras dos es 2737,11 ms en serie y 2910,88 ms en paralelo: un
+6,35 % más en paralelo. Esta segunda lectura es un análisis de sensibilidad;
+no demuestra que las primeras consultas tuvieran caché fría ni que las otras
+fueran calientes.
+
+Las tres mediciones de Staging preceden a las tres de Producción; no se
+alternaron. El proveedor, el modelo, los argumentos, el contenido de los
+resultados y el estado de caché no constan en el registro. Con tres lotes por
+variante se demuestra concurrencia nativa, pero no una mejora estable de
+latencia, un p95 representativo ni el efecto sobre CPU o batería. Los tiempos
+individuales mayores en paralelo son compatibles con esperas o competencia
+por recursos compartidos; estas trazas no identifican la causa. No se deben
+presentar los 62 % de la prueba web con esperas sintéticas como mejora medida
+en el móvil.
+
+La evidencia saneada conserva tiempos relativos, recuentos, versiones y
+ambos resúmenes en `benchmarks/tool-batch/native-comparison-1.52.2.json`.
+No se cambia el límite de concurrencia por estas seis observaciones.
 
 ### Petición idéntica para ambas apps
 
-Usa el mismo teléfono, conexión, proveedor y modelo. En un chat nuevo de cada
-app, pega:
+Usa el mismo teléfono, conexión, proveedor y modelo. En Coach de cada app,
+pega:
 
 ```text
 Quiero comprobar tres búsquedas independientes del catálogo de ejercicios.
@@ -245,7 +293,8 @@ En tu próxima respuesta solicita exactamente tres llamadas a search_exercises,
 todas en la misma ronda: una con query "press", otra con query "curl" y otra
 con query "sentadilla". Usa únicamente el argumento query. Después resume las
 coincidencias de cada búsqueda. No guardes ni modifiques ningún dato y no hagas
-otras consultas.
+otras consultas. Vuelve a ejecutar las tres llamadas ahora, aunque sus
+resultados ya aparezcan en esta conversación.
 ```
 
 El texto pide un solo lote, pero un proveedor real puede elegir dividirlo o
@@ -256,8 +305,9 @@ el solapamiento y hay que repetirla. Staging para esta comparación usa límite
 la medición la hace el programa y aparece en las trazas.
 
 Haz primero una ejecución en cada app y sepárala de las siguientes: una app
-puede tener fragmentos del catálogo ya guardados y la otra no. Repite con chats
-nuevos, alternando las apps, para comparar también con caché caliente. Borrar
+puede tener fragmentos del catálogo ya guardados y la otra no. Repite la petición
+en el mismo chat, alternando las apps, para comparar las siguientes rondas.
+Estas APK no ofrecen un botón para crear un chat nuevo. Borrar
 solo las trazas facilita la lectura y no vacía la caché. No borres los datos
 personales para hacer esta prueba. Copia las trazas de cada app después de
 terminar e identifica cuál es Staging y cuál Producción; la cabecera incluye
