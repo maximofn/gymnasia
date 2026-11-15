@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**1.300/7.140 imágenes registradas; 5.840 pendientes; 18,21 %.**
+**1.400/7.140 imágenes registradas; 5.740 pendientes; 19,61 %.**
 
-Las tandas `0001` a `0013` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0014` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -28,6 +28,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0011: manifiesto y prompts](0011/manifest.json).
 - [Tanda 0012: manifiesto y prompts](0012/manifest.json).
 - [Tanda 0013: manifiesto y prompts](0013/manifest.json).
+- [Tanda 0014: manifiesto y prompts](0014/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -1841,3 +1842,131 @@ Correcciones visuales registradas: 0. Casos abiertos a tamaño completo: `bls-F5
 | [bls-G109100](0013/bls-G109100.webp) | Zuckerhutsalat roh | Sugar loaf chicory raw |
 | [bls-G130100](0013/bls-G130100.webp) | Rucola roh | Rocket raw |
 | [bls-G210132](0013/bls-G210132.webp) | Spinat gekocht | Spinach boiled |
+
+
+## Tanda 0014: hojas verdes, coles y colinabo
+
+100 WebP finales opacos de 1024×1024 revisados en nueve hojas de contacto; 18 casos revisados también a tamaño completo. Cada código tiene una salida independiente del generador integrado de Codex. Las referencias CIQUAL solo aportan el estilo. BLS sigue fuera de la app.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0014-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0014-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0014-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0014-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0014-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0014-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0014-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0014-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0014-09.jpg)
+
+La espinaca común se distingue del amaranto de hoja (`Gemüseamaranth`, `Chinese spinach`) y de la espinaca de Nueva Zelanda. Para el amaranto se elige una variedad ilustrativa de hoja verde, compatible con la descripción de [FAO para Amaranthus tricolor](https://ecocrop.apps.fao.org/ecocrop/srv/en/cropView?id=2190). No se representa grano de amaranto ni espinaca acuática. La espinaca de Nueva Zelanda muestra hojas triangulares carnosas, de acuerdo con [Australian National University](https://apsa.anu.edu.au/samples/sample.php?id=81-4-3) y [Flora Malesiana](https://repository.naturalis.nl/pub/532550/FM1S1948004001054.pdf). Son decisiones editoriales para ilustrar los nombres, no una certificación de especie o variedad de cada ficha.
+
+El apio conserva sus pencas acanaladas; la acelga incluye hojas y nervios blancos anchos. Para el perejil se elige una variedad de hoja plana; el seco tiene escamas deshidratadas y el congelado, escarcha discreta. Ortiga y diente de león conservan sus bordes dentados; la acedera se representa con hojas en flecha, conforme a [RHS](https://www.rhs.org.uk/plants/41751/rumex-acetosa/details) y [Kew](https://growwild.kew.org/plants/common-sorrel). El berro de jardín se muestra cortado, sin tierra ni bandeja de cultivo.
+
+`Chinakohl` se ilustra como repollo chino alargado, de hojas claras arrugadas y nervios blancos, descrito por [BZfE](https://www.bzfe.de/presse/pressemeldungen-archiv/zeit-fuer-heimischen-chinakohl). Se diferencia del pak choi, de hojas en cuchara y pencas carnosas, y de la col rizada. El colinabo muestra su tallo engrosado y una cuña clara, sin convertirlo en una raíz de nabo. La coliflor conserva floretes blancos; el brócoli, verdes; las coles de Bruselas, cogollos pequeños.
+
+Las verduras hervidas, al vapor, braseadas y guisadas se muestran tiernas y sin tostado; las horneadas tienen bordes secos ligeramente dorados y las de sartén, marcas moderadas de contacto. No se añaden salsas, aceite, queso, rebozados ni guarniciones. Los congelados sin cocinar llevan escarcha; los cocinados desde congelado ya no. Las conservas y la coliflor encurtida se muestran escurridas, sin envases. El zumo de espinaca es líquido en vaso sin marcas, sin hielo ni decoración. La fotografía no demuestra ausencia de grasa ni composición nutricional.
+
+Correcciones visuales registradas: 1 (`bls-G331182`): se regeneró el colinabo de sartén para quitar hojas añadidas y mostrar solo trozos pelados del tallo engrosado. Casos abiertos a tamaño completo: `bls-G212100`, `bls-G213100`, `bls-G210600`, `bls-G211200`, `bls-G250100`, `bls-G250400`, `bls-G261100`, `bls-G262100`, `bls-G263100`, `bls-G280100`, `bls-G311242`, `bls-G311802`, `bls-G321100`, `bls-G322902`, `bls-G324100`, `bls-G331100`, `bls-G331182`, `bls-G332200`. Nombres DE/EN literales, incluido `prepard` en el nombre inglés oficial del pak choi guisado. Las fuentes editoriales no modifican ni validan las fichas, sus nutrientes o una ración de 100 g.
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-G210232](0014/bls-G210232.webp) | Spinat tiefgefroren, gekocht | Spinach deep-frozen, boiled |
+| [bls-G210252](0014/bls-G210252.webp) | Spinat tiefgefroren, gedünstet | Spinach deep-frozen, stewed |
+| [bls-G210262](0014/bls-G210262.webp) | Spinat tiefgefroren, gebacken | Spinach deep-frozen, baked |
+| [bls-G210282](0014/bls-G210282.webp) | Spinat tiefgefroren, gebraten ohne Fett (Pfanne) | Spinach deep-frozen, fried without fat (pan) |
+| [bls-G210600](0014/bls-G210600.webp) | Gemüsesaft aus Spinat | Spinach juice |
+| [bls-G210902](0014/bls-G210902.webp) | Spinat Konserve, abgetropft | Spinach canned, drained |
+| [bls-G211100](0014/bls-G211100.webp) | Spinat roh | Spinach raw |
+| [bls-G211152](0014/bls-G211152.webp) | Spinat gedünstet | Spinach stewed |
+| [bls-G211162](0014/bls-G211162.webp) | Spinat gebacken | Spinach baked |
+| [bls-G211182](0014/bls-G211182.webp) | Spinat gebraten ohne Fett (Pfanne) | Spinach fried without fat (pan) |
+| [bls-G211200](0014/bls-G211200.webp) | Spinat tiefgefroren | Spinach deep-frozen |
+| [bls-G212100](0014/bls-G212100.webp) | Gemüseamaranth roh | Chinese spinach raw |
+| [bls-G212152](0014/bls-G212152.webp) | Gemüseamaranth gedünstet | Chinese spinach stewed |
+| [bls-G212182](0014/bls-G212182.webp) | Gemüseamaranth gebraten ohne Fett (Pfanne) | Chinese spinach fried without fat (pan) |
+| [bls-G213100](0014/bls-G213100.webp) | Neuseeländer Spinat roh | New Zealand spinach raw |
+| [bls-G213132](0014/bls-G213132.webp) | Neuseeländer Spinat gekocht | New Zealand spinach boiled |
+| [bls-G213152](0014/bls-G213152.webp) | Neuseeländer Spinat gedünstet | New Zealand spinach stewed |
+| [bls-G213182](0014/bls-G213182.webp) | Neuseeländer Spinat gebraten ohne Fett (Pfanne) | New Zealand spinach fried without fat (pan) |
+| [bls-G220100](0014/bls-G220100.webp) | Bleichsellerie roh | Stalk celery raw |
+| [bls-G220132](0014/bls-G220132.webp) | Bleichsellerie gekocht | Stalk celery boiled |
+| [bls-G220142](0014/bls-G220142.webp) | Bleichsellerie geschmort ohne Fett | Stalk celery braised without fat |
+| [bls-G220152](0014/bls-G220152.webp) | Bleichsellerie gedünstet | Stalk celery stewed |
+| [bls-G220162](0014/bls-G220162.webp) | Bleichsellerie gebacken | Stalk celery baked |
+| [bls-G221182](0014/bls-G221182.webp) | Bleichsellerie gebraten ohne Fett (Pfanne) | Stalk celery fried without fat (pan) |
+| [bls-G230100](0014/bls-G230100.webp) | Mangold roh | Chard/leaf beet, raw |
+| [bls-G230132](0014/bls-G230132.webp) | Mangold gekocht | Chard/leaf beet, boiled |
+| [bls-G230142](0014/bls-G230142.webp) | Mangold geschmort ohne Fett | Chard/leaf beet, braised without fat |
+| [bls-G230152](0014/bls-G230152.webp) | Mangold gedünstet | Chard/leaf beet, stewed |
+| [bls-G230162](0014/bls-G230162.webp) | Mangold gebacken | Chard/leaf beet, baked |
+| [bls-G230182](0014/bls-G230182.webp) | Mangold gebraten ohne Fett (Pfanne) | Chard/leaf beet, fried without fat (pan) |
+| [bls-G250100](0014/bls-G250100.webp) | Petersilienblatt roh | Parsley leaf raw |
+| [bls-G250200](0014/bls-G250200.webp) | Petersilienblatt tiefgefroren | Parsley leaf deep-frozen |
+| [bls-G250400](0014/bls-G250400.webp) | Petersilienblatt getrocknet | Parsley leaf dried |
+| [bls-G261100](0014/bls-G261100.webp) | Brennnessel roh | Stinging nettle raw |
+| [bls-G261132](0014/bls-G261132.webp) | Brennnessel gekocht | Stinging nettle boiled |
+| [bls-G261152](0014/bls-G261152.webp) | Brennnessel gedünstet | Stinging nettle stewed |
+| [bls-G262100](0014/bls-G262100.webp) | Löwenzahn roh | Dandelion raw |
+| [bls-G263100](0014/bls-G263100.webp) | Sauerampfer roh | Sorrel raw |
+| [bls-G263132](0014/bls-G263132.webp) | Sauerampfer gekocht | Sorrel boiled |
+| [bls-G263152](0014/bls-G263152.webp) | Sauerampfer gedünstet | Sorrel stewed |
+| [bls-G280100](0014/bls-G280100.webp) | Gartenkresse roh | Garden cress raw |
+| [bls-G311100](0014/bls-G311100.webp) | Blumenkohl roh | Cauliflower raw |
+| [bls-G311132](0014/bls-G311132.webp) | Blumenkohl gekocht | Cauliflower boiled |
+| [bls-G311142](0014/bls-G311142.webp) | Blumenkohl gedämpft | Cauliflower steamed |
+| [bls-G311152](0014/bls-G311152.webp) | Blumenkohl gedünstet | Cauliflower stewed |
+| [bls-G311162](0014/bls-G311162.webp) | Blumenkohl gebacken | Cauliflower baked |
+| [bls-G311182](0014/bls-G311182.webp) | Blumenkohl gebraten ohne Fett (Pfanne) | Cauliflower fried without fat (pan) |
+| [bls-G311200](0014/bls-G311200.webp) | Blumenkohl tiefgefroren | Cauliflower deep-frozen |
+| [bls-G311232](0014/bls-G311232.webp) | Blumenkohl tiefgefroren, gekocht | Cauliflower deep-frozen, boiled |
+| [bls-G311242](0014/bls-G311242.webp) | Blumenkohl tiefgefroren, gedämpft | Cauliflower deep-frozen, steamed |
+| [bls-G311252](0014/bls-G311252.webp) | Blumenkohl tiefgefroren, gedünstet | Cauliflower deep-frozen, stewed |
+| [bls-G311262](0014/bls-G311262.webp) | Blumenkohl tiefgefroren, gebacken | Cauliflower deep-frozen, baked |
+| [bls-G311282](0014/bls-G311282.webp) | Blumenkohl tiefgefroren, gebraten ohne Fett (Pfanne) | Cauliflower deep-frozen, fried without fat (pan) |
+| [bls-G311802](0014/bls-G311802.webp) | Blumenkohl gesäuert, abgetropft | Cauliflower pickled, drained |
+| [bls-G312100](0014/bls-G312100.webp) | Broccoli roh | Broccoli raw |
+| [bls-G312132](0014/bls-G312132.webp) | Broccoli gekocht | Broccoli boiled |
+| [bls-G312152](0014/bls-G312152.webp) | Broccoli gedünstet | Broccoli stewed |
+| [bls-G312162](0014/bls-G312162.webp) | Broccoli gebacken | Broccoli baked |
+| [bls-G312182](0014/bls-G312182.webp) | Broccoli gebraten ohne Fett (Pfanne) | Broccoli fried without fat (pan) |
+| [bls-G312200](0014/bls-G312200.webp) | Broccoli tiefgefroren | Broccoli deep-frozen |
+| [bls-G312232](0014/bls-G312232.webp) | Broccoli tiefgefroren, gekocht | Broccoli deep-frozen, boiled |
+| [bls-G312252](0014/bls-G312252.webp) | Broccoli tiefgefroren, gedünstet | Broccoli deep-frozen, stewed |
+| [bls-G312262](0014/bls-G312262.webp) | Broccoli tiefgefroren, gebacken | Broccoli deep-frozen, baked |
+| [bls-G312282](0014/bls-G312282.webp) | Broccoli tiefgefroren, gebraten ohne Fett (Pfanne) | Broccoli deep-frozen, fried without fat (pan) |
+| [bls-G321100](0014/bls-G321100.webp) | Chinakohl roh | Chinese white cabbage raw |
+| [bls-G321132](0014/bls-G321132.webp) | Chinakohl gekocht | Chinese white cabbage boiled |
+| [bls-G321152](0014/bls-G321152.webp) | Chinakohl gedünstet | Chinese white cabbage stewed |
+| [bls-G321162](0014/bls-G321162.webp) | Chinakohl gebacken | Chinese white cabbage baked |
+| [bls-G321182](0014/bls-G321182.webp) | Chinakohl gebraten ohne Fett (Pfanne) | Chinese white cabbage fried without fat (pan) |
+| [bls-G322100](0014/bls-G322100.webp) | Grünkohl roh | Curly kale raw |
+| [bls-G322132](0014/bls-G322132.webp) | Grünkohl gekocht | Curly kale boiled |
+| [bls-G322142](0014/bls-G322142.webp) | Grünkohl gedämpft | Curly kale steamed |
+| [bls-G322152](0014/bls-G322152.webp) | Grünkohl gedünstet | Curly kale stewed |
+| [bls-G322182](0014/bls-G322182.webp) | Grünkohl gebraten ohne Fett (Pfanne) | Curly kale fried without fat (pan) |
+| [bls-G322200](0014/bls-G322200.webp) | Grünkohl tiefgefroren | Curly kale deep-frozen |
+| [bls-G322232](0014/bls-G322232.webp) | Grünkohl tiefgefroren, gekocht | Curly kale deep-frozen, boiled |
+| [bls-G322242](0014/bls-G322242.webp) | Grünkohl tiefgefroren, gedämpft | Curly kale deep-frozen, steamed |
+| [bls-G322252](0014/bls-G322252.webp) | Grünkohl tiefgefroren, gedünstet | Curly kale deep-frozen, stewed |
+| [bls-G322282](0014/bls-G322282.webp) | Grünkohl tiefgefroren, gebraten ohne Fett (Pfanne) | Curly kale deep-frozen, fried without fat (pan) |
+| [bls-G322902](0014/bls-G322902.webp) | Grünkohl Konserve, abgetropft | Curly kale canned, drained |
+| [bls-G324100](0014/bls-G324100.webp) | Pak Choi roh | Pak choi raw |
+| [bls-G324132](0014/bls-G324132.webp) | Pak Choi gekocht | Pak choi boiled |
+| [bls-G324152](0014/bls-G324152.webp) | Pak Choi gedünstet | Pak choi stewed (prepard without fat) |
+| [bls-G324182](0014/bls-G324182.webp) | Pak Choi gebraten ohne Fett (Pfanne) | Pak choi fried without fat (pan) |
+| [bls-G331100](0014/bls-G331100.webp) | Kohlrabi roh | Kohlrabi raw |
+| [bls-G331132](0014/bls-G331132.webp) | Kohlrabi gekocht | Kohlrabi boiled |
+| [bls-G331152](0014/bls-G331152.webp) | Kohlrabi gedünstet | Kohlrabi stewed |
+| [bls-G331162](0014/bls-G331162.webp) | Kohlrabi gebacken | Kohlrabi baked |
+| [bls-G331182](0014/bls-G331182.webp) | Kohlrabi gebraten ohne Fett (Pfanne) | Kohlrabi fried without fat (pan) |
+| [bls-G331902](0014/bls-G331902.webp) | Kohlrabi Konserve, abgetropft | Kohlrabi canned, drained |
+| [bls-G332100](0014/bls-G332100.webp) | Rosenkohl roh | Brussels sprouts raw |
+| [bls-G332132](0014/bls-G332132.webp) | Rosenkohl gekocht | Brussels sprouts boiled |
+| [bls-G332152](0014/bls-G332152.webp) | Rosenkohl gedünstet | Brussels sprouts stewed |
+| [bls-G332162](0014/bls-G332162.webp) | Rosenkohl gebacken | Brussels sprouts baked |
+| [bls-G332182](0014/bls-G332182.webp) | Rosenkohl gebraten ohne Fett (Pfanne) | Brussels sprouts fried without fat (pan) |
+| [bls-G332200](0014/bls-G332200.webp) | Rosenkohl tiefgefroren | Brussels sprouts deep-frozen |
+| [bls-G332232](0014/bls-G332232.webp) | Rosenkohl tiefgefroren, gekocht | Brussels sprouts deep-frozen, boiled |
+| [bls-G332252](0014/bls-G332252.webp) | Rosenkohl tiefgefroren, gedünstet | Brussels sprouts deep-frozen, stewed |
+| [bls-G332262](0014/bls-G332262.webp) | Rosenkohl tiefgefroren, gebacken | Brussels sprouts deep-frozen, baked |
+| [bls-G332902](0014/bls-G332902.webp) | Rosenkohl Konserve, abgetropft | Brussels sprouts canned, drained |
