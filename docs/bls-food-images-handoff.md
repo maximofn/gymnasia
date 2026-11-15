@@ -5,29 +5,29 @@ BLS permanece independiente de la app. Sus datos y erratas se fusionaron en la
 permite generar imágenes con el enfoque visual y editorial de CIQUAL; no integra
 BLS en móvil ni publica una versión.
 
-## Estado acumulado (14 de noviembre de 2026)
+## Estado acumulado (15 de noviembre de 2026)
 
-- Tandas `0001` a `0012`: **1.200/7.140 imágenes generadas y revisadas**.
-- Progreso: **16,81 %; 5.940 pendientes**.
-- Última tanda: `0012`, 100 imágenes desde `bls-F304100` hasta `bls-F529100`.
-- Manifiesto y prompts: `alimentos/bls/image-batches/0012/manifest.json`.
-- Nueve láminas en `docs/testing/assets/bls-food-images-0012-*.jpg`.
-- Casos revisados a tamaño completo: `bls-F304152`, `bls-F322100`, `bls-F331100`, `bls-F408000`, `bls-F4A1900`, `bls-F503400`, `bls-F504100`, `bls-F504400`, `bls-F514152`, `bls-F515902`, `bls-F522100`, `bls-F523100`, `bls-F524100`, `bls-F529100`.
+- Tandas `0001` a `0013`: **1.300/7.140 imágenes generadas y revisadas**.
+- Progreso: **18,21 %; 5.840 pendientes**.
+- Última tanda: `0013`, 100 imágenes desde `bls-F532100` hasta `bls-G210132`.
+- Manifiesto y prompts: `alimentos/bls/image-batches/0013/manifest.json`.
+- Nueve láminas en `docs/testing/assets/bls-food-images-0013-*.jpg`.
+- Casos revisados a tamaño completo: `bls-F545400`, `bls-F563100`, `bls-F564100`, `bls-F601300`, `bls-F605100`, `bls-F820000`, `bls-F850100`, `bls-F957900`, `bls-G090200`, `bls-G093100`, `bls-G093200`, `bls-G093400`, `bls-G101182`, `bls-G109100`.
 - Correcciones: 0. Todas las salidas finales están revisadas.
-- La PR 471, undécima tanda, seguía abierta al comenzar la duodécima, con
+- La PR 472, duodécima tanda, seguía abierta al comenzar la decimotercera, con
   `catalogs` y `prompt-policy` correctos para su SHA actual.
 - Consultar GitHub para el estado actual de las PRs. BLS sigue fuera de la app.
 
 ## Flujo
 
-- Rama actual: `codex/bls-food-images-0012`, basada en `codex/bls-food-images-0011`
-  (PR 471, undécima tanda). Abrir la PR contra esa rama para mostrar solo la tanda
-  `0012`. Consultar las PRs antes de continuar; si cambia o se fusiona una base,
+- Rama actual: `codex/bls-food-images-0013`, basada en `codex/bls-food-images-0012`
+  (PR 472, duodécima tanda). Abrir la PR contra esa rama para mostrar solo la tanda
+  `0013`. Consultar las PRs antes de continuar; si cambia o se fusiona una base,
   actualizar la base y comprobar diff y checks.
 - Tandas de hasta 100 imágenes nuevas, una por
   código pendiente, con PR revisable. Consultar GitHub al empezar; este documento
   no autoriza fusionar una PR. Conservar el trabajo y los archivos del mantenedor.
-- Worktree inicial: `/tmp/gymnasia-bls-import-20261111`. Si falta, recuperar la
+- Worktree actual: `/private/tmp/gymnasia-bls-import-20261115`. Si falta, recuperar la
   rama desde GitHub en un checkout limpio. No cambiar la rama BEDCA ni publicar
   su captura privada para continuar BLS.
 - Leer `.claude/skills/generate-food-image/SKILL.md` y la skill `imagegen` de
@@ -82,7 +82,7 @@ composición, propiedades nutricionales ni una ración de 100 g.
 
 Cada carpeta numerada admite solo WebP y `manifest.json`. Guardar planes,
 recibos, notas y hojas de contacto fuera de ella. Los checkpoints de cada
-tanda viven en `/tmp/gymnasia-bls-images-NNNN/` (`0001` a `0012`): `plan.json`, un
+tanda viven en `/tmp/gymnasia-bls-images-NNNN/` (`0001` a `0013`): `plan.json`, un
 `bls-CODIGO.receipt.json` por alimento y `review/notes.json`, con hashes revisados.
 Los temporales son recuperación opcional; WebP, manifiesto, prompts y vistas
 revisables de la PR son los entregables duraderos.

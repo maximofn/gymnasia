@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**1.200/7.140 imágenes registradas; 5.940 pendientes; 16,81 %.**
+**1.300/7.140 imágenes registradas; 5.840 pendientes; 18,21 %.**
 
-Las tandas `0001` a `0012` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0013` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -27,6 +27,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0010: manifiesto y prompts](0010/manifest.json).
 - [Tanda 0011: manifiesto y prompts](0011/manifest.json).
 - [Tanda 0012: manifiesto y prompts](0012/manifest.json).
+- [Tanda 0013: manifiesto y prompts](0013/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -1714,3 +1715,129 @@ hasta la revisión del mantenedor. BLS permanece fuera de la app.
 | [bls-F523100](0012/bls-F523100.webp) | Brotfrucht roh | Breadfruit raw |
 | [bls-F524100](0012/bls-F524100.webp) | Cherimoya roh | Cherimoya raw |
 | [bls-F529100](0012/bls-F529100.webp) | Japanische Wollmispel/Loquat, roh | Japanese medlar/loquat, raw |
+
+
+## Tanda 0013: melones, cítricos y primeras verduras
+
+100 WebP finales de 1024×1024 revisados en nueve hojas de contacto; 14 casos revisados también a tamaño completo. Una salida independiente del generador integrado por código; las referencias CIQUAL solo aportan el estilo. No hay integración móvil.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0013-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0013-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0013-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0013-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0013-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0013-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0013-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0013-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0013-09.jpg)
+
+Se distinguen el cantalupo naranja y el melón de pulpa verde, así como el plátano macho crudo, hervido, guisado, horneado, cocinado en sartén sin grasa y seco. El seco muestra deshidratación; los chips de banana fritos muestran textura crujiente. Los concentrados de limón y lima son líquidos concentrados en ramequín, sin convertirlos en polvo. Las conservas escurridas no tienen líquido acumulado. Las propiedades de azúcar, edulcorantes y grasa no se certifican con símbolos ni ingredientes colocados al lado.
+
+La feijoa conserva piel verde, pulpa clara y centro translúcido, conforme a [UC ANR](https://ucanr.edu/node/109899/printable/print) y la [especificación de Foodstuffs](https://www.foodstuffs.co.nz/-/media/Produce-Specifications/PS%20-%20Feijoa%202.pdf). El rambután tiene cubierta pilosa y arilo blanco, descritos por [NParks](https://www.nparks.gov.sg/florafaunaweb/flora/3/0/3042). La preparación de plátano macho deshidratado en rodajas es una elección editorial compatible con [FAO](https://www.fao.org/4/v5030e/V5030E0o.htm), sin afirmar que BLS fije su corte o madurez.
+
+Para `Suppengrün`, el nombre alemán precisa una mezcla de verduras para sopa: zanahoria, apionabo, puerro y perejil incorporado, según [BZfE](https://www.bzfe.de/kueche-und-alltag/kochen/how-to-obst-und-gemuese/how-to-sellerie). No se cambia el nombre inglés oficial `Mirepoix`. Kaisergemüse conserva solo zanahoria, coliflor y brócoli. Las variantes congeladas sin cocinar muestran escarcha discreta; las cocinadas ya no la tienen. La achicoria azúcar es un cogollo alto verde, distinto del witloof blanco, de acuerdo con [RHS](https://www.rhs.org.uk/vegetables/chicory/grow-your-own?type=v). La mezcla encurtida Puszta y las salsas genéricas son opciones ilustrativas, no recetas oficiales.
+
+Correcciones visuales registradas: 0. Casos abiertos a tamaño completo: `bls-F545400`, `bls-F563100`, `bls-F564100`, `bls-F601300`, `bls-F605100`, `bls-F820000`, `bls-F850100`, `bls-F957900`, `bls-G090200`, `bls-G093100`, `bls-G093200`, `bls-G093400`, `bls-G101182`, `bls-G109100`. Los nombres DE/EN siguen literales; las fuentes editoriales no validan las fichas ni sus nutrientes.
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-F532100](0013/bls-F532100.webp) | Netzmelone/Cantaloupmelone, roh | Musk melon/cantaloup, raw |
+| [bls-F533100](0013/bls-F533100.webp) | Honigmelone roh | Honeydew melon raw |
+| [bls-F533600](0013/bls-F533600.webp) | Honigmelonensaft | Honeydew melon juice |
+| [bls-F535100](0013/bls-F535100.webp) | Wassermelone roh | Watermelon raw |
+| [bls-F545100](0013/bls-F545100.webp) | Kochbanane roh | Plantain raw |
+| [bls-F545132](0013/bls-F545132.webp) | Kochbanane gekocht | Plantain boiled |
+| [bls-F545142](0013/bls-F545142.webp) | Kochbanane geschmort ohne Fett | Plantain braised without fat |
+| [bls-F545152](0013/bls-F545152.webp) | Kochbanane gedünstet | Plantain stewed |
+| [bls-F545162](0013/bls-F545162.webp) | Kochbanane gebacken | Plantain baked |
+| [bls-F545182](0013/bls-F545182.webp) | Kochbanane gebraten ohne Fett (Pfanne) | Plantain fried without fat (pan) |
+| [bls-F545400](0013/bls-F545400.webp) | Kochbanane getrocknet | Plantain dried |
+| [bls-F549100](0013/bls-F549100.webp) | Jackfrucht roh | Jackfruit raw |
+| [bls-F552100](0013/bls-F552100.webp) | Kapstachelbeere/Physalis, roh | Cape gooseberry raw |
+| [bls-F552600](0013/bls-F552600.webp) | Kapstachelbeersaft/Physalissaft | Cape gooseberry juice |
+| [bls-F553100](0013/bls-F553100.webp) | Karambole/Sternfrucht, roh | Carambola/star fruit, raw |
+| [bls-F556100](0013/bls-F556100.webp) | Kaktusfeige roh | Prickly pear raw |
+| [bls-F559100](0013/bls-F559100.webp) | Rambutan roh | Rambutan raw |
+| [bls-F563100](0013/bls-F563100.webp) | Feijoa/Ananas-Guave, roh | Feijoa/pineapple guava, raw |
+| [bls-F564100](0013/bls-F564100.webp) | Mangostane roh | Mangosteen raw |
+| [bls-F564600](0013/bls-F564600.webp) | Mangostanesaft | Mangosteen juice |
+| [bls-F572100](0013/bls-F572100.webp) | Tamarillo roh | Tamarillo/tree tomato, raw |
+| [bls-F591902](0013/bls-F591902.webp) | Ananas ungesüßt, Konserve, abgetropft | Pineapple unsweetened, canned, drained |
+| [bls-F597902](0013/bls-F597902.webp) | Ananas mit Süßungsmitteln, Konserve, abgetropft | Pineapple with artificial sweeteners, canned, drained |
+| [bls-F5A1902](0013/bls-F5A1902.webp) | Ananas in Fruchtsaft, Konserve, abgetropft | Pineapple in juice, canned, drained |
+| [bls-F601100](0013/bls-F601100.webp) | Zitrone roh | Lemon raw |
+| [bls-F601300](0013/bls-F601300.webp) | Zitronensaft Konzentrat | Lemon concentrate |
+| [bls-F601600](0013/bls-F601600.webp) | Zitronensaft | Lemon juice |
+| [bls-F602100](0013/bls-F602100.webp) | Limette roh | Lime raw |
+| [bls-F602300](0013/bls-F602300.webp) | Limettensaft Konzentrat | Lime concentrate |
+| [bls-F602600](0013/bls-F602600.webp) | Limettensaft | Lime juice |
+| [bls-F603100](0013/bls-F603100.webp) | Orange roh | Orange raw |
+| [bls-F603600](0013/bls-F603600.webp) | Orangensaft | Orange juice |
+| [bls-F603700](0013/bls-F603700.webp) | Orangennektar | Orange nectar |
+| [bls-F604100](0013/bls-F604100.webp) | Grapefruit roh | Grapefruit raw |
+| [bls-F604600](0013/bls-F604600.webp) | Grapefruitsaft | Grapefruit juice |
+| [bls-F605100](0013/bls-F605100.webp) | Pampelmuse/Pomelo, roh | Pomelo raw |
+| [bls-F605600](0013/bls-F605600.webp) | Pampelmusensaft/Pomelosaft | Pomelo juice |
+| [bls-F606100](0013/bls-F606100.webp) | Mandarine roh | Mandarin raw |
+| [bls-F606600](0013/bls-F606600.webp) | Mandarinensaft | Mandarin juice |
+| [bls-F606902](0013/bls-F606902.webp) | Mandarine gezuckert, Konserve, abgetropft | Mandarin sugared, canned, drained |
+| [bls-F607100](0013/bls-F607100.webp) | Clementine roh | Clementine raw |
+| [bls-F607600](0013/bls-F607600.webp) | Clementinensaft | Clementine juice |
+| [bls-F608100](0013/bls-F608100.webp) | Satsuma roh | Satsuma mandarin raw |
+| [bls-F608600](0013/bls-F608600.webp) | Satsumasaft | Satsuma mandarin juice |
+| [bls-F609100](0013/bls-F609100.webp) | Tangerine roh | Tangerine raw |
+| [bls-F609600](0013/bls-F609600.webp) | Tangerinensaft | Tangerine juice |
+| [bls-F613100](0013/bls-F613100.webp) | Kumquat roh | Kumquat raw |
+| [bls-F614600](0013/bls-F614600.webp) | Orangennektar mit Süßungsmitteln | Orange nectar with artificial sweeteners |
+| [bls-F640902](0013/bls-F640902.webp) | Mandarine ungesüßt, Konserve, abgetropft | Mandarin unsweetened, canned, drained |
+| [bls-F6A6902](0013/bls-F6A6902.webp) | Mandarine in Fruchtsaft, Konserve, abgetropft | Mandarin in juice, canned, drained |
+| [bls-F6B6902](0013/bls-F6B6902.webp) | Mandarine mit Süßungsmitteln, Konserve, abgetropft | Mandarin with artificial sweeteners, canned, drained |
+| [bls-F820000](0013/bls-F820000.webp) | Fruchtschnitte/Fruchtriegel | Fruit bar |
+| [bls-F840100](0013/bls-F840100.webp) | Rosine/Sultanine (Weinbeere getrocknet) | Raisin/sultana (grape dried) |
+| [bls-F840300](0013/bls-F840300.webp) | Korinthe (Weinbeere getrocknet) | Currant (grape dried) |
+| [bls-F850100](0013/bls-F850100.webp) | Bananenchips frittiert, gesüßt | Banana crips/banana chips, deep-fried, sweetened |
+| [bls-F900900](0013/bls-F900900.webp) | Rote Grütze gezuckert, Konserve | Red fruit jelly sugared, canned |
+| [bls-F921900](0013/bls-F921900.webp) | Apfelkompott/Apfelmus, gezuckert, Konserve | Apple sauce/apple compote, sugared, canned |
+| [bls-F923900](0013/bls-F923900.webp) | Apfelkompott/Apfelmark, ungesüßt, Konserve | Apple sauce/apple compote, unsweetened, canned |
+| [bls-F928900](0013/bls-F928900.webp) | Apfelkompott/Apfelmus, mit Süßungsmitteln, Konserve | Apple sauce/apple compote, with artificial sweeteners, canned |
+| [bls-F957900](0013/bls-F957900.webp) | Rhabarberkompott mit einer Zuckerart und Süßungsmitteln, Konserve | Rhubarb compote with sugar and artificial sweeteners, canned |
+| [bls-F960800](0013/bls-F960800.webp) | Cashewnussmus | Cashew butter (100 % pure) |
+| [bls-F971900](0013/bls-F971900.webp) | Fruchtsoße gezuckert, Konserve | Fruit sauce sugared, canned |
+| [bls-G012902](0013/bls-G012902.webp) | Kapern gesäuert, abgetropft | Capers pickled, canned, drained |
+| [bls-G061000](0013/bls-G061000.webp) | Basilikum roh | Basil raw |
+| [bls-G081100](0013/bls-G081100.webp) | Schnittlauch roh | Chives raw |
+| [bls-G081400](0013/bls-G081400.webp) | Schnittlauch getrocknet | Chives dried |
+| [bls-G090100](0013/bls-G090100.webp) | Gemüsemischung Kaisergemüse, roh | Mixed vegetables (carrots, cauliflower and broccoli florets) raw |
+| [bls-G090132](0013/bls-G090132.webp) | Gemüsemischung Kaisergemüse, gekocht | Mixed vegetables (carrots, cauliflower and broccoli florets) boiled |
+| [bls-G090142](0013/bls-G090142.webp) | Gemüsemischung Kaisergemüse, geschmort ohne Fett | Mixed vegetables (carrots, cauliflower and broccoli florets) braised without fat |
+| [bls-G090152](0013/bls-G090152.webp) | Gemüsemischung Kaisergemüse, gedünstet | Mixed vegetables (carrots, cauliflower and broccoli florets) stewed |
+| [bls-G090162](0013/bls-G090162.webp) | Gemüsemischung Kaisergemüse, gebacken | Mixed vegetables (carrots, cauliflower and broccoli florets) baked |
+| [bls-G090182](0013/bls-G090182.webp) | Gemüsemischung Kaisergemüse, gebraten ohne Fett (Pfanne) | Mixed vegetables (carrots, cauliflower and broccoli florets) fried without fat (pan) |
+| [bls-G090200](0013/bls-G090200.webp) | Gemüsemischung Kaisergemüse, tiefgefroren | Mixed vegetables (carrots, cauliflower and broccoli florets) deep-frozen |
+| [bls-G090232](0013/bls-G090232.webp) | Gemüsemischung Kaisergemüse, tiefgefroren, gekocht | Mixed vegetables (carrots, cauliflower and broccoli florets) deep-frozen, boiled |
+| [bls-G090242](0013/bls-G090242.webp) | Gemüsemischung Kaisergemüse, tiefgefroren, geschmort ohne Fett | Mixed vegetables (carrots, cauliflower and broccoli florets) deep-frozen, braised without fat |
+| [bls-G090252](0013/bls-G090252.webp) | Gemüsemischung Kaisergemüse, tiefgefroren, gedünstet | Mixed vegetables (carrots, cauliflower and broccoli florets) deep-frozen, stewed |
+| [bls-G090262](0013/bls-G090262.webp) | Gemüsemischung Kaisergemüse, tiefgefroren, gebacken | Mixed vegetables (carrots, cauliflower and broccoli florets) deep-frozen, baked |
+| [bls-G090282](0013/bls-G090282.webp) | Gemüsemischung Kaisergemüse, tiefgefroren, gebraten ohne Fett (Pfanne) | Mixed vegetables (carrots, cauliflower and broccoli florets) deep-frozen, fried without fat (pan) |
+| [bls-G090600](0013/bls-G090600.webp) | Gemüsesaft aus Gemüsemischung | Mixed vegetables juice |
+| [bls-G090802](0013/bls-G090802.webp) | Gemüsemischung gesäuert (Puszta Salat) abgetropft | Mixed vegetables pickled, drained |
+| [bls-G093100](0013/bls-G093100.webp) | Suppengrün/Suppenkraut, roh | Mirepoix raw |
+| [bls-G093132](0013/bls-G093132.webp) | Suppengrün/Suppenkraut, gekocht | Mirepoix boiled |
+| [bls-G093200](0013/bls-G093200.webp) | Suppengrün/Suppenkraut, tiefgefroren | Mirepoix deep-frozen |
+| [bls-G093232](0013/bls-G093232.webp) | Suppengrün/Suppenkraut, tiefgefroren, gekocht | Mirepoix deep-frozen, boiled |
+| [bls-G093400](0013/bls-G093400.webp) | Suppengrün/Suppenkraut, getrocknet | Mirepoix dried |
+| [bls-G093432](0013/bls-G093432.webp) | Suppengrün/Suppenkraut, getrocknet, gekocht | Mirepoix dried, boiled |
+| [bls-G101100](0013/bls-G101100.webp) | Chicoree roh | Witloof chicory raw |
+| [bls-G101152](0013/bls-G101152.webp) | Chicoree gedünstet | Witloof chicory stewed |
+| [bls-G101162](0013/bls-G101162.webp) | Chicoree gebacken | Witloof chicory baked |
+| [bls-G101182](0013/bls-G101182.webp) | Chicoree gebraten ohne Fett (Pfanne) | Witloof chicory fried without fat (pan) |
+| [bls-G102100](0013/bls-G102100.webp) | Endivie/Escariol, roh | Endive/escarole, raw |
+| [bls-G103100](0013/bls-G103100.webp) | Eisbergsalat roh | Iceberg lettuce raw |
+| [bls-G104100](0013/bls-G104100.webp) | Feldsalat/Rapunzel, roh | Lamb's lettuce raw |
+| [bls-G105100](0013/bls-G105100.webp) | Kopfsalat roh | Butterhead lettuce raw |
+| [bls-G106100](0013/bls-G106100.webp) | Radicchio roh | Radicchio/red Italian chicory, raw |
+| [bls-G107100](0013/bls-G107100.webp) | Römischer Salat/Romanasalat, roh | Cos lettuce/Romaine lettuce, raw |
+| [bls-G108100](0013/bls-G108100.webp) | Schnittsalat/Pflücksalat, roh | Looseleaf lettuce raw |
+| [bls-G109100](0013/bls-G109100.webp) | Zuckerhutsalat roh | Sugar loaf chicory raw |
+| [bls-G130100](0013/bls-G130100.webp) | Rucola roh | Rocket raw |
+| [bls-G210132](0013/bls-G210132.webp) | Spinat gekocht | Spinach boiled |
