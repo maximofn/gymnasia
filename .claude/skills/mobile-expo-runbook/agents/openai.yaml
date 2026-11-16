@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mobile Expo Runbook"
+  short_description: "Run and troubleshoot Expo Go mobile execution for this repo"
+  default_prompt: "Ejecuta la app en móvil con Expo Go, valida tunnel y corrige errores de arranque"
