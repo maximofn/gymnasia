@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**1.900/7.140 imágenes registradas; 5.240 pendientes; 26,61 %.**
+**2.000/7.140 imágenes registradas; 5.140 pendientes; 28,01 %.**
 
-Las tandas `0001` a `0019` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0020` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -34,6 +34,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0017: manifiesto y prompts](0017/manifest.json).
 - [Tanda 0018: manifiesto y prompts](0018/manifest.json).
 - [Tanda 0019: manifiesto y prompts](0019/manifest.json).
+- [Tanda 0020: manifiesto y prompts](0020/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -2616,3 +2617,133 @@ Correcciones visuales registradas: 0.  Casos abiertos a tamaño completo: `bls-G
 | [bls-H702132](0019/bls-H702132.webp) | Augenbohne reif, gekocht | Cowpea/black-eyed pea, mature, boiled |
 | [bls-H702902](0019/bls-H702902.webp) | Augenbohne reif, Konserve, abgetropft | Cowpea/black-eyed pea, mature, canned, drained |
 | [bls-H710400](0019/bls-H710400.webp) | Erbsenmehl | Pea flour |
+
+
+## Tanda 0020: legumbres, productos vegetales y patatas
+
+100 WebP finales opacos de 1024×1024 revisados en nueve hojas de contacto; 23 casos comprobados también a tamaño completo. Una generación independiente por código, mediante el generador integrado de Codex y referencias CIQUAL usadas solo para el estilo. BLS permanece fuera de la app.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0020-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0020-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0020-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0020-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0020-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0020-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0020-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0020-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0020-09.jpg)
+
+Las legumbres maduras sin cocción se muestran como semillas secas; las hervidas o en conserva, hidratadas y escurridas. Se distinguen las lentejas rojas partidas, las alubias blancas, las alubias rojas, las habas maduras con hilo oscuro y el mungo verde. Las harinas son polvos secos; el granulado de soja texturizada seco conserva porosidad, mientras que la versión remojada y salteada está hidratada y tiene dorado moderado.
+
+Las bebidas de almendra y soja usan un vaso sencillo con líquido opaco marfil. Dulzor, sabor no especificado, fortificación y cantidad de grasa no se codifican con colores o símbolos inventados. Postres, yogures y cremas vegetales se presentan sin fruta ni decoración; el pudin genérico es una elección ilustrativa de color crema, sin afirmar sabor ni base concretos. El tofu firme tiene estructura de cuajada prensada y el sedoso una superficie fina y delicada. Las cocciones conservan esa diferencia. Miso, cremas de semillas, queso vegetal, embutidos y sustitutos de carne usan presentaciones ilustrativas sin certificar fórmula. El huevo de los cortes vegetarianos queda incorporado, sin añadir un huevo de adorno. Las alubias en tomate y la boloñesa conservan su salsa; el hummus no lleva guarnición.
+
+Las patatas peladas no conservan piel marrón; las enteras con piel sí. Crudas, hervidas, al vapor, al horno y a la sartén mantienen el aspecto correspondiente. Los congelados anteriores a la cocción final tienen escarcha fina; los cocinados desde congelado no. Solo las patatas fritas explícitamente saladas muestran unos pocos cristales adheridos. La fécula es polvo blanco fino y el puré instantáneo conserva pequeñas escamas secas.
+
+Los preparados deshidratados para Kartoffelkloß se muestran como mezclas secas, sin convertirlos en bolas cocidas. Los [criterios alemanes de productos de patata](https://www.deutsche-lebensmittelbuch-kommission.de/fileadmin/Dokumente/leitsaetze_kartoffelerzeugnisse_barrierefrei.pdf) distinguen mezclas secas y productos congelados, y describen los Kartoffelpuffer congelados como piezas ya formadas y prefritas. Por ello, estos últimos conservan algo de dorado previo bajo la escarcha; el [fabricante Schwarmstedter](https://www.schwarmstedter.de/kartoffelgerichte/kartoffelpuffer-klassisch) también documenta esa presentación. La textura exacta de los dos preparados secos es una elección ilustrativa, no una certificación de receta. Los gnocchi son pequeñas almohadillas de masa con surcos: crudos mates, cocidos hidratados, tostados solo cuando se nombra la cocción correspondiente. El código genérico de chips usa patatas en láminas como una de sus presentaciones posibles.
+
+Estas ilustraciones no certifican especie, variedad, receta, ingredientes exactos, alérgenos, propiedades nutricionales ni porción de 100 g. Las fichas nutricionales y las fuentes oficiales no cambian.
+
+Correcciones visuales registradas: 0.  Casos abiertos a tamaño completo: `bls-H730032`, `bls-H739400`, `bls-H750100`, `bls-H765000`, `bls-H765082`, `bls-H810100`, `bls-H843200`, `bls-H861042`, `bls-H861100`, `bls-H861132`, `bls-H882000`, `bls-H910400`, `bls-H923900`, `bls-K110100`, `bls-K110162`, `bls-K120200`, `bls-K130362`, `bls-K213000`, `bls-K240400`, `bls-K240500`, `bls-K260200`, `bls-K271000`, `bls-K271032`.
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-H720400](0020/bls-H720400.webp) | Kichererbsenmehl | Chickpea flour |
+| [bls-H720902](0020/bls-H720902.webp) | Kichererbse reif, Konserve, abgetropft | Chickpea mature, canned, drained |
+| [bls-H725100](0020/bls-H725100.webp) | Linse reif | Lentil mature |
+| [bls-H730000](0020/bls-H730000.webp) | Linse rot reif | Lentil red mature |
+| [bls-H730032](0020/bls-H730032.webp) | Linse rot, reif, gekocht | Lentil red, mature, boiled |
+| [bls-H730132](0020/bls-H730132.webp) | Linse reif, gekocht | Lentil mature, boiled |
+| [bls-H730400](0020/bls-H730400.webp) | Linsenmehl | Lentil flour |
+| [bls-H730902](0020/bls-H730902.webp) | Linse reif, Konserve, abgetropft | Lentil mature, canned, drained |
+| [bls-H731400](0020/bls-H731400.webp) | Lupinenmehl | Lupin flour |
+| [bls-H739400](0020/bls-H739400.webp) | Gartenbohne reif | Haricot bean mature |
+| [bls-H740132](0020/bls-H740132.webp) | Gartenbohne reif, gekocht | Haricot bean mature, boiled |
+| [bls-H740902](0020/bls-H740902.webp) | Gartenbohne reif, Konserve, abgetropft | Haricot bean mature, canned, drained |
+| [bls-H742100](0020/bls-H742100.webp) | Kidneybohne reif | Kidney bean mature |
+| [bls-H742132](0020/bls-H742132.webp) | Kidneybohne reif, gekocht | Kidney bean mature, boiled |
+| [bls-H742902](0020/bls-H742902.webp) | Kidneybohne reif, Konserve, abgetropft | Kidney bean mature, canned, drained |
+| [bls-H750100](0020/bls-H750100.webp) | Dicke Bohne reif | Broad bean mature |
+| [bls-H750132](0020/bls-H750132.webp) | Dicke Bohne reif, gekocht | Broad bean mature, boiled |
+| [bls-H760600](0020/bls-H760600.webp) | Sojabohne reif, geröstet ohne Fett (Sojakerne) | Soya bean mature (soya kernel) roasted without fat |
+| [bls-H764400](0020/bls-H764400.webp) | Sojamehl vollfett | Soya flour full fat |
+| [bls-H765000](0020/bls-H765000.webp) | Sojaschnetzel/Sojagranulat, texturiert, trocken | Plant-based mince, made from texturised soya protein, plain, dry |
+| [bls-H765082](0020/bls-H765082.webp) | Sojaschnetzel/Sojagranulat, texturiert, eingeweicht, gebraten ohne Fett (Pfanne) | Plant-based mince, made from texturised soya protein, plain, soaked, fried without fat (pan) |
+| [bls-H770100](0020/bls-H770100.webp) | Mungbohne reif | Mung bean mature |
+| [bls-H770132](0020/bls-H770132.webp) | Mungbohne reif, gekocht | Mung bean mature, boiled |
+| [bls-H800000](0020/bls-H800000.webp) | Mandeldrink ungesüßt | Almond drink unsweetened |
+| [bls-H800100](0020/bls-H800100.webp) | Mandeldrink ungesüßt, angereichert mit Vitaminen und Calcium | Almond drink unsweetened, fortified with vitamins and calcium |
+| [bls-H800200](0020/bls-H800200.webp) | Mandeldrink gesüßt, aromatisiert | Almond drink sweetened, flavoured |
+| [bls-H800300](0020/bls-H800300.webp) | Mandeldrink gesüßt, aromatisiert, angereichert mit Calcium | Almond drink sweetened, flavoured, fortified with calcium |
+| [bls-H800400](0020/bls-H800400.webp) | Mandeldrink gesüßt, aromatisiert, angereichert mit Vitaminen und Calcium | Almond drink sweetened, flavoured, fortified with vitamins and calcium |
+| [bls-H810000](0020/bls-H810000.webp) | Studentenfutter | Fruit and nut mix |
+| [bls-H810100](0020/bls-H810100.webp) | Erdnuss geröstet, im Teigmantel | Peanut roasted, crispy coated |
+| [bls-H841100](0020/bls-H841100.webp) | Sojadrink ungesüßt | Soya drink unsweetened |
+| [bls-H841400](0020/bls-H841400.webp) | Sojadrink ungesüßt, angereichert mit Vitaminen und Calcium | Soya drink unsweetened, fortified with vitamins and calcium |
+| [bls-H842400](0020/bls-H842400.webp) | Sojadrink gesüßt, aromatisiert | Soya drink sweetened, flavoured |
+| [bls-H842600](0020/bls-H842600.webp) | Sojadrink gesüßt, aromatisiert, angereichert mit Vitaminen und Calcium | Soya drink sweetened, flavoured, fortified with vitamins and calcium |
+| [bls-H843200](0020/bls-H843200.webp) | Dessert/Puddingalternative, pflanzlich | Plant-based dessert/pudding alternative |
+| [bls-H843300](0020/bls-H843300.webp) | Dessert/Puddingalternative, pflanzlich, angereichert mit Vitaminen und Calcium | Plant-based dessert/pudding alternative, fortified with vitamins and calcium |
+| [bls-H844000](0020/bls-H844000.webp) | Soja-Joghurtalternative ungesüßt | Plant-based yogurt alternative, made from soya, unsweetened |
+| [bls-H844100](0020/bls-H844100.webp) | Soja-Joghurtalternative ungesüßt, angereichert mit Vitaminen und Calcium | Plant-based yogurt alternative, made from soya, unsweetened, fortified with vitamins and calcium |
+| [bls-H844400](0020/bls-H844400.webp) | Soja-Joghurtalternative gesüßt, aromatisiert | Plant-based yogurt alternative, made from soya, sweetened, flavoured |
+| [bls-H844500](0020/bls-H844500.webp) | Soja-Joghurtalternative gesüßt, aromatisiert, angereichert mit Vitaminen und Calcium | Plant-based yogurt alternative, made from soya, sweetened, flavoured fortified with vitamins and calcium |
+| [bls-H845000](0020/bls-H845000.webp) | Sojakochcreme | Plant-based cream alternative, made from soya (for boiling and refining) |
+| [bls-H861000](0020/bls-H861000.webp) | Tofu | Tofu |
+| [bls-H861032](0020/bls-H861032.webp) | Tofu gargezogen | Tofu poached |
+| [bls-H861042](0020/bls-H861042.webp) | Tofu geschmort ohne Fett | Tofu braised without fat |
+| [bls-H861062](0020/bls-H861062.webp) | Tofu gebacken | Tofu baked |
+| [bls-H861082](0020/bls-H861082.webp) | Tofu gebraten ohne Fett (Pfanne) | Tofu fried without fat (pan) |
+| [bls-H861100](0020/bls-H861100.webp) | Seidentofu | Silken tofu |
+| [bls-H861132](0020/bls-H861132.webp) | Seidentofu gargezogen | Silken tofu poached |
+| [bls-H862200](0020/bls-H862200.webp) | Miso/Sojabohnenpaste | Miso/soya bean paste |
+| [bls-H880100](0020/bls-H880100.webp) | Sonnenblumenkernaufstrich, Brotaufstrich pflanzlich | Sunflower seed spread |
+| [bls-H880200](0020/bls-H880200.webp) | Erdnussbutter/Erdnusscreme | Peanut butter |
+| [bls-H882000](0020/bls-H882000.webp) | Käsealternative, Basis Cashewkerne, vegan | Plant-based cheese alternative, cashew-based, vegan |
+| [bls-H882100](0020/bls-H882100.webp) | Frischecreme/Streichcreme, Basis Mandeln, vegan | Plant-based soft cream cheese alternative, almond-based, vegan |
+| [bls-H900900](0020/bls-H900900.webp) | Bohnen weiß, in Tomatensoße, Konserve | Haricot beans in tomato sauce, canned |
+| [bls-H910200](0020/bls-H910200.webp) | Tofu-Bratlinge gebraten ohne Fett (Pfanne) | Tofu burgers fried without fat (pan) |
+| [bls-H910300](0020/bls-H910300.webp) | Vegetarische Bratwurst (aus Tofu und Weizenprotein) | Vegetarian bratwurst (made from tofu and wheat protein) |
+| [bls-H910400](0020/bls-H910400.webp) | Veganes Schnitzel | Vegan schnitzel |
+| [bls-H910500](0020/bls-H910500.webp) | Vegetarische Wiener Würstchen | Vegetarian Vienna sausages |
+| [bls-H923900](0020/bls-H923900.webp) | Soja-Bolognese Konserve | Soya Bolognese, canned |
+| [bls-H926100](0020/bls-H926100.webp) | Soja-Bratlinge gebraten ohne Fett (Pfanne) | Soya burgers fried without fat (pan) |
+| [bls-H930000](0020/bls-H930000.webp) | Veganer Aufschnitt (Wurstalternative) | Vegan cold cuts alternative |
+| [bls-H930100](0020/bls-H930100.webp) | Soja-Streichwurstalternative, vegan | Soya spreadable sausage alternative, vegan |
+| [bls-H930200](0020/bls-H930200.webp) | Vegetarischer Aufschnitt (Wurstalternative, mit Ei) | Vegetarian cold cuts alternative, with egg |
+| [bls-H960000](0020/bls-H960000.webp) | Hummus/Kichererbsenmus | Hummus/chickpea puree |
+| [bls-K110100](0020/bls-K110100.webp) | Kartoffel geschält, roh | Potatoe peeled, raw |
+| [bls-K110132](0020/bls-K110132.webp) | Kartoffel geschält, gekocht | Potatoe peeled, boiled |
+| [bls-K110142](0020/bls-K110142.webp) | Kartoffel geschält, geschmort ohne Fett | Potatoe peeled, braised without fat |
+| [bls-K110143](0020/bls-K110143.webp) | Kartoffel geschält, druckgedämpft | Potatoe peeled, pressure-steamed |
+| [bls-K110162](0020/bls-K110162.webp) | Kartoffel geschält, gebacken | Potatoe peeled, baked |
+| [bls-K110182](0020/bls-K110182.webp) | Kartoffel geschält, gebraten ohne Fett (Pfanne) | Potatoe peeled, fried without fat (pan) |
+| [bls-K110902](0020/bls-K110902.webp) | Kartoffel geschält, gekocht, Konserve, abgetropft | Potatoe peeled, boiled, canned, drained |
+| [bls-K120100](0020/bls-K120100.webp) | Kartoffel ungeschält, roh | Potatoe unpeeled, raw |
+| [bls-K120134](0020/bls-K120134.webp) | Kartoffel ungeschält, gekocht | Potatoe unpeeled, boiled |
+| [bls-K120164](0020/bls-K120164.webp) | Kartoffel ungeschält, gebacken | Potatoe unpeeled, baked |
+| [bls-K120184](0020/bls-K120184.webp) | Kartoffel ungeschält, gebraten ohne Fett (Pfanne) | Potatoe unpeeled, fried without fat (pan) |
+| [bls-K120200](0020/bls-K120200.webp) | Kartoffel ungeschält, tiefgefroren | Potatoe unpeeled, deep-frozen |
+| [bls-K120264](0020/bls-K120264.webp) | Kartoffel ungeschält, tiefgefroren, gebacken | Potatoe unpeeled, deep-frozen, baked |
+| [bls-K130200](0020/bls-K130200.webp) | Pommes frites tiefgefroren | Potato chips/french fries, deep-frozen |
+| [bls-K130262](0020/bls-K130262.webp) | Pommes frites tiefgefroren, gebacken | Potato chips/french fries, deep-frozen, baked |
+| [bls-K130362](0020/bls-K130362.webp) | Pommes frites tiefgefroren, gebacken, gesalzen | Potato chips/french fries, deep-frozen, baked, salted |
+| [bls-K130492](0020/bls-K130492.webp) | Pommes frites tiefgefroren, frittiert | Potato chips/french fries, deep-frozen, deep-fried |
+| [bls-K130592](0020/bls-K130592.webp) | Pommes frites tiefgefroren, frittiert, gesalzen | Potato chips/french fries, deep-frozen, deep-fried, salted |
+| [bls-K213000](0020/bls-K213000.webp) | Kartoffelpüree Instantpulver | Potatoes mashed instant powder |
+| [bls-K230000](0020/bls-K230000.webp) | Kartoffelstärke (Kartoffelmehl) | Potato starch (potato flour) |
+| [bls-K240400](0020/bls-K240400.webp) | Kartoffelkloß (aus rohen Kartoffeln) Trockenprodukt | Potato dumpling (from raw potatoes) dehydrated product |
+| [bls-K240500](0020/bls-K240500.webp) | Kartoffelkloß (aus gekochten Kartoffeln) Trockenprodukt | Potato dumpling (from boiled potatoes) dehydrated product |
+| [bls-K241200](0020/bls-K241200.webp) | Kartoffelkloß halb und halb, tiefgefroren | Potato dumpling half and half, deep-frozen |
+| [bls-K241232](0020/bls-K241232.webp) | Kartoffelkloß halb und halb, tiefgefroren, gargezogen | Potato dumpling half and half, deep-frozen, poached |
+| [bls-K260200](0020/bls-K260200.webp) | Kartoffelpuffer tiefgefroren | Potato pancakes deep-frozen |
+| [bls-K260262](0020/bls-K260262.webp) | Kartoffelpuffer tiefgefroren, gebacken | Potato pancakes deep-frozen, baked |
+| [bls-K260282](0020/bls-K260282.webp) | Kartoffelpuffer tiefgefroren, gebraten ohne Fett (Pfanne) | Potato pancakes deep-frozen, fried without fat (pan) |
+| [bls-K260292](0020/bls-K260292.webp) | Kartoffelpuffer tiefgefroren, frittiert | Potato pancakes deep-frozen, deep-fried |
+| [bls-K270000](0020/bls-K270000.webp) | Gnocchi roh | Gnocchi raw |
+| [bls-K270022](0020/bls-K270022.webp) | Gnocchi gedämpft | Gnocchi steamed |
+| [bls-K270032](0020/bls-K270032.webp) | Gnocchi gekocht | Gnocchi boiled |
+| [bls-K270062](0020/bls-K270062.webp) | Gnocchi gekocht, gebacken | Gnocchi boiled, baked |
+| [bls-K270082](0020/bls-K270082.webp) | Gnocchi gekocht, gebraten ohne Fett (Pfanne) | Gnocchi boiled, fried without fat (pan) |
+| [bls-K271000](0020/bls-K271000.webp) | Gnocchi tiefgefroren | Gnocchi deep-frozen |
+| [bls-K271032](0020/bls-K271032.webp) | Gnocchi tiefgefroren, gekocht | Gnocchi deep-frozen, boiled |
+| [bls-K280100](0020/bls-K280100.webp) | Kartoffelchips/Stapelchips, diverse Sorten | Potato crisps/potato chips (various types) |
