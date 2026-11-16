@@ -33,6 +33,8 @@ const fixture = (overrides = {}) => ({
     locale: "es",
     lang: "es",
     title: "Título",
+    description: "Descripción de la política",
+    image_alt: "Texto alternativo",
     url: "https://gymnasia.maximofn.com/privacidad",
     alternate_locale: "en",
     alternate_url: "https://gymnasia.maximofn.com/privacy",
@@ -127,10 +129,33 @@ test("el HTML publicado lleva versión, digest, hreflang y canonical", () => {
   assert.match(html, /<link rel="canonical" href="https:\/\/gymnasia\.maximofn\.com\/privacidad">/);
   assert.match(html, /hreflang="en" href="https:\/\/gymnasia\.maximofn\.com\/privacy"/);
   assert.match(html, /<html lang="es">/);
+  // x-default apunta a la versión inglesa desde las dos páginas.
+  assert.match(html, /hreflang="x-default" href="https:\/\/gymnasia\.maximofn\.com\/privacy"/);
+  assert.match(html, /<meta name="description" content="Descripción de la política">/);
+  assert.match(html, /<meta property="og:url" content="https:\/\/gymnasia\.maximofn\.com\/privacidad">/);
+  assert.match(html, /<meta property="og:locale" content="es_ES">/);
+  assert.match(html, /<meta property="og:image:alt" content="Texto alternativo">/);
+  assert.match(html, /<meta name="twitter:card" content="summary_large_image">/);
   // Una política que carga un tercero para leerse sería una contradicción.
   assert.equal(/<script/i.test(html), false);
   assert.equal(html.includes("http://"), false);
   assert.equal(/src=|<link rel="stylesheet"/.test(html), false);
+});
+
+test("la versión inglesa es su propio x-default", () => {
+  const policy = fixture({
+    meta: {
+      locale: "en",
+      lang: "en",
+      url: "https://gymnasia.maximofn.com/privacy",
+      alternate_locale: "es",
+      alternate_url: "https://gymnasia.maximofn.com/privacidad",
+    },
+  });
+  policy.locale = "en";
+  const html = renderHtml(policy);
+  assert.match(html, /hreflang="x-default" href="https:\/\/gymnasia\.maximofn\.com\/privacy"/);
+  assert.match(html, /<meta property="og:locale" content="en_US">/);
 });
 
 test("no se publica una política a la que le falta una sección obligatoria", () => {
@@ -138,6 +163,12 @@ test("no se publica una política a la que le falta una sección obligatoria", (
   policy.sections = policy.sections.filter((section) => section.id !== "byok");
   const codes = validatePolicies([policy]).map((violation) => violation.code);
   assert.ok(codes.includes("section-missing"));
+});
+
+test("no se publica una política sin descripción ni texto alternativo de la imagen", () => {
+  const policy = fixture({ meta: { description: "", image_alt: "" } });
+  const missing = validatePolicies([policy]).filter((violation) => violation.code === "metadata-missing");
+  assert.equal(missing.length, 2);
 });
 
 test("no se publica una sección vacía", () => {

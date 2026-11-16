@@ -21,11 +21,13 @@ Escritura:
   uv run linear.py link GYM-12 --blocked-by GYM-10 --blocked-by GYM-11
   uv run linear.py close GYM-12 --evidence "npm test: 24/24"
   uv run linear.py comment GYM-12 --body "Comentario"
+  uv run linear.py attach-image GYM-12 --file captura.jpg --alt "Descripción"
 
 Prioridades: none | urgent | high | medium | low
 """
 import argparse
 import json
+import mimetypes
 import os
 import re
 import sys
@@ -60,7 +62,8 @@ TEST_PLAN_TEMPLATE = """## Plan de pruebas
 
 CHECKED_TEST_ITEM = re.compile(r"^\s*[-*]\s*\[[xX]\]")
 NOT_APPLICABLE = re.compile(r"(?i)\bno\s+aplica\s*:\s*(.+)$")
-PLACEHOLDER = re.compile(r"<[^>]+>")
+# Linear guarda los enlaces como [texto](<url>); ese <url> no es un marcador de plantilla.
+PLACEHOLDER = re.compile(r"<(?!https?://)[^>]+>")
 
 
 def repo_root() -> Path:
@@ -315,6 +318,8 @@ def cmd_get(args):
         identifier title description priorityLabel
         state { name type } assignee { name }
         labels { nodes { name } }
+        parent { identifier title }
+        children(first: 100) { nodes { identifier title state { name } } }
         createdAt updatedAt url
       }
     }
@@ -327,6 +332,13 @@ def cmd_get(args):
     print(f"Asignado:   {n['assignee']['name'] if n['assignee'] else '—'}")
     print(f"Labels:     {labels}")
     print(f"URL:        {n['url']}")
+    if n["parent"]:
+        print(f"Padre:      {n['parent']['identifier']}  {n['parent']['title']}")
+    children = n["children"]["nodes"]
+    if children:
+        print(f"Sub-issues: {len(children)}")
+        for c in children:
+            print(f"  {c['identifier']:<9} [{c['state']['name']}] {c['title']}")
     print("\n--- Descripción ---")
     print(n["description"] or "(vacía)")
 
@@ -594,13 +606,32 @@ def build_board_report(board: dict, nodes: list, team: str = "GYM", checked_at: 
 
 def fetch_board_nodes(team: str) -> list:
     gql = """
-    query($key:String!,$first:Int){
-      issues(filter:{team:{key:{eq:$key}}}, first:$first){
+    query($key:String!,$first:Int,$after:String){
+      issues(filter:{team:{key:{eq:$key}}}, first:$first, after:$after){
         nodes{ identifier title state{ name } }
+        pageInfo{ hasNextPage endCursor }
       }
     }
     """
-    return query(gql, {"key": team.upper(), "first": 250})["issues"]["nodes"]
+    nodes = []
+    after = None
+    cursors = set()
+    identifiers = set()
+    while True:
+        page = query(gql, {"key": team.upper(), "first": 250, "after": after})["issues"]
+        for node in page["nodes"]:
+            identifier = node["identifier"]
+            if identifier in identifiers:
+                raise ValueError("La paginación repite un ticket; no se comparará un inventario ambiguo.")
+            identifiers.add(identifier)
+            nodes.append(node)
+        info = page["pageInfo"]
+        if not info["hasNextPage"]:
+            return nodes
+        after = info["endCursor"]
+        if not after or after in cursors:
+            raise ValueError("La paginación no avanza; no se comparará un inventario incompleto.")
+        cursors.add(after)
 
 
 def print_board_report(report: dict):
@@ -827,6 +858,88 @@ def cmd_comment(args):
     print(f"Comentario añadido a {args.id}")
 
 
+def upload_private_image(path: Path) -> str:
+    """Sube una imagen al almacenamiento privado de Linear y devuelve su URL."""
+    if not path.is_file():
+        sys.exit(f"No existe la imagen: {path}")
+
+    content_type = mimetypes.guess_type(path.name)[0]
+    if not content_type or not content_type.startswith("image/"):
+        sys.exit(
+            f"El fichero no tiene un tipo de imagen reconocido: {path.name}"
+        )
+
+    payload = path.read_bytes()
+    if not payload:
+        sys.exit(f"La imagen está vacía: {path}")
+
+    gql = """
+    mutation UploadImage($contentType: String!, $filename: String!, $size: Int!) {
+      fileUpload(contentType: $contentType, filename: $filename, size: $size) {
+        success
+        uploadFile {
+          uploadUrl
+          assetUrl
+          headers { key value }
+        }
+      }
+    }
+    """
+    result = query(
+        gql,
+        {
+            "contentType": content_type,
+            "filename": path.name,
+            "size": len(payload),
+        },
+    )["fileUpload"]
+    upload = result.get("uploadFile")
+    if not result["success"] or not upload:
+        sys.exit("Linear no concedió una URL para subir la imagen.")
+
+    headers = {item["key"]: item["value"] for item in upload["headers"]}
+    # Linear firma la subida para el MIME solicitado, pero no lo repite entre
+    # las cabeceras devueltas. urllib usaría application/x-www-form-urlencoded
+    # al recibir bytes y Google Storage rechazaría la firma con un 403.
+    headers.setdefault("Content-Type", content_type)
+    headers.setdefault("Cache-Control", "public, max-age=31536000")
+    request = urllib.request.Request(
+        upload["uploadUrl"],
+        data=payload,
+        headers=headers,
+        method="PUT",
+    )
+    try:
+        with urllib.request.urlopen(request) as response:
+            response.read()
+    except urllib.error.HTTPError as error:
+        sys.exit(f"La subida de la imagen falló con HTTP {error.code}.")
+
+    return upload["assetUrl"]
+
+
+def cmd_attach_image(args):
+    """Sube una imagen privada y la inserta en un comentario del ticket."""
+    issue_uuid = resolve_issue_uuid(args.id)
+    asset_url = upload_private_image(Path(args.file).expanduser().resolve())
+    body = f"## Evidencia visual\n\n![{args.alt}]({asset_url})"
+    gql = """
+    mutation Comment($input: CommentCreateInput!) {
+      commentCreate(input: $input) { success comment { id } }
+    }
+    """
+    result = query(
+        gql,
+        {"input": {"issueId": issue_uuid, "body": body}},
+    )["commentCreate"]
+    if not result["success"]:
+        sys.exit(
+            "La imagen se subió, pero no se pudo añadir al ticket; "
+            f"asset privado: {asset_url}"
+        )
+    print(f"Imagen adjuntada a {args.id}")
+
+
 def cmd_link(args):
     """Crea relaciones `blocks` desde cada bloqueante hacia el ticket objetivo."""
     gql = """
@@ -1043,6 +1156,19 @@ def main():
     pm.add_argument("id", help="identifier, p.ej. GYM-12")
     pm.add_argument("--body", required=True)
     pm.set_defaults(func=cmd_comment)
+
+    pimage = sub.add_parser(
+        "attach-image",
+        help="subir una imagen privada y mostrarla en un comentario del issue",
+    )
+    pimage.add_argument("id", help="identifier, p.ej. GYM-12")
+    pimage.add_argument("--file", required=True, help="ruta local de la imagen")
+    pimage.add_argument(
+        "--alt",
+        required=True,
+        help="texto alternativo accesible que describe la evidencia",
+    )
+    pimage.set_defaults(func=cmd_attach_image)
 
     plink = sub.add_parser(
         "link",

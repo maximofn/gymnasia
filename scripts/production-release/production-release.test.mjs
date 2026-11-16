@@ -11,6 +11,7 @@ import {
   extractCertificateDigest,
   extractNotificationSoundsFromArchiveListing,
   extractNotificationSoundsFromCompiledResources,
+  extractVerifiedNotificationSoundsFromAab,
   loadReleasePolicy,
   normalizeCertificateDigest,
   parseManifestXml,
@@ -62,11 +63,21 @@ function validEnvironment() {
   };
 }
 
+function validPlayEnvironment() {
+  return {
+    name: policy.playEnvironment,
+    protection_rules: [],
+    deployment_branch_policy: { protected_branches: true, custom_branch_policies: false },
+  };
+}
+
 function sourceInput(overrides = {}) {
   return {
     policy,
-    profile: "production",
-    artifactType: "aab",
+    targets: [
+      { profile: "production", artifactType: "aab" },
+      { profile: "production-apk", artifactType: "apk" },
+    ],
     ref: "refs/heads/main",
     headSha: commit,
     checkedOutSha: commit,
@@ -75,6 +86,7 @@ function sourceInput(overrides = {}) {
     reachableFromProduction: true,
     rulesets: [validRuleset()],
     productionEnvironment: validEnvironment(),
+    playEnvironment: validPlayEnvironment(),
     pullRequest: {
       number: 122,
       state: "closed",
@@ -91,12 +103,8 @@ function sourceInput(overrides = {}) {
   };
 }
 
-test("la fuente válida exige main, controles remotos y perfil coherente", () => {
+test("la fuente válida exige main, controles remotos y ambos perfiles", () => {
   assert.deepEqual(evaluateSourceCandidate(sourceInput()).violations, []);
-  assert.deepEqual(evaluateSourceCandidate(sourceInput({
-    profile: "production-apk",
-    artifactType: "apk",
-  })).violations, []);
 });
 
 test("rechaza ramas, commits sucios/no alcanzables y perfiles cruzados", () => {
@@ -104,11 +112,11 @@ test("rechaza ramas, commits sucios/no alcanzables y perfiles cruzados", () => {
     ref: "refs/heads/feature",
     clean: false,
     reachableFromProduction: false,
-    artifactType: "apk",
+    targets: [{ profile: "production", artifactType: "apk" }],
   })).violations;
   assert.deepEqual(
     new Set(violations.map((violation) => violation.code)),
-    new Set(["artifact-profile", "ref", "dirty", "unreachable"]),
+    new Set(["targets", "ref", "dirty", "unreachable"]),
   );
 });
 
@@ -127,6 +135,18 @@ test("rechaza un commit sin PR o sin autorización sobre el SHA de la PR", () =>
   assert.ok(withoutStatuses.some((violation) => violation.code === "authorization-check"));
 });
 
+test("GitHub APK conserva las protecciones de Production sin retirar revisores de Play", () => {
+  const playEnvironment = validPlayEnvironment();
+  playEnvironment.protection_rules = [{ type: "required_reviewers", reviewers: [{ reviewer: { login: policy.owner } }] }];
+  assert.ok(evaluateSourceCandidate(sourceInput({ playEnvironment })).violations
+    .some(({ code }) => code === "play-environment-reviewer"));
+  assert.deepEqual(evaluateSourceCandidate(sourceInput({ publicationTarget: "github-apk", playEnvironment })).violations, []);
+  assert.ok(evaluateSourceCandidate(sourceInput({ publicationTarget: "unknown" })).violations
+    .some(({ code }) => code === "publication-target"));
+  assert.ok(evaluateSourceCandidate(sourceInput({ publicationTarget: "github-apk", productionEnvironment: null })).violations
+    .some(({ code }) => code === "environment"));
+});
+
 test("rechaza cualquier deriva del ruleset o del environment", () => {
   const brokenRuleset = validRuleset();
   brokenRuleset.bypass_actors = [{ actor_id: 1 }];
@@ -136,9 +156,12 @@ test("rechaza cualquier deriva del ruleset o del environment", () => {
   const environment = validEnvironment();
   environment.deployment_branch_policy.protected_branches = false;
   environment.protection_rules[0].reviewers = [];
+  const playEnvironment = validPlayEnvironment();
+  playEnvironment.protection_rules = [{ type: "required_reviewers", reviewers: [{ reviewer: { login: "someone" } }] }];
   const codes = evaluateSourceCandidate(sourceInput({
     rulesets: [brokenRuleset],
     productionEnvironment: environment,
+    playEnvironment,
   })).violations.map((violation) => violation.code);
   for (const code of [
     "ruleset-bypass",
@@ -146,6 +169,7 @@ test("rechaza cualquier deriva del ruleset o del environment", () => {
     "ruleset-check",
     "environment-reviewer",
     "environment-branch",
+    "play-environment-reviewer",
   ]) {
     assert.ok(codes.includes(code), code);
   }
@@ -260,13 +284,15 @@ const validAppConfig = {
   },
 };
 const validSourceEvidence = {
-  schemaVersion: 1,
-  kind: "ProductionSourceEvidenceV1",
+  schemaVersion: 2,
+  kind: "ProductionSourceEvidenceV2",
   result: "passed",
   commit,
   ref: "refs/heads/main",
-  profile: "production",
-  artifactType: "aab",
+  targets: [
+    { profile: "production", artifactType: "aab" },
+    { profile: "production-apk", artifactType: "apk" },
+  ],
   appVersion: validManifest.versionName,
   source: {
     clean: true,
@@ -278,8 +304,10 @@ const validSourceEvidence = {
     rulesetName: policy.rulesetName,
     rulesetEnforcement: "active",
     bypassActors: [],
-    environment: policy.environment,
-    protectedBranchesOnly: true,
+    environments: {
+      production: { name: policy.environment, protectedBranchesOnly: true },
+      playInternal: { name: policy.playEnvironment, protectedBranchesOnly: true, reviewerCount: 0 },
+    },
     ownerReviewer: policy.owner,
     pullRequest: { headSha: "b".repeat(40) },
     requiredStatuses: policy.requiredStatusChecks.map((context) => ({ context, result: true })),
@@ -295,6 +323,7 @@ function artifactInput(overrides = {}) {
   return {
     policy,
     kind: "aab",
+    profile: "production",
     sourceEvidence: validSourceEvidence,
     manifest: validManifest,
     appConfig: validAppConfig,
@@ -312,6 +341,18 @@ function artifactInput(overrides = {}) {
     ...overrides,
   };
 }
+
+test("la evidencia APK de GitHub admite revisores de Play, pero nunca un destino desconocido", () => {
+  const sourceEvidence = structuredClone(validSourceEvidence);
+  sourceEvidence.remoteControls.environments.playInternal.reviewerCount = 1;
+  assert.ok(evaluateArtifactCandidate(artifactInput({ sourceEvidence })).violations
+    .some(({ code }) => code === "source-contract"));
+  sourceEvidence.publicationTarget = "github-apk";
+  assert.deepEqual(evaluateArtifactCandidate(artifactInput({ sourceEvidence })).violations, []);
+  sourceEvidence.publicationTarget = "unknown";
+  assert.ok(evaluateArtifactCandidate(artifactInput({ sourceEvidence })).violations
+    .some(({ code }) => code === "source-contract"));
+});
 
 test("acepta un AAB de Production con fuente, snapshot y firma coherentes", () => {
   assert.deepEqual(evaluateArtifactCandidate(artifactInput()).violations, []);
@@ -352,6 +393,39 @@ test("extrae los sonidos nativos tanto de APK como de AAB", () => {
   );
 });
 
+test("acepta las copias assets_ del AAB solo cuando son idénticas a los sonidos aprobados", () => {
+  const listing = notificationSounds.flatMap((sound) => [
+    `base/res/raw/${sound}`,
+    `base/res/raw/assets_${sound}`,
+  ]).join("\n");
+  const contents = new Map(notificationSounds.flatMap((sound) => {
+    const bytes = Buffer.from(`sound:${sound}`);
+    return [
+      [`base/res/raw/${sound}`, bytes],
+      [`base/res/raw/assets_${sound}`, Buffer.from(bytes)],
+    ];
+  }));
+  assert.deepEqual(
+    extractVerifiedNotificationSoundsFromAab(listing, (path) => contents.get(path)),
+    notificationSounds,
+  );
+  contents.set("base/res/raw/assets_beep.wav", Buffer.from("different"));
+  assert.deepEqual(
+    extractVerifiedNotificationSoundsFromAab(listing, (path) => contents.get(path)),
+    [...notificationSounds, "assets_beep.wav"].sort(),
+  );
+});
+
+test("un sonido assets_ sin original o un sonido nuevo sigue siendo inesperado", () => {
+  const listing = "base/res/raw/assets_beep.wav\nbase/res/raw/unexpected.wav";
+  assert.deepEqual(
+    extractVerifiedNotificationSoundsFromAab(listing, () => {
+      throw new Error("No debe leer archivos sin pareja aprobada.");
+    }),
+    ["assets_beep.wav", "unexpected.wav"],
+  );
+});
+
 test("extrae los sonidos del APK por su nombre lógico aunque sus ficheros estén ofuscados", () => {
   const resourceTable = `Package Groups (1)
     resource 0x7f120000 raw/ascending
@@ -383,14 +457,9 @@ test("extrae los sonidos del APK por su nombre lógico aunque sus ficheros esté
 });
 
 test("acepta un APK cuyos nombres físicos están ofuscados si conserva los recursos lógicos", () => {
-  const sourceEvidence = {
-    ...validSourceEvidence,
-    profile: "production-apk",
-    artifactType: "apk",
-  };
   const result = evaluateArtifactCandidate(artifactInput({
     kind: "apk",
-    sourceEvidence,
+    profile: "production-apk",
     archiveListing: "AndroidManifest.xml\nres/7M.wav\nres/83.wav\nres/CE.wav\nres/KH.wav\nres/Rj.wav",
     notificationSounds,
     size: policy.artifacts.apk.minBytes,
@@ -446,10 +515,9 @@ test("rechaza evidencia fuente incompleta aunque declare passed", () => {
 });
 
 test("rechaza que un AAB se presente como APK", () => {
-  const sourceEvidence = { ...validSourceEvidence, profile: "production-apk", artifactType: "apk" };
   const violations = evaluateArtifactCandidate(artifactInput({
     kind: "apk",
-    sourceEvidence,
+    profile: "production-apk",
   })).violations;
   assert.ok(violations.some((violation) => violation.code === "archive-kind"));
 });

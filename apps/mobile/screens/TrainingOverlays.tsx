@@ -1,3 +1,4 @@
+import { OptionChips } from "../components/OptionChips";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { memo } from "react";
 import ConfettiCannon from "react-native-confetti-cannon";
@@ -6,7 +7,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  SafeAreaView,
   ScrollView,
   Text,
   TextInput,
@@ -118,7 +118,7 @@ export const TrainingCatalogOverlays = memo(function TrainingCatalogOverlays({
 
       {model.customFormOpen ? (
         <View testID={shellSurfaceTestId("custom-exercise-form")} style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, backgroundColor: "#0D1117", zIndex: 750, elevation: 75 }}>
-          <SafeAreaView style={{ flex: 1 }}>
+          <View style={{ flex: 1 }}>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
               <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, gap: 10 }}>
                 <Pressable onPress={actions.closeCustomForm} hitSlop={10}>
@@ -194,7 +194,7 @@ export const TrainingCatalogOverlays = memo(function TrainingCatalogOverlays({
                 </Pressable>
               </ScrollView>
             </KeyboardAvoidingView>
-          </SafeAreaView>
+          </View>
         </View>
       ) : null}
 
@@ -229,33 +229,6 @@ export const TrainingCatalogOverlays = memo(function TrainingCatalogOverlays({
   );
 });
 
-function OptionChips({
-  label,
-  options,
-  selected,
-  onToggle,
-}: {
-  label: string;
-  options: ReadonlyArray<string>;
-  selected(option: string): boolean;
-  onToggle(option: string, selected: boolean): void;
-}) {
-  return (
-    <View style={{ gap: 6 }}>
-      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>{label}</Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-        {options.map((option) => {
-          const active = selected(option);
-          return (
-            <Pressable key={option} onPress={() => onToggle(option, active)} style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: mobileTheme.radius.pill, borderWidth: 1, borderColor: active ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle, backgroundColor: active ? "rgba(160,204,0,0.12)" : "#0D1117" }}>
-              <Text style={{ color: active ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>{option}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
 
 export const TrainingExerciseDetailOverlay = memo(function TrainingExerciseDetailOverlay({
   exercise,
@@ -267,7 +240,7 @@ export const TrainingExerciseDetailOverlay = memo(function TrainingExerciseDetai
   if (!exercise) return null;
   return (
     <View testID={shellSurfaceTestId("training-exercise-detail")} style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "#06090D", zIndex: 200 }}>
-      <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
           <View style={{ position: "relative" }}>
             {exercise.imageUri ? (
@@ -322,7 +295,7 @@ export const TrainingExerciseDetailOverlay = memo(function TrainingExerciseDetai
             ) : null}
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     </View>
   );
 });

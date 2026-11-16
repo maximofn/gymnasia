@@ -24,6 +24,15 @@ const legacyRecipesCacheKey = "gymnasia.development:gymnasia.mobile.recipes_repo
 const fixtureFoodName = "Pera Catálogo E2E";
 const fixtureExerciseName = "Sentadilla Catálogo E2E";
 const screenshotDir = process.env.CATALOG_E2E_SCREENSHOT_DIR || "";
+const ciqualFoods = JSON.parse(readFileSync(join(repositoryRoot, "apps/mobile/catalogs/generated/ciqualBaseline.generated.json"), "utf8")).foods;
+const ciqualRice = ciqualFoods.find((food) => food.id === "ciqual-9100");
+const ciqualLatest = ciqualFoods.find((food) => food.id === "ciqual-1010");
+const ciqualImageIndex = JSON.parse(readFileSync(join(repositoryRoot, "apps/mobile/catalogs/generated/ciqualImages.generated.json"), "utf8"));
+const ciqualImageUrl = (food) => `https://raw.githubusercontent.com/maximofn/gymnasia/main/alimentos/ciqual/${ciqualImageIndex.images[food.id]}`;
+const ciqualImageFiles = new Map(Object.values(ciqualImageIndex.images).map((path) => [
+  `/maximofn/gymnasia/main/alimentos/ciqual/${path}`, join(repositoryRoot, "alimentos/ciqual", path),
+]));
+const ciqualIncomplete = ciqualFoods.find((food) => food.calories_per_100g !== null && food.ciqual.qualifiers.fat_per_100g.qualifier === "missing");
 
 if (screenshotDir) mkdirSync(screenshotDir, { recursive: true });
 
@@ -178,7 +187,7 @@ async function installRoutes(page, networkState) {
     body: "{}",
   }));
   await page.route("https://api.github.com/**", (route) => route.fulfill({ status: 503 }));
-  await page.route("https://raw.githubusercontent.com/**", (route) => {
+  await page.route("https://raw.githubusercontent.com/**", async (route) => {
     if (networkState.offline) {
       return route.fulfill({ status: 503, body: "offline fixture" });
     }
@@ -188,6 +197,7 @@ async function installRoutes(page, networkState) {
       return route.fulfill({ status: 503, body: "products unavailable fixture" });
     }
     if (pathname.endsWith("/alimentos/all.json")) {
+      if (networkState.foodGate) await networkState.foodGate;
       return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(foodFixture) });
     }
     if (pathname.includes("/ejercicios/catalog-v1/")) {
@@ -208,6 +218,12 @@ async function installRoutes(page, networkState) {
       return route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
     }
     if (pathname.endsWith(".webp")) {
+      if (pathname.includes("/alimentos/ciqual/")) {
+        const file = ciqualImageFiles.get(pathname);
+        return file
+          ? route.fulfill({ status: 200, contentType: "image/webp", body: readFileSync(file) })
+          : route.fulfill({ status: 404, body: "Imagen CIQUAL sin registrar" });
+      }
       return route.fulfill({
         status: 200,
         contentType: "image/webp",
@@ -228,8 +244,9 @@ async function preparePage(context, networkState, initialStorage = {}, agentEnab
     if (!localStorage.getItem(key)) {
       localStorage.setItem(key, JSON.stringify(store));
     }
-    for (const [storageKey, value] of Object.entries(seededStorage)) {
-      if (!localStorage.getItem(storageKey)) localStorage.setItem(storageKey, value);
+    if (!sessionStorage.getItem("catalog-fixture-seeded")) {
+      for (const [storageKey, value] of Object.entries(seededStorage)) localStorage.setItem(storageKey, value);
+      sessionStorage.setItem("catalog-fixture-seeded", "1");
     }
   }, { key: storageKey, store: seedStore(agentEnabled), seededStorage: initialStorage });
   await installRoutes(page, networkState);
@@ -322,11 +339,11 @@ function openAIToolCallSse(responseId, callId, name, argumentsJson = "{}") {
   ].join("\n\n");
 }
 
-function openAIFinalSse() {
+function openAIFinalSse(text = "Catálogos consultados.") {
   return [
     `event: response.created\ndata: ${JSON.stringify({ type: "response.created", response: { id: "resp_catalog_final" } })}`,
-    `event: response.output_text.delta\ndata: ${JSON.stringify({ type: "response.output_text.delta", item_id: "msg_catalog_final", output_index: 0, content_index: 0, delta: "Catálogos consultados." })}`,
-    `event: response.completed\ndata: ${JSON.stringify({ type: "response.completed", response: { id: "resp_catalog_final", output: [{ type: "message", id: "msg_catalog_final", content: [{ type: "output_text", text: "Catálogos consultados." }] }] } })}`,
+    `event: response.output_text.delta\ndata: ${JSON.stringify({ type: "response.output_text.delta", item_id: "msg_catalog_final", output_index: 0, content_index: 0, delta: text })}`,
+    `event: response.completed\ndata: ${JSON.stringify({ type: "response.completed", response: { id: "resp_catalog_final", output: [{ type: "message", id: "msg_catalog_final", content: [{ type: "output_text", text }] }] } })}`,
     "data: [DONE]",
     "",
   ].join("\n\n");
@@ -371,14 +388,19 @@ async function expectProviderCatalogTools(page, expectedFoodAvailability, expect
     [1, "gymnasia_foods", expectedFoodAvailability],
     [2, "gymnasia_exercises", expectedExerciseAvailability],
   ]) {
-    const output = requests[requestIndex].input?.find((item) => item.type === "function_call_output")?.output;
+    const expectedCallId = requestIndex === 1 ? "call_catalog_foods" : "call_catalog_exercises";
+    const output = requests[requestIndex].input?.find(
+      (item) => item.type === "function_call_output" && item.call_id === expectedCallId,
+    )?.output;
     assert.equal(typeof output, "string");
     const parsed = JSON.parse(output);
     assert.equal(parsed.availability, expectedAvailability);
     assert.equal(parsed.sources.some((source) => source.source_id === expectedSource), true);
     assert.equal(parsed.results.every((result) => result.source_id && result.item_id), true);
   }
-  const routineOutput = requests[3].input?.find((item) => item.type === "function_call_output")?.output;
+  const routineOutput = requests[3].input?.find(
+    (item) => item.type === "function_call_output" && item.call_id === "call_catalog_routine",
+  )?.output;
   assert.equal(typeof routineOutput, "string");
   const expectedRoutineStatus = expectedExerciseAvailability === "unavailable" ? "invalid_input" : "created";
   assert.equal(JSON.parse(routineOutput).status, expectedRoutineStatus);
@@ -393,11 +415,161 @@ async function expectProviderCatalogTools(page, expectedFoodAvailability, expect
   await page.unroute("**/v1/responses*");
 }
 
+async function expectCiqualOffline(page) {
+  log("Verificando CIQUAL en Ajustes y Dieta sin red ni caché previa");
+  await page.getByTestId("nav-tab-settings").click();
+  await page.getByTestId("settings-tab-foods").click();
+  await page.getByTestId("ciqual-attribution").waitFor({ state: "visible" });
+  await page.getByTestId("food-catalog-load-more").waitFor({ state: "visible" });
+  assert.equal(await page.getByTestId(/^food-catalog-row-/).count(), 30);
+  await page.getByTestId("food-catalog-load-more").click();
+  assert.equal(await page.getByTestId(/^food-catalog-row-/).count(), 60);
+  // La búsqueda se aplica al catálogo completo, no solo a las 30 filas visibles.
+  await page.locator('input[placeholder="Buscar alimento..."]').fill(ciqualIncomplete.name.normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+  await page.getByText(ciqualIncomplete.name, { exact: true }).click();
+  const detail = page.getByTestId("shell-layer-settings-food-detail");
+  await detail.getByText("No disponible", { exact: true }).first().waitFor({ state: "visible" });
+  assert.equal(await detail.getByText("Ración típica", { exact: true }).count(), 0);
+  await detail.getByText(/Original francés:/).waitFor({ state: "visible" });
+  if (screenshotDir) {
+    await page.screenshot({ path: join(screenshotDir, "ciqual-detail-390.png"), fullPage: true });
+    await page.setViewportSize({ width: 960, height: 900 });
+    await page.screenshot({ path: join(screenshotDir, "ciqual-detail-960.png"), fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+  }
+  await page.getByTestId("nav-tab-diet").click();
+  const search = page.locator('input[placeholder="Buscar alimento..."]').first();
+  await search.fill(ciqualRice.name);
+  await page.getByText(ciqualRice.name, { exact: true }).click();
+  await page.getByTestId("selected-food-grams-input").fill("150");
+  await page.getByTestId("save-selected-food").click();
+  await page.waitForFunction((key) => Object.values(JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate ?? {}).some((day) => day.meals.some((meal) => meal.items.some((item) => item.catalog_link?.ref?.sourceId === "anses_ciqual_2025" && item.catalog_link.ref.itemId === "ciqual-9100" && item.calories_kcal === 525))), storageKey);
+  await search.fill(ciqualIncomplete.name);
+  await page.getByText(ciqualIncomplete.name, { exact: true }).click();
+  assert.equal(await page.getByTestId("manual-food-fat_g-input").inputValue(), "");
+  await page.getByTestId("save-manual-food").click();
+  await page.getByTestId("manual-food-fat_g-error").waitFor({ state: "visible" });
+  const items = await page.evaluate((key) => Object.values(JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate ?? {}).flatMap((day) => day.meals.flatMap((meal) => meal.items)), storageKey);
+  assert.equal(items.some((item) => item.title === ciqualIncomplete.name), false);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await page.getByTestId("nav-tab-diet").click();
+  await page.getByText(ciqualRice.name, { exact: true }).waitFor({ state: "visible" });
+
+  log("Verificando tools CIQUAL con proveedor falso, selección por ID y rechazo de desconocidos");
+  const requests = [];
+  await page.route("**/v1/responses*", async (route) => {
+    requests.push(route.request().postDataJSON());
+    const number = requests.length;
+    const body = number === 1
+      ? openAIToolCallSse("resp_ciqual_search", "call_ciqual_search", "search_foods", JSON.stringify({ query: ciqualRice.name, source: "anses_ciqual_2025" }))
+      : number === 2 || number === 3
+        ? openAIToolCallSse(`resp_ciqual_add_${number}`, `call_ciqual_add_${number}`, "add_meal_food", JSON.stringify({ date: "2026-10-29", meal: "Comida", data: JSON.stringify({ kind: "catalog", source_id: "anses_ciqual_2025", item_id: number === 2 ? ciqualRice.id : ciqualIncomplete.id, grams: 150 }) }))
+        : openAIFinalSse("CIQUAL consultado.");
+    await route.fulfill({ status: 200, headers: { "content-type": "text/event-stream; charset=utf-8" }, body });
+  });
+  await page.getByTestId("nav-tab-chat").click();
+  await page.getByTestId("chat-input").fill("Consulta CIQUAL y registra arroz con la referencia indicada");
+  await page.getByTestId("chat-send").click();
+  await page.getByText("CIQUAL consultado.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+  assert.equal(requests.length, 4);
+  const output = (index, callId) => JSON.parse(requests[index].input.find((item) => item.type === "function_call_output" && item.call_id === callId).output);
+  assert.equal(output(1, "call_ciqual_search").results[0].source_id, "anses_ciqual_2025");
+  assert.equal(output(3, "call_ciqual_add_3").error, "incomplete_nutrition");
+  await page.waitForFunction((key) => JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate?.["2026-10-29"]?.meals.some((meal) => meal.items.some((item) => item.catalog_link?.ref?.sourceId === "anses_ciqual_2025" && item.calories_kcal === 525)), storageKey);
+  await page.unroute("**/v1/responses*");
+}
+
+async function expectCiqualImages() {
+  log("Verificando imágenes reales de CIQUAL en catálogo, búsqueda, dieta e historial");
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const networkState = { offline: false };
+  const page = await preparePage(context, networkState);
+  const expectImage = async (scope, food) => {
+    const image = scope.locator("img").filter({ visible: true }).first();
+    await image.waitFor({ state: "visible" });
+    await page.waitForFunction(({ url }) => Array.from(document.images).some((image) => image.src === url && image.complete && image.naturalWidth === 1024), { url: ciqualImageUrl(food) });
+    assert.equal(await image.getAttribute("src"), ciqualImageUrl(food));
+    assert.equal(await image.evaluate((image) => image.naturalWidth), 1024);
+  };
+  try {
+    await openApp(page);
+    await page.getByTestId("nav-tab-settings").click();
+    await page.getByTestId("settings-tab-foods").click();
+    const catalogSearch = page.locator('input[placeholder="Buscar alimento..."]');
+    await catalogSearch.fill(ciqualLatest.name);
+    await expectImage(page.getByTestId(`food-catalog-row-anses_ciqual_2025-${ciqualLatest.id}`), ciqualLatest);
+    await catalogSearch.fill(ciqualRice.name);
+    const row = page.getByTestId(`food-catalog-row-anses_ciqual_2025-${ciqualRice.id}`);
+    await expectImage(row, ciqualRice);
+    await row.click();
+    const detail = page.getByTestId("shell-layer-settings-food-detail");
+    await expectImage(detail, ciqualRice);
+    await detail.getByText(/Imágenes ilustrativas generadas por IA/).waitFor({ state: "visible" });
+    if (screenshotDir) {
+      await page.screenshot({ path: join(screenshotDir, "ciqual-images-catalog-390.png"), fullPage: true });
+      await page.setViewportSize({ width: 960, height: 900 });
+      await page.screenshot({ path: join(screenshotDir, "ciqual-images-catalog-960.png"), fullPage: true });
+      await page.setViewportSize({ width: 390, height: 844 });
+    }
+    await page.getByTestId("nav-tab-diet").click();
+    const search = page.locator('input[placeholder="Buscar alimento..."]').first();
+    await search.fill(ciqualRice.name);
+    const result = page.getByText(ciqualRice.name, { exact: true });
+    await expectImage(result.locator("..").locator(".."), ciqualRice);
+    if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "ciqual-images-search-390.png"), fullPage: true });
+    await result.click();
+    await page.getByTestId("selected-food-grams-input").fill("150");
+    await page.getByTestId("save-selected-food").click();
+    const mealRow = page.getByTestId(/^diet-item-row-/).filter({ hasText: ciqualRice.name });
+    await expectImage(mealRow, ciqualRice);
+    if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "ciqual-images-diet-390.png"), fullPage: true });
+    const saved = await page.evaluate((key) => Object.values(JSON.parse(localStorage.getItem(key)).dietByDate).flatMap((day) => day.meals.flatMap((meal) => meal.items)), storageKey);
+    assert.equal(saved[0].image_uri, ciqualImageUrl(ciqualRice));
+    assert.equal(saved[0].calories_kcal, 525);
+
+    // Simula una comida guardada antes de integrar las imágenes; conserva sus totales.
+    await page.evaluate((key) => {
+      const store = JSON.parse(localStorage.getItem(key));
+      for (const day of Object.values(store.dietByDate)) for (const meal of day.meals) for (const item of meal.items) item.image_uri = null;
+      localStorage.setItem(key, JSON.stringify(store));
+    }, storageKey);
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.getByTestId("nav-tab-diet").click();
+    await expectImage(page.getByTestId(/^diet-item-row-/).filter({ hasText: ciqualRice.name }), ciqualRice);
+    const restored = await page.evaluate((key) => Object.values(JSON.parse(localStorage.getItem(key)).dietByDate).flatMap((day) => day.meals.flatMap((meal) => meal.items)), storageKey);
+    assert.deepEqual(restored, saved.map((item) => ({ ...item, image_uri: null })));
+
+    log("Verificando sustitución de imágenes sin red y conservación de los datos");
+    networkState.offline = true;
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.getByTestId("nav-tab-diet").click();
+    const offlineMeal = page.getByTestId(/^diet-item-row-/).filter({ hasText: ciqualRice.name });
+    await offlineMeal.waitFor({ state: "visible" });
+    await page.waitForFunction(() => !Array.from(document.images).some((image) => image.src.includes("/alimentos/ciqual/")));
+    await search.fill(ciqualRice.name);
+    await page.getByText(ciqualRice.name, { exact: true }).last().click();
+    await page.getByTestId("selected-food-grams-input").fill("100");
+    await page.getByTestId("save-selected-food").click();
+    await page.waitForFunction((key) => Object.values(JSON.parse(localStorage.getItem(key)).dietByDate).some((day) => day.meals.some((meal) => meal.items.length === 2)), storageKey);
+  } finally {
+    await context.close();
+  }
+}
+
 exportDevelopmentBundle();
 const server = await startServer();
 const browser = await chromium.launch({ headless: process.env.CATALOG_E2E_HEADLESS !== "0" });
 
 try {
+  await expectCiqualImages();
+  if (process.env.CATALOG_E2E_CIQUAL_ONLY === "1") {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const page = await preparePage(context, { offline: true }, {}, true);
+    await openApp(page);
+    await expectFoodConsumer(page, false);
+    await expectCiqualOffline(page);
+    await context.close();
+  } else {
   const networkState = { offline: false, exerciseName: fixtureExerciseName };
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await preparePage(context, networkState, {}, true);
@@ -472,6 +644,82 @@ try {
   await expectExerciseConsumer(page, "Rutina Catálogos E2E", true, renamedExercise);
   await context.close();
 
+  log("Verificando búsqueda del agente cuando el catálogo termina de cargar durante el turno");
+  let releaseFoodResponse;
+  const foodGate = new Promise((resolve) => { releaseFoodResponse = resolve; });
+  const lateContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const latePage = await preparePage(lateContext, { offline: false, foodGate }, {}, true);
+  const lateRequests = [];
+  await latePage.route("**/v1/responses*", async (route) => {
+    lateRequests.push(route.request().postDataJSON());
+    if (lateRequests.length === 1) {
+      releaseFoodResponse();
+      await expectFoodConsumer(latePage, true);
+      await latePage.getByTestId("nav-tab-chat").click();
+    }
+    await route.fulfill({
+      status: 200,
+      headers: { "content-type": "text/event-stream; charset=utf-8", "cache-control": "no-cache" },
+      body: lateRequests.length === 1
+        ? openAIToolCallSse("resp_late_food", "call_late_food", "search_foods", JSON.stringify({ query: fixtureFoodName }))
+        : openAIFinalSse(),
+    });
+  });
+  await openApp(latePage);
+  await latePage.getByTestId("nav-tab-chat").click();
+  await latePage.getByTestId("chat-input").fill(`Busca ${fixtureFoodName}`);
+  await latePage.getByTestId("chat-send").click();
+  await latePage.getByText("Catálogos consultados.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+  const lateOutput = lateRequests[1].input?.find((item) => item.type === "function_call_output")?.output;
+  assert.equal(typeof lateOutput, "string");
+  const lateSearch = JSON.parse(lateOutput);
+  assert.equal(lateSearch.availability, "fresh");
+  assert.equal(lateSearch.results[0]?.nombre, fixtureFoodName);
+  await lateContext.close();
+
+  log("Verificando migración offline de todos los artefactos y retirada verificada de v2/v3");
+  const migrationContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const oldArtifacts = exerciseCatalogFixture();
+  const oldManifest = JSON.parse(oldArtifacts["manifest.json"]);
+  const artifactPrefix = `${exerciseCatalogCacheKey}:artifact:`;
+  const legacyV2Key = exercisesCacheKey.replace(".v3", ".v2");
+  const largeStore = seedStore(false);
+  const preservedMessage = "Historial personal sintético 🏋️ ".repeat(20_000);
+  largeStore.messagesByThread.thread_catalogs_e2e.push({ id: "migration-history", role: "user",
+    content: preservedMessage, created_at: "2026-09-01T10:00:00Z" });
+  const oldStorage = {
+    [storageKey]: JSON.stringify(largeStore),
+    [exerciseCatalogCacheKey]: JSON.stringify({ schemaVersion: 4, active: { manifest: oldManifest, fetchedAt: new Date().toISOString() } }),
+    [legacyV2Key]: JSON.stringify(exerciseFixture),
+    [exercisesCacheKey]: JSON.stringify(exerciseFixture),
+    ...Object.fromEntries(Object.entries(oldArtifacts).filter(([path]) => path !== "manifest.json")
+      .map(([path, raw]) => [`${artifactPrefix}${oldManifest.catalogVersion}:${path}`, raw])),
+  };
+  const migratedPage = await preparePage(migrationContext, { offline: true }, oldStorage);
+  await openApp(migratedPage);
+  await migratedPage.waitForFunction(({ oldKeys, artifactPrefix }) => oldKeys.every((key) => localStorage.getItem(key) === null)
+    && !Object.keys(localStorage).some((key) => key.startsWith(artifactPrefix)),
+    { oldKeys: [legacyV2Key, exercisesCacheKey], artifactPrefix });
+  await expectExerciseConsumer(migratedPage, "Rutina migrada offline", true);
+  const storedArtifacts = await migratedPage.evaluate(() => new Promise((resolve, reject) => {
+    const request = indexedDB.open("gymnasia.development:gymnasia_public_catalog_cache_v1", 1);
+    request.onerror = () => reject(new Error("IndexedDB unavailable"));
+    request.onsuccess = () => {
+      const database = request.result;
+      const tx = database.transaction("artifacts", "readonly");
+      const read = tx.objectStore("artifacts").getAll();
+      read.onsuccess = () => resolve(read.result);
+      tx.oncomplete = () => database.close();
+    };
+  }));
+  assert.ok(storedArtifacts.length >= Object.keys(oldArtifacts).length - 1);
+  assert.ok(storedArtifacts.every((raw) => typeof raw === "string" && JSON.parse(raw).schemaVersion === 1));
+  await migratedPage.reload({ waitUntil: "domcontentloaded" });
+  await migratedPage.getByTestId("nav-tab-diet").waitFor({ state: "visible" });
+  await expectExerciseConsumer(migratedPage, "Rutina migrada offline", true);
+  assert.equal(await migratedPage.evaluate((key) => JSON.parse(localStorage.getItem(key)).messagesByThread.thread_catalogs_e2e[0].content, storageKey), preservedMessage);
+  await migrationContext.close();
+
   log("Verificando cachés heredadas antiguas y migración offline");
   const staleState = { offline: true };
   const staleContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -499,16 +747,30 @@ try {
   await expectProviderCatalogTools(partialPage, "partial", "fresh");
   await partialContext.close();
 
-  log("Verificando arranque limpio sin red y repositorios vacíos");
+  log("Verificando arranque limpio sin red con catálogo de alimentos integrado");
   const coldContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const coldPage = await preparePage(coldContext, { offline: true }, {}, true);
   await openApp(coldPage);
   await expectCaches(coldPage, false);
   await expectFoodConsumer(coldPage, false);
   const unavailableNotice = coldPage.getByTestId("diet-food-catalog-status-desayuno");
-  await unavailableNotice.getByText("Catálogo no disponible", { exact: true }).waitFor({ state: "visible" });
+  await unavailableNotice.getByText("Disponibilidad parcial", { exact: true }).waitFor({ state: "visible" });
   if (screenshotDir) await unavailableNotice.screenshot({ path: join(screenshotDir, "unavailable.png") });
-  await expectProviderCatalogTools(coldPage, "unavailable");
+  await coldPage.getByTestId("nav-tab-chat").click();
+  let unexpectedProviderCall = false;
+  await coldPage.route("**/v1/responses*", (route) => {
+    unexpectedProviderCall = true;
+    return route.fulfill({ status: 500 });
+  });
+  await coldPage.getByTestId("chat-input").fill("Busca arroz blanco en el catálogo y dime sus calorías por 100 g");
+  await coldPage.getByTestId("chat-send").click();
+  await coldPage.getByText("En el catálogo, Arroz blanco (cocido) tiene 130 kcal por 100 g.", { exact: true })
+    .waitFor({ state: "visible", timeout: 30_000 });
+  assert.equal(unexpectedProviderCall, false);
+  if (screenshotDir) await coldPage.screenshot({ path: join(screenshotDir, "coach-catalog-rice.png") });
+  await coldPage.unroute("**/v1/responses*");
+  await expectCiqualOffline(coldPage);
+  await expectProviderCatalogTools(coldPage, "partial", "unavailable");
   await expectExerciseConsumer(coldPage, "Rutina Offline E2E", false);
   await coldPage.getByText("No se pudo cargar esta parte del catálogo.", { exact: true }).waitFor({ state: "visible" });
   await coldPage.getByTestId("training-exercise-custom-open").waitFor({ state: "visible" });
@@ -530,7 +792,7 @@ try {
   const corruptPage = await preparePage(corruptContext, { offline: true }, { [foodsCacheKey]: corruptEnvelope });
   await openApp(corruptPage);
   await expectFoodConsumer(corruptPage, false);
-  await corruptPage.getByText("Catálogo no disponible", { exact: true }).first().waitFor({ state: "visible" });
+  await corruptPage.getByText("Disponibilidad parcial", { exact: true }).first().waitFor({ state: "visible" });
   await corruptContext.close();
 
   log("Verificando selección explícita ante una coincidencia ambigua");
@@ -560,6 +822,8 @@ try {
   await ambiguousContext.close();
 
   log("Runtime local-first, identidad y estados degradados verificados");
+  }
+  log("Catálogos E2E completados correctamente, incluidas imágenes CIQUAL");
 } finally {
   await browser.close();
   await new Promise((resolve) => server.close(resolve));

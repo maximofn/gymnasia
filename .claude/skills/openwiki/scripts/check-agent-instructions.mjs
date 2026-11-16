@@ -35,10 +35,25 @@ async function main() {
     content.indexOf(START),
     content.indexOf(END) + END.length,
   );
-  if (/See \[AGENTS\.md\]\(AGENTS\.md\)/u.test(managed)) {
+  if (
+    /See \[AGENTS\.md\]\(AGENTS\.md\)/u.test(managed) ||
+    /^@AGENTS\.md$/mu.test(managed)
+  ) {
     throw new Error(
       "CLAUDE.md cannot point to AGENTS.md because AGENTS.md already links back to it.",
     );
+  }
+
+  for (const expected of [
+    "openwiki_search",
+    "openwiki_read",
+    "openwiki/quickstart.md",
+  ]) {
+    if (!managed.includes(expected)) {
+      throw new Error(
+        `The managed OpenWiki block is missing the 0.6 retrieval guidance: ${expected}.`,
+      );
+    }
   }
 
   process.stdout.write("OpenWiki agent instructions: OK\n");

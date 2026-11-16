@@ -77,6 +77,43 @@ Si falta `android.buildType`, EAS genera un `.aab` por defecto que no se puede i
 
 ## Generar el APK
 
+### Preparar la política firmada de Staging
+
+Antes de compilar `staging` o `preview`, desde la raíz:
+
+```bash
+npm run prepare:policy-snapshot -- --environment staging
+APP_ENV=staging npm --workspace apps/mobile run eas-build-pre-install
+```
+
+El preparador descarga y verifica la política ya aprobada del canal Staging;
+no promociona ni modifica sus instrucciones. Development utiliza su snapshot
+local. Production prepara sus archivos mediante el workflow obligatorio.
+
+Si la compilación se hace en otro checkout o una VM, hay que preparar allí el
+snapshot o transferir **los cuatro archivos generados juntos**:
+
+- `apps/mobile/agent/generated/chatSystemPrompt.generated.ts`
+- `apps/mobile/agent/generated/healthSafetyPolicy.generated.ts`
+- `apps/mobile/agent/generated/policySnapshot.generated.json`
+- `apps/mobile/agent/generated/signedPolicySnapshot.generated.ts`
+
+Trampa: copiar solo el prompt, la política sanitaria y los metadatos permite
+que Ajustes muestre una versión y un hash correctos, mientras Coach responde
+«La compilación no contiene un snapshot firmado». El cuarto módulo del checkout
+local contiene `null`: los metadatos no sustituyen el paquete firmado. La
+verificación `eas-build-pre-install` comprueba firmas, canal y coherencia de los
+cuatro archivos antes de compilar. Este hook forma parte del
+[ciclo de build de EAS](https://docs.expo.dev/build-reference/npm-hooks/).
+
+Antes de entregar una APK para medir tools, probar también el flujo visible:
+abrir Trazas, borrarlas, ejecutar una consulta en Coach y volver a Trazas. Deben
+aparecer los tiempos y habilitarse Copiar trazas. Ver marcadores de diagnóstico
+en el binario o comprobar sus hashes no demuestra este flujo. Comprobar además
+que Staging puede usar su política integrada sin necesitar una actualización
+remota. Nunca atribuir las llamadas al modelo solo porque su respuesta dice
+que las ejecutó: confirmarlas con las trazas.
+
 ### 1. Verificar el estado del proyecto
 
 ```bash
@@ -161,54 +198,70 @@ npm run prepare:production-version -- \
 base y las releases publicadas. Si `apps/mobile/app.json` no contiene exactamente
 ese valor, el PR no puede fusionarse.
 
-La release APK descargable solo se lanza mediante
-`.github/workflows/build-apk.yml`. El workflow crea primero un draft duradero con
-`android-release-transaction.json`, la evidencia fuente y el bundle de política;
-después envía un build no bloqueante a EAS y persiste inmediatamente su build ID.
-Una cancelación o timeout de GitHub no autoriza otra compilación: la siguiente
-ejecución consulta y reutiliza ese mismo build.
+La release Android solo se lanza mediante `.github/workflows/build-apk.yml`.
+Después de la aprobación humana de `Production`, una VM desechable de wallabot
+compila primero el AAB `production` y después el APK `production-apk` con el
+mismo `versionCode`. Un runner administrado verifica ambos, envía el AAB al canal
+público `production` mediante EAS Submit y publica los dos en GitHub. EAS aporta firma,
+contador y submission, pero no capacidad de compilación.
 
 Operaciones manuales:
 
 ```bash
-# Continuar una transacción activa sin consumir otra build
-gh workflow run build-apk.yml --ref main -f operation=reconcile
+# Continuar una transacción activa sin repetir una pata validada
+gh workflow run build-apk.yml --ref main \
+  -f operation=reconcile -f target_version= -f reason= -f submission_id=
 
-# Reintentar una build que EAS marcó terminalmente como fallida
+# Reintentar solo la pata fallida
 gh workflow run build-apk.yml --ref main \
   -f operation=retry-failed \
-  -f target_version=1.31.3 \
-  -f reason="incidencia confirmada y corregida en EAS"
+  -f target_version=1.45.0 \
+  -f reason="incidencia confirmada y corregida" -f submission_id=
+
+# Adoptar un submission tras una respuesta perdida; confirmar antes su ID en EAS
+gh workflow run build-apk.yml --ref main \
+  -f operation=adopt-submission \
+  -f target_version=1.45.0 \
+  -f submission_id=<ID_CONFIRMADO> -f reason=
 
 # Sustituir una versión fallida para desbloquear la siguiente
 gh workflow run build-apk.yml --ref main \
   -f operation=supersede-failed \
-  -f target_version=1.31.3 \
-  -f reason="la fuente necesita una nueva version"
+  -f target_version=1.45.0 \
+  -f reason="la fuente necesita una nueva version" -f submission_id=
 ```
 
 Los reintentos y sustituciones solo aceptan la transacción semánticamente más
 antigua y exigen motivo. No borres un draft para saltarte ese orden.
 
-Para un AAB de Google Play, sigue exactamente
-`docs/store/google-play/production-promotion-gates.md`:
-
-1. `npm run verify:production-source -- --profile production --artifact-type aab
-   --output /tmp/gymnasia-production-source.json`;
-2. `npm run prepare:policy-snapshot -- --environment production`;
-3. compilar desde `apps/mobile` con `--profile production`;
-4. ejecutar `npm run verify:production-artifact` con el AAB llamado
-   `gymnasia.aab`, la evidencia fuente, el snapshot generado y `bundletool`
-   1.18.3;
-5. restaurar siempre los módulos generados temporales;
-6. subir a Play únicamente si ambas evidencias declaran `result: passed`.
+El contrato completo de credenciales, `PLAY_VERSION_CODE_FLOOR`, validación con
+bundletool 1.18.3, transacción V2 y recuperación está en
+`docs/store/google-play/production-promotion-gates.md`. No ejecutes manualmente
+`eas submit --path` para una transacción incierta: los submissions de builds
+locales no exponen un build ID con el que deduplicar y podrías subir el AAB dos
+veces.
 
 El verificador rechaza ramas distintas de `main`, checkouts sucios o no
 alcanzables, controles remotos degradados, perfiles cruzados, firma distinta,
 permisos prohibidos, versión incoherente, tamaño o MIME inesperados y snapshot
-ausente. El APK se descarga primero a una ruta de cuarentena y solo adquiere el
-nombre `gymnasia.apk` después de validar estructura, manifest, firma y SHA-256.
+ausente. AAB y APK pasan primero por una ruta de cuarentena y solo adquieren sus
+nombres publicados después de validar estructura, manifest, firma y SHA-256.
 No llames a EAS directamente para Production saltándote este contrato.
+
+Antes de cualquier envío, `Play Internal` debe tener configurado el secreto
+`GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` de la cuenta de servicio existente: el
+workflow valida esa credencial, vuelve a comparar los bytes descargados y exige
+un recibo con hash/track consultados a Google después del submission. No copiar
+la clave al repo, a logs ni al chat. El servicio necesita permiso de publicación
+en Producción solo para Gymnasia, nunca de administrador. Google activa también
+«Gestionar declaraciones de políticas» y «Gestionar enlaces profundos» al marcar
+Producción: son dependencias obligatorias y deben estar expresamente autorizadas
+antes de guardar. La publicación efectiva sigue pendiente de revisión de Google;
+`FINISHED` o `completed` no prueban que aparezca «Actualizar» en Play Store.
+No cambiar el canal de una transacción histórica al reintentar: sus evidencias
+siguen ligadas al track original. Las promociones del propietario en Play Console tienen un procedimiento
+y una frontera de confianza explícitos en el runbook; no afirmar que GitHub
+pueda bloquear una acción directa del propietario en otra plataforma.
 
 ## Problemas frecuentes
 

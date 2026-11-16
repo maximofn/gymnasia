@@ -32,7 +32,7 @@ export type HealthSafetyConsentSwitchModel = {
 
 type ProviderKeyLike = { provider: Provider; api_key: string };
 
-const PROVIDERS: readonly Provider[] = ["anthropic", "openai", "google"];
+const PROVIDERS: readonly Provider[] = ["anthropic", "openai", "google", "custom_openai"];
 
 export function createHealthSafetyConsentState(consentVersion: string): HealthSafetyConsentState {
   return {

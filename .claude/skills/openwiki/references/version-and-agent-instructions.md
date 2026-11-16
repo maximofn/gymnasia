@@ -19,15 +19,15 @@ Al escribir a través del enlace simbólico de Gymnasia, ambas operaciones afect
 
 OpenWiki 0.5.0 sigue preparando y escribiendo `AGENTS.md` y `CLAUDE.md` como dos
 archivos distintos. La ejecución real del 7 de septiembre de 2026 completó la
-migración solo después de aplicar la materialización temporal del runner. No
-retires esa protección hasta que upstream reconozca explícitamente el enlace
-simbólico y una prueba desechable confirme que conserva su topología.
+migración solo después de aplicar la materialización temporal del runner. Esa
+protección no podía retirarse hasta que upstream reconociera explícitamente el
+enlace simbólico y una prueba desechable confirmara que conservaba su topología;
+ambas condiciones se cumplieron al migrar a 0.6.
 
-El runner privado materializa temporalmente `AGENTS.md` como una copia regular de
-`CLAUDE.md` antes de ejecutar OpenWiki. Después restaura ambos desde
-`origin/main` antes de preparar el commit y añade al índice solo `openwiki/` y
-`.openwikiignore`. Esta protección afecta exclusivamente al runner; las PR
-normales sí pueden actualizar aprendizajes en `CLAUDE.md`.
+El runner privado de 0.5 materializaba temporalmente `AGENTS.md` como una copia
+regular de `CLAUDE.md` antes de ejecutar OpenWiki. Después restauraba ambos desde
+`origin/main` antes de preparar el commit y añadía al índice solo `openwiki/` y
+`.openwikiignore`.
 
 ## Migración a 0.4
 
@@ -64,15 +64,48 @@ LangSmith 0.8.12 para OpenWiki mientras `deepagents@1.12.0` sigue declarando el
 peer `^0.7.1`. Trátalo como aviso mientras instalación, tests y ejecución real
 terminen correctamente.
 
+## Migración a 0.6
+
+OpenWiki 0.6 compara `AGENTS.md` y `CLAUDE.md` por dispositivo e inodo antes de
+escribir sus instrucciones. Si ambos nombres resuelven al mismo archivo, escribe
+el bloque completo una sola vez y no introduce `@AGENTS.md`, que sería una
+referencia circular en Gymnasia.
+
+La prueba desechable del 27 de septiembre de 2026 ejecutó 0.6.0 directamente
+sobre `AGENTS.md -> CLAUDE.md`, sin la materialización del runner. Conservó el
+enlace, dejó exactamente un par de delimitadores, añadió la recuperación
+selectiva mediante `openwiki_search` y `openwiki_read` y no alteró el hash al
+aplicar por segunda vez `ensureCodeModeRepoSetup`. El validador de esta skill
+comprueba desde entonces la topología, los delimitadores, la ausencia de
+autorreferencias y esas tres rutas de recuperación.
+
+El runner de 0.6 ya no materializa `AGENTS.md`: valida el enlace antes de empezar
+y ejecuta OpenWiki sobre la topología real. Sigue restaurando ambos nombres desde
+`origin/main` antes de preparar el commit, de modo que una actualización
+documental no puede cambiar instrucciones revisadas.
+
+Las ejecuciones nativas del runner usan `OPENWIKI_PAGE_CONCURRENCY=2`. Cada
+trabajador posee una página y las escrituras compartidas se serializan; las
+páginas completas siguen siendo unidades durables de reanudación. OpenWiki baja
+la concurrencia si el proveedor limita solicitudes. No aumentes el valor por
+encima de 2 sin varias ejecuciones completas y telemetría que demuestren que el
+tiempo mejora sin aumentar omisiones, reintentos o fallos OAuth.
+
 ## Protocolo de actualización
 
 1. Obtén la versión local desde el banner de `openwiki --help` o con `npm ls -g --depth=0`; `openwiki --version` no existe y trataría el argumento como una opción inválida.
 2. Consulta la versión estable y las notas oficiales. No uses `latest` en el runner: actualiza el pin exacto de la plantilla y del repositorio privado.
 3. Ejecuta la nueva versión en un checkout desechable basado en `main`, nunca sobre trabajo local sin guardar.
-4. Compara el árbol generado, la rama `openwiki/update`, el manifiesto por página, el estado transitorio y cualquier cambio en archivos de instrucciones.
-5. Ejecuta el validador de esta skill y los tests de la plantilla.
-6. Si la versión propone una instrucción legítima, adáptala manualmente al archivo canónico, preséntala en una PR normal y conserva el enlace simbólico. No retires la protección del runner solo porque upstream cambió su plantilla.
-7. Valida el runner con OAuth y tracing normales; confirma Code Brain, Personal Brain, cifrado posterior y paths de la PR.
+4. Ejecuta primero con concurrencia 1 y sin materializar `AGENTS.md`. Comprueba
+   el destino del enlace, un único par de delimitadores, la ausencia de
+   autorreferencias y la idempotencia de `ensureCodeModeRepoSetup`.
+5. Compara el árbol generado, la rama `openwiki/update`, el manifiesto por página,
+   el estado transitorio y cualquier cambio en archivos de instrucciones.
+6. Ejecuta el validador de esta skill y los tests de la plantilla.
+7. Si la versión propone una instrucción legítima, adáptala manualmente al
+   archivo canónico, preséntala en una PR normal y conserva el enlace simbólico.
+8. Valida el runner con OAuth y tracing normales; confirma Code Brain, Personal
+   Brain, cifrado posterior y paths de la PR.
 
 La plantilla exige Node 22.22.x. Un Node anterior puede instalar OpenWiki mostrando `EBADENGINE`, pero no constituye un entorno de validación soportado.
 

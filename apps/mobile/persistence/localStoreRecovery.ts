@@ -110,7 +110,7 @@ type ParsedLocalStoreRaw =
       issues: LocalStoreValidationIssue[];
     };
 
-const PROVIDERS = new Set(["openai", "anthropic", "google"]);
+const PROVIDERS = new Set(["openai", "anthropic", "google", "custom_openai"]);
 const ROOT_FIELD_SET = new Set<string>(LOCAL_STORE_ROOT_FIELDS);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -283,7 +283,7 @@ function validateProviderKey(
   path: string,
   issues: LocalStoreValidationIssue[],
 ): void {
-  ["provider", "api_key", "model", "workspace_id", "reasoning_effort"].forEach((key) =>
+  ["provider", "api_key", "model", "base_url", "workspace_id", "reasoning_effort"].forEach((key) =>
     validateOptionalScalar(value, key, path, "string", issues),
   );
   validateOptionalScalar(value, "is_active", path, "boolean", issues);

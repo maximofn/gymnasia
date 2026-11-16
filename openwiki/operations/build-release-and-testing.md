@@ -1,11 +1,9 @@
 ---
 type: guía operativa
-title: Build, release y estrategia de validación
-description: Selecciona comprobaciones deterministas, E2E web, validación del tablero y gates de release para cambios de Gymnasia. Distingue la evidencia de navegador y checks estáticos de la que exige un binario o dispositivo nativo.
-tags: [operations, ci, testing, release, android, backup, recovery, board]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T12:53:55.207Z
+title: Compilación, publicación y validación
+description: Contratos operativos y comandos verificables para pruebas, catálogos, configuración Android y publicación. Distingue la aprobación y el envío de una release de su disponibilidad efectiva en Google Play.
+tags: [android, release, testing, github-actions, google-play]
+openwiki_generated: true
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
     resource: repo://.github/workflows/agent-tests.yml
@@ -49,6 +47,12 @@ sources:
     resource: repo://apps/mobile/vitest.config.mts
   - id: openwiki-source-90e4eb523a83656a5e292747
     resource: repo://arquitectura-agente/tests/board.e2e.mjs
+  - id: openwiki-source-d851a3b576631bfd0d132a7d
+    resource: repo://ops/android-build/admit-job.sh
+  - id: openwiki-source-a3143d7b3e559e4f5a1bf551
+    resource: repo://ops/android-build/job_runner.py
+  - id: openwiki-source-156c2535bf9a431f394eb0d0
+    resource: repo://ops/android-build/provision-controller.py
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
   - id: openwiki-source-c657bdb933b7ed64c860ab05
@@ -57,6 +61,12 @@ sources:
     resource: repo://scripts/board-automation/verify-production.mjs
   - id: openwiki-source-2d527a0a2fddf1f1e4422fcf
     resource: repo://scripts/board-automation/workflow-contract.test.mjs
+  - id: openwiki-source-479a8e1beb0e92cbabe03d8c
+    resource: repo://scripts/catalogs/ciqual-image-batches.mjs
+  - id: openwiki-source-a98f882a58d31990459e44fd
+    resource: repo://scripts/catalogs/ciqual-image-samples.mjs
+  - id: openwiki-source-fbc0c015833f90d8b1382e35
+    resource: repo://scripts/catalogs/ciqual-mobile-images.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
   - id: openwiki-source-f807c3c379c670c5871c2b49
@@ -65,18 +75,32 @@ sources:
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-  - id: openwiki-source-7718d8047e7c1e0a6137f6de
-    resource: repo://scripts/production-release/policy.json
+  - id: openwiki-source-45c16db7a918783b8b3616ab
+    resource: repo://scripts/production-release/local-build.test.mjs
+  - id: openwiki-source-5bb7a7442c09c2e571325b53
+    resource: repo://scripts/production-release/local-controller.mjs
   - id: openwiki-source-24a206e2ad72f4f0a1502c09
     resource: repo://scripts/production-release/production-release.mjs
+  - id: openwiki-source-7c707c545626347a78c372eb
+    resource: repo://scripts/production-release/publish-github-apk.mjs
   - id: openwiki-source-eca432bcfe70b04e1d09e3d3
     resource: repo://scripts/production-release/release-transaction.mjs
+  - id: openwiki-source-a43fcdd54439cd4258ab69e4
+    resource: repo://scripts/production-release/verify-artifact.mjs
   - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
     resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
+  - id: openwiki-source-fcf341cb7be3a3304b37a528
+    resource: repo://scripts/production-release/vm-contract.test.mjs
+  - id: openwiki-source-b368a0060923f31656ab90b3
+    resource: repo://scripts/production-release/workflow.test.mjs
+generated: { by: "openwiki/0.6.0", at: "2026-11-11T15:41:01.947Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-11T15:41:01.947Z
 ---
 
-# Build, release y estrategia de validación
+
+# Compilación, publicación y validación
 
 ## Principio operativo
 
@@ -85,7 +109,7 @@ La validación debe ser proporcional al cambio y al contrato que podría rompers
 1. **Checks locales deterministas:** tipos, contratos, artefactos generados y regresiones con fixtures. Son la señal inicial reproducible tras `npm ci`.
 2. **E2E web controlada:** exporta React Native Web, sirve `apps/mobile/dist` y usa Playwright. Comprueba interfaz, estado y recuperación bajo respuestas simuladas; no valida Android ni iOS.
 3. **Gates de release:** combinan checks locales con controles de identidad, estado de GitHub y evidencia del binario. Se ejecutan para un candidato exacto, no como sustituto de una revisión ordinaria.
-4. **Actos remotos protegidos:** EAS, environments de GitHub, releases y promoción de política requieren credenciales y aprobación. No son necesarios para desarrollar ni para que la app funcione localmente.
+4. **Actos protegidos y remotos:** la aprobación de `Production`, las credenciales administradas de Expo, EAS Submit y Google Play, las releases de GitHub y la promoción de política requieren controles y credenciales propios. La compilación Android de release sucede localmente dentro de una VM desechable; no es una build remota de EAS.
 
 ```mermaid
 flowchart TD
@@ -96,7 +120,7 @@ flowchart TD
     Web --> Review
     Review --> Sensitive{"¿Política o release Android?"}
     Sensitive -->|"Política"| Signed["Promoción firmada y aprobada"]
-    Sensitive -->|"Android"| Release["Gates Production y EAS"]
+    Sensitive -->|"Android"| Release["Gates, VM local, verificación y Play"]
     Sensitive -->|"Tablero"| Board["CI, despliegue y verificación del tablero"]
     Sensitive -->|"No"| Done["Validación terminada"]
 ```
@@ -124,7 +148,7 @@ npm --workspace apps/mobile exec tsc --noEmit
 
 Asocie cada uno a su riesgo: `expo start` sirve para iterar; `expo run:android` y `expo run:ios` ejercitan un runtime nativo de desarrollo; `build:web` detecta fallos de empaquetado web; y `tsc --noEmit` detecta incompatibilidades estáticas sin ejecutar la app. La exportación genera `apps/mobile/dist`, que reutilizan varias E2E, pero no prueba permisos fusionados, SecureStore, alarmas, notificaciones, intents, audio de fondo ni instalación en un teléfono.
 
-`app.json` define el paquete Android/iOS y la política declarativa de permisos. Declara `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`, y bloquea `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`. Para cambios en plugins Expo, dependencias nativas o permisos, ejecute además los controles de permisos y una compilación/prueba nativa representativa. Véase [Validación de permisos Android publicables](android-permissions.md).
+`app.json` aporta la configuración base y la política declarativa de permisos, pero el paquete Android/iOS efectivo no es fijo: `app.config.ts` exige `APP_ENV` (`development`, `staging` o `production`) y deriva por variante el nombre, identificador, canal de política, namespace de almacenamiento y modo de proveedor. La configuración base declara `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`, y bloquea `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`. Para cambios en plugins Expo, dependencias nativas o permisos, ejecute además los controles de permisos y una compilación/prueba nativa representativa. Véase [Validación de permisos Android publicables](android-permissions.md).
 
 ## Matriz de validación mínima
 
@@ -134,11 +158,11 @@ Asocie cada uno a su riesgo: `expo start` sirve para iterar; `expo run:android` 
 | Prompt integrado | `npm run check:chat-prompt` | Detecta que el snapshot generado usado por la app deriva del prompt fuente; `test:deterministic` lo invoca como precheck. |
 | Salud, seguridad o prompt de política | `npm run check:health-safety && npm run test:health-safety` y/o `npm run check:prompt-policy && npm run test:prompt-policy` | Comprueba la política canónica, sus generados, contratos y regresiones; requiere además la autorización indicada en [Gobierno de cambios sensibles y política de prompt](prompt-policy-governance.md). |
 | Tipos de la app móvil | `npm --workspace apps/mobile exec tsc --noEmit` | Análisis estático del workspace móvil, no una prueba de runtime. |
-| Configuración, plugin o dependencia Android | `npm run check:android-permissions && npm run test:android-permissions` | El check contrasta configuración y manifests de dependencias instaladas con la política; los tests prueban que el guard rail detecte fallos. Requiere `node_modules` y no sustituye un dispositivo. |
+| Configuración, plugin o dependencia Android | `npm run check:android-permissions && npm run test:android-permissions && npm run check:android-native-config && npm run test:android-native-config` | Contrasta configuración, manifests de dependencias y configuración nativa generable con sus políticas; los tests prueban los guard rails. Requiere `node_modules`, pero no produce el artefacto final ni sustituye un dispositivo. |
 | Claves locales, destinos HTTPS o impacto de permisos en privacidad | `npm run check:data-inventory && npm run test:data-inventory` | Impide que el inventario publicable deje de describir las claves, hosts y permisos declarados por la app. |
 | Texto legal o política de privacidad publicada | `npm run check:legal && npm run test:legal` | Comprueba los artefactos legales generados y sus contratos. Para el sitio publicado, añada `npm run test:privacy:e2e`. |
-| Catálogos y sus salidas | `npm run check:catalogs && npm run test:catalogs` | Verifica contratos de todos los dominios y que los generados estén actualizados. |
-| Consumidores de catálogos | `npm run test:catalogs:e2e` | Prueba la proyección web con fixtures e indisponibilidad simulada, sin consultar servicios externos. |
+| Catálogos, BLS, CIQUAL, imágenes CIQUAL o sus salidas móviles | `npm run check:catalogs && npm run check:bls && npm run check:ciqual && npm run check:ciqual:images && npm run check:ciqual:mobile && npm run test:catalogs` | Los checks no escriben: validan artefactos de catálogo, importaciones BLS/CIQUAL, muestras y tandas de imágenes, y las proyecciones móviles CIQUAL de nutrientes e índice de imágenes. `check:ciqual:mobile` encadena también `check:ciqual:images:mobile`; los tests cubren regresiones. |
+| Consumidores de catálogos | `npm run test:catalogs:e2e` | Exporta la app web development y prueba con Playwright los consumidores y estados degradados contra fixtures e interceptaciones; no consulta servicios externos reales ni acredita un runtime nativo. |
 | Chat/agente web | `npm run test:agent:e2e` | Ejecuta las E2E de chat y proveedor de desarrollo contra navegador y dependencias interceptadas; no acredita proveedores reales ni funcionalidades nativas. |
 | Recuperación de almacenamiento y exportación cifrada en web | `npm run test:storage-recovery:e2e` | Exporta web development, siembra `localStorage` y usa Chromium para comprobar el flujo de cuarentena; no ejecuta almacenamiento, selector de archivos ni compartir nativos. |
 | Descifrado externo de una exportación de recuperación | `npm run test:recovery-cli` | Lanza la CLI Node con un fixture cifrado y verifica salida, permisos y errores; no prueba la UI ni un terminal humano. |
@@ -147,7 +171,15 @@ Asocie cada uno a su riesgo: `expo start` sirve para iterar; `expo run:android` 
 | Proxy Anthropic | `npm run test:proxy` | Delega en el workspace Python aislado; no instala ni transforma sus dependencias en dependencias npm. |
 | Contrato, datos o interfaz estática del tablero | `npm run test:linear && npm run test:board-automation && npm run test:board && npm run test:board:e2e` | Comprueba el contrato Linear, los guard rails de automatización, los datos y la representación estática en Chromium; no consulta Linear ni verifica el despliegue de producción. |
 | Release o despliegue del tablero | Los workflows `board-deploy.yml` y `board-reconcile.yml` | Reejecutan los gates del tablero donde corresponde y verifican bytes de producción; requieren secrets, permisos o revisión humana según la operación. |
-| Release Android | `npm run verify:production-source -- --profile production-apk --artifact-type apk --output /tmp/production-source-evidence.json` | Verificador de candidato Production que necesita checkout, GitHub y gates; el workflow es la entrada normal, no un comando local autosuficiente. |
+| Release Android | `npm run verify:production-source -- --expected-commit <SHA> --expected-version <X.Y.Z> --output /tmp/production-source-evidence.json` | Produce una sola evidencia de fuente para los destinos `production` AAB y `production-apk` APK; requiere checkout, controles de GitHub, dependencias y Chromium. El workflow es la entrada operativa normal. No compila ni verifica bytes finales. |
+
+### No intercambiar capas de evidencia
+
+- **Vitest** (`test:deterministic`) corre en entorno Node sobre los patrones de `apps/mobile/vitest.config.mts`. Acredita lógica importable y fixtures, no una vista renderizada ni React Native en Android.
+- **E2E web** ejecuta scripts independientes de `npm test`. Normalmente exporta React Native Web, sirve `dist` y conduce Chromium con Playwright; acredita ese recorrido web y sus dobles, no el proveedor real ni APIs nativas.
+- **Checks de fuente y prebuild** —tipado, permisos, configuración nativa, inventarios, generados y `expo export --platform android --dev`— detectan incoherencias antes de Gradle. Una exportación Android correcta no demuestra que exista un AAB/APK firmado instalable.
+- **Verificación de artefacto** inspecciona los bytes ya compilados con `bundletool`/`jarsigner` para AAB o `apkanalyzer`/`apksigner`/`aapt2` para APK, y los ata a fuente, snapshot, intento, firma, manifest y `versionCode`. No demuestra instalación, migraciones o comportamiento en hardware.
+- **Prueba en dispositivo** es la señal necesaria para instalación/actualización, conservación de datos y capacidades del sistema como alarmas, notificaciones y segundo plano. Ningún check web, de fuente o de archivo la sustituye.
 
 ## Copias cifradas y recuperación: señal mínima y límites
 
@@ -190,27 +222,34 @@ Los generadores de catálogo separan comprobar de escribir:
 
 ```bash
 npm run check:catalogs
+npm run check:bls
+npm run check:ciqual
+npm run check:ciqual:images
+npm run check:ciqual:mobile
 npm run test:catalogs
+npm run test:catalogs:e2e
 npm run sync:catalogs
 # escritura limitada a un dominio
 node scripts/catalogs/generate.mjs --write --domain alimentos
 ```
 
-`check:catalogs` no modifica el checkout y verifica todos los catálogos y sus artefactos; no acepta `--domain`. `sync:catalogs` o `--write --domain` materializan salidas que deben revisarse y confirmarse junto con su fuente. Después, los tests y la E2E de consumidores comprueban que una salida correcta sea usable; escribir no reemplaza esa validación.
+`check:catalogs` no modifica el checkout y verifica todos los catálogos y sus artefactos; no acepta `--domain`. `check:bls` y `check:ciqual` verifican separadamente sus importaciones. Para CIQUAL, el orden ayuda a localizar el fallo: `check:ciqual:images` valida las muestras y tandas editoriales —estilo aprobado, manifiestos y archivos registrados, hashes, referencias autorizadas y WebP real, opaco y de 1024 × 1024—; `check:ciqual:mobile` compara la proyección nutricional generada y, como parte del mismo script npm, ejecuta `check:ciqual:images:mobile` para exigir un índice móvil completo, sin IDs duplicados y con hashes de los bytes todavía válidos. Las imágenes editoriales no cambian los datos ANSES ni entran en la app por el check de tandas: se proyectan explícitamente con `npm run sync:ciqual:images:mobile`.
+
+`sync:catalogs` o `--write --domain` materializan salidas que deben revisarse y confirmarse junto con su fuente. Para actualizar CIQUAL móvil use `npm run sync:ciqual:mobile` y, tras una modificación de manifiestos o imágenes, `npm run sync:ciqual:images:mobile`; después ejecute los checks correspondientes. Los tests y la E2E de consumidores comprueban que una salida correcta sea usable; escribir no reemplaza esa validación.
 
 De modo equivalente, `check:android-permissions` revisa `app.json` y los manifests de dependencias instaladas, mientras `test:android-permissions` valida la capacidad del escáner para detectar las clases de infracción. Un check verde valida el contrato del checkout instalado, no la aceptación por Google Play ni el comportamiento de una alarma en hardware.
 
 ## E2E: qué representan
 
-Las E2E son scripts Playwright que normalmente exportan web y sirven `dist`; aceptan variables de entorno para reutilizar una exportación o mostrar el navegador en algunos casos. Están diseñadas para ser deterministas: la E2E de privacidad abre cada página en un contexto limpio, sin cookies, almacenamiento ni claves, y compara el contenido y metadatos con la copia legal generada. La de borrado local siembra claves scoped y verifica que el flujo las elimine. Las E2E del agente y catálogos inyectan o interceptan respuestas de proveedores para cubrir estados de éxito, error y recuperación.
+Las E2E son scripts Playwright que normalmente exportan web y sirven `dist`; aceptan variables de entorno para reutilizar una exportación o mostrar el navegador en algunos casos. Están diseñadas para ser deterministas: la E2E de privacidad abre cada página en un contexto limpio, sin cookies, almacenamiento ni claves, y compara el contenido y metadatos con la copia legal generada. La de borrado local siembra claves scoped y verifica que el flujo las elimine. La E2E de catálogos exporta con `APP_ENV=development`, sirve en loopback e intercepta GitHub API y raw GitHub; entrega fixtures para catálogos y bytes locales para cada imagen CIQUAL registrada, o errores `503` para la ausencia de red. Comprueba catálogo, detalle, dieta e historial de imágenes CIQUAL, incluida la recuperación de comidas antiguas sin `image_uri`, y que al quedar offline no persista una imagen nueva. Las E2E del agente y catálogos inyectan o interceptan respuestas de proveedores para cubrir estados de éxito, error y recuperación.
 
 Por ello, use una E2E cuando cambie la interfaz, el contrato de almacenamiento o la integración cliente que cubre, pero no la presente como requisito de arranque local ni como prueba de disponibilidad de OpenAI, Anthropic, Google, GitHub u otros servicios. Tampoco sustituye una prueba Android/iOS cuando el cambio toca una capacidad nativa. Para la estrategia del agente y el uso reservado de evals LLM, consulte `docs/testing/agent-testing.md` y [Entrenamiento móvil](../mobile/training.md).
 
 ## Integración continua
 
-`agent-tests.yml` se activa en PR y `main` solo para sus rutas declaradas. Su job Node usa Node 22, `npm ci`, permiso `contents: read` y diez minutos para verificar prompt integrado, política sanitaria y sus tests, `npm test`, límites de arquitectura móvil, la E2E Metro del dev store, feedback worker, automatización OpenWiki y TypeScript. El proxy corre en otro job con `uv`, de modo que no forma parte del entorno Node. Un cambio fuera de esos filtros no recibe este workflow.
+`agent-tests.yml` se activa en PR y `main` solo para sus rutas declaradas. Su job Node usa Node 22, `npm ci`, permiso `contents: read` y diez minutos para verificar prompt integrado, política sanitaria y sus tests, `npm test`, límites de arquitectura móvil, la E2E Metro del dev store, feedback worker, automatización OpenWiki, los tests del controlador de release Android y TypeScript. El job `android-controller`, separado y sin credenciales, ejecuta con Python/Bash los contratos de aprovisionamiento, registro, canal de smoke y la sintaxis del instalador. El proxy corre en otro job con `uv`, de modo que no forma parte del entorno Node. Un cambio fuera de esos filtros no recibe este workflow.
 
-`catalog-tests.yml` también usa Node 22 y `npm ci`, instala Chromium y ejecuta `check:catalogs`, `test:catalogs` y `test:catalogs:e2e` para rutas de fuentes, generador y consumidores declaradas. Sus resultados no cubren por sí mismos permisos Android ni una release.
+`catalog-tests.yml` se activa en PR y `main` para las rutas declaradas de datos de catálogo, generador e imágenes, consumidores móviles, inventario y sus dependencias de workflow. En Ubuntu 24.04 usa Node 22 y `npm ci`, instala Chromium y ejecuta `check:catalogs`, `check:ciqual`, `check:ciqual:mobile`, `check:ciqual:images` y `check:bls`, seguidos de `test:catalogs` y `test:catalogs:e2e`. La E2E se ejecuta después de los contratos generados y prueba consumidores web con dobles locales, sin servicios externos; el workflow no sustituye los controles Android ni un release.
 
 ## Tablero de arquitectura: gates, despliegue y conciliación
 
@@ -245,37 +284,105 @@ Consulte [Arquitectura del tablero](../services/architecture-board.md) para el m
 
 La promoción de política es una operación manual protegida, distinta del merge. Requiere el workflow de promoción, una operación y motivo, una activación firmada y los controles remotos de candidato; para el modelo de autorización, staging, producción y rollback consulte [Gobierno de cambios sensibles y política de prompt](prompt-policy-governance.md). Ningún test local autoriza una promoción.
 
-El perfil EAS `production` tiene `APP_ENV=production` e incremento remoto de versión y produce el formato por defecto de EAS; `production-apk` lo extiende y fuerza `android.buildType: apk`. El workflow Android publica con `production-apk`; no confunda ese destino con el perfil `production` que la política de release clasifica como AAB. La versión visible procede de `apps/mobile/app.json` y un cambio en una ruta empaquetada exige el incremento semántico calculado desde la base o la versión publicada más alta.
+### Dos artefactos, dos perfiles y un solo contador
+
+El perfil EAS `production` fija `APP_ENV=production`, conserva `appVersionSource: remote`, incrementa el `versionCode` y produce el AAB. `production-apk` lo extiende, desactiva el incremento y fuerza `android.buildType: apk`, de modo que reutiliza el contador reservado por el AAB. La compilación local siempre ordena AAB antes de APK y exige que ambos manifiestos terminen con el mismo `versionCode`, superior al máximo entre la evidencia anterior y `PLAY_VERSION_CODE_FLOOR`.
+
+No confunda las operaciones: `eas build --local` se ejecuta dos veces dentro del guest y **no** envía builds a la infraestructura remota de EAS. El destino elegido al iniciar manualmente el workflow queda fijado en la transacción: el habitual `play` usa después el perfil de submit `production` para subir por ruta únicamente el AAB ya verificado a producción (`track: production`, `releaseStatus: completed`); `github-apk` publica solo el APK en GitHub y no contacta Play. En ambos casos se compilan y verifican AAB y APK, porque el AAB reserva el `versionCode` compartido. Para `play`, el environment de GitHub llamado `Play Internal` no cambia el track configurado en EAS ni introduce una segunda aprobación: la única aprobación de `Production` precede a la compilación. Antes del submit exige `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` y comprueba esa credencial; tras `FINISHED`, consulta con ella que Google Play recibió el AAB exacto en el track `production` con estado `completed`. El APK nunca se envía a Play y queda como instalación directa manual.
+
+### Fronteras de confianza y flujo
+
+```mermaid
+sequenceDiagram
+    participant GH as GitHub runner
+    participant HC as Controlador wallabot
+    participant VM as Guest desechable
+    participant UA as Artifact no confiable
+    participant VJ as Job verificador
+    participant PI as Google Play Production
+    GH->>GH: Selecciona y valida fuente exacta
+    GH->>GH: Crea draft y reserva AAB y APK
+    HC->>GH: Comprueba cola y aprobación
+    HC->>VM: Registra runner efímero exclusivo
+    VM->>VM: Admite solo compile-android canónico
+    VM->>VM: Compila AAB y después APK con EAS local
+    VM->>UA: Sube binarios y metadatos
+    VJ->>UA: Descarga en cuarentena
+    VJ->>VJ: Vincula intentos y verifica ambos artefactos
+    VJ->>GH: Adjunta bytes y evidencias al draft
+    GH->>GH: Publica solo APK si el destino es github-apk
+    GH->>PI: Para play envía solo el AAB validado
+    PI-->>GH: EAS devuelve estado FINISHED
+    GH->>PI: Consulta recibo del AAB y track completed
+    PI-->>GH: Devuelve recibo de Google Play
+    GH->>GH: Liga evidencias y verifica digests antes de publicar
+    HC->>VM: Apaga y elimina overlay y seed
+    HC->>GH: Retira el runner efímero
+```
+
+*GitHub orquesta y publica; el controlador root del host solo admite y aprovisiona; el guest compila; el artifact de Actions se trata como no confiable; y un runner administrado distinto verifica antes de Play cuando el destino es `play` y antes de toda publicación.*
+
+Los límites importan:
+
+- Los jobs de selección, validación, preparación, verificación, submit y publicación corren en runners administrados por GitHub. Solo `compile-android` declara las etiquetas autoalojadas, permiso `contents: read` y el environment `Production`.
+- El controlador instalado de wallabot no ejecuta un checkout del candidato como root. Cada minuto busca un `compile-android` elegible cuya aprobación ya se resolvió, vuelve a comprobar workflow, `main`, evento, repositorio, prerequisitos y etiqueta exclusiva, registra una identidad efímera y arranca una VM KVM nueva.
+- El hook root del guest se ejecuta antes del checkout y rechaza forks, PR, otro workflow u otro job. El proceso de build corre como usuario no root, sin grupos `sudo`, Docker, KVM o libvirt, y sin socket Docker, GPU ni virtualización anidada.
+- La VM tiene salida pública acotada, pero no puertos reenviados ni montajes del host. El `EXPO_TOKEN` permite consultar proyecto, contador y firma administrada con `--freeze-credentials`; no concede al job permisos para escribir releases ni la cuenta de servicio de Play.
+- Los AAB/APK y metadatos que salen del guest son **entrada no confiable**. `verify-artifacts`, en `ubuntu-latest`, los descarga a `/tmp/quarantine`, los vincula a los intentos y solo entonces inspecciona sus bytes.
+
+### Admisión y transacción durable
+
+`build-apk.yml` se activa por cambios empaquetables de `apps/mobile/**` en `main` —excluye scripts, documentación, recursos públicos y tests— o por `workflow_dispatch`. La concurrencia global `android-production-release` no cancela el run en curso. El dispatch acepta `publication_target` (`play` o `github-apk`), `operation` (`reconcile`, `retry-failed`, `adopt-submission` o `supersede-failed`) y, según la operación, versión, motivo o `submission_id`. `select-transaction` procesa siempre la transacción pendiente de menor versión semántica: `reconcile` crea una nueva o reanuda una existente; `retry-failed` y `supersede-failed` exigen versión y motivo; `adopt-submission` recupera un ID de submit incierto. Una versión fallida no se salta automáticamente.
+
+Antes de aprobar la compilación, `validate-production` hace checkout del SHA de la transacción y genera una única `ProductionSourceEvidenceV2` para `{production, aab}` y `{production-apk, apk}`. Comprueba origen, `main`, alcance del commit, PR, ruleset, statuses y environments remotos; después ejecuta ordenadamente los 20 `PRODUCTION_GATES`. Si uno falla, la lista queda incompleta; si cualquiera modifica el checkout, el candidato también falla.
+
+`prepare-production` crea o recupera el draft y conserva transacción, evidencia de fuente, snapshot/bundle de política, evidencia del APK anterior y baseline del contador. Antes del dispatch, reserva por separado las patas AAB y APK con IDs derivados de `run`, intento, SHA y pata; cada intento conserva backend `wallabot-local`, versión, perfil, toolchain y hashes de los inputs inmutables. Un intento `building` de otro run no se duplica: si aquel run sigue activo se detiene; si terminó sin resultado verificable se marca fallido y exige una decisión manual.
 
 ```mermaid
 stateDiagram-v2
     [*] --> prepared
-    prepared --> build_submitted: submit EAS build ID
-    build_submitted --> build_running: observe IN_PROGRESS
-    build_submitted --> build_finished: observe FINISHED
-    build_running --> build_finished: observe FINISHED
-    build_submitted --> failed: observe ERRORED or CANCELED
-    build_running --> failed: observe ERRORED or CANCELED
-    failed --> prepared: retry with reason
-    failed --> superseded: supersede with reason
-    build_finished --> validated: verify artifact
+    prepared --> building: inicia patas locales
+    building --> artifacts_validated: AAB y APK validados
+    building --> failed: fallo local o verificación
+    artifacts_validated --> submitting: destino play
+    artifacts_validated --> validated: destino github-apk
+    submitting --> validated: FINISHED y recibo válido
+    submitting --> failed: fallo o resultado incierto
+    failed --> prepared: retry local autorizado
+    failed --> artifacts_validated: reutiliza bytes verificados
+    failed --> submitting: reintento Play o adopción
+    failed --> superseded: sustitución motivada
     validated --> [*]
     superseded --> [*]
 ```
 
-*La transacción durable permite reconciliar un timeout sin recompilar; un fallo terminal exige una decisión manual motivada.*
+*La máquina de estados global se deriva de tres patas. AAB y APK pasan por `prepared`, `building`, `built`, `validated` o `failed`; Play usa `prepared`, `submitting`, `submitted`, `retry-pending`, `validated`, `failed` o `uncertain`. Solo `play` puede alcanzar `validated` por Play y solo `github-apk` lo hace desde los dos artefactos validados. Los reintentos preservan bytes ya terminados y una solicitud incierta solo continúa después de adoptar su `submissionId`.*
 
-`build-apk.yml` se activa por push a `main` en rutas empaquetadas o manualmente con `reconcile`, `retry-failed` o `supersede-failed`; su concurrencia no cancela una ejecución en curso. Antes de usar `EXPO_TOKEN`, valida el SHA exacto y ejecuta todos los `PRODUCTION_GATES`: políticas, permisos, inventario de datos, legal, prompt, pruebas, OpenWiki, tipos, export Android de desarrollo y E2E de agente/entrenamiento. Si un gate falla o ensucia el checkout, el candidato no es publicable.
+### Compilación, cuarentena y publicación
 
-Después crea o recupera una transacción durable en un draft de GitHub, adopta como máximo un build EAS que coincida con perfil, versión, SHA y mensaje, y observa EAS hasta terminar. El APK se descarga a cuarentena y `verify:production-artifact` inspecciona su estructura, manifest, firma, tamaño, MIME, paquete, SDK, permisos, configuración y snapshot de política antes de adjuntarlo como `gymnasia.apk` y publicar el draft. La operación exige el environment `Production` y sus controles remotos; una comprobación local no puede reemplazarlos.
+Dentro de la VM, `run-local-build.mjs` vuelve a comprobar repositorio, ref, evento, usuario, SHA, versión, transacción, digests de inputs y toolchain fijada. Ejecuta `eas build --local --non-interactive --freeze-credentials` primero con `production` y después con `production-apk`; los logs privados y directorios de trabajo se destruyen con la VM. Los únicos resultados transferidos son `gymnasia.aab`, `gymnasia.apk` y sus metadatos mínimos con hashes y tamaños.
 
-Incluso con todos los gates verdes, instale el APK en un dispositivo representativo antes de distribuirlo y compruebe versión, migración/conservación de datos, notificaciones, alarmas y ejecución en segundo plano. La app no implementa un actualizador desde GitHub; la instalación directa es manual y distinta de Play.
+El job `verify-artifacts` no confía en esa salida. Tras descargarla en cuarentena, aplica `finish-local`, persiste la transacción y ejecuta `verify:production-artifact` para cada pata. El AAB exige `bundletool` fijado por versión y SHA, validación de bundle y firma JAR; el APK usa `apkanalyzer`, `apksigner` y `aapt2`. Ambos se contrastan con la evidencia de fuente, snapshot de política, intento local, package, versión, SDK, certificado, permisos, sonidos, configuración, tamaño, MIME y nombre. Solo los bytes que pasan se renombran, reciben evidencia, se ligan por SHA-256/tamaño/`versionCode` y se adjuntan al draft. Los dos `versionCode` deben coincidir.
+
+Para el destino `play`, `submit-play-and-release` registra durablemente la intención **antes** de contactar EAS Submit. Sube por `--path` el AAB validado al track `production`, liga el ID de submission y espera un estado terminal. Un submit conocido que falla puede usar `eas submit:retry` sobre ese ID, sin reconstruir ni volver a cargar AAB/APK; si la petición pudo aceptarse pero se perdió el ID, queda `uncertain` y el flujo prohíbe otra subida hasta adoptar manualmente el ID exacto. `FINISHED` no basta: con la cuenta de servicio configurada, `google-play-receipt.mjs` comprueba en Google Play el AAB exacto y el track `production` con estado `completed`, y `create-play-evidence.mjs` liga ese recibo a la evidencia Play. La release permanece draft hasta que la comprobación final confirme el SHA objetivo, estado `validated`, presencia, MIME, tamaño y cadena de digests. Para `play` la cadena incluye AAB, APK, fuente, recibo de Google, evidencia Play y transacción. Para `github-apk`, `publish-github-apk` exige los dos artefactos verificados, retira el AAB del borrador y publica solamente el APK junto con las evidencias de fuente/AAB/APK y la transacción; no crea evidencia Play ni contacta ese servicio. Solo entonces se publica como latest.
+
+### Reanudación y fallos seguros
+
+- Un run de reconciliación puede reutilizar el artifact de Actions de un intento `built`; no recompila por comodidad.
+- Si solo APK o AAB falló, el reintento conserva la otra pata validada. Si falló Play, conserva ambos binarios; un fallo terminal conocido reintenta el `submissionId` registrado, mientras que uno incierto exige la adopción manual de ese ID antes de reconciliarlo.
+- Solo una transacción global `failed` acepta `retry` o `supersede`, siempre con motivo saneado y auditable; sustituir exige que `main` declare una versión posterior.
+- El controlador del host no reintenta una VM tras reinicio, respuesta perdida o interrupción: reconcilia y retira la misma identidad, limpia overlay/seed y cierra el diario como interrumpido. La transacción de GitHub decide el reintento de compilación.
+- No use el botón genérico de reejecución de jobs, no borre el draft y no convierta un intento local en un build ID remoto. Para parar admisiones nuevas, deshabilite `gymnasia-android-controller.timer`; conserve el diario e identidad para reconciliar la limpieza.
+
+Para cambiar el controlador, la máquina de estados, la evidencia o el workflow, ejecute `npm run test:production-release`; la suite cubre contratos de workflow, selección/reintento de transacciones, metadatos de build y validación/publicación. Es una prueba de implementación y no sustituye la VM, la firma real ni Play.
+
+Incluso con fuente, AAB, APK y Play verificados, instale el APK en un dispositivo representativo antes de distribuirlo directamente y compruebe versión, actualización sobre una instalación anterior, migración/conservación de datos, notificaciones, alarmas y ejecución en segundo plano. La app no implementa un actualizador desde GitHub; la instalación directa es manual y distinta de Play.
 
 ## Selección rápida
 
 - **Cambio aislado de lógica:** añada/ejecute el test determinista responsable, `npm test` y typecheck si modifica el workspace móvil.
 - **Cambio de UI, persistencia o flujo web:** añada `build:web` y la E2E concreta; amplíe a flujos vecinos cuando comparten el contrato.
-- **Cambio de catálogo:** `check:catalogs`, `test:catalogs` y `test:catalogs:e2e`; ejecute escritura solo si debe actualizar salidas.
+- **Cambio de catálogo:** ejecute `check:catalogs`, `test:catalogs` y `test:catalogs:e2e`; añada `check:bls` para su importación, `check:ciqual` para CIQUAL, y `check:ciqual:images` más `check:ciqual:mobile` si cambia muestras, tandas, referencias, la proyección nutricional o el índice de imágenes CIQUAL. Ejecute la escritura específica solo si debe actualizar salidas y vuelva a comprobarlas.
 - **Cambio de privacidad o datos:** `check:data-inventory`, sus tests, checks legales y la E2E de privacidad o borrado cuando modifique la experiencia publicada o de eliminación.
 - **Cambio de permiso, plugin o dependencia nativa:** guard rail de permisos, tipado, export y build/prueba nativa; una E2E web no basta.
 - **Cambio sensible de prompt o salud:** gates de política más autorización explícita antes de merge; promoción firmada posterior si corresponde.

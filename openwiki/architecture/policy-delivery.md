@@ -1,11 +1,8 @@
 ---
 type: arquitectura de entrega de políticas
-title: Entrega y activación de políticas firmadas
-description: Describe cómo se construyen, firman, promocionan y verifican localmente los bundles de prompt y salud-seguridad. Cubre el snapshot integrado, la selección por canal, la caché anti-rollback y el fallback seguro del cliente móvil.
+title: Entrega y activación de políticas
+description: Explica cómo se generan, firman, promocionan y capturan los snapshots de política, y cómo el cliente móvil los verifica y activa de forma segura. Cubre la resolución por canal, la caché anti-rollback y la degradación segura.
 tags: [agent-policy, signed-policy, mobile, security, deployment, health-safety]
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-07T11:37:28.236Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -43,10 +40,15 @@ sources:
     resource: repo://scripts/policy-promotion/prepare-policy-snapshot.mjs
   - id: openwiki-source-d89cdda8746df6dbfedfcf69
     resource: repo://scripts/policy-promotion/sign-policy.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-07T11:37:28.236Z" }
+  - id: openwiki-source-cf7c9acb7f23cfca2b8f4fcd
+    resource: repo://scripts/prompt-policy/policy.mjs
+generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-20T13:07:24.686Z
 ---
 
-# Entrega y activación de políticas firmadas
+# Entrega y activación de políticas
 
 La política ejecutable no es un prompt remoto arbitrario: es un **bundle canónico firmado** que reúne el prompt, el runtime de salud-seguridad, las herramientas requeridas y metadatos de compatibilidad. Una activación firmada lo asocia con un canal (`Staging` o `Production`) y una secuencia. La aplicación solo puede usar un paquete cuya cadena verifique contra raíces públicas integradas en la build.
 
@@ -96,9 +98,31 @@ Un rollback no restaura una caché local ni reduce la secuencia. `policy:promote
 
 ## Snapshot integrado en la build
 
-`npm run prepare:policy-snapshot -- --environment staging|production` busca el deployment exitoso del canal y descarga sus dos assets con límites de tamaño y tipos de contenido permitidos. Comprueba el digest publicado y verifica el paquete frente a `trusted-roots.json` y el catálogo de tools. Además exige que el informe sanitario no sea autorizante, no tenga fallos y coincida con el prompt, y que la evidencia de promoción corresponda al candidato, commit y digest.
+`npm run prepare:policy-snapshot -- --environment staging|production` busca el deployment exitoso del canal y descarga `policy.bundle.json` y `policy.bundle.signature.json` con límites de tamaño y tipos de contenido permitidos. Comprueba el digest publicado y verifica el paquete frente a `trusted-roots.json` y el catálogo móvil de tools. Después descarga `health-safety-report.json` y `promotion-evidence.json`: exige un informe no autorizante, sin fallos y vinculado al digest del prompt, y evidencia v3 correspondiente al candidato, commit, digest del bundle y digest del informe.
 
-Solo tras esas comprobaciones genera los módulos de prompt, runtime sanitario y `signedPolicySnapshot.generated.ts`, junto con metadatos del snapshot. La build de APK de producción ejecuta este paso para una transacción nueva y conserva esos inputs inmutables como artefactos de release; en reintentos restaura los inputs previamente guardados en vez de resolver otra política.
+Solo tras esas comprobaciones genera `chatSystemPrompt.generated.ts`, `healthSafetyPolicy.generated.ts`, `signedPolicySnapshot.generated.ts` y `policySnapshot.generated.json`. El último registra entorno, canal, candidato, digests, versión del runtime, activación, secuencia y deployment; el paquete firmado integrado conserva los cuerpos y firmas necesarios para que el cliente vuelva a verificarlo.
+
+### Captura y reutilización en la transacción Android
+
+En una transacción nueva de producción, `build-apk.yml` ejecuta el preparador una sola vez, copia los metadatos a `production-policy-snapshot.json` y empaqueta los cuatro archivos generados en `production-policy-bundle.tar.gz`. Antes de compilar, ambos archivos se publican en el borrador durable de la release y también viajan dentro del artefacto de inputs inmutables.
+
+Una transacción reanudada —incluido un reintento autorizado— no consulta de nuevo el deployment de Production: descarga del mismo tag `production-policy-snapshot.json` y `production-policy-bundle.tar.gz`, restaura el snapshot y recupera también la evidencia de fuente original. El job de compilación valida los inputs con el controlador confiable y extrae exactamente ese tar antes de construir AAB y APK. La verificación posterior recibe el mismo `production-policy-snapshot.json` para vincular cada binario con la política capturada. Así, un cambio de deployment entre intentos no cambia silenciosamente la política de una versión Android ya reservada.
+
+```mermaid
+flowchart TD
+    Tx{"Modo de transacción"}
+    Tx -->|"Nueva"| Resolve["Resolver Production y verificar"]
+    Resolve --> Generate["Generar snapshot y módulos"]
+    Generate --> Draft["Guardar JSON y tar en release draft"]
+    Tx -->|"Reanudada"| Restore["Restaurar JSON y tar del mismo tag"]
+    Draft --> Inputs["Artefacto de inputs inmutables"]
+    Restore --> Inputs
+    Inputs --> Check["Validar inputs y extraer tar"]
+    Check --> Build["Compilar AAB y APK"]
+    Build --> Verify["Verificar binarios contra snapshot"]
+```
+
+*La bifurcación ocurre antes de compilar: una transacción nueva captura la política y una reanudada reutiliza la captura durable.*
 
 `Local` no resuelve un deployment remoto firmado: crea el lease desde los snapshots de desarrollo. `staging` usa `Staging` y `production` usa `Production`; el almacenamiento se delimita por entorno y canal.
 
@@ -152,7 +176,7 @@ Los diagnósticos se reducen a frontera, origen, candidato, secuencia y código 
 
 ## Lease y atribución en el runtime
 
-`acquireAgentPolicyLease(boundary)` es la entrada al runtime del agente. En canales firmados convierte la selección en un `AgentPolicyLease` profundamente inmutable: prompt, salud-seguridad fusionada, `PolicyContext`, estado y deployment proceden del mismo candidato. La interfaz adquiere este lease antes de clasificar una entrada sanitaria o enviar el turno; así no mezcla un prompt, un guardrail y atribución de políticas distintas en una petición.
+`acquireAgentPolicyLease(boundary)` es la entrada al runtime del agente. En canales firmados convierte la selección en un `AgentPolicyLease` profundamente inmutable: prompt, salud-seguridad fusionada, `PolicyContext`, estado y deployment proceden del mismo candidato. Los envíos del chat principal, el asistente de alimentos y el mini chat adquieren el lease antes de clasificar la entrada sanitaria o enviar el turno; así no mezclan un prompt, un guardrail y atribución de políticas distintas en una petición.
 
 El contexto contiene candidato, digest del bundle, versión, secuencia, origen e id/acción de activación. El estado expone activa, pendiente, degradación, resultado de comprobación y latencia de propagación para la presentación y diagnóstico local, sin registrar contenido sensible. Véase [Runtime del agente](../agent/runtime.md) para el consumidor de este lease y [Estado local y copias de seguridad](../mobile/local-state-and-backup.md) para el aislamiento de estado.
 
@@ -161,6 +185,10 @@ El contexto contiene candidato, digest del bundle, versión, secuencia, origen e
 Los comandos, workflows y artefactos descritos arriba son el mecanismo ejecutable actual. Los bundles de releases anteriores solo se consultan como candidatos históricos para un rollback firmado: no son una fuente alternativa de política ni se copian directamente al cliente.
 
 Los comentarios de incidentes y de transacciones anteriores que aparecen en workflows de build son contexto histórico de mantenimiento. No sustituyen las comprobaciones actuales ni deben convertirse en una receta operativa. Para un cambio presente en `prompts/` o `policy/health-safety/`, describe primero en lenguaje natural qué tools, acciones o recomendaciones se permiten, prohíben o restringen, y obtén la aprobación requerida antes de firmar o promocionar.
+
+### Puerta de promoción del commit
+
+El check `gymnasia/policy-promotion` conecta el cambio de contenido con su entrega: si una modificación toca una ruta configurada para promoción, permanece en `pending` hasta que exista un deployment `Production` exitoso de `gymnasia-policy` cuyo payload v3 tenga `sourceCommit` igual al SHA evaluado. Si no hay cambios en esas rutas, el check termina correctamente sin exigir una promoción. Por tanto, una promoción de otro commit o un deployment con otro esquema no satisface la puerta del commit actual.
 
 La comprobación local mínima antes de promover es:
 

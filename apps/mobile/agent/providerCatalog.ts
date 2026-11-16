@@ -17,6 +17,7 @@ import {
   type ProviderVerificationResult,
 } from "./providerVerification";
 import { googleInteractionEndpoint } from "./googleStreamTransport";
+import { fetchCustomOpenAIModels } from "./customOpenAIModels";
 
 export type { ProviderVerificationResult } from "./providerVerification";
 
@@ -181,6 +182,18 @@ export async function fetchOpenAIModels(input: {
     throw new Error(extractErrorMessage(payload, `OpenAI error (${response.status})`));
   }
   return parseOpenAIModelOptions(payload);
+}
+
+export async function fetchPersonalizedModels(input: {
+  provider: ProviderConfiguration;
+  platform: "web" | "native";
+  fakeMode: boolean;
+}): Promise<{ options: OpenAIModelOption[]; unavailable: boolean }> {
+  if (input.fakeMode) return {
+    options: input.provider.model ? [{ id: input.provider.model, owned_by: null }] : [],
+    unavailable: false,
+  };
+  return fetchCustomOpenAIModels(input.provider, { platform: input.platform });
 }
 
 export function googleModelsBaseUrl(input: {

@@ -77,14 +77,14 @@ test("preserves reviewed repository instructions when publishing docs", async ()
 
   assert.match(
     workflow,
-    /name: Materialize linked agent instructions for OpenWiki/u,
+    /name: Validate linked agent instructions for OpenWiki/u,
   );
   assert.match(
     workflow,
     /\[ ! -L AGENTS\.md \].*readlink AGENTS\.md.*CLAUDE\.md/su,
   );
-  assert.match(workflow, /unlink AGENTS\.md/u);
-  assert.match(workflow, /cp --preserve=mode CLAUDE\.md AGENTS\.md/u);
+  assert.doesNotMatch(workflow, /unlink AGENTS\.md/u);
+  assert.doesNotMatch(workflow, /cp --preserve=mode CLAUDE\.md AGENTS\.md/u);
   assert.match(
     workflow,
     /git restore --source=origin\/main -- AGENTS\.md CLAUDE\.md/u,
@@ -99,6 +99,12 @@ test("preserves reviewed repository instructions when publishing docs", async ()
     workflow,
     /git add -A -- openwiki \.openwikiignore AGENTS\.md CLAUDE\.md/u,
   );
+});
+
+test("uses bounded parallel OpenWiki page workers", async () => {
+  const workflow = await readFile(workflowUrl, "utf8");
+
+  assert.match(workflow, /OPENWIKI_PAGE_CONCURRENCY: "2"/u);
 });
 
 test("publishes durable page progress before propagating OpenWiki failures", async () => {
@@ -125,6 +131,73 @@ test("publishes durable page progress before propagating OpenWiki failures", asy
   assert.match(
     workflow,
     /steps\.openwiki\.outputs\.result == 'failure'.*run: exit 1/su,
+  );
+});
+
+test("auto-merges only complete OpenWiki documentation from allowed paths", async () => {
+  const workflow = await readFile(workflowUrl, "utf8");
+
+  assert.match(workflow, /git fetch --no-tags origin main/u);
+  assert.match(workflow, /git rebase origin\/main/u);
+  assert.match(
+    workflow,
+    /name: Enable automatic merge for complete documentation/u,
+  );
+  assert.match(
+    workflow,
+    /steps\.commit\.outputs\.result == 'success'/u,
+  );
+  for (const guard of [
+    "preflight.outcome == 'success'",
+    "oauth.outcome == 'success'",
+    "openwiki.outputs.result == 'success'",
+    "encrypt_oauth.outcome == 'success'",
+    "personal_sources.outcome != 'failure'",
+    "personal_restore.outcome != 'failure'",
+    "personal_config.outcome != 'failure'",
+    "personal.outcome != 'failure'",
+    "personal.outputs.result != 'failure'",
+    "encrypt_personal.outcome != 'failure'",
+  ]) {
+    assert.ok(workflow.includes(`steps.${guard}`), guard);
+  }
+  assert.match(
+    workflow,
+    /\.openwikiignore\|openwiki\/\*\|ops\/openwiki-runtime-telemetry\.json/u,
+  );
+  assert.match(workflow, /gh pr diff "\$PR_URL" --name-only/u);
+  assert.match(workflow, /gh pr merge "\$PR_URL" --auto --merge/u);
+  assert.doesNotMatch(workflow, /gh pr review/u);
+  assert.match(workflow, /expected_head="\$\(git rev-parse HEAD\)"/u);
+  assert.match(workflow, /expected_base="\$\(git rev-parse origin\/main\)"/u);
+  assert.match(workflow, /\[\.head\.sha, \.base\.sha\] \| @tsv/u);
+  assert.match(
+    workflow,
+    /gh api --method PATCH[\s\S]*-f base=main > \/dev\/null/u,
+  );
+  assert.match(workflow, /title=Stale OpenWiki PR/u);
+});
+
+test("retries transient GitHub artifact download failures", async () => {
+  const workflow = await readFile(workflowUrl, "utf8");
+
+  assert.equal(
+    workflow.match(/for attempt in 1 2 3; do/gu)?.length,
+    3,
+  );
+  assert.ok(
+    (workflow.match(/sleep "\$\(\(attempt \* 2\)\)"/gu)?.length ?? 0) >= 3,
+  );
+  for (const artifact of [
+    "openwiki-runtime-telemetry.zip",
+    "openwiki-oauth-state.zip",
+    "openwiki-personal-state.zip",
+  ]) {
+    assert.ok(workflow.includes(`artifact_zip="$RUNNER_TEMP/${artifact}"`));
+  }
+  assert.equal(
+    workflow.match(/> "\$artifact_zip\.tmp"/gu)?.length,
+    3,
   );
 });
 

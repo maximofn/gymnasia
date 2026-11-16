@@ -74,3 +74,9 @@ credentials.json
 
 # Reverse-engineering artifacts (GYM-6) - do not commit
 apk-vivagym/
+
+# Local video production assets
+youtube_assets/
+
+# Vínculo local con Vercel (IDs de cuenta; no se comparte)
+.vercel/

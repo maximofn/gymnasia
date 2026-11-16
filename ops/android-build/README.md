@@ -21,12 +21,36 @@ que funcionaba en su Android. La reversión de transacciones se ensayó sin red.
 La App está instalada solo en Gymnasia y su clave queda protegida para root;
 las copias de entrada se eliminaron después de comprobar su autenticación.
 
-`build-apk.yml` conserva la selección de candidato, validación, borrador,
-verificación y publicación en GitHub. Solo `compile-android` usa
+`build-apk.yml` conserva la selección de candidato, aprobación, borrador,
+compilación local de AAB y APK, verificación, envío a Prueba cerrada Alpha para
+los 14 testers y publicación en GitHub. Solo `compile-android` usa
 `[self-hosted, linux, x64, wallabot, android-build]`, en una VM KVM desechable.
-Los tres pasos con efectos conservan el environment `Production` y sus
-aprobaciones. El runner tiene `contents: read`; nunca recibe un token para
-publicar releases.
+La aprobación humana de `Production` sucede antes de despacharlo. El runner
+tiene `contents: read`; nunca recibe un token para publicar releases ni la
+cuenta de servicio de Google. El job posterior `Play Internal` (nombre heredado
+del environment que guarda el token, no del track actual) no tiene
+aprobador: usa otro `EXPO_TOKEN` únicamente después de validar ambos binarios.
+
+## Publicar únicamente el APK en GitHub
+
+Para una petición aislada de APK en GitHub se admite la opción manual
+`publication_target=github-apk` del mismo workflow. Se conserva la VM, la
+aprobación Production, los dos builds y sus verificaciones independientes; el
+AAB sirve para reservar el versionCode compartido y se retira del borrador
+antes de publicar únicamente `gymnasia.apk` y las evidencias. No se usa el
+entorno Play Internal ni se ejecuta EAS Submit. Sus revisores pueden permanecer
+configurados: solo la validación de una publicación destinada a Play exige
+que ese paso sea automático. El destino se incluye en la evidencia de fuente y
+la transacción; las transacciones GitHub no admiten transiciones de Play ni
+pueden cambiar de destino en un reintento. El flujo habitual conserva sus
+controles y su envío a Play.
+
+```bash
+gh workflow run build-apk.yml --ref main -f publication_target=github-apk
+```
+
+La publicación exclusiva en GitHub no encadena automáticamente otra versión.
+Para reintentar esa transacción hay que volver a elegir el mismo destino.
 
 ## Preparar el host (intervención administrativa)
 
@@ -126,8 +150,10 @@ usuario y rechaza cualquier directorio o herramienta que pueda modificar.
 
 ## Firma y contador
 
-Se mantienen `appVersionSource: remote`, `autoIncrement: true` y las
-credenciales administradas actuales. La compilación **sí sigue necesitando
+Se mantiene `appVersionSource: remote`. El perfil `production` incrementa el
+contador al compilar primero el AAB; `production-apk` no lo incrementa y
+reutiliza después el mismo valor. Las credenciales administradas actuales se
+conservan. La compilación **sí sigue necesitando
 cuenta Expo y EXPO_TOKEN** para proyecto, contador y firma; no usa capacidad de
 compilación de EAS. `--freeze-credentials` impide generar o cambiar claves.
 No ejecutar la primera consulta de firma sin la intervención del mantenedor.
@@ -147,9 +173,10 @@ bytes y su SHA-256 es
 Su versionCode 56 supera el 55 de la última release pública, `v1.43.3`, cuya
 evidencia se volvió a descargar y contrastar antes del reintento. La fuente de
 esta prueba sigue siendo `c9fd7ea27849881c80b64262d2f7fe62201df125` (1.43.2).
-En cada release se descarga de nuevo la evidencia del último APK,
-se valida su digest de GitHub y se exige un versionCode superior; 53 no es un
-contador nuevo ni un valor fijado en el código.
+En cada release se descarga de nuevo la evidencia del último APK, se valida su
+digest de GitHub y se exige un `versionCode` superior al máximo entre esa
+evidencia y `PLAY_VERSION_CODE_FLOOR`, que debe reflejar el mayor código real de
+Play Console; 53 no es un contador nuevo ni un valor fijado en el código.
 
 ## Preparación y validación de una instalación
 
@@ -430,12 +457,13 @@ simulaciones no sustituyen la prueba del servicio y de un job real en wallabot.
 
 ## Transacción y fallos
 
-Antes de que el runner reciba el trabajo, el draft conserva un intento
-`wallabot-local` con ID `github-RUN-ATTEMPT-SHA`, versión, perfil, toolchain e
-inputs inmutables. El APK y sus metadatos se transfieren como un artifact de
-Actions, con nombre específico del intento. El verificador administrado
-comprueba los bytes en cuarentena, compara la identidad del intento y la firma,
-y solo después adjunta el APK al draft y verifica la cadena de hashes.
+Antes de que el runner reciba el trabajo, el draft conserva dos intentos
+`wallabot-local`, con ID `github-RUN-ATTEMPT-SHA-aab` y
+`github-RUN-ATTEMPT-SHA-apk`, versión, perfil, toolchain e inputs inmutables.
+El AAB se compila primero y el APK después. Los binarios y sus metadatos se
+transfieren como un artifact de Actions. El verificador administrado comprueba
+los bytes en cuarentena, firma, manifest, configuración, snapshot y el
+`versionCode` común antes de adjuntarlos al draft.
 
 Reconciliar un intento terminado reutiliza ese artifact de Actions (30 días de
 retención), nunca recompila. Si el intento quedó a medias y su ejecución anterior
@@ -443,10 +471,13 @@ ya terminó, se registra como fallido y se exige `retry-failed` o
 `supersede-failed` con motivo. Se conserva todo el historial. No usar el botón
 genérico de reejecutar jobs como sustituto de esa decisión.
 
-Si el APK ya está validado y falla la publicación, conservar esos bytes y
-reconciliar. No sustituir el binario ni autorizar otro build. Si caduca el
-artifact de Actions, recuperar exactamente el asset del draft y verificar su
-hash mediante intervención manual. No borrar el draft para desbloquear la cola.
+Si una pata ya está validada, conservar esos bytes y reconstruir únicamente la
+que falló. Si falla Play, no reconstruir ninguna: reconciliar el submission
+conocido o usar `eas submit:retry`. Si la petición pudo llegar a EAS pero se
+perdió su ID, el flujo queda incierto y no repite la subida; localizar el ID con
+`eas submit:list` y usar `adopt-submission`. El procedimiento completo está en
+`docs/store/google-play/production-promotion-gates.md`. No borrar el draft para
+desbloquear la cola.
 
 Los registros de EAS quedan privados dentro del guest y se destruyen al salir.
 El workflow borra checkout y temporales; el host elimina overlay y seed también

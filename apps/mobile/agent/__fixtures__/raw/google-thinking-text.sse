@@ -1,0 +1,36 @@
+event: interaction.created
+data: {"event_type": "interaction.created", "interaction": {"id": "fixture_google-thinking", "status": "in_progress"}}
+
+event: step.start
+data: {"event_type": "step.start", "index": 0, "step": {"type": "thought"}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 0, "delta": {"type": "thought_summary", "content": {"type": "text", "text": "El usuario pregunta "}}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 0, "delta": {"type": "thought_summary", "content": {"type": "text", "text": "por su objetivo."}}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 0, "delta": {"type": "thought_signature", "signature": "sig_fixture"}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 0}
+
+event: step.start
+data: {"event_type": "step.start", "index": 1, "step": {"type": "model_output"}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 1, "delta": {"type": "text", "text": "Tu objetivo es "}}
+
+event: step.delta
+data: {"event_type": "step.delta", "index": 1, "delta": {"type": "text", "text": "ganar músculo 💪."}}
+
+event: step.stop
+data: {"event_type": "step.stop", "index": 1}
+
+event: interaction.completed
+data: {"event_type": "interaction.completed", "interaction": {"id": "fixture_google-thinking", "status": "completed", "usage": {"total_input_tokens": 32, "total_output_tokens": 18, "total_tokens": 50}}}
+
+event: done
+data: [DONE]
+

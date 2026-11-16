@@ -9,6 +9,8 @@ import {
   TextInput,
   View,
 } from "react-native";
+// Un Modal nativo se dibuja fuera del contenedor raíz, así que no hereda sus insets (GYM-249).
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { mobileTheme } from "../theme";
 import { validatePortablePassword } from "./portableEncryption";
@@ -72,7 +74,7 @@ export function PortablePasswordModal({
   if (!visible) return null;
 
   const content = (
-    <View
+    <SafeAreaView
         testID="portable-password-modal"
         accessibilityViewIsModal
         style={{
@@ -293,7 +295,7 @@ export function PortablePasswordModal({
             <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 14, fontWeight: "700" }}>Cancelar</Text>
           </Pressable>
         </View>
-    </View>
+    </SafeAreaView>
   );
 
   if (Platform.OS === "web") return content;

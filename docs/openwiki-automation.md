@@ -28,11 +28,14 @@ que no puede generar cargos accidentales al agotar la cuota gratuita.
 
 - `openwiki-update.yml`, diariamente a las 08:00 UTC:
   - restaura exclusivamente el OAuth de OpenWiki desde un artefacto cifrado;
-  - actualiza el Code Brain de Gymnasia con la suscripción de ChatGPT;
+  - actualiza el Code Brain de Gymnasia con la suscripción de ChatGPT y hasta dos
+    trabajadores de página concurrentes;
   - consulta una ventana de 7 días del proyecto LangSmith `openwiki`, la reduce
     a conteos y percentiles permitidos y conserva el último agregado válido en
     un artefacto de 30 días;
-  - reutiliza siempre la rama `openwiki/update` y crea o actualiza una única PR;
+  - reutiliza siempre la rama `openwiki/update`, crea o actualiza una única PR y
+    solicita su auto-merge cuando la ejecución es completa, el diff respeta la
+    lista cerrada de rutas publicables y pasan los checks obligatorios;
   - si OpenWiki falla después de completar páginas, publica ese progreso
     durable sin `.run.json` y después marca la ejecución como fallida;
   - actualiza opcionalmente Personal Brain desde Linear, maximofn.com y Tavily;
@@ -127,24 +130,33 @@ activos. Todos los secretos y la variable de las tablas anteriores están
 configurados; `OPENWIKI_OAUTH_SEED` se eliminó después de verificar la
 restauración desde artefacto.
 
-Versión `0.5.0` verificada el 7 de septiembre de 2026:
+Versión `0.6.0` verificada el 27 de septiembre de 2026:
 
-- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34117514822)
-  terminó correctamente con Code Brain, LangSmith, Personal Brain, renovación
-  cifrada y publicación documental en 44 minutos y 58 segundos;
-- los artefactos cifrados `openwiki-oauth-state` y
-  `openwiki-personal-state` se renovaron desde esa misma ejecución y caducan el
-  7 de octubre de 2026;
-- la rama fija creó la [PR de documentación #188](https://github.com/maximofn/gymnasia/pull/188)
-  con 50 archivos permitidos, 20 Claims y todos los checks en verde; añadió
-  `openwiki/.page-manifest.json` con esquema 1 y 22 páginas, sin incluir
-  `CLAUDE.md`, `AGENTS.md` ni el estado transitorio `.run.json`;
-- como OpenWiki `0.5.0` todavía no admite que `AGENTS.md` sea un enlace a
-  `CLAUDE.md`, el runner materializa temporalmente ambos archivos, ejecuta la
-  actualización y restaura las instrucciones exactas de `main` antes de publicar;
+- la [actualización completa](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/36337856463)
+  terminó correctamente con dos trabajadores de página, Code Brain, Personal
+  Brain, renovación cifrada y publicación documental en 30 minutos y 8
+  segundos; frente a los 44 minutos y 58 segundos de la referencia 0.5.0, es
+  una reducción aproximada del 33 % en una ejecución con cambios distintos;
+- los artefactos `openwiki-oauth-state`, `openwiki-personal-state` y
+  `openwiki-runtime-telemetry` se renovaron y caducan el 27 de octubre de 2026;
+- la rama fija actualizó la [PR de documentación #237](https://github.com/maximofn/gymnasia/pull/237)
+  con 55 archivos permitidos y todos los checks en verde. Sus 2.202 adiciones y
+  1.696 eliminaciones pertenecen únicamente a `openwiki/` y al agregado público
+  `ops/openwiki-runtime-telemetry.json`; no incluye `CLAUDE.md`, `AGENTS.md`,
+  `.run.json` ni estado privado;
+- la prueba desechable y el runner real conservaron `AGENTS.md -> CLAUDE.md`, un
+  único bloque administrado y ninguna autorreferencia. El runner ya no
+  materializa una copia regular, aunque sigue restaurando las instrucciones
+  revisadas de `main` antes de publicar documentación;
+- el recolector saneado de LangSmith dejó
+  `latestAttempt.status=unavailable` sin muestra. El 21 de octubre se comprobó
+  que no era un fallo de red: enviaba `limit: 900` a una API cuyo máximo por
+  petición es 100 y el texto `Failed to fetch` del HTTP 400 confundía al
+  clasificador. Code Brain y su configuración de trazas ocultas continuaron; no
+  fue un error de clave ni de OAuth;
 - la plantilla pública y el repositorio privado quedaron sincronizados en el
-  commit privado `354f662`; sus [tests remotos](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34117417781)
-  y el [informe manual de Telegram](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/34121672371)
+  merge privado `d9e8ae8`; los [tests remotos](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/36337765763)
+  y el [informe manual de Telegram](https://github.com/maximofn/gymnasia-openwiki-automation/actions/runs/36339828257)
   terminaron correctamente.
 
 ### Permiso de PR
@@ -155,6 +167,29 @@ automatización privada usa `GYMNASIA_REPO_TOKEN`. El recordatorio correcto es
 crear ese token fine-grained con acceso exclusivo a Gymnasia y los dos permisos
 anteriores. Si en el futuro se vuelve a trasladar la creación de PR al workflow
 público, entonces sí habrá que activar dicha opción.
+
+Gymnasia tiene habilitado el auto-merge del repositorio. La regla de `main` no
+exige revisiones aprobatorias, pero sí que la rama esté actualizada y que pasen
+`prompt-policy`, `gymnasia/owner-authorization` y
+`gymnasia/policy-promotion`. El runner no intenta aprobar su propia PR: valida
+que solo cambien `.openwikiignore`, `openwiki/**` o
+`ops/openwiki-runtime-telemetry.json` y solicita un merge commit automático. Si
+OpenWiki conserva progreso parcial tras un fallo, publica o actualiza la PR pero
+no solicita auto-merge. Tampoco lo solicita si falla la configuración,
+restauración, actualización o persistencia de Personal Brain: la condición de
+auto-merge refleja todos los estados que harían roja la ejecución privada.
+
+Las descargas de los últimos artefactos OAuth, Personal Brain y telemetría
+reintentan tres veces los errores transitorios de GitHub antes de fallar. Esto
+evita que un HTTP 503 aislado se diagnostique erróneamente como un artefacto
+cifrado corrupto o una contraseña incorrecta.
+
+Antes de leer el diff o habilitar el auto-merge, el runner exige que los SHA de
+cabeza y base que expone la PR coincidan con el commit que acaba de publicar y
+con `origin/main`. GitHub puede conservar durante unos instantes los SHA
+anteriores después de un force-push; en ese caso el runner vuelve a declarar la
+misma base para pedir su recálculo, espera de forma acotada y falla sin
+auto-merge si la PR continúa desfasada.
 
 ## Sembrar OAuth sin pegarlo en el chat
 
@@ -250,7 +285,15 @@ Si la consulta a LangSmith falla, la actualización documental continúa. El
 artefacto vuelve a guardar la última muestra válida, marca el intento como no
 disponible y Telegram muestra esa antigüedad. La evidencia pública se actualiza
 semanalmente los lunes y también en cada ejecución manual; su JSON fuente es
-`ops/openwiki-runtime-telemetry.json` y la PR sigue requiriendo fusión manual.
+`ops/openwiki-runtime-telemetry.json` y se somete a los mismos checks y la misma
+lista cerrada antes del auto-merge.
+
+El recolector no envía `limit: 900` a `/runs/query`: LangSmith limita cada
+petición a 100 spans. Deja que el SDK pagine con el límite admitido y corta la
+muestra agregada al alcanzar 900 spans. Los errores HTTP de LangSmith se
+clasifican como `langsmith` antes de interpretar el texto del mensaje, para que
+un HTTP 400 cuyo texto empiece por `Failed to fetch` no aparezca falsamente como
+un fallo de red.
 
 ## Validación
 

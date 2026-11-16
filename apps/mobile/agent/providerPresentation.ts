@@ -39,6 +39,12 @@ export const PROVIDER_UI_META: Record<
     avatar_bg: "#4D84FF",
     avatar_text: "#EFF4FF",
   },
+  custom_openai: {
+    label: "Personalizado",
+    models_hint: "ID exacto del modelo",
+    avatar_bg: "#565D6A",
+    avatar_text: "#F3F5F7",
+  },
 };
 
 export const PROVIDER_STATUS_COPY = {

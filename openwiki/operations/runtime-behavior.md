@@ -1,107 +1,126 @@
 ---
-type: observabilidad de runtime
-title: Comportamiento en ejecución y oportunidades
-description: Complemento operativo para interpretar la muestra LangSmith del agente móvil sin exponer contenido de runs. Separa los datos observados de los límites estáticos, los fallos y las decisiones seguras al cambiar el chat, las herramientas o su persistencia.
-tags: [runtime, observability, langsmith, mobile, agent, tools]
+type: guía operativa
+title: Comportamiento operativo, trazas y degradación
+description: Diagnóstico local de versión, almacenamiento y configuración de proveedores, con límites explícitos de privacidad y de lo que una comprobación local puede asegurar sobre servicios remotos.
+tags: [runtime, observability, mobile, privacy, providers, storage]
 verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T12:53:55.207Z
+  - by: openwiki/0.6.0
+    at: 2026-11-08T14:36:51.071Z
 sources:
-  - id: openwiki-source-0c30fc96b9e7c8b57c35473c
-    resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
-  - id: openwiki-source-abc6fea468a7de09acfb0c4f
-    resource: repo://apps/mobile/agent/providerToolClient.ts
-  - id: openwiki-source-b14a4ecd65e83b5561f88e2a
-    resource: repo://apps/mobile/agent/providerToolLoop.ts
-  - id: openwiki-source-d3be928c369037f29888bc0b
-    resource: repo://apps/mobile/agent/toolExecutor.ts
-  - id: openwiki-source-d8ad30beb46f5e7dc1ced4cf
-    resource: repo://apps/mobile/agent/toolOperationLedger.test.ts
-  - id: openwiki-source-9e7ddd51c09caf628a81acad
-    resource: repo://apps/mobile/agent/toolOperationLedger.ts
-  - id: openwiki-source-929e8e1df23628a3f3848ff8
-    resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
+  - id: openwiki-source-d663aad02875819980c54be4
+    resource: repo://apps/mobile/agent/providerPresentation.ts
+  - id: openwiki-source-e5f74ffc1b3b8c00fd4c6086
+    resource: repo://apps/mobile/agent/providerVerification.test.ts
+  - id: openwiki-source-c80e54251b903682e229caf2
+    resource: repo://apps/mobile/agent/providerVerification.ts
+  - id: openwiki-source-f4cb42639b722f40aa5d0429
+    resource: repo://apps/mobile/controllers/settingsController.ts
+  - id: openwiki-source-7a047b00a95eb325eb147887
+    resource: repo://apps/mobile/environment.ts
+  - id: openwiki-source-f0c30949361dd30d241675c9
+    resource: repo://apps/mobile/platform/index.ts
+  - id: openwiki-source-aaea1399d87505bae662f853
+    resource: repo://apps/mobile/platform/network.ts
+  - id: openwiki-source-f79d8817053cc5b678005d76
+    resource: repo://apps/mobile/platform/trace.test.ts
+  - id: openwiki-source-1d477406340582311e84da48
+    resource: repo://apps/mobile/runtimeEnvironment.ts
+  - id: openwiki-source-b07bed6982772a253ff77116
+    resource: repo://apps/mobile/storage/storageUsage.ts
+  - id: openwiki-source-1d0198c38ac34ff97dd54fc0
+    resource: repo://apps/mobile/trace.ts
+generated: { by: "openwiki/0.6.0", at: "2026-11-08T14:36:51.071Z" }
 ---
 
-# Comportamiento en ejecución y oportunidades
+# Comportamiento operativo, trazas y degradación
 
-Esta es la vista operativa del agente de `apps/mobile`, no del runner que materializa la wiki. El punto de entrada conversacional construye el contexto del turno, adquiere una política, llama al proveedor BYOK y, si este solicita herramientas, aplica efectos locales bajo guardas e idempotencia. Para los formatos SSE y las continuaciones de cada proveedor, consulte [Streaming de proveedores](../agent/provider-streaming.md); para configuración y secretos BYOK, [Configuración BYOK de proveedores](../agent/provider-configuration.md); para el contrato completo del agente, [Runtime del agente y herramientas](../agent/runtime.md).
+La aplicación es *local-first*: sus funciones principales no requieren un servicio y el backend de incidencias es opcional. Por tanto, un diagnóstico local sirve para identificar el binario, el estado y el almacenamiento del dispositivo; no demuestra conectividad, disponibilidad, latencia ni coste de un proveedor remoto. Las pruebas del agente usan proveedores falsos y no consumen red, claves ni tokens ([`README.md`](repo://README.md#L1-L4), [`README.md`](repo://README.md#L131-L152)).
 
-## Alcance y privacidad de la muestra
+Esta página describe qué se puede copiar o interpretar con seguridad desde **Ajustes → Trazas**, y qué debe verificarse aparte. Para configurar proveedores, véase [Configuración de proveedores](../agent/provider-configuration.md); para el flujo del agente, [Runtime del agente](../agent/runtime.md); para persistencia y recuperación, [Estado local y copias de seguridad](../mobile/local-state-and-backup.md).
 
-La configuración de OpenWiki declara los proyectos LangSmith `gymnasia-app-agent` y `gymnasia-food-agent` en el endpoint europeo. No hay un dump LangSmith extraído y legible en los recursos disponibles para esta actualización; por tanto, **no se publican conteos, URLs de trazas, latencias, tokens, costes, llamadas repetidas ni secuencias**. La configuración no prueba tráfico ni comportamiento observado.
-
-Nunca copie prompts, entradas, salidas, argumentos de tools, razonamiento ni contenido de un run. Si se proporciona el dump ya extraído, registre solo agregados y firmas: ventana y filtros, número de runs, URL de traza cuando sea autorizada, proveedor/ruta, estado, llamadas y mediana de latencia por tool, tokens de entrada/salida y coste cuando existan, además de repeticiones agrupadas por `executionId`, tool y operación. Los buckets **error**, **outlier** y **baseline** son una muestra sesgada por filtros, entorno, proveedor y selección: no son tasas de población ni evidencia causal. La mediana de `baseline` es una referencia normal de esa muestra, no una garantía.
-
-### Observado
-
-No hay observaciones cuantitativas verificables en esta actualización. No se observaron en la muestra disponible fallos, reintentos, límites alcanzados, outliers ni una clase de hallazgo, porque no hay muestra legible que los establezca.
-
-### Correlacionado
-
-Los siguientes límites y rutas proceden del código. Sirven para contrastar una observación futura; no convierten una hipótesis en diagnóstico.
+## Flujo de diagnóstico local
 
 ```mermaid
-sequenceDiagram
-    participant UI as Chat UI
-    participant Policy as Policy lease
-    participant Client as Provider tool client
-    participant Provider as BYOK provider
-    participant Guard as Safety and operation guard
-    participant Store as Local store
-    UI->>Policy: acquire lease for turn
-    Policy-->>UI: immutable prompt and safety policy
-    UI->>Client: send history and execution ID
-    Client->>Provider: initial streamed turn
-    Provider-->>UI: content and thinking deltas
-    alt provider requests a tool
-        Provider-->>Client: tool call
-        Client->>Guard: validate safety and operation
-        Guard->>Store: commit allowed local effect
-        Guard-->>Client: tool result or replay
-        Client->>Provider: continuation
-    else turn completes
-        Client-->>UI: final content
-    end
+flowchart TD
+  Start["Abrir Ajustes y Trazas"] --> Trace["Cargar y copiar trazas locales"]
+  Start --> Storage["Medir ocupación bajo demanda"]
+  Trace --> Version["Versión y build del runtime instalado"]
+  Trace --> Context["Entorno y metadatos de política"]
+  Storage --> Privacy["Excluir claves sensibles y desconocidas"]
+  Version --> Triage["Adjuntar diagnóstico mínimo"]
+  Context --> Triage
+  Privacy --> Triage
+  Triage --> Remote["Comprobar proveedor por separado"]
 ```
 
-*El diagrama muestra el recorrido de un turno del chat principal y la frontera entre la respuesta remota y un efecto local.*
+*El flujo separa la evidencia que vive en el dispositivo de una verificación que necesariamente contacta con un servicio remoto.*
 
-- **Política por turno.** `acquireAgentPolicyLease` devuelve un objeto congelado que reúne prompt, política de salud-seguridad, contexto y estado de selección. En canal `Local` se construye desde los artefactos integrados; en canales firmados se rechaza una política sanitaria cuyo contrato no pueda fusionarse. `App` usa el lease antes de preparar el mensaje y de aplicar los guardrails.
-- **Riesgo sanitario antes y durante el turno.** `callProviderChatAPIWithTools` no contacta al proveedor ante un riesgo bloqueante. Para cada tool vuelve a clasificar `nombre + argumentos` y rechaza tanto una tool desconocida como una incompatible, devolviendo un resultado de bloqueo al loop en vez de mutar estado. El evaluador remoto opcional tiene un timeout de 10 s y, ante fallo o resultado inválido, conserva la decisión local base.
-- **Reintentos y latencia visible.** El envío de chat intenta hasta tres veces errores de red, timeout, sobrecarga o estados 429/503/529; espera 2 s y 4 s antes de los reintentos y reinicia el borrador. La interfaz agrupa actualizaciones de streaming con 40 ms. Por ello, varios requests o una espera visible no equivalen por sí solos a varias escrituras ni a la duración de una sola tool.
-- **Continuaciones y límite.** OpenAI, Anthropic y Google ejecutan las calls de cada ronda secuencialmente. `MAX_TOOL_ROUNDS` es 10; Google arroja un error si continúa requiriendo tools al alcanzarlo. El flujo OpenAI exige `responseId` para continuar, y Google rechaza IDs de tool reutilizados entre rondas. Cada continuación puede sumar latencia y consumo remoto aunque el handler local sea rápido.
-- **Historial por proveedor.** Antes de llamar al cliente, `App` limita a los últimos 20 mensajes el historial de OpenAI y Anthropic, mientras que Google recibe todo el historial reconstruido. Compare proveedor y tamaño efectivo de conversación antes de atribuir tokens de entrada elevados a una tool.
-- **Efectos locales.** El ejecutor solo devuelve `committed` si un handler llamó `markEffectCommitted`; validaciones sin efecto y fallos previos al commit no entran en el ledger. Un error del handler se transforma en resultado para el modelo, evitando abortar todo el loop; si el handler ya marcó el efecto, su estado sigue siendo `committed`.
-- **Idempotencia de escritura.** Para effects distintos de lectura, el coordinador identifica una operación mediante versión, `executionId`, proveedor, tool, argumentos JSON canónicos y ocurrencia; `providerCallId` no forma parte de la identidad. Reutiliza ejecuciones concurrentes y reproduce un resultado ya comprometido desde memoria o desde el ledger persistente. Las lecturas no se deduplican. El ledger conserva hasta 256 commits durante siete días, falla antes del efecto si no puede leerse y no deshace una mutación si falla la escritura posterior del ledger.
+### Trazas: ciclo de vida, versión y privacidad
 
-### Hipótesis de diagnóstico
+`trace.ts` mantiene hasta 1.000 entradas en memoria y en `AsyncStorage`, dentro del espacio de nombres del entorno activo. Antes de añadir una entrada carga el buffer persistido para no sobrescribir el historial; la persistencia, el log de consola y los fallos de lectura o escritura son de mejor esfuerzo. Cada entrada se imprime además en consola, por lo que sus datos pueden aparecer en `adb logcat` o en los logs de Expo: no se debe añadir a `pushTrace` contenido de conversaciones, claves, tokens ni otros datos personales ([`apps/mobile/trace.ts`](repo://apps/mobile/trace.ts#L15-L20), [`apps/mobile/trace.ts`](repo://apps/mobile/trace.ts#L35-L87)).
 
-1. **Latencia o coste altos con varias rondas:** contrastar el número de continuaciones y el límite de diez rondas antes de optimizar un handler individual.
-2. **Más de un request por mensaje:** separar los reintentos de transporte, el evaluador sanitario consentido y las continuaciones de tools usando `executionId`, proveedor y ocurrencia.
-3. **Tool repetida pero un único efecto durable:** comprobar si fue una unión `inFlight` o un replay de memoria/ledger. Una operación `no_effect` o `failed_before_commit` puede ejecutarse de nuevo porque no hay commit que reproducir.
-4. **Tokens de entrada crecientes:** comparar la ruta Google con OpenAI/Anthropic y el historial efectivo, no solo el nombre de la tool.
-5. **Error después de una escritura:** distinguir fallo previo al commit, fallo de persistencia local y fallo de escritura del ledger. Este último deja un riesgo de deduplicación tras reinicio, no evidencia un rollback.
+El volcado copiable contiene plataforma, versión, build, entorno, canal y metadatos abreviados de política, fecha y número de entradas; después serializa el `data` de cada entrada. **No es un mecanismo de saneamiento.** Que la cabecera sea segura no vuelve seguros los `data` que los llamadores hayan registrado. La acción de copiar usa exactamente ese volcado y la de borrar elimina el buffer y su clave persistida ([`apps/mobile/trace.ts`](repo://apps/mobile/trace.ts#L89-L133), [`apps/mobile/controllers/settingsController.ts`](repo://apps/mobile/controllers/settingsController.ts#L640-L667)).
 
-## Hallazgos y oportunidades de runtime
+La atribución de versión tiene estas reglas:
 
-No hay hallazgos priorizados en esta revisión: falta evidencia de trazas que pueda emparejarse con un archivo, símbolo e implicación operativa. No se infieren outliers, fallos ni oportunidades desde límites estáticos.
+- En una app nativa instalada, `expo-application` aporta `nativeApplicationVersion` y `nativeBuildVersion`; no se usa `app.json` como prueba del build instalado.
+- En web y Expo Go se muestra la versión de proyecto disponible y el build como `unavailable`, para no atribuir al proyecto la versión del host.
+- Al arrancar se guarda una entrada `App mounted` con la versión y build observados entonces. Un historial superviviente a una actualización conserva así sus arranques anteriores sin relabeling retrospectivo.
 
-Cuando exista evidencia autorizada, cada hallazgo debe contener estrictamente: **Observado** (agregado y URL de traza), **Correlacionado** (archivo y símbolo), **Hipótesis** (si aún no hay causalidad) e **implicación** concreta para quien cambie esa zona. Elimine cualquier observación que no cambie un plan de modificación o validación.
+Estas reglas están implementadas y cubiertas por pruebas para Android, iOS, web, Expo Go, metadatos nativos ausentes y entradas antiguas ([`apps/mobile/trace.ts`](repo://apps/mobile/trace.ts#L22-L33), [`apps/mobile/trace.ts`](repo://apps/mobile/trace.ts#L99-L133), [`apps/mobile/platform/trace.test.ts`](repo://apps/mobile/platform/trace.test.ts#L53-L126)).
 
-## Cambios seguros y validación focalizada
+## Entorno y aislamiento de estado
 
-1. Mantenga un único lease inmutable por turno: no mezcle prompt, guardrail y `PolicyContext` de candidatos distintos.
-2. Al añadir una tool, actualice su definición y efecto, el handler y el adaptador de continuación del proveedor. Valide argumentos antes de mutar y marque el commit inmediatamente después del efecto irreversible.
-3. No incorpore `providerCallId` a la identidad de operación y no elimine `occurrence`: el primero cambiaría con un reintento remoto y el segundo distingue dos calls idénticas intencionales dentro de un turno.
-4. Instrumente agregados de proveedor, ruta, estado, duración, número de rondas y estado de commit; no instrumente contenido sensible ni razonamiento.
-5. Si se modifica el streaming o el protocolo, conserve IDs de llamada, bloques y firmas que el proveedor exige para continuar; el transporte y el loop cambian juntos.
+`RUNTIME_ENVIRONMENT` se resuelve al cargar la aplicación desde `Constants.expoConfig.extra`. La configuración debe concordar por completo con una de las variantes `development`, `staging` o `production`: versión de configuración, canal de política, namespace, modo de proveedor, candidato y SHA-256 de política válido. Una configuración ausente, parcial o híbrida lanza un error en vez de continuar con una identidad de entorno ambigua ([`apps/mobile/environment.ts`](repo://apps/mobile/environment.ts#L1-L22), [`apps/mobile/environment.ts`](repo://apps/mobile/environment.ts#L106-L142), [`apps/mobile/runtimeEnvironment.ts`](repo://apps/mobile/runtimeEnvironment.ts#L11-L26)).
 
-Ejecute desde la raíz:
+Producción conserva las claves de almacenamiento existentes; desarrollo y staging les anteponen su namespace. Las claves de almacenamiento seguro usan un separador distinto. Esta separación evita que los diagnósticos y datos no productivos se mezclen con producción, pero no es cifrado ni sustituto de `SecureStore` ([`apps/mobile/environment.ts`](repo://apps/mobile/environment.ts#L83-L103), [`apps/mobile/agent/environment.test.ts`](repo://apps/mobile/agent/environment.test.ts#L43-L56)).
+
+En desarrollo, el modo por defecto es `fake` y `byok` requiere una elección explícita; staging y producción usan `byok`. La verificación en modo `fake` devuelve éxito local sin tocar la red, por lo que ese resultado solo confirma el fixture, no una cuenta ni un proveedor ([`apps/mobile/environment.ts`](repo://apps/mobile/environment.ts#L66-L80), [`apps/mobile/agent/providerVerification.ts`](repo://apps/mobile/agent/providerVerification.ts#L66-L80), [`apps/mobile/agent/providerVerification.test.ts`](repo://apps/mobile/agent/providerVerification.test.ts#L133-L143)).
+
+## Uso de almacenamiento: medición parcial y segura
+
+**Medir ocupación** se ejecuta bajo demanda desde la pantalla de trazas. La app entrega al medidor el `AsyncStorage` activo, el namespace, las fotos, metadatos de la base y la caché de artefactos; el informe se puede copiar mediante un formateador distinto del volcado de trazas ([`apps/mobile/App.tsx`](repo://apps/mobile/App.tsx#L2729-L2747), [`apps/mobile/controllers/settingsController.ts`](repo://apps/mobile/controllers/settingsController.ts#L619-L639)).
+
+El medidor lee secuencialmente solo claves conocidas del namespace activo y suma bytes UTF-8. Cuenta como excluidas las configuraciones de proveedor, almacenes heredados y cuarentenas que podrían contener credenciales; cuenta las claves desconocidas pero no las abre. Cada lectura tiene un límite de cinco segundos, cede al event loop entre claves y convierte fallos en contadores, por lo que no bloquea indefinidamente ni expone errores o rutas nativas ([`apps/mobile/storage/storageUsage.ts`](repo://apps/mobile/storage/storageUsage.ts#L40-L62), [`apps/mobile/storage/storageUsage.ts`](repo://apps/mobile/storage/storageUsage.ts#L146-L218)).
+
+El informe copiable contiene totales, categorías y estados, pero no valores crudos, nombres de claves, rutas ni errores. Fotos, archivos SQLite y caché pública se informan aparte; los desgloses no se suman al total y las lecturas no son una instantánea atómica. En particular, bytes medidos no equivalen a cuota libre, tamaño físico de SQLite ni uso total del dispositivo ([`apps/mobile/storage/storageUsage.ts`](repo://apps/mobile/storage/storageUsage.ts#L221-L257)).
+
+## Capacidades de plataforma y límites operativos
+
+La composición de servicios de plataforma adapta almacenamiento de artefactos a cada plataforma: IndexedDB en web y archivos privados en nativo. El resto de integraciones —portapapeles, almacenamiento seguro, ficheros, notificaciones, APIs nativas y red— se inyectan como puertos Expo/React Native. La red es un adaptador directo de `fetch`: su presencia no implica que haya red, DNS, TLS válido, cuota, ni que el destino esté disponible ([`apps/mobile/platform/index.ts`](repo://apps/mobile/platform/index.ts#L30-L60), [`apps/mobile/platform/index.ts`](repo://apps/mobile/platform/index.ts#L63-L92), [`apps/mobile/platform/network.ts`](repo://apps/mobile/platform/network.ts#L1-L7)).
+
+La degradación esperada es la siguiente:
+
+| Situación | Comportamiento verificable | No permite concluir |
+| --- | --- | --- |
+| No se puede leer o persistir una traza | El diagnóstico se degrada silenciosamente; el flujo principal no debe depender de ello. | Que el historial esté completo. |
+| No se puede medir una fuente de almacenamiento | El informe conserva `No disponible` o contadores de fallo, sin exponer el error nativo. | Que el tamaño sea cero. |
+| Web o Expo Go | El build instalado de Gymnasia se marca no disponible. | Que el build del host sea el de la app. |
+| Modo `fake` | La comprobación confirma el fixture local sin red. | Conectividad, autenticación, coste o disponibilidad remota. |
+| Estado visual «Conectado» | La presentación muestra el último resultado de comprobación. | Salud continua, capacidad del modelo, saldo o éxito de una conversación posterior. |
+
+## Comprobación de proveedores y errores
+
+`verifyProviderConfiguration` es una comprobación puntual de configuración, no un health check continuo. Sin API key devuelve advertencia sin llamada. Con key, consulta un endpoint específico por proveedor: `/v1/models` para OpenAI, el modelo de Google, y una petición mínima a Anthropic; en web puede delegar Anthropic a un proxy. Las credenciales se envían en cabeceras cuando corresponde —no en la URL—, salvo el contrato explícito del proxy que recibe un cuerpo para custodiar la comprobación ([`apps/mobile/agent/providerVerification.ts`](repo://apps/mobile/agent/providerVerification.ts#L66-L116), [`apps/mobile/agent/providerVerification.ts`](repo://apps/mobile/agent/providerVerification.ts#L143-L199), [`apps/mobile/agent/providerVerification.test.ts`](repo://apps/mobile/agent/providerVerification.test.ts#L23-L39)).
+
+Los resultados distinguen `success`, `warning` y `error`. Un 404 de Anthropic se interpreta como key verificada con advertencia de modelo no disponible; en un servidor `custom_openai`, que `/models` no exista deja guardar el modelo manualmente y advierte que probarlo aparte puede consumir API. El timeout y los errores de transporte se convierten en un mensaje de error grave. Por ello, al informar una incidencia se debe registrar proveedor, plataforma, tipo de resultado y código o mensaje ya saneado, pero nunca la clave, el cuerpo de petición ni la conversación ([`apps/mobile/agent/providerVerification.ts`](repo://apps/mobile/agent/providerVerification.ts#L84-L95), [`apps/mobile/agent/providerVerification.ts`](repo://apps/mobile/agent/providerVerification.ts#L164-L206), [`apps/mobile/agent/providerPresentation.ts`](repo://apps/mobile/agent/providerPresentation.ts#L50-L59)).
+
+El badge no inventa una métrica de servicio: «Comprobando» procede del estado local; éxito se presenta como «Conectado», advertencia como «Atención», error como «Error» y los demás estados como «Sin verificar» o «No conectado». Consúmase como feedback de la última operación, no como garantía contractual de conectividad o disponibilidad ([`apps/mobile/agent/providerPresentation.ts`](repo://apps/mobile/agent/providerPresentation.ts#L83-L98)).
+
+## Procedimiento mínimo de triage
+
+1. Reproduzca con el entorno y la variante correctos. Confirme `environment`, `policy-channel`, candidato y el prefijo de SHA-256 del volcado; no infiera producción desde una clave o un nombre aislado.
+2. Copie trazas solo tras revisar que sus entradas no incluyan contenido personal. Identifique versión/build desde la cabecera y arranques antiguos desde sus entradas `App mounted`.
+3. Si el problema es capacidad local, use **Medir ocupación** y comparta el informe formateado, no los valores de `AsyncStorage`, SQLite ni ficheros.
+4. Si es un proveedor, distinga falta de key, fixture `fake`, fallo de configuración, modelo no disponible y fallo remoto/timeout. Una prueba puede realizar red y, según proveedor, consumir API.
+5. Para una hipótesis de coste, cuota o indisponibilidad remota, recoja la evidencia autorizada del proveedor y el periodo consultado. No derive esas propiedades de la UI, una traza local o una prueba determinista.
+
+## Validación focalizada
+
+Ejecute desde la raíz los tests que fijan estos contratos locales:
 
 ```bash
-npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/providerToolClient.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/providerPipeline.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts
+npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/platform/trace.test.ts apps/mobile/agent/environment.test.ts apps/mobile/storage/storageUsage.test.ts apps/mobile/storage/storageFileUsage.test.ts apps/mobile/agent/providerVerification.test.ts apps/mobile/agent/providerPresentation.test.ts apps/mobile/platform/index.test.ts apps/mobile/platform/network.test.ts
 ```
 
-Estas pruebas fijan contratos locales —lease, continuaciones, límite de tools, resultados de handler e idempotencia—, no disponibilidad, coste ni latencia de proveedores remotos. Para cambios que afecten el recorrido visible, añada `npm run test:agent:e2e` como indica el [Inicio rápido](../quickstart.md).
+Estas pruebas validan formatos, aislamiento, degradación y mapeo de errores con mocks. No prueban que una API externa esté disponible, que una petición tenga coste cero o que un proveedor vaya a aceptar una conversación real.

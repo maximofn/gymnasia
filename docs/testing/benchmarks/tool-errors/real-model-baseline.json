@@ -1,0 +1,50 @@
+[
+  {
+    "model": "gpt-6-luna",
+    "tool": "read_field_value",
+    "prompt": "¿Qué dice literalmente mi campo Objetivo? Consulta su valor y cítalo entre comillas, sin resumir.",
+    "call": {
+      "name": "read_field_value",
+      "arguments": "{\"key\":\"Objetivo\"}"
+    },
+    "mode": "legacy",
+    "result": "Campo \"Objetivo\" no encontrado.",
+    "answer": "No se encontró ningún campo llamado «Objetivo», así que no puedo citar su valor."
+  },
+  {
+    "model": "gpt-6-luna",
+    "tool": "read_field_value",
+    "prompt": "¿Qué dice literalmente mi campo Objetivo? Consulta su valor y cítalo entre comillas, sin resumir.",
+    "call": {
+      "name": "read_field_value",
+      "arguments": "{\"key\":\"Objetivo\"}"
+    },
+    "mode": "marked",
+    "result": "{\"kind\": \"tool_error\", \"version\": 1, \"is_error\": true, \"error\": \"not_found\", \"message\": \"Campo \\\"Objetivo\\\" no encontrado. No es un valor guardado; consulta las claves disponibles antes de elegir otro campo.\", \"recovery\": \"choose_alternative\", \"recoverable\": true}",
+    "answer": "No puedo citarlo literalmente porque no encuentro un campo llamado «Objetivo»."
+  },
+  {
+    "model": "gpt-6-luna",
+    "tool": "read_measurement",
+    "prompt": "Quiero saber si ya tengo registros de medidas. Consulta las del 2020-01-02 y dime si tengo medidas registradas.",
+    "call": {
+      "name": "read_measurement",
+      "arguments": "{\"date\":\"2020-01-02\"}"
+    },
+    "mode": "legacy",
+    "result": "No hay registro de medidas para la fecha \"2020-01-02\".",
+    "answer": "No tienes medidas registradas para el 2020-01-02."
+  },
+  {
+    "model": "gpt-6-luna",
+    "tool": "read_measurement",
+    "prompt": "Quiero saber si ya tengo registros de medidas. Consulta las del 2020-01-02 y dime si tengo medidas registradas.",
+    "call": {
+      "name": "read_measurement",
+      "arguments": "{\"date\":\"2020-01-02\"}"
+    },
+    "mode": "marked",
+    "result": "{\"kind\": \"tool_error\", \"version\": 1, \"is_error\": true, \"error\": \"not_found\", \"message\": \"No hay registro de medidas para la fecha \\\"2020-01-02\\\". No implica que no haya registros en otras fechas. Consulta otra fecha solo si tienes información para elegirla.\", \"recovery\": \"choose_alternative\", \"recoverable\": true}",
+    "answer": "No hay un registro de medidas para el 2020-01-02. Esto no permite saber si tienes registros en otras fechas."
+  }
+]

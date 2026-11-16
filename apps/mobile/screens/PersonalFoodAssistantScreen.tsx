@@ -1,6 +1,8 @@
+import { ChatComposer } from "../components/ChatComposer";
+import { TextField } from "../components/TextField";
 import { Feather } from "@expo/vector-icons";
 import { memo } from "react";
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 
 import { AI_DISCLOSURE_MESSAGE_KIND } from "../agent/aiTransparency";
 import { isReportableAssistantMessage } from "../agent/feedbackIssues";
@@ -78,12 +80,17 @@ export const PersonalFoodAssistantScreen = memo(function PersonalFoodAssistantSc
         </Pressable>
       ) : null}
 
-      <View style={{ flexDirection: "row", gap: 8, alignItems: "flex-end" }}>
-        <TextInput testID="personal-food-assistant-input" value={model.input} onChangeText={actions.changeInput} placeholder="Ej: tortilla de patatas..." accessibilityLabel="Pregunta a Gymnasia Food Estimator sobre un alimento" placeholderTextColor={mobileTheme.color.textSecondary} onSubmitEditing={actions.send} multiline style={{ flex: 1, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, paddingHorizontal: 10, paddingVertical: 8, color: mobileTheme.color.textPrimary, fontSize: 14, backgroundColor: mobileTheme.color.cardBg, maxHeight: 120 }} />
-        <Pressable testID="personal-food-assistant-send" onPress={actions.send} disabled={model.sending || !model.input.trim()} accessibilityLabel="Enviar mensaje a Gymnasia Food Estimator" accessibilityRole="button" style={{ alignItems: "center", justifyContent: "center", paddingHorizontal: 14, borderRadius: mobileTheme.radius.md, backgroundColor: model.sending || !model.input.trim() ? "#333" : mobileTheme.color.brandPrimary }}>
-          <Feather name="send" size={16} color={model.sending || !model.input.trim() ? "#666" : "#000"} />
-        </Pressable>
-      </View>
+      <ChatComposer
+        layout="row"
+        input={
+          <TextField testID="personal-food-assistant-input" value={model.input} onChangeText={actions.changeInput} placeholder="Ej: tortilla de patatas..." accessibilityLabel="Pregunta a Gymnasia Food Estimator sobre un alimento" placeholderTextColor={mobileTheme.color.textSecondary} onSubmitEditing={actions.send} multiline style={{ flex: 1, minHeight: 0, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, paddingHorizontal: 10, paddingVertical: 8, color: mobileTheme.color.textPrimary, fontSize: 14, backgroundColor: mobileTheme.color.cardBg, maxHeight: 120 }} />
+        }
+        action={
+          <Pressable testID="personal-food-assistant-send" onPress={actions.send} disabled={model.sending || !model.input.trim()} accessibilityLabel="Enviar mensaje a Gymnasia Food Estimator" accessibilityRole="button" style={{ alignItems: "center", justifyContent: "center", paddingHorizontal: 14, borderRadius: mobileTheme.radius.md, backgroundColor: model.sending || !model.input.trim() ? "#333" : mobileTheme.color.brandPrimary }}>
+            <Feather name="send" size={16} color={model.sending || !model.input.trim() ? "#666" : "#000"} />
+          </Pressable>
+        }
+      />
       <AiIdentityPersistentDisclosure surface="personal-food-assistant" />
     </View>
   );

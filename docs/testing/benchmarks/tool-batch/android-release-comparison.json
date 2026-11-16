@@ -1,0 +1,52 @@
+{
+  "result": "passed",
+  "checkedAt": "2026-10-04T16:05:10.969728+00:00",
+  "sourceCommit": "f38755747371e932cd9385234637b908e3156e45",
+  "releaseUrl": "https://github.com/maximofn/gymnasia/releases/tag/v1.51.0",
+  "workflowUrl": "https://github.com/maximofn/gymnasia/actions/runs/37212255364",
+  "production": {
+    "aab": {
+      "filename": "gymnasia.aab",
+      "sha256": "da0e58b92952b03a48daaaac413cffd35992388b6414f62ce21b03e65edbd34a",
+      "size": 69023753,
+      "version": "1.51.0",
+      "versionCode": "86",
+      "packageName": "com.maximofn.gymnasia",
+      "certificateSha256": "310b3839e405f1fa9f920925767e6ee84247aaa1b8a72259479e919a4859ab31",
+      "policySha256": "ba9dc95f307beb233568d12cd716d05604f7b25739204c9e039c56bff8f7c9a5",
+      "bundleSha256": "a84513e31d1887644e154f28d839fbe2623bd52521eba99fc33c1a0a1a9ed2ca",
+      "hasParallelSchedulerMarker": true
+    },
+    "apk": {
+      "filename": "gymnasia.apk",
+      "sha256": "1dce0f56b4e030e7f99f64850e15059fa52b209bb090093d05948363297e0c45",
+      "size": 103643958,
+      "version": "1.51.0",
+      "versionCode": "86",
+      "packageName": "com.maximofn.gymnasia",
+      "certificateSha256": "310b3839e405f1fa9f920925767e6ee84247aaa1b8a72259479e919a4859ab31",
+      "policySha256": "ba9dc95f307beb233568d12cd716d05604f7b25739204c9e039c56bff8f7c9a5",
+      "bundleSha256": "a84513e31d1887644e154f28d839fbe2623bd52521eba99fc33c1a0a1a9ed2ca",
+      "hasParallelSchedulerMarker": true
+    }
+  },
+  "staging": {
+    "sourceCommit": "97c9c9fd02e133dd9ace4a221ff26d58cb08539b",
+    "sha256": "5c82a37c8670eb67a1208c94ab2a3e7c1e075556d5445a21b429207ee729bd25",
+    "size": 103544514,
+    "packageName": "com.maximofn.gymnasia.staging",
+    "versionName": "1.50.4",
+    "versionCode": "1",
+    "certificateSha256": "31d27c88c1d534b016a1ad3c3601076758fb22f4937d63e773eb59f1d2acfeb3",
+    "policySha256": "ba9dc95f307beb233568d12cd716d05604f7b25739204c9e039c56bff8f7c9a5",
+    "bundleSha256": "e2f083537074ec12c6b7e6fb8de761aed6d2ad3ac3bae116f5d7bff2be97bd3a",
+    "hasParallelSchedulerMarker": false
+  },
+  "play": {
+    "result": "passed",
+    "track": "alpha",
+    "releaseStatus": "completed",
+    "submissionStatus": "FINISHED"
+  },
+  "nativePerformanceMeasured": false
+}

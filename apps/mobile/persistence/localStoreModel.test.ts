@@ -31,6 +31,7 @@ describe("local store model", () => {
         openai: "secure-secret",
         anthropic: "",
         google: "",
+        custom_openai: "",
       }).keys[0].api_key,
     ).toBe("secure-secret");
   });

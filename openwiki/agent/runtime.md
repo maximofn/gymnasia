@@ -1,213 +1,229 @@
 ---
-okf:
-  version: 1
-  kind: code-wiki
-  status: grounded
-  scope: apps/mobile/agent and chat orchestration in apps/mobile/App.tsx
-type: entorno de ejecución
-title: Runtime del agente y herramientas
-description: Guía para interpretar una muestra de ejecución LangSmith del agente móvil sin convertirla en una tasa poblacional. Relaciona llamadas, repeticiones, latencia y tokens con los límites efectivos del loop, la política y los efectos locales.
-summary: Diagnóstico de rutas, reintentos, límites, costes e idempotencia del agente móvil.
-tags: [agent, runtime, tools, mobile, policy, idempotency, langsmith]
-related:
-  - ./provider-streaming.md
-  - ./provider-configuration.md
-  - ../architecture/policy-delivery.md
-  - ../mobile/diet-and-food-estimation.md
-  - ../operations/runtime-behavior.md
+type: referencia de runtime
+title: Runtime del agente Coach y observabilidad
+description: Contratos del turno local-first de Coach y límites de sus señales operativas, trazas y telemetría. Distingue mediciones agregadas disponibles de tokens y coste no observables.
+tags: [agent, runtime, observability, telemetry, privacy, mobile]
+openwiki_generated: true
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-10T15:53:08.815Z
 sources:
   - id: openwiki-source-192849a5973afd8b6e55db2c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
   - id: openwiki-source-0c30fc96b9e7c8b57c35473c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.ts
+  - id: openwiki-source-3401bdbf4f6a971e97274df0
+    resource: repo://apps/mobile/agent/coachContext.test.ts
+  - id: openwiki-source-7d451400787483c2f7879ac3
+    resource: repo://apps/mobile/agent/coachContext.ts
+  - id: openwiki-source-dc42304b20e8518ef65b4b63
+    resource: repo://apps/mobile/agent/googleContextBudget.ts
+  - id: openwiki-source-63dae4a27346d91c6139697b
+    resource: repo://apps/mobile/agent/googleInteractions.test.ts
+  - id: openwiki-source-df22d5c1fa6f9ff9bb908437
+    resource: repo://apps/mobile/agent/googleInteractions.ts
   - id: openwiki-source-c8058179f2f675901a8caa09
     resource: repo://apps/mobile/agent/healthSafety.ts
-  - id: openwiki-source-google-context-budget
-    resource: repo://apps/mobile/agent/googleContextBudget.ts
-  - id: openwiki-source-google-interactions-test
-    resource: repo://apps/mobile/agent/googleInteractions.test.ts
   - id: openwiki-source-1120d27174dc5514893a227c
     resource: repo://apps/mobile/agent/personalData.contract.test.ts
   - id: openwiki-source-f0c2a422cec47f5791d6713d
     resource: repo://apps/mobile/agent/personalData.ts
-  - id: openwiki-source-c65a19b98fa314cba98ace44
-    resource: repo://apps/mobile/agent/providerPipeline.test.ts
+  - id: openwiki-source-9de55cc50318c64549e79726
+    resource: repo://apps/mobile/agent/providerToolClient.roundLimit.test.ts
+  - id: openwiki-source-abc6fea468a7de09acfb0c4f
+    resource: repo://apps/mobile/agent/providerToolClient.ts
   - id: openwiki-source-b14a4ecd65e83b5561f88e2a
     resource: repo://apps/mobile/agent/providerToolLoop.ts
+  - id: openwiki-source-31ab0914f32f6c759ba493a0
+    resource: repo://apps/mobile/agent/streamDraftFlusher.ts
+  - id: openwiki-source-02dfa58fcd62b6df088569fc
+    resource: repo://apps/mobile/agent/toolBatch.test.ts
+  - id: openwiki-source-1ad5b6a5e6488611c8796fe1
+    resource: repo://apps/mobile/agent/toolBatch.ts
+  - id: openwiki-source-875e06bfac5f11963a3dc5b2
+    resource: repo://apps/mobile/agent/toolBatchDiagnostics.ts
   - id: openwiki-source-ce025f2f0f394ccba9235558
     resource: repo://apps/mobile/agent/toolDefinitions.ts
-  - id: openwiki-source-165cffcff462003cd11223e2
-    resource: repo://apps/mobile/agent/toolExecutor.test.ts
   - id: openwiki-source-d3be928c369037f29888bc0b
     resource: repo://apps/mobile/agent/toolExecutor.ts
   - id: openwiki-source-d8ad30beb46f5e7dc1ced4cf
     resource: repo://apps/mobile/agent/toolOperationLedger.test.ts
   - id: openwiki-source-9e7ddd51c09caf628a81acad
     resource: repo://apps/mobile/agent/toolOperationLedger.ts
-  - id: openwiki-source-tool-operation-receipts
+  - id: openwiki-source-de70ecabc63fb20bba2d2f0c
+    resource: repo://apps/mobile/agent/toolOperationReceipts.test.ts
+  - id: openwiki-source-87b29eb5813e0867475b958b
     resource: repo://apps/mobile/agent/toolOperationReceipts.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T12:53:55.207Z
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
+  - id: openwiki-source-1d0198c38ac34ff97dd54fc0
+    resource: repo://apps/mobile/trace.ts
+  - id: openwiki-source-ea083ff1c1afd80c588dedd8
+    resource: repo://ops/openwiki-runtime-telemetry.json
+generated: { by: "openwiki/0.6.0", at: "2026-11-10T15:53:08.815Z" }
 ---
 
-# Runtime del agente y herramientas
 
-Esta página sirve para decidir **qué comprobar antes de alterar el loop móvil** a partir de una muestra de LangSmith. No describe el ensamblaje normal de middleware ni sustituye el contrato operativo de [Comportamiento en ejecución de la automatización OpenWiki](../operations/runtime-behavior.md): aquella página trata el runner privado que genera la wiki; esta trata el chat de `apps/mobile` y sus efectos locales. A la inversa, una señal del runner o de OpenWiki no debe atribuirse al agente móvil sin una traza de este proyecto.
+# Runtime del agente Coach y observabilidad
 
-## Cómo leer la evidencia
+Esta página delimita el turno de Coach en `apps/mobile`: política, selección de contexto, proveedor, tools y efectos durables, y separa esos contratos de las señales de diagnóstico. El runtime es *local-first*: la ejecución y sus diagnósticos viven en el dispositivo; una traza o una muestra agregada no acredita el comportamiento de un proveedor remoto. Para configuración y streaming, véanse [Configuración de proveedores](provider-configuration.md) y [Streaming de proveedores](provider-streaming.md); el diagnóstico general del dispositivo está en [Comportamiento operativo, trazas y degradación](../operations/runtime-behavior.md).
 
-### Observado
+## Señales operativas agregadas, no contratos
 
-No hay un dump LangSmith legible mediante las fuentes de trabajo disponibles en esta actualización. Por tanto, esta revisión **no publica conteos de llamadas, latencias, tokens, costes ni repeticiones**, ni deduce una causa de fallo. No confunda la presencia de configuración de trazado con evidencia de tráfico o métricas.
+### Qué mide el manifiesto y qué no mide
 
-Cuando esté disponible el dump ya ingerido, registre únicamente agregados de la muestra: número de runs, llamadas por herramienta, latencia por herramienta, tokens de entrada/salida cuando estén presentes, y repeticiones por `executionId` y operación. Indique siempre ventana, filtros y denominador. Una muestra de trazas es sesgada por proveedor, entorno, usuarios, errores y muestreo; no es una tasa poblacional ni prueba causal.
+**Observado:** `ops/openwiki-runtime-telemetry.json` describe una ventana de siete días marcada como `truncated`. En esa muestra hay contadores de roots, llamadas LLM, categorías de tools y percentiles de duración; no hay una medición completa de población. Tanto `llm.tokens` como `llm.cost` declaran `state: "unavailable"`, `coverage: "partial"` y cero llamadas observadas: los ceros son marcadores de indisponibilidad, **no** tokens consumidos, coste cero, ni un total parcial que pueda extrapolarse. El manifiesto no contiene cuerpos de ejecución, prompts ni argumentos; esto solo caracteriza a ese artefacto agregado, no garantiza que otros diagnósticos locales no los registren.
 
-### Correlacionado: límites que explican qué inspeccionar
+Por ello, no use la muestra como tasa de flota ni como prueba de disponibilidad, frecuencia, coste o latencia poblacional. Úsela para priorizar una investigación y use los contratos y pruebas de las secciones siguientes para decidir qué límite o invariante verificar. No infiera una escritura repetida solo a partir de más llamadas de modelo o de una duración de tool.
 
-Los siguientes hechos provienen de símbolos de código, no de LangSmith. Son el mapa para convertir una señal observada en una hipótesis comprobable:
+### Trazas locales: extensión deliberada y frontera de privacidad
 
-- **Límite de rondas y coste de proveedor.** `MAX_TOOL_ROUNDS` vale 10. Cada loop ejecuta las calls de una ronda de forma secuencial y solicita otra respuesta al proveedor si quedan llamadas. Una secuencia que alcance diez rondas debe revisarse como límite del loop y como posible multiplicador de latencia/tokens, no como evidencia de que una herramienta concreta sea lenta. OpenAI también falla si necesita continuar una llamada sin `responseId`; Google rechaza IDs de llamada repetidos entre rondas. Véanse `runOpenAIToolLoop`, `runAnthropicToolLoop` y `runGoogleToolLoop`.
-- **Reintentos de turno.** `sendMessage` intenta como máximo tres veces errores de transporte que coincidan con su patrón, esperando 2 y 4 segundos antes de los intentos posteriores y reiniciando el borrador. Una misma interacción de usuario puede por ello tener varias solicitudes de proveedor sin que sea una repetición de escritura; para correlacionarlas, el `executionId` transmitido al loop es el ID del mensaje de usuario.
-- **Rutas que evitan o amplían tráfico.** El riesgo sanitario bloqueante evita el proveedor. Para riesgo `elevated`, el evaluador remoto solo se consulta si hay consentimiento para el proveedor; tiene un timeout de 10 s y, si falla, se conserva la decisión base. Separar esas llamadas de clasificación de las llamadas principales evita sumar su latencia o tokens al turno conversacional.
-- **Historial y streaming.** OpenAI y Anthropic reciben como máximo 20 mensajes de historial. Google conserva como máximo los diez intercambios más recientes, elimina imágenes de intercambios anteriores y aplica límites de 512 KiB sin imágenes y 19 MB para la petición completa; si ni el intercambio actual cabe, rechaza localmente la petición. El cliente acumula deltas y el borrador se actualiza con una cadencia mínima de 40 ms. Así, la latencia visible no equivale necesariamente a la latencia de una herramienta ni a un único request remoto.
-- **Efectos y repetición segura.** El guard bloquea tools desconocidas y las incompatibles con la decisión sanitaria antes del ejecutor. Las tools de lectura no se deduplican. Para una escritura, la identidad usa versión, `executionId`, proveedor, nombre, argumentos JSON canónicos y ocurrencia; excluye `providerCallId`. El coordinador comparte ejecuciones simultáneas y reproduce una escritura ya comprometida desde memoria o ledger. Por ello, varias calls observadas con igual operación no implican varias mutaciones locales.
-- **Punto de commit.** El ejecutor solamente clasifica un resultado como `committed` si el manejador invoca `markEffectCommitted`; los errores o validaciones previos pueden volver a intentarse. Antes de una escritura, el journal persiste una entrada `prepared`; después conserva el resultado comprometido o el estado ambiguo. Las confirmadas caducan a los siete días, las no resueltas no se expulsan automáticamente y cualquier lectura no verificable bloquea el efecto.
+`pushTrace` conserva hasta 1.000 entradas en `AsyncStorage` bajo una clave con namespace de entorno, las escribe además en consola y permite exportarlas en texto. El campo `data` acepta `unknown` y se serializa sin saneamiento al persistir, imprimir y exportar. En consecuencia, no equivale a una telemetría central ni a una frontera de redacción: quien añada un emisor debe limitarse a metadatos necesarios y revisar el volcado antes de compartirlo; nunca debe pasar texto de conversación, credenciales, tokens, argumentos o resultados de tools, ni errores que los incorporen.
 
-### Hipótesis que una muestra puede priorizar
+La instrumentación del lote de tools sí ofrece una extensión acotada: entrega fase, `batchId`, índice, nombre o `unknown`, efecto, conteos y tiempos, y su contrato excluye argumentos, IDs del proveedor, resultados y texto de excepción. Su sink es de mejor esfuerzo: un error de diagnóstico no altera la ejecución. Esto la hace apta para explicar concurrencia y duración locales, no para calcular coste o atribuir contenido a una ejecución.
 
-1. **Latencia elevada con muchas rondas:** comprobar `MAX_TOOL_ROUNDS`, el número de continuaciones del proveedor y la secuencialidad de las calls antes de optimizar un handler.
-2. **Más de un request por mensaje:** distinguir el reintento de transporte, el evaluador sanitario consentido y las continuaciones de tools. No etiquetarlo como duplicación hasta contrastar `executionId`, proveedor, ocurrencia y `operationId`.
-3. **Coste de entrada creciente:** contrastar proveedor e historial efectivo. Google aplica su propio presupuesto por intercambios y bytes y elimina imágenes antiguas; no comparte el recorte por número de mensajes de OpenAI/Anthropic.
-4. **Una tool repetida con una única mutación:** verificar si el resultado fue replay del ledger o unión `inFlight`. Si fue `no_effect` o `failed_before_commit`, la repetición sí puede ejecutar de nuevo porque aún no hubo commit.
-5. **Fallo de escritura sin respuesta normal:** revisar primero lectura del ledger, validación del handler y persistencia local. Una colisión o una lectura de ledger fallida están diseñadas para impedir el efecto.
+### Correlación con contratos ejecutables
 
-Estas son hipótesis de diagnóstico, no explicaciones de una observación inexistente o de una muestra aislada.
+- **Llamadas de modelo por turno.** Una llamada adicional puede proceder del evaluador sanitario consentido, de hasta tres intentos del turno, de una ronda de continuación, de un cierre al límite de rondas o de un fallback de transporte. `App.sendMessage`, `evaluateHealthSafetyWithProvider` y los loops de `providerToolLoop.ts` son rutas distintas; no atribuir una llamada adicional a una escritura repetida sin correlacionarla.
+- **Presión de contexto.** `selectCoachContext` elige los últimos 20 mensajes antes de adaptar el proveedor. En la rama Google de `requestProviderToolChat`, el símbolo `DEFAULT_GOOGLE_CONTEXT_BUDGET` se sobrescribe a 20 intercambios; `prepareGoogleInteractionRequest` puede aún retirar imágenes antiguas o intercambios completos por bytes y rechaza antes de red si no cabe el último intercambio.
+- **Tools lentas o repetidas.** `executeToolBatch` solo solapa lecturas conocidas contiguas y `ToolOperationCoordinator.execute` hace replay o unión `inFlight` únicamente para efectos. Por tanto, una duración agregada de tool no revela por sí misma ni handler, ni paralelismo, ni una mutación adicional.
+- **Escritura seguida de error.** `createDetailedAgentToolExecutor` y `ToolOperationCoordinator.executeOnce` distinguen ausencia de efecto, commit e incertidumbre; una incapacidad de confirmar el registro no autoriza repetir la mutación.
 
-## Invariantes para cambiar el loop
+### Hipótesis y comprobación focalizada
 
-- Mantenga un único `AgentPolicyLease` inmutable por turno: une prompt, política sanitaria, contexto y estado de política. En canal `Local` procede del bundle y fuera de él una política sanitaria firmada incompatible se rechaza. No mezcle datos personales locales en el prompt: la memoria se expone mediante tools específicas.
-- Al añadir una tool, declare su esquema y efecto en `AGENT_TOOL_DEFINITIONS`, mantenga el handler registrado y decida si es lectura, escritura local o externa. La clasificación de seguridad se aplica también a `nombre + argumentos`, no solo al texto inicial.
-- Para una escritura, valide antes de mutar, use el almacenamiento durable apropiado y marque el commit inmediatamente después del efecto irreversible. Propague `operationId` a IDs durables cuando la entidad creada necesite resistencia adicional a duplicados.
-- No cambie la composición de identidad para incluir `providerCallId`: los reintentos del proveedor cambiarían de identidad. Tampoco elimine `occurrence`, pues dos calls idénticas dentro del mismo turno deben poder distinguirse.
-- Al instrumentar, no incluya contenido de prompt, argumentos personales, resultados crudos ni razonamiento. Los agregados deben permitir separar proveedor, ruta, tool y estado de commit sin convertir la observabilidad en otra superficie de datos sensibles.
+| Discrepancia observada | Límite o invariante que vigilar | Prueba focalizada |
+| --- | --- | --- |
+| Más de una llamada asociada a un turno | Separar evaluador, intento remoto, ronda, cierre y fallback. Mantener `executionId` estable en `sendMessage`. | `providerToolLoop.test.ts` y `providerToolClient.roundLimit.test.ts` |
+| Contexto Google grande o rechazo previo a red | Ventana Coach de 20 mensajes; 512 KiB sin imágenes y 19 000 000 bytes de petición; último intercambio no se descarta. | `coachContext.test.ts` y `googleInteractions.test.ts` |
+| Tool repetida o escritura duplicada | Identidad por `executionId`, proveedor, nombre, JSON canónico y `occurrence`, sin `providerCallId`; revisar replay y `inFlight`. | `toolOperationLedger.test.ts` |
+| Turno con demasiadas continuaciones | Máximo de diez rondas ejecutables; la call pendiente recibe resultado sintético y se exige un cierre sin tools. | `providerToolClient.roundLimit.test.ts` y `providerToolLoop.test.ts` |
+| Error después de una escritura | `prepared` no se vuelve a ejecutar a ciegas; reconciliar recibo o estado de dominio y conservar `indeterminate` ante duda. | `toolExecutor.test.ts`, `toolOperationLedger.test.ts` y `toolOperationReceipts.test.ts` |
 
-## Protocolos de proveedor
+Estas son **hipótesis de diagnóstico**, no afirmaciones sobre la distribución de producción. Si se amplía la instrumentación, limite el esquema a proveedor, intento, ronda, cierre, categoría o estado de tool, duración y estado de commit como agregados. No envíe contenido, argumentos, resultados ni datos que reconstruyan un run; `pushTrace` no impone esta regla por sí mismo.
 
-Cada proveedor usa un bucle con `MAX_TOOL_ROUNDS = 10`. Las llamadas de una ronda se ejecutan secuencialmente y la ocurrencia se cuenta por pareja de nombre y argumentos canónicos. El resultado vuelve al protocolo de origen: `function_call_output` con `call_id` en OpenAI, `tool_result` con `tool_use_id` en Anthropic y `functionResponse` en Google. Los argumentos JSON malformados de OpenAI se degradan a `{}`; los manejadores de dominio, no el parser, son la frontera que decide si el resultado puede causar una escritura.
+## Turno, política y contexto
 
-## Autorización, validación y commit local
+`App.sendMessage` valida proveedor y credencial, adquiere exactamente un `AgentPolicyLease` para el límite `new-conversation` o `turn`, y solo entonces clasifica la entrada. `acquireAgentPolicyLease` devuelve un objeto profundamente congelado que agrupa prompt, política sanitaria, `PolicyContext` y estado. En canal `Local` procede del bundle; en un canal firmado `createSignedAgentPolicyLease` fusiona y valida la política sanitaria antes de entregarla. No mezcle datos de leases distintos dentro del mismo turno.
 
-Cada tool tiene un efecto declarado: `read`, `local_write` o `external_write`. Antes de ejecutar, `executeGuardedTool` busca ese efecto y clasifica tanto la entrada del turno como `nombre + argumentos`. Una tool desconocida o incompatible con el modo sanitario devuelve un error estructurado y no llega al ejecutor. Con riesgo elevado solo se permiten lecturas; con riesgo alto o crítico no se permiten tools.
+```mermaid
+sequenceDiagram
+    participant UI as Chat UI
+    participant App as sendMessage
+    participant Policy as Policy runtime
+    participant Provider as Provider client
+    participant Guard as Tool guard
+    participant Coordinator as Operation coordinator
+    participant Handler as Tool handler
+    App->>Policy: acquireAgentPolicyLease
+    Policy-->>App: frozen lease
+    App->>App: classify and select context
+    alt health risk blocks
+        App-->>UI: local safety response
+    else provider route
+        App->>Provider: request with executionId
+        opt provider requests tools
+            Provider->>Guard: name args and envelope
+            Guard->>Coordinator: authorized effect
+            Coordinator->>Handler: execute after prepare
+            Handler-->>Coordinator: outcome
+            Coordinator-->>Provider: tool result or replay
+        end
+        Provider-->>App: final streamed response
+        App-->>UI: filtered message
+    end
+```
 
-El ejecutor detallado despacha únicamente los manejadores registrados. Convierte una tool desconocida en una respuesta controlada y captura excepciones para no abortar todo el turno: informa un fallo y diferencia `failed_before_commit` de un efecto que ya se había comprometido. Las escrituras validan sus estructuras de dominio antes de mutar. Por ejemplo, una medición inválida, una referencia de catálogo ausente o ambigua, o una rutina parcialmente irresoluble no se persisten.
+*Un único lease cruza el turno; una escritura autorizada pasa por preparación durable antes del handler.*
 
-`ToolExecutionContext` separa la instantánea de lectura (`store`) de `commitStore`, que persiste la mutación durable. Un manejador debe llamar a `markEffectCommitted` solo después del punto irreversible. El resultado se clasifica como `committed` únicamente si se hizo esa llamada; validación fallida y errores previos quedan como `no_effect` o `failed_before_commit` y se pueden volver a intentar. Las escrituras que crean entidades derivan identificadores estables de `operationId`, lo que añade una defensa de dominio ante una repetición.
+Un riesgo `high` o `critical` persiste el mensaje de usuario y una intervención local sin contactar al proveedor. Para `elevated`, `evaluateHealthSafetyWithProvider` solo se usa si existe consentimiento para ese proveedor, vence a los 10 segundos y, ante timeout, JSON inválido u otro fallo, conserva la decisión base con fuente `evaluator-failure`. El borrador conserva el `PolicyContext`; la respuesta final pasa por el gate sanitario.
 
-La memoria personal tiene una frontera de forma propia: `sanitizePersonalDataFields` acepta únicamente arrays de objetos con una `key` utilizable, convierte números y booleanos a texto y descarta entradas inválidas. Es total e idempotente y conserva literalmente la clave —sin recortarla, deduplicarla ni normalizarla— porque las tools de lectura comparan claves por igualdad exacta. El saneador no es una autorización ni un mecanismo de privacidad del prompt: esa separación se mantiene porque la memoria no se concatena al prompt.
+Antes de crear la solicitud, `sendMessage` excluye divulgaciones locales y `selectCoachContext` conserva los últimos 20 mensajes para **todos** los proveedores. El prompt de sistema proviene exclusivamente de `systemPromptSelection.content`; `composeAiSystemPrompt` añade transparencia después. La memoria personal no entra en el prompt y solo se accede mediante tools. El saneador de esa memoria es una frontera de forma, no de autorización: sus claves permanecen literales porque las lecturas comparan igualdad exacta.
 
-## Idempotencia de escrituras
+Para Google, `buildGoogleHistory` transforma esa ventana en pasos y `requestProviderToolChat` fija `maxExchanges` a `COACH_CONTEXT_MESSAGE_LIMIT` (20), en lugar del valor genérico 10. `prepareGoogleInteractionRequest` conserva el intercambio más reciente, elimina datos de imágenes en intercambios anteriores, y después elimina intercambios antiguos hasta cumplir 512 KiB no-imagen y 19 000 000 bytes de solicitud. Si el contexto imprescindible sigue sin caber, lanza `GoogleContextBudgetError` antes de abrir red. `GoogleContextReport` ofrece solo contadores y razones aptos para agregación; no registre cuerpos ni historial.
 
-Las lecturas no se deduplican. Para `local_write` y `external_write`, `ToolOperationCoordinator` calcula una identidad SHA-256 sobre versión, `executionId` del mensaje, proveedor, nombre, argumentos JSON canónicos y ocurrencia. El `providerCallId` no participa: un reintento del proveedor con el mismo turno puede recuperar el mismo resultado, mientras que dos llamadas idénticas del mismo turno conservan ocurrencias distintas.
+### Continuación Google: historial local validado, no sesión remota
+
+Google Interactions se usa en modo sin estado: cada solicitud lleva el historial de `GoogleStep` y el contrato incluye `store: false`, sin `previous_interaction_id`. Una respuesta de asistente terminada puede conservar un `GoogleConversationTurn` versión 1 —modelo, pasos e identificadores/uso de interacciones— para reconstruir el contexto en el siguiente turno; no se conserva ni reanuda una llamada pendiente.
+
+Antes de restaurar esos pasos, `isGoogleConversationTurn` exige tipos válidos, `thought.signature`, IDs de `function_call` no repetidos y un `function_result` con el mismo `call_id` y nombre para cada call. Rechaza `user_input` incrustado y cualquier call sin resultado. `buildGoogleHistory` falla si el turno persistido no pasa esa validación y clona los objetos antes de entregarlos al parser o transporte. Así, un historial corrupto o una operación inconclusa no se convierte en trabajo ejecutable al hidratar ni puede ser mutada accidentalmente por una nueva petición.
+
+Durante una continuación de tools, `runGoogleToolLoop` acumula los pasos y resultados locales. Puede aceptar `interactionId` vacío —normal con `store: false`—, pero solo reutiliza una interacción no vacía cuando su representación canónica es idéntica; una identidad contradictoria o un `function_call.id` repetido entre rondas aborta antes de un segundo efecto. El reintento de todo el turno sigue protegido por `executionId`, nombre, argumentos canónicos y `occurrence` en el ledger, aun si Google asigna nuevos IDs de interacción o de call.
+
+## Reintentos, rondas y lote
+
+Tras persistir el usuario y un borrador `is_streaming`, `createStreamDraftFlusher` agrupa repintados en ventanas de 40 ms. `sendMessage` intenta la ruta principal hasta tres veces: reintenta únicamente firmas reconocidas de red, timeout, sobrecarga o 429/503/529, con espera de 2 y 4 segundos; un resultado vacío consume intento sin espera. Cada intento posterior limpia contenido, razonamiento y gate, pero conserva `userMessage.id` como `executionId`. El fallo terminal convierte el borrador en `technical_error`; no deshace efectos de tools que ya ocurrieron.
+
+Los loops `runOpenAIToolLoop`, `runAnthropicToolLoop`, `runGoogleToolLoop` y la ruta `custom_openai` asignan `occurrence` en orden de proveedor, por nombre y argumentos canónicos, **antes** de ejecutar. OpenAI y Google además rechazan IDs de tool repetidos; Google reutiliza resultados de una interacción no vacía idéntica y rechaza identidades o `call_id` contradictorios entre rondas. Los IDs nativos sirven para continuar cada protocolo (`call_id`, `tool_use_id` o `function_result.call_id`), no para identificar durablemente una escritura.
 
 ```mermaid
 flowchart TD
-    Call["Llamada con ejecución y ocurrencia"] --> Guard["Guard y efecto declarado"]
-    Guard -->|Lectura| Run["Ejecutar manejador"]
-    Guard -->|Escritura| Identity["Identidad SHA-256 canónica"]
-    Identity --> Check["Memoria, journal y recibo de dominio"]
-    Check -->|Confirmada| Replay["Devolver salida anterior"]
-    Check -->|Colisión| Reject["Rechazar operación"]
-    Check -->|Ambigua| Stop["No repetir y avisar"]
-    Check -->|Ausencia demostrada| Prepare["Persistir prepared y verificar"]
-    Prepare --> Run
-    Run -->|Commit de dominio con recibo| Record["Registrar committed y salida"]
-    Run -->|Sin efecto| Discard["Retirar prepared"]
-    Replay --> Return
-    Record --> Return
-    Discard --> Return
+    Initial["turn from provider"] --> HasTools{"requests tools"}
+    HasTools -->|no| Final["return final response"]
+    HasTools -->|yes and round below 10| Batch["assign occurrences and execute batch"]
+    Batch --> Next["request next turn"]
+    Next --> HasTools
+    HasTools -->|yes at limit| Pending["return synthetic result for pending calls"]
+    Pending --> Closing["request closing turn with tools disabled"]
+    Closing --> Valid{"completed without tools"}
+    Valid -->|yes| Limited["return closing response"]
+    Valid -->|no| LimitError["ToolRoundLimitError"]
 ```
 
-*La garantía es como máximo una ejecución automática: ante una duda se sacrifica el
-reintento, no se arriesga un segundo efecto.*
+*Diez rondas pueden ejecutar tools; la siguiente call no se ejecuta y solo habilita un cierre sin tools.*
 
-El coordinador une ejecuciones simultáneas con la misma identidad y mantiene en memoria
-resultados comprometidos. Antes de cualquier efecto consulta el journal y el recibo del
-destino; una colisión, corrupción o lectura no verificable falla cerrada. Cuando la
-ausencia es segura, persiste y relee una entrada `prepared` **antes** de invocar al
-manejador. Una validación sin efecto o un fallo anterior al commit retira esa entrada.
+`executeToolBatch` preserva el orden de resultados, aunque una racha contigua de lecturas conocidas se ejecute con hasta cuatro operaciones solapadas. Una escritura o tool desconocida es una barrera secuencial. Ante un fallo fatal deja de iniciar nuevas lecturas, espera las que ya estaban activas y propaga el primer error en orden de proveedor: el turno no termina con un lote anterior aún activo. Si se agotan las rondas, las calls pendientes reciben `ROUND_LIMIT_TOOL_RESULT` y se pide un cierre con tools prohibidas; un cierre truncado, fallido o que vuelve a pedir tools produce `ToolRoundLimitError`.
 
-Las escrituras locales guardan un recibo mínimo —identidad, nombre de tool y fecha— en
-la misma mutación durable que el dato. `LocalStoreRecoveryRepository` verifica esa
-mutación para comidas, medidas y rutinas; la memoria personal usa un sobre versionado y
-una cola de escrituras verificada. Si el efecto termina pero falla el registro
-`committed` del journal, el coordinador consulta ese recibo y puede reconstruir el
-resultado sin repetir la mutación. Un recibo ausente solo demuestra que no hubo efecto
-mientras no haya podido caducar ni ser expulsado por el límite; fuera de esa ventana la
-operación queda `indeterminate`.
+## Autorización, ejecución y recuperación de efectos
 
-`ToolOperationLedgerRepository` persiste el journal de esquema 2 en AsyncStorage, migra
-las entradas confirmadas del esquema 1 y verifica cada escritura por relectura. Conserva
-como máximo 256 entradas: las `committed` caducan a los siete días, mientras `prepared`
-e `indeterminate` no se expulsan hasta reconciliarse o borrar la actividad. Si las 256
-son irresolubles, una escritura nueva falla antes del efecto. Un journal corrupto ya no
-se reinicia vacío. El borrado de actividad y el total incluyen journal y recibos; un
-contador de generación evita que una operación que termine después del borrado vuelva a
-poblar el journal.
+`AGENT_TOOL_DEFINITIONS` es la fuente común de nombre, descripción, esquema y efecto (`read`, `local_write`, `external_write`); de ella se derivan `CHAT_TOOLS.openai`, `CHAT_TOOLS.anthropic` y `CHAT_TOOLS.google`. Al añadir una tool, añadir su definición y handler no basta: debe validarse su dominio antes de mutar y decidir su recibo y reconciliador.
 
-Al hidratar, la app reconcilia las entradas sin resolver. Si el destino confirma el
-efecto, las promueve a `committed`; si demuestra ausencia, las retira. Si el estado es
-ambiguo, no ejecuta nada y muestra un aviso para que el usuario revise sus datos antes de
-solicitar de nuevo la acción. Las trazas solo incluyen fase, estado, origen y nombre de
-tool: nunca identidad, argumentos, contenido ni salida.
+En `callProviderChatAPIWithTools`, `executeGuardedTool` clasifica tanto la entrada original como `nombre + argumentos`. Una tool desconocida o incompatible devuelve un error controlado antes del ejecutor. La regla efectiva es:
 
-## Feedback como escritura externa verificable
+| Riesgo efectivo | Tools permitidas |
+| --- | --- |
+| `none` | `read`, `local_write`, `external_write` |
+| `elevated` | solo `read` |
+| `high` o `critical` | ninguna; además la ruta principal del proveedor queda bloqueada |
 
-`create_feature_issue` es `external_write`, no una llamada directa del modelo a GitHub. La definición exige mostrar al usuario el título y resumen exactos, esperar su aprobación, no copiar citas literales ni datos personales y no afirmar éxito sin referencia. El manejador sanea el borrador, invoca `submitFeedbackIssue` y solo marca el commit si el resultado discriminado es `created`.
+`createDetailedAgentToolExecutor` valida el esquema y convierte excepciones de handlers en resultados controlados. Un handler debe llamar a `markEffectCommitted` justo después de la persistencia irreversible; puede señalar `markEffectIndeterminate` si el resultado pudo ocurrir pero no se confirma. Las salidas son `no_effect`, `failed_before_commit`, `committed` o `indeterminate`. Una excepción posterior a la marca de commit sigue siendo `committed`: no existe rollback general del almacenamiento.
 
-El cliente hace `POST /feedback/issues` con exactamente cinco campos: versión de esquema,
-tipo, título, resumen y `idempotency_key`. Los formularios conservan la clave corta del
-borrador saneado; `create_feature_issue` usa la identidad completa de 64 hexadecimales.
-Antes de enviar y cuando pierde o recibe una respuesta ambigua, consulta
-`GET /feedback/issues/status` con esa identidad. Solo `created` con un número positivo y
-una URL `https://github.com/` verificable confirma la operación. `pending`, servicio
-inaccesible o respuesta malformada quedan como indeterminados y no causan un segundo
-`POST`; una ausencia fresca permite el primer envío.
+Para efectos, `identifyToolOperation` calcula SHA-256 sobre versión, `executionId`, proveedor, nombre, argumentos JSON canónicos y `occurrence`; `providerCallId` se excluye. `ToolOperationCoordinator` puede unir la misma operación en vuelo y reproducir un commit desde memoria o ledger sin volver a invocar el handler. Las lecturas no pasan por esa deduplicación durable. Por ello, dos calls iguales intencionales en un mismo loop tienen ocurrencias distintas, mientras un reintento remoto equivalente puede recuperar la misma operación.
 
-Las denuncias de respuestas IA también se forman y saneaban en el dispositivo como una vista previa limitada: motivo, detalles opcionales, pregunta previa, respuesta denunciada y metadatos técnicos. No admiten el hilo completo ni el razonamiento como superficie de envío. La recepción, retención, deduplicación de servidor y controles de abuso corresponden al [Worker de feedback](../services/feedback-worker.md).
+```mermaid
+stateDiagram-v2
+    [*] --> Miss: new identity
+    Miss --> Prepared: persist and verify
+    Prepared --> Committed: handler marks commit
+    Prepared --> Cleared: no effect or failed before commit
+    Prepared --> Indeterminate: effect uncertain
+    Indeterminate --> Committed: domain confirms receipt
+    Indeterminate --> Cleared: domain proves absence
+    Indeterminate --> Indeterminate: cannot verify
+    Committed --> Replay: same identity
+    Replay --> Committed
+```
 
-## Guía para extender el runtime
+*El ledger evita repetir una escritura dudosa; reconciliar puede confirmar el efecto o demostrar su ausencia, nunca deshacerlo.*
 
-1. **Política:** use un único `AgentPolicyLease` para prompt, guardrail y `PolicyContext` durante un turno. No añada texto local privilegiado en `sendMessage`.
-2. **Nueva tool:** añada definición, esquema, efecto y manejador juntos. `CHAT_TOOLS` se deriva del catálogo y las pruebas comprueban que catálogo y ejecutor declaren exactamente los mismos nombres.
-3. **Escritura:** valide todo antes de mutar, persista `prepared` antes del efecto y guarde
-   el recibo de `operationId` en la misma transacción o escritura durable que el dato. Un
-   error que pueda haber ocurrido después del commit debe clasificarse como
-   `indeterminate`, nunca como fallo reintentable.
-4. **Reintentos:** preserve `executionId`, argumentos canónicos y ocurrencia al cambiar parsers o adaptadores. No use el identificador de llamada del proveedor como identidad persistente.
-5. **Privacidad y feedback:** no convierta memoria personal en prompt, no envíe conversaciones o razonamiento en reportes, y no comunique una incidencia como creada sin su referencia verificable.
+El coordinador consulta memoria y ledger, reconcilia el dominio para entradas nuevas o no resueltas, y persiste/relee `prepared` antes del handler. Si el resultado es `no_effect` o `failed_before_commit`, descarta la preparación; si es `indeterminate`, la conserva. Si falla el registro final de un commit, intenta el reconciliador del dominio y, sin confirmación, devuelve `indeterminate` en vez de repetir. Una colisión de fingerprint no ejecuta la mutación.
 
-## Pruebas focalizadas
+El ledger de esquema 2 verifica por relectura cada escritura y falla cerrado ante lectura corrupta o inaccesible. Retiene como máximo 256 entradas: los commits expiran a los siete días y pueden expulsarse por antigüedad; `prepared` e `indeterminate` no expiran ni se expulsan para abrir hueco. Si llenan la capacidad, una escritura nueva falla antes del efecto. `clear()` incrementa una generación para que una operación que termine después no repueble caché ni ledger.
 
-Ejecute estas pruebas desde la raíz al modificar estas fronteras:
+Las escrituras locales incluyen recibos mínimos con `operationId`, `toolName` y `committedAt`, también limitados a 256 entradas y siete días. La ausencia de un recibo solo demuestra ausencia de efecto si, desde `preparedAt`, no pudo caducar ni ser expulsado. Tras hidratar, `reconcileUnresolved` recorre las entradas pendientes sin ejecutar handlers: confirma las que el dominio reconoce, elimina las de ausencia demostrada y conserva las ambiguas como `indeterminate`, con aviso para revisión.
+
+## Cambio seguro y validación
+
+1. Mantenga un solo `AgentPolicyLease` inmutable por turno y la selección de contexto antes de la adaptación al proveedor.
+2. No describa la ruta Coach de Google con el límite genérico de 10: su límite de intercambios es 20, pero los límites de bytes siguen siendo efectivos.
+3. No convierta reintento, fallback, continuación, cierre, unión `inFlight` y replay en una única noción de «repetición».
+4. Para una nueva escritura, conserve `executionId`, canonicalización y `occurrence`; no incluya `providerCallId` en su identidad. Valide antes del efecto, marque commit inmediatamente después y proporcione recibo/reconciliador.
+5. No introduzca paralelismo en escrituras ni dependa del orden de finalización de lecturas. Mantenga la barrera y el máximo de cuatro lecturas de `executeToolBatch`.
+6. No registre contenido sensible. Para correlacionar una anomalía basta con dimensiones agregadas de intento, ronda, cierre, categoría, duración y estado de commit.
+
+Desde la raíz, ejecute el conjunto focalizado:
 
 ```bash
-npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/providerToolClient.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/toolDefinitions.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts
+npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/platform/trace.test.ts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/coachContext.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/toolBatch.test.ts apps/mobile/agent/toolBatchDiagnostics.test.ts apps/mobile/agent/toolDefinitions.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts apps/mobile/agent/toolOperationReceipts.test.ts apps/mobile/agent/googleInteractions.test.ts
 ```
 
-Las pruebas de lease cubren inmutabilidad y selección de política. Las de bucle y pipeline
-reproducen SSE fragmentado y verifican las correlaciones nativas, truncamiento de
-Anthropic y continuación de los tres proveedores. Las de definiciones y ejecutor
-mantienen alineados catálogo, esquema y manejadores, y prueban que no se confirma una
-escritura sin persistencia. Las del journal cubren identidad canónica, write-ahead,
-reinicio en cada frontera de crash, unión concurrente, colisiones, corrupción, límites,
-retención de ambiguas y borrado durante una operación. Las de recibos cubren caducidad y
-expulsión segura. Las de datos personales prueban migración del sobre y preservación de
-recibos; las de feedback prueban reconciliación de estado sin éxito falso.
-Las pruebas del presupuesto de Google fijan además el recorte por intercambios y bytes,
-la eliminación de imágenes antiguas y el rechazo local de la petición actual cuando no
-cabe. Úselas junto con las trazas: prueban contratos locales, pero no miden disponibilidad,
-latencia ni coste de proveedores remotos.
+Estas pruebas verifican contratos locales de trazas, lease, presupuesto, protocolo, lote, autorización, commit y recuperación; no miden disponibilidad, tokens, coste, latencia o frecuencia en producción. Para el manejo del volcado local y sus cautelas, vuelva a [Comportamiento operativo, trazas y degradación](../operations/runtime-behavior.md).

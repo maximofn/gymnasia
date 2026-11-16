@@ -1,0 +1,188 @@
+{
+  "url": "https://gymnasia.maximofn.com/",
+  "sourceSha": "f38755747371e932cd9385234637b908e3156e45",
+  "version": "1.51.0",
+  "provider": "openai",
+  "model": "gpt-6-luna",
+  "readBatch": [
+    {
+      "requestId": "31128.728",
+      "model": "gpt-6-luna",
+      "tools": [
+        {
+          "id": "call_Ug8xYQ652JeLVM8Yaq0Zd326",
+          "name": "search_exercises",
+          "arguments": "{\"query\":\"press\"}"
+        },
+        {
+          "id": "call_3zVwN7oll7Vhnp7WE7h5sGsj",
+          "name": "search_exercises",
+          "arguments": "{\"query\":\"curl\"}"
+        },
+        {
+          "id": "call_suRGIHaCLOkRE8Wb09wnYrib",
+          "name": "search_exercises",
+          "arguments": "{\"query\":\"sentadilla\"}"
+        }
+      ],
+      "completed": true
+    },
+    {
+      "requestId": "31128.738",
+      "model": "gpt-6-luna",
+      "tools": [],
+      "completed": true
+    }
+  ],
+  "orderedResults": [
+    {
+      "id": "call_Ug8xYQ652JeLVM8Yaq0Zd326",
+      "outputKeys": [
+        "availability",
+        "fetched_at",
+        "sources",
+        "warnings",
+        "results"
+      ],
+      "hasError": false
+    },
+    {
+      "id": "call_3zVwN7oll7Vhnp7WE7h5sGsj",
+      "outputKeys": [
+        "availability",
+        "fetched_at",
+        "sources",
+        "warnings",
+        "results"
+      ],
+      "hasError": false
+    },
+    {
+      "id": "call_suRGIHaCLOkRE8Wb09wnYrib",
+      "outputKeys": [
+        "availability",
+        "fetched_at",
+        "sources",
+        "warnings",
+        "results"
+      ],
+      "hasError": false
+    }
+  ],
+  "writes": [
+    {
+      "requestId": "31128.744",
+      "status": 200,
+      "tools": [
+        {
+          "id": "call_OHUH8VCL5xFeKysaXXgXgTIH",
+          "name": "write_measurement",
+          "arguments": "{\"date\":\"2020-01-01\",\"data\":{\"weight_kg\":75}}"
+        }
+      ],
+      "completed": true
+    },
+    {
+      "requestId": "31128.745",
+      "status": 200,
+      "tools": [
+        {
+          "id": "call_ZsuWAbP4eZ1RQJcek2EHSXor",
+          "name": "write_measurement",
+          "arguments": "{\"date\":\"2020-01-01\",\"data\":{\"weight_kg\":76}}"
+        }
+      ],
+      "completed": true
+    },
+    {
+      "requestId": "31128.746",
+      "status": 200,
+      "tools": [
+        {
+          "id": "call_Wn1jjLREeY3NGmcSUHBOrvbi",
+          "name": "read_measurement",
+          "arguments": "{\"date\":\"2020-01-01\"}"
+        }
+      ],
+      "completed": true
+    },
+    {
+      "requestId": "31128.747",
+      "status": 200,
+      "tools": [],
+      "completed": true
+    }
+  ],
+  "persistence": [
+    {
+      "requestId": "31128.798",
+      "status": 200,
+      "tools": [
+        {
+          "id": "call_Cf8rgDdIpWcArgj2XDMFnKP6",
+          "name": "read_measurement",
+          "arguments": "{\"date\":\"2020-01-01\"}"
+        }
+      ],
+      "measurementResults": []
+    },
+    {
+      "requestId": "31128.799",
+      "status": 200,
+      "tools": [],
+      "measurementResults": [
+        {
+          "id": "call_Cf8rgDdIpWcArgj2XDMFnKP6",
+          "date": "2020-01-01",
+          "weight_kg": 76
+        }
+      ]
+    }
+  ],
+  "limits": "Las dos escrituras llegaron en turnos separados del modelo; la exclusión dentro de un mismo lote se verifica con tests deterministas. No mide rendimiento nativo.",
+  "recovery": [
+    {
+      "requestId": "31128.802",
+      "status": 200,
+      "tools": [
+        {
+          "id": "call_TkjQCsGp5PO03b4U9Rkw973H",
+          "name": "read_measurement",
+          "arguments": "{\"date\":\"2020-01-02\"}"
+        },
+        {
+          "id": "call_0KZvgQJ9GEKE3ZpYA3MaeKGb",
+          "name": "read_measurement",
+          "arguments": "{\"date\":\"2020-01-01\"}"
+        },
+        {
+          "id": "call_OQ8q1YDgyBrc369PAoxo4Hys",
+          "name": "search_exercises",
+          "arguments": "{\"query\":\"curl\"}"
+        }
+      ],
+      "results": []
+    },
+    {
+      "requestId": "31128.804",
+      "status": 200,
+      "tools": [],
+      "results": [
+        {
+          "id": "call_TkjQCsGp5PO03b4U9Rkw973H",
+          "error": "not_found"
+        },
+        {
+          "id": "call_0KZvgQJ9GEKE3ZpYA3MaeKGb",
+          "date": "2020-01-01",
+          "weight_kg": 76
+        },
+        {
+          "id": "call_OQ8q1YDgyBrc369PAoxo4Hys",
+          "catalogAvailability": "fresh",
+          "resultCount": 15
+        }
+      ]
+    }
+  ]
+}

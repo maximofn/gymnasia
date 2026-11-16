@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CIQUAL_FOODS, CIQUAL_STATUS } from "../catalogs/ciqual";
 
 import {
   aggregateCatalogAvailability,
@@ -115,17 +116,29 @@ export function useExerciseCatalogRuntime(input: {
 
   const getService = useCallback((): ExerciseCatalogService => {
     if (!serviceRef.current) {
+      // App reset remounts this hook. An old async callback must keep its old
+      // generation, never acquire permission to write into the new runtime.
+      const generation = inputRef.current.getRuntimeGeneration();
+      const checkCurrent = () => {
+        if (inputRef.current.isRuntimeBlocked() || inputRef.current.getRuntimeGeneration() !== generation) {
+          throw new Error("Catalog runtime invalidated.");
+        }
+      };
       serviceRef.current = createExerciseCatalogService({
         storage: {
           getItem: (key) => inputRef.current.services.storage.getItem(key),
           setItem: async (key, value) => {
-            if (inputRef.current.isRuntimeBlocked()) {
-              throw new Error("Catalog runtime invalidated.");
-            }
+            checkCurrent();
             await inputRef.current.services.storage.setItem(key, value);
           },
-          removeItem: (key) => inputRef.current.services.storage.removeItem(key),
+          removeItem: async (key) => { checkCurrent(); await inputRef.current.services.storage.removeItem(key); },
           getAllKeys: () => inputRef.current.services.storage.getAllKeys(),
+        },
+        artifacts: {
+          getItem: (key) => inputRef.current.services.catalogArtifacts.getItem(key),
+          getAllKeys: () => inputRef.current.services.catalogArtifacts.getAllKeys(),
+          setItem: async (key, value) => { checkCurrent(); await inputRef.current.services.catalogArtifacts.setItem(key, value); },
+          removeItem: async (key) => { checkCurrent(); await inputRef.current.services.catalogArtifacts.removeItem(key); },
         },
         fetcher: (url, init) => inputRef.current.services.network.fetch(url, init),
       });
@@ -541,14 +554,15 @@ export function useFoodCatalogRuntime(input: {
   }, [input.isHydrated, runtimeDependencies]);
 
   const foods = useMemo(
-    () => snapshots.flatMap((snapshot) => snapshot.data),
+    () => [...snapshots.flatMap((snapshot) => snapshot.data), ...CIQUAL_FOODS],
     [snapshots],
   );
   const availability = useMemo<CatalogSearchAvailability>(() => ({
-    availability: aggregateCatalogAvailability(snapshots),
+    availability: aggregateCatalogAvailability(snapshots) === "unavailable" ? "partial" : aggregateCatalogAvailability(snapshots),
     fetchedAt: latestCatalogFetch(snapshots),
     sources: [
       ...catalogStatuses(snapshots),
+      CIQUAL_STATUS,
       {
         sourceId: "user_personal_foods",
         label: "Alimentos personales",

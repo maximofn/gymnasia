@@ -55,3 +55,13 @@ test("todas las Actions de terceros están fijadas a un commit", () => {
     }
   }
 });
+
+// Playwright 1.58.2 cannot install Chromium dependencies on Ubuntu 26.04.
+test("los jobs con Chromium usan una distribución admitida por el Playwright fijado", () => {
+  for (const name of ["board-ci.yml", "board-reconcile.yml", "board-deploy.yml"]) {
+    const workflow = readWorkflow(name);
+    assert.match(workflow, /playwright install --with-deps chromium/, name);
+    assert.match(workflow, /runs-on: ubuntu-24\.04/, name);
+    assert.doesNotMatch(workflow, /runs-on: ubuntu-latest/, name);
+  }
+});

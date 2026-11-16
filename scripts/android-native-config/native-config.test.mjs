@@ -25,6 +25,7 @@ function validInput(overrides = {}) {
     manifest: validManifest,
     mainActivity: validMainActivity,
     notificationSounds: [...policy.expectedNotificationSounds],
+    gradleProperties: "AsyncStorage_db_size_in_MB=64\n",
     warnings: [],
     ...overrides,
   };
@@ -32,6 +33,19 @@ function validInput(overrides = {}) {
 
 test("acepta el contrato semántico revisado", () => {
   assert.deepEqual(evaluateNativeConfig(validInput()), []);
+});
+
+test("impide volver a la cuota Android de 6 MiB o perderla durante prebuild", () => {
+  for (const gradleProperties of [
+    "",
+    "# AsyncStorage_db_size_in_MB=64\n",
+    "AsyncStorage_db_size_in_MB=6\n",
+    "AsyncStorage_db_size_in_MB=64\nAsyncStorage_db_size_in_MB=6\n",
+  ]) {
+    const violations = evaluateNativeConfig(validInput({ gradleProperties }));
+    assert.equal(violations.length, 1);
+    assert.equal(violations[0].code, "gradle-property");
+  }
 });
 
 test("detecta permisos, bloqueos y sonidos ausentes o inesperados", () => {

@@ -104,7 +104,7 @@ export function collectOpenAIOutputText(outputItems: OpenAIResponseOutputItem[])
     .filter((item): item is OpenAIMessageOutputItem => item.type === "message")
     .flatMap((item) => item.content ?? [])
     .filter((part) => part.type === "output_text")
-    .map((part) => part.text.trim())
+    .flatMap((part) => typeof part.text === "string" ? [part.text.trim()] : [])
     .filter(Boolean)
     .join("\n");
   return text || null;
@@ -115,7 +115,7 @@ export function collectOpenAIThinking(outputItems: OpenAIResponseOutputItem[]): 
     .filter((item): item is OpenAIReasoningOutputItem => item.type === "reasoning")
     .flatMap((item) => item.summary ?? [])
     .filter((part) => part.type === "summary_text")
-    .map((part) => part.text.trim())
+    .flatMap((part) => typeof part.text === "string" ? [part.text.trim()] : [])
     .filter(Boolean)
     .join("\n\n");
   return thinking || null;

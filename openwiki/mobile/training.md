@@ -1,21 +1,35 @@
 ---
 type: concepto de dominio
-title: Plantillas, series y ejecución de entrenamientos
-description: Contratos de series simples y compuestas, edición transaccional de rutinas y ciclo recuperable de las sesiones de entrenamiento. Describe el cálculo de esfuerzos y resumen, los conflictos de revisión y la temporización de descansos.
+title: Entrenamiento y sesiones
+description: Contratos y ciclo recuperable de plantillas, series, sesiones, historial y descansos de entrenamiento. Distingue los datos durables de los controles de interfaz y las validaciones que evitan perder trabajo o duplicar resúmenes.
 tags: [mobile, training, workout-templates, workout-execution, transactions]
 sources:
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
+  - id: openwiki-source-d85e28abe300f8689fbec4b2
+    resource: repo://apps/mobile/controllers/trainingController.ts
   - id: openwiki-source-0c1c1cf9365f0a086537a465
     resource: repo://apps/mobile/scripts/train-compound-execution.e2e.mjs
+  - id: openwiki-source-925b08011eb916f5e46a3640
+    resource: repo://apps/mobile/scripts/train-history-snapshot.e2e.mjs
   - id: openwiki-source-3d1e8494385688fc7860919a
     resource: repo://apps/mobile/scripts/train-series-operations.e2e.mjs
+  - id: openwiki-source-ce2a29d26d2fc9bbc6f67477
+    resource: repo://apps/mobile/training/restNotificationContract.ts
   - id: openwiki-source-3f488b56edb095ad7ccfcb94
     resource: repo://apps/mobile/training/seriesContract.ts
   - id: openwiki-source-e62f241b3b74f3d63b5eccbe
     resource: repo://apps/mobile/training/workoutExecution.test.ts
   - id: openwiki-source-75e7f1f835dd98bbe8989db6
     resource: repo://apps/mobile/training/workoutExecution.ts
+  - id: openwiki-source-fa130f9df627b75b84906bad
+    resource: repo://apps/mobile/training/workoutHistory.test.ts
+  - id: openwiki-source-d110c2b2759413b57dbd6e3b
+    resource: repo://apps/mobile/training/workoutHistory.ts
+  - id: openwiki-source-8f020561b9564f6b5431ad46
+    resource: repo://apps/mobile/training/workoutSessionClock.test.ts
+  - id: openwiki-source-cb19dbd48ccae7f46336ba51
+    resource: repo://apps/mobile/training/workoutSessionClock.ts
   - id: openwiki-source-3866f88db5eab632394c014a
     resource: repo://apps/mobile/training/workoutSessionModel.ts
   - id: openwiki-source-ab0ce5fe81f5d3ca90789cbc
@@ -29,97 +43,126 @@ sources:
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
 verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+  - by: openwiki/0.6.0
+    at: 2026-09-27T17:43:05.548Z
+generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
 ---
 
-# Plantillas, series y ejecución de entrenamientos
+# Entrenamiento y sesiones
 
-El dominio de entrenamiento separa la **prescripción editable** (`WorkoutTemplate`) de la **ejecución** (`WorkoutSession`). Los contratos puros de `apps/mobile/training/` definen la forma, la normalización, las copias, las revisiones y la proyección en unidades ejecutables; `apps/mobile/App.tsx` conserva el estado, persiste los borradores de sesión y coordina la interfaz, el temporizador y las notificaciones. Para los límites generales de persistencia, véase [Estado local y copia de seguridad](./local-state-and-backup.md); para permisos y alarmas de Android, [Permisos de Android](../operations/android-permissions.md).
+El dominio separa la **prescripción editable** (`WorkoutTemplate`) de una **ejecución recuperable** (`WorkoutSession`) y de su resultado inmutable (`WorkoutSessionSummary`). Los módulos puros de `apps/mobile/training/` son la autoridad de contratos, normalización, cálculo y transiciones; `apps/mobile/App.tsx` posee el estado React, las colas de persistencia, la integración con `AsyncStorage`, el reloj y `expo-notifications`. Los controladores de `apps/mobile/controllers/trainingController.ts` no duplican esas reglas: adaptan modelo y acciones a pantallas, overlays y la pila de volver.
 
-## Modelo e identidades
+Para los límites generales de persistencia y restauración, véase [Estado local y copia de seguridad](./local-state-and-backup.md). Esta página se centra en los invariantes específicos de entrenamiento.
 
-Una plantilla contiene ejercicios ordenados y cada ejercicio mantiene `sets: number[]` por compatibilidad, pero la prescripción operativa es `series?: ExerciseSeries[]`. Una serie tiene un `id`, entradas textuales de repeticiones, peso y descanso, un tipo opcional, tempo y, cuando procede, `sub_series`. La versión `series_schema_version` se sella dentro de cada rutina: evita añadir claves raíz incompatibles al almacén y nunca rebaja una versión futura ya escrita.
+## Qué es durable y qué es interfaz
 
-Los catorce valores admitidos de `SeriesType` incluyen tipos simples —por ejemplo `normal`, `warmup`, `tempo` e `isometric`— y los cinco tipos compuestos `dropset`, `restpause`, `myoreps`, `cluster` y `superset`. Solo estos últimos expanden mini-series durante la ejecución. Una mini-serie puede nombrar y referir otro ejercicio y puede tener su propio enlace de catálogo.
+| Capa | Estado o responsabilidad |
+| --- | --- |
+| Plantilla canónica durable | `templates` conserva rutina, ejercicios, series, identidad y el sello `series_schema_version`; es la prescripción que se editará en el futuro. |
+| Sesión durable recuperable | La sesión, su instantánea inicial y el `WorkoutSessionTemplateDraftRecord` se guardan por separado. Contienen claves de esfuerzos, reloj, descanso, resolución pendiente y revisión base. |
+| Historial durable | `workoutHistory` guarda resúmenes y, en el esquema actual, una instantánea compacta de la prescripción ejecutada. |
+| Estado efímero de interfaz | Menús, selectores, modales de confirmación, filtros, búsqueda, expansión de historial y selección de detalle viven en React o se derivan para el controlador. No deben convertirse en parte de una plantilla o sesión. |
+| Integración de dispositivo | La alarma programada, el permiso y el canal Android son efectos reconciliados desde el descanso durable; no son la fuente de verdad del reloj. |
 
-La normalización repara datos almacenados antes de que lleguen a la interfaz: convierte números finitos en texto, recorta texto, descarta tempo inválido, valida tipos de serie y regenera IDs faltantes o duplicados. Las identidades de serie y mini-serie son únicas dentro de su lista; una estructura no interpretable genera incidencias. En modo `repair` se recupera lo posible; en `strict`, errores estructurales impiden aceptar el resultado. Si un ejercicio no tiene `series`, la migración las deriva de sus `sets`, `load_kg` y `rest_seconds` heredados. La proyección inversa a `sets` conserva únicamente las repeticiones positivas que se puedan leer.
+`useTrainingCatalogController`, `useTrainingSessionController`, `useTrainingEditorController`, `useTrainingDetailController` y `useTrainingHistoryController` exponen `model`, `actions` y capas de retroceso. Mantienen el último input en un `ref`, por lo que las acciones memorizadas delegan al estado actual; los manejadores de volver cierran primero la capa abierta correspondiente. El controlador no posee ni persiste las mutaciones de entrenamiento.
 
-## Series simples, compuestas y unidades de ejecución
+## Plantillas, series e identidades
 
-La ejecución no usa índices como identidad. `listWorkoutExecutionUnits` recorre ejercicios y series en orden y crea:
+Una plantilla ordena ejercicios. Cada ejercicio conserva `sets: number[]` como espejo de compatibilidad, mientras que `series?: ExerciseSeries[]` es la prescripción operativa. Una serie tiene ID, repeticiones, peso y descanso textuales, tipo opcional, tempo y, opcionalmente, `sub_series`; una mini-serie puede referir o nombrar otro ejercicio y enlazar el catálogo.
 
-- una unidad `primary` por cada serie, con clave `exerciseId:seriesId`;
-- para una serie de tipo compuesto, una unidad `sub_series` por cada mini-serie, con clave `exerciseId:seriesId:subSeriesId`, inmediatamente después de su unidad principal;
-- ninguna mini-serie para un tipo simple aunque el dato conservado aún contenga `sub_series`.
+Los 14 `SeriesType` admitidos incluyen nueve simples y cinco compuestos: `dropset`, `restpause`, `myoreps`, `cluster` y `superset`. Solo los compuestos expanden mini-series en ejecución. Cambiar temporalmente a un tipo simple **no borra** las mini-series: quedan ocultas y reaparecen al volver a compuesto. Si se entra por primera vez en un tipo compuesto se crea una mini-serie con los valores visibles (para `dropset`, descanso `0`).
 
-Esta distinción permite ocultar temporalmente mini-series al cambiar a un tipo simple sin destruirlas: al volver a un tipo compuesto reaparecen; si nunca existieron, se crea una usando los valores visibles. Una superserie muestra el `exercise_name` de su mini-serie cuando está disponible; las demás mini-series conservan el nombre del ejercicio raíz.
+El sello `series_schema_version` está dentro de cada rutina, no en la raíz del almacén: una clave raíz desconocida activa la recuperación del almacén. `sealedSeriesSchemaVersion` escribe la versión soportada pero nunca reduce una versión futura leída.
 
-### Semántica de descanso de bloques compuestos
+### Normalización y compatibilidad
 
-El descanso es una transición entre unidades, no un atributo que siempre se aplica al marcar una unidad. `resolveWorkoutExecutionRest` usa el `rest_seconds` de la **siguiente** mini-serie mientras el siguiente esfuerzo continúa dentro del mismo bloque compuesto. Al salir del bloque hacia otra serie o ejercicio, usa el `rest_seconds` de la serie principal completada. Si no existe siguiente unidad, o no coincide ninguno de esos casos, no hay descanso. Por ello una mini-serie final con descanso `0` no anula el descanso configurado para concluir el bloque.
+Antes de presentar datos, la normalización convierte números finitos a texto, recorta entradas, descarta tempo inválido, valida tipos y enlaces de catálogo, y regenera IDs ausentes o repetidos. La unicidad de IDs se exige por lista de series y por lista de mini-series. En `repair` se conserva y repara lo interpretable; en `strict`, los problemas estructurales —objeto, lista o texto donde no corresponde— bloquean la aceptación. El arranque usa reparación, mientras que una importación aplica la vía estricta para no sustituir el almacén por datos incompatibles.
 
-`parseWorkoutRestSeconds` acepta segundos numéricos, `s`, minutos `m` y `minutos:segundos`; entradas vacías, negativas o inválidas se convierten en cero. Esta regla se aplica tanto a series simples como a la transición de bloques compuestos.
+Si faltan `series`, se derivan desde `sets`, `load_kg` y `rest_seconds` heredados. El espejo inverso `sets` incluye solo la primera repetición positiva legible de cada serie. Por tanto, modificar los campos derivados no debe usarse para detectar cambios funcionales ni para reconciliar una sesión.
 
-## Edición transaccional y conflictos
+## Edición aislada y conflictos
 
-El editor nunca debe mutar la rutina canónica mientras se escribe. `createWorkoutTemplateDraft` crea copias profundas de `original` y `draft`; una edición calcula su suciedad comparando la revisión funcional del borrador con `baseRevision`. La revisión cubre nombre, categoría, icono, duración, orden y contenido funcional de ejercicios, series, tempo, mini-series y enlaces de catálogo. Excluye deliberadamente el sello de esquema y los espejos derivados `sets`, `load_kg` y `rest_seconds`, para no generar conflictos falsos.
+El editor nunca modifica la plantilla canónica mientras el usuario escribe. `createWorkoutTemplateDraft` crea copias profundas de `original` y `draft`; para una edición, `baseRevision` es la revisión funcional de la canónica al abrir. Esa revisión cubre metadatos, orden, ejercicios, series, tempo, mini-series y enlaces de catálogo, y excluye el sello y espejos heredados para evitar conflictos espurios.
 
-Guardar valida nombre, categoría e icono, y que cada ejercicio tenga nombre y al menos una serie con repeticiones positivas; también valida los valores numéricos, las exigencias de tipos compuestos y los enlaces de catálogo. Al aceptar, sella la versión de esquema y vuelve a derivar los espejos heredados. Para editar, el commit solo se aplica si la revisión canónica sigue siendo `baseRevision`; si falta la plantilla devuelve `missing`, y si cambió devuelve `conflict` sin escribir. Para crear, una plantilla existente con el mismo ID también es conflicto. Un borrador limpio puede recibir un `rebase`; uno sucio se conserva para no borrar trabajo local. El usuario puede recargar la versión canónica o confirmar explícitamente la sobrescritura.
+Al guardar se validan metadatos obligatorios y que cada ejercicio tenga nombre y al menos una serie con repeticiones positivas, además de valores numéricos, condiciones de series compuestas y enlaces. Un commit de edición solo se aplica si la revisión canónica sigue siendo `baseRevision`; devuelve `missing` si desapareció y `conflict` si cambió, sin escribir. En creación, un ID existente también entra en conflicto. Un `rebase` solo reemplaza un borrador limpio; un borrador sucio se conserva para no perder trabajo local. La persona puede recargar la canónica o sobrescribir de forma explícita.
 
-Las operaciones de clonación son profundas: una instantánea conserva IDs para restauración; una duplicación regenera los IDs de rutina, ejercicios, series y mini-series. Al duplicar una rutina, también reasigna los `exercise_id` internos de superseries para que apunten a los ejercicios clonados. `createSeriesAfter` copia por completo la configuración de la serie previa pero con identidades nuevas.
+Las instantáneas usan copias profundas que preservan IDs. Las duplicaciones regeneran los IDs de rutina, ejercicios, series y mini-series y reasignan los `exercise_id` internos de superseries a sus ejercicios clonados. `createSeriesAfter` clona toda la configuración de la serie anterior con identidades nuevas.
 
 ```mermaid
 flowchart TD
-    Template["Plantilla canónica"] --> Editor["Borrador del editor"]
-    Editor --> Validate["Validar borrador"]
-    Validate -->|"válido"| Revision["Comparar revisión base"]
-    Revision -->|"sin cambios externos"| Commit["Aplicar plantilla"]
-    Revision -->|"cambio externo"| Conflict["Conflicto"]
-    Conflict -->|"recargar"| Editor
-    Conflict -->|"sobrescribir"| Commit
-    Commit --> Session["Sesión con borrador propio"]
-    Session --> Resolution["Finalizar o descartar"]
-    Resolution -->|"conservar cambios"| Template
-    Resolution -->|"mantener canónica"| Summary["Resumen persistido"]
-    Template --> Summary
+    Canonical["Plantilla canónica"] --> Editor["Borrador del editor"]
+    Editor --> Check["Validar y comparar revisión"]
+    Check -->|"sin cambio externo"| Save["Commit de plantilla"]
+    Check -->|"conflicto"| Choice["Recargar o sobrescribir"]
+    Choice --> Editor
+    Choice --> Save
+    Save --> SessionDraft["Borrador de sesión durable"]
+    SessionDraft --> Pending["Resolución pendiente"]
+    Pending -->|"conservar borrador"| Canonical
+    Pending -->|"mantener canónica"| History["Resumen en historial"]
+    Canonical --> History
 ```
 
-*El ciclo muestra los dos espacios de borrador: el editor confirma una plantilla canónica y la sesión usa otro borrador, cuya resolución puede volver a modificarla o limitarse a guardar el resumen.*
+*La plantilla, el borrador de editor y el borrador de sesión son espacios distintos; la decisión final controla si el último vuelve a ser canónico.*
 
-## Sesión recuperable
+## Ejecución, progreso y recuperación
 
-Una sesión inicia solo si no hay otra activa y la plantilla se expande al menos a una unidad ejecutable. Guarda el primer `current_unit_key`, las claves completadas, contadores derivados, tiempo, estado `running` o `paused`, y el posible `pending_resolution`. Además crea un borrador versionado de la plantilla para la sesión, con su revisión base y `draft_revision`.
+`listWorkoutExecutionUnits` convierte la plantilla efectiva en esfuerzos con claves estables, no índices: una unidad `primary` por serie (`exerciseId:seriesId`) y, en una serie compuesta, mini-series `sub_series` consecutivas (`exerciseId:seriesId:subSeriesId`). Ignora mini-series de tipos simples y evita claves repetidas. El contador, la unidad actual y el resumen se derivan de esas claves.
 
-Mientras se entrena, la plantilla efectiva es ese borrador de sesión, no la canónica. Esto mantiene ejecutable la sesión incluso si la rutina canónica cambia o desaparece. Cuando una modificación estructural cambia el borrador, la aplicación vuelve a listar unidades, elimina claves completadas que ya no existan, recalcula los contadores y resuelve una unidad actual válida. Al hidratar, el normalizador también deduplica y filtra claves, migra las antiguas claves de serie a todas las unidades de su bloque, y deriva contadores desde las claves realmente válidas; la migración es idempotente.
+Solo se inicia una sesión si no hay otra activa y la plantilla tiene alguna unidad ejecutable. La sesión fija la primera clave actual, las claves completadas, contadores, estado `running` o `paused`, reloj, posible `pending_resolution` y un borrador de plantilla de sesión con `base_revision` y `draft_revision`. Durante el entrenamiento se ejecuta ese borrador, incluso si la plantilla canónica se modifica o elimina.
 
-Completar la unidad actual agrega su clave una sola vez, busca la siguiente unidad incompleta y programa el descanso calculado. Si no queda ninguna, solicita la finalización. La lista de comprobación puede completar una unidad concreta y finaliza solo al alcanzar el total de esfuerzos; desmarcarla cancela un descanso activo, la enfoca y vuelve a derivar el contador. Mover el puntero o enfocar un ejercicio está bloqueado durante el descanso.
+Al cambiar la estructura del borrador, la aplicación vuelve a enumerar unidades, descarta completadas que ya no existen, recalcula contadores y elige una unidad actual válida. Al hidratar, `normalizeWorkoutSession` deduplica y filtra claves, migra las antiguas claves de serie al bloque completo, normaliza una resolución pendiente a pausa y vuelve a derivar los contadores. Así la migración es idempotente y una marca antigua no deja una sesión parcialmente inconsistente.
 
-Al pedir finalizar o descartar, la sesión pasa a `paused` con una resolución pendiente recuperable. Se compara el borrador con la instantánea original y también con la revisión canónica. Si hay cambios, el modal permite conservar el borrador de sesión o mantener la canónica; una divergencia canónica exige una decisión explícita antes de sobrescribir. La mutación atómica añade el resumen solo si su ID no está ya en historial, evitando duplicados al reintentar. Después espera las colas de persistencia y elimina las claves de sesión, instantánea y borrador.
+Marcar el esfuerzo actual lo añade una sola vez y busca el siguiente pendiente; la lista también puede marcar una unidad concreta. Desmarcar cancela un descanso, enfoca esa unidad y recalcula. No se permite mover el foco durante descanso. Al solicitar terminar o descartar, se pausa la sesión y se persiste `pending_resolution`: un cierre o reinicio no convierte silenciosamente una sesión parcial en finalizada.
 
-## Resumen e historial
+### Reloj y descanso
 
-`summarizeWorkoutExecution` cuenta claves únicas completadas y calcula repeticiones y volumen solo de esas unidades. Convierte repeticiones a enteros no negativos y peso a número no negativo; valores ilegibles aportan cero. El resultado conserva tanto el total global de esfuerzos como un desglose de principales y mini-series. Un resumen con instantánea de prescripción usa el esquema 2 y `calculation_version: 2`; marca `can_recalculate: true` y guarda volumen, repeticiones, calorías estimadas y tiempos. Los resúmenes heredados se conservan con `calculation_version: 1`, sin desglose ni instantánea recalculable. El historial se añade al principio y se limita a `MAX_WORKOUT_HISTORY_ITEMS`.
+El reloj durable ancla `clock_last_tick_ms`, `rest_due_at_ms`, `rest_cycle_id`, `rest_alarm_revision` y la última alerta tratada. Reconcilia segundos enteros conservando la fracción subsegundo. Una pausa congela tiempo y descanso; reanudar un descanso conserva lo pendiente pero crea una fecha objetivo y una revisión nuevas. Si el reloj retrocede, se reancla sin sumar tiempo; si el hueco supera 12 horas, la sesión se pausa automáticamente sin inventar tiempo ni terminar el descanso. Cada ciclo de descanso solo puede emitir una alerta lógica gracias a `last_handled_rest_alert`.
 
-## Alarmas de descanso
+El descanso se decide entre unidades: dentro del mismo bloque compuesto toma el descanso de la **siguiente** mini-serie; al salir del bloque toma el de la serie principal completada. Sin siguiente unidad no hay descanso. `parseWorkoutRestSeconds` acepta segundos, sufijo `s`, minutos `m` y `minutos:segundos`; vacío, negativo o inválido vale cero.
 
-El temporizador de sesión conserva `elapsed_seconds`, `is_resting`, `rest_seconds_left` y `rest_seconds_total`. Al terminar naturalmente un descanso, cancela la notificación pendiente y reproduce la alerta dentro de la aplicación, salvo si fue una omisión manual. Un candado breve y una marca temporal reducen alertas duplicadas cuando una notificación llega inmediatamente después.
+```mermaid
+stateDiagram-v2
+    [*] --> Running
+    Running --> Resting: completar esfuerzo con descanso
+    Resting --> Running: vence o se omite
+    Running --> Paused: pausa o resolución pendiente
+    Resting --> Paused: pausa o resolución pendiente
+    Paused --> Running: reanudar
+    Paused --> Resolving: confirmar terminar o descartar
+    Running --> Resolving: terminar sin pendiente
+    Resolving --> [*]: commit y limpiar claves
+```
 
-Para una alarma en segundo plano, `scheduleRestEndNotification` no hace nada si `notifications.enabled` es falso; en otro caso cancela las notificaciones de descanso identificadas como propias y agenda una notificación fechada en el canal Android `rest_end_alert`. Una revisión de operación evita que una programación que ya quedó obsoleta permanezca activa. El contenido usa el sonido elegido si `sound` está activo y el patrón de vibración solo si `vibrate` lo está. La inicialización solicita permiso y, en Android, crea el canal con importancia máxima, vibración, `bypassDnd` y el sonido predeterminado configurado. El comportamiento final de entrega continúa sujeto a permiso y a políticas del sistema operativo.
+*El reloj, el ciclo y la revisión de alarma hacen recuperable la transición; los modales solo deciden la resolución.*
 
-## Pruebas orientadas a cambios seguros
+## Finalización atómica e historial
 
-- `workoutExecution.test.ts` prueba expansión de los cinco tipos compuestos, claves, descansos dentro y entre bloques, formatos de descanso, totales sin duplicación, entradas inválidas y migración heredada idempotente; incluye propiedades sobre unicidad y finitud.
-- `workoutTemplateOperations.test.ts` prueba copias sin referencias compartidas, regeneración de IDs y reasignación de superseries, y la conservación de mini-series al alternar tipos.
-- `workoutTemplateTransactions.test.ts` cubre cancelación, rebase limpio, conflictos, desaparición, validación, serialización del borrador de sesión y propiedades de aplicación o cancelación exacta.
-- `npm run test:train:series-operations:e2e` verifica desde la interfaz que cancelar no muta la plantilla, que el guardado aplica una transacción completa, que las modificaciones de sesión no tocan la canónica antes de resolverse y que borrador, decisión pendiente y conflicto sobreviven una recarga.
-- `npm run test:train:compound:e2e` siembra los cinco tipos compuestos, migra sesiones antiguas, ejecuta principales y mini-series a través de recargas y verifica el resumen v2 y el desglose frente a historial legado.
+Al resolver, `App.tsx` compara el borrador de sesión tanto con la instantánea inicial como con la revisión de la canónica. Si se pretende conservar el borrador y la rutina canónica cambió o desapareció, abre un conflicto y no escribe hasta una decisión explícita. La mutación local única puede reemplazar o volver a insertar la plantilla elegida y añade el resumen solamente si su ID aún no existe; el historial se antepone y se limita a `MAX_WORKOUT_HISTORY_ITEMS`. Tras confirmar la mutación espera ambas colas de persistencia y elimina las tres claves de sesión. Esta orden evita perder un borrador recuperable y evita duplicar un resumen al reintentar.
 
-Antes de cambiar contratos, ejecución o descansos, ejecute al menos:
+Un resumen actual tiene `summary_schema_version: 2`, `calculation_version: 2`, conteos de esfuerzos y desglose de principales y mini-series. `summarizeWorkoutEfforts` ignora claves repetidas, cuenta solo esfuerzos completados y transforma repeticiones/peso ilegibles o negativos en cero. Una sesión solo es `completed` cuando completó todos sus esfuerzos; de otro modo es `partial`, que no contribuye a racha ni progreso semanal.
+
+Además de los totales almacenados, v2 guarda `prescription_snapshot`: nombres, tipo, repeticiones, peso, descanso, tempo y marca de ejecución en kg. No incluye imágenes, enlaces de catálogo ni datos musculares. Es independiente de la rutina actual, por lo que un historial sigue explicando lo ejecutado aunque se edite o borre la plantilla. La recalculación compara totales, conteos y desglose pero no sobrescribe los valores guardados: informa `match` o `mismatch`. Un resumen heredado o una instantánea inválida se conserva sin capacidad de recalcular; durante hidratación se degrada con una incidencia, mientras que en importación estricta se rechaza toda la restauración de forma transaccional.
+
+## Notificaciones de descanso
+
+Una notificación es programable solo para una sesión `running`, en descanso, con segundos pendientes, ciclo, revisión y vencimiento futuro. Su payload identifica `kind: "rest_end"`, sesión, ciclo, revisión y fecha objetivo. La reconciliación programa al abrir o cambiar de revisión y cancela si deja de ser programable. Antes de programar limpia únicamente avisos marcados como propios; un contador de operación invalida y cancela resultados asíncronos obsoletos.
+
+Si las notificaciones están desactivadas no agenda nada. En Android inicializa el canal `rest_end_alert` con importancia máxima, vibración, sonido configurado, visibilidad pública y `bypassDnd`; la entrega real sigue dependiendo del permiso y de la política del sistema. Al volver a primer plano, la aplicación contrasta bandeja y respuesta de notificación con el payload esperado para no reproducir dos alertas. También mide retraso observado frente a `expected_at_ms` y muestra el estado de puntualidad, sin afirmar que pueda consultar el permiso de alarmas exactas.
+
+## Pruebas que protegen el cambio
+
+- `series.contract.test.ts` impide que `App.tsx` reintroduzca tipos, normalización, copias o firmas de series; también verifica que solo la importación sea estricta y que el sello no se filtre a la raíz del almacén.
+- Las pruebas de contratos, propiedades y regresión de `seriesContract`, `workoutTemplateOperations` y `workoutTemplateTransactions` cubren reparación, identidades, copias, cambios de tipo, validación, rebase y conflictos.
+- `workoutExecution.test.ts`, `workoutSessionModel.test.ts` y `workoutSessionClock.test.ts` cubren expansión, descansos, deduplicación, migración, pausas, huecos largos, retroceso de reloj y alerta única por ciclo. `restNotificationContract.test.ts` y su prueba de reanudación cubren el payload y la reconciliación de alarmas.
+- `workoutHistory.test.ts` verifica instantáneas sin datos de catálogo o imágenes, independencia frente a ediciones, discrepancias sin sobrescritura, legado, rechazo estricto e impacto de sesiones parciales en racha y semana.
+- `npm run test:train:history:e2e` recorre historial global, cálculo coincidente y discrepante, plantilla eliminada, legado y el ciclo de exportar, borrar actividad, restaurar y rechazar una instantánea incompatible sin alterar lo ya restaurado.
+
+Antes de modificar estos contratos o el flujo, ejecute al menos:
 
 ```bash
-npm --workspace apps/mobile test -- --run training
+npm --workspace apps/mobile run test:deterministic
 npm run test:train:series-operations:e2e
 npm run test:train:compound:e2e
+npm run test:train:history:e2e
 ```

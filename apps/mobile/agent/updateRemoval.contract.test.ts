@@ -50,10 +50,12 @@ describe("retirada completa del actualizador de APK", () => {
     expect(appSource).toContain("await AsyncStorage.multiRemove(LEGACY_STORAGE_KEYS)");
   });
 
-  it("mantiene la publicación manual de Production separada del cliente", () => {
-    expect(buildWorkflow).toContain("--profile production-apk");
+  it("mantiene la publicación de Production separada del cliente", () => {
     expect(buildWorkflow).not.toContain("Upload internal Staging APK");
     expect(buildWorkflow).toContain("Create durable draft before local compilation");
-    expect(buildWorkflow).toContain("Publish immutable APK release");
+    expect(buildWorkflow).toContain("Build AAB first and APK second inside the disposable VM");
+    expect(buildWorkflow).toContain("environment: Production");
+    expect(buildWorkflow).toContain("environment: Play Internal");
+    expect(buildWorkflow).toContain("Verify the full release, write summary and publish");
   });
 });

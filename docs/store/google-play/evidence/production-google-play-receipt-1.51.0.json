@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "kind": "GooglePlayArtifactReceiptV1",
+  "packageName": "com.maximofn.gymnasia",
+  "versionCode": "86",
+  "sha256": "da0e58b92952b03a48daaaac413cffd35992388b6414f62ce21b03e65edbd34a",
+  "track": "alpha",
+  "releaseStatus": "completed",
+  "observedAt": "2026-10-12T19:47:56.375Z"
+}

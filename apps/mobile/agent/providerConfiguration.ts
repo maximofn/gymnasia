@@ -4,7 +4,7 @@ import {
   normalizeGoogleModel,
 } from "./providerTransport";
 
-export type Provider = "anthropic" | "openai" | "google";
+export type Provider = "anthropic" | "openai" | "google" | "custom_openai";
 
 export type OpenAIReasoningEffort =
   | "none"
@@ -19,6 +19,7 @@ export type ProviderConfiguration = {
   is_active: boolean;
   api_key: string;
   model: string;
+  base_url?: string;
   workspace_id?: string;
   reasoning_effort?: OpenAIReasoningEffort | null;
 };
@@ -26,6 +27,7 @@ export type ProviderConfiguration = {
 export type ProviderDraft = {
   api_key: string;
   model: string;
+  base_url?: string;
   workspace_id?: string;
   reasoning_effort?: OpenAIReasoningEffort | null;
 };
@@ -61,12 +63,13 @@ export type ProviderDiscoveryToken = {
   discoveryRevision: number;
 };
 
-export const PROVIDERS: Provider[] = ["openai", "anthropic", "google"];
+export const PROVIDERS: Provider[] = ["openai", "anthropic", "google", "custom_openai"];
 
 export const DEFAULT_MODELS: Record<Provider, string> = {
   openai: "gpt-5.6-luna",
   anthropic: "claude-sonnet-5",
   google: DEFAULT_GOOGLE_MODEL,
+  custom_openai: "",
 };
 
 export const DEFAULT_OPENAI_REASONING_EFFORT: OpenAIReasoningEffort = "medium";
@@ -89,6 +92,7 @@ export function normalizeProviderModel(
   if (provider === "google") {
     return normalizeGoogleModel(rawModel);
   }
+  if (provider === "custom_openai") return (rawModel ?? "").trim();
   const trimmed = (rawModel ?? "").trim();
   const model = trimmed || DEFAULT_MODELS[provider];
   if (provider === "openai" && model === LEGACY_OPENAI_DEFAULT_MODEL) {
@@ -147,6 +151,7 @@ export function normalizeProviderConfiguration(
       : isActive,
     api_key: (raw?.api_key ?? "").trim(),
     model,
+    base_url: provider === "custom_openai" ? (raw?.base_url ?? "").trim() : "",
     workspace_id:
       provider === "anthropic"
         ? normalizeAnthropicWorkspaceId(raw?.workspace_id)
@@ -167,6 +172,7 @@ export function normalizeProviderConfigurations(
       value?.provider === "openai"
       || value?.provider === "anthropic"
       || value?.provider === "google"
+      || value?.provider === "custom_openai"
     ) {
       byProvider.set(value.provider, value);
     }
@@ -192,6 +198,7 @@ export function createProviderDrafts(
     {
       api_key: item.api_key,
       model: item.model,
+      base_url: item.base_url ?? "",
       workspace_id: item.workspace_id ?? "",
       reasoning_effort: item.reasoning_effort ?? null,
     },

@@ -84,7 +84,7 @@ Ejecutar desde la raíz del repo. `SK=.claude/skills/linear-tickets/scripts/line
 python3 .claude/skills/linear-tickets/scripts/linear.py list                    # issues abiertos
 python3 .claude/skills/linear-tickets/scripts/linear.py list --all              # incluye done/canceled
 python3 .claude/skills/linear-tickets/scripts/linear.py list --state "In Progress"
-python3 .claude/skills/linear-tickets/scripts/linear.py get GYM-12              # detalle
+python3 .claude/skills/linear-tickets/scripts/linear.py get GYM-12              # detalle, con padre y sub-issues
 python3 .claude/skills/linear-tickets/scripts/linear.py teams                   # equipos
 python3 .claude/skills/linear-tickets/scripts/linear.py states GYM             # estados del flujo
 ```
@@ -155,7 +155,21 @@ python3 .claude/skills/linear-tickets/scripts/linear.py unlink GYM-12 \
 python3 .claude/skills/linear-tickets/scripts/linear.py relate GYM-12 --with GYM-13
 # Comentar
 python3 .claude/skills/linear-tickets/scripts/linear.py comment GYM-12 --body "Comentario"
+# Subir la imagen al almacenamiento privado de Linear y mostrarla en un comentario
+python3 .claude/skills/linear-tickets/scripts/linear.py attach-image GYM-12 \
+  --file /ruta/captura.jpg \
+  --alt "El temporizador aparece en la tarjeta del ejercicio anterior"
 ```
+
+`attach-image` exige un tipo MIME de imagen reconocible, solicita a Linear una
+URL de subida firmada, envía los bytes directamente a su almacenamiento privado
+y solo después añade el comentario. El texto alternativo es obligatorio para que
+la propia evidencia no introduzca una barrera de accesibilidad.
+
+La URL firmada puede devolver solo cabeceras de Google Storage (por ejemplo,
+`x-goog-content-length-range`) y omitir `Content-Type` y `Cache-Control`. El
+cliente debe añadir ambas: si deja que `urllib` infiera el tipo de un cuerpo de
+bytes, envía `application/x-www-form-urlencoded` y la subida falla con HTTP 403.
 
 ### Cierre protegido
 
@@ -221,7 +235,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Dieciséis cosas que cuestan tiempo si no se saben:
+Veinte cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -269,8 +283,9 @@ Dieciséis cosas que cuestan tiempo si no se saben:
 7. **Linear limita `issues(first: ...)` a 250 resultados.** El síntoma al usar
    `list --limit 251` (o un valor mayor) es `Argument Validation Error` con
    `first must not be greater than 250`. Usa como máximo `--limit 250`; si el
-   equipo supera esa cifra, el script necesitará paginación antes de poder
-   auditar el inventario completo en una sola consulta.
+   equipo supera esa cifra, `list --limit` sigue siendo una lectura limitada.
+   `board` sí recorre automáticamente todas las páginas de 250 resultados;
+   no auditar el inventario completo a partir de un `list` limitado.
 
 8. **Un worktree no hereda el vínculo ignorado de Vercel.** El síntoma al
    desplegar el tablero es `Searching for existing projects` seguido de
@@ -366,6 +381,41 @@ Dieciséis cosas que cuestan tiempo si no se saben:
     rtk proxy curl -sS https://gymnasia-sable.vercel.app/data/board.json \
       | rtk proxy shasum -a 256
     ```
+
+17. **Un enlace Markdown en el plan de pruebas bloqueaba `close`.** El síntoma
+    es `No se puede cerrar: faltan por resolver regresión` (o la categoría que
+    sea) con la casilla visiblemente marcada `[X]`. Linear guarda los enlaces
+    como `[texto](<https://...>)`, y el validador tomaba ese `<https://...>` por
+    un marcador de plantilla sin rellenar como `<motivo>`. Verificado el 27 de
+    septiembre de 2026 al cerrar GYM-39. `PLACEHOLDER` ignora ahora los `<url>`
+    que empiezan por `http(s)://`; si reaparece con otro formato, relee la línea
+    con `get` y busca cualquier `<...>` que Linear haya añadido.
+
+18. **Una sola página de Linear puede fingir que se borró un ticket antiguo.**
+    Síntoma: `board` informa `SOBRA` o `missingFromLinear` y bloquea `--apply-safe`,
+    pero `get` encuentra el ticket, sin archivar y con su estado correcto. Al
+    superar 250 issues, el antiguo inventario descartaba la segunda página;
+    detectado con GYM-6 (ticket para investigar el QR de acceso de VivaGym) al
+    cerrar GYM-225 (ticket para auditar los gates de publicación de Production).
+    `fetch_board_nodes` sigue ahora `pageInfo.hasNextPage/endCursor` y pasa
+    `after`; rechaza cursores que no avanzan e identifiers repetidos. No eliminar
+    tarjetas por un supuesto borrado sin verificar antes el ticket real.
+
+19. **Linear convierte algunos fragmentos de comandos en emojis si no son código.**
+    El síntoma al guardar `test:train:e2e` como texto normal es que la descripción
+    releída contiene `test🚋e2e`: el editor interpreta `:train:` como un shortcode.
+    Rodea los comandos y nombres de scripts con backticks Markdown antes de
+    enviarlos, por ejemplo `` `npm run test:train:e2e` ``, y relee el ticket para
+    comprobar que conserva el comando literal. Pasa ese Markdown desde Python o
+    con comillas simples en shell para evitar la sustitución descrita en la
+    trampa 6.
+
+20. **Una épica parece no tener sub-issues porque su descripción dice «sin crear».**
+    Las descripciones de épicas envejecen: GYM-51 seguía diciendo «Sub-tareas
+    propuestas (sin crear)» con cinco sub-issues ya colgando de ella. Antes de
+    afirmar que una épica está vacía, mira la línea `Sub-issues:` de
+    `linear.py get`, que lista los hijos reales con su estado. Si no aparece, no
+    tiene ninguno.
 
 ## Notas
 

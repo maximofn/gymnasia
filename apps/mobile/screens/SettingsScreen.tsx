@@ -1,6 +1,18 @@
+import { RecordCard } from "../components/RecordCard";
+import { CIQUAL_ATTRIBUTION } from "../catalogs/ciqual";
+import { CIQUAL_IMAGE_ATTRIBUTION } from "../catalogs/imageUris";
+import { formatFoodNutrient, formatFoodServing, hasCompleteFoodNutrition } from "../catalogs/foodNutrition";
+import { normalizeCatalogName } from "../catalogs/matching";
+import { NoticeFrame } from "../components/NoticeFrame";
+import { Thumbnail } from "../components/Thumbnail";
+import { ItemRow } from "../components/ItemRow";
+import { TextField } from "../components/TextField";
+import { ChoiceRow } from "../components/ChoiceRow";
+import { ToggleField, ToggleField as NotificationToggle } from "../components/ToggleField";
+import { SearchField as CatalogSearch } from "../components/SearchField";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { memo, useCallback, useMemo, useRef, useState, type ReactNode } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ActivityIndicator, Image, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import {
@@ -34,6 +46,7 @@ import {
   DEFAULT_MODELS,
   type Provider,
 } from "../agent/providerConfiguration";
+import { photoCapabilityId } from "../agent/providerPhotoCapability";
 import { providerCredential } from "../agent/providerCredentials";
 import {
   OPENAI_REASONING_EFFORT_LABELS,
@@ -47,6 +60,7 @@ import { CatalogStatusNotice } from "../catalogs/CatalogStatusNotice";
 import { foodCatalogImageUri } from "../catalogs/sources";
 import type { UserPreferences } from "../storage/userPreferences";
 import { buildUserPreferencesPanelModel } from "../storage/userPreferencesPresentation";
+import { formatStorageBytes } from "../storage/storageUsage";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
 import {
   formatMeasurementHistoryDate,
@@ -436,7 +450,7 @@ export const PersonalFoodsSettingsPanel = memo(function PersonalFoodsSettingsPan
               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Ración típica</Text>
               <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{model.selectedFood.serving_description}</Text>
               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
-                {Math.round(model.selectedFood.calories_per_100g * model.selectedFood.serving_size_g / 100)} kcal · P:{(model.selectedFood.protein_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g · C:{(model.selectedFood.carbs_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g · G:{(model.selectedFood.fat_per_100g * model.selectedFood.serving_size_g / 100).toFixed(1)}g
+                {formatFoodServing(model.selectedFood)}
               </Text>
             </View>
           ) : null}
@@ -511,17 +525,10 @@ function PolicyStatusCard({
   const isHealthy = presentation?.tone === "healthy";
   const accent = isHealthy ? mobileTheme.color.brandPrimary : "#F3B95F";
   return (
-    <View
+    <NoticeFrame
       testID="policy-status-card"
       accessibilityLiveRegion="polite"
-      style={{
-        borderWidth: 1,
-        borderColor: status ? `${accent}66` : mobileTheme.color.borderSubtle,
-        backgroundColor: status ? `${accent}0F` : mobileTheme.color.bgSurface,
-        borderRadius: mobileTheme.radius.lg,
-        padding: 16,
-        gap: 14,
-      }}
+      style={{ borderColor: status ? `${accent}66` : mobileTheme.color.borderSubtle, backgroundColor: status ? `${accent}0F` : mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 16, gap: 14 }}
     >
       <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
         <View
@@ -627,7 +634,100 @@ function PolicyStatusCard({
           {model.policyResult}
         </Text>
       ) : null}
+    </NoticeFrame>
+  );
+}
+
+function StorageUsageCard({ model, actions }: {
+  model: Readonly<TraceSettingsModel>;
+  actions: Readonly<TraceSettingsActions>;
+}) {
+  const report = model.storageReport;
+  const row = (label: string, bytes: number | null, id: string) => (
+    <View key={id} style={{ flexDirection: "row", justifyContent: "space-between", gap: 12 }}>
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, flex: 1 }}>{label}</Text>
+      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{formatStorageBytes(bytes)}</Text>
     </View>
+  );
+  return (
+    <RecordCard variant="outline" testID="storage-usage-card">
+      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
+        Uso del almacenamiento
+      </Text>
+      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>
+        Mide los datos guardados sin modificarlos. El informe contiene solo tamaños y categorías, sin claves, mensajes ni fotos.
+      </Text>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+        <Pressable testID="storage-usage-measure" accessibilityRole="button"
+          disabled={model.storageLoading} onPress={actions.measureStorage}
+          style={{ flex: 1, minWidth: 130, minHeight: 44, borderRadius: mobileTheme.radius.md,
+            backgroundColor: mobileTheme.color.brandPrimary, alignItems: "center", justifyContent: "center",
+            opacity: model.storageLoading ? 0.5 : 1 }}>
+          <Text style={{ color: mobileTheme.color.bgApp, fontWeight: "700" }}>
+            {model.storageLoading ? "Midiendo…" : "Medir ocupación"}
+          </Text>
+        </Pressable>
+        <Pressable testID="storage-usage-copy" accessibilityRole="button"
+          disabled={!report || model.storageLoading} onPress={actions.copyStorageReport}
+          style={{ flex: 1, minWidth: 130, minHeight: 44, borderRadius: mobileTheme.radius.md,
+            borderWidth: 1, borderColor: mobileTheme.color.borderSubtle,
+            alignItems: "center", justifyContent: "center", opacity: !report || model.storageLoading ? 0.5 : 1 }}>
+          <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700" }}>
+            {model.storageCopied ? "Informe copiado ✓" : "Copiar informe"}
+          </Text>
+        </Pressable>
+      </View>
+      {model.storageError ? <Text accessibilityRole="alert" style={{ color: "#FF8585", fontSize: 13 }}>
+        {model.storageError}
+      </Text> : null}
+      {report ? <View testID="storage-usage-report" style={{ gap: 10 }}>
+        <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 24, fontWeight: "700" }}>
+          {formatStorageBytes(report.valueBytes)}
+        </Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          Valores medidos en UTF-8 · {report.measuredEntries} entradas · {new Date(report.measuredAt).toLocaleTimeString("es-ES")}
+        </Text>
+        {report.groups.map((group) => row(group.label, group.bytes, group.id))}
+        {row("Entrada individual más grande", report.largestEntryBytes, "largest")}
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700", marginTop: 4 }}>
+          Dentro de los catálogos
+        </Text>
+        {report.catalogSections.map((section) => row(`${section.label} · ${section.entries}`, section.bytes, section.id))}
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700", marginTop: 4 }}>
+          Archivos SQLite en Android
+        </Text>
+        {row("Archivo de la base de datos", report.database.databaseBytes, "database")}
+        {row("Archivos auxiliares", report.database.auxiliaryBytes, "database-auxiliary")}
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          Tamaños de archivo, sin abrir su contenido. Incluyen estructura y espacio reutilizable; no indican cuánto queda de cuota. No se suman a los valores medidos.
+        </Text>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700", marginTop: 4 }}>
+          Dentro de los datos principales
+        </Text>
+        {report.primaryStatus === "measured" ? report.primarySections.map((section) => row(section.label, section.bytes, section.id))
+          : <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+            {report.primaryStatus === "missing" ? "No hay un registro principal guardado." : "No se pudo desglosar el registro principal."}
+          </Text>}
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700", marginTop: 4 }}>
+          Fuera de este almacén
+        </Text>
+        {row("Caché pública separada", report.artifacts.bytes, "public-cache")}
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          {report.artifacts.entries ?? "No disponible"} archivos públicos · límite {formatStorageBytes(report.artifacts.maxBytes)}. No ocupa el almacén de datos personales.
+        </Text>
+        {row("Archivos de fotos", report.photos.bytes, "photos")}
+        {row("Espacio libre del dispositivo", report.photos.availableDiskBytes, "free-space")}
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          Archivos de fotos: {report.photos.fileCount ?? "no disponible"}. En web no se puede medir el directorio privado del móvil.
+        </Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          Suma parcial de valores, no del archivo SQLite ni de su cuota. Entradas excluidas por privacidad: {report.excludedEntries}; desconocidas sin leer: {report.unknownEntries}; lecturas fallidas: {report.unreadableEntries}.
+        </Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
+          Los desgloses de catálogos y datos principales ya están incluidos en el total. El principal serializa cada campo por separado. Las fotos se miden aparte. La ocupación puede cambiar mientras se mide.
+        </Text>
+      </View> : null}
+    </RecordCard>
   );
 }
 
@@ -640,6 +740,7 @@ export const TraceSettingsPanel = memo(function TraceSettingsPanel({
 }) {
   return (
     <View style={{ gap: 12 }}>
+      <StorageUsageCard model={model} actions={actions} />
       <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "700" }}>
         Trazas de depuración
       </Text>
@@ -983,74 +1084,6 @@ export const PreferencesSettingsPanel = memo(function PreferencesSettingsPanel({
   );
 });
 
-function NotificationToggle({
-  testID,
-  label,
-  description,
-  checked,
-  disabled = false,
-  onPress,
-}: {
-  testID: string;
-  label: string;
-  description: string;
-  checked: boolean;
-  disabled?: boolean;
-  onPress(): void;
-}) {
-  return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        backgroundColor: mobileTheme.color.bgSurface,
-        borderRadius: 12,
-        padding: 14,
-        borderWidth: 1,
-        borderColor: mobileTheme.color.borderSubtle,
-        opacity: disabled ? 0.4 : 1,
-      }}
-    >
-      <View style={{ flex: 1, gap: 2 }}>
-        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "600" }}>
-          {label}
-        </Text>
-        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>
-          {description}
-        </Text>
-      </View>
-      <Pressable
-        testID={testID}
-        accessibilityRole="switch"
-        accessibilityLabel={`${label}: ${checked ? "sí" : "no"}`}
-        accessibilityState={{ checked, disabled }}
-        onPress={onPress}
-        disabled={disabled}
-        style={{
-          width: 52,
-          height: 30,
-          borderRadius: 15,
-          backgroundColor: checked ? mobileTheme.color.brandPrimary : mobileTheme.color.borderSubtle,
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "row",
-        }}
-      >
-        <View
-          style={{
-            position: "absolute",
-            left: checked ? 26 : 4,
-            width: 22,
-            height: 22,
-            borderRadius: 11,
-            backgroundColor: "#fff",
-          }}
-        />
-      </Pressable>
-    </View>
-  );
-}
 
 export const NotificationSettingsPanel = memo(function NotificationSettingsPanel({
   model,
@@ -1569,7 +1602,7 @@ function MemoryInput({
   secondary?: boolean;
 }) {
   return (
-    <TextInput
+    <TextField
       style={{ minHeight: 40, borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgApp, color: secondary ? mobileTheme.color.textSecondary : mobileTheme.color.textPrimary, paddingHorizontal: 10, fontSize: secondary ? 12 : 13, fontWeight: bold ? "700" : undefined }}
       value={value}
       onChangeText={onChangeText}
@@ -1687,6 +1720,9 @@ export const DietSettingsPanel = memo(function DietSettingsPanel({
           <Text style={{ color: "#000", fontSize: 12, fontWeight: "700" }}>Calcular</Text>
         </Pressable>
       </View>
+      {model.calculationIssue ? (
+        <Text testID="diet-plan-calculation-issue" accessibilityLiveRegion="polite" style={{ color: "#FF8D8D", fontSize: 11 }}>{model.calculationIssue}</Text>
+      ) : null}
       {model.issues.get("daily_calories") ? (
         <Text testID="diet-plan-error-daily-calories" style={{ color: "#FF8D8D", fontSize: 11 }}>{model.issues.get("daily_calories")?.message}</Text>
       ) : null}
@@ -1734,9 +1770,6 @@ function LabeledDietValue({ label, flex, children }: { label: string; flex: numb
   return <View style={{ flex, gap: 2 }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, fontWeight: "600", paddingLeft: 10 }}>{label}</Text>{children}</View>;
 }
 
-function ChoiceRow<T extends string>({ label, options, selected, onSelect }: { label: string; options: ReadonlyArray<{ key: T; label: string }>; selected: T | undefined; onSelect(value: T): void }) {
-  return <><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>{label}</Text><View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>{options.map((option) => { const active = selected === option.key; return <Pressable key={option.key} onPress={() => onSelect(option.key)} style={{ borderWidth: 1, borderColor: active ? "rgba(203,255,26,0.45)" : mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.pill, paddingHorizontal: 12, minHeight: 34, alignItems: "center", justifyContent: "center", backgroundColor: active ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp }}><Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>{option.label}</Text></Pressable>; })}</View></>;
-}
 
 function MacroSettingsRow({ row, first, model, actions }: { row: { macro: "protein" | "carbs" | "fat"; kcalLabel: string; gkgLabel: string; hint: number | null; value: string }; first: boolean; model: Readonly<DietSettingsModel>; actions: Readonly<DietSettingsActions> }) {
   const calorieIssue = model.issues.get(`manual_macro_calories.${row.macro}`);
@@ -1793,7 +1826,7 @@ export const MeasurementsSettingsPanel = memo(function MeasurementsSettingsPanel
       ) : model.measurements.map((measurement, index) => {
         const fields = measurementSettingsFields(measurement);
         return (
-          <View key={measurement.id} style={{ backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, padding: 12, gap: 8 }}>
+          <RecordCard key={measurement.id} variant="outline">
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
               <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 13, fontWeight: "700" }}>{formatMeasurementHistoryDate(measurement.measured_on)}</Text>
               <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>#{model.measurements.length - index}</Text>
@@ -1818,7 +1851,7 @@ export const MeasurementsSettingsPanel = memo(function MeasurementsSettingsPanel
                 <Text style={{ color: "#FF6B6B", fontSize: 12, fontWeight: "600" }}>Eliminar</Text>
               </Pressable>
             </View>
-          </View>
+          </RecordCard>
         );
       })}
     </View>
@@ -1928,17 +1961,20 @@ export const FoodsSettingsPanel = memo(function FoodsSettingsPanel({
   actions: Readonly<FoodCatalogSettingsActions>;
 }) {
   const foods = model.foods.filter((food) => !food.source || food.source === "alimento");
+  const [visibleCount, setVisibleCount] = useState(30);
+  useEffect(() => { setVisibleCount(30); }, [model.foodSearch, model.foodCategory]);
   const categories = ["all", ...Array.from(new Set(foods.map((food) => food.category))).sort()];
-  const normalizedSearch = model.foodSearch.toLowerCase();
+  const normalizedSearch = normalizeCatalogName(model.foodSearch);
   const filtered = foods.filter((food) => (
-    (!normalizedSearch || food.name.toLowerCase().includes(normalizedSearch) || food.category.toLowerCase().includes(normalizedSearch))
+    (!normalizedSearch || normalizeCatalogName(food.name).includes(normalizedSearch) || normalizeCatalogName(food.category).includes(normalizedSearch))
     && (model.foodCategory === "all" || food.category === model.foodCategory)
   ));
   return (
     <View style={{ gap: 12 }}>
       <CatalogStatusNotice metadata={model.availability} onRetry={actions.retry} testID="settings-food-catalog-status" />
+      <Text testID="ciqual-attribution" style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{CIQUAL_ATTRIBUTION} Disponible sin conexión.</Text>
       <CatalogSearch value={model.foodSearch} onChange={actions.changeFoodSearch} placeholder="Buscar alimento..." />
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexGrow: 0 }} contentContainerStyle={{ gap: 6 }}>
         {categories.map((category) => {
           const active = model.foodCategory === category;
           const label = category === "all" ? "Todos" : category.charAt(0).toUpperCase() + category.slice(1);
@@ -1948,19 +1984,24 @@ export const FoodsSettingsPanel = memo(function FoodsSettingsPanel({
             </Pressable>
           );
         })}
-      </View>
+      </ScrollView>
       <View style={{ borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, backgroundColor: mobileTheme.color.bgSurface, borderRadius: mobileTheme.radius.lg, padding: 12, gap: 10 }}>
         <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18 }}>Alimentos ({foods.length})</Text>
         {filtered.length === 0 ? (
           <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13 }}>No se encontraron alimentos.</Text>
-        ) : filtered.map((food) => (
-          <View key={food.id}>
+        ) : filtered.slice(0, visibleCount).map((food) => (
+          <View key={`${food.sourceId}/${food.id}`}>
             <FoodCatalogRow food={food} showCategory onPress={() => actions.selectFood(model.selectedFood?.id === food.id ? null : food)} />
             {model.selectedFood?.id === food.id ? (
               <FoodCatalogDetail food={food} testID={shellSurfaceTestId("settings-food-detail")} />
             ) : null}
           </View>
         ))}
+        {filtered.length > visibleCount ? (
+          <Pressable testID="food-catalog-load-more" onPress={() => setVisibleCount((count) => count + 30)} style={{ minHeight: 42, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md }}>
+            <Text style={{ color: mobileTheme.color.textPrimary }}>Mostrar más ({Math.min(visibleCount, filtered.length)} de {filtered.length})</Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
@@ -1993,49 +2034,48 @@ export const ProductsSettingsPanel = memo(function ProductsSettingsPanel({
   );
 });
 
-function CatalogSearch({ value, onChange, placeholder }: { value: string; onChange(value: string): void; placeholder: string }) {
-  return (
-    <View style={{ flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgSurface, paddingHorizontal: 10, height: 40 }}>
-      <Feather name="search" size={16} color={mobileTheme.color.textSecondary} />
-      <TextInput value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={mobileTheme.color.textSecondary} style={{ flex: 1, color: mobileTheme.color.textPrimary, fontSize: 14, marginLeft: 8 }} />
-      {value ? <Pressable onPress={() => onChange("")} style={{ padding: 4 }}><Feather name="x" size={16} color={mobileTheme.color.textSecondary} /></Pressable> : null}
-    </View>
-  );
-}
 
 function FoodCatalogRow({ food, onPress, showCategory = false }: { food: FoodCatalogSettingsModel["foods"][number]; onPress(): void; showCategory?: boolean }) {
   return (
-    <Pressable onPress={onPress} style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle }}>
+    <ItemRow testID={`food-catalog-row-${food.sourceId}-${food.id}`} onPress={onPress} style={{ paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: mobileTheme.color.borderSubtle }}>
       <SettingsFoodThumbnail food={food} />
       <View style={{ flex: 1 }}>
-        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={1}>{food.name}</Text>
-        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{food.calories_per_100g} kcal · P:{food.protein_per_100g}g · C:{food.carbs_per_100g}g · G:{food.fat_per_100g}g</Text>
+        <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13, fontWeight: "600" }} numberOfLines={2}>{food.name}</Text>
+        <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{formatFoodNutrient(food, "calories_per_100g", "kcal")} · P: {formatFoodNutrient(food, "protein_per_100g", "g")} · C: {formatFoodNutrient(food, "carbs_per_100g", "g")} · G: {formatFoodNutrient(food, "fat_per_100g", "g")}</Text>
+        {food.ciqual ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>ANSES-CIQUAL 2025 · {food.id}</Text> : null}
+        {showCategory ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>{food.category}</Text> : null}
       </View>
-      {showCategory ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>{food.category}</Text> : null}
-    </Pressable>
+    </ItemRow>
   );
 }
 
 function SettingsFoodThumbnail({ food }: { food: FoodCatalogSettingsModel["foods"][number] }) {
-  const [failed, setFailed] = useState(false);
-  const uri = foodCatalogImageUri(food);
-  if (uri && !failed) return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
   const emoji = food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️";
-  return <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}><Text style={{ fontSize: 16 }}>{emoji}</Text></View>;
+  return <Thumbnail uri={foodCatalogImageUri(food)} size={36} fallback={<View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}><Text style={{ fontSize: 16 }}>{emoji}</Text></View>} />;
 }
 
 function FoodCatalogDetail({ food, testID, onClose, showTitle = false }: { food: FoodCatalogSettingsModel["foods"][number]; testID: string; onClose?: () => void; showTitle?: boolean }) {
-  const servingCalories = Math.round(food.calories_per_100g * food.serving_size_g / 100);
+  const imageUri = foodCatalogImageUri(food);
   return (
     <View testID={testID} style={{ backgroundColor: mobileTheme.color.bgSurface, borderRadius: 12, padding: 16, gap: 12, marginTop: showTitle ? 0 : 6, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle }}>
       {showTitle ? <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}><Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 18, flex: 1 }}>{food.name}</Text><Pressable onPress={onClose} style={{ padding: 4 }}><Feather name="x" size={20} color={mobileTheme.color.textSecondary} /></Pressable></View> : null}
-      {showTitle && food.image ? <Image source={{ uri: foodCatalogImageUri(food)! }} style={{ width: "100%", height: 160, borderRadius: 8 }} resizeMode="contain" /> : null}
+      {(showTitle || food.ciqual) && imageUri ? <Thumbnail key={imageUri} uri={imageUri} size={160} style={{ width: "100%" }} resizeMode="contain" accessibilityLabel={`Imagen de ${food.name}`} fallback={null} /> : null}
       <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>Por 100g</Text>
       <View style={{ flexDirection: "row", gap: 8 }}>
-        {[{ label: "Calorías", value: food.calories_per_100g, unit: "kcal", color: "#FF6B6B" }, { label: "Proteína", value: food.protein_per_100g, unit: "g", color: "#4ECDC4" }, { label: "Carbos", value: food.carbs_per_100g, unit: "g", color: "#FFE66D" }, { label: "Grasa", value: food.fat_per_100g, unit: "g", color: "#FF8A5C" }].map((macro) => <View key={macro.label} style={{ flex: 1, backgroundColor: `${macro.color}15`, borderRadius: 8, padding: 8, alignItems: "center", gap: 2 }}><Text style={{ color: macro.color, fontSize: 16, fontWeight: "700" }}>{macro.value}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.unit}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.label}</Text></View>)}
+        {[{ label: "Calorías", value: formatFoodNutrient(food, "calories_per_100g"), unit: "kcal", color: "#FF6B6B" }, { label: "Proteína", value: formatFoodNutrient(food, "protein_per_100g"), unit: "g", color: "#4ECDC4" }, { label: "Carbos", value: formatFoodNutrient(food, "carbs_per_100g"), unit: "g", color: "#FFE66D" }, { label: "Grasa", value: formatFoodNutrient(food, "fat_per_100g"), unit: "g", color: "#FF8A5C" }].map((macro) => <View key={macro.label} style={{ flex: 1, backgroundColor: `${macro.color}15`, borderRadius: 8, padding: 8, alignItems: "center", gap: 2 }}><Text style={{ color: macro.color, fontSize: macro.value.length > 8 ? 11 : 16, fontWeight: "700" }}>{macro.value}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.unit}</Text><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 9 }}>{macro.label}</Text></View>)}
       </View>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text><Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>{food.fiber_per_100g}g</Text></View>
-      {food.serving_size_g > 0 ? <View style={{ backgroundColor: "#ffffff08", borderRadius: 8, padding: 10, gap: 4 }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>{showTitle ? `Ración típica (${food.serving_size_g}g)` : "Ración típica"}</Text>{!showTitle ? <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{food.serving_description || `${food.serving_size_g}g`}</Text> : null}<Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{servingCalories} kcal · P:{(food.protein_per_100g * food.serving_size_g / 100).toFixed(1)}g · C:{(food.carbs_per_100g * food.serving_size_g / 100).toFixed(1)}g · G:{(food.fat_per_100g * food.serving_size_g / 100).toFixed(1)}g</Text></View> : null}
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Fibra</Text><Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "600" }}>{formatFoodNutrient(food, "fiber_per_100g", "g")}</Text></View>
+      {food.serving_size_g !== null && food.serving_size_g > 0 ? <View style={{ backgroundColor: "#ffffff08", borderRadius: 8, padding: 10, gap: 4 }}><Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, fontWeight: "600" }}>{showTitle ? `Ración típica (${food.serving_size_g}g)` : "Ración típica"}</Text>{!showTitle ? <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{food.serving_description || `${food.serving_size_g}g`}</Text> : null}<Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{formatFoodServing(food)}</Text></View> : null}
+      {food.ciqual ? (
+        <View style={{ gap: 6 }}>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>{food.serving_description}. Sin ración doméstica documentada.</Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>{CIQUAL_IMAGE_ATTRIBUTION}</Text>
+          {!hasCompleteFoodNutrition(food) ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Datos incompletos: para registrar este alimento en la dieta tendrás que completar los valores manualmente. «No disponible», trazas y límites no equivalen a cero.</Text> : null}
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>ANSES-CIQUAL {food.ciqual.version} · {food.id} · Licence Ouverte 2.0</Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>Original francés: {food.ciqual.names.fr}</Text>
+          <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>Original inglés: {food.ciqual.names.en}</Text>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -2047,6 +2087,10 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
   model: Readonly<ProviderSettingsModel>;
   actions: Readonly<ProviderSettingsActions>;
 }) {
+  const customModelInputRef = useRef<TextInput>(null);
+  useEffect(() => {
+    if (model.custom.focusModelRequest > 0) customModelInputRef.current?.focus();
+  }, [model.custom.focusModelRequest]);
   const healthSafetyConsent = model.healthSafetyConsent;
   const store = {
     keys: model.keys,
@@ -2152,38 +2196,18 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                       <Text style={{ color: mobileTheme.color.textSecondary, lineHeight: 18, fontSize: 12 }}>
                         A veces una consulta queda en duda. Con este interruptor activado, la app envía solo el texto de esa consulta al proveedor de IA que estés usando en ese momento (el del Coach o el del Estimador) para que dé una segunda opinión antes de responder. No envía historial, fotos ni memoria local. Desactivado, esa duda se resuelve solo con la revisión local.
                       </Text>
-                      <Pressable
+                      <ToggleField
+                        variant="inline"
                         testID="health-safety-consent-switch"
-                        accessibilityRole="switch"
-                        accessibilityState={{ checked: healthSafetyConsent.enabled, disabled: !healthSafetyConsent.available }}
+                        checked={healthSafetyConsent.enabled}
+                        disabled={!healthSafetyConsent.available}
                         accessibilityLabel="Pedir una segunda opinión a la IA en consultas dudosas"
                         accessibilityHint={healthSafetyConsent.available ? undefined : "Guarda la API key de un proveedor para poder activarla"}
-                        disabled={!healthSafetyConsent.available}
                         onPress={() => updateHealthSafetyConsent(!healthSafetyConsent.enabled)}
-                        style={{ flexDirection: "row", alignItems: "center", gap: 10, minHeight: 38, opacity: healthSafetyConsent.available ? 1 : 0.55 }}
-                      >
-                        <View
-                          style={{
-                            width: 38,
-                            height: 22,
-                            borderRadius: 999,
-                            padding: 2,
-                            alignItems: healthSafetyConsent.enabled ? "flex-end" : "flex-start",
-                            backgroundColor: healthSafetyConsent.enabled ? mobileTheme.color.brandPrimary : "#3A414C",
-                          }}
-                        >
-                          <View style={{ width: 18, height: 18, borderRadius: 999, backgroundColor: healthSafetyConsent.enabled ? "#06090D" : "#A2AAB5" }} />
-                        </View>
-                        <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600", flex: 1 }}>
-                          Segunda opinión de la IA en consultas dudosas
-                        </Text>
-                        <Text
-                          testID="health-safety-consent-status"
-                          style={{ color: healthSafetyConsent.enabled ? mobileTheme.color.brandPrimary : mobileTheme.color.textSecondary, fontSize: 11 }}
-                        >
-                          {healthSafetyConsent.status}
-                        </Text>
-                      </Pressable>
+                        label="Segunda opinión de la IA en consultas dudosas"
+                        status={healthSafetyConsent.status}
+                        statusTestID="health-safety-consent-status"
+                      />
                       {!healthSafetyConsent.available ? (
                         <Text testID="health-safety-consent-hint" style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
                           Para activarla, guarda antes la API key de un proveedor más abajo. Sin clave no hay a quién enviar la consulta.
@@ -2254,10 +2278,12 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                                 overflow: "hidden",
                               }}
                             >
-                              {(["anthropic", "openai", "google"] as Provider[]).map((provider) => {
+                              {(["anthropic", "openai", "google", "custom_openai"] as Provider[]).map((provider) => {
                                 const k = store.keys.find((item) => item.provider === provider);
                                 const hasKey = !!providerCredential(k?.api_key, IS_FAKE_PROVIDER_MODE);
                                 const isSelected = dropdown.value === provider;
+                                const photoUnsupported = dropdown.surfaceId === "food-provider-dropdown" && !!k
+                                  && model.photoUnsupportedIds.includes(photoCapabilityId(k));
                                 return (
                                   <Pressable
                                     key={provider}
@@ -2269,7 +2295,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                                       paddingHorizontal: 12,
                                       paddingVertical: 10,
                                       backgroundColor: isSelected ? "rgba(203,255,26,0.08)" : "transparent",
-                                      opacity: hasKey ? 1 : 0.4,
+                                      opacity: hasKey ? (photoUnsupported ? 0.65 : 1) : 0.4,
                                     }}
                                   >
                                     <View
@@ -2293,6 +2319,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                                       {!hasKey ? (
                                         <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>Sin API key</Text>
                                       ) : null}
+                                      {photoUnsupported ? <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 10 }}>(No válido para análisis de fotos: no procesa imágenes)</Text> : null}
                                     </View>
                                     {isSelected ? <Feather name="check" size={16} color={mobileTheme.color.brandPrimary} /> : null}
                                   </Pressable>
@@ -2316,6 +2343,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                       const draft = providerDraftByProvider[key.provider] ?? {
                         api_key: key.api_key,
                         model: key.model,
+                        base_url: key.base_url ?? "",
                         workspace_id: key.workspace_id ?? "",
                       };
                       const hasDraftApiKey = !!providerCredential(draft.api_key, IS_FAKE_PROVIDER_MODE);
@@ -2347,13 +2375,14 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                           }}
                         >
                           <View
-                            style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10 }}
+                            style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 10 }}
                           >
-                            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flex: 1 }}>
+                            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, flexGrow: 1, flexBasis: 190, minWidth: 190 }}>
                               <View
                                 style={{
                                   width: 42,
                                   height: 42,
+                                  flexShrink: 0,
                                   borderRadius: 12,
                                   backgroundColor: providerMeta.avatar_bg,
                                   alignItems: "center",
@@ -2364,8 +2393,13 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                                   {providerMeta.label.charAt(0)}
                                 </Text>
                               </View>
-                              <View style={{ flex: 1 }}>
-                                <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: 29 }}>
+                              <View style={{ flex: 1, minWidth: 0 }}>
+                                <Text
+                                  numberOfLines={1}
+                                  adjustsFontSizeToFit
+                                  minimumFontScale={0.75}
+                                  style={{ color: mobileTheme.color.textPrimary, fontWeight: "700", fontSize: key.provider === "custom_openai" ? 21 : 29 }}
+                                >
                                   {providerMeta.label}
                                 </Text>
                                 <Text
@@ -2379,6 +2413,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                             <View
                               style={{
                                 borderRadius: mobileTheme.radius.pill,
+                                flexShrink: 0,
                                 paddingHorizontal: 10,
                                 minHeight: 28,
                                 backgroundColor: statusMeta.backgroundColor,
@@ -2502,6 +2537,26 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                               </Text>
                             </View>
                           ) : null}
+
+                          {key.provider === "custom_openai" ? (
+                            <View style={{ gap: 8 }}>
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>URL base HTTPS del servidor</Text>
+                              <TextInput
+                                testID="provider-base-url-custom_openai"
+                                value={draft.base_url ?? ""}
+                                onChangeText={(value) => updateProviderDraft("custom_openai", { base_url: value })}
+                                placeholder="URL HTTPS del servidor (incluye /v1 si procede)"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                keyboardType="url"
+                                style={{ minHeight: 46, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }}
+                              />
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, lineHeight: 16 }}>
+                                Usa HTTPS con un certificado válido. Gymnasia enviará la clave y las consultas a esta dirección.
+                              </Text>
+                            </View>
+                          ) : null}
   
                           <View style={{ flexDirection: "row", gap: 8 }}>
                             <Pressable
@@ -2563,6 +2618,42 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                           >
                             {connectionStatus.detail}
                           </Text>
+
+                          {key.provider === "custom_openai" ? (
+                            <View style={{ gap: 8 }}>
+                              <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12 }}>Modelo</Text>
+                              <TextInput
+                                ref={customModelInputRef}
+                                testID="provider-model-input-custom_openai"
+                                value={draft.model}
+                                onChangeText={(value) => updateProviderDraft("custom_openai", { model: value })}
+                                placeholder="ID del modelo"
+                                placeholderTextColor={mobileTheme.color.textSecondary}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                style={{ minHeight: 46, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.bgApp, color: mobileTheme.color.textPrimary, paddingHorizontal: 12 }}
+                              />
+                              {model.custom.photoUnsupported ? (
+                                <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11 }}>
+                                  (No válido para análisis de fotos: este modelo no procesa imágenes.)
+                                </Text>
+                              ) : null}
+                              <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+                                <Pressable onPress={actions.loadCustomModels} disabled={model.custom.loading} testID="provider-load-models-custom_openai" style={{ borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.brandPrimary, padding: 9, opacity: model.custom.loading ? 0.5 : 1 }}>
+                                  <Text style={{ color: mobileTheme.color.brandPrimary, fontSize: 12, fontWeight: "700" }}>{model.custom.loading ? "Consultando..." : "Actualizar modelos"}</Text>
+                                </Pressable>
+                                <Pressable onPress={actions.testCustomModel} disabled={model.custom.testing} testID="provider-test-model-custom_openai" style={{ borderRadius: mobileTheme.radius.md, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, padding: 9, opacity: model.custom.testing ? 0.5 : 1 }}>
+                                  <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 12, fontWeight: "700" }}>{model.custom.testing ? "Probando..." : "Probar modelo (puede consumir API)"}</Text>
+                                </Pressable>
+                              </View>
+                              {model.custom.message ? <Text style={{ color: providerDetailColorBySeverity(model.custom.message.severity), fontSize: 12 }}>{model.custom.message.text}</Text> : null}
+                              {model.custom.options.map((option) => (
+                                <Pressable key={option.id} testID={`provider-model-option-custom_openai-${option.id}`} onPress={() => actions.selectCustomModel(option.id)} style={{ padding: 8, borderRadius: mobileTheme.radius.md, backgroundColor: option.id === draft.model ? "rgba(203,255,26,0.08)" : mobileTheme.color.bgApp }}>
+                                  <Text style={{ color: mobileTheme.color.textPrimary }}>{option.id}</Text>
+                                </Pressable>
+                              ))}
+                            </View>
+                          ) : null}
   
                           {key.provider === "anthropic" ? (
                               <View style={{ gap: 8 }}>
@@ -3250,7 +3341,7 @@ export const ProviderSettingsPanel = memo(function ProviderSettingsPanel({
                                   </Text>
                                 ) : null}
                               </View>
-                            ) : (
+                            ) : key.provider === "custom_openai" ? null : (
                               <TextInput
                                 style={{
                                   minHeight: 42,

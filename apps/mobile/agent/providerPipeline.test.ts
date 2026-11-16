@@ -8,8 +8,10 @@ import {
   createAnthropicStreamParser,
   createGoogleStreamParser,
   createOpenAIStreamParser,
+  type AnthropicStreamTurnResult,
+  type OpenAIStreamTurnResult,
 } from "./providerStreamParsers";
-import { createAgentToolExecutor, type ToolExecutorDependencies } from "./toolExecutor";
+import { createAgentToolExecutor, type ToolExecutorDependencies, type ToolStore } from "./toolExecutor";
 import {
   runAnthropicToolLoop,
   runGoogleToolLoop,
@@ -56,6 +58,26 @@ function replayWithChunkSizes<TResult>(
   return parser.finish();
 }
 
+function emptyOpenAITurn(responseId: string | null = "resp_done"): OpenAIStreamTurnResult {
+  return {
+    responseId,
+    content: "",
+    thinking: null,
+    truncated: false,
+    outputItems: [],
+  };
+}
+
+function emptyAnthropicTurn(): AnthropicStreamTurnResult {
+  return {
+    content: "",
+    thinking: null,
+    contentBlocks: [],
+    stopReason: "end_turn",
+    truncated: false,
+  };
+}
+
 function createRealExecutor(storedPersonalData: unknown) {
   const saved: unknown[] = [];
   const dependencies = {
@@ -94,7 +116,7 @@ describe("GYM-139: el ejecutor real sobre memoria con campos de inyección", () 
       createOpenAIStreamParser({}),
     );
     const outputs: Array<Record<string, unknown>> = [];
-    const result = await runOpenAIToolLoop({
+    const result = await runOpenAIToolLoop({ initialInput: [],
       initialTurn,
       executeTool: (name, args) => executeTool(name, args),
       requestNextTurn: async (turnOutputs) => {
@@ -106,7 +128,7 @@ describe("GYM-139: el ejecutor real sobre memoria con campos de inyección", () 
       },
     });
 
-    expect(outputs).toEqual([{
+    expect(outputs).toEqual([initialTurn.outputItems[0], {
       type: "function_call_output",
       call_id: "call_openai_1",
       output: "Ganar masa muscular",
@@ -129,6 +151,63 @@ describe("GYM-139: el ejecutor real sobre memoria con campos de inyección", () 
 });
 
 describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
+  it.each(["openai", "anthropic", "google"])(
+    "%s: devuelve el fallo de schema, acepta la corrección y persiste una sola vez",
+    async (provider) => {
+      let store: ToolStore = { measurements: [], templates: [], dietByDate: {} };
+      const commitStore = vi.fn(async (updater: (previous: ToolStore) => ToolStore) => {
+        store = updater(store);
+      });
+      const execute = createAgentToolExecutor({
+        loadPersonalData: async () => [], savePersonalData: async () => {},
+        loadMeasurements: async () => store.measurements,
+        createId: (prefix) => `${prefix}_test`, getExerciseImageUrl: () => "",
+        submitFeedbackIssue: async () => ({ status: "canceled" }),
+      });
+      const executeTool = async (name: string, args: Record<string, unknown>) =>
+        execute(name, args, { commitStore });
+      let rounds = 0;
+      const nextFixture = (messages: unknown) => {
+        rounds += 1;
+        if (rounds === 1) {
+          expect(JSON.stringify(messages)).toContain("invalid_tool_arguments");
+          expect(JSON.stringify(messages)).toContain("data.weight_kg");
+          expect(commitStore).not.toHaveBeenCalled();
+          expect(store.measurements).toEqual([]);
+        } else {
+          expect(JSON.stringify(messages)).toContain("Medidas guardadas correctamente");
+          expect(commitStore).toHaveBeenCalledOnce();
+        }
+        return readRawFixture(`${provider}-measurement-${rounds === 1 ? "tool-call" : "final"}.sse`);
+      };
+      const invalid = readRawFixture(`${provider}-invalid-measurement-tool-call.sse`);
+      if (provider === "openai") {
+        await runOpenAIToolLoop({
+          initialInput: [], initialTurn: replayInNetworkChunks(invalid, createOpenAIStreamParser()),
+          executeTool,
+          requestNextTurn: async (messages) => replayInNetworkChunks(nextFixture(messages), createOpenAIStreamParser()),
+        });
+      } else if (provider === "anthropic") {
+        await runAnthropicToolLoop({
+          initialMessages: [], initialTurn: replayInNetworkChunks(invalid, createAnthropicStreamParser()),
+          executeTool,
+          requestNextTurn: async (messages) => replayInNetworkChunks(nextFixture(messages), createAnthropicStreamParser()),
+        });
+      } else {
+        await runGoogleToolLoop({
+          initialMessages: [], initialTurn: replayInNetworkChunks(invalid, createGoogleStreamParser()),
+          executeTool,
+          requestNextTurn: async (messages) => replayInNetworkChunks(nextFixture(messages), createGoogleStreamParser()),
+        });
+      }
+      expect(rounds).toBe(2);
+      expect(commitStore).toHaveBeenCalledOnce();
+      expect(store.measurements).toEqual([expect.objectContaining({
+        measured_on: "2024-04-11", weight_kg: 75.5, body_fat_pct: 18.5,
+      })]);
+    },
+  );
+
   it("procesa el dialecto completo de OpenAI", async () => {
     const deltas: string[] = [];
     const initialTurn = replayInNetworkChunks(
@@ -136,12 +215,12 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
       createOpenAIStreamParser({ onContentDelta: (delta) => deltas.push(delta) }),
     );
     const executeTool = vi.fn(async () => "Ganar masa muscular");
-    const requests: Array<{ outputs: Array<Record<string, unknown>>; responseId: string }> = [];
-    const result = await runOpenAIToolLoop({
+    const requests: Array<Array<Record<string, unknown>>> = [];
+    const result = await runOpenAIToolLoop({ initialInput: [],
       initialTurn,
       executeTool,
-      requestNextTurn: async (outputs, responseId) => {
-        requests.push({ outputs, responseId });
+      requestNextTurn: async (context) => {
+        requests.push(context);
         return replayInNetworkChunks(
           readRawFixture("openai-final.sse"),
           createOpenAIStreamParser({ onContentDelta: (delta) => deltas.push(delta) }),
@@ -149,6 +228,7 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
       },
     });
 
+    expect(initialTurn.truncated).toBe(false);
     expect(initialTurn.outputItems).toEqual([expect.objectContaining({
       type: "function_call",
       name: "read_field_value",
@@ -159,14 +239,14 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
       { key: "Objetivo" },
       expect.any(Object),
     );
-    expect(requests).toEqual([{
-      responseId: "resp_openai_tool",
-      outputs: [{
+    expect(requests).toEqual([[
+      initialTurn.outputItems[0],
+      {
         type: "function_call_output",
         call_id: "call_openai_1",
         output: "Ganar masa muscular",
-      }],
-    }]);
+      },
+    ]]);
     expect(deltas.join("")).toBe("Tu objetivo es ganar masa muscular.");
     expect(result.content).toBe("Tu objetivo es ganar masa muscular.");
   });
@@ -191,6 +271,7 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
       },
     });
 
+    expect(initialTurn.truncated).toBe(false);
     expect(initialTurn.contentBlocks).toEqual([{
       type: "tool_use",
       id: "toolu_anthropic_1",
@@ -249,6 +330,166 @@ describe("pipeline SSE crudo → parser → tool → segunda ronda", () => {
   });
 });
 
+describe("argumentos de tools en streaming", () => {
+  it("acumula y correlaciona deltas intercalados de OpenAI y Anthropic", async () => {
+    const openAI = replayInNetworkChunks(
+      readRawFixture("openai-interleaved-tool-calls.sse"),
+      createOpenAIStreamParser(),
+    );
+    const openAIExecute = vi.fn(async (_name: string, args: Record<string, unknown>) => (
+      `valor:${String(args.key)}`
+    ));
+    await runOpenAIToolLoop({ initialInput: [],
+      initialTurn: openAI,
+      executeTool: openAIExecute,
+      requestNextTurn: async () => emptyOpenAITurn("resp_openai_done"),
+    });
+
+    expect(openAI.truncated).toBe(false);
+    expect(openAI.outputItems).toEqual([
+      expect.objectContaining({
+        call_id: "call_openai_first",
+        arguments: '{"key":"Objetivo"}',
+      }),
+      expect.objectContaining({
+        call_id: "call_openai_second",
+        arguments: '{"key":"Altura"}',
+      }),
+    ]);
+    expect(openAIExecute.mock.calls.map(([, args]) => args)).toEqual([
+      { key: "Objetivo" },
+      { key: "Altura" },
+    ]);
+
+    const anthropic = replayInNetworkChunks(
+      readRawFixture("anthropic-interleaved-tool-calls.sse"),
+      createAnthropicStreamParser(),
+    );
+    const anthropicExecute = vi.fn(async (_name: string, args: Record<string, unknown>) => (
+      `valor:${String(args.key)}`
+    ));
+    await runAnthropicToolLoop({
+      initialTurn: anthropic,
+      initialMessages: [],
+      executeTool: anthropicExecute,
+      requestNextTurn: async () => emptyAnthropicTurn(),
+    });
+
+    expect(anthropic.truncated).toBe(false);
+    expect(anthropic.contentBlocks).toEqual([
+      {
+        type: "tool_use",
+        id: "toolu_anthropic_first",
+        name: "read_field_value",
+        input: { key: "Objetivo" },
+      },
+      {
+        type: "tool_use",
+        id: "toolu_anthropic_second",
+        name: "read_field_value",
+        input: { key: "Altura" },
+      },
+    ]);
+    expect(anthropicExecute.mock.calls.map(([, args]) => args)).toEqual([
+      { key: "Objetivo" },
+      { key: "Altura" },
+    ]);
+  });
+
+  it("rechaza un stream truncado antes de ejecutar argumentos parciales", async () => {
+    const openAI = replayInNetworkChunks(
+      readRawFixture("openai-truncated-tool-call.sse"),
+      createOpenAIStreamParser(),
+    );
+    const openAIExecute = vi.fn(async () => "no debe ejecutarse");
+
+    expect(openAI.truncated).toBe(true);
+    await expect(runOpenAIToolLoop({ initialInput: [],
+      initialTurn: openAI,
+      executeTool: openAIExecute,
+      requestNextTurn: async () => emptyOpenAITurn(),
+    })).rejects.toThrow("La respuesta de OpenAI se cortó antes de completarse.");
+    expect(openAIExecute).not.toHaveBeenCalled();
+
+    const anthropic = replayInNetworkChunks(
+      readRawFixture("anthropic-truncated-tool-call.sse"),
+      createAnthropicStreamParser(),
+    );
+    const anthropicExecute = vi.fn(async () => "no debe ejecutarse");
+
+    expect(anthropic.truncated).toBe(true);
+    await expect(runAnthropicToolLoop({
+      initialTurn: anthropic,
+      initialMessages: [],
+      executeTool: anthropicExecute,
+      requestNextTurn: async () => emptyAnthropicTurn(),
+    })).rejects.toThrow("La respuesta de Anthropic se cortó antes de completarse.");
+    expect(anthropicExecute).not.toHaveBeenCalled();
+  });
+
+  it("no ejecuta mientras llegan deltas y solo usa el turno final", async () => {
+    const parser = createOpenAIStreamParser();
+    const executeTool = vi.fn(async () => "ok");
+    const raw = readRawFixture("openai-tool-call.sse");
+    const terminalOffset = raw.indexOf("event: response.completed");
+
+    parser.push(raw.slice(0, terminalOffset));
+    expect(executeTool).not.toHaveBeenCalled();
+
+    const initialTurn = parser.finish();
+    expect(initialTurn.truncated).toBe(true);
+    await expect(runOpenAIToolLoop({ initialInput: [],
+      initialTurn,
+      executeTool,
+      requestNextTurn: async () => emptyOpenAITurn(),
+    })).rejects.toThrow("La respuesta de OpenAI se cortó antes de completarse.");
+    expect(executeTool).not.toHaveBeenCalled();
+
+    const completeTurn = replayInNetworkChunks(
+      raw,
+      createOpenAIStreamParser(),
+    );
+    expect(completeTurn.truncated).toBe(false);
+    await runOpenAIToolLoop({ initialInput: [],
+      initialTurn: completeTurn,
+      executeTool,
+      requestNextTurn: async () => emptyOpenAITurn(),
+    });
+    expect(executeTool).toHaveBeenCalledOnce();
+
+    const anthropicParser = createAnthropicStreamParser();
+    const anthropicExecute = vi.fn(async () => "ok");
+    const anthropicRaw = readRawFixture("anthropic-tool-call.sse");
+    const anthropicTerminalOffset = anthropicRaw.indexOf("event: message_stop");
+
+    anthropicParser.push(anthropicRaw.slice(0, anthropicTerminalOffset));
+    expect(anthropicExecute).not.toHaveBeenCalled();
+
+    const incompleteAnthropicTurn = anthropicParser.finish();
+    expect(incompleteAnthropicTurn.truncated).toBe(true);
+    await expect(runAnthropicToolLoop({
+      initialTurn: incompleteAnthropicTurn,
+      initialMessages: [],
+      executeTool: anthropicExecute,
+      requestNextTurn: async () => emptyAnthropicTurn(),
+    })).rejects.toThrow("La respuesta de Anthropic se cortó antes de completarse.");
+    expect(anthropicExecute).not.toHaveBeenCalled();
+
+    const completeAnthropicTurn = replayInNetworkChunks(
+      anthropicRaw,
+      createAnthropicStreamParser(),
+    );
+    expect(completeAnthropicTurn.truncated).toBe(false);
+    await runAnthropicToolLoop({
+      initialTurn: completeAnthropicTurn,
+      initialMessages: [],
+      executeTool: anthropicExecute,
+      requestNextTurn: async () => emptyAnthropicTurn(),
+    });
+    expect(anthropicExecute).toHaveBeenCalledOnce();
+  });
+});
+
 describe("deteccion de streams cortados", () => {
   it("un turno completo no se marca como truncado", () => {
     const result = replayInNetworkChunks(
@@ -295,7 +536,7 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       readRawFixture("openai-final.sse"),
       createOpenAIStreamParser(),
     ));
-    const openAIResult = await runOpenAIToolLoop({
+    const openAIResult = await runOpenAIToolLoop({ initialInput: [],
       initialTurn: replayInNetworkChunks(
         readRawFixture("openai-final.sse"),
         createOpenAIStreamParser(),
@@ -365,7 +606,7 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       createOpenAIStreamParser(),
     ));
 
-    await runOpenAIToolLoop({ initialTurn, executeTool, requestNextTurn });
+    await runOpenAIToolLoop({ initialInput: [], initialTurn, executeTool, requestNextTurn });
 
     expect(initialTurn.outputItems).toEqual([
       expect.objectContaining({
@@ -390,6 +631,7 @@ describe("contrato de parsing de llamadas a herramientas", () => {
       })],
     ]);
     expect(requestNextTurn).toHaveBeenCalledWith([
+      ...initialTurn.outputItems,
       {
         type: "function_call_output",
         call_id: "call_openai_first",
@@ -400,7 +642,7 @@ describe("contrato de parsing de llamadas a herramientas", () => {
         call_id: "call_openai_second",
         output: "valor:Altura",
       },
-    ], "resp_openai_multiple");
+    ]);
   });
 
   it("extrae varias llamadas de Anthropic en orden y conserva tool_use_id", async () => {
@@ -528,29 +770,32 @@ describe("contrato de parsing de llamadas a herramientas", () => {
     )).toThrow("google controlled");
   });
 
-  it("degrada argumentos inválidos a objeto vacío de forma controlada", async () => {
-    const executeTool = vi.fn(async () => "ok");
-    await runOpenAIToolLoop({
-      initialTurn: {
-        responseId: "resp_malformed_args",
-        outputItems: [{
-          type: "function_call",
-          id: "fc_malformed_args",
-          call_id: "call_malformed_args",
-          name: "read_field_value",
-          arguments: "{not-json",
-        }],
-      },
-      executeTool,
-      requestNextTurn: async () => ({ responseId: "resp_done", outputItems: [] }),
-    });
+  it.each(["{not-json", "", "null", "[]", "75", '"text"'])(
+    "devuelve al modelo los argumentos JSON inválidos (%s) sin ejecutar una tool sin campos requeridos",
+    async (argumentsText) => {
+      const executeTool = vi.fn(async () => "ok");
+      const requestNextTurn = vi.fn(async () => emptyOpenAITurn());
+      await runOpenAIToolLoop({ initialInput: [],
+        initialTurn: {
+          responseId: "resp_malformed_args",
+          content: "",
+          thinking: null,
+          truncated: false,
+          outputItems: [{
+            type: "function_call",
+            id: "fc_malformed_args",
+            call_id: "call_malformed_args",
+            name: "read_routines",
+            arguments: argumentsText,
+          }],
+        },
+        executeTool,
+        requestNextTurn,
+      });
 
-    expect(executeTool).toHaveBeenCalledWith(
-      "read_field_value",
-      {},
-      expect.any(Object),
-    );
-
+      expect(executeTool).not.toHaveBeenCalled();
+      expect(requestNextTurn).toHaveBeenCalledOnce();
+      expect(JSON.stringify(requestNextTurn.mock.calls)).toContain("invalid_tool_arguments");
   });
 });
 

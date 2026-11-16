@@ -5,11 +5,12 @@ import {
   ActivityIndicator,
   Modal,
   Pressable,
-  SafeAreaView,
   ScrollView,
   Text,
   View,
 } from "react-native";
+// Nunca el SafeAreaView de react-native core: en Android no aplica insets (GYM-249).
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { mobileTheme } from "./theme";
 import type { RecoveryQuarantineRecord } from "./persistence/localStoreRecovery";
@@ -333,7 +334,7 @@ export function LocalStoreRecoveryScreen({
           if (!actionsDisabled) setConfirmDiscard(false);
         }}
       >
-        <View
+        <SafeAreaView
           testID="local-store-recovery-discard-confirmation"
           style={{
             position: "absolute",
@@ -388,7 +389,7 @@ export function LocalStoreRecoveryScreen({
               onPress={() => setConfirmDiscard(false)}
             />
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );

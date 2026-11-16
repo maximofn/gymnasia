@@ -18,12 +18,18 @@ import {
   Vibration,
 } from "react-native";
 import { createPlatformFetch } from "./network";
+import { CATALOG_CACHE_DIRECTORY, type CatalogArtifactStorage } from "../catalogCache";
+import { scopedStorageKey } from "../runtimeEnvironment";
+import { createBoundedCatalogArtifacts } from "./catalogArtifactStorage";
+import { createCatalogArtifactFiles } from "./catalogArtifactFiles";
+import { createCatalogArtifactIndexedDb } from "./catalogArtifactIndexedDb";
 
 export type PlatformDocumentPickerAsset = DocumentPicker.DocumentPickerAsset;
 export type PlatformAudioSound = InstanceType<typeof Audio.Sound>;
 
 export type AppPlatformServices = Readonly<{
   storage: typeof AsyncStorage;
+  catalogArtifacts: CatalogArtifactStorage;
   secureStorage: typeof SecureStore;
   crypto: typeof Crypto;
   constants: typeof Constants;
@@ -57,6 +63,12 @@ export type AppPlatformServices = Readonly<{
 export function createExpoPlatformServices(): AppPlatformServices {
   return {
     storage: AsyncStorage,
+    catalogArtifacts: createBoundedCatalogArtifacts(
+      Platform.OS === "web"
+        ? createCatalogArtifactIndexedDb(scopedStorageKey(CATALOG_CACHE_DIRECTORY))
+        : createCatalogArtifactFiles(`${scopedStorageKey("gymnasia.mobile.exercise_catalog.v4")}:artifact:`, scopedStorageKey(CATALOG_CACHE_DIRECTORY)),
+      `${scopedStorageKey("gymnasia.mobile.exercise_catalog.v4")}:artifact:`,
+    ),
     secureStorage: SecureStore,
     crypto: Crypto,
     constants: Constants,

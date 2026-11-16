@@ -1,13 +1,17 @@
+import { Thumbnail } from "../components/Thumbnail";
+import { TextField } from "../components/TextField";
+import { Button } from "../components/Button";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { memo, useState } from "react";
-import { Image, KeyboardAvoidingView, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { memo } from "react";
+import { Image, KeyboardAvoidingView, Pressable, ScrollView, Text, View } from "react-native";
 
 import type { AiReportSurface } from "../agent/feedbackIssues";
 import type { ChatMessage } from "../agent/chatModel";
 import { foodCatalogImageUri } from "../catalogs/sources";
 import type { FoodCatalogEntry } from "../catalogs/types";
 import { formatDietDayHeader, formatNutritionNumber, isoDateFromDate } from "../diet/model";
+import { dietItemImageUri } from "../diet/catalogModel";
 import type { DietMealCategory } from "../diet/nutritionContract";
 import type { DietResolutionActions, DietResolutionModel } from "../controllers/dietController";
 import { shellSurfaceTestId } from "../shell/shellRegistry";
@@ -41,7 +45,7 @@ export const DietResolutionOverlays = memo(function DietResolutionOverlays({
               <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 18, fontWeight: "800", textAlign: "center" }}>Repetir {category}</Text>
               <Text style={{ color: "#A1AAB8", fontSize: 13, lineHeight: 19, textAlign: "center" }}>Elige el día del que quieres copiar los alimentos.</Text>
               {model.isWeb ? (
-                <TextInput
+                <TextField
                   value={model.copyDateText}
                   onChangeText={actions.changeCopyDateText}
                   placeholder="AAAA-MM-DD"
@@ -64,7 +68,7 @@ export const DietResolutionOverlays = memo(function DietResolutionOverlays({
               >
                 <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 15 }}>Continuar</Text>
               </Pressable>
-              <SecondaryButton label="Cancelar" onPress={actions.closeCopyDate} />
+              <Button variant="secondary" style={{ width: "100%", minHeight: 44, borderRadius: 14 }} textStyle={{ fontSize: 15 }} label="Cancelar" onPress={actions.closeCopyDate} />
             </View>
           </View>
         )
@@ -81,7 +85,7 @@ export const DietResolutionOverlays = memo(function DietResolutionOverlays({
                   <FoodThumbnail food={candidate} size={42} />
                   <View style={{ flex: 1 }}>
                     <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 14, fontWeight: "700" }}>{candidate.name}</Text>
-                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>{candidate.sourceId} · {candidate.id} · {candidate.calories_per_100g} kcal/100g</Text>
+                    <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 11, marginTop: 2 }}>{candidate.sourceId} · {candidate.id} · {candidate.calories_per_100g ?? "No disponible"} kcal/100g</Text>
                   </View>
                   <Feather name="chevron-right" size={17} color={mobileTheme.color.brandPrimary} />
                 </Pressable>
@@ -127,7 +131,7 @@ function DietCopyConfirmation({ confirmation, selectedDate, onConfirm, onCancel 
         <ScrollView style={{ maxHeight: 240, width: "100%" }} contentContainerStyle={{ gap: 8 }}>
           {confirmation.items.map((item) => (
             <View key={item.id} style={{ flexDirection: "row", alignItems: "center", gap: 10, borderWidth: 1, borderColor: mobileTheme.color.borderSubtle, borderRadius: 12, backgroundColor: mobileTheme.color.bgApp, paddingHorizontal: 10, paddingVertical: 8 }}>
-              <DietItemThumbnail uri={item.image_uri} dotColor={meta.dot} />
+              <DietItemThumbnail uri={dietItemImageUri(item)} dotColor={meta.dot} />
               <View style={{ flex: 1 }}>
                 <Text style={{ color: mobileTheme.color.textPrimary, fontWeight: "600" }} numberOfLines={1}>{item.title}</Text>
                 <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 12, marginTop: 1 }}>{item.grams > 0 ? `${formatNutritionNumber(item.grams)} g · ` : ""}{formatNutritionNumber(item.calories_kcal)} kcal</Text>
@@ -140,35 +144,23 @@ function DietCopyConfirmation({ confirmation, selectedDate, onConfirm, onCancel 
           <Feather name="check" size={15} color="#06090D" />
           <Text style={{ color: "#06090D", fontWeight: "800", fontSize: 15 }}>Confirmar</Text>
         </Pressable>
-        <SecondaryButton label="Cancelar" onPress={onCancel} />
+        <Button variant="secondary" style={{ width: "100%", minHeight: 44, borderRadius: 14 }} textStyle={{ fontSize: 15 }} label="Cancelar" onPress={onCancel} />
       </View>
     </View>
   );
 }
 
-function SecondaryButton({ label, onPress }: { label: string; onPress(): void }) {
-  return (
-    <Pressable onPress={onPress} style={{ width: "100%", minHeight: 44, borderRadius: 14, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: "#1B1F27", alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ color: "#E7EBF3", fontSize: 15, fontWeight: "700" }}>{label}</Text>
-    </Pressable>
-  );
-}
 
 function DietItemThumbnail({ uri, dotColor, size = 36 }: { uri?: string | null; dotColor: string; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  if (uri && !failed) return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: size, height: size, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
-  return <View style={{ width: 7, height: 7, borderRadius: 999, backgroundColor: dotColor, marginTop: 8 }} />;
+
+  return <Thumbnail uri={uri} size={size} fallback={<View style={{ width: 7, height: 7, borderRadius: 999, backgroundColor: dotColor, marginTop: 8 }} />} />;
 }
 
 function FoodThumbnail({ food, size = 36 }: { food: FoodCatalogEntry; size?: number }) {
-  const [failed, setFailed] = useState(false);
-  const uri = foodCatalogImageUri(food);
-  if (uri && !failed) return <Image source={{ uri }} onError={() => setFailed(true)} style={{ width: size, height: size, borderRadius: 8, backgroundColor: mobileTheme.color.bgSurface }} />;
-  return (
-    <View style={{ width: size, height: size, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}>
+
+  return <Thumbnail uri={foodCatalogImageUri(food)} size={size} fallback={<View style={{ width: size, height: size, borderRadius: 8, backgroundColor: "rgba(203,255,26,0.1)", alignItems: "center", justifyContent: "center" }}>
       <Text style={{ fontSize: size * 0.44 }}>{food.category === "proteína" ? "🥩" : food.category === "carbohidrato" ? "🍚" : food.category === "grasa" ? "🫒" : food.category === "fruta" ? "🍎" : food.category === "verdura" ? "🥦" : food.category === "lácteo" ? "🥛" : food.category === "legumbre" ? "🫘" : food.category === "fruto-seco" ? "🥜" : "🍽️"}</Text>
-    </View>
-  );
+    </View>} />;
 }
 
 type FoodEstimatorOverlayProps = {
@@ -180,6 +172,7 @@ type FoodEstimatorOverlayProps = {
   inputValue: string;
   sending: boolean;
   statusLabel: string;
+  photoError: string | null;
   expandedThinking: Record<string, boolean>;
   scrollRef: import("react").RefObject<ScrollView | null>;
   hasResponse: boolean;
@@ -193,6 +186,7 @@ type FoodEstimatorOverlayProps = {
   onToggleThinking(messageId: string): void;
   onReportMessage(surface: AiReportSurface, message: ChatMessage, conversation: ChatMessage[]): void;
   onAddFood(): void;
+  onChooseModel(): void;
 };
 
 export const FoodEstimatorOverlay = memo(function FoodEstimatorOverlay({
@@ -204,6 +198,7 @@ export const FoodEstimatorOverlay = memo(function FoodEstimatorOverlay({
   inputValue,
   sending,
   statusLabel,
+  photoError,
   expandedThinking,
   scrollRef,
   hasResponse,
@@ -217,6 +212,7 @@ export const FoodEstimatorOverlay = memo(function FoodEstimatorOverlay({
   onToggleThinking,
   onReportMessage,
   onAddFood,
+  onChooseModel,
 }: FoodEstimatorOverlayProps) {
   if (!open) return null;
   const imageLimitReached = images.length >= maxImages;
@@ -252,6 +248,15 @@ export const FoodEstimatorOverlay = memo(function FoodEstimatorOverlay({
               </View>
             ))}
           </ScrollView>
+        ) : null}
+
+        {photoError ? (
+          <View testID="food-estimator-photo-error" style={{ borderWidth: 1, borderColor: "rgba(255,205,77,0.45)", borderRadius: mobileTheme.radius.md, backgroundColor: "rgba(255,205,77,0.07)", padding: 12, gap: 8 }}>
+            <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 13 }}>{photoError}</Text>
+            <Pressable testID="food-estimator-choose-model" onPress={onChooseModel} accessibilityRole="button" style={{ alignSelf: "flex-start", borderRadius: mobileTheme.radius.md, backgroundColor: mobileTheme.color.brandPrimary, paddingHorizontal: 12, paddingVertical: 9 }}>
+              <Text style={{ color: "#06090D", fontWeight: "700" }}>Elegir otro modelo</Text>
+            </Pressable>
+          </View>
         ) : null}
 
         <SharedChatPanel

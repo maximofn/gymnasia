@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0009",
+  "status": "pending-review",
+  "generated_on": "2026-11-05",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-13015",
+      "names": {
+        "fr": "Framboise, crue",
+        "en": "Raspberry, raw",
+        "es": "Frambuesa, cruda"
+      },
+      "source_sha256": "7056ae102ce28c7b358e8b74d8a95b1f103ec2054431ea6d3da98a7b0bc89b2c",
+      "image": "ciqual-13015.webp",
+      "sha256": "04cfc5ee6acf6f0e445268931e78a71bc4a54e606d9f0ea86d47bdb2d8edeaea",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: A small compact mound of fresh raw red raspberries, natural delicate drupelets with fine tiny hairs, several hollow berry openings visible. Not frozen, no leaves, stems, sugar, juice puddles or garnish..\nSingle centered food subject or specified compact group, entire food and any specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; fruit groups from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-13028",
+      "names": {
+        "fr": "Myrtille, crue",
+        "en": "Blueberry, raw",
+        "es": "Arándano, crudo"
+      },
+      "source_sha256": "cb1705e71e4d98ce7346024ff8fac75983f93e22f65ea75a8df8d3f5307f4424",
+      "image": "ciqual-13028.webp",
+      "sha256": "4949ed41fbd417acda96ccf935ae38784fe7517c9fcfa5fb198bc46de9d7f8cc",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: A small compact mound of fresh raw blueberries, naturally deep blue berries with subtle dusty bloom and characteristic star-shaped blossom-end crowns. Not frozen, no frost, leaves, stems, sugar or garnish..\nSingle centered food subject or specified compact group, entire food and any specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; fruit groups from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-13029",
+      "names": {
+        "fr": "Mûre (de ronce), crue",
+        "en": "Blackberry, raw",
+        "es": "Mora (de zarza), cruda"
+      },
+      "source_sha256": "0e8773ae2dc56865f17f77b5b1f24467eb9cbe9eb34a9578c5c5ddadb7aff28a",
+      "image": "ciqual-13029.webp",
+      "sha256": "0e019b029226add6382dce03f3cd075a2d8f8a844c9c1c958da97088ab1731c0",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: A small compact mound of fresh raw blackberry fruits from a bramble bush, plump short rounded oblong berries with glossy deep purple-black clustered drupelets. Not long mulberries, not frozen, no leaves, stems, sugar or garnish..\nSingle centered food subject or specified compact group, entire food and any specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; fruit groups from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-13008",
+      "names": {
+        "fr": "Ceriser, chair et peau, sans noyau, crue",
+        "en": "Cherry, flesh and skin, pitted, raw",
+        "es": "Cereza, pulpa y piel, sin hueso, cruda"
+      },
+      "source_sha256": "a3c0d09857fe8b32be70eb2906ab442aeba3aa87d7bf642a18aefedf17046c62",
+      "image": "ciqual-13008.webp",
+      "sha256": "eba4d35a2000eb56342ba5ca5e040f0da266bc81bb64f7ced794c6edebbb75ad",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Raw sweet cherry flesh and skin, fully pitted: a small compact group of glossy dark red cherries cut into halves, with natural empty stone cavities visibly exposed and juicy red flesh. All stones and stems removed, no whole unpitted cherries, syrup, leaves or garnish..\nSingle centered food subject or specified compact group, entire food and any specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; fruit groups from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-13018",
+      "names": {
+        "fr": "Grenade, chair sans peau, avec pépins, crue",
+        "en": "Pomegranate, flesh without skin, with seeds, raw",
+        "es": "Granada, pulpa sin piel, con pepitas, cruda"
+      },
+      "source_sha256": "2454f6cb6dd6dc47bd089cd0ad7281277d1846810091c358bba246d858189ec5",
+      "image": "ciqual-13018.webp",
+      "sha256": "7ddcb6d3bd8c412777f559cfff943df51d4870653b073e2fc979fc95240a4eb4",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Raw pomegranate flesh with its edible seeds, without skin: a small dark matte bowl containing only loose ruby-red translucent pomegranate arils, tiny pale internal seeds naturally visible inside some arils. No whole or halved pomegranate, no rind, white pith, leaves or garnish..\nSingle centered food subject or specified compact group, entire food and any specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; fruit groups from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-13024",
+      "names": {
+        "fr": "Clémentine ou mandarine, chair sans peau, sans pépins, crue",
+        "en": "Clementine or Mandarin orange, flesh without skin, without seeds, raw",
+        "es": "Clementina o mandarina, pulpa sin piel, sin pepitas, cruda"
+      },
+      "source_sha256": "d877df349fff33d11c94fe8be635bb83c143225f21d788d9a335a9deb681ba70",
+      "image": "ciqual-13024.webp",
+      "sha256": "d04895006bcad62b9c81938eecc3fecb5dc3ce8ef86185cf0c05b54fd3c352e7",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Raw clementine or mandarin orange flesh, peeled and seedless: a compact group of bright orange peeled citrus segments with natural thin segment membranes and subtle juice-vesicle texture. No outer orange rind, green leaves, seeds or whole unpeeled fruit..\nSingle centered food subject or specified compact group, entire food and any specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; fruit groups from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-13100",
+      "names": {
+        "fr": "Prune, sans noyau, crue",
+        "en": "Plum, flesh and skin, pitted, raw",
+        "es": "Ciruela, sin hueso, cruda"
+      },
+      "source_sha256": "c1d9a5954cf4cc81c2a351c81c0bc0a7419fd9a0411dba5859cd49827ca63f42",
+      "image": "ciqual-13100.webp",
+      "sha256": "d6def7f43b2937260f3586b152c7d730823acff6d0f7ce8ee78b344b8a2bb1d4",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Raw plum flesh and skin with the stone removed: two closely grouped halves of one ripe purple-red plum, natural smooth bloomy purple skin on the outer curves, golden amber flesh and empty central stone cavities facing the camera. No stones, leaves, stems, syrup or garnish..\nSingle centered food subject or specified compact group, entire food and any specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; fruit groups from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-13036",
+      "names": {
+        "fr": "Pastèque, chair sans peau, sans pépins, crue",
+        "en": "Watermelon, flesh without skin, without seeds, raw",
+        "es": "Sandía, pulpa sin piel, sin pepitas, cruda"
+      },
+      "source_sha256": "bdf540bfd57d2ce271dc98fd6041c4410920683b43aef589c9dc209ae18a35b4",
+      "image": "ciqual-13036.webp",
+      "sha256": "c07ae4d33019d3674878755641b34ee67859b082e84b1abf2c94b5ca9801138d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Raw watermelon flesh, without rind and without seeds: a compact group of three juicy red triangular watermelon flesh wedges, completely red from edge to edge, with natural crisp porous texture. Absolutely no green skin, white rind, black seeds, visible white seeds or garnish..\nSingle centered food subject or specified compact group, entire food and any specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; fruit groups from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-13009",
+      "names": {
+        "fr": "Citron, chair sans peau, sans pépins, cru",
+        "en": "Lemon, flesh without skin, without seeds, raw",
+        "es": "Limón, pulpa sin piel, sin pepitas, crudo"
+      },
+      "source_sha256": "eae55ab8df6fa022a0d0bcab33ab46df5116b7c810f65c06abf38c33f99b6d26",
+      "image": "ciqual-13009.webp",
+      "sha256": "eae17c77089471412bad31b43019e665a2b6a035499f7b0090b2bb568dd0a064",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Raw lemon flesh without skin and without seeds: a compact group of pale translucent lemon-yellow peeled citrus segments, delicate juice vesicles and thin natural segment membranes. No outer yellow peel or rind, no white pith layer, no seeds, whole unpeeled lemons, leaves or garnish..\nSingle centered food subject or specified compact group, entire food and any specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; fruit groups from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-13023",
+      "names": {
+        "fr": "Litchi, chair sans peau, sans noyau, cru",
+        "en": "Lithchi, flesh without skin, pitted, flesh without skin, raw",
+        "es": "Lichi, pulpa sin piel, sin hueso, crudo"
+      },
+      "source_sha256": "bf0d20a8cbb823253c3389a677444d0754798e51d84eb841c4b46843ce68c419",
+      "image": "ciqual-13023.webp",
+      "sha256": "dbe6655985e5bca197f94697f960487cabdce2d1efba88e380be34eaac44cfc8",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Raw lychee flesh, peeled and pitted: a compact group of glossy translucent milky-white lychee flesh pieces, two split open showing empty hollow cavities where the brown stones have been removed. No red shells, brown seeds, stems, leaves, syrup or garnish..\nSingle centered food subject or specified compact group, entire food and any specified bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; fruit groups from a gentle elevated front 3/4 angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    }
+  ]
+}

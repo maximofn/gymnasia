@@ -1,4 +1,5 @@
 import type { ToolEffect } from "./healthSafety";
+import { toolError } from "./toolErrors";
 import { DIET_MEAL_CATEGORIES } from "../diet/nutritionContract";
 import { SERIES_TYPES } from "../training/seriesContract";
 import {
@@ -277,15 +278,15 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
       properties: {
         query: stringProperty("Texto de búsqueda por nombre (opcional)"),
         category: stringProperty("Filtrar por categoría del alimento, por ejemplo: grasa, proteina, carbohidrato, fruta, verdura, lacteo, cereal (opcional)"),
-        source: stringProperty("Filtrar por tipo heredado o source_id: 'alimento', 'producto_comercial', 'receta', 'personal', 'gymnasia_foods', 'gymnasia_products', 'gymnasia_recipes' o 'user_personal_foods' (opcional)"),
+        source: stringProperty("Filtrar por tipo heredado o source_id: 'alimento', 'producto_comercial', 'receta', 'personal', 'gymnasia_foods', 'gymnasia_products', 'gymnasia_recipes', 'anses_ciqual_2025' o 'user_personal_foods' (opcional). CIQUAL conserva valores nulos y calificadores: no son ceros ni cantidades exactas."),
         min_calories: numberProperty("Calorías mínimas por 100g (opcional)"),
-        max_calories: numberProperty("Calorías máximas por 100g (opcional)"),
+        max_calories: numberProperty("Calorías máximas por 100g; 0 desactiva este filtro (opcional)"),
         min_protein: numberProperty("Proteínas mínimas por 100g en gramos (opcional)"),
-        max_protein: numberProperty("Proteínas máximas por 100g en gramos (opcional)"),
+        max_protein: numberProperty("Proteínas máximas por 100g en gramos; 0 desactiva este filtro (opcional)"),
         min_carbs: numberProperty("Carbohidratos mínimos por 100g en gramos (opcional)"),
-        max_carbs: numberProperty("Carbohidratos máximos por 100g en gramos (opcional)"),
+        max_carbs: numberProperty("Carbohidratos máximos por 100g en gramos; 0 desactiva este filtro (opcional)"),
         min_fat: numberProperty("Grasa mínima por 100g en gramos (opcional)"),
-        max_fat: numberProperty("Grasa máxima por 100g en gramos (opcional)"),
+        max_fat: numberProperty("Grasa máxima por 100g en gramos; 0 desactiva este filtro (opcional)"),
         sort_by: stringProperty("Ordenar por: 'calories_asc', 'calories_desc', 'protein_asc', 'protein_desc', 'carbs_asc', 'carbs_desc', 'fat_asc', 'fat_desc' (opcional)"),
       },
     },
@@ -414,6 +415,9 @@ export const CHAT_TOOLS = {
     name: tool.name,
     description: tool.description,
     parameters: tool.inputSchema,
+    // Responses otherwise normalizes optional properties into required fields.
+    // Keep the canonical contract; the local dispatcher validates every call.
+    strict: false,
   })),
   anthropic: AGENT_TOOL_DEFINITIONS.map((tool) => ({
     name: tool.name,
@@ -430,6 +434,12 @@ export type ToolInputValidation = {
   errors: string[];
 };
 
+export function formatToolInputError(errors: string[]): string {
+  return toolError("invalid_tool_arguments",
+    "La herramienta no se ha ejecutado. Corrige los argumentos y vuelve a intentarlo.",
+    "correct_arguments", { issues: errors });
+}
+
 export function validateToolInput(
   schema: ToolInputSchema,
   input: unknown,
@@ -441,20 +451,19 @@ export function validateToolInput(
 
   const values = input as Record<string, unknown>;
   for (const field of schema.required ?? []) {
-    if (!(field in values) || values[field] === null || values[field] === undefined) {
+    if (!Object.hasOwn(values, field)) {
       errors.push(`Falta el campo requerido "${field}".`);
     }
   }
 
   for (const [field, value] of Object.entries(values)) {
-    const property = schema.properties[field];
+    const property = Object.hasOwn(schema.properties, field) ? schema.properties[field] : undefined;
     if (!property) {
       if (schema.additionalProperties === false) {
         errors.push(`El campo "${field}" no está permitido.`);
       }
       continue;
     }
-    if (value === null || value === undefined) continue;
     validateSchemaProperty(field, value, property, errors);
   }
 
@@ -468,9 +477,9 @@ function validateSchemaProperty(
   errors: string[],
 ): void {
   const actualType = Array.isArray(value) ? "array" : typeof value;
-  const typeMatches = property.type === "integer"
+  const typeMatches = value !== null && value !== undefined && (property.type === "integer"
     ? typeof value === "number" && Number.isInteger(value)
-    : actualType === property.type;
+    : actualType === property.type);
   if (!typeMatches) {
     errors.push(`El campo "${field}" debe ser de tipo ${property.type}.`);
     return;
@@ -500,20 +509,19 @@ function validateSchemaProperty(
   if (property.type !== "object" || !property.properties) return;
   const objectValue = value as Record<string, unknown>;
   for (const requiredField of property.required ?? []) {
-    if (!(requiredField in objectValue) || objectValue[requiredField] === null || objectValue[requiredField] === undefined) {
+    if (!Object.hasOwn(objectValue, requiredField)) {
       errors.push(`Falta el campo requerido "${field}.${requiredField}".`);
     }
   }
   for (const [childField, childValue] of Object.entries(objectValue)) {
-    const childProperty = property.properties[childField];
+    const childProperty = Object.hasOwn(property.properties, childField)
+      ? property.properties[childField] : undefined;
     if (!childProperty) {
       if (property.additionalProperties === false) {
         errors.push(`El campo "${field}.${childField}" no está permitido.`);
       }
       continue;
     }
-    if (childValue !== null && childValue !== undefined) {
-      validateSchemaProperty(`${field}.${childField}`, childValue, childProperty, errors);
-    }
+    validateSchemaProperty(`${field}.${childField}`, childValue, childProperty, errors);
   }
 }

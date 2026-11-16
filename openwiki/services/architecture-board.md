@@ -1,10 +1,12 @@
 ---
-type: "Referencia"
-title: "Tablero de arquitectura y seguimiento"
+type: "referencia de servicio"
+title: "Tablero de arquitectura"
+description: "Referencia del espejo estático de Linear: su contrato editorial, conciliación asistida y publicación. Distingue el plan versionado de los componentes ejecutables de Gymnasia."
+tags: [linear, static-site, planning, github-actions]
 openwiki_generated: true
 verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T12:53:55.207Z
+  - by: openwiki/0.6.0
+    at: 2026-11-03T15:32:51.876Z
 sources:
   - id: openwiki-source-95db82d22801961ce58f4a00
     resource: repo://.claude/skills/linear-tickets/scripts/linear.py
@@ -40,31 +42,37 @@ sources:
     resource: repo://scripts/board-automation/verify-production.mjs
   - id: openwiki-source-2d527a0a2fddf1f1e4422fcf
     resource: repo://scripts/board-automation/workflow-contract.test.mjs
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T12:53:55.207Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-03T15:32:51.876Z" }
 ---
 
 
-# Tablero de arquitectura y seguimiento
+# Tablero de arquitectura
 
-## Alcance y límites
+## Propósito y límite
 
-`arquitectura-agente/` es un sitio estático en español que visualiza el espejo de los tickets del equipo GYM de Linear. En ejecución, el navegador únicamente obtiene `data/board.json`; no contiene API de Linear, token, backend, cron ni base de datos. Linear sigue siendo la autoridad ante una discrepancia, pero el espejo ya no depende de una actualización exclusivamente manual: GitHub Actions lo concilia cada seis horas y propone únicamente cambios mecánicos revisables.
+`arquitectura-agente/` es el sitio estático de seguimiento publicado en <https://gymnasia-sable.vercel.app/>. El navegador carga recursos estáticos y lee `data/board.json`; durante esa navegación no usa API ni token de Linear, backend, cron o base de datos. Linear es la autoridad cuando el espejo discrepa.
 
-No es un runtime del producto. No se importa desde la aplicación Expo, no guarda datos de personas usuarias y no participa en BYOK, políticas firmadas, catálogos ni feedback. Los tickets y sus descripciones pueden registrar planes históricos o trabajo futuro; no demuestran que esos componentes sean ejecutables o estén desplegados.
+La instantánea editorial actualmente versionada declara `meta.updated: "2026-11-03"`. Esta fecha y los estados, títulos y resúmenes del archivo describen el espejo en esa fecha; no acreditan implementación, despliegue ni comportamiento del producto.
+
+El tablero es un artefacto editorial versionado, no una prueba de que los tickets descritos estén implementados, desplegados o formen parte del runtime. Tampoco es una ruta del cliente Expo: la entrada móvil registra `App`, mientras que `arquitectura-agente/index.html` carga el cascarón del tablero. Para los componentes ejecutables del producto, véase [Arquitectura local-first](../architecture/overview.md).
 
 | Límite | Responsabilidad |
 | --- | --- |
-| `arquitectura-agente/data/board.json` | Contenido y topología que proyecta el sitio; es el único archivo de datos que modifica la sincronización. |
-| `arquitectura-agente/index.html`, `script.js`, `styles.css` | Cascarón, renderizado vanilla y presentación del sitio estático. |
-| `.claude/skills/linear-tickets/scripts/linear.py` | Lee Linear, clasifica la deriva y hace sustituciones quirúrgicas en memoria antes de una escritura atómica. |
-| `.github/workflows/board-*.yml` | Puertas de integridad, conciliación, propuesta de PR y publicación de producción. |
-| `scripts/board-automation/` | Contratos de alertas deduplicadas, cuerpo de PR y verificación criptográfica de producción. |
+| `data/board.json` | Estado persistente del tablero: inventario, relaciones y orden editorial. |
+| `index.html`, `script.js`, `styles.css` | Proyección en el navegador y presentación local; no escriben hacia Linear. |
+| `linear.py board` y la conciliación de Actions | Comparar con Linear y proponer únicamente cambios mecánicos revisables. |
+| Workflows y `scripts/board-automation/` | Validar, desplegar, comprobar producción y notificar fallos. |
 
-Como el cliente usa `fetch("data/board.json")`, abrir `index.html` con `file://` no es un modo admitido; use un servidor HTTP estático.
+Para desarrollo, sírvase el directorio por HTTP: `fetch("data/board.json")` hace que `file://` no sea un modo admitido.
 
-## Modelo y proyecciones del JSON
+## Contrato editorial de `board.json`
 
-El objeto raíz contiene `meta`, los catálogos `states` y `baselines`, `groups` y `recommendedOrder`. Un grupo `kind: "epic"` representa una épica de Linear y puede tener estado y relaciones; un `kind: "group"` es una agrupación local. Los tickets tienen identificador, título, estado, resumen y relaciones; `baseline` y `article` HTTPS son opcionales. `meta.ignore` excluye IDs de la conciliación y no puede solaparse con un nodo mostrado.
+El objeto raíz contiene:
+
+- `meta`, incluido `updated` con formato `YYYY-MM-DD`, la base HTTPS de enlaces a Linear y `ignore`. Un ID ignorado debe tener formato `GYM-n` y no puede aparecer simultáneamente como nodo del tablero.
+- Los catálogos `states` y `baselines`. Los estados de un ticket o épica deben pertenecer al primero; un `baseline` opcional debe pertenecer al segundo. `baseline` expresa el punto de partida del código, no el estado de Linear.
+- `groups`, cada uno con `id`, `title`, `kind` (`epic` o `group`) y al menos un ticket. Las épicas tienen identificador de Linear y estado; los tickets tienen identificador, título y estado. `summary`, `dependsOn`, `related`, `baseline` y `article` son metadatos editoriales opcionales; un `article` debe usar HTTPS.
+- `recommendedOrder`, fases con `id`, `title`, `why` y una lista de tickets. Es una recomendación humana de secuenciación, no un workflow ejecutable.
 
 ```mermaid
 erDiagram
@@ -78,91 +86,83 @@ erDiagram
     TICKET }o--o{ TICKET : references
 ```
 
-*El JSON concentra los datos fuente de las tres vistas, la hoja de ruta y las relaciones.*
+*El JSON versionado concentra tanto los datos de las vistas como la topología y la secuencia editorial.*
 
-`dependsOn` significa que el destino bloquea al nodo que lo declara; el grafo lo dibuja bloqueador → bloqueado. `related` solo aporta contexto. Toda referencia debe resolver a un ticket o una épica existente; no se admiten autorreferencias ni ciclos. La validación también impide que un ticket `done` dependa de un bloqueador abierto.
+`dependsOn` nombra el nodo que bloquea al que lo declara; puede referenciar tickets o épicas. `related` solo aporta contexto. Toda referencia debe resolver a un ticket o épica del JSON y no puede autorreferenciarse; las dependencias deben ser acíclicas. Además, un nodo `done` no puede depender de uno que permanezca abierto.
 
-`recommendedOrder` es una recomendación editorial, no otro workflow: los tickets abiertos de épicas deben aparecer exactamente una vez y después de cualquier bloqueador también planificado. Por eso una alta o baja de inventario requiere decisión humana: además del título y estado, puede necesitar grupo, resumen, relaciones y fase.
+Las fases no pueden repetir tickets. Cada ticket abierto de una épica debe figurar una vez en `recommendedOrder` y, cuando su bloqueador también está planificado, después de él. Por ello un alta, una baja o un cambio de relaciones requiere decisión editorial: no basta con copiar título y estado.
 
-## Sitio cliente y comportamiento visible
+## Lectura y proyecciones locales
 
-Al cargar el DOM, `script.js` lee el JSON con `cache: "no-cache"`. Si falla HTTP o el parseo, muestra el error de carga sin datos alternativos. Si tiene éxito, construye índices de tickets, bloqueadores y relaciones, inicializa filtros y preferencia de hoja de ruta, renderiza y finalmente marca `body[data-ready="true"]`.
+En la inicialización, `script.js` solicita el JSON con `cache: "no-cache"`, construye índices en memoria de tickets, bloqueadores, bloqueados y relaciones, inicializa filtros y preferencias, renderiza las proyecciones y finalmente fija `body[data-ready="true"]`. Si la respuesta HTTP o el parseo fallan, muestra el error de carga sin utilizar una copia alternativa.
 
 ```mermaid
 flowchart TD
     Fetch["Fetch data/board.json"] --> Index["Index tickets and relations"]
     Index --> Setup["Initialize filters and preference"]
-    Setup --> Render["Render roadmap views and graph"]
+    Setup --> Render["Render projections"]
     Render --> Ready["Set body data-ready"]
     Fetch --> Failure["Show load error"]
 ```
 
-*Una única lectura local alimenta todas las vistas; el navegador no escribe de vuelta a Linear.*
+*Una única lectura local alimenta las vistas; no existe escritura de vuelta a Linear desde el navegador.*
 
-La vista predeterminada **Épicas** conserva expansión durante la sesión y calcula el progreso sobre todos los tickets no cancelados del grupo. **Estado** genera columnas según el orden de `states`; es una proyección kanban sin arrastrar ni mutar datos. Búsqueda y chips de estado se combinan con AND. La vista se refleja en `#epics`, `#states` o `#deps` y hashes inválidos se normalizan a `#epics`.
+- **Épicas** es la vista inicial. La búsqueda por ID, título o resumen y los filtros de estado se combinan con AND; el progreso no se limita a los resultados filtrados.
+- **Estado** proyecta los tickets en columnas según el catálogo `states`; no hay arrastre ni mutación del JSON.
+- **Dependencias** no aplica búsqueda ni filtros de estado. Dibuja cada arista desde el bloqueador al bloqueado y puede añadir relaciones informativas; estas se deduplican de forma simétrica. Sus niveles usan la ruta más larga de prerrequisitos. Una guarda evita que un ciclo bloquee el render, pero la aceptación de datos depende de la validación de aciclicidad.
 
-«Por dónde seguir» elimina de la presentación tickets `done` y `canceled`, oculta fases vacías y renumera las restantes. Su plegado persiste como `gymnasia.board.roadmapCollapsed` en `localStorage`, pero el sitio continúa si el almacenamiento no está disponible.
+El hash admite `#epics`, `#states` y `#deps`; un valor no reconocido vuelve a `#epics`. En **Por dónde seguir**, los tickets `done` y `canceled` y las fases vacías no se muestran, y las fases restantes se renumeran. Solo el plegado de esa hoja de ruta persiste, bajo `gymnasia.board.roadmapCollapsed`; si `localStorage` falla, el tablero sigue operativo y la preferencia no se conserva.
 
-El grafo incluye extremos de dependencias y, al activar el control correspondiente, relaciones informativas. Calcula niveles a partir de la ruta bloqueante más larga y deduplica relaciones simétricas. La protección de recursión evita que un JSON cíclico bloquee el renderizado, pero no convierte ese JSON en válido: la barrera es `test:board`.
+## Actualización asistida, no sincronización viva
 
-## Conciliación: cambios seguros frente a revisión humana
-
-`linear.py board` consulta hasta 250 tickets del equipo y construye un informe JSON estable (`schemaVersion: 1`) que separa cambios de `states`, `titles`, tickets que faltan en el tablero y entradas que faltan en Linear. Ignora `meta.ignore` y convierte el estado Linear `In Review` a `in_progress`, porque el espejo solo tiene cinco columnas.
-
-- `clean`: no hay deriva.
-- `safe_changes`: solo cambiaron estado o título.
-- `review_required`: hay altas o bajas de inventario; no se debe hacer una aplicación parcial.
-
-`--format json` produce el informe sin fallar por la deriva. En uso humano, `board` sin aplicar termina con código 1 si hay diferencias. El legado `--apply` actualiza solo estados y `meta.updated`; `--apply-safe` actualiza además títulos, pero rechaza por completo la escritura si el informe exige revisión. Antes de escribir, las sustituciones se hacen y se verifican en memoria; `atomic_write_text` hace `fsync`, conserva permisos y reemplaza el archivo con `os.replace`.
-
-```mermaid
-flowchart TD
-    Audit["Read main and compare Linear"] --> Classify{"Report status"}
-    Classify -->|clean| CheckProduction["Verify production equals main"]
-    Classify -->|safe changes| Apply["Apply safe fields atomically"]
-    Apply --> Retest["Run automation data and E2E gates"]
-    Retest --> Recheck["Re-read Linear report"]
-    Recheck --> Proposal["Create or refresh review PR"]
-    Classify -->|review required| Alert["Open deduplicated alert and stop"]
-    CheckProduction --> Healthy["Close obsolete PR and alert"]
-```
-
-*La conciliación parte de `main`; las altas y bajas se detienen antes de modificar el espejo, y ningún camino fusiona automáticamente la PR.*
-
-`.github/workflows/board-reconcile.yml` se ejecuta por cron a los 17 minutos de cada seis horas o manualmente, y obtiene explícitamente `refs/heads/main`. Si hay revisión humana, publica la alerta y cierra PRs automáticas obsoletas. Para cambios seguros instala dependencias y Chromium, aplica con `--apply-safe`, vuelve a consultar Linear para asegurar que quedó `clean`, ejecuta los controles del tablero y solo entonces crea o actualiza `automation/board-sync`. El push usa `--force-with-lease`; la PR queda para revisión y el workflow no contiene auto-merge.
-
-La automatización mantiene un único issue titulado `[board-sync] El tablero necesita atención`. Busca por un marcador estable, cierra duplicados y usa una huella SHA-256 del payload para no repetir el mismo comentario. Una comprobación sana comenta y cierra las alertas abiertas cuando Linear, `main` y producción vuelven a coincidir.
-
-## Puertas y despliegue a Vercel
-
-`board-ci.yml` se ejecuta en PRs y en cambios relevantes que llegan a `main`; tiene únicamente `contents: read`, no recibe secretos y ejecuta `test:linear`, `test:board-automation`, `test:board` y `test:board:e2e`. El checkout se realiza mediante `git init` y un fetch superficial, evitando recorrer gitlinks heredados.
-
-Un cambio publicable en `main` o una ejecución manual activa `board-deploy.yml`. Su grupo de concurrencia `board-production` cancela despliegues anteriores en curso. El job vuelve a ejecutar las cuatro puertas antes de desplegar. Después usa `vercel@59.16.0 pull --environment=production` y comprueba que la configuración resuelta tenga el nombre `gymnasia` y los IDs de proyecto y organización esperados: evita publicar por error en otro proyecto de Vercel.
-
-```mermaid
-flowchart TD
-    Main["Eligible change on main"] --> Gates["Linear automation data and E2E gates"]
-    Gates --> Resolve["Resolve expected gymnasia Vercel project"]
-    Resolve --> Deploy["Vercel production deploy"]
-    Deploy --> Verify["Fetch root and data/board.json"]
-    Verify --> Hash{"SHA-256 matches local bytes"}
-    Hash -->|yes| Evidence["Write deployment summary and retain artifact"]
-    Hash -->|no| Alert["Report production mismatch and fail"]
-```
-
-*La publicación solo se considera correcta cuando el sitio canónico sirve el tablero esperado y los bytes de `data/board.json` coinciden con `main`.*
-
-La verificación consulta `/` y `/data/board.json` con `cache: "no-store"`, sigue redirecciones y exige que la raíz incluya el título esperado. Calcula SHA-256 sobre bytes locales y remotos; el despliegue reintenta 12 veces cada 5 segundos para tolerar propagación. El resultado —incluidos hashes, commit, URL de despliegue e intentos— se conserva como evidencia: se resume en el job y se sube como artefacto durante 30 días. Un desajuste abre o actualiza la alerta deduplicada y hace fallar el job.
-
-El sitio sigue sin build: `vercel.json` activa `cleanUrls` y desactiva `trailingSlash`. La recuperación manual excepcional puede usar:
+La actualización normal empieza comparando explícitamente el checkout con Linear:
 
 ```bash
-npm exec --yes -- vercel@59.16.0 deploy --prod --yes --cwd arquitectura-agente
+npm run test:linear
+python3 .claude/skills/linear-tickets/scripts/linear.py board
+python3 .claude/skills/linear-tickets/scripts/linear.py board --format json
+python3 .claude/skills/linear-tickets/scripts/linear.py board --apply-safe
+npm run test:board
+npm run test:board:e2e
 ```
 
-La ruta normal es el workflow, porque aplica las puertas, valida el proyecto exacto y prueba los bytes publicados. Para comprobar manualmente la producción, use `/`, no `/index.html`.
+`board` clasifica la diferencia en `clean`, `safe_changes` o `review_required` y distingue cambios de estados y títulos de faltas de inventario en uno u otro lado. `In Review` de Linear se representa como `in_progress`. El formato JSON usa `schemaVersion: 1` y permite a la automatización inspeccionar la diferencia; la salida humana sin aplicación devuelve código 1 cuando hay deriva.
 
-## Operación y pruebas enfocadas
+`--apply-safe` cambia solo estados, títulos y `meta.updated`, y rechaza toda escritura si hay altas o bajas. El `--apply` heredado solo actualiza estados. La aplicación segura se prepara y verifica en memoria; al persistir usa un temporal sincronizado, conserva permisos y reemplaza el archivo mediante `os.replace`, por lo que no deja una escritura parcial.
+
+Las altas y bajas no son una excepción mecánica: quien edite `board.json` debe decidir grupo, resumen, dependencias o relaciones y, para tickets abiertos de épicas, la fase apropiada de `recommendedOrder`. Después debe ejecutar las validaciones antes de abrir una PR. Esta frontera evita convertir el espejo en una integración de escritura con Linear.
+
+```mermaid
+flowchart TD
+    Audit["Compare main with Linear"] --> Status{"Report status"}
+    Status -->|"clean"| CheckProd["Check production matches main"]
+    Status -->|"safe changes"| CheckProd
+    Status -->|"review required"| Alert["Open alert and stop"]
+    CheckProd -->|"mismatch"| Alert
+    CheckProd -->|"match and clean"| Healthy["Close stale proposal and alert"]
+    CheckProd -->|"match and safe"| Apply["Apply safe fields"]
+    Apply --> Recheck["Require clean second comparison"]
+    Recheck --> Gates["Run data and browser gates"]
+    Gates --> Proposal["Create or refresh review PR"]
+```
+
+*Solo estados y títulos siguen la vía mecánica; los cambios de inventario se detienen para revisión humana.*
+
+## Conciliación y alertas
+
+`board-reconcile.yml` se ejecuta cada seis horas —a los 17 minutos— o manualmente. Consulta siempre `refs/heads/main` y cancela ejecuciones solapadas. Si el informe es `review_required`, abre o reutiliza una alerta, cierra una PR automática obsoleta y termina en fallo sin aplicar cambios parciales. Para `clean` o `safe_changes`, comprueba antes que producción sirva los mismos bytes que `main`; una discrepancia también alerta y detiene el flujo.
+
+Con `safe_changes`, instala las dependencias de propuesta, aplica la actualización, exige una segunda comparación `clean`, ejecuta los gates y crea o actualiza la rama `automation/board-sync`. El push existente se protege con `--force-with-lease`; el workflow no usa auto-merge ni fusiona la PR. Si la diferencia desaparece o el estado es limpio, cierra propuestas automáticas obsoletas.
+
+La automatización conserva un único issue identificado por el marcador de `[board-sync] El tablero necesita atención`: cierra duplicados y no repite un comentario cuyo payload tenga la misma huella SHA-256. Cuando la conciliación confirma que Linear, `main` y producción vuelven a coincidir, comenta y cierra las alertas abiertas.
+
+## Validaciones, CI y publicación
+
+`npm run test:board` ejecuta `node --test` sobre el contrato de datos. Protege los catálogos, los IDs, referencias y duplicados, el ciclo de dependencias, la coherencia de tickets cerrados y la cobertura, unicidad y orden de `recommendedOrder`.
+
+`npm run test:board:e2e` levanta el sitio estático en `127.0.0.1:8123` —configurable con `BOARD_E2E_PORT`— y usa Playwright/Chromium. Comprueba que el JSON se proyecta en las tres vistas, la interacción de plegados, filtros, pestañas y grafo, la ausencia de errores de página y la contención a `390x844`. Esas suites validan el sitio estático, no el runtime de Expo.
+
+El CI se activa en PR y en cambios relevantes de `main`, tiene únicamente `contents: read` y ejecuta estas cuatro puertas:
 
 ```bash
 npm run test:linear
@@ -171,8 +171,14 @@ npm run test:board
 npm run test:board:e2e
 ```
 
-`npm run test:linear` cubre la clasificación de deriva, el rechazo de aplicación parcial, sustituciones conservadoras y escritura atómica. `npm run test:board-automation` prueba los contratos de alertas y checksum, además de afirmar propiedades críticas de los tres workflows: CI sin secretos de escritura, conciliación desde `main` sin auto-merge y despliegue con gates, proyecto exacto y evidencia.
+El despliegue se activa desde `main` para archivos publicables o manualmente, serializa producción en `board-production` y vuelve a ejecutar las cuatro puertas. Antes de publicar con `vercel@59.16.0`, confirma que `vercel pull` resolvió el proyecto `gymnasia` y que los IDs de proyecto y organización coinciden con los secretos esperados. El sitio no tiene paso de build; `vercel.json` configura URL limpias y sin barra final.
 
-`npm run test:board` ejecuta `node --test` sin navegador para validar catálogos, identificadores, relaciones, ciclos, coherencia de cierres y cobertura/orden de `recommendedOrder`. `npm run test:board:e2e` inicia un servidor HTTP en `127.0.0.1:8123` (configurable mediante `BOARD_E2E_PORT`) y usa Playwright/Chromium. Verifica la proyección del JSON, preferencias, enlaces, filtros, grafo, relaciones opcionales, pestañas y ausencia de desbordamiento a `390x844`; también falla ante `pageerror` o `console.error`.
+Después del despliegue, `verify-production.mjs` solicita la raíz canónica y `/data/board.json` sin caché, comprueba el título de la página y compara SHA-256 del JSON remoto con el archivo local. El despliegue usa hasta 12 intentos con cinco segundos entre ellos para tolerar propagación; deja hashes, commit, URL e intentos en el resumen y conserva la evidencia como artefacto durante 30 días. Un fallo o discrepancia actualiza la alerta y hace fallar el workflow.
 
-Estas suites validan el artefacto estático y su cadena de publicación, no el runtime Expo ni una API de Linear en el navegador. Para el producto ejecutable consulte [Arquitectura local-first](../architecture/overview.md), [Inicio rápido](../quickstart.md) y [Build, release y estrategia de validación](../operations/build-release-and-testing.md).
+La recuperación manual excepcional es:
+
+```bash
+npm exec --yes -- vercel@59.16.0 deploy --prod --yes --cwd arquitectura-agente
+```
+
+La vía habitual es el workflow, porque aplica las puertas, comprueba el destino y verifica los bytes publicados. Para comprobar manualmente la página publicada, solicite `/`, no `/index.html`.

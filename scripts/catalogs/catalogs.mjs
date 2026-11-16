@@ -270,11 +270,19 @@ async function loadDomain(root, domain, definition, validator) {
     }
   }
 
+  const aggregateContents = `${JSON.stringify(rows.map((row) => row.value), null, 2)}\n`;
   const artifacts = [{
     domain,
     path: join(catalogRoot, "all.json"),
-    contents: `${JSON.stringify(rows.map((row) => row.value), null, 2)}\n`,
+    contents: aggregateContents,
   }];
+  if (domain === "alimentos") {
+    artifacts.push({
+      domain,
+      path: join(root, "apps/mobile/catalogs/generated/foodBaseline.generated.json"),
+      contents: aggregateContents,
+    });
+  }
   if (definition.index === "food") {
     artifacts.push({
       domain,

@@ -8,10 +8,11 @@ export const CATALOG_SOURCE_IDS = [
   "gymnasia_recipes",
   "gymnasia_exercises",
   "user_personal_foods",
+  "anses_ciqual_2025",
 ] as const;
 
 export type CatalogSourceId = (typeof CATALOG_SOURCE_IDS)[number];
-export type RemoteCatalogSourceId = Exclude<CatalogSourceId, "user_personal_foods">;
+export type RemoteCatalogSourceId = Exclude<CatalogSourceId, "user_personal_foods" | "anses_ciqual_2025">;
 export type FoodCatalogSourceId = Exclude<CatalogSourceId, "gymnasia_exercises">;
 
 export type CatalogItemRef = {
@@ -49,9 +50,17 @@ export type RawFoodCatalogEntry = {
 
 export type LegacyFoodSource = "alimento" | "producto_comercial" | "receta" | "personal";
 
-export type FoodCatalogEntry = RawFoodCatalogEntry & {
+export type FoodNutrientField = "calories_per_100g" | "protein_per_100g" | "carbs_per_100g" | "fat_per_100g" | "fiber_per_100g";
+
+export type FoodCatalogEntry = Omit<RawFoodCatalogEntry, FoodNutrientField | "serving_size_g"> & Record<FoodNutrientField, number | null> & {
+  serving_size_g: number | null;
   sourceId: FoodCatalogSourceId;
   source: LegacyFoodSource;
+  ciqual?: {
+    version: "2025";
+    names: { fr: string; en: string };
+    qualifiers: Record<FoodNutrientField, { qualifier: "reported" | "less_than" | "trace" | "missing"; limit?: number }>;
+  };
 };
 
 export type RawExerciseCatalogEntry = {

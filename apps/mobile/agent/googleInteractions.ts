@@ -13,7 +13,7 @@ export type GoogleStep =
   | (Record<string, unknown> & { type: "thought"; signature?: string; summary?: GoogleContent[] })
   | GoogleFunctionCall
   | (Record<string, unknown> & {
-      type: "function_result"; name: string; call_id: string; result: GoogleContent[];
+      type: "function_result"; name: string; call_id: string; result: GoogleContent[]; is_error?: boolean;
     });
 
 export type GoogleInteractionTurn = {
@@ -53,7 +53,8 @@ export function isGoogleStep(value: unknown): value is GoogleStep {
     case "function_call": return typeof value.id === "string" && !!value.id.trim()
       && typeof value.name === "string" && !!value.name.trim() && isGoogleRecord(value.arguments);
     case "function_result": return typeof value.call_id === "string" && !!value.call_id.trim()
-      && typeof value.name === "string" && !!value.name.trim() && isContent(value.result);
+      && typeof value.name === "string" && !!value.name.trim() && isContent(value.result)
+      && (value.is_error === undefined || typeof value.is_error === "boolean");
     default: return false;
   }
 }

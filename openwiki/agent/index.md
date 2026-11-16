@@ -1,5 +1,5 @@
 # Archivos
 
-- [Configuración BYOK de proveedores](provider-configuration.md) - Contrato de configuración, almacenamiento y comprobación de credenciales BYOK de OpenAI, Google y Anthropic en la aplicación móvil. Explica el aislamiento de secretos, las diferencias entre web y nativo y el proxy Anthropic opcional.
-- [Streaming de proveedores](provider-streaming.md) - Describe el flujo SSE y los bucles de herramientas de OpenAI, Anthropic y Google en el cliente móvil, incluidos sus contratos de continuación, validación y fallos.
-- [Runtime del agente y herramientas](runtime.md) - Guía para interpretar una muestra de ejecución LangSmith del agente móvil sin convertirla en una tasa poblacional. Relaciona llamadas, repeticiones, latencia y tokens con los límites efectivos del loop, la política y los efectos locales.
+- [Configuración BYOK de proveedores](provider-configuration.md) - Contratos de configuración, credenciales, verificación, descubrimiento y transporte BYOK para OpenAI, Anthropic, Google y servidores compatibles con OpenAI en la aplicación móvil.
+- [Streaming, continuaciones y fallos de proveedores](provider-streaming.md) - Contratos del cliente móvil para consumir respuestas incrementales, continuar llamadas de herramientas y convertir fallos de proveedores en resultados seguros. Describe las diferencias entre OpenAI, Anthropic, Google Interactions y servidores Chat Completions compatibles.
+- [Runtime del agente Coach y observabilidad](runtime.md) - Contratos del turno local-first de Coach y límites de sus señales operativas, trazas y telemetría. Distingue mediciones agregadas disponibles de tokens y coste no observables.

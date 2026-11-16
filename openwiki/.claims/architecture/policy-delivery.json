@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:71e98cfd2e601e9923d548ca43c0455229b160b20a2df5807516c83a4ee7dfe2",
+  "pageVersion": "sha256:a0eb58747b07a7db509c03bbee17856dcda60f1e555aa47679be6d0539a7d3a2",
   "claims": [
     {
       "id": "claim_531b0801ff69469ba48c4b25cec7318c",
@@ -100,15 +100,19 @@
     },
     {
       "id": "claim_b9ab1428615e433d9424fdb83f061a3a",
-      "statement": "La preparación del snapshot de build para staging o production descarga y verifica el deployment exitoso, el digest, las raíces y las tools, exige evidencia autorizable del gate sanitario, y genera los módulos de prompt, runtime sanitario, snapshot firmado y metadatos usados por la build.",
+      "statement": "El preparador de snapshots para staging o production resuelve el deployment exitoso del canal, descarga y verifica bundle, firma, digest, raíces y tools, exige un informe sanitario no autorizante y evidencia de promoción coherente, y solo entonces genera los módulos y metadatos integrados por la build.",
       "evidence": [
         {
-          "resource": "repo://.github/workflows/build-apk.yml#L214-L227",
-          "version": "repo-lines-v1:sha256:8d288144677c51a3aff2ec29f09f8cd18328c5cd032390dcf3d59ee7bb31c746:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMTFjZDdjMWU5ZTE1MDMzMzJmZjgwNjc3NDI4Njg4NzY2MjM5NzNlZmNiODczZWY4M2QwYzI4NDdhZWM3MTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjZDlhNzJjMDg1ZDU3ZjkyNTA2NWZhMzE1NzVlYjU2OTI4ZWU0NDM1NmY2YTdhNTI4YzY3NDk0MjAwYTdiZDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMjNkNmQyNjQxMDdkZTc2YzYwOTBhM2ZkY2Y2NzUwZjMxNGYyMmM4YjZjYWMyZjBmZTI5MGQ3MDE3ZDViNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI1ZGY4NWQ4MDAxMDE2MjQyZTI1Mzg0ZWNiMWIxZTM4MmY0ODdjNTAyODY3ZGVmN2M4MmJkMWYwMzI0ZDMwODkifQ"
+          "resource": "repo://.github/workflows/build-apk.yml#L251-L262",
+          "version": "repo-lines-v1:sha256:7853180bfc1fa1f31a781c6ec99c95d7ef2ecdc2c57008a971a21fec09bdcc86:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMTFjZDdjMWU5ZTE1MDMzMzJmZjgwNjc3NDI4Njg4NzY2MjM5NzNlZmNiODczZWY4M2QwYzI4NDdhZWM3MTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjZDlhNzJjMDg1ZDU3ZjkyNTA2NWZhMzE1NzVlYjU2OTI4ZWU0NDM1NmY2YTdhNTI4YzY3NDk0MjAwYTdiZDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2ZTE2NTRmNGQ4NjU3NjYzYzk4NWM5ZjEwYzM3YjMzYjIwODAxMTRhMDNjZjBiODg3ZjcyZjY1ODYwZmUwZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI1ZGY4NWQ4MDAxMDE2MjQyZTI1Mzg0ZWNiMWIxZTM4MmY0ODdjNTAyODY3ZGVmN2M4MmJkMWYwMzI0ZDMwODkifQ"
         },
         {
           "resource": "repo://scripts/policy-promotion/prepare-policy-snapshot.mjs#L146-L247",
           "version": "repo-lines-v1:sha256:e75c6cee64ef39a85627b150286904a6d021cede50bedc2d8f7b3a98c36921ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmMzY2OWY3OTZhMmZkOWIwMjQyMGJmYzM0MTZmYmM0YzU1NWExNjRjOGYwMjZiY2U0OWNmMTMwYjQzZTQ5Y2QzIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIyMTRmZmY3OWI3ZGI1ZmJhYWU1ZTNkZWQ3ZDhkODk5MThhNDUyOTE4NjI4YWJkYTAxMjk4NzNjMzg4NDZmNTkwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIyYzc5M2MwZDU5ZjJhODMyNWI4NWU5NmZlOGIzYzBjNmE3ZTM4YjRjMjQzNTExYmM2YThkYjJkNjgwYzA3YTQzIn0"
+        },
+        {
+          "resource": "repo://scripts/policy-promotion/prepare-policy-snapshot.mjs#L97-L129",
+          "version": "repo-lines-v1:sha256:568ae2664f6d7dac3c7b4ad8e61d30d5de3a4c49b271e68f5527e031fff3d911:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzYzEwZDBmMzcyOGQyZTViYzIxMjEzYzEyNWQ4YmEwM2M4Y2ExNjJmNDVmODYwOTk5N2NlOWViZWI2NTE2YjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlYTgxNWQ1NzczNDAwOGI1YWIzNjY2MTQyZGEwMTExOTI4MzJmYjBmNWQ3OTNmNzBjMjFjMDIzY2VjOTE5NDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwOTM0NGY1ZTA0OTg3NzcxZWQ3NTY3ZGU1Nzg5ODY3MTcwMzIzZjAxOTg2MGQ0NDZmNWY5OTJkMzM3MDY1YzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViYTk5Yzc2MWQ0MzAwOGJlYTM1MmJkZDExNjY2YTNmODc0NmZjNGMyNjIwYWFmZDQwZjE3NmNlOGVhZDQ3ZjMifQ"
         }
       ]
     },
@@ -176,11 +180,19 @@
     },
     {
       "id": "claim_cdefbb6509b74abfa14f75dff25e3ff8",
-      "statement": "El lease del agente une y congela profundamente el prompt, la política sanitaria fusionada, el contexto de activación y el estado de una misma selección; la interfaz lo adquiere antes de clasificar la entrada sanitaria de un envío.",
+      "statement": "El lease del agente une y congela profundamente el prompt, la política sanitaria fusionada, el contexto de activación y el estado de una misma selección; los envíos del chat principal, el asistente de alimentos y el mini chat lo adquieren antes de clasificar la entrada sanitaria de un turno.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/App.tsx#L5202-L5249",
-          "version": "repo-lines-v1:sha256:38b55b52dba0f2f8e7821c96910c3ce0701fd0557ca28254d9306ca37683b948:eyJzZWxlY3RlZExpbmVDb3VudCI6NDgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4N2I5ZTQyZmYxYjE3MmRjMGRiYWJhNjI3YjAxMzU0NjliNDJhMTAzYWJkMGE2OWViODhlNGM5ODAwZDdlYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE3OTJmODQ3YmIyMWNiMjkyZGQwOWY3ZmE2ZTdjYWM0YThjMTRkOTdkMzg5NjMzYjNkMTUyMGVhMTRiNWIxZGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMDIxNGZlZjM5YmM0ZTM5NmM3OTk3ZjJkOTgxMjA1YTY5NTFjYzI3ZGFhZWYyZWM0NTI0OTJkMTI3MWZmZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRmZDEzYmE4ODU5MzQ3ZTU0YjI1Y2Q4YzhlMDc4MjNmYzg2NzA4OGNlZjJlMWNhZjE1OTFlMWRlNmQ3YWRjMGQifQ"
+          "resource": "repo://apps/mobile/App.tsx#L1861-L1872",
+          "version": "repo-lines-v1:sha256:8a95ba5e78e694ea2eb78c4ee23528ca8031718fe4e1c44ce2d5c7f4f2f965e8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4N2I5ZTQyZmYxYjE3MmRjMGRiYWJhNjI3YjAxMzU0NjliNDJhMTAzYWJkMGE2OWViODhlNGM5ODAwZDdlYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMDIxNGZlZjM5YmM0ZTM5NmM3OTk3ZjJkOTgxMjA1YTY5NTFjYzI3ZGFhZWYyZWM0NTI0OTJkMTI3MWZmZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjljNWZkNmIwNTQ4NGU4ZTQ1Mzk4OWE5YzljODI0ZTBiNjAzMTAyZTU3NWYxMmI0NTIyZGM2MGM2Y2U2NzM2YjIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L4840-L4851",
+          "version": "repo-lines-v1:sha256:37e8d8eb11abd6733750592f4196349fb006795d3d5a1ebfaf80cdfa92ae2fda:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExZGY4N2E0NzMxNmM3MDhjNTUwMjA5OGU5YWY2YzQ0NTM0ZWI4MGJlYWRjZjYwNjMwMjhlZmNhODU5MzdhYmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwM2Q0YmZjMDViNTNiNjk0MDA1ZTY5NzU2ZGMyYmQwNWYwNWQwNWMwYWE5YWQ0Mjg2NmI2MjU0NDAzNDhkOTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkODlmZGFjNDNmMzJmM2VjNzc3MjNiMDFkNGExZDNlNGE4MTMyMDE5M2M3NmY1OGI1YjY0NmVhYzQzYjJhODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZlOWUwNDkwODBhNDI1MGZmODI5MWMyZTBhMGMxZGRiNWI5Y2JmYzI0NDAwM2IzNDliZTViYWVlMDQ1OGQ5NmQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/App.tsx#L5758-L5765",
+          "version": "repo-lines-v1:sha256:6ff58b356bdd58b7a8bc48a4c36bffce98e97afa570ad218bb58864497403c9d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWE4ODQyMGEzZDNlNjk0NzBmNDJjMTEyMTM0NjdhMmJkNjM0OGIxNmQxOTllYThjYzFhMjBjYzRjMzQyMmU1MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTVmYjhjNjBmZWVlOThjN2NmZmRhMjI1ZGNhNDVmODFlZDcxZGU4ZmI5Y2M0ZmJmMGEwMTQxMDc4MjA2NzZhZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmIwYzEzYTQyNGFiYzc4ZTM1OTZhMzhjMGFkYjNhYjcxYTNhYzliYjNmZWQ5NWYxYjQxNWNmNTdhYzAwNjFkNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDcxNDU3OTkwNTlkNzQwYzc4YWRhNDY2YzBjMTVkZDE2YjdkNWRjYTc4ZmM2NDBkN2YzM2NjY2MxNjhhNjc4ZCJ9"
         },
         {
           "resource": "repo://apps/mobile/agent/agentPolicyRuntime.test.ts#L98-L113",
@@ -252,11 +264,23 @@
     },
     {
       "id": "claim_fc2f63fcbf284b0db3dd8b73f1fc232f",
-      "statement": "La build de producción prepara inputs de política inmutables para transacciones nuevas y los restaura desde el release durante reintentos en lugar de volver a resolver una política.",
+      "statement": "Una transacción Android de producción nueva captura una vez los inputs de política verificados, guarda el JSON de metadatos y el tar de módulos en el borrador durable y en el artefacto de inputs; una transacción reanudada los restaura desde el mismo tag, y la compilación y verificación de AAB/APK reutilizan ese snapshot en lugar de resolver otra política.",
       "evidence": [
         {
-          "resource": "repo://.github/workflows/build-apk.yml#L214-L250",
-          "version": "repo-lines-v1:sha256:0bd9a60614686f0083f858281725dbf98f1f9acfbeaaf075d7edc1900c8ad6ca:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMTFjZDdjMWU5ZTE1MDMzMzJmZjgwNjc3NDI4Njg4NzY2MjM5NzNlZmNiODczZWY4M2QwYzI4NDdhZWM3MTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOTk1ODMzNGQ4ZmJiY2QwYTJlY2UwYTU2NmY3OTYxODMyZGI4ZGRjNTA2NmFlMmI1YmJmMTk4ZGE3ZWU0NzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmMjNkNmQyNjQxMDdkZTc2YzYwOTBhM2ZkY2Y2NzUwZjMxNGYyMmM4YjZjYWMyZjBmZTI5MGQ3MDE3ZDViNDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlODBiMGY3MTA5Y2NiM2E5YThhMjYwYWJhZjMxZGNhZDM3Zjg3YTM0MmQzYmVkNGZiMjJhMzMwNDQ4MThkYmIifQ"
+          "resource": "repo://.github/workflows/build-apk.yml#L251-L327",
+          "version": "repo-lines-v1:sha256:15729611189e70f5a22bc1f1d7838ec092200bc1d7bce3a9b74c7a87ae2839d0:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMTFjZDdjMWU5ZTE1MDMzMzJmZjgwNjc3NDI4Njg4NzY2MjM5NzNlZmNiODczZWY4M2QwYzI4NDdhZWM3MTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1NGExMjY3NDIzNWVmNjM0MzM3MjRmOTU2M2M0YWViZTY0YTliOTg2MTliY2EyZjgwMmRiMzQ3ZDJiNDAwYjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2ZTE2NTRmNGQ4NjU3NjYzYzk4NWM5ZjEwYzM3YjMzYjIwODAxMTRhMDNjZjBiODg3ZjcyZjY1ODYwZmUwZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3ODRmOGFkMWMxYTY3NGFiNjE0NmE0NDIwMWM4NTBhNGMxZTBjZjBlMDZlY2Y1ZGNkMjUyN2E4MGZkOGJhZWUifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L346-L424",
+          "version": "repo-lines-v1:sha256:afa47d6a260bc0f2214ef662c155bca64b77ef918294e4babfa0470c63735c9c:eyJzZWxlY3RlZExpbmVDb3VudCI6ODMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5MWZjYmQzZGYzZDQ3YTZiYjhkMDk3OTQ0MmY0M2EzYjEwMDI2ZmIwODAzZDVhOTA1YTdjNjI0ZTFmZDRkMzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1NjI2ZDk4MjY2Y2IxYjk1NTRlYWI3M2RhZjcxMjdiMWI3ODgyYzM2ODM0MmE3ZGU5ZTllODM0MjU2NjBmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiZmRjZjUyMjhjNjIzN2FiNmJkNGU1MGVmMGUwOTZjNGRiZDM5YmNjODQ5OTIxNTFlNWFhYjdjYmEzZWQyMWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhZDQ5OGM5ZDdlYjNkYzYxOWUzN2ZiZDdjZGVmZDBkMDUxYzgxM2ZmZWY0NmNlMDEwNTNjOTgwYjBiNTQ0MjEifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L472-L485",
+          "version": "repo-lines-v1:sha256:e28051605a68ce9ec12610218484755900b559cb0f801276802ce31770e50cb7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1NWYxN2YyOTMyYjE1M2M1MjBmN2IwNGI5ZTE5NDNmZDVkZjJkZWM2ODQ1YzA0ZGEzZmI0NmQzOWY5ZDI2MmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2YThhZTVhODI5OTljN2Q1MDY0MWZhZTFhZTY4NThmNjhlMzQ4NWJmZmRiZTJhYzZkN2JhN2MxODdiN2QyOGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZmZGZjMTAwZmVkNTgxMjc2ZjBjMDQ5ZWEyMDkyMmIzZjBiZDNhZjRkODQwYWM2Mzc5NDFjZDFkYjE4NmI5OWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiNGE4YmQ0NWJhOTEyOTM4OTEzYjI4NjllNjdiMThiZGQyMjgwOGIwNzVmNzk3NWU1NWFjOWRiYTRhZDJlNjMifQ"
+        },
+        {
+          "resource": "repo://.github/workflows/build-apk.yml#L538-L558",
+          "version": "repo-lines-v1:sha256:c1b6154c09aa9ab3e9d0edd78a8a2d07e98c91cfd5e05b8a2e7b9d252e03acd5:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkYjU4ODk3YzY1ZDU4MzYyNjdiZjViMWE1ZTUxMmE1Yzk1MzMzYzlhYmIxYmFiZTAzNmI0NDliYWNiNWU1ZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyNzRjYTY4NmViNjYxNzViY2U4MDc4M2ExZTk3NzQwODlkODY1MDliODhmNTI2ZWU3MTFlOWNjZDQ4Y2JiYzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlZWZhM2VkMmMxOTQxMjkyYWQxYTczZGU5M2ZiNDdmYmYyMThkMTk5MWJkMzgyNWRjNjcyNjNlODgxYWQ2Y2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM3MWQwOTNmZGQ4MzI0ZGNhOTU2NTQ3MTgyYTJhNTEzZjFmODgyMjJhYmFkYzg2YjQ0MjliNTg5MmE3ZTZjODYifQ"
         }
       ]
     },
@@ -343,10 +367,20 @@
           "version": "repo-lines-v1:sha256:4a06f8986f6e80e9996ce931b02999418d0b264cf0587da6e016b802fdbc4b7d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRlYzEzNGJhZjAyMmQxZjA3MWI0MDk2NDg5ZGU5YWY2NzU5YzBlOTE3NjY3MDEzOWQ2ODcyY2M2Y2IzN2ZlNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA0ZWY3YzFhMDAyYjRlOTY4ZmIyODYyMzRkYjgxZTc2OWNhNWFkYjkwODJmNmVmN2FhNzBjNzJkNDk4YjVmNjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_b5858f3ca4c7499794a177e9cf8fc86a",
+      "statement": "El check `gymnasia/policy-promotion` solo se completa para un cambio en rutas de promoción cuando existe un deployment exitoso de `gymnasia-policy` en `Production` cuyo payload v3 referencia exactamente el SHA evaluado como `sourceCommit`; si no hay cambios en esas rutas se completa sin exigir promoción.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/prompt-policy/policy.mjs#L104-L141",
+          "version": "repo-lines-v1:sha256:5f07378570ee816fc284117385773a427c12e81d1b3665f43edb76d33ef958e5:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjZDE5MGU4MzZhY2U0YWY3NTVjODkwZDU0NzljYzQ2NjQ4MDEwNWVmZjNlMjFiMDM2OTI0MWU2MGIyNTAzOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyMzVkYTFhMzRhMWM2NTRmMmU4Y2RkYjFiYThhNDQ1ZWYxY2U4ZjYwNTA5NmI4NmUzYWYzODZiNjk5MTUwMWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1YWQxNDIyNjEyMTQ5ZTYyNTgwMDUwYTZkN2U3ZmU1YjI2ZjU4MjZkZGY3N2YwNzFiZWZhN2E1YzU3ODU2MWYifQ"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.5.0",
-    "at": "2026-09-07T11:37:28.236Z"
+    "by": "openwiki/0.6.0",
+    "at": "2026-10-20T13:07:24.686Z"
   }
 }

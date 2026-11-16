@@ -1,11 +1,15 @@
 ---
 type: concepto
-title: Repositorios de catálogos
-description: Contratos, generación y publicación de los catálogos nutricionales y de ejercicios, y sus estrategias diferenciadas de consumo local-first en la aplicación móvil.
+title: Catálogos nutricionales y de ejercicios
+description: Contratos de edición, generación, importación y consumo móvil de los catálogos nutricionales y de ejercicios. Incluye la proyección CIQUAL, su índice editorial de imágenes y la verificación de artefactos remotos.
 tags: [content, catalogs, validation, offline, mobile]
 sources:
+  - id: openwiki-source-947f1d235f257ae2a1e059b1
+    resource: repo://alimentos/ciqual/README.md
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
+  - id: openwiki-source-407d9d819b31da7a6fdc2472
+    resource: repo://apps/mobile/catalogs/ciqual.ts
   - id: openwiki-source-c0eca02912a89ea7ca68826e
     resource: repo://apps/mobile/catalogs/exerciseCatalogRuntime.test.ts
   - id: openwiki-source-997461d2f9cf061268adfc05
@@ -32,10 +36,16 @@ sources:
     resource: repo://apps/mobile/scripts/catalogs.e2e.mjs
   - id: openwiki-source-d54ece17be93a2b0fabf9d35
     resource: repo://ejercicios/SOURCES.md
-  - id: openwiki-source-5b54a58d1b51cd490b0e7162
-    resource: repo://package.json
   - id: openwiki-source-b896fa4e3ea6b5bfcc4ef173
     resource: repo://scripts/catalogs/catalogs.mjs
+  - id: openwiki-source-479a8e1beb0e92cbabe03d8c
+    resource: repo://scripts/catalogs/ciqual-image-batches.mjs
+  - id: openwiki-source-a98f882a58d31990459e44fd
+    resource: repo://scripts/catalogs/ciqual-image-samples.mjs
+  - id: openwiki-source-fbc0c015833f90d8b1382e35
+    resource: repo://scripts/catalogs/ciqual-mobile-images.mjs
+  - id: openwiki-source-ffa640596f2637a03b25785c
+    resource: repo://scripts/catalogs/ciqual-mobile.mjs
   - id: openwiki-source-87ef8bdaf847493a7f3a10e0
     resource: repo://scripts/catalogs/exercise-pagination.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
@@ -44,109 +54,142 @@ sources:
     resource: repo://scripts/catalogs/schemas/ejercicio.schema.json
   - id: openwiki-source-025372dfd931964e023a41cf
     resource: repo://scripts/catalogs/schemas/food-entry.schema.json
+generated: { by: "openwiki/0.6.0", at: "2026-11-11T15:41:01.947Z" }
 verified:
-  - by: openwiki/0.5.0
-    at: 2026-09-13T07:56:37.562Z
-generated: { by: "openwiki/0.5.0", at: "2026-09-13T07:56:37.562Z" }
+  - by: openwiki/0.6.0
+    at: 2026-11-11T15:41:01.947Z
 ---
 
-# Repositorios de catálogos
+# Catálogos nutricionales y de ejercicios
 
-Los directorios versionados `alimentos/`, `productos_comerciales/`, `recetas/` y `ejercicios/` son la fuente curada pública. Las fichas JSON individuales y sus imágenes son lo que se edita; los agregados e índices son derivados comprobables. La aplicación móvil trata los catálogos nutricionales y el de ejercicios de manera distinta: descarga los primeros como agregados completos, pero consulta el segundo mediante un manifiesto versionado, páginas y shards bajo `ejercicios/catalog-v1/`.
+Los directorios `alimentos/`, `productos_comerciales/`, `recetas/` y `ejercicios/` contienen el contenido curado del producto. Sus fichas JSON y recursos declarados son la entrada editable; agregados, índices, baselines y artefactos de paginación son derivados reproducibles y se confirman junto con esa entrada. No tratar un derivado como una segunda fuente de verdad.
 
-Este límite separa contenido público y estado personal: `user_personal_foods` vive en el dispositivo, es privado y no tiene URL ni imagen remota. Para el uso de estos datos, véanse [Dieta y estimación de alimentos](../mobile/diet-and-food-estimation.md) y [Plantillas de entrenamiento](../mobile/training.md).
+Hay un límite importante: `alimentos/ciqual/` es una importación versionada de ANSES-CIQUAL, no otra colección de fichas curadas a mano. Sus XML de origen, fichas, diccionarios e índices tienen un proceso propio; la app consume una proyección compacta integrada. Por otro lado, `user_personal_foods` pertenece al dispositivo: no tiene URL remota ni se publica en estos repositorios. Para el uso de alimentos y enlaces en comidas, véase [Dieta y estimación de alimentos](../mobile/diet-and-food-estimation.md).
 
-## Contenido fuente y artefactos
+## Qué se edita y qué se genera
 
-| Dominio | Fuente editable | Recursos | Derivados principales | Consumo móvil |
-| --- | --- | --- | --- | --- |
-| `alimentos/` | `<id>.json` | `images/<archivo>.webp` | `all.json`, `index.json` | agregado nutricional |
-| `productos_comerciales/` | `<id>.json` | `images/<archivo>.webp` | `all.json` | agregado nutricional |
-| `recetas/` | `<id>.json` | `images/<archivo>.webp` si se declara imagen | `all.json` | agregado nutricional |
-| `ejercicios/` | `<id>.json` | `images/<id>-male.webp`, `images/<id>-female.webp` | `all.json`, `index.json`, `catalog-v1/` | manifiesto, páginas e índices fragmentados |
-| `apps/mobile/catalogs/generated/` | No admite edición manual | — | `catalogSchemas.generated.ts` | validación de agregados nutricionales |
+| Dominio | Entrada que mantiene el repositorio | Derivados relevantes | Consumo móvil |
+| --- | --- | --- | --- |
+| `alimentos/` | `<id>.json` e imágenes declaradas | `all.json`, `index.json`, `foodBaseline.generated.json` | agregado remoto y baseline integrado |
+| `productos_comerciales/` | `<id>.json` e imágenes declaradas | `all.json` | agregado remoto |
+| `recetas/` | `<id>.json` e imágenes declaradas | `all.json` | agregado remoto |
+| `ejercicios/` | `<id>.json` y las dos imágenes declaradas | `all.json`, `index.json`, `catalog-v1/` | manifiesto, páginas e índices bajo demanda |
+| `alimentos/ciqual/` | XML importados, `translations.es.json` y manifiestos/WebP editoriales | fichas, índices, diccionarios, manifiesto, baseline e índice de imágenes CIQUAL | baseline e índice integrados; WebP bajo demanda |
+| `apps/mobile/catalogs/generated/` | No es entrada manual | schemas TypeScript y baselines | validación y disponibilidad local |
 
-El generador enumera las fichas por nombre de archivo, por lo que los `all.json` son deterministas. El índice de alimentos conserva pares `{id, name}` y el de ejercicios contiene IDs. Para ejercicios también genera un catálogo paginado de 30 entradas: el manifiesto fija un hash de versión, describe las páginas, los shards de búsqueda por unigrama/bigrama normalizado y los directorios por primer byte del ID. Cada descriptor lleva su hash SHA-256; el manifiesto se escribe al final para no publicar una referencia a contenido aún no sustituido.
+El generador de catálogos recorre las fichas por nombre de archivo y conserva ese orden en los agregados. Para alimentos crea un índice `{id, name}` y copia `alimentos/all.json` al baseline de la app; para ejercicios crea un índice de IDs y el catálogo paginado. También transpone los schemas de alimento y ejercicio a `catalogSchemas.generated.ts`, que usa el parser móvil. En consecuencia, un cambio de ficha o schema exige regenerar y revisar los derivados afectados.
 
-**No se editan manualmente los derivados.** Una modificación de ficha, imagen o schema exige regenerarlos y confirmarlos en el mismo cambio. El validador también rechaza cualquier recurso en `images/` que no esté referenciado: ese directorio no es un área de borradores.
+Las fichas nutricionales comparten un schema estricto para identidad, nombre, categoría, nutrientes y porción. Las recetas se publican aquí como ficha nutricional calculada por 100 g, no como instrucciones ejecutables de preparación. Las fichas de ejercicio declaran metadatos, instrucciones e imágenes `images/<id>-male.webp` y `images/<id>-female.webp`; el ID debe coincidir con el nombre de su JSON.
 
-## Contratos e integridad del contenido
+La inspección bloquea JSON o schema inválido, discrepancia entre fichero e ID, IDs duplicados —incluidos duplicados entre los tres dominios nutricionales—, rutas inseguras o con distinta capitalización, recursos faltantes o huérfanos y bytes que no son WebP. Las imágenes nutricionales deben ser cuadradas; las de ejercicio, 16:9. Por tanto, `images/` no es un directorio de borradores: todo archivo debe estar referenciado por una ficha.
 
-Las fichas nutricionales no admiten campos extra. Exigen ID kebab-case, nombre, categoría, energía, macronutrientes, fibra y datos de porción; los números nutricionales y la masa han de ser no negativos. `image`, si existe, es un nombre de archivo WebP seguro. Los nutrientes se expresan por 100 g, por lo que una receta es una ficha nutricional calculada por 100 g y no una receta ejecutable con ingredientes.
+## Generación y guardas de publicación
 
-Las fichas de ejercicio también son estrictas: requieren nombre, grupo muscular, músculos secundarios, equipo, dificultad, instrucciones y dos rutas de imagen. Las rutas deben ser exactamente `images/<id>-male.webp` e `images/<id>-female.webp` y el ID declarado debe coincidir con el archivo JSON. La inspección comprueba que las imágenes referenciadas existen con la misma capitalización, se pueden decodificar y son WebP; exige proporción 1:1 para nutrición y 16:9 para ejercicios. Además bloquea IDs duplicados —también entre dominios nutricionales—, rutas inseguras, imágenes huérfanas y deriva de derivados.
-
-## Generación y publicación segura
-
-Los puntos de entrada son:
+El entrypoint del generador es `scripts/catalogs/generate.mjs`. Desde la raíz, el contrato del CLI es:
 
 ```bash
-npm run sync:catalogs
-npm run check:catalogs
-npm run test:catalogs
-npm run test:catalogs:e2e
+node scripts/catalogs/generate.mjs --write
+node scripts/catalogs/generate.mjs --check
+node scripts/catalogs/generate.mjs --write --domain alimentos
+node --test scripts/catalogs/*.test.mjs
+node apps/mobile/scripts/catalogs.e2e.mjs
 ```
 
-`sync:catalogs` ejecuta la inspección y escribe artefactos con archivos temporales y renombres. Si falla una sustitución, revierte tanto los artefactos ya reemplazados como los ficheros obsoletos que hubiese borrado. Puede limitar la escritura con `node scripts/catalogs/generate.mjs --write --domain alimentos`. `check:catalogs`, en cambio, siempre valida los cuatro dominios y compara todos los derivados esperados, incluido el schema móvil y los ficheros de `catalog-v1/`; falla ante artefactos ausentes, distintos o ya no esperados.
+`--check` siempre inspecciona los cuatro dominios y compara los derivados esperados; rechaza `--domain`, para evitar validar solo una parte de una publicación. `--write` inspecciona antes de escribir y puede limitar la escritura a un dominio. Una escritura enfocada sirve únicamente cuando ya se determinó qué derivados de ese dominio deben cambiar; antes de integrar, ejecutar la comprobación global.
+
+La publicación de derivados usa sustituciones temporales, instala el contenido antes de eliminar artefactos de ejercicio obsoletos y publica `catalog-v1/manifest.json` al final. Si falla una operación, intenta revertir sustituciones y restaurar borrados; un error de rollback impide considerar publicable el resultado. Este orden evita que el manifiesto activo describa páginas que aún no están instaladas.
 
 ```mermaid
 flowchart TD
-    Edit["Editar ficha JSON e imagen"] --> Inspect["Validar schema, IDs e imágenes"]
-    Inspect -->|"Violación"| Fix["Corregir contenido fuente"]
-    Fix --> Edit
-    Inspect -->|"Válido"| Generate["Generar agregados e índices"]
-    Generate --> Check["Ejecutar check:catalogs"]
-    Check -->|"Deriva"| Generate
-    Check -->|"Al día"| Commit["Confirmar fuente y derivados juntos"]
+    Edit["Editar fichas y recursos"] --> Inspect["Inspeccionar schemas, IDs e imágenes"]
+    Inspect -->|"Inválido"| Repair["Corregir la entrada"]
+    Repair --> Edit
+    Inspect -->|"Válido"| Derive["Generar agregados, baseline y catalog-v1"]
+    Derive --> Install["Instalar artefactos y manifiesto al final"]
+    Install --> Check["Comprobación global"]
+    Check -->|"Drift"| Derive
+    Check -->|"Al día"| Commit["Confirmar entrada y derivados juntos"]
 ```
 
-*Flujo de publicación: el contenido solo es publicable cuando fuente, recursos y productos derivados superan la misma inspección.*
+*El pipeline de contenido valida antes de escribir y activa el manifiesto de ejercicios después de sus artefactos.*
 
-La atribución de `ejercicios/SOURCES.md` permite adaptar los metadatos e instrucciones del dataset fijado bajo MIT, pero excluye copiar, redistribuir o utilizar como referencia imágenes y GIF de Gym Visual.
+`catalog-v1` fija una versión mediante el hash SHA-256 del catálogo canónico. Su manifiesto describe páginas de 30 fichas, sus hashes, shards de búsqueda de unigramas y bigramas normalizados, y shards de directorio por primer byte del ID. Cada artefacto declarado lleva su hash; `all.json` no participa en la exploración paginada del cliente.
 
-## Fuentes remotas y caché nutricional
+## CIQUAL: importación distinta y baseline integrado
 
-El registro nutricional define tres fuentes remotas de GitHub Raw: `gymnasia_foods`, `gymnasia_products` y `gymnasia_recipes`, cada una apuntando a su `all.json`, con clave de caché actual, clave heredada y procedencia. Al terminar la hidratación local, `useFoodCatalogRuntime` lee las tres cachés en paralelo, las presenta de inmediato y refresca las tres fuentes en paralelo. El parser elimina cualquier `sourceId` o `source` almacenado que contradiga la fuente esperada, valida el arreglo completo y solo después vuelve a añadir esos campos de procedencia. Ese origen decide si una imagen alimentaria se busca en `alimentos`, `productos_comerciales` o `recetas`; los alimentos personales no producen URI remota.
+CIQUAL conserva 3.484 fichas locales procedentes de los cinco XML oficiales de la entrega ANSES 2025. Las fichas, índices, diccionarios y manifiesto se generan de forma determinista; `translations.es.json` es la superficie editorial para las traducciones y vincula cada nombre a las etiquetas originales mediante SHA-256. No se deben editar a mano los archivos generados de `alimentos/ciqual/`.
 
-El snapshot nutricional actual es un sobre versionado con fuente, fecha, hash SHA-256 del JSON canónico, ETag, procedencia y datos. En lectura se revalidan forma, fuente, fecha, entradas y hash. Si existe un sobre actual inválido se rechaza sin recurrir a la clave heredada; si falta el sobre y el array heredado es válido, se migra como `stale`. Una copia con fecha de hasta siete días es `cached`; una más antigua o sin fecha, `stale`.
+La importación puede descargar los XML fijados o usar una copia local. Comprueba hashes antes de convertir y `check:ciqual` valida la entrega sin red; con `--source-dir` además reconstruye y compara todos los archivos. Después de cambiar la importación o las traducciones, genere y compruebe la proyección móvil con `scripts/catalogs/ciqual-mobile.mjs`: `--write` actualiza `apps/mobile/catalogs/generated/ciqualBaseline.generated.json` y, sin esa opción, compara el archivo con la proyección esperada. El script parte de `all.json` y `groups.json`, exige traducción española, base de 100 g y los cinco roles nutricionales; solo conserva un valor numérico cuando su calificador es `reported`, y transporta los demás calificadores.
 
-Cada refresco añade `ts` a la URL y solamente publica datos `fresh` si HTTP, JSON y schema son correctos. Un fallo remoto conserva el snapshot anterior; una escritura de caché fallida conserva el contenido nuevo durante la sesión, pero lo marca para advertir que no sobrevivirá offline. Al combinar estados diferentes de las tres fuentes, la disponibilidad global es `partial`.
+La proyección integrada contiene los nombres, categoría y cinco valores por 100 g necesarios en la app. Conserva calificadores como límite, traza o dato ausente: no convierte incertidumbre en cero. Es una fuente independiente, `anses_ciqual_2025`, disponible en el primer arranque sin conexión y actualizable únicamente mediante una nueva versión de la app; no reemplaza IDs de los catálogos curados ni crea una caché remota de CIQUAL.
 
-## Catálogo de ejercicios bajo demanda
+### Muestras y tandas de imágenes: material editorial separado
 
-El catálogo de ejercicios remoto se abre desde `https://raw.githubusercontent.com/maximofn/gymnasia/main/ejercicios/catalog-v1`. Primero se descarga y valida `manifest.json` y, si hay entradas, su primera página; solo entonces se activa el manifiesto. Los artefactos se cachean por `(catalogVersion, path)` y se verifican contra el hash del descriptor antes de usarse. La metadata conserva una versión activa y, como respaldo, la versión activa anterior; al iniciar, se rechaza una metadata cuya página inicial no pueda comprobarse. Al activar una versión nueva se mantienen únicamente sus artefactos y los de ese respaldo.
+Las imágenes de `alimentos/ciqual/image-samples/` y `image-batches/<NNNN>/` son ilustraciones de Gymnasia, no datos ni imágenes de ANSES. No alteran fichas, nutrientes ni traducciones, pero sí son la entrada del índice editorial generado `apps/mobile/catalogs/generated/ciqualImages.generated.json`. Ese índice completo enlaza cada ID CIQUAL con su WebP; la app lo usa para obtener la URL GitHub Raw de la imagen cuando se muestra. No se deben confundir con los recursos declarados de los catálogos curados ni con el baseline nutricional.
+
+El validador lee `all.json` como autoridad de IDs y nombres. Cada manifiesto exige un ID CIQUAL existente y único, nombres idénticos a la fuente, huella de esos nombres, prompt, atribución y una ruta `ciqual-<id>.webp`; también exige una imagen de referencia permitida. Los bytes deben coincidir con el SHA-256 del manifiesto y decodificar como WebP opaco, no animado, de 1024 × 1024. Las muestras deben estar aprobadas por el mantenedor antes de aceptar tandas; cada tanda contiene solo su manifiesto y las imágenes listadas, usa un directorio numérico de cuatro dígitos y no puede repetir IDs de muestras ni de otra tanda.
+
+```mermaid
+flowchart TD
+    Source["all.json de CIQUAL"] --> Manifest["Manifiesto de muestra o tanda"]
+    Reference["Referencia de estilo aprobada"] --> Manifest
+    Manifest --> Validate["Validar identidad, huella, archivos y WebP"]
+    Validate -->|"Falla"| Fix["Corregir manifiesto o imagen"]
+    Fix --> Validate
+    Validate -->|"Pasa"| Editorial["Confirmar material editorial"]
+    Editorial --> Index["Generar índice de imágenes móvil"]
+    Index --> Remote["WebP remoto bajo demanda"]
+```
+
+*La validación ancla las ilustraciones a la identidad de CIQUAL: quedan fuera del contrato nutricional, pero un índice generado las hace resolubles por la app.*
+
+Para validar sin escribir, ejecutar `node scripts/catalogs/ciqual-image-batches.mjs --check`; `--next <1..50>` solo lista los primeros alimentos pendientes en el orden de la fuente. `npm run sync:ciqual:images:mobile` escribe el índice móvil y `npm run check:ciqual:images:mobile` exige cobertura completa y comprueba los hashes de todos los WebP. Para una nueva tanda, seleccionar IDs aún pendientes, preservar preparación y variedad, no sobrescribir imágenes existentes y registrar prompt, referencia y hash. La validación mínima antes de una PR de imágenes es el check de tandas, la comprobación del índice y las pruebas de catálogos; además, inspeccionar visualmente cada WebP final. Para cambios de fichas o traducciones, la validación mínima proporcional es comprobar la importación, regenerar/verificar el baseline móvil y ejecutar el check global de catálogos antes de la E2E móvil cuando se modifica un contrato de consumo.
+
+## Fuentes nutricionales, procedencia e imágenes
+
+El registro móvil define tres fuentes nutricionales remotas —`gymnasia_foods`, `gymnasia_products` y `gymnasia_recipes`— cuyas URL GitHub Raw apuntan a su `all.json`. Cada una lleva claves de caché v2 y heredada v1, procedencia de repositorio y parser. Solo `gymnasia_foods` recibe el baseline curado integrado. CIQUAL se registra por separado y el alimento personal tiene `url: null`, procedencia `local://device` y almacenamiento privado.
+
+El parser de los tres agregados remotos rechaza cualquier ficha que declare un `sourceId` o `source` distinto de la fuente esperada. Después de validar la ficha sin esos campos, añade de nuevo la procedencia canónica. La URI de imagen se deduce de `sourceId`: productos usa `productos_comerciales/images`, recetas usa `recetas/images` y el resto de catálogo curado usa `alimentos/images`. Los alimentos personales no reciben URI remota. CIQUAL no usa el campo `image` de la ficha nutricional: resuelve su ID contra el índice editorial generado y, si existe, devuelve su WebP de GitHub Raw; si no existe, devuelve `null`.
+
+Un snapshot nutricional actual encapsula versión, fuente, fecha, hash SHA-256 del JSON canónico, ETag opcional, procedencia y datos. Se valida de nuevo al leer. Si existe una caché actual inválida se rechaza y no se intenta una caída silenciosa a la clave heredada; si falta la clave actual, un array heredado puede migrarse como `stale`. Tras hidratar el almacenamiento, el runtime ofrece datos locales y refresca las fuentes remotas en paralelo. Un fallo de red conserva el snapshot previo; si no puede persistir una descarga válida, los datos sirven durante la sesión con aviso `cache_write_failed`, sin promesa de continuidad offline. Estados distintos entre fuentes producen disponibilidad agregada `partial`.
+
+## Ejercicios: versión activa, artefactos y fallback
+
+El runtime de ejercicios identifica la fuente como `gymnasia_exercises` y usa por defecto `ejercicios/catalog-v1` en GitHub Raw. Valida estrictamente `manifest.json`: versión e hashes, tamaño de página, conteos, rutas permitidas, estrategia de búsqueda y shards sin IDs repetidos. Si el manifiesto no está vacío, descarga y valida además la página cero antes de activar la nueva versión.
+
+Los artefactos se almacenan con la clave `(catalogVersion, path)` y se vuelven a verificar contra el hash del descriptor tanto al leer caché como tras descargar. La metadata V4 conserva una versión activa y, cuando procede, su anterior. Solo sustituye metadata durable si la primera página de la nueva versión quedó verificadamente almacenada; aun si persiste falla, el resultado de red puede servir a la sesión y se marca `cache_write_failed`. Cuando la activación es durable, se podan las versiones distintas de activa y anterior si el almacenamiento permite enumerar y borrar claves.
 
 ```mermaid
 sequenceDiagram
-    participant Mobile as Aplicación móvil
-    participant Storage as Almacenamiento local
+    participant Client as App móvil
+    participant Meta as Metadata local
+    participant Cache as Caché de artefactos
     participant Raw as GitHub Raw
-    Mobile->>Storage: Inicializar metadata y página inicial
-    Storage-->>Mobile: Versión activa o respaldo válido
-    Mobile->>Raw: Solicitar manifest.json
-    Raw-->>Mobile: Manifiesto con hashes
-    Mobile->>Raw: Solicitar primera página
-    Raw-->>Mobile: Página de ejercicios
-    Mobile->>Storage: Activar metadata y cachear artefactos
-    Mobile->>Raw: Solicitar shard o página cuando se necesita
-    Raw-->>Mobile: Artefacto versionado
-    Mobile->>Storage: Verificar hash y cachear por versión
+    Client->>Meta: Inicializar versión activa y respaldo
+    Meta-->>Client: Versión cuya página cero es válida
+    Client->>Raw: Solicitar manifest.json
+    Raw-->>Client: Manifiesto versionado
+    Client->>Raw: Solicitar página cero declarada
+    Raw-->>Client: Página cero
+    Client->>Cache: Verificar hash y guardar artefactos
+    Client->>Meta: Activar versión si es durable
+    Client->>Raw: Solicitar páginas o shards bajo demanda
+    Raw-->>Client: Artefacto declarado
+    Client->>Cache: Verificar hash antes de usarlo
 ```
 
-*El manifiesto activa una versión coherente antes de que el selector consulte páginas, búsqueda o resolución de IDs.*
+*Una publicación remota solo se vuelve activa después de validar su manifiesto y su primera página; cada artefacto se verifica antes de uso o persistencia.*
 
-El selector pagina la exploración y usa shards de búsqueda para texto y filtros. La búsqueda normaliza minúsculas, acentos y puntuación; verifica la estructura del shard y filtra candidatos con los criterios completos. Para resolver referencias persistidas, consulta primero páginas ya cacheadas y luego un shard de directorio que indica la página del ID. Las descargas duplicadas de la misma URL se comparten; al cerrar el selector o cambiar la consulta se abortan solicitudes, y una revisión evita que resultados tardíos sobrescriban la consulta actual. Si no puede recuperar un shard, la búsqueda se degrada a las páginas cacheadas y declara que no tiene cobertura global.
+Al iniciar, el runtime descarta metadata o primera página no verificable y prueba el respaldo anterior. Si la publicación remota falla o es inválida, conserva la versión válida ya activa. Si no hay una versión V4 utilizable, migra datos completos V2/V3 válidos a páginas locales marcadas `localMigration`; esa alternativa no tiene shards remotos de búsqueda ni directorio y se considera `stale`. Sin una caché válida ni migrable, el estado es `unavailable`.
 
-La caché heredada V3 de ejercicios puede migrarse localmente a páginas sin índice; queda `stale` y su búsqueda solo cubre el contenido cacheado hasta descargar un manifiesto actual. Si red, manifiesto o página inicial fallan, la app conserva una versión válida ya activa; sin ninguna versión utilizable queda `unavailable`.
+La exploración carga una página por cursor. La búsqueda normaliza minúsculas, acentos y puntuación; usa el shard determinado por el primer ancla de consulta y filtra exactamente los candidatos por nombre, grupo muscular, músculo secundario, equipo y dificultad. Para referencias persistidas, primero busca en las páginas cacheadas de la versión activa y anterior y, si falta un ID, consulta el shard de directorio para cargar solo su página. Descargas simultáneas de la misma URL comparten una sola petición.
 
-## Identidad persistida y cambio compatible
+Si el shard de búsqueda no está disponible o es inválido, la búsqueda recorre las páginas cacheadas de la versión activa y anterior. El resultado avisa `remote_failed` y no declara cobertura global, excepto en el fallback `localMigration`, cuya cobertura es el catálogo migrado completo. El controlador del selector cancela la petición al cerrar, cambiar consulta o reemplazarla por una revisión nueva, y compara la revisión antes de aplicar resultados tardíos.
 
-Las selecciones persistidas usan `{ schemaVersion, sourceId, itemId }`, no el nombre visible. Un enlace puede ser `linked`, con el método que lo creó, o `unresolved`, con un motivo explícito. Tras resolver ejercicios de la versión activa, la app sincroniza en las plantillas nombre, grupo muscular e imagen por ID. Por eso un ejercicio renombrado conserva su vínculo y actualiza su presentación.
+## Identidad persistida, extensiones y pruebas
 
-Para ejercicios heredados sin enlace, solo se crea automáticamente una referencia ante una coincidencia exacta o alias con un único candidato. Una coincidencia ambigua no se adivina y requiere elección manual. Los reintentos y operaciones de carga capturan una generación de ejecución; el borrado de datos la incrementa y bloquea escrituras de caché, de modo que una petición tardía no puede volver a persistir datos eliminados.
+Las referencias persistidas usan `{ schemaVersion, sourceId, itemId }` dentro de un enlace `linked`, o conservan un motivo `unresolved`; no dependen del nombre que ve la persona. Al resolver ejercicios enlazados se actualizan nombre, grupo muscular e imagen en las plantillas, por lo que un renombre publicado mantiene el vínculo. Para contenido heredado sin enlace, la migración automática solo acepta una coincidencia exacta o un alias con candidato único. Una coincidencia ambigua requiere selección manual.
 
-## Pruebas y cambio seguro
+Al añadir contenido, asigne un ID estable, declare y añada exactamente los recursos requeridos, ejecute `node scripts/catalogs/generate.mjs --write` y confirme el resultado con `--check`. Cambiar IDs, schemas, rutas de imágenes o el formato de `catalog-v1` modifica un contrato de publicación, caché y referencias: requiere una estrategia explícita de compatibilidad o migración. Los puntos de extensión seguros son nuevas fichas que cumplen el schema y nuevos datos CIQUAL regenerados desde su fuente; no editar agregados, shards, baselines ni schemas generados directamente.
 
-Para añadir contenido, cree una ficha con un ID estable, añada los recursos declarados y ejecute `npm run sync:catalogs`; confirme fuentes y derivados juntos. Cambiar un ID, schema, ruta de imagen o la estructura de `catalog-v1/` es un cambio de contrato: debe considerar artefactos generados, cachés existentes y referencias persistidas.
-
-Además de pruebas unitarias del generador y de ambos runtimes, `npm run test:catalogs:e2e` intercepta GitHub Raw. Verifica consumo de agregados nutricionales y catálogo paginado de ejercicios, scroll infinito y búsqueda, continuidad offline, migración de cachés heredadas, disponibilidad parcial, rechazo de una caché manipulada y resolución manual de coincidencias alimentarias ambiguas. También comprueba que, al renombrar un ejercicio servido, una plantilla mantiene el mismo `itemId` y recibe el nuevo nombre.
+Las pruebas unitarias de catálogos cubren determinismo, drift, imágenes, rutas, limpieza de artefactos obsoletos y rollback de escritura. Las pruebas de muestras y tandas CIQUAL rechazan hashes, formato, dimensiones, IDs, nombres, referencias, duplicados y archivos huérfanos incorrectos; la generación del índice exige una entrada única y cobertura completa y verifica otra vez cada SHA-256. Las del runtime cubren manifiestos y hashes, activación, recuperación de caché, migración V2/V3, versiones anterior/activa y fallos de persistencia. La E2E exporta la app web e intercepta GitHub Raw para verificar agregados nutricionales, selector paginado con scroll y búsqueda, enlaces que sobreviven a un renombre, continuidad offline, migración, disponibilidad parcial, rechazo de caché manipulada y selección manual ante alimentos ambiguos. También cubre CIQUAL integrado sin red, sus datos incompletos y la escritura por referencia rechazada cuando faltan nutrientes; comprueba las imágenes CIQUAL reales en catálogo, búsqueda y comidas, que una imagen se repone por ID en una comida antigua y que el fallo de red de la imagen no impide consultar ni registrar alimentos.

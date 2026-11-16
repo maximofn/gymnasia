@@ -46,7 +46,8 @@ permissions:
 
 jobs:
   catalogs:
-    runs-on: ubuntu-latest
+    # Playwright 1.58.2 cannot install Chromium dependencies on Ubuntu 26.04.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
 
     steps:
@@ -72,7 +73,13 @@ jobs:
         run: npm exec -- playwright install --with-deps chromium
 
       - name: Verify catalog contracts and generated files
-        run: npm run check:catalogs
+        run: |
+          npm run check:catalogs
+          npm run check:ciqual
+          npm run check:ciqual:mobile
+          npm run check:ciqual:images
+          npm run check:bls
+          npm run check:bls:images
 
       - name: Run catalog regression tests
         run: npm run test:catalogs

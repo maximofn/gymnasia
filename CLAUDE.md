@@ -226,6 +226,28 @@ Run from repo root unless noted.
 - No repo-wide ESLint/Prettier config is committed yet; keep diffs consistent with surrounding code.
 
 ## Testing Guidelines
+Para la QA manual, usa la versión web de la misma app en
+<https://gymnasia.maximofn.com/> siempre que el flujo se pueda reproducir allí.
+La sesión habitual del navegador del mantenedor tendrá configurada su API key
+BYOK de OpenAI: aprovecha esa sesión para probar tú mismo Coach, las llamadas a
+tools, la interfaz y los flujos de datos locales. Comprueba el resultado visible
+y, cuando importe, las llamadas reales del proveedor y sus resultados. No leas,
+copies ni registres la clave; si falta en esa sesión, pide al mantenedor que la
+configure. No le encargues pruebas manuales en el móvil que puedas completar en
+web. Reserva el dispositivo para lo que dependa de Android o iOS, por ejemplo
+instalación limpia sin caché, permisos, notificaciones, segundo plano o
+almacenamiento seguro nativo. Indica qué parte verificaste en web y qué parte
+requiere una prueba nativa.
+
+El mantenedor no usa la versión web como registro personal: los datos locales
+de esa sesión son desechables para QA. Puedes crear, modificar y borrar
+registros recuperables de prueba en la web, confirmar propuestas de Coach y
+ejecutar las tools de escritura necesarias para verificar el resultado, sin
+pedirle permiso cada vez ni trasladarle esas pruebas al móvil. Comprueba el
+estado persistido después de la acción. Esta autorización se refiere a los
+datos locales de la web; la API key y los datos de la app instalada en el móvil
+siguen protegidos.
+
 The agent has a deterministic Vitest suite isolated from Expo and provider APIs:
 - deterministic tests: `npm test`
 - backend de incidencias: `npm --workspace apps/feedback-worker run test`
@@ -269,16 +291,17 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   external PR that touches a sensitive path from `.github/prompt-policy.json`
   requires a current-commit approval from `@maximofn`; all merges remain manual.
 - If a PR touches build-triggering files under `apps/mobile/**`, ask for explicit
-  confirmation before merging because Expo quota is limited.
-- **El entorno de build móvil por defecto es Producción.** Mientras el mantenedor
-  pruebe directamente en Producción y no haya usuarios, interpreta cualquier
-  petición genérica de compilar, generar un APK o lanzar una build como
-  `production-apk` (APK instalable con configuración de Producción). Usa
-  `production` solo cuando se pida un AAB para Google Play. No lances ni apruebes
-  una build `staging` salvo que el mantenedor solicite Staging explícitamente. Si
-  el push a `main` deja esperando la build automática de Staging, no la apruebes
-  por defecto: lanza y aprueba manualmente `production-apk`.
-- **Qué dispara realmente el build de Expo**: no todo push a `main`. El workflow
+  confirmation before merging: la fusión inicia una compilación Android real.
+- **El entorno de build móvil por defecto es Producción.** Para una petición
+  aislada de APK instalable usa `production-apk`; para un AAB usa `production`.
+  El workflow normal de release compila automáticamente primero el AAB y después
+  el APK en wallabot con el mismo `versionCode`, envía el AAB a Producción
+  de Google Play para todos los usuarios de los países ya habilitados y
+  publica ambos en GitHub. No lances una build `staging` salvo que el mantenedor
+  solicite Staging explícitamente. Google puede demorar la disponibilidad hasta
+  terminar su revisión. Se conserva la aprobación humana de la build; no cambiar
+  países, permisos ni canales adicionales sin autorización explícita.
+- **Qué dispara realmente el build Android**: no todo push a `main`. El workflow
   `.github/workflows/build-apk.yml` filtra por rutas:
   ```yaml
   push:
@@ -292,12 +315,9 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   Es decir, solo compila si el push toca `apps/mobile/**`, y ni siquiera entonces
   si son únicamente scripts, markdown o ficheros de `public/`. Cambios en
   `.claude/`, `CLAUDE.md`, `arquitectura-agente/`, `ejercicios/`, `alimentos/` o
-  `.github/` **no gastan build**. `apps/mobile/public/` tampoco: solo lo consume
-  `expo export --platform web`, EAS no lo empaqueta en el AAB, y ahí vive la
-  política de privacidad publicada, que debe poder republicarse sin gastar cuota.
-  El plan de Expo es de pago desde septiembre de 2026, así que una build ya no es
-  el recurso escaso que era; sigue siendo finita, así que verifica el filtro antes
-  de asumir que un push es caro — y pide confirmación igualmente.
+  `.github/` **no lanzan wallabot**. `apps/mobile/public/` tampoco: solo lo consume
+  `expo export --platform web`, no se empaqueta en el AAB, y ahí vive la política
+  de privacidad publicada, que debe poder republicarse sin compilar Android.
 - PR description should include: summary, impacted paths, commands executed, and screenshots for UI updates.
 
 ## Security & Configuration Tips
@@ -325,10 +345,11 @@ History follows mostly Conventional Commits: `feat(scope): ...`, `fix(scope): ..
   arquitectura, los componentes, los flujos, las integraciones, las operaciones,
   las pruebas y los riesgos conocidos. Su punto de entrada es
   `openwiki/quickstart.md`.
-- Para comprender una parte del sistema o localizar el código responsable,
-  consulta primero `openwiki/quickstart.md` y la página temática correspondiente.
-  Usa la wiki como mapa de navegación y verifica después las conclusiones en el
-  código y las pruebas, que son la fuente de verdad.
+- Para preguntas concretas sobre arquitectura o comportamiento, usa la búsqueda
+  y lectura selectiva descritas en el bloque administrado de OpenWiki. Si esas
+  herramientas no están disponibles, usa `openwiki/quickstart.md` como mapa de
+  navegación. Verifica después las conclusiones en el código y las pruebas, que
+  son la fuente de verdad.
 - Para cualquier tarea de operación o mantenimiento de OpenWiki, carga
   `.claude/skills/openwiki/SKILL.md`. Sus reglas de seguridad, compatibilidad y
   automatización viven solo en esa skill; no las dupliques aquí.
@@ -371,6 +392,12 @@ Only non-obvious gotchas that could recur are kept here.
 - Gotcha: Gemini REST API rejects `thinkingConfig` at the top level of the request body with `Unknown name "thinkingConfig": Cannot find field`.
 - Fix: nest it as `generationConfig.thinkingConfig: { includeThoughts: true }`.
 
+### OpenAI Responses puede convertir campos opcionales en obligatorios
+- Síntoma: pedir solo un peso produce valores mínimos inventados en otras medidas, o impide usar `clear_fields` sin volver a enviarlas. El schema enviado no las marcaba como requeridas, pero el schema devuelto por OpenAI sí.
+- Causa externa: omitir `strict` en Responses permite que el servicio normalice el schema a modo estricto, que requiere todos los campos. En Chat Completions el valor por defecto es distinto.
+- El catálogo de Coach usa `strict: false` explícito para conservar el contrato canónico y valida cada llamada localmente antes del handler. No arreglarlo aceptando valores ficticios ni haciendo nullable un campo que la app no trata como nullable.
+- Referencia: https://developers.openai.com/api/docs/guides/function-calling. Detectado en la QA de GYM-40 (ticket para validar los argumentos de las tools contra su schema), con `gpt-6-luna` el 3 de octubre de 2026.
+
 ### Tunnel mode not applied when starting mobile from root alias
 - Gotcha: `npm run dev:mobile -- --tunnel --clear` sometimes fails to forward the `--tunnel` flag through the workspace command chain, starting Metro in LAN mode instead.
 - Fix: use `npm --workspace apps/mobile run start -- --tunnel --clear` directly. Verify `Tunnel ready` + `exp.direct` URL before scanning QR.
@@ -388,6 +415,14 @@ Only non-obvious gotchas that could recur are kept here.
 ### Metro 500 after SDK upgrade — missing `babel-preset-expo`
 - Gotcha: after upgrading Expo SDK, Metro can return HTTP 500 because `babel-preset-expo` is not installed.
 - Fix: `npm --workspace apps/mobile exec expo install babel-preset-expo`
+
+### Expo export puede conservar el proveedor anterior al cambiar de variante
+- Síntoma: una exportación solicitada con `DEV_PROVIDER_MODE=byok` sigue respondiendo
+  con la fixture local y no llama al proveedor. Cambiar las variables entre exports
+  puede dejar en la caché de Metro el código compilado de la variante anterior.
+- Fix: al alternar `APP_ENV` o `DEV_PROVIDER_MODE`, exportar con `--clear` y comprobar
+  el comportamiento. Para identificar el bundle usado, leer el `src` de `index.html`:
+  el directorio de salida puede conservar otros bundles de exports anteriores.
 
 ### npm audit warnings from Expo/RN transitive dependencies
 - State: `npm install` reports ~34 vulnerabilities from transitive deps (`fast-xml-parser`, `minimatch`, `tar`, `send`) in the Expo/RN toolchain.
@@ -426,19 +461,27 @@ Only non-obvious gotchas that could recur are kept here.
 - `interruptionModeAndroid: DuckOthers` requests `AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK` when a `Sound` plays. Keeping a reusable `Sound` around can leave vendor-specific Android audio focus active longer than the alert and attenuate other apps during a rest.
 - Fix: do not preload or cache the rest-alert `Sound`. Create it only when the foreground alert must play, then stop and unload that exact instance as soon as playback finishes. Background alerts stay native notifications.
 
-### Una build parada casi nunca es la cola de Expo: mira antes la puerta de aprobación
-El plan de Expo **es de pago desde septiembre de 2026**. La cola del plan gratuito, que
-antes explicaba casi cualquier espera, ya no es la sospechosa por defecto: empezar por ahí
-hace perder el tiempo. Diagnostica en este orden.
+### Una build parada no está en la cola de Expo: mira Production y wallabot
+Android se compila localmente en wallabot; EAS solo aporta credenciales, contador y
+submission. Diagnostica en este orden.
 
 **1. ¿Hay una ejecución anterior esperando aprobación?** Es la causa más frecuente y la
 menos visible. `build-apk.yml` declara `concurrency: android-production-release` con
-`cancel-in-progress: false`, así que las builds se ejecutan de una en una y en orden. Si
+`cancel-in-progress: false`, así que solo una build puede estar activa. Si
 una queda en estado `waiting` —esperando la aprobación del entorno `Production`— **bloquea
 todas las siguientes de forma indefinida**, y las que se apilan detrás aparecen como
 `cancelled` sin haber ejecutado un solo job. Verificado el 5 de septiembre de 2026: una
 ejecución del día 3 llevaba dos días sin aprobar y había cancelado por tiempo las dos
 builds posteriores.
+
+**La cola de GitHub no garantiza un orden FIFO.** Con la configuración actual solo cabe
+una ejecución pendiente: una nueva sustituye a la pendiente anterior, aunque
+`cancel-in-progress: false` proteja la ejecución activa. El orden de las versiones lo
+decide el selector de transacciones durables del repositorio. Si un push aparece
+`cancelled` sin jobs al terminar la build anterior, comprueba si `enqueue-next` ha creado
+una ejecución `workflow_dispatch` para el mismo SHA y la misma versión antes de reintentar.
+Ese relevo se observó el 4 de octubre de 2026 al pasar de 1.50.4 a 1.51.0; no interrumpió
+ninguna compilación de 1.51.0. Referencia: [concurrencia de GitHub Actions](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency).
 
 El síntoma que la delata es que el run está en `pending` y **no tiene ningún job**, ni
 siquiera empezado:
@@ -463,25 +506,15 @@ Las comillas simples en `environment_ids[]` son obligatorias: sin ellas zsh inte
 expandir los corchetes y falla con `no matches found`. Aprobar es el mismo comando con
 `state=approved`.
 
-**Trampa: una sola aprobación no basta.** `build-apk.yml` declara `environment: Production`
-en tres jobs (`prepare-production`, `compile-android` y `verify-and-release`), y la puerta
-puede volver a saltar en cada uno. Verificado el 18 de septiembre de 2026: tras aprobar la
-primera vez el run pasó a `in_progress`, ejecutó `prepare-production` y volvió a `waiting`
-con `compile-android` sin arrancar; hizo falta una segunda aprobación. Después de aprobar,
-no des la build por lanzada: espera un minuto y repite la consulta a `pending_deployments`;
-si vuelve a listar `Production`, hay que aprobar otra vez. El `jq` del comando de aprobación
-puede quejarse con `expected an object but got: string` aunque la aprobación haya entrado;
-confirma con `gh run view <run_id>` en vez de fiarte de esa salida.
+**2. Si ya pasó la aprobación**, comprueba el controlador de wallabot y el runner efímero
+con el runbook `ops/android-build/README.md`. Una build local interrumpida no sigue viva en
+Expo: el overlay se destruye y la transacción queda fallida. Si AAB o APK ya estaban
+validados, se conservan; `retry-failed` recompila únicamente la pata pendiente.
 
-**2. Si ya está corriendo y muere por tiempo**, entonces sí puede ser la espera de EAS.
-`eas build` espera a que termine, así que un job que agota `timeout-minutes` (hoy 120) sale
-como `cancelled` con `##[error]The operation was canceled` en el paso "Build APK on EAS";
-los pasos siguientes (Download APK / Create Release / Commit version bump) quedan
-`skipped`, así que **no hay Release ni commit de versión** — pero la build sigue viva en
-Expo por su cuenta. Compruébalo con `eas build:view <build-id>` o la URL que imprime el
-log: si sigue `in queue`/`in progress`, el APK acabará y se descarga desde Expo. Si esto
-se repite pese al plan de pago, considera `eas build --no-wait` publicando la release desde
-un webhook de Expo, o compila en local con la skill `build-apk`.
+**3. Si ambos binarios están validados**, mira el submission con
+`eas submit:view <submission-id> --json`. Un timeout con ID conocido se reconcilia sin
+otra subida. Una intención sin ID queda bloqueada a propósito: localiza el ID con páginas
+de `eas submit:list` y usa `adopt-submission`; nunca repitas `eas submit --path` a ciegas.
 
 ### `test:train:e2e` es intermitente por diseño, y además **miente en su código de salida**
 Dos trampas distintas del mismo script (`apps/mobile/scripts/train-usability.e2e.mjs`),
@@ -653,6 +686,43 @@ esto hay que arreglarlo antes o el job pasará siempre.
   separado del checkout inmutable que produjo la app; así una corrección de la
   prueba puede reconciliar el mismo artefacto sin recompilarlo.
 
+### Expo puede duplicar sonidos del AAB con el prefijo `assets_`
+- Gotcha: un AAB local correcto puede contener a la vez `base/res/raw/beep.wav`
+  y `base/res/raw/assets_beep.wav` (igual para los demás sonidos configurados).
+  Contar cada ruta como un sonido nuevo da un falso fallo de verificación después
+  de consumir un `versionCode`. En el intento real los cinco pares eran idénticos
+  byte por byte.
+- Fix: omitir un alias `assets_` solo cuando corresponde a un sonido aprobado y
+  sus bytes son idénticos al original; los alias modificados y los sonidos nuevos
+  siguen invalidando el AAB. Si la compilación terminó pero falló la
+  verificación, `retry-failed` debe recuperar el artefacto conservado en Actions
+  y repetir la verificación sin lanzar otra build ni reservar otro código.
+
+### GitHub Actions omite descendientes de un job saltado sin `always()`
+- Gotcha: al reutilizar AAB/APK, `compile-android` se salta a propósito. Aunque
+  `verify-artifacts` termine correctamente, un job posterior con solo
+  `if: needs.verify-artifacts.result == 'success'` puede quedar también omitido
+  por la condición de éxito implícita de GitHub sobre la cadena de dependencias.
+  El run puede acabar verde sin enviar nada a Play.
+- Fix: en `submit-play-and-release`, usar `always()` junto con la comprobación
+  explícita de que `verify-artifacts` tuvo éxito. No quitar la comprobación: un
+  fallo de validación debe seguir dejando el borrador sin publicar.
+
+### EAS Submit también evalúa `app.config.ts` y necesita `APP_ENV`
+- Gotcha: el perfil `production` de EAS Build declara su entorno, pero
+  `eas submit --profile production --path ...` no aplica automáticamente ese
+  `APP_ENV` al proceso local. La configuración de Gymnasia lo exige antes de
+  contactar con EAS; sin él, Submit acaba con código 1 y no crea submission.
+- Fix: fijar `APP_ENV=production` en todo el job `submit-play-and-release`,
+  tanto para la subida como para `submit:view`; usarlo también al consultar
+  `submit:list` manualmente. Si un intento ya quedó
+  `uncertain`, comprobar en EAS que no existe un envío antes de cargar el AAB;
+  nunca repetir automáticamente una petición de estado desconocido.
+- En un runner limpio, instalar también las dependencias del repositorio antes
+  de llamar a EAS: `expo-github-action` instala la CLI, no `apps/mobile/node_modules`.
+  Sin ese árbol, la CLI no puede ejecutar `expo config` ni siquiera para consultar
+  con `submit:view` un ID que ya existe.
+
 ### Fetch con `AbortSignal` también activa la ruta incremental de React Native
 - Gotcha: en React Native 0.81, `whatwg-fetch` instala `xhr.onreadystatechange`
   cuando recibe un `AbortSignal`. El XHR nativo considera la mera presencia de ese
@@ -673,6 +743,23 @@ esto hay que arreglarlo antes o el job pasará siempre.
   rondas por ID solo cuando Google entrega uno no vacío. El ledger local sigue evitando
   repetir efectos durante reintentos completos.
 
+### El `SafeAreaView` de `react-native` core no hace nada en Android
+- Gotcha: `SafeAreaView` importado de `"react-native"` solo aplica insets en iOS; en
+  Android es un `View` normal. Como el SDK 54 fuerza edge-to-edge (no se puede
+  desactivar), la app se dibuja bajo la barra de estado y la de gestos, y nada
+  reserva ese espacio. El síntoma llega como «la app se solapa arriba y abajo» y
+  parece depender del dispositivo: en Android 15+ es sistemático, y en versiones
+  anteriores ya se veía en capas absolutas (el catálogo, #208). Verificado el 19 de
+  septiembre de 2026 en GYM-249 (ticket para arreglar el solapamiento con las barras
+  del sistema).
+- Fix: los insets salen de `react-native-safe-area-context` (`SafeAreaProvider` en la
+  raíz de `App.tsx`, `SafeAreaView` de esa librería en el contenedor raíz y en cada
+  `<Modal>` nativo, que se dibuja fuera de la raíz). Las capas `position: absolute`
+  **dentro** del contenedor raíz heredan su padding y no necesitan nada; compensar a
+  mano con `StatusBar.currentHeight` produce margen doble.
+- Guardarraíl: `apps/mobile/shell/safeArea.contract.test.ts` falla si vuelve el import
+  de core, si un `<Modal>` no aplica sus insets o si reaparece `StatusBar.currentHeight`.
+
 ## Post-Modification Workflow
 After each modification, create a local commit on a topic branch:
 ```bash
@@ -682,18 +769,20 @@ gh pr create
 ```
 Do not push directly to `main`. Wait for the required checks and merge the pull
 request manually. If it touches build-triggering files under `apps/mobile/**`,
-ask for explicit confirmation before merging because Expo quota is limited.
+ask for explicit confirmation before merging because it starts the real
+wallabot/Play flow.
 
-Un push a `main` **solo** dispara el build de APK si toca `apps/mobile/**`
+Un push a `main` **solo** dispara el build Android si toca `apps/mobile/**`
 (excluyendo `apps/mobile/scripts/**` y los `.md`). Ver el filtro de rutas en
-"Commit & Pull Request Guidelines". Un push que sí entre en el filtro gasta build;
-el resto, no. La cuota de Expo es finita aunque el plan sea de pago, y sobre todo
-las builds se ejecutan de una en una: ver "Una build parada casi nunca es la cola
-de Expo" en el Solved Problems Log.
+"Commit & Pull Request Guidelines". Un push que sí entre en el filtro reserva
+wallabot, genera AAB y APK, y envía el AAB al canal público `production` de
+Google Play; el resto no. Las builds
+se ejecutan de una en una: ver "Una build parada no está en la cola de Expo" en
+el Solved Problems Log.
 
-The APK workflow changes `apps/mobile/app.json` only inside the build workspace;
-the GitHub tag and Release persist the published version. It must never commit a
-version bump directly to `main`.
+The Android workflow never changes `apps/mobile/app.json`; the publishable
+version must already be committed on `main`. It must never commit a version bump
+directly to `main`.
 
 <!-- OPENWIKI:START -->
 
@@ -701,6 +790,10 @@ version bump directly to `main`.
 
 This repository has a generated `openwiki/` evidence index. It is optional just-in-time context, not required startup reading.
 
+- Do not enumerate, preload, or search wikis at task start. Use retrieval when the user asks for it, when unfamiliar architecture or dependency behavior materially affects the task, or when source inspection leaves an important uncertainty. Stop once the question is grounded.
+- When those conditions apply and OpenWiki retrieval tools are available, use `openwiki_search` for just-in-time context and `openwiki_read` for the relevant complete sections. If search returns `workspace_required`, ask which listed workspace to use and retry with its ID.
+- Use `openwiki_list_workspaces` or `openwiki_list_wikis` when workspace membership itself needs to be discovered.
+- If the retrieval tools are unavailable, read `openwiki/quickstart.md` and follow its links to the relevant pages.
 - Treat source code and tests as authoritative. A brief's unknowns and review items are verification gaps, not automatic requirements.
 - Prefer the narrowest quiet validation that proves the changed behavior. Preserve complete failure output.
 

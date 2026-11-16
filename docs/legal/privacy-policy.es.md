@@ -1,9 +1,11 @@
 ---
-version: 2026-09-v6
-effective_date: 2026-09-18
+version: 2026-09-v10
+effective_date: 2026-09-29
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
+description: Qué datos guarda Gymnasia, dónde se almacenan, qué se envía al proveedor de IA que elijas y cómo borrar tus datos o ejercer tus derechos.
+image_alt: Gymnasia, pantalla de inicio de la app con el entrenamiento del día
 url: https://gymnasia.maximofn.com/privacidad
 alternate_locale: en
 alternate_url: https://gymnasia.maximofn.com/privacy
@@ -19,12 +21,15 @@ entrenamientos, tu dieta, tu peso, tus medidas y tus conversaciones con el asist
 guardan en el almacenamiento de la propia aplicación.
 
 Hay una excepción importante y es enteramente tuya: si activas el asistente de
-inteligencia artificial, **tú** aportas la clave de un proveedor (OpenAI, Anthropic o
-Google) y la aplicación habla **directamente** con ese proveedor desde tu dispositivo.
-Lo que escribas en el chat viaja a la empresa que hayas elegido, bajo tu propia cuenta
-con ella. Nosotros no lo vemos ni lo almacenamos, salvo que decidas usar la acción
-**Denunciar** sobre una respuesta y apruebes expresamente la vista previa del contenido
-que se enviará.
+inteligencia artificial, **tú** aportas la clave de OpenAI, Anthropic, Google o de un
+servidor compatible con la API de OpenAI cuya URL HTTPS eliges. La aplicación habla
+**directamente** con ese destino desde tu dispositivo.
+Las consultas que necesitan el modelo viajan a la empresa que hayas elegido, bajo tu
+propia cuenta con ella. Las consultas explícitas de calorías por 100 g de un alimento
+del catálogo pueden responderse con los datos del dispositivo, sin enviar esa consulta
+al proveedor de IA. Nosotros no vemos ni almacenamos el chat, salvo que decidas usar
+la acción **Denunciar** sobre una respuesta y apruebes expresamente la vista previa
+del contenido que se enviará.
 
 Esta política describe con detalle qué se guarda, qué sale del dispositivo y qué
 control tienes sobre ello.
@@ -80,8 +85,11 @@ Todo lo siguiente se guarda únicamente en tu dispositivo:
   transmite. «Borrar todos mis datos» las elimina.
 - **Preferencias**: ajustes de la interfaz y de las notificaciones, y tu consentimiento
   para la evaluación adicional opcional de seguridad sanitaria.
-- **Configuración de proveedores de IA**: el modelo elegido y, si Anthropic lo exige
-  para una clave vinculada a identidad, el identificador del workspace (`wrkspc_…`).
+- **Configuración de proveedores de IA**: el modelo elegido, la URL base HTTPS si
+  configuras un servidor compatible con OpenAI y, si Anthropic lo exige para una clave
+  vinculada a identidad, el identificador del workspace (`wrkspc_…`). También se guarda
+  qué combinación de proveedor, modelo y URL rechazó explícitamente una foto para
+  mostrarte un aviso hasta que cambies la configuración.
 - **Registro de depuración**: un histórico técnico de hasta 1000 entradas con los avisos
   de fin de descanso entregados, que incluyen el nombre del ejercicio y el número de
   serie; eventos técnicos de selección de políticas; y contadores del contexto preparado
@@ -124,12 +132,14 @@ aplicación.
 ## Tu clave de API {#byok}
 
 El asistente funciona con el modelo de **clave propia**: no se incluye ninguna clave en
-la aplicación, y tú introduces la de tu cuenta con OpenAI, Anthropic o Google.
+la aplicación, y tú introduces la de tu cuenta con OpenAI, Anthropic, Google o el
+servidor compatible que configures.
 
 - La clave se guarda **en el llavero seguro de tu dispositivo** y no se envía a ningún
   servidor del responsable, porque no existe tal servidor.
-- La clave se envía **únicamente al proveedor al que corresponde**, en cada petición,
-  como exige su API.
+- La clave se envía **únicamente al destino configurado** en cada petición. Si eliges
+  un servidor compatible, tú decides su URL HTTPS y eres responsable de confiar en él.
+  La aplicación rechaza las redirecciones de ese servidor.
 - Si una clave de Anthropic vinculada a identidad requiere un identificador de
   workspace, ese identificador se guarda localmente y se envía únicamente a Anthropic
   para dirigir las peticiones al workspace elegido.
@@ -150,15 +160,19 @@ La pantalla de recuperación lo advierte antes de descargarlo.
 
 ## Qué envía la aplicación a los proveedores de IA {#proveedores}
 
-Cuando usas el asistente, tu dispositivo se conecta **directamente** con el proveedor
-que hayas elegido. La petición incluye:
+Cuando una consulta del asistente necesita el modelo, tu dispositivo se conecta
+**directamente** con el proveedor que hayas elegido. Una búsqueda explícita de calorías
+por 100 g que se resuelve con el catálogo local no genera esa petición. Cuando sí se
+envía, la petición incluye:
 
 - las instrucciones del sistema del asistente;
-- en el chat principal, para Google, **hasta los 10 intercambios más recientes**, con
-  los pasos de respuesta y herramientas que pertenezcan a ellos; un límite adicional de
-  tamaño puede retirar intercambios completos empezando por el más antiguo. Para OpenAI
-  y Anthropic se envían **los últimos 20 mensajes**. Los asistentes de alimentos envían
-  el historial reciente de su sesión con el mismo límite cuando usan Google;
+- en el chat principal, Gymnasia selecciona **hasta los últimos 20 mensajes** con
+  una misma regla local para todos los proveedores. Después adapta ese contexto al
+  formato de cada API. En Google, la petición conserva los intercambios de esa
+  selección con sus pasos de respuesta y herramientas; si supera los límites de
+  tamaño de la API, retira intercambios completos empezando por el más antiguo.
+  Los asistentes de alimentos envían el historial reciente de su sesión, limitado
+  a diez intercambios en Google;
 - los resultados de las herramientas que el asistente utiliza a petición tuya, que
   pueden incluir tu peso, tu porcentaje de grasa, tus perímetros, las comidas del día
   o tus rutinas;
@@ -183,12 +197,26 @@ almacenada en Google para continuar el diálogo. El historial íntegro sigue gua
 el dispositivo y no se borra al preparar una petición más pequeña. Este ajuste no
 sustituye los términos generales del proveedor.
 
+Las peticiones del Coach a OpenAI Responses también usan `store: false`: la app
+selecciona el historial en el dispositivo y, durante una consulta con herramientas,
+reenvía las respuestas y los resultados necesarios para continuar. Los elementos
+técnicos de razonamiento cifrado se mantienen solo en memoria durante esa consulta;
+no se muestran ni se guardan en el historial de la app. Este ajuste evita guardar
+las respuestas como estado de la aplicación en OpenAI, pero no elimina los registros
+de vigilancia de abusos que OpenAI pueda conservar según la configuración de tu cuenta.
+
 Ese contenido queda sujeto a la política de privacidad y a los términos del proveedor
 que hayas elegido, bajo tu propia cuenta con él:
 
-- [OpenAI](https://openai.com/policies/privacy-policy)
+- [OpenAI](https://openai.com/policies/privacy-policy/)
 - [Anthropic](https://www.anthropic.com/legal/privacy)
 - [Google](https://policies.google.com/privacy)
+
+Si configuras un servidor compatible con OpenAI, consulta su propia política y términos:
+Gymnasia no controla ese destino. La prueba opcional de modelo envía una consulta breve y
+puede generar cargos según el servicio que elijas. Si el modelo rechaza herramientas,
+el Coach no puede usarlo; el estimador de comida puede responder sin consultar códigos
+de barras y te lo indicará.
 
 Si no configuras ninguna clave, la aplicación no contacta con ningún proveedor de IA y
 el resto de funciones sigue operativa.
@@ -263,7 +291,8 @@ El paquete exportado **contiene**: tus medidas y porcentajes de grasa, las copia
 normalizadas de tus fotografías de progreso que quepan dentro de los límites de la
 app, tu registro de dieta completo, tu historial de
 entrenamiento, tus ajustes personales (sexo, altura, fecha de nacimiento), la memoria
-del asistente y **el historial íntegro de tus conversaciones**. Es el fichero más
+del asistente, los modelos y la URL base del servidor personalizado si la configuraste,
+y **el historial íntegro de tus conversaciones**. Es el fichero más
 sensible que produce la aplicación: guárdalo con cuidado y piensa a quién se lo envías.
 
 Cada fotografía lleva un checksum SHA-256 para comprobarla al restaurar. La app admite
