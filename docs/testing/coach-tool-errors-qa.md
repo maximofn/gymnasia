@@ -95,7 +95,7 @@ de Anthropic o Google. La versión Android 1.50.4 se publicó por el workflow
 [de release](https://github.com/maximofn/gymnasia/actions/runs/37203970830);
 la web probada ya mostraba la versión posterior 1.51.0.
 
-## Artículo y criterio pendiente
+## Artículo y cierre
 
 El artículo explica el contrato, sus tres adapters y las conversaciones reales,
 con las mismas limitaciones en
@@ -117,4 +117,12 @@ HTTP 200 y permitió inspeccionar las tres páginas públicas completas.
 
 El criterio original «conversación real donde el modelo confunde un error con
 un resultado» sigue sin evidencia. No se marca como cumplido ni se inventa una
-conversación. El ticket permanece abierto hasta resolver ese criterio.
+conversación.
+
+El 3 de noviembre de 2026, el mantenedor solicitó cerrar la tarea con el alcance
+implementado y verificado. Se retiró ese resultado editorial no reproducido como
+condición de cierre, conservando la limitación en Linear y en este informe. La
+tarea quedó en `Done`, con el plan de pruebas resuelto y un comentario de evidencia
+que distingue los resultados históricos de las comprobaciones del día del cierre.
+La comprobación de una comida antes de repetir su guardado sigue siendo una opción
+de diseño explicada en el artículo; no se declara implementada por este cierre.

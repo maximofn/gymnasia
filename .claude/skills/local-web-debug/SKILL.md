@@ -1,6 +1,6 @@
 ---
 name: local-web-debug
-description: Levantar, parar y depurar la app mobile en local en el navegador. Usa esta skill siempre que el usuario quiera arrancar o parar el servidor de desarrollo web, verificar la app en el browser, depurar problemas de la UI en web, lanzar el proxy de Anthropic para CORS, o comprobar que la app funciona en localhost. Tambien cuando mencione "preview", "vista previa", "levantar la app", "levantar la app para probar en local", "parar la app", "stop app", "probar en navegador", "debug web", "arrancar servidor", "parar servidor", "cors proxy" o "depurar en local".
+description: Levantar, parar y depurar la app mobile en local en el navegador. Usa esta skill siempre que el usuario quiera arrancar o parar el servidor de desarrollo web, verificar la app en el browser, depurar problemas de la UI en web, lanzar el proxy de Anthropic para CORS, o comprobar que la app funciona en localhost. Tambien cuando mencione "preview", "vista previa", "levantar la app", "levantar la app para probar en local", "parar la app", "stop app", "probar en navegador", "debug web", "arrancar servidor", "parar servidor", "cors proxy" o "depurar en local". Cubre también los fallos de arranque de la vista web: falta de `react-dom`/`react-native-web`, Metro devolviendo 500 y validar el bundle sin abrir puertos.
 ---
 
 # Local Web Debug
@@ -114,13 +114,22 @@ npm --workspace apps/mobile exec tsc --noEmit
 | Problema | Causa | Solucion |
 |----------|-------|----------|
 | `Module not found: react-dom` | Dependencias web no instaladas | `npm --workspace apps/mobile exec expo install react-dom react-native-web @expo/metro-runtime` |
-| CORS error en Anthropic | Navegador bloquea llamadas directas | Levantar el proxy CORS (ver arriba) |
+| Metro devuelve HTTP 500 | Suele faltar `babel-preset-expo` o hay un error de compilación | Leer el primer error real del log de Metro; `npm --workspace apps/mobile exec expo install babel-preset-expo`; comprobar con `cd apps/mobile && npx expo export --platform web --dev`; corregir el primer error y repetir |
+| CORS error en Anthropic | Falta la cabecera `anthropic-dangerous-direct-browser-access` | Añadir esa cabecera. No levantar el proxy: ya no hace falta (ver arriba) |
 | Puerto 8081 ocupado | Otro proceso Metro corriendo | `lsof -ti:8081 \| xargs kill -9` y reiniciar |
 | SecureStore no disponible en web | Limitacion del navegador | Las API keys se guardan en AsyncStorage como fallback (con aviso en la UI) |
 | `Failed to download remote update` | Esto es Expo Go, no web | Para web usar `npm run web`, para movil ver la skill de Expo Go |
 
 ## Notas importantes
 
-- **No hay backend**: la app es 100% local-first. El unico "backend" es el proxy CORS para Anthropic en web.
+- **No hay backend obligatorio**: la app es 100% local-first y funciona sin ningún servicio. La única excepción autorizada es `apps/feedback-worker` (incidencias); el proxy CORS de Anthropic es solo una herramienta de depuración local.
+- **SecureStore en navegador** no tiene las mismas garantías que en móvil nativo.
+- **Comprobar el SDK** si algo no cuadra: `cd apps/mobile && npx expo config --type public` debe mostrar `sdkVersion: 54.0.0`.
+
+## Comportamiento esperado del agente
+
+- Ejecutar los comandos, no solo describir los pasos.
+- Identificar y reportar la causa raíz del primer error, no los síntomas secundarios.
+- Cerrar con un arreglo mínimo reproducible y el siguiente comando exacto a ejecutar.
 - **HMR activo**: los cambios en codigo se reflejan automaticamente sin recargar la pagina.
 - **El proxy es un symlink**: `apps/mobile/cors-proxy.py` apunta a `apps/anthropic_proxy/cors-proxy.py`.

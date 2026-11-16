@@ -6,6 +6,7 @@ describe("AppPlatformServices", () => {
   it("keeps the platform contract injectable", () => {
     const requiredPorts = [
       "storage",
+      "catalogArtifacts",
       "secureStorage",
       "crypto",
       "constants",
@@ -21,6 +22,6 @@ describe("AppPlatformServices", () => {
       "native",
     ] as const satisfies ReadonlyArray<keyof AppPlatformServices>;
 
-    expect(requiredPorts).toHaveLength(14);
+    expect(requiredPorts).toHaveLength(15);
   });
 });

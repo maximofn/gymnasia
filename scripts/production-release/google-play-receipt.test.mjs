@@ -16,7 +16,7 @@ let transaction = transitionReleaseTransaction(fixture().transaction, "prepare-p
 transaction = transitionReleaseTransaction(transaction, "adopt-submission", {
   leg: "play", submissionId: "test-submission", status: "FINISHED",
 });
-function remote({ sha256 = transaction.legs.aab.artifact.sha256, status = "completed", fail = "" } = {}) {
+function remote({ sha256 = transaction.legs.aab.artifact.sha256, status = "completed", track = "production", fail = "" } = {}) {
   const calls = [];
   const fetchImpl = async (url, options) => {
     calls.push({ url, method: options.method ?? "GET" });
@@ -25,7 +25,7 @@ function remote({ sha256 = transaction.legs.aab.artifact.sha256, status = "compl
     if (options.method === "POST") return Response.json({ id: "test-edit" });
     if (options.method === "DELETE") return new Response(null, { status: 204 });
     if (url.endsWith("/bundles")) return Response.json({ bundles: [{ versionCode: 86, sha256 }] });
-    return Response.json({ track: "alpha", releases: [{ versionCodes: ["86"], status }] });
+    return Response.json({ track, releases: [{ versionCodes: ["86"], status }] });
   };
   return { calls, fetchImpl };
 }
@@ -46,6 +46,8 @@ test("integra OAuth, bundles y track; descarta el edit y solo emite datos públi
   const receipt = await observeGooglePlayArtifact({ transaction, key, fetchImpl: mock.fetchImpl });
   assert.equal(receipt.sha256, transaction.legs.aab.artifact.sha256);
   assert.equal(receipt.versionCode, "86");
+  assert.equal(receipt.track, "production");
+  assert.ok(mock.calls.some((call) => call.url.endsWith("/tracks/production")));
   assert.equal(mock.calls.at(-1).method, "DELETE");
   assert.equal(mock.calls.filter((call) => call.method === "POST").length, 2);
   assert.ok(mock.calls.every((call) => !/commit|upload/.test(call.url)));
@@ -53,12 +55,22 @@ test("integra OAuth, bundles y track; descarta el edit y solo emite datos públi
 });
 
 test("regresión: hash diferente o track sin completar bloquea y limpia el edit", async () => {
-  for (const options of [{ sha256: "0".repeat(64) }, { status: "draft" }, { fail: "/bundles" }]) {
+  for (const options of [{ sha256: "0".repeat(64) }, { status: "draft" }, { track: "alpha" }, { fail: "/bundles" }]) {
     const mock = remote(options);
     await assert.rejects(observeGooglePlayArtifact({ transaction, key, fetchImpl: mock.fetchImpl }),
       (error) => !error.message.includes("private credential"));
     assert.equal(mock.calls.at(-1).method, "DELETE");
   }
+});
+
+test("consulta el canal histórico sin reinterpretar una release Alpha como pública", async () => {
+  const historical = structuredClone(transaction);
+  historical.legs.play.track = "alpha";
+  const mock = remote({ track: "alpha" });
+  const receipt = await observeGooglePlayArtifact({ transaction: historical, key, fetchImpl: mock.fetchImpl });
+  assert.equal(receipt.track, "alpha");
+  assert.ok(mock.calls.some((call) => call.url.endsWith("/tracks/alpha")));
+  assert.ok(mock.calls.every((call) => !call.url.endsWith("/tracks/production")));
 });
 
 test("no confirma una publicación si no se pudo descartar el edit", async () => {
@@ -81,6 +93,6 @@ test("propiedad: ninguna huella distinta de la del AAB validado pasa", () => {
     fc.pre(sha256 !== transaction.legs.aab.artifact.sha256);
     assert.throws(() => assertGooglePlayReceipt({ schemaVersion: 1, kind: "GooglePlayArtifactReceiptV1",
       packageName: loadReleasePolicy().android.packageName, versionCode: "86", sha256,
-      track: "alpha", releaseStatus: "completed", observedAt: new Date().toISOString() }, transaction));
+      track: transaction.legs.play.track, releaseStatus: "completed", observedAt: new Date().toISOString() }, transaction));
   }));
 });

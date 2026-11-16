@@ -9,6 +9,7 @@
     "web": "APP_ENV=development expo start --web",
     "web:mirror": "EXPO_PUBLIC_DEV_STORE_MIRROR=1 APP_ENV=development expo start --web",
     "build:web": "APP_ENV=${APP_ENV:-development} expo export --platform web",
+    "eas-build-pre-install": "node ../../scripts/policy-promotion/check-bundled-snapshot.mjs",
     "sync:chat-prompt": "node scripts/sync-chat-system-prompt.mjs --write",
     "check:chat-prompt": "node scripts/sync-chat-system-prompt.mjs --check",
     "pretest:deterministic": "npm run check:chat-prompt",

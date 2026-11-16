@@ -1,11 +1,13 @@
 ---
-type: arquitectura de producto
-title: Arquitectura local-first
-description: Gymnasia es un cliente Expo local-first para móvil y web cuyo estado de producto reside en el dispositivo. Esta página delimita los catálogos, la política de IA, los proveedores BYOK y el servicio opcional de feedback.
+type: arquitectura de sistema
+title: Arquitectura local-first y fronteras del sistema
+description: Mapa de la única aplicación Expo, sus datos locales y las integraciones opcionales que cruzan fronteras de confianza. Describe los contratos de persistencia, política, catálogos, IA, feedback y publicación que deben preservarse al hacer cambios transversales.
 tags: [local-first, mobile, web, byok, privacy]
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
+  - id: openwiki-source-ecc8cf626716f1ed125add59
+    resource: repo://apps/feedback-worker/package.json
   - id: openwiki-source-00f3917787dfe248860adc3b
     resource: repo://apps/feedback-worker/src/index.ts
   - id: openwiki-source-3cfa88bf1d888145532ec324
@@ -40,6 +42,10 @@ sources:
     resource: repo://apps/mobile/index.js
   - id: openwiki-source-e86fe7b76c693666bc2cb828
     resource: repo://apps/mobile/package.json
+  - id: openwiki-source-2c7bb274ff3842d79f3b5fb9
+    resource: repo://apps/mobile/persistence/localStoreRuntime.ts
+  - id: openwiki-source-f0c30949361dd30d241675c9
+    resource: repo://apps/mobile/platform/index.ts
   - id: openwiki-source-1d477406340582311e84da48
     resource: repo://apps/mobile/runtimeEnvironment.ts
   - id: openwiki-source-1d0198c38ac34ff97dd54fc0
@@ -52,10 +58,17 @@ sources:
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+  - id: openwiki-source-3a6fcd656a0c5c85a01f8e48
+    resource: repo://scripts/mobile-boundaries/check.mjs
+  - id: openwiki-source-6f9dc1fe6ee9c17751b010df
+    resource: repo://scripts/mobile-boundaries/policy.json
+generated: { by: "openwiki/0.6.0", at: "2026-11-11T15:41:01.947Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-08T14:36:51.071Z
 ---
 
-# Arquitectura local-first
+# Arquitectura local-first y fronteras del sistema
 
 Gymnasia tiene una única superficie de producto: `apps/mobile`. `index.js` registra el mismo `App` de Expo para Android, iOS y web con `react-native-web`. Entrenamientos, dieta, medidas, conversaciones y preferencias se crean y conservan en el dispositivo: no dependen de una cuenta ni de una API de producto de Gymnasia. La red puede enriquecer una función concreta, pero no confirma ni autoriza las mutaciones de esos dominios.
 
@@ -63,7 +76,7 @@ La excepción remota es `apps/feedback-worker`: recibe voluntariamente propuesta
 
 ```mermaid
 flowchart TD
-    Person["Usuario"] --> Client["Cliente Expo local"]
+    Person["Persona usuaria"] --> Client["Cliente Expo local"]
     Client --> State["Estado local AsyncStorage"]
     Client --> Secrets["Credenciales SecureStore nativo"]
     Client --> Catalogs["Catálogos GitHub Raw"]
@@ -86,7 +99,7 @@ flowchart TD
 | Límite | Responsabilidad | No debe convertirse en |
 |---|---|---|
 | `apps/mobile` | Shell Expo, dominios de entrenamiento y dieta, agente, persistencia, backup y adaptadores de red. | Cliente de una API central, identidad de Gymnasia o sincronización implícita. |
-| Capas de la app | Los `controllers` adaptan dominios a flujos y memorizan acciones; `screens` y superposiciones no acceden directamente a servicios Expo; `platform` concentra sus puertos e implementaciones. | Lógica de plataforma dispersa en pantallas o acoplamiento directo de UI con almacenamiento y red. |
+| Capas de la app | La política de fronteras separa `bootstrap`, `app`, `controllers`, `screens`, `platform`, `shell`, UI y dominios; los `controllers` no importan React Native ni Expo y `platform` solo depende de `shared`. | Lógica de plataforma dispersa en controladores o dependencias entre capas fuera del contrato. |
 | Política del agente | Snapshot integrado en `Local`; en `Staging` y `Production`, resolución y verificación de un artefacto firmado para el canal. | Prompt remoto libre o almacén de datos del usuario. |
 | Catálogos | Referencias de alimentos, productos, recetas y ejercicios publicadas como JSON, validadas y cacheadas en el cliente. | Estado personal o fuente de autoridad sobre los registros del usuario. |
 | Proveedores de IA | OpenAI, Anthropic, Google o una API HTTPS compatible con OpenAI reciben una clave aportada por la persona usuaria y el contexto necesario para su petición. | Backend o cuenta compartida de Gymnasia. |
@@ -105,7 +118,7 @@ Las claves de `AsyncStorage` y de SecureStore se derivan de la variante. Develop
 
 El estado general se serializa en `AsyncStorage`. Las claves API no deben ir en esa serialización: en nativo, la configuración de proveedores usa `expo-secure-store` cuando está disponible y deja en AsyncStorage un espejo saneado sin `api_key`; si el almacén seguro falla, la app lo informa sin descartar el estado principal. En web la configuración de proveedor se guarda con el almacenamiento local disponible en el navegador; no tiene la garantía de un secreto de servidor ni la protección equivalente a SecureStore nativo.
 
-Las trazas de depuración son otro dato local sensible: `trace.ts` conserva hasta 1.000 entradas en `AsyncStorage` dentro del ámbito de la variante y además las escribe en consola. Incluyen metadatos de compilación y diagnósticos de selección de política; el borrado total las trata explícitamente como una familia que debe eliminarse y verificarse. Al añadir instrumentación, no incluya prompts, argumentos, resultados ni otros valores personales en `data`.
+Las trazas de depuración son otro dato local sensible: `trace.ts` usa una clave de `AsyncStorage` derivada de la variante, conserva las últimas 1.000 entradas y las escribe también en consola. El flujo de borrado total ejecuta `clearTraces` y comprueba tanto que la clave no exista como que el búfer cargado esté vacío. Al añadir instrumentación, no incluya prompts, argumentos, resultados ni otros valores personales en `data`.
 
 Una exportación `.gymnasia` es una copia local iniciada por la persona usuaria. Incluye los datos locales y fotos de progreso normalizadas, excluye claves API y las cachés remotas, y las exportaciones nuevas se cifran y autentican con una contraseña que la app no conserva. El importador todavía acepta, con aviso, los formatos antiguos JSON v1 y ZIP v2. Conversaciones y otros datos incluidos siguen siendo sensibles: importar, exportar o añadir una categoría de datos debe mantener la exclusión de credenciales y el borrado verificable.
 
@@ -117,11 +130,19 @@ El espejo `/dev-store` solo se habilita en el preview web de Development con `EX
 
 ## Catálogos: referencias remotas recuperables
 
-Los catálogos de alimentos, productos comerciales y recetas se obtienen desde sus `all.json` en GitHub Raw. Cada definición aporta URL, procedencia, clave de caché y parser. Antes de aceptar una descarga se comprueba el esquema; el sobre persistido incluye versión, fuente, fecha, ETag, procedencia y hash SHA-256 del contenido validado. Alimentos incluye además una línea base integrada para que una instalación nueva pueda consultar sin red.
+Los catálogos de alimentos, productos comerciales y recetas se obtienen desde sus `all.json` en GitHub Raw. Cada definición aporta URL, procedencia, clave de caché y parser. Antes de aceptar una descarga se comprueba el esquema; el sobre persistido incluye versión de esquema, fuente, fecha, ETag, procedencia y hash SHA-256 del contenido validado. Alimentos incluye además una línea base integrada para que una instalación nueva pueda consultar sin red.
 
-El catálogo de ejercicios usa un protocolo distinto con el mismo límite de confianza: descarga un manifiesto versionado de `ejercicios/catalog-v1`, valida sus descriptores y hashes, y obtiene por separado páginas, fragmentos de búsqueda e índices por ID. Solo activa una versión tras validar el manifiesto y su primera página; los artefactos se verifican contra el hash del manifiesto antes de cachearse. Así conserva una instantánea utilizable sin conexión y evita descargar el agregado completo para buscar o abrir una ficha.
+El catálogo de ejercicios usa un protocolo distinto: descarga `manifest.json` de `ejercicios/catalog-v1`, valida estrictamente versión de esquema, versión de catálogo, procedencia, paginación y descriptores de páginas y *shards*. Cada descriptor declara un hash SHA-256; la app verifica ese hash al leer de caché o descargar un artefacto. Solo activa un manifiesto remoto después de cargar y validar su primera página. El manifiesto apunta a páginas de fichas, *shards* de búsqueda y un directorio por ID, por lo que buscar, abrir una ficha y resolver IDs no exigen bajar el agregado completo.
 
-Al arrancar puede utilizarse una caché válida marcada como `cached` o `stale`. Al refrescar, un HTTP inválido, JSON malformado, esquema inválido o fallo de red conserva el snapshot anterior y señala el fallo en vez de borrar datos disponibles. Los alimentos personales son otro origen, `local://device`, y no se envían ni se sustituyen por GitHub Raw. Este diseño permite uso offline sin convertir el catálogo en una dependencia de arranque.
+La caché de ejercicios conserva un manifiesto activo y, cuando es durable, el anterior. La activación no reemplaza metadatos persistentes si la primera página de la versión nueva no está almacenada y verificada. Al inicializar puede recuperar el activo o el anterior si su primera página sigue siendo válida; al fallar una actualización remota conserva el snapshot disponible y expone `remote_failed`. Los catálogos agregados siguen el mismo principio de no borrar el snapshot anterior ante HTTP inválido, JSON malformado, esquema inválido o fallo de red. Los alimentos personales son otro origen, `local://device`, y no se envían ni se sustituyen por GitHub Raw.
+
+## Publicación de contenido: artefactos, no un servicio de producto
+
+Los directorios de contenido versionado (`alimentos/`, `productos_comerciales/`, `recetas/` y `ejercicios/`) son la fuente que la automatización transforma en artefactos de lectura; no son una API de cuentas ni un almacén de datos de la persona usuaria. Para alimentos, productos y recetas, `all.json` e `index.json` son derivados y no se editan manualmente. `sync:catalogs` valida y regenera los agregados, mientras `check:catalogs`, `test:catalogs` y `test:catalogs:e2e` cubren contratos, integridad y el consumo remoto con caché offline. El generador también copia el agregado de alimentos al baseline integrado que permite el primer uso sin red.
+
+Los ejercicios se publican como `ejercicios/catalog-v1/`: el generador produce un manifiesto, páginas de fichas, *shards* de búsqueda e índices por ID. Rechaza antes de publicar esquemas o referencias inválidas, IDs duplicados, diferencias de mayúsculas, imágenes huérfanas, archivos dañados e imágenes que no sean WebP reales. Por tanto, un cambio de esquema o de pipeline debe actualizar de forma coordinada el generador, los validadores y el lector móvil, y demostrar que un snapshot ya instalado sigue siendo utilizable sin red; no basta con modificar un JSON servido por GitHub.
+
+La política sigue una cadena de publicación diferente: `policy/health-safety/` genera el bloque sanitario y sus fixtures, y `scripts/policy-promotion/` prepara artefactos públicos firmados para los canales. GitHub distribuye esos artefactos, pero la verificación Ed25519 y las raíces públicas están en la app; las claves privadas no pertenecen al bundle ni al repositorio de política público. En consecuencia, publicar no equivale a ejecutar contenido remoto de confianza: el runtime solo puede activar lo que cumple su contrato criptográfico y de canal.
 
 ## Política y llamadas de IA
 
@@ -152,17 +173,17 @@ La tarea programada redacta denuncias `report` que superan 30 días y poda conta
 
 ## Validación enfocada
 
-Antes de cambiar estos límites, ejecute al menos:
+No hay un único comando que demuestre todos los límites de esta página. Use una base proporcional al cambio y añada la validación del dominio que realmente atraviesa:
 
 ```bash
 npm --workspace apps/mobile exec tsc --noEmit
 npm test
-npm run check:health-safety
-npm run policy:bundle:check
-npm run check:policy-trust
-npm run check:anthropic-proxy
-npm --workspace apps/mobile run build:web
-npm --workspace apps/feedback-worker run test
+npm run check:mobile-boundaries
 ```
 
-Para catálogos, añada `npm run check:catalogs`, `npm run test:catalogs` y `npm run test:catalogs:e2e`; para el proxy, `npm run test:proxy`. Los scripts de raíz incluyen pruebas deterministas de la app y del espejo de desarrollo, contratos de catálogos y política, comprobación de fronteras móviles, compilación web y E2E específicos del agente, recuperación de almacenamiento, shell y flujos de entrenamiento o dieta. La suite del Worker usa una base de datos y un entorno falsos, por lo que verifica creación, rechazo, límites, deduplicación, consulta de estado y retención sin token ni red reales.
+El último comando analiza los módulos fuente de `apps/mobile` —no los tests ni los artefactos generados— y falla ante módulos sin capa, imports locales no resolubles, dependencias entre capas no permitidas, imports que no usan la entrada pública del destino, excepciones heredadas ya innecesarias o ciclos. Es la comprobación que protege la separación entre shell, controladores, plataforma y dominios; no sustituye una prueba de comportamiento.
+
+<!-- openwiki: broken internal link [../quickstart.md#mapa-compacto-de-tareas] heading anchor "mapa-compacto-de-tareas" does not exist in "../quickstart.md". Fix the href or restore the target, then delete this comment. -->
+Después seleccione el control según el límite modificado, sin convertir esta página en un inventario de scripts: política y seguridad sanitaria requieren sus checks de artefactos y reglas; catálogos, privacidad/persistencia, permisos o configuración nativa, proxy y release tienen controles propios. La [guía de inicio](../quickstart.md#mapa-compacto-de-tareas) enlaza cada superficie con su validación mínima y las páginas de [runtime del agente](../agent/runtime.md), [repositorios de contenido](../content/repositories.md), [shell móvil](../mobile/application-shell.md) y [build, release y pruebas](../operations/build-release-and-testing.md) especifican qué prueba focalizada corresponde.
+
+Para una modificación del Worker, ejecute `npm --workspace apps/feedback-worker run test`. La suite construye un entorno con D1 falso, token, sal y repositorio de prueba, y sustituye `fetch`; por ello verifica el contrato y los fallos del Worker sin usar la credencial ni la red reales. Para una ruta web, añada `npm --workspace apps/mobile run build:web`; la exportación no acredita por sí misma capacidades nativas.

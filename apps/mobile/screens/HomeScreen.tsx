@@ -1,92 +1,11 @@
-import { memo, type ReactNode } from "react";
+import { Button as PrimaryButton } from "../components/Button";
+import { StatCard } from "../components/StatCard";
+import { memo } from "react";
 import { Feather } from "@expo/vector-icons";
 import { Image, Pressable, Text, View } from "react-native";
 
 import type { HomeScreenActions, HomeScreenModel } from "../controllers/homeController";
 import { mobileTheme } from "../theme";
-
-function PrimaryButton({
-  label,
-  onPress,
-  icon,
-  testID,
-}: {
-  label: string;
-  onPress(): void;
-  icon?: ReactNode;
-  testID?: string;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      testID={testID}
-      accessibilityLabel={label}
-      accessibilityRole="button"
-      style={{
-        height: 46,
-        borderRadius: 12,
-        backgroundColor: mobileTheme.color.brandPrimary,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: icon ? 10 : 0,
-      }}
-    >
-      {icon}
-      <Text style={{ color: "#06090D", fontWeight: "700" }}>{label}</Text>
-    </Pressable>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  subtitle,
-  subtitleColor,
-  icon,
-  testID,
-}: {
-  label: string;
-  value: string;
-  subtitle: string;
-  subtitleColor?: string;
-  icon: ReactNode;
-  testID?: string;
-}) {
-  return (
-    <View
-      testID={testID}
-      style={{
-        flex: 1,
-        minHeight: 94,
-        borderWidth: 1,
-        borderColor: mobileTheme.color.borderSubtle,
-        backgroundColor: mobileTheme.color.bgSurface,
-        borderRadius: 18,
-        padding: 12,
-        gap: 4,
-      }}
-    >
-      <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-        {icon}
-        <Text style={{ color: "#8B94A3", fontSize: 12, fontWeight: "600" }}>{label}</Text>
-      </View>
-      <Text style={{ color: mobileTheme.color.textPrimary, fontSize: 17, fontWeight: "700" }}>
-        {value}
-      </Text>
-      <Text
-        style={{
-          color: subtitleColor ?? "#7F8896",
-          fontSize: 11,
-          fontWeight: subtitleColor ? "700" : "400",
-          marginTop: "auto",
-        }}
-      >
-        {subtitle}
-      </Text>
-    </View>
-  );
-}
 
 export const HomeScreen = memo(function HomeScreen({
   model,

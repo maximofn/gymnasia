@@ -135,6 +135,18 @@ test("rechaza un commit sin PR o sin autorización sobre el SHA de la PR", () =>
   assert.ok(withoutStatuses.some((violation) => violation.code === "authorization-check"));
 });
 
+test("GitHub APK conserva las protecciones de Production sin retirar revisores de Play", () => {
+  const playEnvironment = validPlayEnvironment();
+  playEnvironment.protection_rules = [{ type: "required_reviewers", reviewers: [{ reviewer: { login: policy.owner } }] }];
+  assert.ok(evaluateSourceCandidate(sourceInput({ playEnvironment })).violations
+    .some(({ code }) => code === "play-environment-reviewer"));
+  assert.deepEqual(evaluateSourceCandidate(sourceInput({ publicationTarget: "github-apk", playEnvironment })).violations, []);
+  assert.ok(evaluateSourceCandidate(sourceInput({ publicationTarget: "unknown" })).violations
+    .some(({ code }) => code === "publication-target"));
+  assert.ok(evaluateSourceCandidate(sourceInput({ publicationTarget: "github-apk", productionEnvironment: null })).violations
+    .some(({ code }) => code === "environment"));
+});
+
 test("rechaza cualquier deriva del ruleset o del environment", () => {
   const brokenRuleset = validRuleset();
   brokenRuleset.bypass_actors = [{ actor_id: 1 }];
@@ -329,6 +341,18 @@ function artifactInput(overrides = {}) {
     ...overrides,
   };
 }
+
+test("la evidencia APK de GitHub admite revisores de Play, pero nunca un destino desconocido", () => {
+  const sourceEvidence = structuredClone(validSourceEvidence);
+  sourceEvidence.remoteControls.environments.playInternal.reviewerCount = 1;
+  assert.ok(evaluateArtifactCandidate(artifactInput({ sourceEvidence })).violations
+    .some(({ code }) => code === "source-contract"));
+  sourceEvidence.publicationTarget = "github-apk";
+  assert.deepEqual(evaluateArtifactCandidate(artifactInput({ sourceEvidence })).violations, []);
+  sourceEvidence.publicationTarget = "unknown";
+  assert.ok(evaluateArtifactCandidate(artifactInput({ sourceEvidence })).violations
+    .some(({ code }) => code === "source-contract"));
+});
 
 test("acepta un AAB de Production con fuente, snapshot y firma coherentes", () => {
   assert.deepEqual(evaluateArtifactCandidate(artifactInput()).violations, []);

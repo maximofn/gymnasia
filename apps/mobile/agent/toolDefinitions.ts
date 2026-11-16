@@ -278,7 +278,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
       properties: {
         query: stringProperty("Texto de búsqueda por nombre (opcional)"),
         category: stringProperty("Filtrar por categoría del alimento, por ejemplo: grasa, proteina, carbohidrato, fruta, verdura, lacteo, cereal (opcional)"),
-        source: stringProperty("Filtrar por tipo heredado o source_id: 'alimento', 'producto_comercial', 'receta', 'personal', 'gymnasia_foods', 'gymnasia_products', 'gymnasia_recipes' o 'user_personal_foods' (opcional)"),
+        source: stringProperty("Filtrar por tipo heredado o source_id: 'alimento', 'producto_comercial', 'receta', 'personal', 'gymnasia_foods', 'gymnasia_products', 'gymnasia_recipes', 'anses_ciqual_2025' o 'user_personal_foods' (opcional). CIQUAL conserva valores nulos y calificadores: no son ceros ni cantidades exactas."),
         min_calories: numberProperty("Calorías mínimas por 100g (opcional)"),
         max_calories: numberProperty("Calorías máximas por 100g; 0 desactiva este filtro (opcional)"),
         min_protein: numberProperty("Proteínas mínimas por 100g en gramos (opcional)"),

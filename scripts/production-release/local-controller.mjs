@@ -68,6 +68,7 @@ async function reserve() {
   const source = read("production-source-evidence.json");
   assert.equal(source.result, "passed");
   assert.equal(source.commit, transaction.sourceCommit);
+  assert.equal(source.publicationTarget ?? "play", transaction.publicationTarget ?? "play");
   assert.deepEqual(source.targets, [
     { profile: "production", artifactType: "aab" },
     { profile: "production-apk", artifactType: "apk" },

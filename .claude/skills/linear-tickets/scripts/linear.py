@@ -318,6 +318,8 @@ def cmd_get(args):
         identifier title description priorityLabel
         state { name type } assignee { name }
         labels { nodes { name } }
+        parent { identifier title }
+        children(first: 100) { nodes { identifier title state { name } } }
         createdAt updatedAt url
       }
     }
@@ -330,6 +332,13 @@ def cmd_get(args):
     print(f"Asignado:   {n['assignee']['name'] if n['assignee'] else '—'}")
     print(f"Labels:     {labels}")
     print(f"URL:        {n['url']}")
+    if n["parent"]:
+        print(f"Padre:      {n['parent']['identifier']}  {n['parent']['title']}")
+    children = n["children"]["nodes"]
+    if children:
+        print(f"Sub-issues: {len(children)}")
+        for c in children:
+            print(f"  {c['identifier']:<9} [{c['state']['name']}] {c['title']}")
     print("\n--- Descripción ---")
     print(n["description"] or "(vacía)")
 
@@ -597,13 +606,32 @@ def build_board_report(board: dict, nodes: list, team: str = "GYM", checked_at: 
 
 def fetch_board_nodes(team: str) -> list:
     gql = """
-    query($key:String!,$first:Int){
-      issues(filter:{team:{key:{eq:$key}}}, first:$first){
+    query($key:String!,$first:Int,$after:String){
+      issues(filter:{team:{key:{eq:$key}}}, first:$first, after:$after){
         nodes{ identifier title state{ name } }
+        pageInfo{ hasNextPage endCursor }
       }
     }
     """
-    return query(gql, {"key": team.upper(), "first": 250})["issues"]["nodes"]
+    nodes = []
+    after = None
+    cursors = set()
+    identifiers = set()
+    while True:
+        page = query(gql, {"key": team.upper(), "first": 250, "after": after})["issues"]
+        for node in page["nodes"]:
+            identifier = node["identifier"]
+            if identifier in identifiers:
+                raise ValueError("La paginación repite un ticket; no se comparará un inventario ambiguo.")
+            identifiers.add(identifier)
+            nodes.append(node)
+        info = page["pageInfo"]
+        if not info["hasNextPage"]:
+            return nodes
+        after = info["endCursor"]
+        if not after or after in cursors:
+            raise ValueError("La paginación no avanza; no se comparará un inventario incompleto.")
+        cursors.add(after)
 
 
 def print_board_report(report: dict):

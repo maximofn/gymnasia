@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "source": "User-supplied Android tool timing events; absolute timestamps, batch IDs and unrelated events omitted.",
+  "reportedDevice": "Huawei P30",
+  "appVersion": "1.52.0",
+  "buildVersion": "88",
+  "platform": "android",
+  "environment": "production",
+  "provider": null,
+  "model": null,
+  "cacheState": "not recorded",
+  "maxConcurrentReads": 4,
+  "sampleCount": 3,
+  "serialComparisonPending": true,
+  "medianBatchDurationMs": 2630.189582824707,
+  "batches": [
+    {
+      "sample": 1,
+      "toolName": "search_exercises",
+      "toolCount": 3,
+      "durationMs": 2886.3802070617676,
+      "startOffsetsMs": [
+        0.22968673706054688,
+        17.25208282470703,
+        23.140103816986084
+      ],
+      "finishOffsetsMs": [
+        2491.6276030540466,
+        2886.0015621185303,
+        2115.785936832428
+      ],
+      "peakActiveTools": 3,
+      "returnedCount": 3,
+      "thrownCount": 0
+    },
+    {
+      "sample": 2,
+      "toolName": "search_exercises",
+      "toolCount": 3,
+      "durationMs": 2558.043228149414,
+      "startOffsetsMs": [
+        0.09479093551635742,
+        9.507812023162842,
+        17.988019943237305
+      ],
+      "finishOffsetsMs": [
+        968.002082824707,
+        2190.207291126251,
+        2557.5838532447815
+      ],
+      "peakActiveTools": 3,
+      "returnedCount": 3,
+      "thrownCount": 0
+    },
+    {
+      "sample": 3,
+      "toolName": "search_exercises",
+      "toolCount": 3,
+      "durationMs": 2630.189582824707,
+      "startOffsetsMs": [
+        0.25989580154418945,
+        34.561458110809326,
+        44.84479093551636
+      ],
+      "finishOffsetsMs": [
+        1031.1359367370605,
+        2629.6057291030884,
+        2280.8880200386047
+      ],
+      "peakActiveTools": 3,
+      "returnedCount": 3,
+      "thrownCount": 0
+    }
+  ]
+}

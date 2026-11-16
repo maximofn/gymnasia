@@ -311,6 +311,9 @@ function telemetryFailureCategory(error) {
   if (status === 429) {
     return "rate-limit";
   }
+  if (status >= 400 && status < 600) {
+    return "langsmith";
+  }
   const category = classifyOpenWikiError(error?.message || "");
   return category === "unknown" ? "langsmith" : category;
 }
@@ -514,7 +517,6 @@ export async function collectTelemetry({
       for await (const run of langsmithClient.listRuns({
         projectName: TELEMETRY_PROJECT,
         startTime,
-        limit: TELEMETRY_RUN_LIMIT,
         select: SELECTED_RUN_FIELDS,
       })) {
         runs.push(run);

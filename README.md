@@ -5,6 +5,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 ## Estructura
 
 - `apps/mobile`: App Expo React Native y web (unica aplicacion)
+- `apps/mobile/components`: Bases visuales de las 12 familias adaptables; alcance y QA en [`docs/design/component-audit/implementation.md`](docs/design/component-audit/implementation.md)
 - `apps/mobile/controllers`: Estado y acciones memorizadas por flujo; adaptan los dominios a las pantallas
 - `apps/mobile/screens`: Pantallas y superposiciones React Native sin acceso directo a servicios Expo
 - `apps/mobile/platform`: Puertos tipados e implementaciones Expo de almacenamiento, red, multimedia y APIs nativas
@@ -14,6 +15,8 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `apps/feedback-worker`: Worker de Cloudflare que recibe propuestas de mejora, alimentos, ejercicios y denuncias de respuestas de IA desde la app y crea issues en un repositorio privado. Opcional: si esta caido, la app avisa y sigue funcionando
 - `apps/anthropic_proxy`: Proxy CORS para Anthropic (solo necesario cuando se ejecuta la app en el navegador del ordenador para depurar; en movil no se usa). Ver su `README.md`
 - `alimentos/`: Repositorio de alimentos (JSONs con datos nutricionales)
+- `alimentos/ciqual/`: Catálogo ANSES-CIQUAL 2025 con 3.484 fichas y 74 componentes; fuente, contrato e importación en [`alimentos/ciqual/README.md`](alimentos/ciqual/README.md)
+- `alimentos/bls/`: Catálogo MRI-BLS 4.0 con 7.140 fichas y 138 componentes bajo CC BY 4.0, XLSX oficiales, importación reproducible y erratas con originales y trazabilidad; todavía sin integración móvil. Ver [`alimentos/bls/README.md`](alimentos/bls/README.md).
 - `productos_comerciales/`: Repositorio de productos comerciales (JSONs con datos nutricionales)
 - `recetas/`: Repositorio de recetas (JSONs con datos nutricionales)
 - `ejercicios/`: Repositorio de ejercicios (JSONs + imagenes generadas)
@@ -26,6 +29,7 @@ App movil de fitness construida con Expo React Native. Funciona en modo local-fi
 - `scripts/policy-promotion/`: Firma Ed25519, contratos, promoción y preparación de snapshots por canal
 - `scripts/store-listing/`: Generación y validación de la ficha y los recursos para Google Play
 - `docs/`: Documentacion del proyecto (arquitectura, diseno, specs, roadmap)
+- [`docs/design/component-audit/`](docs/design/component-audit/README.md): Analisis de 54 capturas y 29 propuestas de componentes clasificadas en el codigo, con unificacion de las 12 familias adaptables
 
 ## Arranque rapido
 
@@ -97,6 +101,50 @@ La generación de imágenes en `image-generation/generate_images.py` termina
 invocando este mismo generador, por lo que no existe un segundo formato de
 agregados. La CI dedicada repite estas comprobaciones sin claves ni servicios
 externos cuando cambia cualquier catálogo o su código de consumo.
+
+El catálogo fuente de ANSES-CIQUAL se mantiene en `alimentos/ciqual/`, con una
+ficha por alimento, índice, diccionarios y manifiesto de integridad. Se conserva
+separado del contrato de consumo actual de la app para representar valores
+desconocidos, trazas y límites sin inventar nutrientes o raciones. Incluye nombres
+oficiales en francés e inglés y traducciones españolas de todos los alimentos,
+categorías y componentes, versionadas en `translations.es.json` para conservarlas
+al reimportar. La app incluye además una proyección local de los 3.484 alimentos
+con kcal, proteína (factor de Jones), hidratos disponibles, grasa y fibra para
+Ajustes, Dieta y Coach. Conserva nulos y calificadores; las fichas incompletas
+requieren completar valores explícitos antes de registrarlas. No necesita backend
+ni base de datos externa.
+
+Las primeras muestras de imágenes CIQUAL, con estilo aprobado y sin integrar en la app, viven
+en [`alimentos/ciqual/image-samples/`](alimentos/ciqual/image-samples/README.md).
+Conservan los prompts y referencias de estilo; `npm run check:ciqual:images`
+comprueba su correspondencia con la fuente y los WebP reales de 1024 × 1024.
+Las [tandas sucesivas](alimentos/ciqual/image-batches/README.md) tienen manifiestos
+independientes; ese mismo check valida todas y calcula el progreso sin duplicados.
+`npm run next:ciqual:images -- 10` lista diez alimentos todavía sin imagen.
+
+```bash
+npm run import:ciqual -- --download # descarga oficial fijada y generación reproducible
+npm run check:ciqual                # verifica los 3.484 alimentos sin red
+npm run sync:ciqual:mobile          # regenera la proyección integrada tras cambios
+npm run check:ciqual:mobile         # comprueba que la app consume esos mismos datos
+```
+
+El catálogo de [BLS 4.0](alimentos/bls/README.md) se mantiene separado de los
+catálogos móviles. Se reconstruye sin conexión desde los dos XLSX oficiales
+versionados y fijados por SHA-256. Conserva valores, procedencia y referencias,
+con correcciones oficiales, energía derivada e invalidaciones pendientes
+identificadas en un diario que conserva cada original y su evidencia. No es una
+entrega oficial BLS 4.1; véanse las limitaciones en su README. Las imágenes
+editoriales se conservan por tandas en `alimentos/bls/image-batches/`, separadas
+de los datos y de la app, con el estilo aprobado de CIQUAL.
+
+```bash
+npm run import:bls  # genera fichas, páginas, diccionarios y manifiesto
+npm run check:bls   # reconstruye y compara toda la entrega sin red
+npm run test:bls    # pruebas de datos, erratas e imágenes BLS
+npm run check:bls:images   # verifica las tandas y cuenta pendientes
+npm run next:bls:images -- 10  # lista de solo lectura; no genera ni publica
+```
 
 ## Tests del agente
 
@@ -209,6 +257,41 @@ npm run decrypt:recovery -- --input copia.gymnasia --output recuperacion.json
 - Referencia de diseno: `docs/design/README.md`
 - Automatizacion de OpenWiki: `docs/openwiki-automation.md`
 
+Android genera mediante un plugin Expo una cuota de AsyncStorage de 64 MiB para
+los datos locales y su recuperación. El contrato nativo verifica que un prebuild
+limpio la conserva. El ajuste requiere una nueva build Android instalada como
+actualización; no modifica ni borra los datos existentes.
+
+Las páginas y los índices públicos de ejercicios viven fuera de AsyncStorage:
+archivos privados persistentes en móvil e IndexedDB en web. La caché tiene un
+límite de contenido de 24 MiB (2 MiB por archivo); al llenarse conserva las páginas
+offline y permite usar las descargas sin guardarlas. Solo los manifiestos pequeños
+quedan en AsyncStorage. La actualización copia y verifica los artefactos antiguos
+antes de retirarlos; convierte los catálogos completos v2/v3 válidos en una copia
+paginada disponible sin conexión. El borrado de actividad conserva esta caché y el
+borrado total la elimina y verifica. No cambia los datos personales ni las fotos.
+
+En Ajustes → Trazas → Uso del almacenamiento, «Medir ocupación» muestra los
+bytes de los valores guardados, un desglose por categorías y las fotos aparte.
+Incluye las claves dinámicas de páginas e índices del catálogo de ejercicios,
+con recuentos y tamaños separados, y mide la caché pública externa aparte de los
+valores de AsyncStorage. En Android muestra además el tamaño físico
+de `RKStorage` y sus archivos auxiliares mediante metadatos: no abre ni copia
+su contenido. Esos tamaños incluyen estructura y espacio reutilizable, no
+representan cuota restante y no se suman a los valores ni a las fotos. El dato
+figura no disponible en web, iOS o si no se reconoce la ruta de la base Android.
+«Copiar informe» copia solo tamaños y etiquetas fijas, sin contenido personal.
+La medición es parcial: excluye credenciales y almacenes potencialmente sensibles,
+y no equivale al tamaño físico de SQLite. El diagnóstico no modifica datos ni
+contacta servicios. En web no puede medir las fotos ni el espacio libre del móvil.
+
+Para una publicación manual del APK únicamente en GitHub, sin envío a Google
+Play, ejecuta `build-apk.yml` con `publication_target=github-apk`. Conserva la
+aprobación de Production y todas las verificaciones. El flujo genera AAB y APK
+con el mismo versionCode, pero solo publica el APK; no cambia las protecciones
+de Google Play. El destino queda fijado en la transacción y debe repetirse al
+reintentar. El modo habitual sigue siendo `play`.
+
 La generación con Google usa Interactions sin almacenamiento remoto de conversaciones.
 Contrato, pruebas y validación de XHR en Android: [Google Interactions](docs/testing/google-interactions.md).
 
@@ -225,10 +308,11 @@ requiere HTTPS y un certificado válido para el dispositivo.
 Las builds Android de producción se compilan en una VM desechable en wallabot.
 Tras la aprobación humana de `Production`, wallabot genera primero el AAB y
 después el APK con el mismo `versionCode`. GitHub los verifica de forma
-independiente, envía el AAB directamente a Prueba cerrada Alpha mediante EAS
-Submit para que los 14 testers reciban cada build publicable, y solo entonces
-publica ambos en una Release. La disponibilidad para los testers puede esperar
-la revisión de Google; la promoción a producción sigue siendo manual. El
+independiente, envía el AAB directamente al canal público `production` mediante
+EAS Submit y solo entonces publica ambos en una Release. No hace falta ser
+tester: la actualización se distribuye en los países ya habilitados para la app.
+El envío completado no acredita disponibilidad efectiva: puede quedar pendiente
+de revisión de Google y debe comprobarse en Play Console y Play Store. El
 controlador crea un ejecutor efímero por trabajo aprobado y lo
 retira al terminar; el Mac puede estar apagado.
 

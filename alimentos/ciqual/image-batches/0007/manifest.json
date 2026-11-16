@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0007",
+  "status": "pending-review",
+  "generated_on": "2026-11-05",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-19041",
+      "names": {
+        "fr": "Lait demi-écrémé, UHT",
+        "en": "Milk, semi-skimmed, UHT",
+        "es": "Leche semidesnatada, UHT"
+      },
+      "source_sha256": "8b43f2dbc38c18b3d44ace76164eb799c5d858ff7ef503306c37ab5a064afef1",
+      "image": "ciqual-19041.webp",
+      "sha256": "b601fcd169afa271cb2ffc689d94a35c5ed482232c95a30a23adfc05651de5fe",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Semi-skimmed UHT cow's milk, a small simple clear unbranded drinking glass filled with opaque white milk. No bottle or packaging..\nSingle centered food subject, entire food and any specified glass or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; solid foods or glass from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-19593",
+      "names": {
+        "fr": "Yaourt ou lait fermenté, nature",
+        "en": "Yogurt or fermented milk, plain",
+        "es": "Yogur o leche fermentada, natural"
+      },
+      "source_sha256": "5924ab9b1d2e06df5fc8bb3931bbc6231813c9f31603a210ffbe76d0fdf8891b",
+      "image": "ciqual-19593.webp",
+      "sha256": "dbca7c094344c6ca5294470e3bc2c533f9da0b3ee41529678a4a1f9116982bf4",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Plain unsweetened white yogurt, a small dark matte bowl containing thick creamy white yogurt with one subtle natural swirl. No fruit, toppings or spoon..\nSingle centered food subject, entire food and any specified glass or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; solid foods or glass from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-19585",
+      "names": {
+        "fr": "Ricotta",
+        "en": "Ricotta cheese, from cow's milk",
+        "es": "Queso ricotta, de leche de vaca"
+      },
+      "source_sha256": "4cd07977b78827832e3928280b85393ad608615bb2b2b7aa2e9a8c53e54ab3fa",
+      "image": "ciqual-19585.webp",
+      "sha256": "2ca4526c9ecc4673a2d8d4c86ffbd13e0a7b92ceaf64747633ab7a1b67198f1e",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Cow's milk ricotta cheese, a small dark matte bowl with a modest mound of soft moist white finely granular ricotta curds, delicate fluffy texture, not firm cubes or yogurt..\nSingle centered food subject, entire food and any specified glass or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; solid foods or glass from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-12120",
+      "names": {
+        "fr": "Parmesan",
+        "en": "Parmesan cheese, from cow's milk",
+        "es": "Parmesano"
+      },
+      "source_sha256": "3e26816a6baa5d99a782f37ae37286e6c0ec816641ad62b1ab13a960885d4781",
+      "image": "ciqual-12120.webp",
+      "sha256": "8670cb7a4ce4fe44bc2b3e68bab1ed2d0e6beab1b125aff024194afee01cbab7",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Parmesan cow's milk cheese, one compact irregular hard pale straw-yellow wedge with visibly coarse granular fracture and a natural darker rind. Absolutely no stamped lettering, printed marks, grated cheese, wrapper or garnish..\nSingle centered food subject, entire food and any specified glass or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; solid foods or glass from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-12115",
+      "names": {
+        "fr": "Emmental ou emmenthal",
+        "en": "Emmental cheese, from cow's milk",
+        "es": "Emmental"
+      },
+      "source_sha256": "159d2800562ae631f97d0dc33ca1a3b06097f319c5d70d7413b6c2957f75d8b5",
+      "image": "ciqual-12115.webp",
+      "sha256": "2548463fac0a4ed5018cc98ea63dff302254560d7289869b05e416de5bec8c7c",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Emmental cow's milk cheese, one compact pale yellow cheese wedge with characteristic large rounded holes visible on its cut faces. No packaging or garnish..\nSingle centered food subject, entire food and any specified glass or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; solid foods or glass from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-19590",
+      "names": {
+        "fr": "Mozzarella au lait de vache",
+        "en": "Mozzarella cheese, from cow's milk",
+        "es": "Queso mozzarella de leche de vaca"
+      },
+      "source_sha256": "f3f001833e3e42c943cff5e30ab54cacac1be903eb481d5563da0368ad95303a",
+      "image": "ciqual-19590.webp",
+      "sha256": "04c380e392063302312ab1f038862f79cfe94a99f255d1363818b0114cae49ef",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Fresh cow's milk mozzarella cheese, one smooth white ball cut in half, the two halves closely grouped with moist softly layered cut interiors visible. No buffalo references, tomatoes, basil, packaging or brine puddle..\nSingle centered food subject, entire food and any specified glass or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; solid foods or glass from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-12001",
+      "names": {
+        "fr": "Camembert, sans précision sur le type de lait (pasteurisé ou cru)",
+        "en": "Camembert cheese, from cow's milk",
+        "es": "Camembert, sin especificar el tipo de leche (pasteurizada o cruda)"
+      },
+      "source_sha256": "2a305760adaac9660261ab6a3265a71511b0b08d4dc7b229260a77cdbddae2f1",
+      "image": "ciqual-12001.webp",
+      "sha256": "5eda39bee756f121f125cf7e1270bb8a66c0783b404b6d0aa50679035f1df62d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Camembert cow's milk cheese, a small round wheel with a single cut wedge slightly separated while remaining one compact group. Natural white bloomy rind and pale cream soft interior, not melted. No wooden box, labels or packaging..\nSingle centered food subject, entire food and any specified glass or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; solid foods or glass from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-12066",
+      "names": {
+        "fr": "Feta, au lait de brebis 70% minimum et lait de chèvre 30% maximum",
+        "en": "Feta cheese, 70% min. from ewe's milk, 30% min. from goat's milk",
+        "es": "Feta, mínimo un 70% de leche de oveja y máximo un 30% de leche de cabra"
+      },
+      "source_sha256": "70aa2a6322cab23e2ab3fb1a45beae6bf596d89d63b47b574e16681f2f4a7074",
+      "image": "ciqual-12066.webp",
+      "sha256": "93639f4c55e5e25396a5b7ea895abc27d1dcbdbf99218a91f3decf00f4c400ab",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Feta cheese made with ewe's and goat's milk, a small ivory-white crumbly rectangular block and two closely grouped small cubes. Fine pores and natural crumbly texture, not blue cheese. No herbs, olive oil, olives or packaging..\nSingle centered food subject, entire food and any specified glass or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; solid foods or glass from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-12500",
+      "names": {
+        "fr": "Roquefort (fromage de brebis)",
+        "en": "Roquefort cheese, from ewe's milk",
+        "es": "Roquefort (queso de oveja)"
+      },
+      "source_sha256": "bba5370a7798cc6a26681acdb3cde167deb0de871fda4f0d67843f45ee3bb8f6",
+      "image": "ciqual-12500.webp",
+      "sha256": "f1b904a6113c2e22c66306d3fd7ff016620874b77900bcfa447d30c6cc2dc603",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Roquefort sheep's milk blue cheese, one compact wedge with ivory crumbly paste and clearly visible natural blue-green veins running through the cut interior. No herbs, wrapper, board or garnish..\nSingle centered food subject, entire food and any specified glass or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; solid foods or glass from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-16400",
+      "names": {
+        "fr": "Beurre à 80% MG minimum, doux",
+        "en": "Butter, 80% fat minimum, unsalted",
+        "es": "Mantequilla con 80% de materia grasa mínimo, sin sal"
+      },
+      "source_sha256": "d34ca34bc4873ff032e08f249c0ea0776218234b1eef48fd867023db39df2dc2",
+      "image": "ciqual-16400.webp",
+      "sha256": "fc355b73121a55598a015921a566dfcf7450cbec24442d653aa9cdd630654719",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: Unsalted dairy butter with at least 80 percent milk fat, one small pale-yellow rectangular slab with a single thin straight slice resting immediately against it, smooth dense butter texture. No wrapper, bread, knife, salt crystals or garnish..\nSingle centered food subject, entire food and any specified glass or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference; solid foods or glass from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    }
+  ]
+}

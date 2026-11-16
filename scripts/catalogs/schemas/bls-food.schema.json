@@ -1,0 +1,292 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "kind",
+    "names",
+    "source",
+    "source_note",
+    "source_warning_ids",
+    "nutrition_profiles"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": [
+        1,
+        2
+      ]
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^bls-[A-Z][A-Z0-9]{6}$"
+    },
+    "kind": {
+      "const": "generic"
+    },
+    "names": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "de",
+        "en"
+      ],
+      "properties": {
+        "de": {
+          "type": "string",
+          "minLength": 1
+        },
+        "en": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dataset_id",
+        "food_code",
+        "worksheet_row"
+      ],
+      "properties": {
+        "dataset_id": {
+          "const": "mri-bls-4.0-2025"
+        },
+        "food_code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9]{6}$"
+        },
+        "worksheet_row": {
+          "type": "integer",
+          "minimum": 2
+        }
+      }
+    },
+    "source_note": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_warning_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^bls-errata-"
+      }
+    },
+    "nutrition_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "basis",
+          "nutrients"
+        ],
+        "properties": {
+          "id": {
+            "const": "bls-4.0"
+          },
+          "basis": {
+            "const": {
+              "amount": 100,
+              "unit": "g",
+              "portion": "edible"
+            }
+          },
+          "nutrients": {
+            "type": "object",
+            "minProperties": 1,
+            "patternProperties": {
+              "^bls-[A-Z][A-Z0-9:]*$": {
+                "$ref": "#/definitions/measurement"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "errata_profile_id": {
+      "type": "string",
+      "pattern": "^gymnasia-bls4-errata-"
+    },
+    "errata_status": {
+      "enum": [
+        "unaffected",
+        "corrected",
+        "partial",
+        "pending"
+      ]
+    },
+    "correction_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^bls-correction-"
+      }
+    }
+  },
+  "definitions": {
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "qualifier",
+        "source_value",
+        "source_type",
+        "source_origin",
+        "source_ref"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "qualifier": {
+          "enum": [
+            "reported",
+            "logical_zero",
+            "missing",
+            "trace",
+            "below_detection",
+            "below_quantification",
+            "below_detection_or_quantification",
+            "less_than",
+            "inconsistent_origin",
+            "recomputed",
+            "invalidated_by_erratum"
+          ]
+        },
+        "limit": {
+          "type": "number"
+        },
+        "source_value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_type": {
+          "enum": [
+            "n",
+            "s",
+            "inlineStr",
+            null
+          ]
+        },
+        "source_origin": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_ref": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^bls-ref-[a-f0-9]{64}$"
+            }
+          ]
+        },
+        "correction_id": {
+          "type": "string",
+          "pattern": "^bls-correction-"
+        },
+        "effective_source_value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "effective_origin": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "effective_ref": {
+          "type": "string",
+          "pattern": "^bls-ref-[a-f0-9]{64}$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "correction_id"
+            ],
+            "properties": {
+              "correction_id": {
+                "$ref": "#/definitions/measurement/properties/correction_id"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "effective_source_value",
+              "effective_origin",
+              "effective_ref"
+            ],
+            "properties": {
+              "effective_source_value": {
+                "$ref": "#/definitions/measurement/properties/effective_source_value"
+              },
+              "effective_origin": {
+                "$ref": "#/definitions/measurement/properties/effective_origin"
+              },
+              "effective_ref": {
+                "$ref": "#/definitions/measurement/properties/effective_ref"
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": 2
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "errata_profile_id",
+          "errata_status",
+          "correction_ids"
+        ],
+        "properties": {
+          "errata_profile_id": {
+            "$ref": "#/properties/errata_profile_id"
+          },
+          "errata_status": {
+            "$ref": "#/properties/errata_status"
+          },
+          "correction_ids": {
+            "$ref": "#/properties/correction_ids"
+          }
+        }
+      }
+    }
+  ]
+}

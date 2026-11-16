@@ -16,6 +16,8 @@ sources:
     resource: repo://apps/mobile/backup/portableEncryption.ts
   - id: openwiki-source-85f985fa223d29eb9c8b24fa
     resource: repo://apps/mobile/backup/PortablePasswordModal.tsx
+  - id: openwiki-source-d84b62e4a597047843fbd320
+    resource: repo://apps/mobile/LocalStoreRecoveryScreen.tsx
   - id: openwiki-source-7385ff07d119a125cc2d0f88
     resource: repo://apps/mobile/persistence/localStoreRecovery.test.ts
   - id: openwiki-source-f6b98cd46b889ff9fc8877c4
@@ -28,10 +30,10 @@ sources:
     resource: repo://scripts/decrypt-recovery.test.mjs
   - id: openwiki-source-d7297987d11526bafa6d5df8
     resource: repo://scripts/decrypt-recovery.ts
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-28T14:36:27.740Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-10-28T14:36:27.740Z
 ---
 
 # Cifrado portátil y recuperación
@@ -145,6 +147,14 @@ El cifrado autentica confidencialidad e integridad del archivo frente a quien no
 La pantalla de recuperación no hidrata el runtime ni llama a proveedores de IA. Presenta, según disponibilidad, restaurar el último snapshot verificado, guardar la copia dañada protegida, reintentar después de una reparación externa o descartar con confirmación. El reintento es el único recorrido que ignora una cuarentena existente para inspeccionar un primary reparado; si logra un commit verificado, la elimina. Restaurar también la elimina solo tras reescribir y verificar el snapshot. Descartar elimina el agregado, snapshot, cuarentena y claves de sesión dependientes, y crea un estado inicial que conserva la configuración actual de proveedores; no borra las particiones independientes.
 
 La exportación de cuarentena solo se habilita si hay `rawPayload`. Serializa un documento con identidad Gymnasia, `type: "local-store-recovery"`, `schemaVersion: 1`, metadatos de exportación, advertencia de sensibilidad y el registro de cuarentena; lo cifra mediante el mismo flujo de contraseña y sobre v3. No debe enviarse al importador de backups ni tratarse como una copia regular.
+
+### Límites y separación de responsabilidades
+
+El **snapshot interno** y la **cuarentena interna** son registros de `AsyncStorage`, no copias portátiles ni artefactos cifrados por contraseña. El snapshot se crea únicamente después de que la escritura del primary se pueda leer de vuelta y validar; además, al inspeccionarlo se exige versión, SHA-256 y forma válida del payload. Por tanto, solo un snapshot que pasa esas comprobaciones es candidato a restauración automática.
+
+La cuarentena tiene el objetivo opuesto: conservar el texto crudo y las incidencias cuando no es seguro interpretarlo o sustituirlo. Que tenga un hash permite detectar que el `rawPayload` almacenado ya no coincide, pero no convierte JSON roto, un fallo de lectura ni una escritura ambigua en datos restaurables. Si no hay snapshot verificado, la pantalla ofrece preservar el material para análisis, reintentar la lectura o descartarlo explícitamente; no promete reparar ni restaurar una corrupción no verificable.
+
+La exportación portable de esa cuarentena es una **salida forense protegida**, no una ruta de importación. La app no la pasa al importador de backups, y la CLI solo autentica el sobre y comprueba el documento externo de recuperación antes de escribir un JSON para inspección manual. Ninguno de esos pasos valida ni reinyecta el `recovery.rawPayload` en el almacén local.
 
 ### Procedimiento con la CLI
 

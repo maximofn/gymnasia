@@ -27,7 +27,18 @@ const done = "event: done\ndata: [DONE]\n\n";
 const raw = created + start + args + stop + terminal() + done;
 const parse = (value: string) => { const parser = createGoogleStreamParser(); parser.push(value); return parser.finish(); };
 const finalRaw = readFileSync(new URL("__fixtures__/raw/google-final.sse", import.meta.url), "utf8");
+const statelessMathRaw = readFileSync(new URL("__fixtures__/raw/google-stateless-math.sse", import.meta.url), "utf8");
 const withoutStoredId = (value: string) => value.replaceAll("test-1", "");
+const withoutLifecycleMetadata = (value: string) => value.replace(/^data: (.+)$/gm, (line, payload: string) => {
+  if (payload === "[DONE]") return line;
+  const data = JSON.parse(payload);
+  if (data.event_type === "interaction.created") delete data.interaction.status;
+  if (data.event_type === "interaction.created" || data.event_type === "interaction.completed") {
+    delete data.interaction.id;
+  }
+  if (data.event_type === "interaction.status_update") delete data.interaction_id;
+  return `data: ${JSON.stringify(data)}`;
+});
 
 describe("Google Interactions lifecycle", () => {
   it("assembles opaque thoughts, initial content, repeated text and usage without rewriting fields", () => {
@@ -68,6 +79,14 @@ describe("Google Interactions lifecycle", () => {
     expect(parse(stream)).toMatchObject({ interactionId: "", status: "completed", content: "OK" });
   });
 
+  it("reads the captured stateless response to the Play reviewer’s math question", () => {
+    const onContentDelta = vi.fn();
+    const parser = createGoogleStreamParser({ onContentDelta });
+    parser.push(statelessMathRaw);
+    expect(parser.finish()).toMatchObject({ interactionId: "", status: "completed", content: "7" });
+    expect(onContentDelta).toHaveBeenCalledExactlyOnceWith("7", "7");
+  });
+
   it("still rejects a repeated creation event when the stateless ID is empty", () => {
     const emptyCreated = withoutStoredId(created);
     expect(() => parse(emptyCreated + emptyCreated)).toThrow(/invalid_created/);
@@ -93,6 +112,34 @@ describe("Google Interactions lifecycle", () => {
     expect(() => parse(value)).toThrow();
   });
 
+  it.each([
+    ["null ID", { id: null }],
+    ["numeric ID", { id: 123 }],
+    ["null status", { status: null }],
+    ["completed opening", { status: "completed" }],
+    ["failed opening", { status: "failed" }],
+  ])("rejects explicit invalid metadata: %s", (_name, interaction) => {
+    expect(() => parse(event("interaction.created", { interaction }))).toThrow(/invalid_created/);
+  });
+
+  it("rejects repeated creation and contradictory IDs even when metadata was omitted", () => {
+    const statelessCreated = withoutLifecycleMetadata(created);
+    expect(() => parse(statelessCreated + statelessCreated)).toThrow(/invalid_created/);
+    expect(() => parse(statelessCreated + start + args + stop + terminal())).toThrow(/interaction_mismatch/);
+    expect(() => parse(created + start + args + stop + withoutLifecycleMetadata(terminal())))
+      .toThrow(/interaction_mismatch/);
+    expect(() => parse(statelessCreated + event("interaction.status_update", {
+      interaction_id: "another-interaction", status: "in_progress",
+    }))).toThrow(/interaction_mismatch/);
+  });
+
+  it("requires a completed stream and valid tools with omitted lifecycle metadata", () => {
+    expect(() => parse(withoutLifecycleMetadata(created + start + args + stop))).toThrow(/truncated/);
+    expect(() => parse(withoutLifecycleMetadata(created + start + args + terminal()))).toThrow(/unfinished_step/);
+    expect(() => parse(withoutLifecycleMetadata(raw.replace("requires_action", "failed")))).toThrow(/terminal_status/);
+    expect(() => parse(withoutLifecycleMetadata(raw.replace("requires_action", "completed")))).toThrow(/inconsistent_status/);
+  });
+
   it("keeps failures sticky even if a caller catches push", () => {
     const parser = createGoogleStreamParser();
     expect(() => parser.push(created + args)).toThrow();
@@ -107,10 +154,11 @@ describe("Google Interactions lifecycle", () => {
     }));
   });
 
-  it("survives arbitrary byte boundaries and lifecycle replays", () => {
+  it.each([false, true])("survives arbitrary byte boundaries and step replays (omitted metadata: %s)", (omitted) => {
+    const lifecycle = omitted ? withoutLifecycleMetadata : (value: string) => value;
     fc.assert(fc.property(fc.array(fc.integer({ min: 1, max: 73 }), { minLength: 1, maxLength: 40 }),
       fc.integer({ min: 0, max: 5 }), (sizes, repeats) => {
-        const source = created + start + args + start.repeat(repeats) + stop.repeat(repeats + 1) + terminal() + done;
+        const source = lifecycle(created + start + args + start.repeat(repeats) + stop.repeat(repeats + 1) + terminal() + done);
         const bytes = new TextEncoder().encode(source.replace(/\n/g, "\r\n"));
         const decoder = new TextDecoder(); const parser = createGoogleStreamParser();
         for (let i = 0, n = 0; i < bytes.length; n++) {
@@ -118,7 +166,7 @@ describe("Google Interactions lifecycle", () => {
           parser.push(decoder.decode(bytes.slice(i, end), { stream: true })); i = end;
         }
         parser.push(decoder.decode());
-        expect(parser.finish()).toEqual(parse(raw));
+        expect(parser.finish()).toEqual(parse(lifecycle(raw)));
       }), { numRuns: 100 });
   });
 });
@@ -162,6 +210,21 @@ describe("Google stateless continuation", () => {
     expect(executeTool).toHaveBeenCalledTimes(1);
     expect(result.status).toBe("completed");
     expect(result.interactions.map((interaction) => interaction.id)).toEqual(["", ""]);
+  });
+
+  it("continues and restores stateless tool rounds with omitted lifecycle metadata", async () => {
+    const executeTool = vi.fn(async () => "saved");
+    const result = await runGoogleToolLoop({ initialTurn: parse(withoutLifecycleMetadata(raw)),
+      initialMessages: [], executeTool, requestNextTurn: async () => parse(withoutLifecycleMetadata(finalRaw)) });
+
+    expect(executeTool).toHaveBeenCalledTimes(1);
+    expect(result.content).toBe("Tu objetivo es ganar masa muscular.");
+    expect(result.interactions.map((interaction) => interaction.id)).toEqual(["", ""]);
+    const turn = { version: 1, model: "gemini-3.8-flash", steps: result.history, interactions: result.interactions };
+    const restored = JSON.parse(JSON.stringify(turn));
+    expect(isGoogleConversationTurn(restored)).toBe(true);
+    expect(buildGoogleHistory([{ role: "assistant", content: result.content, googleTurn: restored }]))
+      .toEqual(result.history);
   });
 
   it("builds the full local candidate history, keeps legacy text and isolates each snapshot", async () => {
@@ -442,8 +505,8 @@ describe("Google request context budget", () => {
 });
 
 describe("Google transport parity", () => {
-  it("reads the same real UTF-8 chunks through Fetch and cumulative XHR", async () => {
-    const bytes = new TextEncoder().encode(finalRaw);
+  it.each([finalRaw, statelessMathRaw])("reads the same UTF-8 chunks through Fetch and cumulative XHR %#", async (source) => {
+    const bytes = new TextEncoder().encode(source);
     vi.stubGlobal("fetch", vi.fn(async () => new Response(new ReadableStream({ start(controller) {
       for (let i = 0; i < bytes.length; i += 3) controller.enqueue(bytes.slice(i, i + 3)); controller.close();
     } }))));
@@ -451,7 +514,7 @@ describe("Google transport parity", () => {
       DONE = 4; readyState = 1; status = 200; responseText = "";
       onprogress: (() => void) | null = null; onreadystatechange: (() => void) | null = null;
       open() {} setRequestHeader() {} abort() {}
-      send() { for (const char of finalRaw) { this.responseText += char; this.onprogress?.(); }
+      send() { for (const char of source) { this.responseText += char; this.onprogress?.(); }
         this.readyState = 4; this.onreadystatechange?.(); }
     }
     vi.stubGlobal("XMLHttpRequest", XHR);
@@ -468,7 +531,7 @@ describe("Google transport parity", () => {
     expect(googleInteractionEndpoint(18882, "development", "e2e-local-fake-key")).toContain("127.0.0.1");
   });
 
-  it("falls back to a buffered native response when Android streaming fails before content", async () => {
+  it.each([finalRaw, statelessMathRaw])("falls back to buffered native SSE before content %#", async (source) => {
     let requests = 0;
     let bufferedListenedForProgress = false;
     const sentBodies: unknown[] = [];
@@ -483,7 +546,7 @@ describe("Google transport parity", () => {
         sentBodies.push(body);
         if (requests === 1) { this.onerror?.(); return; }
         bufferedListenedForProgress = !!this.onprogress || !!this.onreadystatechange;
-        this.status = 200; this.responseText = finalRaw; this.onload?.();
+        this.status = 200; this.responseText = source; this.onload?.();
       }
     }
     vi.stubGlobal("XMLHttpRequest", FailingXHR);
@@ -491,7 +554,7 @@ describe("Google transport parity", () => {
       const result = await requestGoogleInteraction({
         model: "gemini-3.8-flash", history: [], apiKey: "test", platform: "android",
       });
-      expect(result).toEqual(parse(finalRaw));
+      expect(result).toEqual(parse(source));
       expect(requests).toBe(2);
       expect(bufferedListenedForProgress).toBe(false);
       expect(sentBodies[1]).toBe(sentBodies[0]);

@@ -1,3 +1,4 @@
+import { CATALOG_CACHE_DIRECTORY } from "./catalogCache";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { Feather, Ionicons } from "@expo/vector-icons";
@@ -24,6 +25,8 @@ import {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { mobileTheme } from "./theme";
+import { measureStorageUsage } from "./storage/storageUsage";
+import { measureStorageDatabaseUsage } from "./storage/storageFileUsage";
 import { DesktopSidebar, ExerciseCatalogDetailOverlay } from "./screens";
 import {
   APP_PLATFORM_SERVICES,
@@ -542,6 +545,7 @@ import {
   clearMeasurementMedia,
   isMeasurementMediaEmpty,
   measurementPhotoSha256,
+  measureMeasurementMediaUsage,
   normalizeAndStoreMeasurementPhoto,
   readMeasurementPhotoForBackup,
   storeImportedMeasurementPhoto,
@@ -2723,7 +2727,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     createFoodId: () => uid("food"),
   });
   const traceSettingsController = useTraceSettingsController({
-    active: settingsTab === "traces",
+    measureStorage: () => measureStorageUsage({
+      storage: AsyncStorage,
+      scopedKey: scopedStorageKey,
+      belongsToActiveNamespace: belongsToActiveStorageNamespace,
+      measurePhotos: measureMeasurementMediaUsage,
+      measureDatabase: measureStorageDatabaseUsage,
+      measureArtifacts: () => APP_PLATFORM_SERVICES.catalogArtifacts.measure(),
+    }),
+    active: tab === "settings" && settingsTab === "traces",
     policyBusy: policyRefreshBusy,
     policyResult: policyRefreshResult,
     policyStatus: policyRuntimeStatus,
@@ -8526,6 +8538,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           preservedKeys.has(key)
           || key === traceKey
           || key === "gymnasia_measurement_media_v1"
+          || key === scopedStorageKey(CATALOG_CACHE_DIRECTORY)
           || key === PROVIDER_CONFIGURATION_STORAGE_KEY
           || key === TOOL_OPERATION_LEDGER_STORAGE_KEY
           || managedStoreKeys.has(key)
@@ -8537,6 +8550,15 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
           verify: async () => (await AsyncStorage.getItem(key)) === null,
         });
       }
+      tasks.push({
+        id: "public-catalog-cache",
+        label: "Caché pública de ejercicios",
+        delete: () => APP_PLATFORM_SERVICES.catalogArtifacts.clear(),
+        verify: async () => {
+          const usage = await APP_PLATFORM_SERVICES.catalogArtifacts.measure();
+          return usage.bytes === 0 && usage.entries === 0;
+        },
+      });
       tasks.push({
         id: "traces",
         label: "Trazas de depuración",
