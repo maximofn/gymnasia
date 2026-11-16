@@ -7,22 +7,22 @@ BLS en móvil ni publica una versión.
 
 ## Estado acumulado (16 de noviembre de 2026)
 
-- Tandas `0001` a `0016`: **1.600/7.140 imágenes generadas y revisadas**.
-- Progreso: **22,41 %; 5.540 pendientes**.
-- Última tanda: `0016`, 100 imágenes desde `bls-G480282` hasta `bls-G560142`.
-- Manifiesto y prompts: `alimentos/bls/image-batches/0016/manifest.json`.
-- Nueve láminas en `docs/testing/assets/bls-food-images-0016-*.jpg`.
-- Casos revisados a tamaño completo: `bls-G480600`, `bls-G480500`, `bls-G484100`, `bls-G485100`, `bls-G486100`, `bls-G488802`, `bls-G490200`, `bls-G490500`, `bls-G491702`, `bls-G490400`, `bls-G492100`, `bls-G510702`, `bls-G520600`, `bls-G520802`, `bls-G530100`, `bls-G543702`, `bls-G550702`, `bls-G554100`.
-- Correcciones: 2. Todas las salidas finales están revisadas; consultar el manifiesto para el detalle.
-- La PR 478, decimoquinta tanda, seguía abierta al comenzar la decimosexta, con
+- Tandas `0001` a `0017`: **1.700/7.140 imágenes generadas y revisadas**.
+- Progreso: **23,81 %; 5.440 pendientes**.
+- Última tanda: `0017`, 100 imágenes desde `bls-G560400` hasta `bls-G660600`.
+- Manifiesto y prompts: `alimentos/bls/image-batches/0017/manifest.json`.
+- Nueve láminas en `docs/testing/assets/bls-food-images-0017-*.jpg`.
+- Casos revisados a tamaño completo: `bls-G560600`, `bls-G560900`, `bls-G561500`, `bls-G568900`, `bls-G570200`, `bls-G581000`, `bls-G581032`, `bls-G581100`, `bls-G582100`, `bls-G583100`, `bls-G611100`, `bls-G613100`, `bls-G613600`, `bls-G614100`, `bls-G620200`, `bls-G620600`, `bls-G622600`, `bls-G630100`, `bls-G640100`, `bls-G650100`, `bls-G650200`, `bls-G660100`, `bls-G660600`.
+- Correcciones: 0. Todas las salidas finales están revisadas; consultar el manifiesto para el detalle.
+- La PR 479, decimosexta tanda, seguía abierta al comenzar la decimoséptima, con
   `catalogs` y `prompt-policy` correctos para su SHA actual.
 - Consultar GitHub para el estado actual de las PRs. BLS sigue fuera de la app.
 
 ## Flujo
 
-- Rama actual: `codex/bls-food-images-0016`, basada en `codex/bls-food-images-0015`
-  (PR 478, decimoquinta tanda). Abrir la PR contra esa rama para mostrar solo la tanda
-  `0016`. Consultar las PRs antes de continuar; si cambia o se fusiona una base,
+- Rama actual: `codex/bls-food-images-0017`, basada en `codex/bls-food-images-0016`
+  (PR 479, decimosexta tanda). Abrir la PR contra esa rama para mostrar solo la tanda
+  `0017`. Consultar las PRs antes de continuar; si cambia o se fusiona una base,
   actualizar la base y comprobar diff y checks.
 - Tandas de hasta 100 imágenes nuevas, una por
   código pendiente, con PR revisable. Consultar GitHub al empezar; este documento
@@ -82,7 +82,7 @@ composición, propiedades nutricionales ni una ración de 100 g.
 
 Cada carpeta numerada admite solo WebP y `manifest.json`. Guardar planes,
 recibos, notas y hojas de contacto fuera de ella. Los checkpoints de cada
-tanda viven en `/tmp/gymnasia-bls-images-NNNN/` (`0001` a `0016`): `plan.json`, un
+tanda viven en `/tmp/gymnasia-bls-images-NNNN/` (`0001` a `0017`): `plan.json`, un
 `bls-CODIGO.receipt.json` por alimento y `review/notes.json`, con hashes revisados.
 Los temporales son recuperación opcional; WebP, manifiesto, prompts y vistas
 revisables de la PR son los entregables duraderos.

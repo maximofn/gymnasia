@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**1.600/7.140 imágenes registradas; 5.540 pendientes; 22,41 %.**
+**1.700/7.140 imágenes registradas; 5.440 pendientes; 23,81 %.**
 
-Las tandas `0001` a `0016` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0017` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -31,6 +31,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0014: manifiesto y prompts](0014/manifest.json).
 - [Tanda 0015: manifiesto y prompts](0015/manifest.json).
 - [Tanda 0016: manifiesto y prompts](0016/manifest.json).
+- [Tanda 0017: manifiesto y prompts](0017/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -2225,3 +2226,131 @@ Estas decisiones visuales no certifican especie, variedad, receta, grasa, alérg
 | [bls-G554152](0016/bls-G554152.webp) | Pfefferschote rot, gedünstet | Chilli pepper red, stewed |
 | [bls-G554182](0016/bls-G554182.webp) | Pfefferschote rot, gebraten ohne Fett (Pfanne) | Chilli pepper red, fried without fat (pan) |
 | [bls-G560142](0016/bls-G560142.webp) | Tomate geschmort ohne Fett | Tomato braised without fat |
+
+
+## Tanda 0017: tomates, maíz, calabazas y hortalizas de raíz
+
+100 WebP finales opacos de 1024×1024 revisados en nueve hojas de contacto; 23 casos comprobados también a tamaño completo. Una generación independiente por código, mediante el generador integrado de Codex y referencias CIQUAL usadas solo para el estilo. BLS permanece fuera de la app.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0017-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0017-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0017-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0017-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0017-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0017-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0017-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0017-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0017-09.jpg)
+
+El tomate seco mantiene piezas arrugadas y coriáceas, diferenciadas del polvo fino. Los tomates secos conservados en aceite o marinados conservan esa textura tras el escurrido; el tomate en conserva sin indicación de escurrido mantiene parte de su propio jugo, y la ficha de tomate pelado se representa sin piel. Los nombres oficiales se mantienen literales, incluido `Tomate dried, marinated, drained`. La sal del zumo de tomate y la miel del zumo de zanahoria están disueltas, sin cristales, tarros ni aderezos visibles. El maíz dulce crudo se ilustra en mazorca y sus preparaciones como granos tiernos; no son palomitas ni maíz seco.
+
+Hokkaido se ilustra con calabaza naranja rojiza de tipo kuri y corteza conservada en los trozos; [BZfE](https://www.bzfe.de/kueche-und-alltag/kochen/how-to-obst-und-gemuese/how-to-kuerbis) describe que su corteza se ablanda al cocinar. La calabaza `C. pepo` usa una variedad redonda naranja ilustrativa y trozos pelados; la conserva genérica de calabaza no certifica especie o variedad. El calabacín tiene pulpa marfil firme y semillas finas. El chayote se ilustra verde pálido, en forma de pera con pliegues y una semilla plana, conforme a [UF/IFAS](https://gardeningsolutions.ifas.ufl.edu/plants/edibles/vegetables/chayote/).
+
+El colinabo de raíz o rutabaga (`Steckrübe`, `Swede`) muestra pulpa amarilla y hombros morados; se diferencia del nabo de pulpa blanca. [RHS](https://www.rhs.org.uk/vegetables/swede/grow-your-own) describe los rasgos del swede. La remolacha conserva su rojo granate y la zanahoria se ilustra naranja. El rábano picante tiene raíz cilíndrica irregular; la chirivía tiene hombros anchos y se estrecha en punta. El salsifí negro crudo conserva corteza oscura y pulpa blanca, y los trozos preparados se muestran pelados, sin puntas de espárrago: [BZfE](https://www.bzfe.de/presse/pressemeldungen-archiv/comeback-der-schwarzwurzeln) documenta esa corteza oscura corchosa y el interior claro. El apionabo muestra una raíz redondeada nudosa, no tallos de apio; sus preparaciones usan pulpa crema. Véase [BZfE: Sellerie](https://www.bzfe.de/kueche-und-alltag/kochen/how-to-obst-und-gemuese/how-to-sellerie).
+
+Hervidos, braseados y guisados muestran ablandamiento sin costra; horno, parrilla y sartén llevan solo el dorado correspondiente. Los congelados sin cocinar tienen escarcha discreta y los cocinados desde congelado no. Las conservas marcadas como escurridas no tienen líquido acumulado. Los zumos son líquidos turbios en un vaso sencillo, sin hielo, guarnición ni sólidos añadidos. No hay envases, utensilios, hierbas ni ingredientes ajenos a las fichas.
+
+Estas decisiones visuales no certifican especie, variedad, receta, grasa, alérgenos ni porción de 100 g. Las fichas, nutrientes y fuentes oficiales no cambian. Correcciones visuales registradas: 0.  Casos abiertos a tamaño completo: `bls-G560600`, `bls-G560900`, `bls-G561500`, `bls-G568900`, `bls-G570200`, `bls-G581000`, `bls-G581032`, `bls-G581100`, `bls-G582100`, `bls-G583100`, `bls-G611100`, `bls-G613100`, `bls-G613600`, `bls-G614100`, `bls-G620200`, `bls-G620600`, `bls-G622600`, `bls-G630100`, `bls-G640100`, `bls-G650100`, `bls-G650200`, `bls-G660100`, `bls-G660600`.
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-G560400](0017/bls-G560400.webp) | Tomate getrocknet | Tomato dried |
+| [bls-G560600](0017/bls-G560600.webp) | Gemüsesaft aus Tomate, mit Salz | Tomato juice with salt |
+| [bls-G560900](0017/bls-G560900.webp) | Tomate Konserve | Tomato canned |
+| [bls-G561072](0017/bls-G561072.webp) | Tomate gegrillt | Tomato grilled |
+| [bls-G561082](0017/bls-G561082.webp) | Tomate gebraten ohne Fett (Pfanne) | Tomato fried without fat (pan) |
+| [bls-G561100](0017/bls-G561100.webp) | Tomate roh | Tomato raw |
+| [bls-G561132](0017/bls-G561132.webp) | Tomate gekocht | Tomato boiled |
+| [bls-G561152](0017/bls-G561152.webp) | Tomate gedünstet | Tomato stewed |
+| [bls-G561162](0017/bls-G561162.webp) | Tomate gebacken | Tomato baked |
+| [bls-G561500](0017/bls-G561500.webp) | Tomate Pulver | Tomato powder |
+| [bls-G561802](0017/bls-G561802.webp) | Tomate gesäuert, abgetropft | Tomato pickled, drained |
+| [bls-G567702](0017/bls-G567702.webp) | Tomate getrocknet, in Öl, Konserve, abgetropft | Tomato dried, in oil, canned, drained |
+| [bls-G568900](0017/bls-G568900.webp) | Tomate geschält, Konserve | Tomato peeled, canned |
+| [bls-G569902](0017/bls-G569902.webp) | Tomate getrocknet, mariniert, abgetropft | Tomate dried, marinated, drained |
+| [bls-G570100](0017/bls-G570100.webp) | Zuckermais roh | Sweetcorn raw |
+| [bls-G570132](0017/bls-G570132.webp) | Zuckermais gekocht | Sweetcorn boiled |
+| [bls-G570162](0017/bls-G570162.webp) | Zuckermais gebacken | Sweetcorn baked |
+| [bls-G570172](0017/bls-G570172.webp) | Zuckermais gegrillt | Sweetcorn grilled |
+| [bls-G570182](0017/bls-G570182.webp) | Zuckermais gebraten ohne Fett (Pfanne) | Sweetcorn fried without fat (pan) |
+| [bls-G570200](0017/bls-G570200.webp) | Zuckermais tiefgefroren | Sweetcorn deep-frozen |
+| [bls-G570232](0017/bls-G570232.webp) | Zuckermais tiefgefroren, gekocht | Sweetcorn deep-frozen, boiled |
+| [bls-G570262](0017/bls-G570262.webp) | Zuckermais tiefgefroren, gebacken | Sweetcorn deep-frozen, baked |
+| [bls-G570272](0017/bls-G570272.webp) | Zuckermais tiefgefroren, gegrillt | Sweetcorn deep-frozen, grilled |
+| [bls-G570282](0017/bls-G570282.webp) | Zuckermais tiefgefroren, gebraten ohne Fett (Pfanne) | Sweetcorn deep-frozen, fried without fat (pan) |
+| [bls-G570802](0017/bls-G570802.webp) | Zuckermais gesäuert, abgetropft | Sweetcorn pickled, drained |
+| [bls-G570902](0017/bls-G570902.webp) | Zuckermais Konserve, abgetropft | Sweetcorn canned, drained |
+| [bls-G581000](0017/bls-G581000.webp) | Kürbis Hokkaido (C. maxima) roh | Hokkaido pumpkin raw |
+| [bls-G581032](0017/bls-G581032.webp) | Kürbis Hokkaido (C. maxima) gekocht | Hokkaido pumpkin boiled |
+| [bls-G581042](0017/bls-G581042.webp) | Kürbis Hokkaido (C. maxima) geschmort ohne Fett | Hokkaido pumpkin braised without fat |
+| [bls-G581052](0017/bls-G581052.webp) | Kürbis Hokkaido (C. maxima) gedünstet | Hokkaido pumpkin stewed |
+| [bls-G581062](0017/bls-G581062.webp) | Kürbis Hokkaido (C. maxima) gebacken | Hokkaido pumpkin baked |
+| [bls-G581082](0017/bls-G581082.webp) | Kürbis Hokkaido (C. maxima) gebraten ohne Fett (Pfanne) | Hokkaido pumpkin fried without fat (pan) |
+| [bls-G581100](0017/bls-G581100.webp) | Kürbis Pumpkin (C. pepo) roh | Pumpkin (C. pepo) raw |
+| [bls-G581132](0017/bls-G581132.webp) | Kürbis Pumpkin (C. pepo) gekocht | Pumpkin (C. pepo) boiled |
+| [bls-G581142](0017/bls-G581142.webp) | Kürbis Pumpkin (C. pepo) geschmort ohne Fett | Pumpkin (C. pepo) braised without fat |
+| [bls-G581152](0017/bls-G581152.webp) | Kürbis Pumpkin (C. pepo) gedünstet | Pumpkin (C. pepo) stewed |
+| [bls-G581162](0017/bls-G581162.webp) | Kürbis Pumpkin (C. pepo) gebacken | Pumpkin (C. pepo) baked |
+| [bls-G581182](0017/bls-G581182.webp) | Kürbis Pumpkin (C. pepo) gebraten ohne Fett (Pfanne) | Pumpkin (C. pepo) fried without fat (pan) |
+| [bls-G581802](0017/bls-G581802.webp) | Kürbis gesäuert, abgetropft | Pumpkin pickled, drained |
+| [bls-G582100](0017/bls-G582100.webp) | Zucchini roh | Courgette raw |
+| [bls-G582132](0017/bls-G582132.webp) | Zucchini gekocht | Courgette boiled |
+| [bls-G582142](0017/bls-G582142.webp) | Zucchini geschmort ohne Fett | Courgette braised without fat |
+| [bls-G582152](0017/bls-G582152.webp) | Zucchini gedünstet | Courgette stewed |
+| [bls-G582162](0017/bls-G582162.webp) | Zucchini gebacken | Courgette baked |
+| [bls-G582172](0017/bls-G582172.webp) | Zucchini gegrillt | Courgette grilled |
+| [bls-G582182](0017/bls-G582182.webp) | Zucchini gebraten ohne Fett (Pfanne) | Courgette fried without fat (pan) |
+| [bls-G582802](0017/bls-G582802.webp) | Zucchini gesäuert, abgetropft | Courgette pickled, drained |
+| [bls-G583100](0017/bls-G583100.webp) | Chayote roh | Chayote raw |
+| [bls-G583132](0017/bls-G583132.webp) | Chayote gekocht | Chayote boiled |
+| [bls-G583182](0017/bls-G583182.webp) | Chayote gebraten ohne Fett (Pfanne) | Chayote fried without fat (pan) |
+| [bls-G611100](0017/bls-G611100.webp) | Kohlrübe/Steckrübe, roh | Swede raw |
+| [bls-G611132](0017/bls-G611132.webp) | Kohlrübe/Steckrübe, gekocht | Swede boiled |
+| [bls-G611152](0017/bls-G611152.webp) | Kohlrübe/Steckrübe, gedünstet | Swede stewed |
+| [bls-G613100](0017/bls-G613100.webp) | Rote Rübe/Rote Bete, roh | Beetroot raw |
+| [bls-G613132](0017/bls-G613132.webp) | Rote Rübe/Rote Bete, gekocht | Beetroot boiled |
+| [bls-G613152](0017/bls-G613152.webp) | Rote Rübe/Rote Bete, gedünstet | Beetroot stewed |
+| [bls-G613600](0017/bls-G613600.webp) | Gemüsesaft aus Rote Rübe/Rote Bete | Beetroot juice |
+| [bls-G613802](0017/bls-G613802.webp) | Rote Rübe/Rote Bete, gesäuert, abgetropft | Beetroot pickled, drained |
+| [bls-G614100](0017/bls-G614100.webp) | Weiße Rübe/Wasserrübe/Herbstrübe, roh | Turnip raw |
+| [bls-G614132](0017/bls-G614132.webp) | Weiße Rübe/Wasserrübe/Herbstrübe, gekocht | Turnip boiled |
+| [bls-G614152](0017/bls-G614152.webp) | Weiße Rübe/Wasserrübe/Herbstrübe, gedünstet | Turnip stewed |
+| [bls-G620100](0017/bls-G620100.webp) | Karotte/Möhre, roh | Carrot raw |
+| [bls-G620132](0017/bls-G620132.webp) | Karotte/Möhre, gekocht | Carrot boiled |
+| [bls-G620142](0017/bls-G620142.webp) | Karotte/Möhre, geschmort ohne Fett | Carrot braised without fat |
+| [bls-G620152](0017/bls-G620152.webp) | Karotte/Möhre, gedünstet | Carrot stewed |
+| [bls-G620162](0017/bls-G620162.webp) | Karotte/Möhre, gebacken | Carrot baked |
+| [bls-G620182](0017/bls-G620182.webp) | Karotte/Möhre, gebraten ohne Fett (Pfanne) | Carrot fried without fat (pan) |
+| [bls-G620200](0017/bls-G620200.webp) | Karotte/Möhre, tiefgefroren | Carrot deep-frozen |
+| [bls-G620232](0017/bls-G620232.webp) | Karotte/Möhre, tiefgefroren, gekocht | Carrot deep-frozen, boiled |
+| [bls-G620242](0017/bls-G620242.webp) | Karotte/Möhre, tiefgefroren, geschmort ohne Fett | Carrot deep-frozen, braised without fat |
+| [bls-G620252](0017/bls-G620252.webp) | Karotte/Möhre, tiefgefroren, gedünstet | Carrot deep-frozen, stewed |
+| [bls-G620262](0017/bls-G620262.webp) | Karotte/Möhre, tiefgefroren, gebacken | Carrot deep-frozen, baked |
+| [bls-G620282](0017/bls-G620282.webp) | Karotte/Möhre, tiefgefroren, gebraten ohne Fett (Pfanne) | Carrot deep-frozen, fried without fat (pan) |
+| [bls-G620600](0017/bls-G620600.webp) | Gemüsesaft aus Karotte/Möhre | Carrot juice |
+| [bls-G620802](0017/bls-G620802.webp) | Karotte/Möhre, gesäuert, abgetropft | Carrot pickled, drained |
+| [bls-G620902](0017/bls-G620902.webp) | Karotte/Möhre, Konserve, abgetropft | Carrot canned, drained |
+| [bls-G622600](0017/bls-G622600.webp) | Gemüsesaft aus Karotte/Möhre, mit Honig | Carrot juice, sweetened with honey |
+| [bls-G630100](0017/bls-G630100.webp) | Meerrettich roh | Horseradish raw |
+| [bls-G630132](0017/bls-G630132.webp) | Meerrettich gekocht | Horseradish boiled |
+| [bls-G640100](0017/bls-G640100.webp) | Pastinake roh | Parsnip raw |
+| [bls-G640132](0017/bls-G640132.webp) | Pastinake gekocht | Parsnip boiled |
+| [bls-G640142](0017/bls-G640142.webp) | Pastinake geschmort ohne Fett | Parsnip braised without fat |
+| [bls-G640152](0017/bls-G640152.webp) | Pastinake gedünstet | Parsnip stewed |
+| [bls-G640162](0017/bls-G640162.webp) | Pastinake gebacken | Parsnip baked |
+| [bls-G640182](0017/bls-G640182.webp) | Pastinake gebraten ohne Fett (Pfanne) | Parsnip fried without fat (pan) |
+| [bls-G650100](0017/bls-G650100.webp) | Schwarzwurzel roh | Black salsify raw |
+| [bls-G650132](0017/bls-G650132.webp) | Schwarzwurzel gekocht | Black salsify boiled |
+| [bls-G650142](0017/bls-G650142.webp) | Schwarzwurzel geschmort ohne Fett | Black salsify braised without fat |
+| [bls-G650152](0017/bls-G650152.webp) | Schwarzwurzel gedünstet | Black salsify stewed |
+| [bls-G650200](0017/bls-G650200.webp) | Schwarzwurzel tiefgefroren | Black salsify deep-frozen |
+| [bls-G650232](0017/bls-G650232.webp) | Schwarzwurzel tiefgefroren, gekocht | Black salsify deep-frozen, boiled |
+| [bls-G650242](0017/bls-G650242.webp) | Schwarzwurzel tiefgefroren, geschmort ohne Fett | Black salsify deep-frozen, braised without fat |
+| [bls-G650252](0017/bls-G650252.webp) | Schwarzwurzel tiefgefroren, gedünstet | Black salsify deep-frozen, stewed |
+| [bls-G650902](0017/bls-G650902.webp) | Schwarzwurzel Konserve, abgetropft | Black salsify canned, drained |
+| [bls-G660100](0017/bls-G660100.webp) | Knollensellerie roh | Celeriac raw |
+| [bls-G660132](0017/bls-G660132.webp) | Knollensellerie gekocht | Celeriac boiled |
+| [bls-G660152](0017/bls-G660152.webp) | Knollensellerie gedünstet | Celeriac stewed |
+| [bls-G660162](0017/bls-G660162.webp) | Knollensellerie gebacken | Celeriac baked |
+| [bls-G660182](0017/bls-G660182.webp) | Knollensellerie gebraten ohne Fett (Pfanne) | Celeriac fried without fat (pan) |
+| [bls-G660600](0017/bls-G660600.webp) | Gemüsesaft aus Knollensellerie | Celeriac juice |
