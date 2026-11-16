@@ -4,7 +4,7 @@ okf_version: "0.2"
 
 # Archivos
 
-- [Guía de inicio y mapa de cambio](quickstart.md) - Ruta breve para localizar el dominio responsable de un cambio en Gymnasia y escoger la validación mínima correspondiente. Delimita el uso de la telemetría del agente frente a contratos y pruebas ejecutables.
+- [Inicio rápido para contribuir en Gymnasia](quickstart.md) - Punto de entrada para instalar y ejecutar Gymnasia, localizar el subsistema responsable de un cambio y elegir una validación proporcional. Distingue los comandos y contratos ejecutables de planes, tableros e informes históricos.
 
 # Directorios
 
