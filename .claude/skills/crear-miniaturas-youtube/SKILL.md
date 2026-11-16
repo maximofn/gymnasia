@@ -53,6 +53,19 @@ Cuando el usuario aporte una foto o fotograma:
 - elimina el fondo solo cuando mejore la composición;
 - evita duplicar el rostro, deformar manos o convertir a la persona en una caricatura.
 
+### Sacar la referencia de la grabación del vídeo
+
+Si el usuario no aporta una foto, usa fotogramas de su propia grabación del vídeo (la pista de webcam de OBS, `*-webcam.mp4`, o los fotogramas ya extraídos para el montaje). No uses fotos de fuera del proyecto ni de internet, y di en la entrega de qué archivo y de qué instante salen.
+
+- Elige dos fotogramas, mejor de momentos distintos de la grabación: cara frontal, ojos abiertos, buena luz, sin la boca a medio hablar ni movimiento.
+- Recórtalos a la cabeza y los hombros en cuadrado, sin escalar a menos de unos 600 px de lado, y guárdalos junto a la miniatura:
+
+  ```bash
+  ffmpeg -ss <segundo> -i <grabacion-webcam.mp4> -frames:v 1 -vf "crop=<lado>:<lado>:<x>:<y>" cara1.png
+  ```
+
+- Revisa los recortes antes de generar. Pásalos como referencia de identidad, nunca como imagen que deba aparecer tal cual.
+
 Si la imagen solo está adjunta a la conversación, incluye con `num_last_images_to_include` el mínimo número de imágenes que cubra todas las referencias. Si todas tienen rutas locales, usa `referenced_image_paths`. No combines ambos mecanismos.
 
 ## Generar la imagen
