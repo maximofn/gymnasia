@@ -1,7 +1,7 @@
 ---
 type: servicio de diagnóstico local
-title: Proxy local de Anthropic
-description: Utilidad FastAPI opcional para depurar desde el navegador el contrato de Anthropic mediante una pasarela en loopback. No es un backend móvil ni un componente de producción y protege las credenciales BYOK contra una exposición compartida.
+title: Proxy de Anthropic
+description: Utilidad FastAPI opcional y local para depurar el contrato entre el cliente web y la API Messages de Anthropic. Describe el transporte de continuaciones con herramientas, el streaming SSE y el tratamiento de errores sin convertir el proceso en un backend de producto.
 tags: [service, anthropic, proxy, cors, development, security]
 sources:
   - id: openwiki-source-338e77d1d6cb373155f08ceb
@@ -28,10 +28,16 @@ sources:
     resource: repo://apps/anthropic_proxy/tests/test_streaming.py
   - id: openwiki-source-d99f0015cb0c37d04b2984ce
     resource: repo://apps/anthropic_proxy/tests/test_upstream_errors.py
+  - id: openwiki-source-c65a19b98fa314cba98ace44
+    resource: repo://apps/mobile/agent/providerPipeline.test.ts
   - id: openwiki-source-6b9b666faa646a8fd83706ea
     resource: repo://apps/mobile/agent/providerStreamParsers.ts
+  - id: openwiki-source-479fc45ac32d23cfffe17d8e
+    resource: repo://apps/mobile/agent/providerStreamTransport.ts
   - id: openwiki-source-abc6fea468a7de09acfb0c4f
     resource: repo://apps/mobile/agent/providerToolClient.ts
+  - id: openwiki-source-b14a4ecd65e83b5561f88e2a
+    resource: repo://apps/mobile/agent/providerToolLoop.ts
   - id: openwiki-source-cc29928f3ae5e1998f27d57a
     resource: repo://apps/mobile/agent/providerTransport.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
@@ -42,10 +48,13 @@ sources:
     resource: repo://scripts/anthropic-proxy/check.mjs
   - id: openwiki-source-06bd7c851908a218f4ac8a15
     resource: repo://scripts/anthropic-proxy/check.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-10-20T13:07:24.686Z
 ---
 
-# Proxy local de Anthropic
+# Proxy de Anthropic
 
 ## Propósito y frontera de seguridad
 
@@ -126,6 +135,38 @@ Una vez enviadas las cabeceras SSE, un corte ya no puede convertirse en un estad
 
 Los errores HTTP JSON de Anthropic conservan su estado y contenido estructurado. Un error HTTP no JSON se normaliza como `upstream_non_json`; un timeout es `504 upstream_timeout`, un problema de conectividad es `502 upstream_unreachable` y una respuesta de éxito no interpretable es `502 upstream_invalid_json`. Antes de devolver texto no estructurado o excepciones, el proxy elimina la clave de la solicitud y patrones conocidos de secretos, y limita el mensaje a 2.000 caracteres. Esta redacción reduce fugas accidentales, pero no hace seguro exponer el proceso ni compartir las credenciales BYOK.
 
+### Continuaciones con herramientas
+
+El proxy no conserva el estado de una conversación ni compone continuaciones: cada vuelta es un `POST /chat/providers/anthropic/messages` independiente. El cliente construye el historial y decide nuevamente el transporte en `makeRequest`; por eso, cuando `anthropicWebProxyUrl` está configurada, tanto el primer turno como cada `requestNextTurn` y la vuelta final atraviesan la misma URL local. En esa rama adjunta `api_key` y, si existe, `workspace_id` al cuerpo local; el proxy los convierte a cabeceras y reenvía el resto del payload de Messages, incluidos `tools`, `tool_choice`, `thinking`, `system` y los bloques de contenido.
+
+```mermaid
+sequenceDiagram
+    participant Client as Cliente Anthropic
+    participant Proxy as Proxy local
+    participant API as API Anthropic
+    Client->>Proxy: POST Messages con historial y credenciales locales
+    Proxy->>API: POST Messages con credenciales en cabeceras
+    API-->>Proxy: SSE del turno
+    Proxy-->>Client: SSE o evento error inyectado
+    Client->>Client: Espera message_stop y ejecuta tools
+    Client->>Proxy: POST de continuación con tool_result
+    Proxy->>API: POST Messages de continuación
+    API-->>Proxy: SSE del siguiente turno
+    Proxy-->>Client: SSE o evento error inyectado
+```
+
+*Cada continuación es una nueva solicitud sin estado en el proxy; el historial y los resultados de herramientas los posee el cliente.*
+
+El parser acumula deltas de texto, razonamiento y `input_json` de los bloques `tool_use`, pero no ejecuta una herramienta hasta terminar el SSE. Si no llega `message_stop`, marca el turno como truncado y `runAnthropicToolLoop` falla antes de ejecutar argumentos posiblemente parciales. Si recibe `tool_use`, agrega al historial el bloque `assistant` recibido y un mensaje `user` cuyo contenido son los `tool_result` correlacionados por `tool_use_id`; entonces solicita la continuación. Los resultados que representan error llevan `is_error: true`.
+
+El bucle ejecuta como máximo `MAX_TOOL_ROUNDS` (10) rondas. Si el turno pendiente aún pide herramientas, no las ejecuta: inserta para cada una `ROUND_LIMIT_TOOL_RESULT` y hace una única llamada de cierre con las herramientas presentes para mantener el historial válido pero `tool_choice: { type: "none" }` y una instrucción de sistema de cierre. Una respuesta de cierre truncada o que solicite herramientas de nuevo se comunica como `ToolRoundLimitError`, no como una respuesta normal.
+
+#### Lectura de comportamiento de runtime
+
+- **Observado:** el código del proxy reenvía el SSE y, si el upstream se corta o termina sin `message_stop`, emite un evento `error`; el parser del cliente convierte ese evento en excepción. El flujo de continuación y el rechazo previo a ejecutar tools en un turno truncado están cubiertos por pruebas deterministas con fixtures SSE.
+- **Correlacionado:** esas dos protecciones forman el contrato extremo a extremo para la rama del proxy: un stream interrumpido no debe convertirse en una continuación ni en la ejecución de una herramienta. La correlación se deriva de las interfaces y pruebas de ambos lados, no de una ejecución capturada.
+- **Hipótesis:** no hay en estas fuentes telemetría ni resultados de ejecuciones reales que permitan cuantificar cortes de stream, reintentos o uso del proxy. No se infiere comportamiento adicional de producción.
+
 ## Pruebas y CI
 
 Ejecute la suite aislada desde la raíz:
@@ -141,12 +182,14 @@ Las pruebas unitarias sustituyen `urlopen` por un upstream registrable: no requi
 ## Relación con otras áreas
 
 - [Configuración BYOK de proveedores](../agent/provider-configuration.md) describe la persistencia de credenciales, el guardado que invoca verificación y la selección de modelos.
-- [Streaming y continuaciones de proveedores](../agent/provider-streaming.md) explica el parser SSE y el bucle que recibe los errores inyectados por este proxy.
+- [Streaming y continuaciones de proveedores](../agent/provider-streaming.md) explica el parser SSE, el bucle de herramientas y cómo recibe los errores inyectados por este proxy.
+- [Runtime del agente](../agent/runtime.md) sitúa la propiedad del historial y la ejecución de herramientas que producen las continuaciones.
+- [Comportamiento de runtime](../operations/runtime-behavior.md) delimita qué comportamiento operativo se observa y qué no puede inferirse de estas fuentes.
 - [Build, release y estrategia de validación](../operations/build-release-and-testing.md) sitúa los comandos y los jobs de CI junto al resto de gates del repositorio.
 
 ## Fuente de verdad
 
 - `apps/anthropic_proxy/cors-proxy.py`: límite local, CORS, contrato, validación, upstream, paginación, errores y streaming.
-- `apps/mobile/App.tsx`, `apps/mobile/agent/providerVerification.ts`, `apps/mobile/agent/providerCatalog.ts` y los clientes de chat: selección explícita entre acceso directo y proxy local.
-- `apps/anthropic_proxy/tests/` y `.github/workflows/agent-tests.yml`: comportamiento cubierto y ejecución aislada en CI.
+- `apps/mobile/App.tsx`, `apps/mobile/agent/providerToolClient.ts`, `apps/mobile/agent/providerTransport.ts`, `apps/mobile/agent/providerToolLoop.ts` y `apps/mobile/agent/providerStreamParsers.ts`: selección del transporte, construcción de continuaciones, credenciales locales y recepción de SSE.
+- `apps/mobile/agent/providerPipeline.test.ts`, `apps/anthropic_proxy/tests/` y `.github/workflows/agent-tests.yml`: contrato de continuaciones y streaming, comportamiento del proxy y ejecución aislada en CI.
 - `scripts/anthropic-proxy/check.mjs`: prevención de una ruta de despliegue accidental.

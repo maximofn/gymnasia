@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0004",
+  "status": "pending-review",
+  "generated_on": "2026-11-05",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-15000",
+      "names": {
+        "fr": "Amande, avec peau, sans sel ajouté",
+        "en": "Almond, with peel, no added salt",
+        "es": "Almendra, con piel, sin sal añadida"
+      },
+      "source_sha256": "a4ca98289ce3df4c2acc3968b161bc3fd644a2f4f3c966efb84ec8bc7998dc7f",
+      "image": "ciqual-15000.webp",
+      "sha256": "51a984704d7b73a73254e3452152aebb03a9d04af13cf5cfbe35409915a61d03",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with whole almond kernels with their natural brown peel intact, recognizable elongated pointed oval nuts with fine lengthwise grooves and varied warm-brown matte skins, shelled almonds without hard outer shells, plain with NO added salt or seasonings, not blanched, not sliced or ground.\nSingle centered food subject, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-15004",
+      "names": {
+        "fr": "Noisette, sans sel ajouté",
+        "en": "Hazelnut, no added salt",
+        "es": "Avellana, sin sal añadida"
+      },
+      "source_sha256": "52d0f5ce61b151be75317ac3f750b5b9f5ad95810639d722d513f30fe17b9046",
+      "image": "ciqual-15004.webp",
+      "sha256": "e69e6a12cf2ef7d96b03c1266e13d1c196eb8ab93aa045d90c7a96d2af4d4604",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with plain hazelnut kernels without hard outer shells, round slightly pointed brown nuts with natural thin brown skins and small pale tan basal patches, realistic dry surface texture, NO added salt, no chocolate or coatings, not ground.\nSingle centered food subject, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-15005",
+      "names": {
+        "fr": "Noix, cerneau, séchée",
+        "en": "Walnut, kernel, dried",
+        "es": "Nuez, grano, seca"
+      },
+      "source_sha256": "8fd51f398e79abf5898fb1030a44aa3020c58e8d1074c83bbd059ac445d42dc9",
+      "image": "ciqual-15005.webp",
+      "sha256": "c0432710dfe7e8a194f73b09380c7cf1e07109f1424d3012608e1bd758b7f681",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with dried shelled walnut kernel halves, natural pale tan and warm beige lobes with deeply wrinkled brain-like ridges and irregular grooves, dry matte realistic texture, no hard outer shells, not fresh green walnuts, not candied and not ground.\nSingle centered food subject, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-15055",
+      "names": {
+        "fr": "Noix de cajou, grillée à sec, sans sel ajouté",
+        "en": "Cashew nut, dry-grilled, no added salt",
+        "es": "Anacardo, tostado en seco, sin sal añadida"
+      },
+      "source_sha256": "83f249930da81a906c8044138d2c6c41e26ec8f4d3b6fb777ad27665a533fce1",
+      "image": "ciqual-15055.webp",
+      "sha256": "b8d0f266a68b56bc7379cc93c5be7876d1e9bafd3f33733bfa9ae833306c4156",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with whole dry-roasted cashew kernels without added salt, natural curved kidney and crescent shapes, light golden-beige toasted color with subtle warm roasting marks and a dry matte surface, NO salt crystals, no oil sheen, no seasoning or sugary coating, no shells.\nSingle centered food subject, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-15044",
+      "names": {
+        "fr": "Pistache, grillée, sans sel ajouté",
+        "en": "Pistachio nut, grilled, no added salt",
+        "es": "Pistacho, tostado, sin sal añadida"
+      },
+      "source_sha256": "bff3d72f1fd2cd67403ceaae02e2f1bb2a64faaed05a57a2ef20ef18740104a9",
+      "image": "ciqual-15044.webp",
+      "sha256": "16fb3806a7268384329c05a7e2158bc0a48178311577332cc6967079a08b642a",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with roasted pistachio kernels without added salt and without hard shells, recognizable irregular oval green kernels with natural purple-brown thin skins and subtle toasted golden patches, NO salt crystals or seasoning, not raw bright neon green, not ground.\nSingle centered food subject, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-15001",
+      "names": {
+        "fr": "Cacahuète, sans sel ajouté",
+        "en": "Peanut, no added salt",
+        "es": "Cacahuete, sin sal añadida"
+      },
+      "source_sha256": "e7b40a7602c64c954bad957cd71fe893a6ba34be7400fd7cf473e7f979b5f8e3",
+      "image": "ciqual-15001.webp",
+      "sha256": "c79836ef16f19c5642a934579c50f792bf51c9f9852262e405c4fe20428c9c39",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with plain shelled peanuts without added salt, recognizable small elongated twin-lobed kernels, mostly intact natural reddish-brown thin skins with a few exposed pale cream halves, realistic dry texture, NO salt crystals or seasoning, no hard outer shells, no butter, no sugary coating.\nSingle centered food subject, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-15047",
+      "names": {
+        "fr": "Chia, graine, séchée",
+        "en": "Chia, seed, dried",
+        "es": "Chía, semilla, seca"
+      },
+      "source_sha256": "778ba272129f550bed9b10b18ac674dd2a6bb9186108afaa8d90a1a6539107fd",
+      "image": "ciqual-15047.webp",
+      "sha256": "f7b343c6a2f196199e92fce1ad9b1999b53171c8ee895a8efe0858030cf23b74",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with DRY chia seeds, extremely small naturally mottled black charcoal gray and occasional ivory oval seeds, realistic fine granular texture, clearly dry loose seeds, NOT swollen or gelatinous, no chia pudding, no liquid, no garnish.\nSingle centered food subject, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-15064",
+      "names": {
+        "fr": "Courge, graine, séchée",
+        "en": "Pumpkin and squash, seed, dried",
+        "es": "Calabaza, semilla, seca"
+      },
+      "source_sha256": "bba1661ae3c29e698e95fbe4fb46a6910808ebfb6acf15e287bb9b992073f7a4",
+      "image": "ciqual-15064.webp",
+      "sha256": "727c1dd43f1b7d51b79af5f71743fbafe5b6f006f851932faf8a964157219fb6",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with dried pumpkin and squash seed kernels, recognizable flat oval olive-to-deep-green pepitas with slightly pointed ends and natural pale edges, dry matte surface, no white hard husks, no salt or spicy coatings, not ground, no pumpkin fruit.\nSingle centered food subject, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-15011",
+      "names": {
+        "fr": "Tournesol, graine",
+        "en": "Sunflower, seed",
+        "es": "Girasol, semilla"
+      },
+      "source_sha256": "9a9207cd3246738f74cd512c064a712662a5255de6805cb759a7d6adb514a695",
+      "image": "ciqual-15011.webp",
+      "sha256": "87a4963a1303d5c1804ecb822c1a46beb7a7624cf58fdb3db628494c7ab74440",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with plain edible sunflower seed kernels, elongated narrow tapered ivory and light beige seeds with subtle natural gray-beige lines, dry realistic texture, NO black striped outer husks, no seasoning or garnish, not ground, no sunflower flower.\nSingle centered food subject, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-15052",
+      "names": {
+        "fr": "Lin, brun, graine",
+        "en": "Flaxseed, brown, seed",
+        "es": "Lino, marrón, semilla"
+      },
+      "source_sha256": "61b1c12a822d0364a1ae347c06566f7e0c41a3600489ce39a0f73dd9c40af083",
+      "image": "ciqual-15052.webp",
+      "sha256": "db6d73a8dde2bf9f38aa897e73a1d4fddccd337a5419895575e701e6b1fc1b07",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl filled with whole brown flax seeds, small flattened oval seeds with a pointed tip and naturally smooth subtly glossy warm reddish-brown surface, clearly individual dry seeds, not golden flax, not ground meal, no liquid or garnish.\nSingle centered food subject, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    }
+  ]
+}

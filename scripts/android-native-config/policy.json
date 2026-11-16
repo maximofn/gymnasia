@@ -51,5 +51,8 @@
     "buzzer.wav",
     "rest_finished.wav"
   ],
+  "expectedGradleProperties": {
+    "AsyncStorage_db_size_in_MB": "64"
+  },
   "allowedPrebuildWarnings": []
 }

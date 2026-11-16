@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0006",
+  "status": "pending-review",
+  "generated_on": "2026-11-05",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-36017",
+      "names": {
+        "fr": "Poulet, filet sans peau cru",
+        "en": "Chicken, breast, without skin, raw",
+        "es": "Pechuga de pollo sin piel, cruda"
+      },
+      "source_sha256": "04bc890ea0e72fb4d0da9d2e2b8b5b4800749b5b020a96e9c798253557341a7a",
+      "image": "ciqual-36017.webp",
+      "sha256": "daf6227bd9b75683d363dd1d5fb3de526cbad44eb3fe6363d5aa0c2435753050",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: one fresh raw chicken breast fillet with all skin removed, plump naturally tapered breast shape, pale peach-pink flesh with subtle natural muscle fibers and a slight fresh moist sheen, completely boneless and skinless, supermarket food photography, NOT cooked or grilled, no sear marks, no seasoning, no liquid puddles or garnish.\nSingle centered food subject, entire food cut or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, meat, fish and tofu from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, natural appetizing food colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image with no graphic anatomy, no blood or visceral detail. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-36304",
+      "names": {
+        "fr": "Dinde, escalope crue",
+        "en": "Turkey, escalope, raw",
+        "es": "Pavo, filete crudo"
+      },
+      "source_sha256": "97521307080e164b6f913b43c6618688cfe7890db6e552bf2eb7f3e4fa8709e8",
+      "image": "ciqual-36304.webp",
+      "sha256": "d13408fc2e6f743bf5900b75b0e94f153f1876bbe29a5a150b6ba42292934feb",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: one fresh raw turkey breast escalope, a thin broad slightly flattened tapered boneless slice with pale pink-ivory flesh, subtle fine muscle grain and natural uneven edges, no skin, supermarket food photography, NOT a plump whole chicken breast, NOT cooked or breaded, no seasoning, no liquid puddles or garnish.\nSingle centered food subject, entire food cut or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, meat, fish and tofu from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, natural appetizing food colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image with no graphic anatomy, no blood or visceral detail. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-6250",
+      "names": {
+        "fr": "Boeuf, steak haché 5% MG cru",
+        "en": "Beef, minced steak, 5% fat, raw",
+        "es": "Vacuno, hamburguesa 5% materia grasa, cruda"
+      },
+      "source_sha256": "9baf9b98d398e89f6e32a81f464a78eb4031b39f786375b367d250a1c06e1bf8",
+      "image": "ciqual-6250.webp",
+      "sha256": "a926b5c6046976f5c6fec5a028144845443b112523de93a903054776cc579a3d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: one plain raw lean minced beef steak patty, a thick round loose-textured disc of naturally deep red minced beef with only sparse tiny pale fat flecks, representing 5 percent fat ground beef, realistic individual minced meat strands, supermarket food photography, NOT cooked or browned, no bun, cheese, seasoning, blood puddles or garnish.\nSingle centered food subject, entire food cut or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, meat, fish and tofu from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, natural appetizing food colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image with no graphic anatomy, no blood or visceral detail. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-28204",
+      "names": {
+        "fr": "Porc, filet mignon cru",
+        "en": "Pork, filet mignon, raw",
+        "es": "Cerdo, filete miñón crudo"
+      },
+      "source_sha256": "e8856c253d1bc05f36a9a3135cd6553967b6c2e3098e16dbb3a9fdf842cf2b7a",
+      "image": "ciqual-28204.webp",
+      "sha256": "8a0aab5ac32f4261752aab774b2ee7fed5711e3a99c22c38abf5683b48a00d9b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: one fresh raw pork tenderloin filet mignon, an elongated gently tapered boneless lean pork muscle with natural pale rosy-pink flesh, fine lengthwise muscle grain and a very thin natural pale connective membrane on a small edge, whole tenderloin entirely visible, supermarket food photography, NOT a bone-in chop, NOT cooked or cured, no seasoning, blood puddles or garnish.\nSingle centered food subject, entire food cut or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, meat, fish and tofu from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, natural appetizing food colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image with no graphic anatomy, no blood or visceral detail. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-26036",
+      "names": {
+        "fr": "Saumon, élevage, cru",
+        "en": "Salmon, raw, farmed",
+        "es": "Salmón, de piscifactoría, crudo"
+      },
+      "source_sha256": "8f688029ca5ea74417c466e78217299e8cafa4ba66f9820e06ded50956ee98f4",
+      "image": "ciqual-26036.webp",
+      "sha256": "38b885f130c5c75e8a51e45de11bb79b3e92c6a3010fabeb3fb45a3085fd0bc4",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: one fresh raw farmed salmon fillet portion, natural orange-pink flesh with clear pale white diagonal fat lines and realistic fine muscle texture, thick neat tapered rectangular fish fillet, fresh gently moist surface, supermarket food photography, NOT smoked, NOT cooked or seared, no lemon, herbs, ice, blood puddles or garnish.\nSingle centered food subject, entire food cut or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, meat, fish and tofu from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, natural appetizing food colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image with no graphic anatomy, no blood or visceral detail. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-26044",
+      "names": {
+        "fr": "Merlu, cru",
+        "en": "European hake, raw",
+        "es": "Merluza, cruda"
+      },
+      "source_sha256": "5ead0858732193e0fc74a3e22cd6563c33e79f400b202f82cb42af6d6d6266e0",
+      "image": "ciqual-26044.webp",
+      "sha256": "2a957476386df462cbc48494320a598170e7d488f61c348c2e41a0ae0c97dcaa",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: one fresh raw European hake fillet, naturally slender tapered white fish fillet with delicate pearly translucent ivory flesh, very fine lengthwise fibers and a narrow natural silvery-gray skin edge, fresh gently moist surface, supermarket food photography, NOT frozen or covered in ice, NOT cooked or breaded, no lemon, herbs, liquid puddles or garnish.\nSingle centered food subject, entire food cut or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, meat, fish and tofu from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, natural appetizing food colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image with no graphic anatomy, no blood or visceral detail. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-26065",
+      "names": {
+        "fr": "Sardine, crue",
+        "en": "European pilchard or sardine, raw",
+        "es": "Sardina, cruda"
+      },
+      "source_sha256": "af4d49b0c9d9b8cdb62755bfd6ac73d97b7acd3e08c0b7f1d82c8bc994b7e632",
+      "image": "ciqual-26065.webp",
+      "sha256": "6675f243661b26dc8bb5bc63970b780b8b963d93ffc23ae8c1f0d0e15b7fdd6c",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: two fresh raw European sardine fillets close together, small slender butterflied sardine portions with clean pearly pale pink flesh and naturally bright silver-blue skin along the edges, prepared as tidy boneless edible fish fillets, no heads or viscera, supermarket food photography, NOT canned, NOT cooked or grilled, no oil, lemon, herbs, ice, blood puddles or garnish.\nSingle centered food subject, entire food cut or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, meat, fish and tofu from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, natural appetizing food colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image with no graphic anatomy, no blood or visceral detail. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-26053",
+      "names": {
+        "fr": "Thon, cru",
+        "en": "Tuna, raw",
+        "es": "Atún, crudo"
+      },
+      "source_sha256": "c32c0e7587ac93014123a0d7b87d6f108db91466789dc409e6156cf273ff7ed3",
+      "image": "ciqual-26053.webp",
+      "sha256": "bf351065bf33627638b6b00beeeeacc294288310b007274b15ee8a23be5cd093",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: one fresh raw tuna steak, a compact thick boneless cut of natural deep pink-red tuna flesh with subtle fine curved muscle grain and a gently moist clean surface, supermarket food photography, NOT canned flakes, NOT cooked or seared, no crust, lemon, herbs, soy sauce, blood puddles or garnish.\nSingle centered food subject, entire food cut or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, meat, fish and tofu from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, natural appetizing food colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image with no graphic anatomy, no blood or visceral detail. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-22000",
+      "names": {
+        "fr": "Oeuf cru",
+        "en": "Egg, raw",
+        "es": "Huevo, crudo"
+      },
+      "source_sha256": "224b793ae5b6673839b3bb592ae6630ae155e353c6e5ec41af397e2560cd8340",
+      "image": "ciqual-22000.webp",
+      "sha256": "ba63157639d08f29ef6652580f7e01e444a096fff32daeb247919b34e781c19e",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: a small dark ceramic bowl containing one cracked RAW chicken egg without any shell, an intact round golden-yellow glossy yolk resting in clear translucent viscous egg white, the white is transparent and uncooked with no opaque cooked parts, no whisking, no salt, no seasoning, no hands or utensils.\nSingle centered food subject, entire food cut or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, meat, fish and tofu from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, natural appetizing food colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image with no graphic anatomy, no blood or visceral detail. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20904",
+      "names": {
+        "fr": "Tofu nature, préemballé",
+        "en": "Tofu, plain, prepacked",
+        "es": "Tofu natural, envasado"
+      },
+      "source_sha256": "bf7e09b7e4f3300833a741a10b3b1c6898ac101d4e1df3d56e0d9866cd6b107f",
+      "image": "ciqual-20904.webp",
+      "sha256": "76667ffcd6710712245dba26239d8b561e49a0c84bd0f08cc80873b72ec0f882",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's food when it differs from this subject.\nSubject: one plain natural firm tofu block with three neat tofu cubes arranged close against it, natural off-white ivory soy curd with fine tiny porous grain and a slightly moist smooth cut surface, recognizable firm tofu rather than feta or paneer, removed from its packaging with NO wrapper or branding visible, NOT silken pudding tofu, NOT smoked, grilled or browned, no sauce, herbs or garnish.\nSingle centered food subject, entire food cut or bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Bowl foods photographed from above or a high 3/4 angle as in the reference, meat, fish and tofu from a gentle elevated front angle. Bold recognizable silhouette at 48x48 pixels, natural appetizing food colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Clean food catalog image with no graphic anatomy, no blood or visceral detail. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    }
+  ]
+}

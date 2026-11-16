@@ -55,6 +55,7 @@ import type { LocalStoreRuntime } from "../persistence/localStoreRuntime";
 import type { AppPlatformServices } from "../platform";
 import type { ScreenController } from "./types";
 import { clearTraces, formatTraces, getTraces, type TraceEntry } from "../trace";
+import { formatStorageUsageReport, type StorageUsageReport } from "../storage/storageUsage";
 
 export function useUserPreferencesRuntime(input: {
   isHydrated: boolean;
@@ -560,6 +561,10 @@ export function usePersonalFoodsSettingsController(
 }
 
 export type TraceSettingsModel = {
+  storageReport: StorageUsageReport | null;
+  storageLoading: boolean;
+  storageError: string | null;
+  storageCopied: boolean;
   traces: ReadonlyArray<TraceEntry>;
   displayText: string;
   loading: boolean;
@@ -573,6 +578,8 @@ export type TraceSettingsModel = {
 };
 
 export type TraceSettingsActions = {
+  measureStorage(): void;
+  copyStorageReport(): void;
   copy(): void;
   clear(): void;
   reload(): void;
@@ -580,6 +587,7 @@ export type TraceSettingsActions = {
 };
 
 export type TraceSettingsControllerInput = {
+  measureStorage(): Promise<StorageUsageReport>;
   active: boolean;
   policyBusy: boolean;
   policyResult: string | null;
@@ -600,7 +608,35 @@ export function useTraceSettingsController(
   tracesRef.current = traces;
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [storageReport, setStorageReport] = useState<StorageUsageReport | null>(null);
+  const storageReportRef = useRef(storageReport);
+  storageReportRef.current = storageReport;
+  const storageBusyRef = useRef(false);
+  const [storageLoading, setStorageLoading] = useState(false);
+  const [storageError, setStorageError] = useState<string | null>(null);
+  const [storageCopied, setStorageCopied] = useState(false);
   const actions = useMemo<TraceSettingsActions>(() => ({
+    measureStorage: () => {
+      if (storageBusyRef.current) return;
+      storageBusyRef.current = true;
+      setStorageLoading(true);
+      setStorageError(null);
+      setStorageReport(null);
+      setStorageCopied(false);
+      void inputRef.current.measureStorage().then(setStorageReport).catch(() => {
+        setStorageError("No se pudo medir el almacenamiento. Puedes volver a intentarlo.");
+      }).finally(() => {
+        storageBusyRef.current = false;
+        setStorageLoading(false);
+      });
+    },
+    copyStorageReport: () => {
+      const report = storageReportRef.current;
+      if (!report || storageBusyRef.current) return;
+      void inputRef.current.copyText(formatStorageUsageReport(report)).then(() => {
+        setStorageCopied(true);
+      }).catch(() => setStorageError("No se pudo copiar el informe."));
+    },
     copy: () => {
       void (async () => {
         try {
@@ -636,6 +672,10 @@ export function useTraceSettingsController(
     if (input.active) actions.reload();
   }, [actions, input.active]);
   const model = useMemo<TraceSettingsModel>(() => ({
+    storageReport,
+    storageLoading,
+    storageError,
+    storageCopied,
     traces,
     displayText: input.active ? formatTraces(traces) : "",
     loading,
@@ -656,6 +696,10 @@ export function useTraceSettingsController(
     input.policyStatus,
     loading,
     traces,
+    storageReport,
+    storageLoading,
+    storageError,
+    storageCopied,
   ]);
   const back = useMemo(() => ({ layers: {}, handlers: {} }), []);
   return useMemo(() => ({ model, actions, back }), [actions, back, model]);

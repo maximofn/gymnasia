@@ -62,7 +62,7 @@ function playValidated() {
 test("V2 conserva dos builds wallabot y un único envío a Play", () => {
   const value = playValidated();
   assert.equal(value.state, "validated");
-  assert.equal(value.legs.play.track, "alpha");
+  assert.equal(value.legs.play.track, "production");
   assert.equal(value.versionCode, "58");
   assert.equal(value.legs.aab.attempts.length, 1);
   assert.equal(value.legs.apk.attempts.length, 1);
@@ -175,12 +175,18 @@ test("la release no se publica sin AAB, APK y Play verificados", () => {
   assert.throws(() => assertPublishedRelease(broken), /carece/);
 });
 
-test("una Release V2 histórica de Play Interno sigue verificándose", () => {
-  const fixture = publishedFixture();
-  fixture.transaction.legs.play.track = "internal";
-  fixture.playEvidence.track = "internal";
-  assert.equal(assertReleaseTransaction(fixture.transaction), fixture.transaction);
-  assert.equal(assertPublishedRelease(fixture), true);
+test("las Releases V2 históricas de Play Interno y Alpha siguen verificándose sin cambiar su destino", () => {
+  for (const track of ["internal", "alpha"]) {
+    const fixture = publishedFixture();
+    fixture.transaction.legs.play.track = track;
+    fixture.playEvidence.track = track;
+    assert.equal(assertReleaseTransaction(fixture.transaction), fixture.transaction);
+    assert.equal(assertPublishedRelease(fixture), true);
+    assert.equal(fixture.transaction.legs.play.track, track);
+  }
+  const invalid = publishedFixture();
+  invalid.transaction.legs.play.track = "unknown";
+  assert.throws(() => assertReleaseTransaction(invalid.transaction), /Play/);
 });
 
 test("lee transacciones V1 históricas sin crear otras nuevas", () => {
