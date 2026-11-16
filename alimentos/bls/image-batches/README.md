@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**1.700/7.140 imágenes registradas; 5.440 pendientes; 23,81 %.**
+**1.800/7.140 imágenes registradas; 5.340 pendientes; 25,21 %.**
 
-Las tandas `0001` a `0017` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0018` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -32,6 +32,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0015: manifiesto y prompts](0015/manifest.json).
 - [Tanda 0016: manifiesto y prompts](0016/manifest.json).
 - [Tanda 0017: manifiesto y prompts](0017/manifest.json).
+- [Tanda 0018: manifiesto y prompts](0018/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -2354,3 +2355,133 @@ Estas decisiones visuales no certifican especie, variedad, receta, grasa, alérg
 | [bls-G660162](0017/bls-G660162.webp) | Knollensellerie gebacken | Celeriac baked |
 | [bls-G660182](0017/bls-G660182.webp) | Knollensellerie gebraten ohne Fett (Pfanne) | Celeriac fried without fat (pan) |
 | [bls-G660600](0017/bls-G660600.webp) | Gemüsesaft aus Knollensellerie | Celeriac juice |
+
+
+## Tanda 0018: raíces, legumbres, encurtidos y mezclas de verduras
+
+100 WebP finales opacos de 1024×1024 revisados en nueve hojas de contacto; 32 casos comprobados también a tamaño completo. Una generación independiente por código, mediante el generador integrado de Codex y referencias CIQUAL usadas solo para el estilo. BLS permanece fuera de la app.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0018-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0018-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0018-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0018-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0018-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0018-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0018-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0018-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0018-09.jpg)
+
+La raíz de perejil se ilustra más esbelta y blanca que la chirivía, con la corona ligeramente elevada; [BZfE](https://www.bzfe.de/presse/pressemeldungen-archiv/kochen-mit-wurzelpetersilie) describe esos rasgos. Su versión seca contiene chips arrugados, no hojas de perejil. El rábano genérico usa un tipo blanco alargado ilustrativo; el rabanito pequeño conserva piel roja y pulpa blanca. El wasabi crudo se representa como rizoma nudoso verde pálido, no como pasta ni rábano picante europeo: [The Wasabi Company](https://www.thewasabicompany.co.uk/pages/grow-your-own) documenta la cosecha del rizoma.
+
+Judías verdes y judías de cera conservan las vainas verdes o amarillas. Habas tiernas, edamame y guisantes se representan desgranados. Las legumbres maduras sin cocinar son semillas secas, mates y sin hidratar; las hervidas están hinchadas y húmedas. Los tirabeques conservan vainas planas comestibles con semillas pequeñas, conforme a [BZfE](https://www.bzfe.de/presse/pressemeldungen-archiv/die-vielseitige-erbse). El maíz dulce, el guisante y el pimiento rojo de la mezcla mexicana son una elección visual ilustrativa; [EDEKA Foodservice](https://edeka-foodservice.de/eigenmarken/produkte/5487228004/bonduelle-goldmais-mexiko-mix-300g) muestra una preparación comercial con esas hortalizas, sin que ello pruebe la receta BLS. En la ficha cruda se exige textura cruda y en la hervida ablandamiento.
+
+La sopa instantánea seca es polvo fino crema con motas integradas; la preparada con agua es líquida y homogénea, sin vaso de leche ni espiral de nata. Las cebollas fritas de producto preparado son tiras y fragmentos finos crujientes de color ámbar, no aros gruesos rebozados ni cebolla caramelizada blanda. Las mezclas, el gulasch vegetariano, el ajvar y el untable vegetal usan recetas ilustrativas: no se certifican ingredientes, proporciones, alérgenos ni una formulación comercial. Las conservas de rábano picante son rallados o pastas blancas; la variante con nata la incorpora, sin cobertura separada. Se preserva el nombre inglés oficial `Horsereadish canned`.
+
+Los encurtidos y fermentados escurridos mantienen humedad superficial sin charcos de salmuera; la fermentación no se inventa mediante burbujas. Honiggurken y Senfgurken se representan en trozos de pepino maduro pelado y sin cavidad de semillas; la miel queda incorporada sin adorno y la variante de mostaza conserva unas pocas semillas adheridas. Leipziger Allerlei combina guisantes, pequeñas zanahorias enteras y espárrago blanco, sin carne, cangrejos ni salsa. Estas decisiones se apoyan en los [Leitsätze für Gemüseerzeugnisse](https://www.deutsche-lebensmittelbuch-kommission.de/fileadmin/Dokumente/leitsaetzegemueseerzeugnisse.pdf), sin atribuir una composición exacta a BLS.
+
+Hervidos, braseados y guisados muestran ablandamiento sin costra; horno y sartén llevan solo el dorado correspondiente. Los congelados sin cocinar tienen escarcha discreta y los cocinados desde congelado no. La sopa y el gulasch conservan su líquido propio. Sin envases, utensilios ni decoración. Estas imágenes no certifican variedad, receta, grasa, alérgenos ni porción de 100 g; las fichas nutricionales y las fuentes oficiales no cambian.
+
+Correcciones visuales registradas: 0.  Casos abiertos a tamaño completo: `bls-G670100`, `bls-G670400`, `bls-G680100`, `bls-G691100`, `bls-G693100`, `bls-G710100`, `bls-G710200`, `bls-G720100`, `bls-G730100`, `bls-G750100`, `bls-G750400`, `bls-G750432`, `bls-G760400`, `bls-G760432`, `bls-G761100`, `bls-G770400`, `bls-G770432`, `bls-G780400`, `bls-G780432`, `bls-G850100`, `bls-G850132`, `bls-G860192`, `bls-G891102`, `bls-G891202`, `bls-G898200`, `bls-G898400`, `bls-G920200`, `bls-G940100`, `bls-G950900`, `bls-G991902`, `bls-G993100`, `bls-G993132`.
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-G660802](0018/bls-G660802.webp) | Knollensellerie gesäuert, abgetropft | Celeriac pickled, drained |
+| [bls-G670100](0018/bls-G670100.webp) | Wurzelpetersilie roh | Parsley root raw |
+| [bls-G670132](0018/bls-G670132.webp) | Wurzelpetersilie gekocht | Parsley root boiled |
+| [bls-G670142](0018/bls-G670142.webp) | Wurzelpetersilie geschmort ohne Fett | Parsley root braised without fat |
+| [bls-G670152](0018/bls-G670152.webp) | Wurzelpetersilie gedünstet | Parsley root stewed |
+| [bls-G670162](0018/bls-G670162.webp) | Wurzelpetersilie gebacken | Parsley root baked |
+| [bls-G670182](0018/bls-G670182.webp) | Wurzelpetersilie gebraten ohne Fett (Pfanne) | Parsley root fried without fat (pan) |
+| [bls-G670400](0018/bls-G670400.webp) | Wurzelpetersilie getrocknet | Parsley root dried |
+| [bls-G680100](0018/bls-G680100.webp) | Rettich roh | Radish raw |
+| [bls-G680152](0018/bls-G680152.webp) | Rettich gedünstet | Radish stewed |
+| [bls-G691100](0018/bls-G691100.webp) | Radieschen roh | Small red radish raw |
+| [bls-G691152](0018/bls-G691152.webp) | Radieschen gedünstet | Small red radish stewed |
+| [bls-G693100](0018/bls-G693100.webp) | Wasabi roh | Japanese horseradish/wasabi root, raw |
+| [bls-G710042](0018/bls-G710042.webp) | Bohne grün, tiefgefroren, geschmort ohne Fett | Bean green, deep-frozen, braised without fat |
+| [bls-G710100](0018/bls-G710100.webp) | Bohne grün, roh | Bean green, raw |
+| [bls-G710132](0018/bls-G710132.webp) | Bohne grün, gekocht | Bean green, boiled |
+| [bls-G710142](0018/bls-G710142.webp) | Bohne grün, geschmort ohne Fett | Bean green, braised without fat |
+| [bls-G710152](0018/bls-G710152.webp) | Bohne grün, gedünstet | Bean green, stewed |
+| [bls-G710162](0018/bls-G710162.webp) | Bohne grün, gebacken | Bean green, baked |
+| [bls-G710182](0018/bls-G710182.webp) | Bohne grün, gebraten ohne Fett (Pfanne) | Bean green, fried without fat (pan) |
+| [bls-G710200](0018/bls-G710200.webp) | Bohne grün, tiefgefroren | Bean green, deep-frozen |
+| [bls-G710232](0018/bls-G710232.webp) | Bohne grün, tiefgefroren, gekocht | Bean green, deep-frozen, boiled |
+| [bls-G710252](0018/bls-G710252.webp) | Bohne grün, tiefgefroren, gedünstet | Bean green, deep-frozen, stewed |
+| [bls-G710262](0018/bls-G710262.webp) | Bohne grün, tiefgefroren, gebacken | Bean green, deep-frozen, baked |
+| [bls-G710282](0018/bls-G710282.webp) | Bohne grün, tiefgefroren, gebraten ohne Fett (Pfanne) | Bean green, deep-frozen, fried without fat (pan) |
+| [bls-G710802](0018/bls-G710802.webp) | Bohne grün, gesäuert, abgetropft | Bean green, pickled, drained |
+| [bls-G710902](0018/bls-G710902.webp) | Bohne grün, Konserve, abgetropft | Bean green, canned, drained |
+| [bls-G720100](0018/bls-G720100.webp) | Wachsbohne roh | Wax bean raw |
+| [bls-G720132](0018/bls-G720132.webp) | Wachsbohne gekocht | Wax bean boiled |
+| [bls-G720152](0018/bls-G720152.webp) | Wachsbohne gedünstet | Wax bean stewed |
+| [bls-G720200](0018/bls-G720200.webp) | Wachsbohne tiefgefroren | Wax bean deep-frozen |
+| [bls-G720232](0018/bls-G720232.webp) | Wachsbohne tiefgefroren, gekocht | Wax bean deep-frozen, boiled |
+| [bls-G720252](0018/bls-G720252.webp) | Wachsbohne tiefgefroren, gedünstet | Wax bean deep-frozen, stewed |
+| [bls-G720802](0018/bls-G720802.webp) | Wachsbohne gesäuert, abgetropft | Wax bean pickled, drained |
+| [bls-G720902](0018/bls-G720902.webp) | Wachsbohne Konserve, abgetropft | Wax bean canned, drained |
+| [bls-G730100](0018/bls-G730100.webp) | Dicke Bohne unreif, roh | Broad bean immature, raw |
+| [bls-G730132](0018/bls-G730132.webp) | Dicke Bohne unreif, gekocht | Broad bean immature, boiled |
+| [bls-G730200](0018/bls-G730200.webp) | Dicke Bohne unreif, tiefgefroren | Broad bean immature, deep-frozen |
+| [bls-G730232](0018/bls-G730232.webp) | Dicke Bohne unreif, tiefgefroren, gekocht | Broad bean immature, deep-frozen, boiled |
+| [bls-G730902](0018/bls-G730902.webp) | Dicke Bohne unreif, Konserve, abgetropft | Broad bean immature, canned, drained |
+| [bls-G750100](0018/bls-G750100.webp) | Sojabohne unreif (Edamame) roh | Soya bean immature (edamame) raw |
+| [bls-G750400](0018/bls-G750400.webp) | Sojabohne reif | Soya bean mature |
+| [bls-G750432](0018/bls-G750432.webp) | Sojabohne reif, gekocht | Soya bean mature, boiled |
+| [bls-G750902](0018/bls-G750902.webp) | Sojabohne unreif (Edamame) Konserve, abgetropft | Soya bean immature (edamame) canned, drained |
+| [bls-G760100](0018/bls-G760100.webp) | Erbse grün, roh | Pea green, raw |
+| [bls-G760132](0018/bls-G760132.webp) | Erbse grün, gekocht | Pea green, boiled |
+| [bls-G760152](0018/bls-G760152.webp) | Erbse grün, gedünstet | Pea green, stewed |
+| [bls-G760162](0018/bls-G760162.webp) | Erbse grün, gebacken | Pea green, baked |
+| [bls-G760182](0018/bls-G760182.webp) | Erbse grün, gebraten ohne Fett (Pfanne) | Pea green, fried without fat (pan) |
+| [bls-G760200](0018/bls-G760200.webp) | Erbse grün, tiefgefroren | Pea green, deep-frozen |
+| [bls-G760232](0018/bls-G760232.webp) | Erbse grün, tiefgefroren, gekocht | Pea green, deep-frozen, boiled |
+| [bls-G760252](0018/bls-G760252.webp) | Erbse grün, tiefgefroren, gedünstet | Pea green, deep-frozen, stewed |
+| [bls-G760262](0018/bls-G760262.webp) | Erbse grün, tiefgefroren, gebacken | Pea green, deep-frozen, baked |
+| [bls-G760282](0018/bls-G760282.webp) | Erbse grün, tiefgefroren, gebraten ohne Fett (Pfanne) | Pea green, deep-frozen, fried without fat (pan) |
+| [bls-G760400](0018/bls-G760400.webp) | Erbse reif | Pea green mature |
+| [bls-G760432](0018/bls-G760432.webp) | Erbse reif, gekocht | Pea green mature, boiled |
+| [bls-G760902](0018/bls-G760902.webp) | Erbse grün, Konserve, abgetropft | Pea green, canned, drained |
+| [bls-G761032](0018/bls-G761032.webp) | Zuckererbse gekocht | Sugar pea boiled |
+| [bls-G761100](0018/bls-G761100.webp) | Zuckererbse roh | Sugar pea raw |
+| [bls-G761152](0018/bls-G761152.webp) | Zuckererbse gedünstet | Sugar pea stewed |
+| [bls-G761200](0018/bls-G761200.webp) | Zuckererbse tiefgefroren | Sugar pea deep-frozen |
+| [bls-G761232](0018/bls-G761232.webp) | Zuckererbse tiefgefroren, gekocht | Sugar pea deep-frozen, boiled |
+| [bls-G761252](0018/bls-G761252.webp) | Zuckererbse tiefgefroren, gedünstet | Sugar pea deep-frozen, stewed |
+| [bls-G770400](0018/bls-G770400.webp) | Kichererbse reif | Chick pea mature |
+| [bls-G770432](0018/bls-G770432.webp) | Kichererbse reif, gekocht | Chick pea mature, boiled |
+| [bls-G780400](0018/bls-G780400.webp) | Limabohne (Butterbohne Mondbohne) reif | Lima bean/butter bean, mature |
+| [bls-G780432](0018/bls-G780432.webp) | Limabohne (Butterbohne, Mondbohne) reif, gekocht | Lima bean/butter bean, mature, boiled |
+| [bls-G850100](0018/bls-G850100.webp) | Gemüsecremesuppe Instantpulver | Cream of vegetable soup instant powder |
+| [bls-G850132](0018/bls-G850132.webp) | Gemüsecremesuppe aus Instantpulver (mit Wasser zubereitet) | Cream of vegetable soup, made from instant powder and water |
+| [bls-G860192](0018/bls-G860192.webp) | Röstzwiebeln (Fertigprodukt) | Fried onions (ready-made product) |
+| [bls-G880402](0018/bls-G880402.webp) | Bohne grün, milchsauer fermentiert, abgetropft | Bean green, lactic acid fermented, drained |
+| [bls-G880602](0018/bls-G880602.webp) | Mixed Pickles gesäuert, abgetropft | Mixed pickles, drained |
+| [bls-G890702](0018/bls-G890702.webp) | Salzgurke/Salzdillgurke, milchsauer fermentiert, abgetropft | Gherkin lactic acid fermented, drained |
+| [bls-G890902](0018/bls-G890902.webp) | Cornichons gesäuert, abgetropft | Cornichons pickled, canned, drained |
+| [bls-G891102](0018/bls-G891102.webp) | Honiggurke gesäuert, abgetropft | Sweet cucumber pickled, canned, drained |
+| [bls-G891202](0018/bls-G891202.webp) | Senfgurke gesäuert, abgetropft | Mustard cucumber pickled, canned, drained |
+| [bls-G898100](0018/bls-G898100.webp) | Gemüse-Meerrettich (ohne Salz) Konserve | Horseradish (unsalted) canned |
+| [bls-G898200](0018/bls-G898200.webp) | Sahne-Meerrettich Konserve | Creamed horseradish canned |
+| [bls-G898300](0018/bls-G898300.webp) | Tafel-Meerrettich Konserve | Horsereadish canned |
+| [bls-G898400](0018/bls-G898400.webp) | Ajvar Konserve | Ajvar canned |
+| [bls-G920200](0018/bls-G920200.webp) | Gemüsemischung Leipziger Allerlei, tiefgefroren | Mixed vegetables "Leipziger Allerlei", deep-frozen |
+| [bls-G920232](0018/bls-G920232.webp) | Gemüsemischung Leipziger Allerlei, tiefgefroren, gekocht | Mixed vegetables "Leipziger Allerlei", deep-frozen, boiled |
+| [bls-G920252](0018/bls-G920252.webp) | Gemüsemischung Leipziger Allerlei, tiefgefroren, gedünstet | Mixed vegetables "Leipziger Allerlei", deep-frozen, stewed |
+| [bls-G920902](0018/bls-G920902.webp) | Gemüsemischung Leipziger Allerlei, Konserve, abgetropft | Mixed vegetables "Leipziger Allerlei", canned, drained |
+| [bls-G940100](0018/bls-G940100.webp) | Gemüseaufstrich, Brotaufstrich pflanzlich | Vegetable spread |
+| [bls-G950900](0018/bls-G950900.webp) | Vegetarisches Gulasch, Konserve | Vegetarian goulash, canned |
+| [bls-G991902](0018/bls-G991902.webp) | Gemüsemischung asiatische Art, Konserve, abgetropft | Mixed vegetables Asian style, canned, drained |
+| [bls-G992100](0018/bls-G992100.webp) | Gemüsemischung Erbsen-Karotten, roh | Mixed vegetables peas and carrots, raw |
+| [bls-G992132](0018/bls-G992132.webp) | Gemüsemischung Erbsen-Karotten, gekocht | Mixed vegetables peas and carrots, boiled |
+| [bls-G992152](0018/bls-G992152.webp) | Gemüsemischung Erbsen-Karotten, gedünstet | Mixed vegetables peas and carrots, stewed |
+| [bls-G992162](0018/bls-G992162.webp) | Gemüsemischung Erbsen-Karotten, gebacken | Mixed vegetables peas and carrots, baked |
+| [bls-G992182](0018/bls-G992182.webp) | Gemüsemischung Erbsen-Karotten, gebraten ohne Fett (Pfanne) | Mixed vegetables peas and carrots, fried without fat (pan) |
+| [bls-G992200](0018/bls-G992200.webp) | Gemüsemischung Erbsen-Karotten, tiefgefroren | Mixed vegetables peas and carrots, deep-frozen |
+| [bls-G992232](0018/bls-G992232.webp) | Gemüsemischung Erbsen-Karotten, tiefgefroren, gekocht | Mixed vegetables peas and carrots, deep-frozen, boiled |
+| [bls-G992252](0018/bls-G992252.webp) | Gemüsemischung Erbsen-Karotten, tiefgefroren, gedünstet | Mixed vegetables peas and carrots, deep-frozen, stewed |
+| [bls-G992262](0018/bls-G992262.webp) | Gemüsemischung Erbsen-Karotten, tiefgefroren, gebacken | Mixed vegetables peas and carrots, deep-frozen, baked |
+| [bls-G992282](0018/bls-G992282.webp) | Gemüsemischung Erbsen-Karotten, tiefgefroren, gebraten ohne Fett (Pfanne) | Mixed vegetables peas and carrots, deep-frozen, fried without fat (pan) |
+| [bls-G992902](0018/bls-G992902.webp) | Gemüsemischung Erbsen-Karotten, Konserve, abgetropft | Mixed vegetables peas and carrots, canned, drained |
+| [bls-G993100](0018/bls-G993100.webp) | Gemüsemischung mexikanische Art, roh | Mixed vegetables Mexican style, raw |
+| [bls-G993132](0018/bls-G993132.webp) | Gemüsemischung mexikanische Art, gekocht | Mixed vegetables Mexican style, boiled |
