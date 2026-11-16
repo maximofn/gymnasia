@@ -84,7 +84,7 @@ Ejecutar desde la raíz del repo. `SK=.claude/skills/linear-tickets/scripts/line
 python3 .claude/skills/linear-tickets/scripts/linear.py list                    # issues abiertos
 python3 .claude/skills/linear-tickets/scripts/linear.py list --all              # incluye done/canceled
 python3 .claude/skills/linear-tickets/scripts/linear.py list --state "In Progress"
-python3 .claude/skills/linear-tickets/scripts/linear.py get GYM-12              # detalle
+python3 .claude/skills/linear-tickets/scripts/linear.py get GYM-12              # detalle, con padre y sub-issues
 python3 .claude/skills/linear-tickets/scripts/linear.py teams                   # equipos
 python3 .claude/skills/linear-tickets/scripts/linear.py states GYM             # estados del flujo
 ```
@@ -235,7 +235,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Diecinueve cosas que cuestan tiempo si no se saben:
+Veinte cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -409,6 +409,13 @@ Diecinueve cosas que cuestan tiempo si no se saben:
     comprobar que conserva el comando literal. Pasa ese Markdown desde Python o
     con comillas simples en shell para evitar la sustitución descrita en la
     trampa 6.
+
+20. **Una épica parece no tener sub-issues porque su descripción dice «sin crear».**
+    Las descripciones de épicas envejecen: GYM-51 seguía diciendo «Sub-tareas
+    propuestas (sin crear)» con cinco sub-issues ya colgando de ella. Antes de
+    afirmar que una épica está vacía, mira la línea `Sub-issues:` de
+    `linear.py get`, que lista los hijos reales con su estado. Si no aparece, no
+    tiene ninguno.
 
 ## Notas
 

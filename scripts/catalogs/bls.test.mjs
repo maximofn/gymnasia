@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mkdtemp, readFile, writeFile, rm, symlink } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, writeFile, rm, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { execFileSync, spawnSync } from "node:child_process";
@@ -126,7 +126,11 @@ test("BLS genera fichas, páginas, diccionarios y manifiesto byte a byte determi
   await writeBlsArtifacts(catalog, root);
   assert.equal((await checkBlsArtifacts(catalog, root)).foods, 2);
   const before = await readFile(join(root, "manifest.json"));
+  await mkdir(join(root, "image-batches/0001"), { recursive: true });
+  await writeFile(join(root, "image-batches/0001/editorial-fixture"), "Image assets have their own validator");
   await writeBlsArtifacts(catalog, root);
+  assert.equal((await checkBlsArtifacts(catalog, root)).foods, 2);
+  assert.equal(await readFile(join(root, "image-batches/0001/editorial-fixture"), "utf8"), "Image assets have their own validator");
   assert.deepEqual(await readFile(join(root, "manifest.json")), before);
 });
 

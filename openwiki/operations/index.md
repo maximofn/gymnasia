@@ -1,7 +1,7 @@
 # Archivos
 
 - [Configuración nativa, permisos y cuota Android](android-permissions.md) - Contrato entre la configuración Expo, el prebuild Android y el artefacto instalado. Describe los permisos publicables, la cuota nativa compartida de AsyncStorage y las validaciones que detectan deriva antes de distribuir una actualización.
-- [Build, publicación y validación](build-release-and-testing.md) - Contratos operativos y comandos verificables para pruebas, catálogos, configuración Android y publicación. Distingue la aprobación y el envío de una release de su disponibilidad efectiva en Google Play.
+- [Compilación, publicación y validación](build-release-and-testing.md) - Contratos operativos y comandos verificables para pruebas, catálogos, configuración Android y publicación. Distingue la aprobación y el envío de una release de su disponibilidad efectiva en Google Play.
 - [Automatización de OpenWiki](openwiki-automation.md) - Runner privado de GitHub Actions que actualiza la documentación de Gymnasia, conserva estados sensibles cifrados y genera un informe diario saneado. Describe sus límites operativos, ciclo de vida y pruebas de contrato.
 - [Gobernanza de prompts y política](prompt-policy-governance.md) - Explica cómo se generan, validan, firman y promocionan las instrucciones del agente y la política sanitaria, incluida la coherencia con copias integradas y las puertas técnicas que evitan la deriva.
 - [Comportamiento operativo, trazas y degradación](runtime-behavior.md) - Diagnóstico local de versión, almacenamiento y configuración de proveedores, con límites explícitos de privacidad y de lo que una comprobación local puede asegurar sobre servicios remotos.

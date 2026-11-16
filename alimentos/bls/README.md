@@ -73,7 +73,10 @@ GitHub. Recorrer `pages.json` en su orden y concatenar los arrays da las mismas
 fichas ordenadas por ID que `foods/`. No se necesita un servidor de paginación.
 
 Las fichas son JSON compactos generados; no se editan manualmente. El contrato de salida es la versión 2 de
-`scripts/catalogs/schemas/bls-food.schema.json`. El check también verifica que no
+`scripts/catalogs/schemas/bls-food.schema.json`. Los recursos editoriales de
+`image-batches/` tienen un validador independiente;
+el importador de datos los conserva y no los añade al manifiesto nutricional.
+El check de datos también verifica que no
 falten ni sobren archivos de salida. El writer prepara cada archivo temporal y
 lo renombra; escribe el manifiesto al final. Una interrupción puede dejar una
 entrega parcial, que el check rechaza y que se recupera reejecutando el importador.
@@ -84,7 +87,8 @@ Se niega a borrar archivos ajenos y a seguir symlinks de salida.
 - IDs `bls-<código>`: el código es texto, incluidos los alfanuméricos como los de
   ciertas leches. No se enlazan ni fusionan alimentos con CIQUAL o el catálogo curado.
 - `names.de` y `names.en` son oficiales y literales. No se han generado nombres
-  españoles, traducciones, imágenes, raciones, densidades ni categorías inferidas.
+  españoles, traducciones, raciones, densidades ni categorías inferidas. Las imágenes
+  editoriales se almacenan aparte; no alteran estos nombres ni las fichas.
 - `source.worksheet_row` identifica la fila del Excel principal; `source_note`
   conserva la columna `Hinweis` cuando existe.
 - Cada componente conserva las nueve columnas del diccionario en `source_fields`
@@ -207,6 +211,38 @@ los contadores originales. `counts.origins` sigue describiendo `source_origin`,
 no los orígenes efectivos. La validación restaura desde el diario y vuelve a
 aplicar el plan: rechaza alteraciones y evita aplicar dos veces la resta energética.
 
+## Imágenes editoriales independientes
+
+Las imágenes de Gymnasia se guardan en [`image-batches/`](image-batches/README.md),
+una imagen nueva por código BLS, sin reutilizar otra variante ni fotografías de
+CIQUAL. Se conserva el estilo aprobado de sus muestras: fotografía gastronómica,
+fondo carbón opaco `#0D1117`, luz cálida suave y sujeto completo y centrado. Las
+muestras de CIQUAL son referencias de estilo, no equivalencias entre alimentos.
+
+Cada tanda contiene hasta 100 WebP opacos de 1024×1024 (calidad 90) y un manifiesto
+con nombres DE/EN literales, huella de esos nombres, prompt exacto, referencia de
+estilo y su hash, hash del WebP y registro de revisión visual. Se usa una llamada
+independiente al generador integrado de Codex por alimento. `pending-review`
+indica que la revisión del agente no equivale a aprobación del mantenedor.
+
+```bash
+npm run check:bls:images
+npm run next:bls:images -- 10
+```
+
+Ambos comandos son de solo lectura, sin proveedor, red ni generación. El check
+verifica los archivos reales, formato/dimensiones/opacidad, fuentes y referencias,
+revisión completa, duplicados, imágenes reutilizadas, huérfanos y enlaces
+simbólicos. `next` devuelve únicamente códigos sin imagen registrada y admite
+entre 1 y 100. `npm run test:bls` incluye sus pruebas, y CI ejecuta el check.
+
+Son ilustraciones generadas por IA, **no proporcionadas ni validadas por Max
+Rubner-Institut**. No documentan una receta oficial, una porción de 100 g,
+composición exacta, alérgenos ni propiedades nutricionales o ausencia de gluten.
+El manifiesto nutricional y las fichas originales permanecen independientes.
+El progreso y cómo reanudar se documentan en
+[`docs/bls-food-images-handoff.md`](../../docs/bls-food-images-handoff.md).
+
 ## Alcance y pruebas
 
 Esta entrega no modifica archivos, bundle, búsquedas, dieta, tools o índices
@@ -224,7 +260,9 @@ invalidaciones, aritmética decimal, idempotencia y manipulación del diario.
 CI ejecuta `check:bls` y `test:catalogs` sin red ni claves para estos checks.
 
 Revisión de privacidad: solo se descargan datos públicos durante mantenimiento.
-No se leen claves ni datos de usuarios, no hay llamadas a IA y la app no se
-conecta a blsdb.de. No se crean permisos, almacenamiento, destinos de red,
+No se leen claves ni datos de usuarios. El importador nutricional no llama a IA;
+la generación editorial usa Codex integrado con nombres públicos y referencias
+visuales propias. La app no se conecta a blsdb.de. No se crean permisos,
+almacenamiento, destinos de red,
 proveedores o cambios de copias/borrado móviles. Se documenta en el inventario;
 no cambia la política publicada ni las declaraciones de Google Play.

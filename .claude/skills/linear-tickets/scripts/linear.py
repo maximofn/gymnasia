@@ -318,6 +318,8 @@ def cmd_get(args):
         identifier title description priorityLabel
         state { name type } assignee { name }
         labels { nodes { name } }
+        parent { identifier title }
+        children(first: 100) { nodes { identifier title state { name } } }
         createdAt updatedAt url
       }
     }
@@ -330,6 +332,13 @@ def cmd_get(args):
     print(f"Asignado:   {n['assignee']['name'] if n['assignee'] else '—'}")
     print(f"Labels:     {labels}")
     print(f"URL:        {n['url']}")
+    if n["parent"]:
+        print(f"Padre:      {n['parent']['identifier']}  {n['parent']['title']}")
+    children = n["children"]["nodes"]
+    if children:
+        print(f"Sub-issues: {len(children)}")
+        for c in children:
+            print(f"  {c['identifier']:<9} [{c['state']['name']}] {c['title']}")
     print("\n--- Descripción ---")
     print(n["description"] or "(vacía)")
 
