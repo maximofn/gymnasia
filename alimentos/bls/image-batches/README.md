@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**1.400/7.140 imágenes registradas; 5.740 pendientes; 19,61 %.**
+**1.500/7.140 imágenes registradas; 5.640 pendientes; 21,01 %.**
 
-Las tandas `0001` a `0014` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0015` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -29,6 +29,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0012: manifiesto y prompts](0012/manifest.json).
 - [Tanda 0013: manifiesto y prompts](0013/manifest.json).
 - [Tanda 0014: manifiesto y prompts](0014/manifest.json).
+- [Tanda 0015: manifiesto y prompts](0015/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -1970,3 +1971,130 @@ Correcciones visuales registradas: 1 (`bls-G331182`): se regeneró el colinabo d
 | [bls-G332252](0014/bls-G332252.webp) | Rosenkohl tiefgefroren, gedünstet | Brussels sprouts deep-frozen, stewed |
 | [bls-G332262](0014/bls-G332262.webp) | Rosenkohl tiefgefroren, gebacken | Brussels sprouts deep-frozen, baked |
 | [bls-G332902](0014/bls-G332902.webp) | Rosenkohl Konserve, abgetropft | Brussels sprouts canned, drained |
+
+## Tanda 0015: coles, alcachofas, hinojo y tallos
+
+100 WebP finales opacos de 1024×1024 revisados en nueve hojas de contacto; 18 casos comprobados también a tamaño completo. Una salida independiente del generador integrado de Codex por código. Las referencias CIQUAL aportan solo el estilo. BLS sigue fuera de la app.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0015-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0015-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0015-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0015-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0015-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0015-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0015-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0015-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0015-09.jpg)
+
+Se distinguen la lombarda morada, el repollo blanco redondo, la col de Saboya de hojas abullonadas y la col puntiaguda. La lombarda en conserva `undrained` conserva líquido rojizo visible; las conservas `drained` se muestran sin líquido acumulado. El chucrut son hebras finas de col fermentada, también cuando figura crudo; no se convierte en una ensalada de col fresca. El chucrut al vino mantiene el vino incorporado, sin copa, botella o uvas. Su zumo es un líquido turbio amarillo pálido, sin hebras ni hielo. Romanesco conserva sus floretes cónicos en espiral.
+
+Las alcachofas crudas y hervidas muestran capullos de brácteas superpuestas; las conservas muestran corazones tiernos. Las variantes en aceite y escurridas conservan solo una película residual, sin charco, especias o limón. Para el cardo se representan pencas carnosas acanaladas, conforme a [NC State Extension](https://plants.ces.ncsu.edu/plants/cynara-cardunculus/common-name/cardoon/); no capullos de alcachofa ni flores de cardo. `Stielmus/Rübstiel` se representa con sus tallos tiernos y hojas jóvenes, de acuerdo con [BZfE](https://www.bzfe.de/presse/pressemeldungen-archiv/saison-fuer-stielmus), sin añadir raíces de nabo.
+
+El hinojo de bulbo muestra su base blanca engrosada en capas, descrita por [RHS](https://www.rhs.org.uk/plants/158862/foeniculum-vulgare-var-azoricum/details). Para `Fenchelblatt/Bologneser Fenchel` se representan las hojas finamente divididas del hinojo dulce, diferenciadas del bulbo, según [RHS](https://www.rhs.org.uk/plants/43747/foeniculum-vulgare-var-dulce/details). El palmito muestra cilindros marfil y rodajas de anillos finos. Los espárragos se ilustran con una variedad blanca, una elección editorial entre las variedades descritas por [BZfE](https://www.bzfe.de/kueche-und-alltag/vom-acker-bis-zum-teller/spargel/spargel-vom-einkauf-in-die-kueche), sin afirmar que BLS certifique ese color para cada ficha.
+
+La verdolaga tiene hojas pequeñas carnosas y tallos rojizos, conforme a [University of Wisconsin Extension](https://hort.extension.wisc.edu/articles/common-purslane-portulaca-oleracea/). Los puerros conservan los cilindros blancos y verdes en capas; la cebolla se ilustra con una variedad amarilla y capas interiores marfil. Hervido, vapor, braseado y guisado muestran ablandamiento sin costra; horno, sartén y parrilla incorporan solo las marcas de cocción correspondientes. El congelado sin cocinar tiene escarcha discreta y los cocinados desde congelado ya no. No hay guarniciones ni envases. Estas decisiones visuales no certifican especie, variedad, receta, contenido en grasa, alérgenos ni porción de 100 g. Los nombres DE/EN permanecen literales y las fichas y nutrientes oficiales no cambian.
+
+Correcciones visuales registradas: 0. Casos abiertos a tamaño completo: `bls-G341900`, `bls-G344100`, `bls-G345100`, `bls-G345600`, `bls-G346100`, `bls-G350100`, `bls-G410100`, `bls-G410702`, `bls-G410732`, `bls-G414100`, `bls-G420100`, `bls-G430100`, `bls-G431100`, `bls-G440100`, `bls-G450100`, `bls-G450242`, `bls-G460100`, `bls-G480072`.
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-G341100](0015/bls-G341100.webp) | Rotkohl roh | Red cabbage raw |
+| [bls-G341132](0015/bls-G341132.webp) | Rotkohl gekocht | Red cabbage boiled |
+| [bls-G341142](0015/bls-G341142.webp) | Rotkohl geschmort ohne Fett | Red cabbage braised without fat |
+| [bls-G341152](0015/bls-G341152.webp) | Rotkohl gedünstet | Red cabbage stewed |
+| [bls-G341162](0015/bls-G341162.webp) | Rotkohl gebacken | Red cabbage baked |
+| [bls-G341182](0015/bls-G341182.webp) | Rotkohl gebraten ohne Fett (Pfanne) | Red cabbage fried without fat (pan) |
+| [bls-G341900](0015/bls-G341900.webp) | Rotkohlgemüse (küchenfertig) Konserve | Red cabbage canned undrained |
+| [bls-G342100](0015/bls-G342100.webp) | Weißkohl roh | White cabbage raw |
+| [bls-G342132](0015/bls-G342132.webp) | Weißkohl gekocht | White cabbage boiled |
+| [bls-G342142](0015/bls-G342142.webp) | Weißkohl geschmort ohne Fett | White cabbage braised without fat |
+| [bls-G342152](0015/bls-G342152.webp) | Weißkohl gedünstet | White cabbage stewed |
+| [bls-G342162](0015/bls-G342162.webp) | Weißkohl gebacken | White cabbage baked |
+| [bls-G342182](0015/bls-G342182.webp) | Weißkohl gebraten ohne Fett (Pfanne) | White cabbage fried without fat (pan) |
+| [bls-G343100](0015/bls-G343100.webp) | Wirsing roh | Savoy cabbage raw |
+| [bls-G343132](0015/bls-G343132.webp) | Wirsing gekocht | Savoy cabbage boiled |
+| [bls-G343142](0015/bls-G343142.webp) | Wirsing geschmort ohne Fett | Savoy cabbage braised without fat |
+| [bls-G343152](0015/bls-G343152.webp) | Wirsing gedünstet | Savoy cabbage stewed |
+| [bls-G343162](0015/bls-G343162.webp) | Wirsing gebacken | Savoy cabbage baked |
+| [bls-G343182](0015/bls-G343182.webp) | Wirsing gebraten ohne Fett (Pfanne) | Savoy cabbage fried without fat (pan) |
+| [bls-G343902](0015/bls-G343902.webp) | Wirsing Konserve, abgetropft | Savoy cabbage canned, drained |
+| [bls-G344100](0015/bls-G344100.webp) | Spitzkohl roh | Pointed cabbage raw |
+| [bls-G344132](0015/bls-G344132.webp) | Spitzkohl gekocht | Pointed cabbage boiled |
+| [bls-G344152](0015/bls-G344152.webp) | Spitzkohl gedünstet | Pointed cabbage stewed |
+| [bls-G344162](0015/bls-G344162.webp) | Spitzkohl gebacken | Pointed cabbage baked |
+| [bls-G344182](0015/bls-G344182.webp) | Spitzkohl gebraten ohne Fett (Pfanne) | Pointed cabbage fried without fat (pan) |
+| [bls-G345032](0015/bls-G345032.webp) | Sauerkraut abgetropft, gekocht | Sauerkraut drained, boiled |
+| [bls-G345042](0015/bls-G345042.webp) | Sauerkraut abgetropft, geschmort ohne Fett | Sauerkraut drained, braised without fat |
+| [bls-G345062](0015/bls-G345062.webp) | Sauerkraut abgetropft, gebacken | Sauerkraut drained, baked |
+| [bls-G345082](0015/bls-G345082.webp) | Sauerkraut abgetropft, gebraten ohne Fett (Pfanne) | Sauerkraut drained, fried without fat (pan) |
+| [bls-G345100](0015/bls-G345100.webp) | Sauerkraut abgetropft, roh | Sauerkraut drained, raw |
+| [bls-G345152](0015/bls-G345152.webp) | Sauerkraut abgetropft, gedünstet | Sauerkraut drained, stewed |
+| [bls-G345600](0015/bls-G345600.webp) | Gemüsesaft aus Sauerkraut | Sauerkraut juice |
+| [bls-G345902](0015/bls-G345902.webp) | Sauerkraut Konserve, abgetropft | Sauerkraut canned, drained |
+| [bls-G346100](0015/bls-G346100.webp) | Weinsauerkraut roh | Wine sauerkraut raw |
+| [bls-G346132](0015/bls-G346132.webp) | Weinsauerkraut gekocht | Wine sauerkraut boiled |
+| [bls-G346152](0015/bls-G346152.webp) | Weinsauerkraut gedünstet | Wine sauerkraut stewed |
+| [bls-G350100](0015/bls-G350100.webp) | Romanesco roh | Romanesco broccoli raw |
+| [bls-G350132](0015/bls-G350132.webp) | Romanesco gekocht | Romanesco broccoli boiled |
+| [bls-G350152](0015/bls-G350152.webp) | Romanesco gedünstet | Romanesco broccoli stewed |
+| [bls-G350162](0015/bls-G350162.webp) | Romanesco gebacken | Romanesco broccoli baked |
+| [bls-G350182](0015/bls-G350182.webp) | Romanesco gebraten ohne Fett (Pfanne) | Romanesco broccoli fried without fat (pan) |
+| [bls-G410100](0015/bls-G410100.webp) | Artischocke roh | Artichokes raw |
+| [bls-G410132](0015/bls-G410132.webp) | Artischocke gekocht | Artichokes boiled |
+| [bls-G410702](0015/bls-G410702.webp) | Artischocke in Öl, Konserve, abgetropft | Artichokes in oil, canned, drained |
+| [bls-G410732](0015/bls-G410732.webp) | Artischocke in Öl, Konserve, abgetropft gekocht | Artichokes in oil, canned, drained boiled |
+| [bls-G410902](0015/bls-G410902.webp) | Artischocke Konserve, abgetropft | Artichokes canned, drained |
+| [bls-G414100](0015/bls-G414100.webp) | Gemüseartischocke/Kardone, roh | Cardoon raw |
+| [bls-G414132](0015/bls-G414132.webp) | Gemüseartischocke/Kardone, gekocht | Cardoon boiled |
+| [bls-G420100](0015/bls-G420100.webp) | Stielmus/Rübstiel, roh | Turnip tops/greens, raw |
+| [bls-G420132](0015/bls-G420132.webp) | Stielmus/Rübstiel, gekocht | Turnip tops/greens, boiled |
+| [bls-G420152](0015/bls-G420152.webp) | Stielmus/Rübstiel, gedünstet | Turnip tops/greens, stewed |
+| [bls-G420182](0015/bls-G420182.webp) | Stielmus/Rübstiel, gebraten ohne Fett (Pfanne) | Turnip tops/greens, fried without fat (pan) |
+| [bls-G430100](0015/bls-G430100.webp) | Gemüsefenchel roh | Fennel/Florence fennel, raw |
+| [bls-G430132](0015/bls-G430132.webp) | Gemüsefenchel gekocht | Fennel/Florence fennel, boiled |
+| [bls-G430152](0015/bls-G430152.webp) | Gemüsefenchel gedünstet | Fennel/Florence fennel, stewed |
+| [bls-G430162](0015/bls-G430162.webp) | Gemüsefenchel gebacken | Fennel/Florence fennel, baked |
+| [bls-G430182](0015/bls-G430182.webp) | Gemüsefenchel gebraten ohne Fett (Pfanne) | Fennel/Florence fennel, fried without fat (pan) |
+| [bls-G431100](0015/bls-G431100.webp) | Fenchelblatt/Bologneser Fenchel, roh | Roman fennel/sweet fennel, raw |
+| [bls-G440100](0015/bls-G440100.webp) | Palmenherz roh | Palm heart, raw |
+| [bls-G440132](0015/bls-G440132.webp) | Palmenherz gekocht | Palm heart, boiled |
+| [bls-G440902](0015/bls-G440902.webp) | Palmenherz Konserve, abgetropft | Palm heart, canned, drained |
+| [bls-G450100](0015/bls-G450100.webp) | Spargel roh | Asparagus raw |
+| [bls-G450132](0015/bls-G450132.webp) | Spargel gekocht | Asparagus boiled |
+| [bls-G450142](0015/bls-G450142.webp) | Spargel gedämpft | Asparagus steamed |
+| [bls-G450152](0015/bls-G450152.webp) | Spargel gedünstet | Asparagus stewed |
+| [bls-G450162](0015/bls-G450162.webp) | Spargel gebacken | Asparagus baked |
+| [bls-G450200](0015/bls-G450200.webp) | Spargel tiefgefroren | Asparagus deep-frozen |
+| [bls-G450232](0015/bls-G450232.webp) | Spargel tiefgefroren, gekocht | Asparagus deep-frozen, boiled |
+| [bls-G450242](0015/bls-G450242.webp) | Spargel tiefgefroren, gedämpft | Asparagus deep-frozen, steamed |
+| [bls-G450252](0015/bls-G450252.webp) | Spargel tiefgefroren, gedünstet | Asparagus deep-frozen, stewed |
+| [bls-G450262](0015/bls-G450262.webp) | Spargel tiefgefroren, gebacken | Asparagus deep-frozen, baked |
+| [bls-G450282](0015/bls-G450282.webp) | Spargel tiefgefroren, gebraten ohne Fett (Pfanne) | Asparagus deep-frozen, fried without fat (pan) |
+| [bls-G450902](0015/bls-G450902.webp) | Spargel Konserve, abgetropft | Asparagus canned, drained |
+| [bls-G451082](0015/bls-G451082.webp) | Spargel gebraten ohne Fett (Pfanne) | Asparagus fried without fat (pan) |
+| [bls-G460100](0015/bls-G460100.webp) | Portulak roh | Purslane raw |
+| [bls-G460152](0015/bls-G460152.webp) | Portulak gedünstet | Purslane stewed |
+| [bls-G470042](0015/bls-G470042.webp) | Porree/Lauch, geschmort ohne Fett | Leek braised without fat |
+| [bls-G470100](0015/bls-G470100.webp) | Porree/Lauch, roh | Leek raw |
+| [bls-G470132](0015/bls-G470132.webp) | Porree/Lauch, gekocht | Leek boiled |
+| [bls-G470152](0015/bls-G470152.webp) | Porree/Lauch, gedünstet | Leek stewed |
+| [bls-G470162](0015/bls-G470162.webp) | Porree/Lauch, gebacken | Leek baked |
+| [bls-G470182](0015/bls-G470182.webp) | Porree/Lauch, gebraten ohne Fett (Pfanne) | Leek fried without fat (pan) |
+| [bls-G470200](0015/bls-G470200.webp) | Porree/Lauch, tiefgefroren | Leek deep-frozen |
+| [bls-G470232](0015/bls-G470232.webp) | Porree/Lauch, tiefgefroren, gekocht | Leek deep-frozen, boiled |
+| [bls-G470242](0015/bls-G470242.webp) | Porree/Lauch, tiefgefroren, geschmort ohne Fett | Leek deep-frozen, braised without fat |
+| [bls-G470252](0015/bls-G470252.webp) | Porree/Lauch, tiefgefroren, gedünstet | Leek deep-frozen, stewed |
+| [bls-G470262](0015/bls-G470262.webp) | Porree/Lauch, tiefgefroren, gebacken | Leek deep-frozen, baked |
+| [bls-G470282](0015/bls-G470282.webp) | Porree/Lauch, tiefgefroren, gebraten ohne Fett (Pfanne) | Leek deep-frozen, fried without fat (pan) |
+| [bls-G480072](0015/bls-G480072.webp) | Speisezwiebel gegrillt | Onion grilled |
+| [bls-G480100](0015/bls-G480100.webp) | Speisezwiebel roh | Onion raw |
+| [bls-G480132](0015/bls-G480132.webp) | Speisezwiebel gekocht | Onion boiled |
+| [bls-G480142](0015/bls-G480142.webp) | Speisezwiebel geschmort ohne Fett | Onion braised without fat |
+| [bls-G480152](0015/bls-G480152.webp) | Speisezwiebel gedünstet | Onion stewed |
+| [bls-G480162](0015/bls-G480162.webp) | Speisezwiebel gebacken | Onion baked |
+| [bls-G480182](0015/bls-G480182.webp) | Speisezwiebel gebraten ohne Fett (Pfanne) | Onion fried without fat (pan) |
+| [bls-G480200](0015/bls-G480200.webp) | Speisezwiebel tiefgefroren | Onion deep-frozen |
+| [bls-G480232](0015/bls-G480232.webp) | Speisezwiebel tiefgefroren, gekocht | Onion deep-frozen, boiled |
+| [bls-G480242](0015/bls-G480242.webp) | Speisezwiebel tiefgefroren, geschmort ohne Fett | Onion deep-frozen, braised without fat |
+| [bls-G480252](0015/bls-G480252.webp) | Speisezwiebel tiefgefroren, gedünstet | Onion deep-frozen, stewed |
+| [bls-G480262](0015/bls-G480262.webp) | Speisezwiebel tiefgefroren, gebacken | Onion deep-frozen, baked |
