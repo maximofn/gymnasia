@@ -1,13 +1,18 @@
 ---
 type: guía operativa
-title: Generación y uso de imágenes de catálogo
-description: Flujo manual para generar imágenes de alimentos y ejercicios, validar sus recursos y referencias de catálogo, y publicar de forma segura los artefactos que consume la aplicación móvil.
-tags: [content, images, generation, catalogs, validation]
+title: Generación y entrega de imágenes de catálogo
+description: Contratos de resolución y entrega de imágenes de alimentos, ejercicios y CIQUAL en el cliente móvil. Distingue el generador histórico de alimentos y ejercicios del flujo vigente, verificable y versionado de imágenes CIQUAL.
+tags: [catalogs, images, mobile, ciqual, generation]
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-11T15:41:01.947Z
 sources:
   - id: openwiki-source-fba881b48b95c05eebc3f1a3
     resource: repo://apps/mobile/catalogs/imageUris.ts
-  - id: openwiki-source-36ac1d1b6a1d97f5db056148
-    resource: repo://apps/mobile/catalogs/types.ts
+  - id: openwiki-source-3f78f2325c436ce5cc553def
+    resource: repo://apps/mobile/components/Thumbnail.tsx
+  - id: openwiki-source-7a63325ebd6d3e0cfa0b1634
+    resource: repo://apps/mobile/diet/catalogModel.ts
   - id: openwiki-source-bd210931c947e300164b7a63
     resource: repo://apps/mobile/scripts/catalogs.e2e.mjs
   - id: openwiki-source-d54ece17be93a2b0fabf9d35
@@ -22,66 +27,92 @@ sources:
     resource: repo://scripts/catalogs/catalogs.mjs
   - id: openwiki-source-869bed5ee1bbd205948cf49e
     resource: repo://scripts/catalogs/catalogs.test.mjs
+  - id: openwiki-source-479a8e1beb0e92cbabe03d8c
+    resource: repo://scripts/catalogs/ciqual-image-batches.mjs
+  - id: openwiki-source-fbc0c015833f90d8b1382e35
+    resource: repo://scripts/catalogs/ciqual-mobile-images.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-10-29T14:43:04.676Z" }
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-29T14:43:04.676Z
+generated: { by: "openwiki/0.6.0", at: "2026-11-11T15:41:01.947Z" }
 ---
 
-# Generación y uso de imágenes de catálogo
+# Generación y entrega de imágenes de catálogo
 
-La generación es una operación manual, externa y no determinista sobre catálogos versionados; no se ejecuta dentro de la app móvil. `image-generation/generate_images.py` solicita imágenes a Spaces de Gradio para **alimentos** y **ejercicios**, copia el resultado a los directorios de contenido y llama al generador común de catálogos. La app consume los JSON y artefactos ya versionados y validados, no un resultado directo de IA.
+Las imágenes son recursos versionados del repositorio, no resultados que la aplicación solicite a un modelo. El cliente móvil construye URL hacia la rama `main` de `raw.githubusercontent.com` y descarga únicamente las imágenes que necesita mostrar. Por tanto, una modificación segura abarca el recurso, su índice o referencia, el contrato del resolvedor y las pruebas de la superficie afectada.
 
-El código y las pruebas son la fuente de verdad. Los Markdown de prompts y los ejemplos del docstring son apoyo editorial: las asignaciones `FOOD_PROMPTS` y `EXERCISE_PROMPTS`, las plantillas y el validador común son el comportamiento ejecutable.
+Hay dos flujos que no deben confundirse:
 
-## Contrato de contenido
+- **CIQUAL (vigente):** ilustraciones IA curadas en muestras y tandas, con manifiestos, hashes e índice móvil generado. Es el mecanismo que entrega imágenes a la fuente `anses_ciqual_2025`.
+- **Alimentos y ejercicios curados (herramienta histórica ejecutable):** `image-generation/generate_images.py` aún genera WebP mediante Spaces de Gradio y después invoca el generador común de catálogos. No genera ni publica las imágenes CIQUAL; no debe usarse como descripción del proceso de tandas CIQUAL.
 
-| Dominio | Ficha editable | Referencia | Recurso y proporción exigidos |
-| --- | --- | --- | --- |
-| Alimentos | `alimentos/<id>.json` | `image: "<archivo>.webp"` | `alimentos/images/<archivo>.webp`, 1:1 |
-| Ejercicios | `ejercicios/<id>.json` | `image_male`, `image_female` | `ejercicios/images/<id>-male.webp` y `...-female.webp`, 16:9 |
-| Productos comerciales | `productos_comerciales/<id>.json` | `image` opcional | `productos_comerciales/images/<archivo>.webp`, 1:1 |
-| Recetas | `recetas/<id>.json` | `image` opcional | `recetas/images/<archivo>.webp`, 1:1 |
+## Resolución y degradación en móvil
 
-El script de IA automatiza únicamente alimentos y ejercicios. Productos y recetas pueden recibir imágenes por otro procedimiento, pero siguen el contrato y la inspección de todos los dominios. Las imágenes nutricionales pueden ser compartidas por fichas; las de ejercicio deben tener exactamente el nombre derivado de su ID y género.
+`imageUris.ts` es el límite entre un registro del catálogo y una URI descargable. Para alimentos personales devuelve `null`. Para una entrada CIQUAL, busca su ID en `ciqualImages.generated.json`; si está indexado, compone `alimentos/ciqual/<ruta-indexada>`. Para las demás fuentes de alimentos, compone `alimentos/images/<image>`, `productos_comerciales/images/<image>` o `recetas/images/<image>` según `sourceId`. Los ejercicios conservan rutas relativas de variante y se resuelven bajo `ejercicios`.
 
-La puerta de publicación valida JSON y schema, nombre de ficha frente a ID, duplicados —también entre dominios nutricionales—, referencias seguras y con mayúsculas exactas. Además rechaza recursos ausentes o huérfanos, extensiones incorrectas, bytes que no sean WebP decodificable y dimensiones no válidas. En particular, se exige `width === height` para nutrición y `width * 9 === height * 16` para ejercicios: ni la extensión `.webp` ni una instrucción en el prompt prueban el contrato.
-
-### Resolución en el cliente móvil
-
-El catálogo transporta nombres o rutas relativas, no una URL absoluta de imagen. `foodCatalogImageUri` construye la URL de `raw.githubusercontent.com/maximofn/gymnasia/main` con el directorio que corresponde a `sourceId`: alimentos por defecto, `productos_comerciales` o `recetas`; devuelve `null` para alimentos personales y CIQUAL aunque tengan un campo `image`. `exerciseCatalogImageUri` conserva `image_male` o `image_female` del catálogo y lo antepone a `ejercicios`. Por ello, cambiar la raíz, el directorio o el formato de una referencia exige cambiar a la vez el contrato de contenido y este resolvedor; no se debe guardar una URL remota en la ficha.
-
-Los tipos hacen obligatorio `image_male` e `image_female` en una entrada de ejercicio, pero `image` es opcional en una entrada nutricional. La obligatoriedad efectiva de los archivos de ejercicio procede además del schema y del validador de nombres; para nutrición solo se valida un recurso cuando la ficha declara `image`.
-
-## Flujo y límites de la operación
+En consecuencia, las fichas curadas no deben almacenar una URL absoluta: sus nombres y rutas relativas forman parte del contrato con el resolvedor. En CIQUAL, la asociación editorial vive fuera de la ficha nutricional, en el artefacto generado; el ID estable es la clave de unión.
 
 ```mermaid
 flowchart TD
-    A["Editar ficha y referencia de imagen"] --> B["Añadir prompt ejecutable para alimento o ejercicio"]
-    B --> C["Ejecutar generador con HF_TOKEN"]
-    C --> D{"Existe el destino"}
-    D -->|"Sí"| E["Omitir la generación"]
-    D -->|"No"| F["Solicitar imagen al Space de Gradio"]
-    F --> G["Copiar resultado al destino webp"]
-    E --> H["Inspeccionar los cuatro catálogos"]
-    G --> H
-    H --> I{"Contratos válidos"}
-    I -->|"No"| J["No publicar artefactos"]
-    I -->|"Sí"| K["Escribir artefactos del dominio"]
-    K --> L["Comprobar deriva y consumidores"]
+    A["Entrada de catálogo"] --> B{"Fuente CIQUAL"}
+    B -->|"Sí"| C["Índice ciqualImages por ID"]
+    C --> D{"Hay ruta indexada"}
+    D -->|"Sí"| E["URL alimentos ciqual"]
+    D -->|"No"| F["Sin URI"]
+    B -->|"No"| G{"Es alimento personal"}
+    G -->|"Sí"| F
+    G -->|"No"| H["Directorio según sourceId e image"]
+    E --> I["Thumbnail"]
+    H --> I
+    I --> J{"URI ausente o carga fallida"}
+    J -->|"Sí"| K["Fallback del dominio"]
+    J -->|"No"| L["Imagen nativa"]
 ```
 
-*El flujo de una ejecución de imágenes: la generación no convierte ni redimensiona el archivo; el generador de catálogos es la barrera de publicación.*
+*Resolución perezosa y degradación local: la ausencia del índice, de red o un error de carga no bloquean el registro del alimento.*
 
-Para cada dominio el script ordena los JSON de ficha y excluye `all.json`, `index.json` y `package.json`. Una ficha sin entrada en su mapa de prompts se registra y se salta. `--id` solo filtra; no diagnostica especialmente un ID inexistente y aun así el recorrido acaba en la sincronización si había fichas. Alimentos producen `images/<id>.webp`; ejercicios producen una solicitud para `man`/`male` y otra para `woman`/`female`.
+`Thumbnail` no decide la URI ni el sustituto: los wrappers de cada dominio se los entregan. Si no hay URI o si el `Image` notifica un error para la URI actual, renderiza el `fallback`; si la URI cambia, puede intentar cargar la nueva. Esto mantiene funcionales búsqueda, consulta y registro aunque una descarga falle.
 
-Un destino existente **nunca se sobrescribe**. Cambiar un prompt no regenera una imagen y un archivo corrupto existente tampoco se repara automáticamente. No hay `--force`: para regenerar, conservar una copia para comparación y mover o borrar deliberadamente el destino antes de repetir el ID. La operación completa tampoco es transaccional: una predicción, copia o sincronización posterior puede fallar después de haber creado recursos.
+Para una comida creada desde catálogo, `dietItemFromCatalog` guarda la URI resuelta en `image_uri` junto con el enlace estable. Para comidas CIQUAL antiguas que no la tenían, `dietItemImageUri` vuelve a resolverla desde `catalog_link` al dibujarla; no altera sus macros ni la instantánea histórica.
 
-## Preparación, CLI y proveedores
+## CIQUAL: curación, integridad y publicación del índice
 
-El proyecto requiere Python 3.12 o posterior y usa `uv`. Carga `HF_TOKEN` del entorno o del `.env` de la raíz; el texto de error que menciona `image-generation/.env` no refleja esa carga. El token es obligatorio antes de conectar, incluso para los clientes que se construyen sin él. No debe confirmarse en Git.
+Las 3.484 fichas CIQUAL son datos nutricionales locales; sus imágenes son ilustraciones de Gymnasia, no material proporcionado ni validado por ANSES. La atribución se incorpora al artefacto móvil y debe aparecer donde corresponda en la UI. Los WebP no se empaquetan todos con la app: se solicitan desde el repositorio público al mostrarse, y la disponibilidad offline de una imagen depende de la caché de plataforma.
+
+El estado publicable se construye desde una muestra de estilo aprobada y las tandas `image-batches/NNNN`. Cada manifiesto aporta el ID, el archivo, el hash y la referencia a una muestra aprobada. La verificación de tandas rechaza IDs duplicados, archivos no declarados o ausentes, referencias de estilo no aprobadas y hashes distintos; también calcula qué alimentos aún no tienen imagen. El comando `--next <1..50>` solo lista una porción de pendientes: no genera ni publica recursos.
+
+Al sincronizar móvil, `ciqual-mobile-images.mjs` carga la muestra y todas las tandas, exige que el estilo esté aprobado y que haya exactamente una imagen por cada alimento, verifica cada SHA-256 y escribe el mapa ordenado `id → ruta` junto con la atribución en `apps/mobile/catalogs/generated/ciqualImages.generated.json`. No edite ese JSON manualmente: se detectaría como deriva.
+
+```mermaid
+flowchart TD
+    A["Muestra aprobada"] --> B["Tanda con manifest y WebP"]
+    B --> C["check ciqual image batches"]
+    C --> D{"Manifiestos, archivos, estilo y hash válidos"}
+    D -->|"No"| E["Detener publicación"]
+    D -->|"Sí"| F["sync ciqual images mobile"]
+    F --> G{"Cobertura completa e hashes válidos"}
+    G -->|"No"| E
+    G -->|"Sí"| H["ciqualImages.generated.json"]
+    H --> I["ciqualFoodImageUri por ID"]
+    I --> J["Descarga bajo demanda en móvil"]
+```
+
+*Flujo vigente de CIQUAL: la cobertura completa y la integridad de los bytes preceden al índice que consume el resolvedor móvil.*
+
+Desde la raíz, las operaciones son:
+
+```bash
+npm run check:ciqual:images
+npm run next:ciqual:images -- 50
+npm run sync:ciqual:images:mobile
+npm run check:ciqual:images:mobile
+npm run check:ciqual:mobile
+```
+
+`check:ciqual:mobile` incluye la comprobación del índice de imágenes. Tras cambiar imágenes o manifiestos, ejecute la sincronización antes de los checks; el check compara el archivo versionado con la salida esperada.
+
+## Generación curada de alimentos y ejercicios
+
+`image-generation/generate_images.py` es una utilidad manual para los catálogos curados `alimentos` y `ejercicios`. Carga `HF_TOKEN` desde el entorno o el `.env` de la raíz, conecta a un backend de Gradio y, al terminar su recorrido, llama a `scripts/catalogs/generate.mjs --write --domain ...`. El generador compartido, no Python, es la barrera que valida catálogos y escribe sus agregados.
 
 ```bash
 cd image-generation
@@ -90,42 +121,15 @@ uv run generate_images.py exercises --id press-banca
 uv run generate_images.py --backend z-image-turbo foods --id arroz-blanco
 ```
 
-`--backend` es una opción del parser superior y debe ir antes del subcomando. Si se omite, el script intenta `nano-banana`, `z-image-turbo` y `flux2-dev`, en ese orden; solo cambia al siguiente si la **conexión** falla. Una excepción de `predict` no activa un respaldo y un backend elegido explícitamente falla el proceso si no conecta.
+La opción global `--backend` va antes del subcomando. Sin ella se intenta `nano-banana`, `z-image-turbo` y `flux2-dev` en ese orden, pero el respaldo solo ocurre si falla la conexión; un fallo de predicción no cambia de proveedor. Solo Nano Banana recibe la proporción del dominio. Los otros dos solicitan 1024×1024, así que una imagen de ejercicio generada con ellos debe superar posteriormente el contrato 16:9. Sus semillas se aleatorizan, por lo que una generación no es reproducible solo por repetir el comando.
 
-| Backend | Llamada remota | Relación solicitada | Consecuencia práctica |
-| --- | --- | --- | --- |
-| `nano-banana` | `multimodalart/nano-banana`, `Nano Banana 2`, `fn_index=2` | La del dominio | Es el único que recibe 16:9 para ejercicios y 1:1 para alimentos. Depende de la firma del endpoint remoto. |
-| `z-image-turbo` | `mrfakename/Z-Image-Turbo`, `/generate_image` | 1024×1024 | Normalmente no superará la validación 16:9 de ejercicios. |
-| `flux2-dev` | `black-forest-labs/FLUX.2-dev`, `/infer` | 1024×1024 | Normalmente no superará la validación 16:9 de ejercicios. |
+El script recorre fichas ordenadas, omite agregados y solo genera IDs que existan en `FOOD_PROMPTS` o `EXERCISE_PROMPTS`. Produce `alimentos/images/<id>.webp` o `ejercicios/images/<id>-male.webp` y `<id>-female.webp`. Un destino existente se omite; no hay sobrescritura ni regeneración forzada. Conserve el recurso anterior y elimine o mueva deliberadamente el destino si se ha aprobado una regeneración.
 
-Los dos respaldos pasan una semilla pero solicitan `randomize_seed=True`; Nano Banana tampoco fija una semilla en este script. Junto con Spaces y modelos remotos no versionados, esto impide asumir reproducibilidad. Revise visualmente el resultado y conserve el recurso anterior hasta aceptarlo.
+Los prompts son material ejecutable indexado por ID; los documentos Markdown y ejemplos son auxiliares. La salida del proveedor debe revisarse visualmente y no sustituye la validación: los catálogos exigen WebP decodificable, rutas seguras y exactas, ausencia de huérfanos, y proporciones 1:1 para nutrición y 16:9 para ejercicios.
 
-## Prompts, procedencia y revisión humana
+## Verificación enfocada
 
-Las claves de `FOOD_PROMPTS` y `EXERCISE_PROMPTS` son IDs de fichas. Las plantillas añaden el estilo común: fotografía de estudio cuadrada para alimentos e ilustración fitness 16:9, género y vista para ejercicios, sin texto ni marca de agua. El proveedor puede ignorar esas instrucciones, así que el prompt no sustituye ni la revisión humana ni el validador.
-
-Al incorporar contenido, haga coincidir nombre de archivo, campo `id`, referencia de imagen y clave del mapa. Para ejercicios, revise ambas variantes por postura y biomecánica, extremidades, equipo, texto, marca de agua y representación segura. Para alimentos, confirme sujeto, legibilidad como miniatura y ausencia de texto o alegaciones nutricionales engañosas.
-
-`ejercicios/SOURCES.md` conserva la procedencia de metadatos e instrucciones. La licencia documentada permite adaptar texto y estructura del dataset indicado, pero excluye copiar, redistribuir o usar como referencia las imágenes y GIF de Gym Visual: las ilustraciones del catálogo se generan desde cero con el estilo propio.
-
-## Sincronización de artefactos
-
-Al finalizar el recorrido, el script ejecuta uno de estos comandos desde la raíz:
-
-```bash
-node scripts/catalogs/generate.mjs --write --domain ejercicios
-node scripts/catalogs/generate.mjs --write --domain alimentos
-```
-
-Antes de escribir, `generate.mjs` inspecciona los cuatro dominios. Cualquier infracción impide publicar incluso si se seleccionó uno solo. Si pasa, `--domain` limita los artefactos escritos: alimentos actualiza `all.json`, `index.json` y `apps/mobile/catalogs/generated/foodBaseline.generated.json`; productos comerciales y recetas actualizan su `all.json`; ejercicios actualiza `all.json`, `index.json` y `ejercicios/catalog-v1/`. Sin `--domain`, también se escribe el schema TypeScript generado para el runtime móvil.
-
-La escritura prepara archivos temporales, publica primero el contenido, elimina páginas paginadas obsoletas y deja el manifiesto de `catalog-v1` al final. Si falla un reemplazo o limpieza, intenta restaurar tanto artefactos sustituidos como borrados. No sustituya este mecanismo con un escritor Python ni edite agregados a mano.
-
-`--check` siempre valida todo y compara los artefactos presentes contra el contenido esperado; no admite `--domain`. Es la comprobación que detecta faltantes, deriva y JSON paginado que ya no pertenece al manifiesto.
-
-## Verificaciones focalizadas
-
-Después de cambiar imágenes, fichas o prompts, ejecute:
+Para cambios en imágenes, fichas o artefactos curados, ejecute:
 
 ```bash
 npm run check:catalogs
@@ -133,15 +137,14 @@ npm run test:catalogs
 npm run test:catalogs:e2e
 ```
 
-Los unitarios cubren generación estable, limpieza de páginas obsoletas, schema e identidad, imágenes con caso/MIME/corrupción/proporción incorrectos y huérfanos, rutas inseguras y rollback. El E2E exporta la app web de desarrollo, sirve el bundle local y sustituye GitHub y el proveedor por fixtures controladas; sus rutas también devuelven un fixture WebP para solicitudes de imagen. Comprueba el consumo de alimentos y del catálogo paginado de ejercicios, búsqueda y scroll, vínculos conservados por ID tras un renombre, caché offline y migración heredada, carga tardía durante una consulta del agente, disponibilidad parcial, arranque sin red y rechazo de una caché manipulada. No hay en este script una aserción de que un componente de UI haya renderizado una imagen concreta ni de su aspecto: el enrutamiento WebP evita que esas peticiones fallen durante los escenarios de catálogo, pero no sustituye la verificación visual o nativa cuando el cambio la requiera.
+Los tests unitarios ejercitan la generación estable, la limpieza de páginas paginadas obsoletas, contratos de imágenes, rutas y rollback. El E2E exporta el cliente web y reemplaza red por fixtures; además de los escenarios de consumo, búsqueda, enlaces por ID, caché/migración y degradación, verifica ahora imágenes CIQUAL reales en catálogo, detalle, búsqueda y dieta. Comprueba la URI esperada, que el elemento `img` terminó de cargar con ancho natural 1024, la atribución, la persistencia de `image_uri` y el fallback sin red. Es una comprobación de integración web de URI/carga, no una aprobación estética o biomecánica del contenido generado.
 
-## Procedimiento seguro de cambio
+## Procedimiento de cambio
 
-1. Cree o corrija primero la ficha JSON y su referencia. En ejercicio las rutas han de ser exactamente `images/<id>-male.webp` e `images/<id>-female.webp`; en alimentos, `image` contiene solo el nombre del WebP, sin `images/`.
-2. Añada el ID al mapa de prompts ejecutable si es alimento o ejercicio. Actualice documentación auxiliar únicamente como acompañamiento.
-3. Genere un solo ID. Para ejercicios, prefiera Nano Banana cuando necesite que la solicitud sea 16:9; un respaldo cuadrado solo es aceptable si el validador posterior pasa.
-4. Inspeccione el archivo y confirme bytes, dimensiones, ruta y mayúsculas. Restaure o retire el recurso si no es aceptable.
-5. Ejecute las tres verificaciones anteriores y revise `git diff`. Deben cambiar solo fichas, prompts, recursos y artefactos derivados esperados.
-6. Confirme esos cambios juntos y compruebe las superficies móviles afectadas: alimentos en dieta y ejercicios en entrenamiento.
+1. Para CIQUAL, añada o cambie el WebP y su manifiesto de muestra o tanda; mantenga ID, nombre de archivo, referencia aprobada y SHA-256 coherentes.
+2. Ejecute `npm run check:ciqual:images`, sincronice el índice y ejecute los checks CIQUAL. No modifique la ficha nutricional para guardar una URL.
+3. Para alimentos o ejercicios curados, corrija primero la ficha y la referencia relativa; solo después añada el prompt y genere un ID si procede.
+4. Revise el resultado visualmente y confirme formato, dimensiones, ruta y mayúsculas. Ejecute los checks de catálogo y el E2E cuando cambie una superficie móvil.
+5. Revise `git diff`: un cambio CIQUAL debe incluir el recurso/manifiesto y el índice móvil derivado; un cambio curado debe incluir los artefactos de catálogo que produzca el generador compartido.
 
-Para el contrato de catálogos y el consumo local-first, véase [Catálogos locales y artefactos generados](repositories.md). Para las superficies de usuario, véanse [Dieta y estimación de alimentos](../mobile/diet-and-food-estimation.md) y [Plantillas de entrenamiento](../mobile/training.md); la matriz general está en [Compilación, publicación y validación](../operations/build-release-and-testing.md).
+Para el contrato general de catálogos, véase [Catálogos locales y artefactos generados](repositories.md). Para las superficies de consumo, véanse [Dieta y estimación de alimentos](../mobile/diet-and-food-estimation.md) y [Plantillas de entrenamiento](../mobile/training.md); la matriz general de validación está en [Compilación, publicación y validación](../operations/build-release-and-testing.md).
