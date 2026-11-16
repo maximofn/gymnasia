@@ -57,11 +57,11 @@ Cuando el usuario aporte una foto o fotograma:
 
 Si el usuario no aporta una foto, usa fotogramas de su propia grabación del vídeo (la pista de webcam de OBS, `*-webcam.mp4`, o los fotogramas ya extraídos para el montaje). No uses fotos de fuera del proyecto ni de internet, y di en la entrega de qué archivo y de qué instante salen.
 
-- Elige dos fotogramas, mejor de momentos distintos de la grabación: cara frontal, ojos abiertos, buena luz, sin la boca a medio hablar ni movimiento.
+- Elige entre cuatro y seis fotogramas de momentos distintos de la grabación (más ángulos y expresiones ayudan a conservar la identidad): cara frontal, ojos abiertos, buena luz, sin la boca a medio hablar ni movimiento.
 - Recórtalos a la cabeza y los hombros en cuadrado, sin escalar a menos de unos 600 px de lado, y guárdalos junto a la miniatura:
 
   ```bash
-  ffmpeg -ss <segundo> -i <grabacion-webcam.mp4> -frames:v 1 -vf "crop=<lado>:<lado>:<x>:<y>" cara1.png
+  ffmpeg -ss <segundo> -i <grabacion-webcam.mp4> -frames:v 1 -vf "crop=<lado>:<lado>:<x>:<y>" cara1.png   # cara2.png, cara3.png…
   ```
 
 - Revisa los recortes antes de generar. Pásalos como referencia de identidad, nunca como imagen que deba aparecer tal cual.
