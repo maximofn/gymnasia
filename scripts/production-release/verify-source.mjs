@@ -162,6 +162,7 @@ async function main() {
     clean: status === "",
     reachableFromProduction: reachability.status === 0,
     ...remote,
+    publicationTarget: options["publication-target"] ?? "play",
   });
   if (options["expected-version"] && options["expected-version"] !== appVersion) {
     evaluated.violations.push({
@@ -178,6 +179,7 @@ async function main() {
     ref: process.env.GITHUB_REF || `refs/remotes/origin/${policy.productionBranch}`,
     targets: Object.entries(policy.profiles).map(([profile, artifactType]) => ({ profile, artifactType })),
     appVersion,
+    publicationTarget: options["publication-target"] ?? "play",
     auditedAt: new Date().toISOString(),
     source: {
       clean: status === "",

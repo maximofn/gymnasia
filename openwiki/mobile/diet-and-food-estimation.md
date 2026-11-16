@@ -1,6 +1,6 @@
 ---
 type: concepto
-title: Dieta y estimación de alimentos
+title: Dieta, catálogo y estimación de alimentos
 description: Modelo local de comidas y objetivos nutricionales, vinculación explícita con catálogos y alimentos personales, y flujo opcional de estimación asistida por IA. Distingue la nutrición validada que se persiste de datos externos o estimados que requieren confirmación y validación.
 tags: [mobile, diet, nutrition, food-estimation, catalogs, agent]
 sources:
@@ -12,6 +12,14 @@ sources:
     resource: repo://apps/mobile/agent/toolExecutor.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
+  - id: openwiki-source-ec48451a8afabd632686c7aa
+    resource: repo://apps/mobile/catalogs/ciqual.test.ts
+  - id: openwiki-source-407d9d819b31da7a6fdc2472
+    resource: repo://apps/mobile/catalogs/ciqual.ts
+  - id: openwiki-source-e27e377601d302f6e6c215eb
+    resource: repo://apps/mobile/catalogs/foodNutrition.ts
+  - id: openwiki-source-fba881b48b95c05eebc3f1a3
+    resource: repo://apps/mobile/catalogs/imageUris.ts
   - id: openwiki-source-f11c40fb577c7d51e488b6f0
     resource: repo://apps/mobile/catalogs/matching.test.ts
   - id: openwiki-source-dea65c4d04c08cc781bd2cda
@@ -38,13 +46,13 @@ sources:
     resource: repo://apps/mobile/scripts/diet-validation.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-11T15:41:01.947Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
+    at: 2026-11-11T15:41:01.947Z
 ---
 
-# Dieta y estimación de alimentos
+# Dieta, catálogo y estimación de alimentos
 
 La dieta es un registro local por fecha. Cada elemento guardado contiene una **instantánea de los totales de su porción** —gramos, kcal, proteínas, carbohidratos y grasas— y puede conservar un `catalog_link` que indica si proviene de un catálogo concreto o por qué no se pudo resolver. Esto separa el historial durable de los datos de catálogo, que pueden actualizarse, quedar obsoletos o no estar disponibles. La interfaz de dieta, el estimador y la tool del agente comparten el contrato de validación de `apps/mobile/diet/nutritionContract.ts`.
 
@@ -107,13 +115,33 @@ Al hidratar almacenamiento previo, `normalizeDietByDate` recupera la clave de fe
 
 ## Catálogos, búsqueda y alimentos personales
 
-Los catálogos remotos de alimentos, productos comerciales y recetas se cargan como fuentes distintas y quedan etiquetados respectivamente con `gymnasia_foods`, `gymnasia_products` y `gymnasia_recipes`. Cada entrada incluye `sourceId` y el origen visible `alimento`, `producto_comercial` o `receta`. Los alimentos personales son una cuarta fuente privada, `user_personal_foods`, normalizada con `source: "personal"`; se guardan bajo una clave AsyncStorage propia y no tienen URL de catálogo ni imagen remota.
+Los catálogos remotos de alimentos, productos comerciales y recetas se cargan como fuentes distintas y quedan etiquetados respectivamente con `gymnasia_foods`, `gymnasia_products` y `gymnasia_recipes`. A ellos se suma el catálogo local de composición CIQUAL 2025, identificado por `anses_ciqual_2025`: no es una fuente remota ni forma parte de los sobres de caché remota. Cada entrada incluye `sourceId` y el origen visible `alimento`, `producto_comercial` o `receta`. Los alimentos personales son una fuente privada, `user_personal_foods`, normalizada con `source: "personal"`; se guardan bajo una clave AsyncStorage propia y no tienen URL de catálogo ni imagen remota.
 
-`findFoodInRepo` combina catálogo y alimentos personales y delega en `matchFoodCatalog`. El matcher normaliza Unicode, diacríticos, espacios y mayúsculas; busca primero nombres equivalentes y después una inclusión bidireccional como alias. Ordena los candidatos por origen e ID, por lo que una duplicidad no depende del orden recibido. Una coincidencia única exacta o alias se puede vincular; varias candidatas abren una resolución explícita y nunca se elige una de forma implícita.
+`findDietFoodInCatalog` combina las fichas que recibe y los alimentos personales **solo después de descartar fichas sin kcal, proteína, carbohidratos o grasa exactos por 100 g**. El matcher normaliza Unicode, diacríticos, espacios y mayúsculas; busca primero nombres equivalentes y después una inclusión bidireccional como alias. Ordena los candidatos por origen e ID, por lo que una duplicidad no depende del orden recibido. Una coincidencia única exacta o alias se puede vincular; varias candidatas abren una resolución explícita y nunca se elige una de forma implícita.
 
-Al elegir una entrada, `dietItemFromCatalog` calcula `ratio = grams / 100`, escala kcal y macronutrientes, redondea a un decimal, construye la URL de imagen cuando el origen la admite y escribe un vínculo `linked`. Una entrada personal también puede vincularse, aunque no aporta imagen remota. Una coincidencia ausente se conserva como `unresolvedCatalog("manual")` o `unresolvedCatalog("external_estimate")` según su ruta.
+La completitud exige que los cuatro nutrientes sean números finitos no negativos; `null`, trazas y límites cualitativos no equivalen a cero. Esto importa particularmente en CIQUAL: sus calificadores conservan la distinción entre valor comunicado, límite, traza y ausencia. `dietItemFromCatalog` vuelve a comprobar esa precondición antes de calcular `ratio = grams / 100`, escalar kcal y macronutrientes, redondear a un decimal y escribir un vínculo `linked`. La interfaz no permite guardar una ficha incompleta como instantánea de catálogo: abre el formulario con los datos disponibles y exige introducir explícitamente los cinco totales (cantidad incluida), para no convertir un dato ausente en cero. Una entrada personal completa también puede vincularse, aunque no aporta imagen remota. Una coincidencia ausente se conserva como `unresolvedCatalog("manual")` o `unresolvedCatalog("external_estimate")` según su ruta.
 
 La disponibilidad del catálogo acompaña las búsquedas del agente como `fresh`, `cached`, `stale`, `partial` o `unavailable`, con fuentes y avisos. Una caída de red no borra una caché previamente validada; si no hay datos utilizables, la búsqueda devuelve disponibilidad no disponible y una lista vacía. La interfaz todavía permite guardar manualmente una entrada validada y marcada como no resuelta. No debe inventarse un enlace cuando no se dispone de una referencia o la coincidencia es ambigua.
+
+### Imágenes de CIQUAL y compatibilidad con historial
+
+La imagen no participa en el cálculo nutricional ni en la validez del vínculo. Para una ficha CIQUAL, `foodCatalogImageUri` consulta un manifiesto generado que asocia **un ID conocido** a una ruta editorial y forma una URL bajo `https://raw.githubusercontent.com/maximofn/gymnasia/main/alimentos/ciqual/`; un ID sin entrada, una ruta no prevista o un alimento personal devuelven `null`. Para las demás fuentes remotas, la ruta se deriva de `entry.image` y de su familia (`alimentos`, `productos_comerciales` o `recetas`).
+
+Al crear una instantánea desde catálogo, se conserva la URL de imagen resuelta en `image_uri`. Como compatibilidad para comidas anteriores que no la tenían, `dietItemImageUri` prefiere siempre `image_uri` pero, si falta y el `catalog_link` es `linked` a `anses_ciqual_2025`, resuelve de nuevo el ID contra el manifiesto. No modifica el elemento ni sus totales; un vínculo no resuelto o una fuente distinta no obtiene una imagen por esta vía. Así una actualización del manifiesto puede mejorar la presentación de un histórico sin reinterpretar su nutrición.
+
+```mermaid
+flowchart TD
+    Item["DietItem"] --> HasImage{"image_uri presente"}
+    HasImage -->|"sí"| Stored["Usar URL persistida"]
+    HasImage -->|"no"| Linked{"Vínculo CIQUAL"}
+    Linked -->|"no"| Empty["Sin imagen"]
+    Linked -->|"sí"| Manifest["Consultar manifiesto por itemId"]
+    Manifest --> Known{"ID conocido"}
+    Known -->|"sí"| Resolved["URL editorial CIQUAL"]
+    Known -->|"no"| Empty
+```
+
+*Resolución visual de una comida: la caída a manifiesto solo cubre enlaces CIQUAL y no altera la instantánea nutricional.*
 
 ## Alta y edición de una comida
 
@@ -121,28 +149,34 @@ La pantalla permite formulario manual, selección desde el catálogo y estimaci�
 
 ```mermaid
 flowchart TD
-    Start["Usuario abre una categoría"] --> Route{"Origen del alimento"}
-    Route --> Catalog["Selecciona o escribe nombre de catálogo"]
+    Start["Usuario abre una categoría"] --> Route{"Origen"}
+    Route --> Catalog["Selecciona ficha de catálogo"]
     Route --> Manual["Introduce totales manuales"]
-    Route --> Estimate["Describe o fotografía para estimar"]
+    Route --> Estimate["Describe o fotografía"]
+    Catalog --> Complete{"Nutrición completa"}
+    Complete -->|"sí"| Snapshot["Escalar por gramos y vincular"]
+    Complete -->|"no"| CompleteForm["Completar totales explícitos"]
+    Manual --> FormValid{"Formulario válido"}
+    CompleteForm --> FormValid
     Estimate --> Extract["Extraer JSON nutricional"]
     Extract --> EstimateValid{"Estructura válida"}
     EstimateValid -->|"no"| Correct["No persistir y pedir corrección"]
-    EstimateValid -->|"sí"| Match
-    Catalog --> Match["Buscar en catálogos y personales"]
-    Manual --> FormValid{"Formulario válido"}
+    EstimateValid -->|"sí"| Match["Buscar fichas completas"]
     FormValid -->|"no"| Correct
     FormValid -->|"sí"| Match
-    Match --> Ambiguous{"Alias o varias candidatas"}
-    Ambiguous -->|"sí"| Choose["Usuario elige catálogo o conserva manual"]
-    Ambiguous -->|"no"| Snapshot["Escalar catálogo exacto o conservar totales"]
+    Match --> Resolution{"Resultado"}
+    Resolution -->|"exacto"| Snapshot
+    Resolution -->|"alias o ambiguo"| Choose["Elegir ficha o conservar manual"]
+    Resolution -->|"ausente"| Unresolved["Conservar totales no resueltos"]
     Choose --> Snapshot
+    Choose --> Unresolved
     Snapshot --> FinalValid{"Totales válidos"}
+    Unresolved --> FinalValid
     FinalValid -->|"no"| Correct
     FinalValid -->|"sí"| Persist["Persistir DietItem y catalog_link"]
 ```
 
-*Las tres rutas convergen antes de persistir: una sugerencia de IA o un texto de búsqueda no se convierte por sí misma en un registro durable.*
+*Flujo de resolución y persistencia de `useDietRuntime`: una ficha incompleta nunca se escala ni se vincula; la resolución manual o asistida solo llega al almacén tras validar los totales.*
 
 En el formulario, una coincidencia exacta reemplaza los totales escritos por los valores escalados del catálogo. Un alias único o varias candidatas muestran un modal: elegir una candidata crea la instantánea vinculada; conservar el valor manual mantiene el vínculo no resuelto. Cuando no hay resultado, la interfaz propone una incidencia de contenido para revisión, pero la propuesta se encola localmente y no sale a la red hasta que la persona usuaria la confirma mediante el mecanismo de feedback.
 
@@ -161,11 +195,44 @@ Al editar cantidad de un elemento existente, `mealPerGramRef` guarda temporalmen
 
 El modal del estimador es una conversación distinta del agente general. Requiere una API key utilizable: prioriza `store.foodAIProvider` si está configurado, después el proveedor ya elegido por el modal y, finalmente, la prioridad del estimador. Si no existe proveedor, muestra un error y no intenta la red. Las credenciales BYOK y las particularidades de transporte se documentan en [Configuración BYOK de proveedores](../agent/provider-configuration.md).
 
-Se pueden adjuntar hasta seis imágenes desde biblioteca o cámara; se solicita el permiso correspondiente y se necesita base64 para adjuntarlas. Las imágenes se mandan solo con el último mensaje de usuario y dejan de reenviarse después de una respuesta válida del modelo. OpenAI, Anthropic y Google transmiten texto y razonamiento y pueden ejecutar hasta cinco rondas de la tool `scan_barcode`. En web, Anthropic rechaza explícitamente imágenes en este flujo; la estimación solo textual sigue sus reglas de transporte normales. Las solicitudes de estimación se reintentan hasta tres veces únicamente ante fallos transitorios identificados.
+Se pueden adjuntar hasta seis imágenes desde biblioteca o cámara; la aplicación solicita el permiso correspondiente y necesita base64 para adjuntarlas. Cada petición usa solo las imágenes aún no enviadas y estas se marcan como enviadas únicamente después de una respuesta válida. El cliente incluye el último mensaje de usuario con las imágenes para los proveedores que las admiten. Si el proveedor rechaza explícitamente imágenes, el borrador de mensaje se retira, el texto se conserva y el modal dirige a elegir un modelo compatible; el error no se oculta ni se convierte en una comida.
 
-`scan_barcode` elimina espacios del código y consulta `https://world.openfoodfacts.org/api/v2/product/{barcode}.json`. Devuelve al modelo un JSON con identidad, porción, nutrientes por 100 g y por porción, ingredientes y Nutri-Score. Un HTTP fallido o producto inexistente se devuelve como resultado textual controlado para que el modelo pueda continuar o estimar visualmente; no escribe esos datos directamente en la dieta. La sesión recuerda si se usó la herramienta para clasificar una propuesta no encontrada como producto comercial, pero ese indicador no es procedencia persistida.
+Antes de enviar la estimación, se adquiere la política de seguridad de salud y se clasifica la entrada. Una evaluación adicional con el proveedor solo se solicita si existe consentimiento para ella; si el riesgo es bloqueante, el modal añade una intervención de seguridad local y no inicia la llamada de estimación. Las respuestas se someten también al filtro de streaming. Este límite de consentimiento es independiente del permiso del sistema para cámara o galería.
 
-Al pulsar guardar, `requestStructuredNutritionJSON` hace una segunda solicitud no transmitida para obtener `dish_name`, gramos, kcal, los tres macros y `food_type`. OpenAI usa un esquema JSON estricto, Anthropic fuerza la tool `extract_nutrition` y Google solicita JSON con el mismo schema sin `additionalProperties`. El resultado pasa por `validateStructuredNutrition`; ante un tipo, nombre o número inválido se informa el error, no se persiste nada y la persona puede corregir la conversación. Después se aplica la misma resolución explícita de catálogo que al usar el formulario.
+```mermaid
+sequenceDiagram
+    participant User as Persona usuaria
+    participant Modal as Modal estimador
+    participant Policy as Política de salud
+    participant Provider as Proveedor BYOK
+    participant Barcode as OpenFoodFacts
+    participant Store as Dieta local
+
+    User->>Modal: texto y fotos autorizadas
+    Modal->>Policy: clasificar entrada
+    alt riesgo bloqueante
+        Policy-->>Modal: intervención local
+        Modal-->>User: aviso visible
+    else estimación permitida
+        Modal->>Provider: conversación e imágenes nuevas
+        opt scan_barcode solicitado
+            Provider->>Barcode: consultar código
+            Barcode-->>Provider: producto o texto de fallo
+        end
+        Provider-->>Modal: respuesta de estimación
+        User->>Modal: guardar
+        Modal->>Provider: extracción estructurada
+        Modal->>Store: validar, resolver catálogo y persistir
+    end
+```
+
+*El proveedor y OpenFoodFacts reciben datos solo dentro de una estimación permitida; ninguna de sus respuestas escribe directamente en la dieta.*
+
+OpenAI, Anthropic y Google pueden ejecutar hasta cinco rondas de `scan_barcode`; el proveedor `custom_openai` intenta usar tools y, si su servidor no las admite, continúa sin lectura de códigos y muestra un aviso. `scan_barcode` elimina espacios del código y consulta `https://world.openfoodfacts.org/api/v2/product/{barcode}.json`. Devuelve al modelo un JSON con identidad, porción, nutrientes por 100 g y por porción, ingredientes y Nutri-Score. Un HTTP fallido, un producto inexistente o una llamada sin código se devuelven como texto controlado para que el modelo pueda continuar o estimar visualmente; no escriben esos datos directamente en la dieta. La sesión recuerda si se usó la herramienta para clasificar una propuesta no encontrada como producto comercial, pero ese indicador no es procedencia persistida.
+
+Las solicitudes de conversación se reintentan hasta tres veces únicamente ante fallos transitorios identificados. Un fallo definitivo se representa como mensaje `technical_error` visible en la conversación. Esto preserva el borrador y evita presentar una respuesta incompleta como estimación apta para guardar.
+
+Al pulsar guardar, `requestStructuredNutritionJSON` hace una segunda solicitud para obtener `dish_name`, gramos, kcal, los tres macros y `food_type`. OpenAI usa un esquema JSON estricto, Anthropic fuerza la tool `extract_nutrition` y Google solicita JSON con el mismo schema sin `additionalProperties`. El resultado pasa por `validateStructuredNutrition`; ante un tipo, nombre o número inválido se informa el error, no se persiste nada y la persona puede corregir la conversación. Después se aplica la misma resolución explícita de catálogo que al usar el formulario.
 
 La salida final tiene dos posibilidades claramente distintas:
 
@@ -178,7 +245,7 @@ Si no se encuentra un producto comercial o receta estimado, se crea una propuest
 
 El runtime del agente expone `search_foods`, `read_meal_foods` y `add_meal_food`. `search_foods` filtra el repositorio combinado por nombre, categoría, origen o rango nutricional, ordena opcionalmente y limita los resultados a 15; devuelve además disponibilidad, avisos y las referencias `source_id`/`item_id`. Así el modelo puede pedir una selección explícita en vez de inferir qué duplicado elegir.
 
-`add_meal_food` acepta una forma `kind: "catalog"` con referencia e `grams`: busca exactamente esa referencia, calcula una instantánea por 100 g y escribe un vínculo `linked` con `linkedBy: "tool"`. La forma manual valida los totales antes de mutar y crea un vínculo no resuelto. La forma heredada basada en nombre se vincula solo ante coincidencia exacta o alias única; si es ambigua devuelve candidatas y `written: false`, sin escribir. La tool usa `commitStore` cuando está disponible y marca su efecto comprometido tras esa persistencia, de acuerdo con la idempotencia y las guardas del runtime.
+`add_meal_food` acepta una forma `kind: "catalog"` con referencia e `grams`: busca exactamente esa referencia disponible, pero rechaza la ficha si no tiene kcal y los tres macronutrientes exactos; solo entonces calcula una instantánea por 100 g y prepara un vínculo `linked` con `linkedBy: "tool"`. La forma manual prepara un vínculo no resuelto. La forma heredada basada en nombre busca únicamente entre fichas completas y se vincula solo ante coincidencia exacta o alias única; si es ambigua devuelve candidatas y `written: false`, sin escribir. **Todas** las formas pasan por `validateNutritionItem` antes de crear o modificar el día. La mutación exige `commitStore`; si este falla, se informa un resultado indeterminado en lugar de afirmar que se guardó. Solo después del `commit` se marca el efecto comprometido y se registra el recibo de operación para mantener la idempotencia del runtime.
 
 ## Persistencia, procedencia y cambios seguros
 
@@ -190,7 +257,7 @@ Para añadir un nutriente, actualice conjuntamente el contrato nutricional, `Die
 
 ## Pruebas focalizadas
 
-`apps/mobile/diet/nutritionContract.test.ts` cubre categorías, conversión de formulario, validación de valores no negativos y finitos, salida estructurada, presupuestos de macros y una propiedad de 1.000 ejecuciones. `apps/mobile/catalogs/matching.test.ts` verifica normalización, estabilidad de ambiguos y alias. `apps/mobile/agent/toolExecutor.test.ts` cubre búsqueda con metadatos de disponibilidad, escritura por referencia, rechazo de ambigüedad, categorías inválidas y nutrientes inválidos.
+`apps/mobile/diet/nutritionContract.test.ts` cubre categorías, conversión de formulario, validación de valores no negativos y finitos, salida estructurada, presupuestos de macros y una propiedad de 1.000 ejecuciones. `apps/mobile/catalogs/matching.test.ts` verifica normalización, estabilidad de ambiguos y alias. `apps/mobile/catalogs/ciqual.test.ts` protege la separación entre calificadores y cero, la exclusión de fichas incompletas, el escalado de instantáneas y la resolución de imágenes CIQUAL conocidas —incluida la recuperación visual de comidas antiguas sin mutarlas—. `apps/mobile/agent/toolExecutor.test.ts` cubre búsqueda con metadatos de disponibilidad, escritura por referencia, rechazo de fichas nutricionalmente incompletas y de ambigüedad, categorías inválidas y nutrientes inválidos. `apps/mobile/agent/foodEstimatorClient.test.ts` cubre el modo determinista sin red, la tool sin código y la validación de la extracción estructurada.
 
 La prueba de navegador `apps/mobile/scripts/diet-validation.e2e.mjs` exporta la app web, siembra un almacenamiento de desarrollo y comprueba el ciclo del plan: el aviso de cálculo sin datos se descarta al navegar, un peso inválido no se guarda, peso y altura válidos completan la medición existente del día y sobreviven a una recarga. También verifica que un objetivo diario cero no se persiste, que un exceso de macros se representa sin remanente negativo, que una caloría manual negativa no escribe y que una entrada válida a cero sí se guarda. Desde la raíz se ejecuta con:
 

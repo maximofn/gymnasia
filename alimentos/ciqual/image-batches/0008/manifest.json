@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0008",
+  "status": "pending-review",
+  "generated_on": "2026-11-05",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-7001",
+      "names": {
+        "fr": "Pain blanc (par ex. : baguette, boule…)",
+        "en": "Bread, French bread, baguette",
+        "es": "Pan blanco (p. ej.: baguette, hogaza...)"
+      },
+      "source_sha256": "f5a601109c6d7309e601a1f7543d0d6f851442d2308400f75a136ef364cf76a3",
+      "image": "ciqual-7001.webp",
+      "sha256": "0eb8517c93ef25c2384a6cca267680033c8a960830212626cb37462faef65edf",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Plain baked white French bread, one short baguette with crisp golden-brown diagonally scored crust, a single freshly cut end slice leaning immediately against it showing airy white crumb. No seeds, fillings, flour pile, basket or board..\nSingle centered food subject or specified compact group, entire food visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-7110",
+      "names": {
+        "fr": "Pain complet ou intégral (à la farine T150)",
+        "en": "Bread, French bread, wholemeal or integral bread (made with flour type 150)",
+        "es": "Pan completo o integral (con harina T150)"
+      },
+      "source_sha256": "a63a6ca9e7dab5fcfed25204c0fd75b4ed5b987681c272fd625133685e8b2f1a",
+      "image": "ciqual-7110.webp",
+      "sha256": "e9418db16914030b053a97da96d041b4d49b3e19a265a942104fafde447a493d",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Wholemeal or integral French wheat bread made with wholemeal T150 flour, one compact rustic brown loaf with a cut face and one adjacent thick slice revealing dense brown bran-flecked crumb. Natural baked brown crust, no seeds or toppings..\nSingle centered food subject or specified compact group, entire food visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-7200",
+      "names": {
+        "fr": "Pain de mie blanc, préemballé",
+        "en": "Sandwich loaf, prepacked",
+        "es": "Pan de molde blanco, envasado"
+      },
+      "source_sha256": "01c4ef93a6314976e280fafb893cc621df2d52f22aece0457c613b242492063c",
+      "image": "ciqual-7200.webp",
+      "sha256": "d95654f0d34272b26d525549b91039182a22ff0975a11b3dca46bf38a027c92e",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Plain white sandwich bread from a prepacked loaf, unwrapped: three closely overlapping square slices with rounded top corners, soft fine white crumb and thin golden-brown crust all around. Not toasted, no filling, wrapper or seeds..\nSingle centered food subject or specified compact group, entire food visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-7111",
+      "names": {
+        "fr": "Pain de mie complet, préemballé",
+        "en": "Sandwich loaf, wholemeal, prepacked",
+        "es": "Pan de molde integral, envasado"
+      },
+      "source_sha256": "85bc1989c8b855344bc1b26e378bf74867a53f8a3a6915da34bff4fd12837bdc",
+      "image": "ciqual-7111.webp",
+      "sha256": "847d46b963ef89b5c888b835e57679c9afefebfcaa137bddd9adc3c9afcb5b30",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Wholemeal sandwich bread from a prepacked loaf, unwrapped: three closely overlapping square slices with rounded top corners, soft fine brown bran-flecked crumb and thin darker baked crust all around. Not toasted, no filling, wrapper, seeds or nuts..\nSingle centered food subject or specified compact group, entire food visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-7125",
+      "names": {
+        "fr": "Pain de seigle et froment",
+        "en": "Rye and wheat bread",
+        "es": "Pan de centeno y trigo"
+      },
+      "source_sha256": "18d2f9e23523b67c17b29857ca2690170c90c645bdf688778da0fb8b2eb1463e",
+      "image": "ciqual-7125.webp",
+      "sha256": "15c07255d9d3c333532d86f2ec1b0d8abe845c3b1164adc1b815e723686178c6",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Rye and wheat bread, one compact oval rustic loaf with one thick slice close beside its cut face. Grayish-tan dense fine rye-and-wheat crumb and dark brown baked crust, not black pumpernickel, no visible seeds, nuts or fillings..\nSingle centered food subject or specified compact group, entire food visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-7180",
+      "names": {
+        "fr": "Pain pita",
+        "en": "Bread, pita",
+        "es": "Pan de pita"
+      },
+      "source_sha256": "9af68a355eb485acaa5ac2eea538bdd6ec9bfbe1e4639208fae3967d9cc1714f",
+      "image": "ciqual-7180.webp",
+      "sha256": "b365806290c9f4ffefb90aef7855d2d5980e5a5f329bb6e08955796fec902d61",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Plain baked pita bread: two small round flat pita breads closely overlapping, naturally beige lightly blistered surface with toasted brown spots, one cut half slightly open revealing its thin empty hollow pocket. No filling, herbs or topping..\nSingle centered food subject or specified compact group, entire food visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-7258",
+      "names": {
+        "fr": "Pain bagel",
+        "en": "Bread, bagel",
+        "es": "Pan bagel"
+      },
+      "source_sha256": "e99eb6561b2435d5c3e91ee893b0ce51c0bd91660b0119c8ad9eeceba7829742",
+      "image": "ciqual-7258.webp",
+      "sha256": "db9ecf2a89f7d829b654e44d9f815353dae004148b029f415c3e7f66a47d6f4e",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: One plain bagel bread roll, round ring shape with a clearly open central hole, smooth gently glossy golden-brown baked chewy crust. Uncut, no seeds, toppings, fillings or spread..\nSingle centered food subject or specified compact group, entire food visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-7300",
+      "names": {
+        "fr": "Biscotte classique",
+        "en": "Rusk",
+        "es": "Pan tostado clásico"
+      },
+      "source_sha256": "1f4e13fd01a49373b5259a440cd5fdb304f8572923aa8014a409fac4b61cbbe0",
+      "image": "ciqual-7300.webp",
+      "sha256": "025b68808f491f6f366d1d047fbc29fb2d91b5f5424f3a8e5c87f00d36c99c53",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: Classic packaged-style rusk bread, unwrapped: three small crisp twice-baked rectangular bread slices with rounded top corners, entirely dry evenly golden toasted crumb, fine porous texture and darker crisp edges. Not soft sandwich bread or crackers, no butter or toppings..\nSingle centered food subject or specified compact group, entire food visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-7620",
+      "names": {
+        "fr": "Croissant pur beurre, artisanal",
+        "en": "Croissant, pure butter, from bakery",
+        "es": "Croissant de mantequilla, artesanal"
+      },
+      "source_sha256": "5e441fb482b30251a00acafe5a6bd1e389c2c573471e48145f78c40b46fcb2c8",
+      "image": "ciqual-7620.webp",
+      "sha256": "0a8c34e2fda73e4bb9781782b35f9773b276219e13c3e81b6361274b59a0fa94",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: One artisanal bakery pure-butter croissant, plump classic crescent shape with tapered curved tips and well-defined delicate flaky laminated layers, rich golden-brown baked crust. Plain and unfilled, no icing, powdered sugar, almonds or chocolate..\nSingle centered food subject or specified compact group, entire food visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    },
+    {
+      "id": "ciqual-7730",
+      "names": {
+        "fr": "Pain au chocolat, artisanal",
+        "en": "Chocolate croissant, from bakery",
+        "es": "Napolitana de chocolate, artesanal"
+      },
+      "source_sha256": "9b2743f941c42b9f60bff7ce117917b9fafda91021b1780d01fa3669b139555a",
+      "image": "ciqual-7730.webp",
+      "sha256": "cf55f6b11a320b971b46bac4d1aaa725a65b1fb187f747d12016fc2d47aeb2df",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's apple.\nSubject: One artisanal bakery pain au chocolat, a rectangular rolled laminated pastry, golden-brown crisp flaky layers, two small dark chocolate batons visibly peeking from the near short open end. Not a crescent croissant, no icing, drizzle, sugar dust or garnish..\nSingle centered food subject or specified compact group, entire food visible, occupying roughly 55-65% of the square frame, generous dark negative space. Gentle elevated front 3/4 camera angle showing texture and volume. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-13620.webp"
+    }
+  ]
+}

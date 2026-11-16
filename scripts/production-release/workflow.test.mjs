@@ -7,7 +7,7 @@ const localBuild = readFileSync(new URL("./run-local-build.mjs", import.meta.url
 const submit = readFileSync(new URL("./eas-submit.mjs", import.meta.url), "utf8");
 
 test("mantiene filtros, cola y aprobación humana de Production", () => {
-  assert.match(workflow, /name: Build Android APK \+ AAB on wallabot & Publish Play Closed Alpha/);
+  assert.match(workflow, /name: Build Android APK \+ AAB on wallabot & Publish Play Production/);
   assert.match(workflow, /group: android-production-release/);
   assert.match(workflow, /cancel-in-progress: false/);
   for (const path of ["apps/mobile/**", "!apps/mobile/scripts/**", "!apps/mobile/**/*.md", "!apps/mobile/public/**"]) {
@@ -17,6 +17,18 @@ test("mantiene filtros, cola y aprobación humana de Production", () => {
   const compile = workflow.slice(workflow.indexOf("  compile-android:"), workflow.indexOf("  verify-artifacts:"));
   assert.match(compile, /environment: Production/);
   assert.ok(compile.indexOf("environment: Production") < compile.indexOf("Build AAB first and APK second"));
+});
+
+test("la opción manual GitHub APK no utiliza Play ni sus credenciales ni encadena publicaciones", () => {
+  assert.match(workflow, /publication_target:\n[\s\S]*options: \[play, github-apk\]\n\s+default: play/);
+  const playJob = workflow.slice(workflow.indexOf("  submit-play-and-release:"), workflow.indexOf("  publish-github-apk:"));
+  assert.match(playJob, /outputs.publication_target == 'play'/);
+  const githubJob = workflow.slice(workflow.indexOf("  publish-github-apk:"), workflow.indexOf("  enqueue-next:"));
+  assert.match(githubJob, /outputs.publication_target == 'github-apk'/);
+  assert.doesNotMatch(githubJob, /environment:|EXPO_TOKEN|GOOGLE_PLAY|eas-submit|submit-artifact/);
+  assert.match(githubJob, /contents: write/);
+  assert.match(githubJob, /publish-github-apk.mjs/);
+  assert.doesNotMatch(workflow.slice(workflow.indexOf("  enqueue-next:")), /publish-github-apk/);
 });
 
 test("ejecuta una sola evidencia de fuente V2 para AAB y APK", () => {
@@ -47,15 +59,15 @@ test("fija herramientas y verifica bundletool antes del AAB", () => {
   assert.equal(policy.bundletool.sha256, "a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29");
 });
 
-test("eas.json reserva el código con AAB y lo reutiliza en APK y Prueba cerrada Alpha", () => {
+test("eas.json reserva el código con AAB y lo reutiliza en APK y Play Producción", () => {
   const eas = JSON.parse(readFileSync(new URL("../../apps/mobile/eas.json", import.meta.url)));
   assert.equal(eas.cli.version, "24.3.0");
   assert.equal(eas.cli.appVersionSource, "remote");
   assert.equal(eas.build.production.autoIncrement, true);
   assert.equal(eas.build["production-apk"].autoIncrement, false);
-  assert.deepEqual(eas.submit.production.android, { track: "alpha", releaseStatus: "completed" });
+  assert.deepEqual(eas.submit.production.android, { track: "production", releaseStatus: "completed" });
   const policy = JSON.parse(readFileSync(new URL("./policy.json", import.meta.url)));
-  assert.equal(policy.play.track, "alpha");
+  assert.equal(policy.play.track, "production");
 });
 
 test("sube solo el AAB validado por path y persiste intención e ID", () => {
@@ -70,7 +82,7 @@ test("sube solo el AAB validado por path y persiste intención e ID", () => {
   assert.match(workflow, /--event fail-play --leg play --uncertain true/);
 });
 
-test("Play Closed Alpha es automático después de Production y usa el token existente", () => {
+test("Play Producción es automático después de la aprobación de build y usa el token existente", () => {
   const playJob = workflow.slice(workflow.indexOf("  submit-play-and-release:"), workflow.indexOf("  enqueue-next:"));
   assert.equal((workflow.match(/environment: Play Internal/g) ?? []).length, 1);
   assert.match(playJob, /environment: Play Internal/);

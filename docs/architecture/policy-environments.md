@@ -222,7 +222,7 @@ el canal de avisos.
 
 Production contiene su `EXPO_TOKEN` de environment para firma y contador. El
 environment automático `Play Internal` (nombre heredado) contiene otro token
-para EAS Submit al track cerrado `alpha`; la
+para EAS Submit al track público `production`; la
 cuenta de servicio de Google permanece en EAS. Antes de invocar EAS local, el workflow
 resuelve el deployment Production y ejecuta:
 
@@ -252,8 +252,8 @@ verify:production-source` reejecuta los gates sobre un checkout limpio de `main`
 `npm run verify:production-artifact` valida el manifest fusionado, la firma, la versión,
 el snapshot y el hash del binario. Los comandos completos y la matriz de promoción están
 en `docs/store/google-play/production-promotion-gates.md`. El AAB no se sube a
-Prueba cerrada Alpha hasta que ambos binarios y su `versionCode` común estén
-acreditados. La revisión de Google puede retrasar su disponibilidad a los testers.
+Producción hasta que ambos binarios y su `versionCode` común estén
+acreditados. La revisión de Google puede retrasar su disponibilidad pública.
 
 En ejecución, la app selecciona en este orden:
 

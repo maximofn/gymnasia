@@ -172,8 +172,12 @@ export function evaluateSourceCandidate({
   pullRequest,
   statuses,
   checkRuns,
+  publicationTarget = "play",
 }) {
   const violations = [];
+  if (!["play", "github-apk"].includes(publicationTarget)) {
+    violations.push({ code: "publication-target", message: "Destino de publicación desconocido." });
+  }
   const expectedTargets = Object.entries(policy.profiles ?? {})
     .map(([profile, artifactType]) => ({ profile, artifactType }))
     .sort((left, right) => left.profile.localeCompare(right.profile));
@@ -260,7 +264,7 @@ export function evaluateSourceCandidate({
     const reviewers = (playEnvironment.protection_rules ?? [])
       .filter((rule) => rule.type === "required_reviewers")
       .flatMap((rule) => rule.reviewers ?? []);
-    if (reviewers.length > 0) {
+    if (publicationTarget === "play" && reviewers.length > 0) {
       violations.push({
         code: "play-environment-reviewer",
         message: `${policy.playEnvironment} no debe exigir aprobación para el canal interno automático.`,
@@ -444,7 +448,9 @@ export function evaluateArtifactCandidate({
     && sourceEvidence?.remoteControls?.ownerReviewer === policy.owner
     && sourceEvidence?.remoteControls?.environments?.playInternal?.name === policy.playEnvironment
     && sourceEvidence?.remoteControls?.environments?.playInternal?.protectedBranchesOnly === true
-    && sourceEvidence?.remoteControls?.environments?.playInternal?.reviewerCount === 0
+    && ([undefined, "play"].includes(sourceEvidence?.publicationTarget)
+      ? sourceEvidence?.remoteControls?.environments?.playInternal?.reviewerCount === 0
+      : sourceEvidence?.publicationTarget === "github-apk")
     && sourceEvidence?.remoteControls?.pullRequest?.headSha
     && policy.requiredStatusChecks.every((context) => sourceStatuses.get(context) === true)
     && observedGates.length === expectedGates.length

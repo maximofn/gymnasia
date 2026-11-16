@@ -31,6 +31,27 @@ cuenta de servicio de Google. El job posterior `Play Internal` (nombre heredado
 del environment que guarda el token, no del track actual) no tiene
 aprobador: usa otro `EXPO_TOKEN` únicamente después de validar ambos binarios.
 
+## Publicar únicamente el APK en GitHub
+
+Para una petición aislada de APK en GitHub se admite la opción manual
+`publication_target=github-apk` del mismo workflow. Se conserva la VM, la
+aprobación Production, los dos builds y sus verificaciones independientes; el
+AAB sirve para reservar el versionCode compartido y se retira del borrador
+antes de publicar únicamente `gymnasia.apk` y las evidencias. No se usa el
+entorno Play Internal ni se ejecuta EAS Submit. Sus revisores pueden permanecer
+configurados: solo la validación de una publicación destinada a Play exige
+que ese paso sea automático. El destino se incluye en la evidencia de fuente y
+la transacción; las transacciones GitHub no admiten transiciones de Play ni
+pueden cambiar de destino en un reintento. El flujo habitual conserva sus
+controles y su envío a Play.
+
+```bash
+gh workflow run build-apk.yml --ref main -f publication_target=github-apk
+```
+
+La publicación exclusiva en GitHub no encadena automáticamente otra versión.
+Para reintentar esa transacción hay que volver a elegir el mismo destino.
+
 ## Preparar el host (intervención administrativa)
 
 Los scripts se ejecutan **desde este directorio, en wallabot**, después de

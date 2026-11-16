@@ -215,3 +215,58 @@ AAB final y bloquearlo si reaparece cualquiera de los dos.
   (ticket para preparar credenciales BYOK temporales para la revisión de Google Play).
 - Ficha, capturas y textos: GYM-197 (ticket para preparar la ficha española de Google
   Play).
+
+---
+
+## 6. Estado de operador y futura monetización
+
+**Decisión del mantenedor, 5 de noviembre de 2026:** declarar la cuenta como
+**no operador** mientras Gymnasia sea un proyecto personal sin actividad comercial.
+Monetizarla es una aspiración futura; esta decisión no cubre el inicio de un plan
+comercial concreto. Google también considera la intención de recibir remuneración
+de forma regular o comercial, aunque todavía no haya ingresos.
+
+**Estado del trámite:** declaración como **no operador guardada**, según
+confirmación del mantenedor recibida el 6 de noviembre de 2026. La pantalla de
+revisión inspeccionada el 5 de noviembre incluía nombre legal, dirección y correo;
+la vista previa mostraba nombre, correo y país. La confirmación del guardado no
+sustituye la futura comprobación del perfil público antes de monetizar.
+
+### Antes de empezar a monetizar
+
+**Condición del mantenedor:** su domicilio particular no debe hacerse público.
+Antes de monetizar, buscar una solución de dirección alternativa que sea legítima,
+verificable y admitida por Google para el tipo de cuenta elegido. Modificar y
+verificar la dirección correspondiente, y comprobar qué aparecerá públicamente.
+No dar por válida una dirección prestada por un amigo sin confirmar que cumple
+los requisitos de Google. **La monetización queda pendiente hasta resolver esta
+condición**, antes de aceptar cualquier publicación del domicilio particular.
+
+Al iniciar la actividad comercial de Gymnasia, **hay que cambiar la declaración a
+operador**. Revisarla al preparar un plan comercial concreto, sin esperar al primer
+cobro, y completar estos pasos antes de activar pagos, suscripciones o anuncios:
+
+1. Resolver la dirección alternativa descrita arriba, actualizar los datos que
+   correspondan en el perfil vinculado a Play Console y completar la verificación
+   que Google solicite. Revisar el perfil público con el mantenedor para comprobar
+   que no expone su domicilio particular antes de guardar consentimientos.
+2. En Play Console, ir a **Gestionar cuenta → Información de la cuenta →
+   Información sobre ti → Estado de operador**, cambiar a **operador** y guardar.
+   La declaración es de la cuenta: revisar también las demás aplicaciones que
+   pueda tener en ese momento.
+3. Si la cuenta sigue siendo personal, proporcionar y verificar el teléfono de
+   contacto público. Revisar con el mantenedor el nombre, la dirección, el teléfono
+   y el correo que Google mostrará, y completar la autocertificación exigida.
+4. En cada aplicación, ir a **Monitorizar y mejorar → Política y programas →
+   Contenido de la aplicación**, confirmar si se aplica el estado de operador y
+   proporcionar el enlace a los términos del servicio solicitado por la consola.
+5. Revisar las declaraciones de anuncios, compras y suscripciones de la
+   [matriz de Play Console](../store/google-play/console-matrix.md). Si el modelo
+   comercial cambia los datos tratados, actualizar el inventario y recorrer el
+   [checklist de privacidad](privacy-change-checklist.md).
+6. Comprobar que los cambios han quedado guardados y actualizar en este documento
+   el estado, la fecha y las verificaciones realizadas, sin copiar datos privados.
+
+La declaración inicial debe completarse antes del **1 de febrero de 2027** y puede
+actualizarse si cambia la actividad. Fuente oficial consultada el 5 de noviembre
+de 2026: [Declaración del estado de operador — Ayuda de Play Console](https://support.google.com/googleplay/android-developer/answer/17594752?hl=es).

@@ -109,6 +109,7 @@ try {
   const source = JSON.parse(readFileSync(join(inputs, "production-source-evidence.json")));
   assert.equal(source.result, "passed");
   assert.equal(source.commit, transaction.sourceCommit);
+  assert.equal(source.publicationTarget ?? "play", transaction.publicationTarget ?? "play");
   const requested = ["aab", "apk"].filter((leg) => {
     const attempt = transaction.legs[leg].attempts.at(-1);
     return transaction.legs[leg].state === "building"

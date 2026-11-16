@@ -25,6 +25,9 @@ configurar nada. Desde la vista de presentador también se puede avanzar con el
 teclado o los botones. El paso actual queda en la URL (`#12`), así que recargar no
 te devuelve al principio.
 
+Si solo tienes una pantalla, abre `presenter.html` (o `presenter.html?netcore`)
+directamente en el móvil: sin proyección asociada, el guion avanza por su cuenta.
+
 ### NetCoreConf Madrid '26
 
 Abre `index.html?netcore` para dar la charla con la plantilla del evento. La

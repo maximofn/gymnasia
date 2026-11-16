@@ -1,3 +1,6 @@
+import { RecordCard } from "../components/RecordCard";
+import { ChartCard as TrainingChartCard } from "../components/ChartCard";
+import { Button as TrainingPrimaryButton } from "../components/Button";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { memo, useRef } from "react";
 import { Animated, Image, PanResponder, Pressable, ScrollView, Text, TextInput, View } from "react-native";
@@ -54,7 +57,7 @@ export function WorkoutHistoryEntryCard({ summary, onPress, showTemplateName, te
   const completed = isCompletedWorkoutSummary(summary);
   const statusColor = completed ? mobileTheme.color.brandPrimary : "#F5C542";
   return (
-    <Pressable onPress={onPress} testID={testID} accessibilityRole="button" accessibilityLabel={`Abrir ${summary.template_name}, ${formatTrainingHistoryDate(summary.finished_at)}`} style={{ borderRadius: 18, borderWidth: 1, borderColor: "rgba(255,255,255,0.05)", backgroundColor: mobileTheme.color.bgSurface, padding: 14, gap: 10 }}>
+    <RecordCard onPress={onPress} testID={testID} accessibilityRole="button" accessibilityLabel={`Abrir ${summary.template_name}, ${formatTrainingHistoryDate(summary.finished_at)}`} variant="history">
       <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
         <View style={{ flex: 1, minWidth: 0, gap: showTemplateName ? 3 : 0 }}>
           {showTemplateName ? <Text numberOfLines={1} style={{ color: mobileTheme.color.textPrimary, fontSize: 16, fontWeight: "800" }}>{summary.template_name}</Text> : null}
@@ -67,7 +70,7 @@ export function WorkoutHistoryEntryCard({ summary, onPress, showTemplateName, te
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}><Feather name="check-circle" size={14} color={statusColor} /><Text style={{ color: "#A6AFBC", fontSize: 13, fontWeight: "600" }}>{summary.completed_effort_count}/{summary.total_effort_count} esfuerzos</Text></View>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}><Feather name="clock" size={14} color="#8B94A3" /><Text style={{ color: "#A6AFBC", fontSize: 13, fontWeight: "600" }}>{formatClock(summary.elapsed_seconds)}</Text></View>
       </View>
-    </Pressable>
+    </RecordCard>
   );
 }
 
@@ -982,49 +985,6 @@ const TRAINING_STATS_METRIC_OPTIONS: Array<{
   { key: "reps", label: "Repeticiones", shortLabel: "reps" },
   { key: "duration", label: "Duración", shortLabel: "min" },
 ];
-
-function TrainingChartCard({
-  title,
-  periodSelector,
-  children,
-  zIndex,
-}: {
-  title: React.ReactNode;
-  periodSelector: React.ReactNode;
-  children: React.ReactNode;
-  zIndex?: number;
-}) {
-  return (
-    <View style={{ borderRadius: 22, borderWidth: 1, borderColor: "rgba(255,255,255,0.06)", backgroundColor: mobileTheme.color.bgSurface, position: "relative", overflow: "visible", zIndex: zIndex ?? 1, padding: 14, gap: 14 }}>
-      <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", gap: 12, zIndex: 2 }}>
-        <View style={{ flex: 1, gap: 4 }}>{title}</View>
-        {periodSelector}
-      </View>
-      {children}
-    </View>
-  );
-}
-
-function TrainingPrimaryButton({
-  label,
-  onPress,
-  disabled,
-  icon,
-  testID,
-}: {
-  label: string;
-  onPress(): void;
-  disabled?: boolean;
-  icon?: React.ReactNode;
-  testID?: string;
-}) {
-  return (
-    <Pressable onPress={onPress} disabled={disabled} testID={testID} accessibilityLabel={label} accessibilityRole="button" style={{ height: 46, borderRadius: 12, backgroundColor: mobileTheme.color.brandPrimary, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: icon ? 10 : 0, opacity: disabled ? 0.6 : 1 }}>
-      {icon}
-      <Text style={{ color: "#06090D", fontWeight: "700" }}>{label}</Text>
-    </Pressable>
-  );
-}
 
 export const TrainingEditorScreen = memo(function TrainingEditorScreen({
   model,

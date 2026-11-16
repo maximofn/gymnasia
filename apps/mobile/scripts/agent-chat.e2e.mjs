@@ -200,10 +200,20 @@ function createSeedStoreWithoutKeys() {
 }
 
 function fixture(name) {
-  return readFileSync(
+  const source = readFileSync(
     new URL(`../agent/__fixtures__/raw/${name}`, import.meta.url),
     "utf8",
   );
+  if (!name.startsWith("google-")) return source;
+  // Current store:false responses omit lifecycle IDs and the opening status.
+  // Keep tool call IDs intact so continuation and duplicate-effect checks stay real.
+  return source.replace(/^data: (\{.+)$/gm, (_line, payload) => {
+    const data = JSON.parse(payload);
+    if (data.event_type === "interaction.created") delete data.interaction.status;
+    if (["interaction.created", "interaction.completed"].includes(data.event_type)) delete data.interaction.id;
+    if (data.event_type === "interaction.status_update") delete data.interaction_id;
+    return `data: ${JSON.stringify(data)}`;
+  });
 }
 
 function providerSystemPrompt(provider, body) {
@@ -327,14 +337,13 @@ async function assertGoogleFoodInteractions(page) {
       protein_g: 5, carbs_g: 15, fat_g: 2, food_type: "alimento",
     }) : `Estimación E2E ${number}: 100 gramos y 100 kcal.`;
     const event = (event_type, fields) => `event: ${event_type}\ndata: ${JSON.stringify({ event_type, ...fields })}\n\n`;
-    const id = `food-${number}`;
     await route.fulfill({ contentType: "text/event-stream", body:
-      event("interaction.created", { interaction: { id, status: "in_progress" } })
+      event("interaction.created", { interaction: { object: "interaction", model: body.model } })
       + event("step.start", { index: 0, step: { type: "thought", signature: `opaque-${number}==` } })
       + event("step.stop", { index: 0 })
       + event("step.start", { index: 1, step: { type: "model_output", content: [{ type: "text", text }] } })
       + event("step.stop", { index: 1 })
-      + event("interaction.completed", { interaction: { id, status: "completed", usage: { total_tokens: 10 } } }),
+      + event("interaction.completed", { interaction: { status: "completed", usage: { total_tokens: 10 } } }),
     });
   });
 
@@ -382,6 +391,33 @@ async function assertGoogleFoodInteractions(page) {
   }
   assert(bodies[4].input.some((step) => step.signature === "opaque-4=="));
   assert.equal(bodies.length, 5);
+}
+
+async function assertGoogleReviewerMath(page) {
+  logStep("Google: pregunta exacta del rechazo de Play con el SSE real anonimizado");
+  let requests = 0;
+  await page.route("https://generativelanguage.googleapis.com/v1beta/interactions", async (route) => {
+    const body = route.request().postDataJSON();
+    requests += 1;
+    assert.equal(body.store, false);
+    assert.equal(body.stream, true);
+    assert.equal(body.model, "gemini-3.8-flash");
+    assert(body.input.some((step) => step.content?.some((part) => part.text === "What is 3 + 4?")));
+    await route.fulfill({ contentType: "text/event-stream", body: fixture("google-stateless-math.sse") });
+  });
+  await page.getByTestId("nav-tab-chat").click();
+  await page.getByTestId("chat-input").fill("What is 3 + 4?");
+  await page.getByTestId("chat-send").click();
+  await page.locator('[data-testid^="chat-message-assistant-"]').getByText("7", { exact: true }).waitFor();
+  assert.equal(requests, 1);
+  const saved = await page.evaluate((key) => JSON.parse(localStorage.getItem(key)), STORE_KEY);
+  const answer = Object.values(saved.messagesByThread).flat().find((message) => message.content === "7");
+  assert(answer?.googleTurn, "la respuesta debe persistirse con su historial técnico");
+  assert.deepEqual(answer.googleTurn.interactions.map((interaction) => interaction.id), [""]);
+  await page.reload();
+  await page.getByTestId("nav-tab-chat").click();
+  await page.locator('[data-testid^="chat-message-assistant-"]').getByText("7", { exact: true }).waitFor();
+  assert.equal(requests, 1, "recargar no debe repetir la generación");
 }
 
 async function runNoKeyDisclosureE2E(page, baseUrl) {
@@ -1237,7 +1273,10 @@ async function runAgentChatE2E(
       { timeout: STEP_TIMEOUT_MS },
     );
   }
-  if (provider === "google") await assertGoogleFoodInteractions(page);
+  if (provider === "google") {
+    await assertGoogleFoodInteractions(page);
+    await assertGoogleReviewerMath(page);
+  }
   logStep(`${provider}: una escritura incierta detiene el turno sin repetirse`);
   let failedWriteRequests = 0;
   await page.route(routePattern, async (route) => {

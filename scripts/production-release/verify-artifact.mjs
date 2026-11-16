@@ -82,6 +82,10 @@ function readBuildMetadata(path, options, artifact, manifest) {
       throw new Error("La build local exige transacción y referencia de versionCode.");
     }
     const transaction = JSON.parse(readFileSync(resolve(options.transaction), "utf8"));
+    const source = JSON.parse(readFileSync(resolve(options["source-evidence"]), "utf8"));
+    if ((source.publicationTarget ?? "play") !== (transaction.publicationTarget ?? "play")) {
+      throw new Error("El destino de publicación no coincide con la fuente verificada.");
+    }
     assertLocalBuildMetadata(build, transaction, artifact, options.kind);
     const baseline = JSON.parse(readFileSync(resolve(options["version-code-baseline"]), "utf8"));
     if (baseline.schemaVersion !== 2 || !Number.isSafeInteger(baseline.minimumExclusive)) {

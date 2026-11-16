@@ -4,10 +4,12 @@ GYM-232 (ticket para migrar toda generación de Google a Interactions sin guarda
 conversaciones remotas) incluye chat, asistentes de alimentos, extracción JSON y
 evaluación sanitaria opcional. Las peticiones llevan `store: false` y nunca
 `previous_interaction_id`. El transporte es Fetch en web y XHR incremental en
-Android/iOS. Google representa con una cadena vacía el ID de una interacción no
-guardada; el parser usa la presencia del evento `interaction.created`, no el valor
-del ID, para controlar el ciclo de vida. Si el XHR nativo falla antes de entregar contenido visible, la app
-repite la petición una vez con XHR almacenado completo, sin eventos de progreso.
+Android/iOS. Google puede representar con una cadena vacía u omitir el ID de una
+interacción no guardada, y omitir el estado inicial. El parser usa la presencia del
+evento `interaction.created`, no el valor del ID, para controlar el ciclo de vida;
+normaliza únicamente el ID ausente a la cadena vacía que ya admite el historial local.
+Si el XHR nativo falla antes de entregar contenido visible, la app repite la petición
+una vez con XHR almacenado completo, sin eventos de progreso.
 
 ## Contrato y regresiones
 
@@ -127,3 +129,53 @@ ficticia; la configuración se rechaza en Staging/Production y con claves reales
 
 El endpoint local se activa únicamente con `GOOGLE_FIXTURE_PORT` y `APP_ENV=development`
 (el script `start` fija este último). No se añade ningún servicio obligatorio al producto.
+
+## Regresión del rechazo de Google Play (2026-10-23)
+
+La captura `IN_APP_EXPERIENCE-1593.png` del rechazo muestra la app abierta: se
+verifica la clave de Google y Coach falla ante «What is 3 + 4?» con
+`invalid_created`. No demuestra un fallo de arranque. La consulta del catálogo
+(`GET models`) verifica el acceso a la clave/modelo, pero no recorre la generación
+ni el lector SSE.
+
+Una petición real a `v1beta/interactions` con `gemini-3.8-flash` y `store:false`
+reprodujo la causa: `interaction.created` contiene solo `object` y `model`, sin
+`id` ni `status`; la actualización de estado y el cierre también omiten el ID.
+El stream sí termina correctamente con el texto «7», firma de pensamiento y uso.
+La referencia oficial describe recursos parciales en los eventos de ciclo de vida:
+<https://ai.google.dev/api/interactions-api#InteractionSseEventInteraction>.
+La captura real es la evidencia de estas omisiones concretas; los ejemplos de la
+referencia todavía incluyen ambos campos.
+
+`agent/__fixtures__/raw/google-stateless-math.sse` conserva ese intercambio; solo
+se sustituye la firma opaca por una cadena ficticia. No contiene claves ni datos
+personales. La prueba falló con el mismo `invalid_created` antes del arreglo.
+El lector ahora acepta los metadatos omitidos y conserva el formato local del ID
+vacío. Sigue exigiendo apertura, cierre explícito válido, pasos completos, firmas,
+argumentos válidos e identidad coherente cuando hay ID. Los campos presentes con
+tipos o estados incorrectos y las aperturas repetidas siguen rechazándose.
+
+La regresión cubre Fetch y ambos caminos XHR simulados, fragmentación UTF-8,
+replays de pasos, una continuación con herramientas ejecutada una sola vez y
+restauración del historial. El E2E web usa las omisiones actuales en todas las
+rondas de Google, incluidos alimentos y extracción JSON, y reproduce la pregunta
+del revisor: aparece «7», se persiste y sigue visible tras recargar sin otra
+petición. No cambia la interfaz ni el contrato enviado al proveedor.
+
+Validación del 23 de octubre: 978 pruebas Vitest en 112 archivos, 11 pruebas del
+almacén de desarrollo y 3 de límites de arquitectura correctas; TypeScript, E2E
+web focalizado en Google, inventario y generación legal correctos. La captura real
+se obtuvo con una petición mínima (razonamiento `low`, límite de 128 tokens).
+Una comprobación adicional de dos rondas reales con una herramienta ficticia
+agotó el timeout de red; no se considera una validación real de herramientas.
+Estas sí están cubiertas por las regresiones deterministas y el E2E con proveedor
+falso. La consulta del catálogo sigue teniendo el alcance descrito arriba.
+
+Revisión de privacidad: no cambian peticiones, destinos, categorías de datos,
+almacenamiento, permisos, copias ni borrado. La normalización conserva el formato
+local existente; no requiere migración, inventario nuevo ni cambio del texto legal.
+
+Pendiente antes de reenviar: comprobar el mismo flujo con una nueva build en
+Android. `adb devices -l` no detectó dispositivos conectados el 23 de octubre;
+los XHR simulados y el navegador no sustituyen esa comprobación. Los envíos
+automáticos a Play siguen retenidos y esta corrección no los libera.

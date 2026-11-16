@@ -42,20 +42,35 @@ La clasificación IARC es independiente de la audiencia elegida. Se aceptará el
 resultado que produzcan las respuestas reales; no se manipulará para obtener un
 16+.
 
+## Estado de operador
+
+Decisión del mantenedor del 5 de noviembre de 2026: **no operador** mientras
+Gymnasia sea un proyecto personal sin actividad comercial. El mantenedor confirmó
+el 6 de noviembre de 2026 que la declaración quedó guardada. Antes de iniciar la monetización,
+cambiar a **operador** y completar las verificaciones de cuenta y aplicación del
+[procedimiento de futura monetización](../../legal/play-declarations.md#6-estado-de-operador-y-futura-monetización).
+Revisar la declaración al preparar un plan comercial concreto, sin esperar al
+primer ingreso.
+
+**Requisito previo de privacidad:** el mantenedor no quiere que se publique su
+domicilio particular. Antes de monetizar o aceptar su publicación, resolver una
+dirección alternativa legítima, verificable y admitida por Google, modificarla y
+comprobar el resultado público. No activar la monetización hasta resolverlo.
+
 ## App access
 
-Seleccionar que parte de la funcionalidad requiere acceso especial. Texto para
-el revisor:
-
-> Gymnasia no requiere cuenta. Las rutinas, la dieta y las medidas funcionan al
-> abrir la aplicación. Para probar las funciones de IA, abre Configuración →
-> Proveedor IA → Google, pega la clave temporal proporcionada en el campo
-> privado de acceso, pulsa Guardar y vuelve a Chat. La clave es exclusiva de la
-> revisión, está limitada y se revocará cuando termine.
+Seleccionar que parte de la funcionalidad requiere acceso especial. Las
+[instrucciones en inglés y el procedimiento de comprobación](reviewer-access.md)
+describen el acceso a Coach y al estimador, la selección del modelo vigente y
+la recuperación de errores. Ese documento distingue la preparación de las
+instrucciones de su guardado y validación efectivos en Play Console.
 
 La clave de GYM-196 (ticket para preparar una credencial BYOK temporal para la
 revisión de Google Play) se pega únicamente en el campo privado de Play Console.
 Nunca se copia al repositorio, a una captura ni a un comentario.
+La credencial se mantiene válida para revisiones posteriores. Su rotación se
+hace con solape y comprobación de la sustituta antes de revocar la anterior,
+siguiendo el procedimiento privado de ese ticket.
 
 ## Data safety
 
@@ -152,6 +167,16 @@ Verificación final en Play Console, 29 de agosto de 2026:
   Estimador, Medidas y Proveedor;
 - el resumen de publicación conserva los cambios para el flujo posterior de
   revisión y prueba cerrada, sin activar Producción.
+
+## Prueba cerrada y solicitud de producción
+
+El [expediente de la prueba cerrada](closed-test-production-access.md) recoge
+el cumplimiento reconocido por Play el 15 de octubre de 2026, el feedback,
+las correcciones y las respuestas enviadas para solicitar acceso a producción.
+Play confirma la recepción del formulario a las 13:55 de ese día. El acceso
+a producción está concedido, comprobado en el panel el 18 de octubre. El
+lanzamiento público continúa pendiente. La coordinación de la prueba cerrada
+queda cerrada el 18 de octubre con el checklist y sus evidencias resueltos.
 
 ## Fuentes oficiales verificadas el 29 de agosto de 2026
 
