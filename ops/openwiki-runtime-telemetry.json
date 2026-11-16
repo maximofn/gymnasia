@@ -3,17 +3,17 @@
   "project": "openwiki",
   "latestAttempt": {
     "status": "available",
-    "at": "2026-11-09T17:58:59.693Z",
+    "at": "2026-11-16T17:36:55.955Z",
     "failureCategory": null
   },
   "sample": {
-    "collectedAt": "2026-11-09T17:58:59.693Z",
-    "windowStartAt": "2026-11-02T17:58:59.693Z",
-    "windowEndAt": "2026-11-09T17:58:59.693Z",
+    "collectedAt": "2026-11-16T17:36:55.955Z",
+    "windowStartAt": "2026-11-09T17:36:55.955Z",
+    "windowEndAt": "2026-11-16T17:36:55.955Z",
     "truncated": true,
     "roots": {
-      "total": 6,
-      "succeeded": 6,
+      "total": 7,
+      "succeeded": 7,
       "failed": 0,
       "unknown": 0
     },
@@ -29,35 +29,35 @@
     },
     "durationMs": {
       "roots": {
-        "count": 6,
+        "count": 7,
         "unknown": 0,
-        "p50": 137061,
-        "p95": 213726,
-        "max": 213726
+        "p50": 169938,
+        "p95": 263304,
+        "max": 263304
       },
       "models": {
-        "count": 150,
+        "count": 140,
         "unknown": 0,
-        "p50": 3233,
-        "p95": 14034,
-        "max": 79476
+        "p50": 3973,
+        "p95": 33529,
+        "max": 64519
       },
       "tools": {
-        "count": 159,
+        "count": 127,
         "unknown": 0,
-        "p50": 3,
-        "p95": 150,
-        "max": 742
+        "p50": 2,
+        "p95": 97,
+        "max": 467
       }
     },
     "llm": {
-      "calls": 150,
+      "calls": 140,
       "callsPerRoot": {
-        "count": 6,
+        "count": 7,
         "unknown": 0,
         "p50": 22,
-        "p95": 34,
-        "max": 34
+        "p95": 28,
+        "max": 28
       },
       "tokens": {
         "state": "unavailable",
@@ -75,15 +75,15 @@
       }
     },
     "tools": {
-      "total": 159,
+      "total": 127,
       "categories": {
         "search": 0,
-        "read": 77,
-        "write": 11,
+        "read": 71,
+        "write": 23,
         "command": 0,
-        "other": 71
+        "other": 33
       },
-      "unknownNames": 71
+      "unknownNames": 33
     }
   }
 }

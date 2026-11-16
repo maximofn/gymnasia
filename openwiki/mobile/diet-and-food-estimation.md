@@ -12,8 +12,14 @@ sources:
     resource: repo://apps/mobile/agent/toolExecutor.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
+  - id: openwiki-source-ec48451a8afabd632686c7aa
+    resource: repo://apps/mobile/catalogs/ciqual.test.ts
+  - id: openwiki-source-407d9d819b31da7a6fdc2472
+    resource: repo://apps/mobile/catalogs/ciqual.ts
   - id: openwiki-source-e27e377601d302f6e6c215eb
     resource: repo://apps/mobile/catalogs/foodNutrition.ts
+  - id: openwiki-source-fba881b48b95c05eebc3f1a3
+    resource: repo://apps/mobile/catalogs/imageUris.ts
   - id: openwiki-source-f11c40fb577c7d51e488b6f0
     resource: repo://apps/mobile/catalogs/matching.test.ts
   - id: openwiki-source-dea65c4d04c08cc781bd2cda
@@ -40,10 +46,10 @@ sources:
     resource: repo://apps/mobile/scripts/diet-validation.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.6.0", at: "2026-10-29T14:43:04.676Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-11T15:41:01.947Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-10-29T14:43:04.676Z
+    at: 2026-11-11T15:41:01.947Z
 ---
 
 # Dieta, catálogo y estimación de alimentos
@@ -109,13 +115,33 @@ Al hidratar almacenamiento previo, `normalizeDietByDate` recupera la clave de fe
 
 ## Catálogos, búsqueda y alimentos personales
 
-Los catálogos remotos de alimentos, productos comerciales y recetas se cargan como fuentes distintas y quedan etiquetados respectivamente con `gymnasia_foods`, `gymnasia_products` y `gymnasia_recipes`. Cada entrada incluye `sourceId` y el origen visible `alimento`, `producto_comercial` o `receta`. Los alimentos personales son una cuarta fuente privada, `user_personal_foods`, normalizada con `source: "personal"`; se guardan bajo una clave AsyncStorage propia y no tienen URL de catálogo ni imagen remota.
+Los catálogos remotos de alimentos, productos comerciales y recetas se cargan como fuentes distintas y quedan etiquetados respectivamente con `gymnasia_foods`, `gymnasia_products` y `gymnasia_recipes`. A ellos se suma el catálogo local de composición CIQUAL 2025, identificado por `anses_ciqual_2025`: no es una fuente remota ni forma parte de los sobres de caché remota. Cada entrada incluye `sourceId` y el origen visible `alimento`, `producto_comercial` o `receta`. Los alimentos personales son una fuente privada, `user_personal_foods`, normalizada con `source: "personal"`; se guardan bajo una clave AsyncStorage propia y no tienen URL de catálogo ni imagen remota.
 
-`findDietFoodInCatalog` combina el catálogo y los alimentos personales **solo después de descartar fichas sin kcal, proteína, carbohidratos o grasa exactos por 100 g**. El matcher normaliza Unicode, diacríticos, espacios y mayúsculas; busca primero nombres equivalentes y después una inclusión bidireccional como alias. Ordena los candidatos por origen e ID, por lo que una duplicidad no depende del orden recibido. Una coincidencia única exacta o alias se puede vincular; varias candidatas abren una resolución explícita y nunca se elige una de forma implícita.
+`findDietFoodInCatalog` combina las fichas que recibe y los alimentos personales **solo después de descartar fichas sin kcal, proteína, carbohidratos o grasa exactos por 100 g**. El matcher normaliza Unicode, diacríticos, espacios y mayúsculas; busca primero nombres equivalentes y después una inclusión bidireccional como alias. Ordena los candidatos por origen e ID, por lo que una duplicidad no depende del orden recibido. Una coincidencia única exacta o alias se puede vincular; varias candidatas abren una resolución explícita y nunca se elige una de forma implícita.
 
-La completitud exige que los cuatro nutrientes sean números finitos no negativos; `null`, trazas y límites cualitativos no equivalen a cero. `dietItemFromCatalog` vuelve a comprobar esa precondición antes de calcular `ratio = grams / 100`, escalar kcal y macronutrientes, redondear a un decimal y escribir un vínculo `linked`. La interfaz no permite guardar una ficha incompleta como instantánea de catálogo: abre el formulario con los datos disponibles y exige introducir explícitamente los cinco totales (cantidad incluida), para no convertir un dato ausente en cero. Una entrada personal completa también puede vincularse, aunque no aporta imagen remota. Una coincidencia ausente se conserva como `unresolvedCatalog("manual")` o `unresolvedCatalog("external_estimate")` según su ruta.
+La completitud exige que los cuatro nutrientes sean números finitos no negativos; `null`, trazas y límites cualitativos no equivalen a cero. Esto importa particularmente en CIQUAL: sus calificadores conservan la distinción entre valor comunicado, límite, traza y ausencia. `dietItemFromCatalog` vuelve a comprobar esa precondición antes de calcular `ratio = grams / 100`, escalar kcal y macronutrientes, redondear a un decimal y escribir un vínculo `linked`. La interfaz no permite guardar una ficha incompleta como instantánea de catálogo: abre el formulario con los datos disponibles y exige introducir explícitamente los cinco totales (cantidad incluida), para no convertir un dato ausente en cero. Una entrada personal completa también puede vincularse, aunque no aporta imagen remota. Una coincidencia ausente se conserva como `unresolvedCatalog("manual")` o `unresolvedCatalog("external_estimate")` según su ruta.
 
 La disponibilidad del catálogo acompaña las búsquedas del agente como `fresh`, `cached`, `stale`, `partial` o `unavailable`, con fuentes y avisos. Una caída de red no borra una caché previamente validada; si no hay datos utilizables, la búsqueda devuelve disponibilidad no disponible y una lista vacía. La interfaz todavía permite guardar manualmente una entrada validada y marcada como no resuelta. No debe inventarse un enlace cuando no se dispone de una referencia o la coincidencia es ambigua.
+
+### Imágenes de CIQUAL y compatibilidad con historial
+
+La imagen no participa en el cálculo nutricional ni en la validez del vínculo. Para una ficha CIQUAL, `foodCatalogImageUri` consulta un manifiesto generado que asocia **un ID conocido** a una ruta editorial y forma una URL bajo `https://raw.githubusercontent.com/maximofn/gymnasia/main/alimentos/ciqual/`; un ID sin entrada, una ruta no prevista o un alimento personal devuelven `null`. Para las demás fuentes remotas, la ruta se deriva de `entry.image` y de su familia (`alimentos`, `productos_comerciales` o `recetas`).
+
+Al crear una instantánea desde catálogo, se conserva la URL de imagen resuelta en `image_uri`. Como compatibilidad para comidas anteriores que no la tenían, `dietItemImageUri` prefiere siempre `image_uri` pero, si falta y el `catalog_link` es `linked` a `anses_ciqual_2025`, resuelve de nuevo el ID contra el manifiesto. No modifica el elemento ni sus totales; un vínculo no resuelto o una fuente distinta no obtiene una imagen por esta vía. Así una actualización del manifiesto puede mejorar la presentación de un histórico sin reinterpretar su nutrición.
+
+```mermaid
+flowchart TD
+    Item["DietItem"] --> HasImage{"image_uri presente"}
+    HasImage -->|"sí"| Stored["Usar URL persistida"]
+    HasImage -->|"no"| Linked{"Vínculo CIQUAL"}
+    Linked -->|"no"| Empty["Sin imagen"]
+    Linked -->|"sí"| Manifest["Consultar manifiesto por itemId"]
+    Manifest --> Known{"ID conocido"}
+    Known -->|"sí"| Resolved["URL editorial CIQUAL"]
+    Known -->|"no"| Empty
+```
+
+*Resolución visual de una comida: la caída a manifiesto solo cubre enlaces CIQUAL y no altera la instantánea nutricional.*
 
 ## Alta y edición de una comida
 
@@ -231,7 +257,7 @@ Para añadir un nutriente, actualice conjuntamente el contrato nutricional, `Die
 
 ## Pruebas focalizadas
 
-`apps/mobile/diet/nutritionContract.test.ts` cubre categorías, conversión de formulario, validación de valores no negativos y finitos, salida estructurada, presupuestos de macros y una propiedad de 1.000 ejecuciones. `apps/mobile/catalogs/matching.test.ts` verifica normalización, estabilidad de ambiguos y alias. `apps/mobile/agent/toolExecutor.test.ts` cubre búsqueda con metadatos de disponibilidad, escritura por referencia, rechazo de fichas nutricionalmente incompletas y de ambigüedad, categorías inválidas y nutrientes inválidos. `apps/mobile/agent/foodEstimatorClient.test.ts` cubre el modo determinista sin red, la tool sin código y la validación de la extracción estructurada.
+`apps/mobile/diet/nutritionContract.test.ts` cubre categorías, conversión de formulario, validación de valores no negativos y finitos, salida estructurada, presupuestos de macros y una propiedad de 1.000 ejecuciones. `apps/mobile/catalogs/matching.test.ts` verifica normalización, estabilidad de ambiguos y alias. `apps/mobile/catalogs/ciqual.test.ts` protege la separación entre calificadores y cero, la exclusión de fichas incompletas, el escalado de instantáneas y la resolución de imágenes CIQUAL conocidas —incluida la recuperación visual de comidas antiguas sin mutarlas—. `apps/mobile/agent/toolExecutor.test.ts` cubre búsqueda con metadatos de disponibilidad, escritura por referencia, rechazo de fichas nutricionalmente incompletas y de ambigüedad, categorías inválidas y nutrientes inválidos. `apps/mobile/agent/foodEstimatorClient.test.ts` cubre el modo determinista sin red, la tool sin código y la validación de la extracción estructurada.
 
 La prueba de navegador `apps/mobile/scripts/diet-validation.e2e.mjs` exporta la app web, siembra un almacenamiento de desarrollo y comprueba el ciclo del plan: el aviso de cálculo sin datos se descarta al navegar, un peso inválido no se guarda, peso y altura válidos completan la medición existente del día y sobreviven a una recarga. También verifica que un objetivo diario cero no se persiste, que un exceso de macros se representa sin remanente negativo, que una caloría manual negativa no escribe y que una entrada válida a cero sí se guarda. Desde la raíz se ejecuta con:
 

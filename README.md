@@ -134,12 +134,16 @@ catálogos móviles. Se reconstruye sin conexión desde los dos XLSX oficiales
 versionados y fijados por SHA-256. Conserva valores, procedencia y referencias,
 con correcciones oficiales, energía derivada e invalidaciones pendientes
 identificadas en un diario que conserva cada original y su evidencia. No es una
-entrega oficial BLS 4.1; véanse las limitaciones en su README.
+entrega oficial BLS 4.1; véanse las limitaciones en su README. Las imágenes
+editoriales se conservan por tandas en `alimentos/bls/image-batches/`, separadas
+de los datos y de la app, con el estilo aprobado de CIQUAL.
 
 ```bash
 npm run import:bls  # genera fichas, páginas, diccionarios y manifiesto
 npm run check:bls   # reconstruye y compara toda la entrega sin red
-npm run test:bls    # pruebas sintéticas y contrato de los 7.140 alimentos
+npm run test:bls    # pruebas de datos, erratas e imágenes BLS
+npm run check:bls:images   # verifica las tandas y cuenta pendientes
+npm run next:bls:images -- 10  # lista de solo lectura; no genera ni publica
 ```
 
 ## Tests del agente
