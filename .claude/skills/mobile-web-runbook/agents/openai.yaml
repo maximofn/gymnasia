@@ -1,4 +1,0 @@
-interface:
-  display_name: "Mobile Web Runbook"
-  short_description: "Run and troubleshoot Expo web preview for apps/mobile"
-  default_prompt: "Usa $mobile-web-runbook para ejecutar apps/mobile en navegador y resolver errores de arranque web"
