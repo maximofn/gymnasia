@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**1.500/7.140 imágenes registradas; 5.640 pendientes; 21,01 %.**
+**1.600/7.140 imágenes registradas; 5.540 pendientes; 22,41 %.**
 
-Las tandas `0001` a `0015` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0016` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -30,6 +30,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0013: manifiesto y prompts](0013/manifest.json).
 - [Tanda 0014: manifiesto y prompts](0014/manifest.json).
 - [Tanda 0015: manifiesto y prompts](0015/manifest.json).
+- [Tanda 0016: manifiesto y prompts](0016/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -2098,3 +2099,129 @@ Correcciones visuales registradas: 0. Casos abiertos a tamaño completo: `bls-G3
 | [bls-G480242](0015/bls-G480242.webp) | Speisezwiebel tiefgefroren, geschmort ohne Fett | Onion deep-frozen, braised without fat |
 | [bls-G480252](0015/bls-G480252.webp) | Speisezwiebel tiefgefroren, gedünstet | Onion deep-frozen, stewed |
 | [bls-G480262](0015/bls-G480262.webp) | Speisezwiebel tiefgefroren, gebacken | Onion deep-frozen, baked |
+
+
+## Tanda 0016: cebollas, ajo, berenjena, pepino y pimientos
+
+100 WebP finales opacos de 1024×1024 revisados en nueve hojas de contacto; 18 casos comprobados también a tamaño completo. Una generación independiente por código, mediante el generador integrado de Codex y referencias CIQUAL usadas solo para el estilo. BLS permanece fuera de la app.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0016-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0016-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0016-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0016-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0016-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0016-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0016-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0016-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0016-09.jpg)
+
+Las cebolletas completas conservan sus hojas tubulares verdes; las fichas `ohne Laub` muestran solo la base blanca sin hojas. Las cebollitas perla y plateadas se ilustran como bulbos blancos pequeños; las chalotas son alargadas, con piel cobriza rosada y capas interiores claras con tonos lilas. Los nombres oficiales se mantienen literales, incluidas las grafías inglesas `Shalot boiled` y `Shalot stewed`. Las escamas deshidratadas se diferencian del polvo fino; no se representan como cebolla o ajo frito. Los zumos de cebolla y pepino son líquidos turbios pálidos en un vaso sin hielo ni sólidos.
+
+El ajo conserva sus dientes curvos y puntiagudos. El ajo silvestre `Bärlauch` se ilustra con hojas elípticas verdes de pecíolos separados, conforme a [RHS: Allium ursinum](https://www.rhs.org.uk/plants/879/allium-ursinum/details), sin convertirlo en una cabeza de ajo ni añadir flores. La berenjena se ilustra con una variedad morada y pulpa clara; el pepino mantiene piel verde y centro húmedo con semillas. La okra muestra vainas alargadas acanaladas y cortes con semillas pequeñas, de acuerdo con [Texas A&M AgriLife Extension](https://aggie-horticulture.tamu.edu/vegetable/wp-content/uploads/sites/10/2013/09/EHT-058.pdf) e [Iowa State University Extension](https://spendsmart.extension.iastate.edu/produce-item/okra/).
+
+Se respeta el verde, amarillo o rojo indicado para cada pimiento. Los dulces tienen paredes gruesas y forma lobulada hueca; los chiles son estrechos y puntiagudos. En las dos conservas de chile sin color especificado se elige una variedad verde a modo ilustrativo; BLS no certifica esa elección. Las conservas en aceite escurridas tienen solo una película residual, sin aceite acumulado; los encurtidos escurridos tampoco tienen salmuera acumulada. Las variantes asadas conservadas mantienen sus marcas de cocción. Hervido, braseado y guisado muestran ablandamiento sin costra; horno, parrilla y sartén llevan solo el dorado correspondiente. El congelado sin cocinar tiene escarcha discreta y el cocinado desde congelado no. El último alimento es tomate braseado sin grasa. No hay guarniciones, utensilios o envases.
+
+Estas decisiones visuales no certifican especie, variedad, receta, grasa, alérgenos ni porción de 100 g. Las fichas, nutrientes y fuentes oficiales no cambian. Correcciones visuales registradas: 2. `bls-G480500`: La primera salida mostraba escamas gruesas, demasiado similares a cebolla granulada o deshidratada, en lugar de polvo fino. Se regeneró con textura homogénea de polvo fino; se revisó el WebP final a tamaño completo y se conservaron los originales descartados en el checkpoint. `bls-G490400`: La primera salida añadió una cabeza de ajo y dientes enteros junto a las láminas deshidratadas. Se regeneró mostrando únicamente láminas y escamas secas, sin cabeza ni dientes frescos; se revisó el WebP final a tamaño completo y se conservaron los originales descartados en el checkpoint. Casos abiertos a tamaño completo: `bls-G480600`, `bls-G480500`, `bls-G484100`, `bls-G485100`, `bls-G486100`, `bls-G488802`, `bls-G490200`, `bls-G490500`, `bls-G491702`, `bls-G490400`, `bls-G492100`, `bls-G510702`, `bls-G520600`, `bls-G520802`, `bls-G530100`, `bls-G543702`, `bls-G550702`, `bls-G554100`.
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-G480282](0016/bls-G480282.webp) | Speisezwiebel tiefgefroren, gebraten ohne Fett (Pfanne) | Onion deep-frozen, fried without fat (pan) |
+| [bls-G480400](0016/bls-G480400.webp) | Speisezwiebel getrocknet | Onion dried |
+| [bls-G480500](0016/bls-G480500.webp) | Speisezwiebel Pulver | Onion powder |
+| [bls-G480600](0016/bls-G480600.webp) | Gemüsesaft aus Speisezwiebel | Onion juice |
+| [bls-G482100](0016/bls-G482100.webp) | Frühlingszwiebel/Lauchzwiebel, roh | Spring onion raw |
+| [bls-G482132](0016/bls-G482132.webp) | Frühlingszwiebel/Lauchzwiebel, gekocht | Spring onion boiled |
+| [bls-G482142](0016/bls-G482142.webp) | Frühlingszwiebel/Lauchzwiebel, geschmort ohne Fett | Spring onion braised without fat |
+| [bls-G482152](0016/bls-G482152.webp) | Frühlingszwiebel/Lauchzwiebel, gedünstet | Spring onion stewed |
+| [bls-G482162](0016/bls-G482162.webp) | Frühlingszwiebel/Lauchzwiebel, gebacken | Spring onion baked |
+| [bls-G482182](0016/bls-G482182.webp) | Frühlingszwiebel/Lauchzwiebel, gebraten ohne Fett (Pfanne) | Spring onion fried without fat (pan) |
+| [bls-G484100](0016/bls-G484100.webp) | Perlzwiebel roh | Pearl onion raw |
+| [bls-G484132](0016/bls-G484132.webp) | Perlzwiebel gekocht | Pearl onion boiled |
+| [bls-G484152](0016/bls-G484152.webp) | Perlzwiebel gedünstet | Pearl onion stewed |
+| [bls-G484162](0016/bls-G484162.webp) | Perlzwiebel gebacken | Pearl onion baked |
+| [bls-G484182](0016/bls-G484182.webp) | Perlzwiebel gebraten ohne Fett (Pfanne) | Pearl onion fried without fat (pan) |
+| [bls-G485082](0016/bls-G485082.webp) | Schalotte gebraten ohne Fett (Pfanne) | Shallot fried without fat (pan) |
+| [bls-G485100](0016/bls-G485100.webp) | Schalotte roh | Shallot raw |
+| [bls-G485132](0016/bls-G485132.webp) | Schalotte gekocht | Shalot boiled |
+| [bls-G485142](0016/bls-G485142.webp) | Schalotte geschmort ohne Fett | Shallot braised without fat |
+| [bls-G485152](0016/bls-G485152.webp) | Schalotte gedünstet | Shalot stewed |
+| [bls-G486100](0016/bls-G486100.webp) | Frühlingszwiebel/Lauchzwiebel (ohne Laub) roh | Spring onion, bulb only, raw |
+| [bls-G486132](0016/bls-G486132.webp) | Frühlingszwiebel/Lauchzwiebel (ohne Laub) gekocht | Spring onion, bulb only, boiled |
+| [bls-G486142](0016/bls-G486142.webp) | Frühlingszwiebel/Lauchzwiebel (ohne Laub) geschmort ohne Fett | Spring onion, bulb only, braised without fat |
+| [bls-G486152](0016/bls-G486152.webp) | Frühlingszwiebel/Lauchzwiebel (ohne Laub) gedünstet | Spring onion, bulb only, stewed |
+| [bls-G486162](0016/bls-G486162.webp) | Frühlingszwiebel/Lauchzwiebel (ohne Laub) gebacken | Spring onion, bulb only, baked |
+| [bls-G486182](0016/bls-G486182.webp) | Frühlingszwiebel/Lauchzwiebel (ohne Laub) gebraten ohne Fett (Pfanne) | Spring onion, bulb only, fried without fat (pan) |
+| [bls-G488100](0016/bls-G488100.webp) | Silberzwiebel roh | Silverskin onion raw |
+| [bls-G488802](0016/bls-G488802.webp) | Silberzwiebel gesäuert, abgetropft | Silverskin onion pickled, drained |
+| [bls-G490042](0016/bls-G490042.webp) | Knoblauch geschmort ohne Fett | Garlic braised without fat |
+| [bls-G490100](0016/bls-G490100.webp) | Knoblauch roh | Garlic raw |
+| [bls-G490132](0016/bls-G490132.webp) | Knoblauch gekocht | Garlic boiled |
+| [bls-G490152](0016/bls-G490152.webp) | Knoblauch gedünstet | Garlic stewed |
+| [bls-G490162](0016/bls-G490162.webp) | Knoblauch gebacken | Garlic baked |
+| [bls-G490182](0016/bls-G490182.webp) | Knoblauch gebraten ohne Fett (Pfanne) | Garlic fried without fat (pan) |
+| [bls-G490200](0016/bls-G490200.webp) | Knoblauch tiefgefroren | Garlic deep-frozen |
+| [bls-G490232](0016/bls-G490232.webp) | Knoblauch tiefgefroren, gekocht | Garlic deep-frozen, boiled |
+| [bls-G490242](0016/bls-G490242.webp) | Knoblauch tiefgefroren, geschmort ohne Fett | Garlic deep-frozen, braised without fat |
+| [bls-G490252](0016/bls-G490252.webp) | Knoblauch tiefgefroren, gedünstet | Garlic deep-frozen, stewed |
+| [bls-G490262](0016/bls-G490262.webp) | Knoblauch tiefgefroren, gebacken | Garlic deep-frozen, baked |
+| [bls-G490282](0016/bls-G490282.webp) | Knoblauch tiefgefroren, gebraten ohne Fett (Pfanne) | Garlic deep-frozen, fried without fat (pan) |
+| [bls-G490400](0016/bls-G490400.webp) | Knoblauch getrocknet | Garlic dried |
+| [bls-G490500](0016/bls-G490500.webp) | Knoblauch Pulver | Garlic powder |
+| [bls-G491702](0016/bls-G491702.webp) | Knoblauch in Öl, Konserve, abgetropft | Garlic in oil, canned, drained |
+| [bls-G491802](0016/bls-G491802.webp) | Knoblauch gesäuert, abgetropft | Garlic pickled, drained |
+| [bls-G492100](0016/bls-G492100.webp) | Bärlauch roh | Wild garlic raw |
+| [bls-G510100](0016/bls-G510100.webp) | Aubergine roh | Aubergine raw |
+| [bls-G510132](0016/bls-G510132.webp) | Aubergine gekocht | Aubergine boiled |
+| [bls-G510142](0016/bls-G510142.webp) | Aubergine geschmort ohne Fett | Aubergine braised without fat |
+| [bls-G510152](0016/bls-G510152.webp) | Aubergine gedünstet | Aubergine stewed |
+| [bls-G510162](0016/bls-G510162.webp) | Aubergine gebacken | Aubergine baked |
+| [bls-G510172](0016/bls-G510172.webp) | Aubergine gegrillt | Aubergine grilled |
+| [bls-G510182](0016/bls-G510182.webp) | Aubergine gebraten ohne Fett (Pfanne) | Aubergine fried without fat (pan) |
+| [bls-G510702](0016/bls-G510702.webp) | Aubergine gegrillt, in Öl, Konserve, abgetropft | Aubergine grilled, in oil, canned, drained |
+| [bls-G520042](0016/bls-G520042.webp) | Gurke geschmort ohne Fett | Cucumber braised without fat |
+| [bls-G520062](0016/bls-G520062.webp) | Gurke gebacken | Cucumber baked |
+| [bls-G520100](0016/bls-G520100.webp) | Gurke roh | Cucumber raw |
+| [bls-G520132](0016/bls-G520132.webp) | Gurke gekocht | Cucumber boiled |
+| [bls-G520152](0016/bls-G520152.webp) | Gurke gedünstet | Cucumber stewed |
+| [bls-G520182](0016/bls-G520182.webp) | Gurke gebraten ohne Fett (Pfanne) | Cucumber fried without fat (pan) |
+| [bls-G520600](0016/bls-G520600.webp) | Gemüsesaft aus Gurke | Cucumber juice |
+| [bls-G520802](0016/bls-G520802.webp) | Gurke gesäuert (Gewürzgurke) abgetropft | Cucumber/gherkin pickled, drained |
+| [bls-G530100](0016/bls-G530100.webp) | Okra roh | Okra raw |
+| [bls-G530132](0016/bls-G530132.webp) | Okra gekocht | Okra boiled |
+| [bls-G530142](0016/bls-G530142.webp) | Okra geschmort ohne Fett | Okra braised without fat |
+| [bls-G530152](0016/bls-G530152.webp) | Okra gedünstet | Okra stewed |
+| [bls-G530902](0016/bls-G530902.webp) | Okra Konserve, abgetropft | Okra canned, drained |
+| [bls-G541032](0016/bls-G541032.webp) | Gemüsepaprika grün, gekocht | Sweet pepper green, boiled |
+| [bls-G541042](0016/bls-G541042.webp) | Gemüsepaprika grün, geschmort ohne Fett | Sweet pepper green, braised without fat |
+| [bls-G541072](0016/bls-G541072.webp) | Gemüsepaprika grün, gegrillt | Sweet pepper green, grilled |
+| [bls-G541082](0016/bls-G541082.webp) | Gemüsepaprika grün, gebraten ohne Fett (Pfanne) | Sweet pepper green, fried without fat (pan) |
+| [bls-G541100](0016/bls-G541100.webp) | Gemüsepaprika grün, roh | Sweet pepper green, raw |
+| [bls-G541152](0016/bls-G541152.webp) | Gemüsepaprika grün, gedünstet | Sweet pepper green, stewed |
+| [bls-G541162](0016/bls-G541162.webp) | Gemüsepaprika grün, gebacken | Sweet pepper green, baked |
+| [bls-G542042](0016/bls-G542042.webp) | Gemüsepaprika gelb, geschmort ohne Fett | Sweet pepper yellow, braised without fat |
+| [bls-G542100](0016/bls-G542100.webp) | Gemüsepaprika gelb, roh | Sweet pepper yellow, raw |
+| [bls-G542132](0016/bls-G542132.webp) | Gemüsepaprika gelb, gekocht | Sweet pepper yellow, boiled |
+| [bls-G542152](0016/bls-G542152.webp) | Gemüsepaprika gelb, gedünstet | Sweet pepper yellow, stewed |
+| [bls-G542162](0016/bls-G542162.webp) | Gemüsepaprika gelb, gebacken | Sweet pepper yellow, baked |
+| [bls-G542172](0016/bls-G542172.webp) | Gemüsepaprika gelb, gegrillt | Sweet pepper yellow, grilled |
+| [bls-G542182](0016/bls-G542182.webp) | Gemüsepaprika gelb, gebraten ohne Fett (Pfanne) | Sweet pepper yellow, fried without fat (pan) |
+| [bls-G543032](0016/bls-G543032.webp) | Gemüsepaprika rot, gekocht | Sweet pepper red, boiled |
+| [bls-G543042](0016/bls-G543042.webp) | Gemüsepaprika rot, geschmort ohne Fett | Sweet pepper red, braised without fat |
+| [bls-G543072](0016/bls-G543072.webp) | Gemüsepaprika rot, gegrillt | Sweet pepper red, grilled |
+| [bls-G543082](0016/bls-G543082.webp) | Gemüsepaprika rot, gebraten ohne Fett (Pfanne) | Sweet pepper red, fried without fat (pan) |
+| [bls-G543100](0016/bls-G543100.webp) | Gemüsepaprika rot, roh | Sweet pepper red, raw |
+| [bls-G543152](0016/bls-G543152.webp) | Gemüsepaprika rot, gedünstet | Sweet pepper red, stewed |
+| [bls-G543162](0016/bls-G543162.webp) | Gemüsepaprika rot, gebacken | Sweet pepper red, baked |
+| [bls-G543702](0016/bls-G543702.webp) | Gemüsepaprika rot, gegrillt, in Öl, Konserve, abgetropft | Sweet pepper red, grilled, in oil, canned, drained |
+| [bls-G543802](0016/bls-G543802.webp) | Gemüsepaprika rot, gesäuert, abgetropft | Sweet pepper red, pickled, drained |
+| [bls-G550702](0016/bls-G550702.webp) | Pfefferschote in Öl, Konserve, abgetropft | Chilli pepper in oil, canned, drained |
+| [bls-G550802](0016/bls-G550802.webp) | Pfefferschote gesäuert, abgetropft | Chilli pepper pickled, drained |
+| [bls-G553100](0016/bls-G553100.webp) | Pfefferschote grün, roh | Chilli pepper green, raw |
+| [bls-G553132](0016/bls-G553132.webp) | Pfefferschote grün, gekocht | Chilli pepper green, boiled |
+| [bls-G553152](0016/bls-G553152.webp) | Pfefferschote grün, gedünstet | Chilli pepper green, stewed |
+| [bls-G553182](0016/bls-G553182.webp) | Pfefferschote grün, gebraten ohne Fett (Pfanne) | Chilli pepper green, fried without fat (pan) |
+| [bls-G554100](0016/bls-G554100.webp) | Pfefferschote rot, roh | Chilli pepper red, raw |
+| [bls-G554132](0016/bls-G554132.webp) | Pfefferschote rot, gekocht | Chilli pepper red, boiled |
+| [bls-G554152](0016/bls-G554152.webp) | Pfefferschote rot, gedünstet | Chilli pepper red, stewed |
+| [bls-G554182](0016/bls-G554182.webp) | Pfefferschote rot, gebraten ohne Fett (Pfanne) | Chilli pepper red, fried without fat (pan) |
+| [bls-G560142](0016/bls-G560142.webp) | Tomate geschmort ohne Fett | Tomato braised without fat |
