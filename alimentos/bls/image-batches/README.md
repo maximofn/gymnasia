@@ -9,9 +9,9 @@ alérgenos ni propiedades nutricionales. Fuente de los nombres: Max Rubner-Insti
 
 ## Estado
 
-**1.800/7.140 imágenes registradas; 5.340 pendientes; 25,21 %.**
+**1.900/7.140 imágenes registradas; 5.240 pendientes; 26,61 %.**
 
-Las tandas `0001` a `0018` contienen 100 imágenes cada una, generadas con Codex
+Las tandas `0001` a `0019` contienen 100 imágenes cada una, generadas con Codex
 integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 `pending-review` no equivale a aprobación del mantenedor. No hay integración móvil.
 
@@ -33,6 +33,7 @@ integrado y revisadas visualmente. Consultar GitHub para el estado de sus PRs;
 - [Tanda 0016: manifiesto y prompts](0016/manifest.json).
 - [Tanda 0017: manifiesto y prompts](0017/manifest.json).
 - [Tanda 0018: manifiesto y prompts](0018/manifest.json).
+- [Tanda 0019: manifiesto y prompts](0019/manifest.json).
 
 Cada variante tiene su propia imagen; los nombres DE/EN se conservan literales.
 
@@ -2485,3 +2486,133 @@ Correcciones visuales registradas: 0.  Casos abiertos a tamaño completo: `bls-G
 | [bls-G992902](0018/bls-G992902.webp) | Gemüsemischung Erbsen-Karotten, Konserve, abgetropft | Mixed vegetables peas and carrots, canned, drained |
 | [bls-G993100](0018/bls-G993100.webp) | Gemüsemischung mexikanische Art, roh | Mixed vegetables Mexican style, raw |
 | [bls-G993132](0018/bls-G993132.webp) | Gemüsemischung mexikanische Art, gekocht | Mixed vegetables Mexican style, boiled |
+
+
+## Tanda 0019: mezclas de verduras, frutos secos, semillas, aceitunas y brotes
+
+100 WebP finales opacos de 1024×1024 revisados en nueve hojas de contacto; 27 casos comprobados también a tamaño completo. Una generación independiente por código, mediante el generador integrado de Codex y referencias CIQUAL usadas solo para el estilo. BLS permanece fuera de la app.
+
+- [Hoja 01](../../../docs/testing/assets/bls-food-images-0019-01.jpg)
+- [Hoja 02](../../../docs/testing/assets/bls-food-images-0019-02.jpg)
+- [Hoja 03](../../../docs/testing/assets/bls-food-images-0019-03.jpg)
+- [Hoja 04](../../../docs/testing/assets/bls-food-images-0019-04.jpg)
+- [Hoja 05](../../../docs/testing/assets/bls-food-images-0019-05.jpg)
+- [Hoja 06](../../../docs/testing/assets/bls-food-images-0019-06.jpg)
+- [Hoja 07](../../../docs/testing/assets/bls-food-images-0019-07.jpg)
+- [Hoja 08](../../../docs/testing/assets/bls-food-images-0019-08.jpg)
+- [Hoja 09](../../../docs/testing/assets/bls-food-images-0019-09.jpg)
+
+Las mezclas mexicana y asiática usan composiciones ilustrativas, sin certificar receta ni proporciones. Los congelados sin cocinar tienen escarcha; los cocinados desde congelado no. Nori son hojas rectangulares tostadas, sin arroz ni sushi. El aislado de proteína de soja es polvo fino; para la lecitina genérica se elige una presentación granular, una de las formas comerciales documentadas por [Bunge](https://bunge.com/markets-we-serve/technical/construction/soybean-lecithin). No se afirma que sea la forma concreta de la ficha BLS. Las salchichas de soja se muestran sin pan, salsas ni marcas de parrilla inventadas. Los fideos de almidón de mungo secos tienen hebras rígidas blanquecinas; los hervidos están hidratados, transparentes y escurridos.
+
+Frutos secos y semillas se representan como partes comestibles sin cáscara dura. Las nueces conservan lóbulos rugosos; las pacanas, surcos longitudinales; los anacardos, curva en C; las nueces de Brasil, cuñas con piel marrón; las macadamias, color marfil y forma redonda. Las versiones molidas son harinas o granillo fino, no frutos enteros ni cremas húmedas. Las cremas de cacahuete, avellana y almendra son pastas sin pan ni ingredientes decorativos. Las almendras blanqueadas carecen de piel marrón, conforme a [BZfE](https://www.bzfe.de/presse/pressemeldungen-archiv-2024-und-frueher/suessmandeln-bittermandeln-und-krachmandeln). La almendra amarga conserva su identificación oficial, pero la imagen no permite distinguir con fiabilidad sabor, composición o seguridad: su parecido con la dulce está descrito por la [Verbraucherzentrale Bayern](https://www.verbraucherzentrale.bayern/faq/sind-bittermandeln-gesundheitsschaedlich-20872).
+
+El coco fresco es pulpa blanca con fina testa marrón, el rallado seco son fibras cortas; el agua de coco es translúcida y la leche de coco opaca, cada una en un vaso transparente sencillo sin hielo ni fruta de adorno. Las castañas se muestran peladas; las cocinadas conservan su pulpa lobulada y la harina es polvo seco. Los tostados tienen dorado moderado; la grasa no se cuantifica mediante brillo. Solo los códigos con sal muestran algunos cristales adheridos. Las semillas de lino son marrones y aplanadas; las de chía, moteadas; las de amapola, muy pequeñas y azul grisáceo. Las harinas de semilla no se confunden con semillas enteras.
+
+Las aceitunas están escurridas, sin charcos de salmuera. Los rellenos de pasta de pimiento rojo y de almendra quedan visibles dentro de las aberturas, sin ingredientes sueltos como decoración. Las aceitunas ennegrecidas se representan uniformemente negras: el [Consejo Oleícola Internacional](https://www.internationaloliveoil.org/wp-content/uploads/2022/05/COI-OT-NC1-2004-Eng.pdf) distingue el oscurecimiento por oxidación de las aceitunas naturalmente negras. Los brotes de bambú son pulpa tierna marfil sin vainas leñosas. Los germinados de soja conservan cotiledones amarillos grandes, los de mungo tienen tallos blancos y puntas pequeñas; se mantienen separadas las identificaciones oficiales, aunque en el comercio puedan confundirse. [Minn Tofu](https://minntofu.com/products/soybean-sprouts/) muestra el grano amarillo unido al brote de soja y [USDA](https://www.ars.usda.gov/is/np/CommercialStorage/CommercialStorage.pdf) describe los hipocótilos blancos y cotiledones amarillos o verdes del mungo. La alfalfa tiene tallos finos y pequeñas hojas; las lentejas germinadas mantienen la semilla con radículas. Los caupís secos conservan su ojo negro y los hervidos o en conserva están hidratados. La harina de guisante usa un tono crema verdoso ilustrativo, sin certificar variedad.
+
+Estas ilustraciones no certifican especie, variedad, receta, ingredientes exactos, alérgenos, propiedades nutricionales ni porción de 100 g. Las fichas nutricionales y las fuentes oficiales no cambian.
+
+Correcciones visuales registradas: 0.  Casos abiertos a tamaño completo: `bls-G994100`, `bls-G995000`, `bls-H030400`, `bls-H030432`, `bls-H120400`, `bls-H130400`, `bls-H150100`, `bls-H151000`, `bls-H154000`, `bls-H011000`, `bls-H012000`, `bls-H210200`, `bls-H220100`, `bls-H230132`, `bls-H230172`, `bls-H410400`, `bls-H450400`, `bls-H480100`, `bls-H510900`, `bls-H511900`, `bls-H520800`, `bls-H620100`, `bls-H650100`, `bls-H662100`, `bls-H702100`, `bls-H702132`, `bls-H710400`.
+
+| Imagen | Nombre alemán oficial | Nombre inglés oficial |
+| --- | --- | --- |
+| [bls-G993142](0019/bls-G993142.webp) | Gemüsemischung mexikanische Art, geschmort ohne Fett | Mixed vegetables Mexican style, braised without fat |
+| [bls-G993152](0019/bls-G993152.webp) | Gemüsemischung mexikanische Art, gedünstet | Mixed vegetables Mexican style, stewed |
+| [bls-G993182](0019/bls-G993182.webp) | Gemüsemischung mexikanische Art, gebraten ohne Fett (Pfanne) | Mixed vegetables Mexican style, fried without fat (pan) |
+| [bls-G993200](0019/bls-G993200.webp) | Gemüsemischung mexikanische Art, tiefgefroren | Mixed vegetables Mexican style, deep-frozen |
+| [bls-G993232](0019/bls-G993232.webp) | Gemüsemischung mexikanische Art, tiefgefroren, gekocht | Mixed vegetables Mexican style, deep-frozen, boiled |
+| [bls-G993242](0019/bls-G993242.webp) | Gemüsemischung mexikanische Art, tiefgefroren, geschmort ohne Fett | Mixed vegetables Mexican style, deep-frozen, braised without fat |
+| [bls-G993252](0019/bls-G993252.webp) | Gemüsemischung mexikanische Art, tiefgefroren, gedünstet | Mixed vegetables Mexican style, deep-frozen, stewed |
+| [bls-G993282](0019/bls-G993282.webp) | Gemüsemischung mexikanische Art, tiefgefroren, gebraten ohne Fett (Pfanne) | Mixed vegetables Mexican style, deep-frozen, fried without fat (pan) |
+| [bls-G993902](0019/bls-G993902.webp) | Gemüsemischung mexikanische Art, Konserve, abgetropft | Mixed vegetables Mexican style, canned, drained |
+| [bls-G994100](0019/bls-G994100.webp) | Gemüsemischung asiatische Art, roh | Mixed vegetables Asian style, raw |
+| [bls-G994132](0019/bls-G994132.webp) | Gemüsemischung asiatische Art, gekocht | Mixed vegetables Asian style, boiled |
+| [bls-G994142](0019/bls-G994142.webp) | Gemüsemischung asiatische Art, geschmort ohne Fett | Mixed vegetables Asian style, braised without fat |
+| [bls-G994152](0019/bls-G994152.webp) | Gemüsemischung asiatische Art, gedünstet | Mixed vegetables Asian style, stewed |
+| [bls-G994162](0019/bls-G994162.webp) | Gemüsemischung asiatische Art, gebacken | Mixed vegetables Asian style, baked |
+| [bls-G994182](0019/bls-G994182.webp) | Gemüsemischung asiatische Art, gebraten ohne Fett (Pfanne) | Mixed vegetables Asian style, fried without fat (pan) |
+| [bls-G994200](0019/bls-G994200.webp) | Gemüsemischung asiatische Art, tiefgefroren | Mixed vegetables Asian style, deep-frozen |
+| [bls-G994232](0019/bls-G994232.webp) | Gemüsemischung asiatische Art, tiefgefroren, gekocht | Mixed vegetables Asian style, deep-frozen, boiled |
+| [bls-G994242](0019/bls-G994242.webp) | Gemüsemischung asiatische Art, tiefgefroren, geschmort ohne Fett | Mixed vegetables Asian style, deep-frozen, braised without fat |
+| [bls-G994252](0019/bls-G994252.webp) | Gemüsemischung asiatische Art, tiefgefroren, gedünstet | Mixed vegetables Asian style, deep-frozen, stewed |
+| [bls-G994262](0019/bls-G994262.webp) | Gemüsemischung asiatische Art, tiefgefroren, gebacken | Mixed vegetables Asian style, deep-frozen, baked |
+| [bls-G994282](0019/bls-G994282.webp) | Gemüsemischung asiatische Art, tiefgefroren, gebraten ohne Fett (Pfanne) | Mixed vegetables Asian style, deep-frozen, fried without fat (pan) |
+| [bls-G995000](0019/bls-G995000.webp) | Nori-Blatt geröstet | Sushi nori (toasted) |
+| [bls-H011000](0019/bls-H011000.webp) | Sojaproteinisolat | Soya bean protein isolate |
+| [bls-H012000](0019/bls-H012000.webp) | Sojalecithin | Soya bean lecithin |
+| [bls-H014900](0019/bls-H014900.webp) | Sojawürstchen | Soya bean small sausage |
+| [bls-H030400](0019/bls-H030400.webp) | Glasnudeln aus Mungbohnenstärke, roh | Glass noodles made from mung bean starch, raw |
+| [bls-H030432](0019/bls-H030432.webp) | Glasnudeln aus Mungbohnenstärke, gekocht | Glass noodles made from mung bean starch, boiled |
+| [bls-H110600](0019/bls-H110600.webp) | Erdnuss geröstet | Peanut roasted |
+| [bls-H110700](0019/bls-H110700.webp) | Erdnuss geröstet, gesalzen | Peanut roasted, salted |
+| [bls-H110800](0019/bls-H110800.webp) | Erdnussmus | Peanut butter (100 % pure) |
+| [bls-H120100](0019/bls-H120100.webp) | Walnuss | Walnut |
+| [bls-H120400](0019/bls-H120400.webp) | Walnuss gemahlen | Walnut ground |
+| [bls-H120610](0019/bls-H120610.webp) | Walnuss geröstet ohne Fett | Walnut roasted without fat |
+| [bls-H130100](0019/bls-H130100.webp) | Haselnuss | Hazelnut |
+| [bls-H130400](0019/bls-H130400.webp) | Haselnuss gemahlen | Hazelnut ground |
+| [bls-H130610](0019/bls-H130610.webp) | Haselnuss geröstet ohne Fett | Hazelnut roasted without fat |
+| [bls-H130800](0019/bls-H130800.webp) | Haselnussmus | Hazelnut butter (100 % pure) |
+| [bls-H150100](0019/bls-H150100.webp) | Kokos Fruchtfleisch, roh | Coconut meat, raw |
+| [bls-H150400](0019/bls-H150400.webp) | Kokos Fruchtfleisch, geraspelt, getrocknet | Coconut meat, grated, dried |
+| [bls-H151000](0019/bls-H151000.webp) | Kokoswasser (Fruchtwasser) | Coconut water (liquid from coconuts) |
+| [bls-H154000](0019/bls-H154000.webp) | Kokosmilch/Kokosnussmilch | Coconut milk |
+| [bls-H160100](0019/bls-H160100.webp) | Pekannuss | Pecan |
+| [bls-H160600](0019/bls-H160600.webp) | Pekannuss geröstet ohne Fett | Pecan roasted without fat |
+| [bls-H170100](0019/bls-H170100.webp) | Cashewkern | Cashew nut |
+| [bls-H170600](0019/bls-H170600.webp) | Cashewkern geröstet mit Fett | Cashew nut roasted with fat |
+| [bls-H170610](0019/bls-H170610.webp) | Cashewkern geröstet ohne Fett | Cashew nut roasted without fat |
+| [bls-H170700](0019/bls-H170700.webp) | Cashewkern geröstet mit Fett, gesalzen | Cashew nut roasted with fat, salted |
+| [bls-H180100](0019/bls-H180100.webp) | Paranuss | Brazil nut |
+| [bls-H180610](0019/bls-H180610.webp) | Paranuss geröstet ohne Fett | Brazil nut roasted without fat |
+| [bls-H190100](0019/bls-H190100.webp) | Macadamianuss | Macadamia nut |
+| [bls-H190600](0019/bls-H190600.webp) | Macadamianuss geröstet ohne Fett | Macadamia nut roasted without fat |
+| [bls-H190700](0019/bls-H190700.webp) | Macadamianuss geröstet ohne Fett, gesalzen | Macadamia nut roasted without fat, salted |
+| [bls-H210100](0019/bls-H210100.webp) | Mandel süß | Sweet almond |
+| [bls-H210200](0019/bls-H210200.webp) | Mandel süß, blanchiert | Sweet almond blanched |
+| [bls-H210400](0019/bls-H210400.webp) | Mandel süß, gemahlen | Sweet almond crushed |
+| [bls-H210600](0019/bls-H210600.webp) | Mandel süß, geröstet ohne Fett | Sweet almond roasted without fat |
+| [bls-H210710](0019/bls-H210710.webp) | Mandel süß, geröstet mit Fett, gesalzen | Sweet almond roasted with fat, salted |
+| [bls-H212800](0019/bls-H212800.webp) | Mandelmus | Sweet almond butter (100 % pure) |
+| [bls-H220100](0019/bls-H220100.webp) | Mandel bitter | Bitter almond |
+| [bls-H230100](0019/bls-H230100.webp) | Edelkastanie/Marone | Sweet chestnut |
+| [bls-H230132](0019/bls-H230132.webp) | Edelkastanie/Marone, gekocht | Sweet chestnut boiled |
+| [bls-H230162](0019/bls-H230162.webp) | Edelkastanie/Marone, gebacken | Sweet chestnut baked |
+| [bls-H230172](0019/bls-H230172.webp) | Edelkastanie/Marone, gegrillt | Sweet chestnut grilled |
+| [bls-H230182](0019/bls-H230182.webp) | Edelkastanie/Marone, gebraten ohne Fett (Pfanne) | Sweet chestnut fried without fat (pan) |
+| [bls-H230400](0019/bls-H230400.webp) | Kastanienmehl | Sweet chestnut flour |
+| [bls-H250100](0019/bls-H250100.webp) | Pistazie | Pistachio nut |
+| [bls-H250600](0019/bls-H250600.webp) | Pistazie geröstet ohne Fett | Pistachio nut roasted without fat |
+| [bls-H250700](0019/bls-H250700.webp) | Pistazie geröstet ohne Fett, gesalzen | Pistachio nut roasted without fat, salted |
+| [bls-H310100](0019/bls-H310100.webp) | Kürbiskern | Pumpkin seed |
+| [bls-H310600](0019/bls-H310600.webp) | Kürbiskern geröstet ohne Fett | Pumpkin seed roasted without fat |
+| [bls-H320100](0019/bls-H320100.webp) | Pinienkern | Pine nut |
+| [bls-H320600](0019/bls-H320600.webp) | Pinienkern geröstet ohne Fett | Pine nut roasted without fat |
+| [bls-H410100](0019/bls-H410100.webp) | Leinsamen | Linseed/flax seed |
+| [bls-H410400](0019/bls-H410400.webp) | Leinsamen geschrotet | Linseed/flax seed, ground |
+| [bls-H410600](0019/bls-H410600.webp) | Leinsamen geröstet ohne Fett | Linseed/flax seed, roasted without fat |
+| [bls-H420100](0019/bls-H420100.webp) | Sesam | Sesame seed |
+| [bls-H420610](0019/bls-H420610.webp) | Sesam geröstet ohne Fett | Sesame seeds roasted without fat |
+| [bls-H430100](0019/bls-H430100.webp) | Sonnenblumenkern | Sunflower seed |
+| [bls-H430610](0019/bls-H430610.webp) | Sonnenblumenkern geröstet ohne Fett | Sunflower seeds roasted without fat |
+| [bls-H450100](0019/bls-H450100.webp) | Mohn | Poppy seed |
+| [bls-H450400](0019/bls-H450400.webp) | Mohn gemahlen | Poppy seed ground |
+| [bls-H480100](0019/bls-H480100.webp) | Chia-Samen | Chia seeds |
+| [bls-H510802](0019/bls-H510802.webp) | Oliven grün, gesäuert, abgetropft | Olives green, pickled, drained |
+| [bls-H510900](0019/bls-H510900.webp) | Oliven grün, gefüllt mit Paprikapaste, gesäuert, abgetropft | Olives green, filled with sweet pepper paste, pickled, drained |
+| [bls-H511900](0019/bls-H511900.webp) | Oliven grün, gefüllt mit Mandeln, gesäuert, abgetropft | Olives green, filled with almonds, pickled, drained |
+| [bls-H520800](0019/bls-H520800.webp) | Oliven geschwärzt, in Salzlake, abgetropft | Olives blackened, in brine, drained |
+| [bls-H610100](0019/bls-H610100.webp) | Bambussprossen roh | Bamboo shoots raw |
+| [bls-H610132](0019/bls-H610132.webp) | Bambussprossen gekocht | Bamboo shoots boiled |
+| [bls-H610182](0019/bls-H610182.webp) | Bambussprossen gebraten ohne Fett (Pfanne) | Bamboo shoots fried without fat (pan) |
+| [bls-H610902](0019/bls-H610902.webp) | Bambussprossen Konserve, abgetropft | Bamboo shoots canned, drained |
+| [bls-H620100](0019/bls-H620100.webp) | Sojabohnensprossen/Sojabohnenkeimlinge, roh | Soya bean sprouts raw |
+| [bls-H620902](0019/bls-H620902.webp) | Sojabohnensprossen/Sojabohnenkeimlinge, Konserve, abgetropft | Soya bean sprouts canned, drained |
+| [bls-H640100](0019/bls-H640100.webp) | Alfalfasprossen/Alfalfakeimlinge, roh | Lucerne/alfalfa sprouts, raw |
+| [bls-H650100](0019/bls-H650100.webp) | Mungbohnensprossen/Mungbohnenkeimlinge, roh | Mung bean sprouts raw |
+| [bls-H650902](0019/bls-H650902.webp) | Mungbohnensprossen/Mungbohnenkeimlinge, Konserve, abgetropft | Mung bean sprouts canned, drained |
+| [bls-H662100](0019/bls-H662100.webp) | Linsensprossen/Linsenkeimlinge, roh | Lentils sprouted raw |
+| [bls-H702100](0019/bls-H702100.webp) | Augenbohne reif | Cowpea/black-eyed pea, mature |
+| [bls-H702132](0019/bls-H702132.webp) | Augenbohne reif, gekocht | Cowpea/black-eyed pea, mature, boiled |
+| [bls-H702902](0019/bls-H702902.webp) | Augenbohne reif, Konserve, abgetropft | Cowpea/black-eyed pea, mature, canned, drained |
+| [bls-H710400](0019/bls-H710400.webp) | Erbsenmehl | Pea flour |
