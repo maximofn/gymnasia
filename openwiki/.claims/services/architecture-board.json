@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:a9b97ecca9555500e890ee37800cd289cf94c7639458d5627eb4c8406662f840",
+  "pageVersion": "sha256:d72cf1e9a114be807768f9949009918dc17e92e32ab88d402e47b5875e17d697",
   "claims": [
     {
       "id": "claim_88c860a79f05477a88045b0ffe08a84d",
@@ -16,7 +16,7 @@
         },
         {
           "resource": "repo://arquitectura-agente/data/board.json#L2-L12",
-          "version": "repo-lines-v1:sha256:0a5e6c8b77998848a1312157aa5db79573ef4f754d22591c239796fc81762261:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiYjUwMTM2MTU2YTFmZjg5ODI0MjVjNzAzNzBiYWIzOTg3NDE0YzQ4ZDQ4ZmYzZmIyMWFiNGM1ZmVlYTBjOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoxLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYzY0NmRmYmJkYjhlNGU5OGNkYzBlOTdkYzg3NzA2OGNjYmFlZmQyYTU1OTIyZDU4NzZjMjM1MWZlZGMyM2UifQ"
+          "version": "repo-lines-v1:sha256:fb50af18203b79a5a71af6f3c139befce38a2ad0f15ac85cef965a5e3f69410b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNiYjUwMTM2MTU2YTFmZjg5ODI0MjVjNzAzNzBiYWIzOTg3NDE0YzQ4ZDQ4ZmYzZmIyMWFiNGM1ZmVlYTBjOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoxLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFhYzY0NmRmYmJkYjhlNGU5OGNkYzBlOTdkYzg3NzA2OGNjYmFlZmQyYTU1OTIyZDU4NzZjMjM1MWZlZGMyM2UifQ"
         }
       ]
     },
@@ -40,7 +40,7 @@
       "evidence": [
         {
           "resource": "repo://arquitectura-agente/data/board.json#L1-L61",
-          "version": "repo-lines-v1:sha256:35cda2d591aaaee0afb6f90be7771f4427e43255bdabb991331535921db2e55e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhNmZiMDhmZGExYWNiOTU3YjYxMTZiZDM3ODExYTFmZTQxYTAxNjExYzA2MzFlZGJmNzg2ZDY4ODlhMjdhNTVjIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlOGM5Y2FmOWI5NDBmMDlkYjA1NzY2ZmNjYjZjZGIxNzRmYjE3OWQ2Y2YzMWRmYzQyOWUwNzE1MjBmN2Y5YjkyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI5YzYyZmM5M2Y5NzRlZGViN2M3MTVmOWU2OWZlYmFiZjNlODIyZjEwOWFiMWMxNWZmZDc1ZGIzNDY1ZmZmZDQxIn0"
+          "version": "repo-lines-v1:sha256:d678e8a79fe27cdd6ab8e831bc3bfee87e57b60762691aab3f950aa59b1acc78:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhNmZiMDhmZGExYWNiOTU3YjYxMTZiZDM3ODExYTFmZTQxYTAxNjExYzA2MzFlZGJmNzg2ZDY4ODlhMjdhNTVjIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJlOGM5Y2FmOWI5NDBmMDlkYjA1NzY2ZmNjYjZjZGIxNzRmYjE3OWQ2Y2YzMWRmYzQyOWUwNzE1MjBmN2Y5YjkyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MCwicHJlY2VkaW5nQ29udGV4dEhhc2giOiJlM2IwYzQ0Mjk4ZmMxYzE0OWFmYmY0Yzg5OTZmYjkyNDI3YWU0MWU0NjQ5YjkzNGNhNDk1OTkxYjc4NTJiODU1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI5YzYyZmM5M2Y5NzRlZGViN2M3MTVmOWU2OWZlYmFiZjNlODIyZjEwOWFiMWMxNWZmZDc1ZGIzNDY1ZmZmZDQxIn0"
         },
         {
           "resource": "repo://arquitectura-agente/tests/board-data.test.mjs#L33-L223",
@@ -286,7 +286,7 @@
     },
     {
       "id": "claim_cdb67615fc9c492181e50351132779a4",
-      "statement": "La instantánea editorial versionada en `arquitectura-agente/data/board.json` declara `meta.updated` como `2026-11-03`; sus estados, títulos y resúmenes describen el espejo, no constituyen evidencia de implementación, despliegue o comportamiento del producto.",
+      "statement": "La instantánea editorial versionada en `arquitectura-agente/data/board.json` declara `meta.updated` como `2026-11-17`; sus estados, títulos y resúmenes describen el espejo, no constituyen evidencia de implementación, despliegue o comportamiento del producto.",
       "evidence": [
         {
           "resource": "repo://arquitectura-agente/README.md#L3-L9",
@@ -294,13 +294,13 @@
         },
         {
           "resource": "repo://arquitectura-agente/data/board.json#L1-L13",
-          "version": "repo-lines-v1:sha256:cf49f38b2d6a22826eee02079ff6d8f2826392c8c012d42b62e5a28b7f3ebb85:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFkMDRkMGM4NDY5Zjc4NmY5MjA1N2Y5YjBiNDc1YTk3YjU1Y2FmYWI2M2NhODk4YmZkZTMyMWM2MjIxOGVlYTgifQ"
+          "version": "repo-lines-v1:sha256:a1b76b4a9f5ac54970579f35d5d8a017e20f6ff242e436a343a40f9d7a8bfe43:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFkMDRkMGM4NDY5Zjc4NmY5MjA1N2Y5YjBiNDc1YTk3YjU1Y2FmYWI2M2NhODk4YmZkZTMyMWM2MjIxOGVlYTgifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-11-03T15:32:51.876Z"
+    "at": "2026-11-17T17:09:17.831Z"
   }
 }

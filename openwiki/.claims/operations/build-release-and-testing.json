@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:a1b0b00c665a5ba3db3bf5c27ad5c92248ddeb8eaa088a3b2257af4945aa1888",
+  "pageVersion": "sha256:ea6d30bcf551edd5745edc6779277dba115d3217979a63134712e4fb9a0732bd",
   "claims": [
     {
       "id": "claim_b6ce0be648324cb693c61680ef4a75d1",
@@ -60,15 +60,15 @@
     },
     {
       "id": "claim_3cffc600700945dc9fb2cde8974026df",
-      "statement": "`catalog-tests.yml` se activa en PR y en `main` para sus rutas declaradas de datos, generador e imágenes, consumidores de catálogo e inventario, instala Chromium y ejecuta los checks de catálogos, BLS, CIQUAL, proyección móvil e imágenes CIQUAL, las regresiones de catálogo y los consumidores E2E sin servicios externos.",
+      "statement": "`catalog-tests.yml` se activa en PR y en `main` para sus rutas declaradas de datos, generador e imágenes, consumidores de catálogo e inventario; instala Chromium y ejecuta los checks de catálogos, BLS y sus imágenes, CIQUAL, proyección móvil e imágenes CIQUAL, las regresiones de catálogo y los consumidores E2E sin servicios externos.",
       "evidence": [
         {
           "resource": "repo://.github/workflows/catalog-tests.yml#L3-L42",
           "version": "repo-lines-v1:sha256:567dcc0ac858882d58294ca4c7be6a7cf9a20370983a6273b55f5e2689064ea6:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5NmRjNDgxNDlmNWE4M2QxZWQ2ZGJiMzliYmM3ZTJiOTAyYWEzZDM0ZDZiZDVhZTRiMjkxYjY4ZGYwY2E3OWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjMzc4MGYxOWQ2MzRkMDQyNTgxYzI5ZTMwYTg0MmI4ZDVjNWY1Yzc2ZDMxNWUwNmI5YzM2ODAyYmZiYWQxZDQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQwNGZhNTJiYjRkZTM0YzZmOTkyNmIyNTRhYTg5YjNjMTE5MTUyY2JkOGUwMDQxZmRlZjYwNDg2ZmMyY2E1NzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdlMjc0MjI0ZTk4Mjg4MWQ5ODFiOGFkZGZkZGM5ODgwYjJmMWQwNzgwMzE1ZDcwZDVkNTE5MWM3NWY5NWE1YjIifQ"
         },
         {
-          "resource": "repo://.github/workflows/catalog-tests.yml#L63-L87",
-          "version": "repo-lines-v1:sha256:dae6eb8a3fc5d30b0baa4c99f901767f6c1294e0ebf89385ebb22bb01e0e780c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmMTg0NDBmYWY4NDg0MDBhYzAxM2RlZDMyNGYzNjU2ODdlMTZiMjYyYzZhZTBmNTM2MTA4MTAyNDUwOWNjYjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllNTBjMjE1NmEwODRiYzRhZGM0MTRlNDQ1NjQ1YmU5NDM5MTYxNDE5YzkyY2JjZTA2MTMzZDJhZDI1Mzg3NzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdlYzNiMTk1MGJiYmZmNzIwNWY2YjQzZmNjNWU0MmI0OTlhZGRiNDk4ZDg1NzhmYjcwNTZiNTE5MDI0YmMwYjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://.github/workflows/catalog-tests.yml#L63-L88",
+          "version": "repo-lines-v1:sha256:88f3b876f119ac72d6965dea775583d378a53086269e61cec50de53d20338d2f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmMTg0NDBmYWY4NDg0MDBhYzAxM2RlZDMyNGYzNjU2ODdlMTZiMjYyYzZhZTBmNTM2MTA4MTAyNDUwOWNjYjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllNTBjMjE1NmEwODRiYzRhZGM0MTRlNDQ1NjQ1YmU5NDM5MTYxNDE5YzkyY2JjZTA2MTMzZDJhZDI1Mzg3NzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdlYzNiMTk1MGJiYmZmNzIwNWY2YjQzZmNjNWU0MmI0OTlhZGRiNDk4ZDg1NzhmYjcwNTZiNTE5MDI0YmMwYjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
@@ -204,7 +204,7 @@
         },
         {
           "resource": "repo://package.json#L28-L88",
-          "version": "repo-lines-v1:sha256:421f575fe6125d1522d07b7734a6fa5ade661a6e017a195a2a9606ed614a38a0:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2YjM2ZmE2NGM2OTVhMDVmZTk4OGIzY2U1MDA5ZTFhZmYyMmRiMmRjYmI5NDU5MDRlM2Y3MTRhMmYzMzRlM2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzODU0NmE0YWYzM2I1N2YyODJkZGNhNGQyOGQ5NWMxYjU0NDI2MjVjNTI3ZmIwOWI4MmVhZjZlZTQzY2ZjYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
+          "version": "repo-lines-v1:sha256:03aa12d5f5cee5f0a9a6e58cc441d917c4abfc861d24bd7b325463f43836c6bd:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2YjM2ZmE2NGM2OTVhMDVmZTk4OGIzY2U1MDA5ZTFhZmYyMmRiMmRjYmI5NDU5MDRlM2Y3MTRhMmYzMzRlM2YiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzODU0NmE0YWYzM2I1N2YyODJkZGNhNGQyOGQ5NWMxYjU0NDI2MjVjNTI3ZmIwOWI4MmVhZjZlZTQzY2ZjYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
         }
       ]
     },
@@ -534,7 +534,7 @@
         },
         {
           "resource": "repo://package.json#L47-L88",
-          "version": "repo-lines-v1:sha256:c8fb1c181040d7f3fd7706a71e4ef321346be0df5d7e1979adb341775fbf888c:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YzI3ZjNjNWJjOTJkYzU0YjAxYjQ0YTk1YTFjYWVkZDM4YzQyZTVmM2JiMGMzNDlkZDAwZTg0MzcyYjM2ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2OTRlY2NhNzkyMjVlNGY1ZGZmMzViZmNlYzhkOThiNTlhZGJmMTUzOWRkMzkxNzQ2NjE2NGQzOWI5NzFmNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
+          "version": "repo-lines-v1:sha256:1a034bf01c94fd8ca60774c050c01426be853b89fe6cc1ad551a21ab048ffe60:eyJzZWxlY3RlZExpbmVDb3VudCI6NTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YzI3ZjNjNWJjOTJkYzU0YjAxYjQ0YTk1YTFjYWVkZDM4YzQyZTVmM2JiMGMzNDlkZDAwZTg0MzcyYjM2ZWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5ZGRjYjc0M2VhZjE5NDVhN2Y0YWY3MzZhNzUxNjY4NzNiYWY1MmNmMjcxODc2ZDM1NmQwNjk1ZGYzOTZhNzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2OTRlY2NhNzkyMjVlNGY1ZGZmMzViZmNlYzhkOThiNTlhZGJmMTUzOWRkMzkxNzQ2NjE2NGQzOWI5NzFmNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MTJlNjRlODg4NzJiZWRjZDE3NzBiZGFkNjNkYjBiNTQwZGYwZDAxMTAyYWYxMGRhZWEwMmMwMTdhMGZlNWIifQ"
         },
         {
           "resource": "repo://scripts/production-release/production-release.mjs#L22-L47",
@@ -659,10 +659,28 @@
           "version": "repo-lines-v1:sha256:671a1a017fdda2a2f8ed551d99882c4c2792f3b5897092c6cea915322a145f7d:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU3MjdhYzQ5OTQ0NmY2MTYyMTMzZGM2NTFmNWFkZmQ4OTcyNzdiZDQ1NTBmOTcxYWIzOTU5NGMwNWFiZTllNDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI2N2YzZmU0YjhmN2RmYzZjZDdhNzgwMWZkYzM2OTNhZGMzOWFiYjQ0MmM3MjNlMGE3MzU3OTEwMWFlNWEyY2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhlM2Y1ZmZmZTBmZWQzMzQzYTM0NTE3YzUxMjIyNDdiODE1YjBhMzI0NDAwZjYzNTA1ZDIwYzc5ZWM1MmU0MTYifQ"
         }
       ]
+    },
+    {
+      "id": "claim_2d93e80c9e94491481a2a54ab5d6b0d4",
+      "statement": "`check:bls:images` es una comprobación de solo lectura de las tandas de imágenes BLS: vincula cada entrada al alimento BLS y a una referencia CIQUAL aprobada, valida WebP y hashes, y rechaza enlaces simbólicos, IDs o bytes duplicados y archivos huérfanos.",
+      "evidence": [
+        {
+          "resource": "repo://package.json#L62-L70",
+          "version": "repo-lines-v1:sha256:9259c983543aedbb5817918bd4a033b9ff521f6e71073ff8577c44ec27baa34f:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmJhZGJmZWE2NjNkOWIxMjc2MjQ0NzI0YjIxMDdiNGNiMDVjMDljZjVkMGVkODA0M2ViMzdjZTNlYjc1YjAwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDU4N2JiNTcwNzljMGM2NGViODk5OGFmYjI2MmM2Y2ZmYjZhZjM5OTRlZjlhZjhkZDQ3NmI5NWM3ZGM0ZTE5YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDA4ZjQyMGY1NjM2NzAxZjc4NDE4N2NjNTY0NDQ4NTU2OTFjM2JkMWFhN2UxNGU0YWNiNjE1NzBhYWVmNmYzNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWMxNzcxZDdhZjhiZDI2MmNiOTg2YjRiMDJlYTRmZTNiNzE5MTQ4YzRhZDVkYjQ3YTc1MmI3ZDZhZDJjMzI5MyJ9"
+        },
+        {
+          "resource": "repo://scripts/catalogs/bls-image-batches.mjs#L10-L77",
+          "version": "repo-lines-v1:sha256:c050170ea6cc7756cfafc02fbca8eb1b6fd0ed3020ddee96618f8d51d28acb79:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0YzJlYTdjMDE3MjA0ZTQ2MzJlN2ZiMGUxNDM5ZDU1MWJhNDQ0NzZjYTdlMDQ5OTk5NTRkYjY4M2RmZDEyMzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmZDI4OWE4MDVkM2Y1NDU0YTdhOWU0ODg3MmRlZjlkMmM3ZmM5YWZhYzAxNzZiNzZmNzA5ZTU0NjJjODc4MjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5MGZjMWRjNTQ2MjkwZTdlYmVjNTQzYTkyMDFhNjY0NzdiNmRmMzc5NGU1Mzc4MDU0YWZjNjkxYTFiZWYyYjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY0YmM0MGYyYTEwNGRkODI5MGIyMDhkMzgxZWUzMGVkZTQ4Yjg2ZDAwNjM5ODFmNGNkMWMzZTQzNWIwNGYwNzMifQ"
+        },
+        {
+          "resource": "repo://scripts/catalogs/bls-image-batches.mjs#L80-L87",
+          "version": "repo-lines-v1:sha256:968673d2ff75979ae5e265c801556ee53f3b2de6e6cdd5d13cde1ab0f6e426a2:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2JlMmMyOTZmMGFkNmU5MTY5MTYzOTM3MDgyMGIyNGJmNDAwMDhiZTIzZDNiYjUwODJiMjQ3OTNjOWNlYzQwZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWM3MTY5MGQ2N2EyODA0ZDQ4NDI4ZmYxYTI2ODlhMTQ5Mzg5YzdjMWM0NWJhMWY3MzU3ZjdkZmI0MDQ3ZDQ4NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzEyNGE4Nzk0NGExZjMzMmVlNWZmZTE2YzcyNGFmYWIyMDdhNGM2MjljZWE0NDE4YTE3Yjc0Yjc0NDdiNDIzNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSJ9"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-11-11T15:41:01.947Z"
+    "at": "2026-11-17T17:09:17.831Z"
   }
 }
