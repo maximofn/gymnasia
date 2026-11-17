@@ -1,0 +1,5 @@
+event: response.completed
+data: {"responseId":"resp_repeat","content":"","thinking":null,"outputItems":[{"type":"function_call","id":"fc_repeat","call_id":"call_repeat","name":"search_exercises","arguments":"{\"query\":\"sentadilla\",\"muscle\":\"pierna\"}"}]}
+
+event: response.completed
+data: {"responseId":"resp_final","content":"La sentadilla trabaja sobre todo la pierna.","thinking":null,"outputItems":[{"type":"message","content":[{"type":"output_text","text":"La sentadilla trabaja sobre todo la pierna."}]}]}
