@@ -12,6 +12,18 @@ import {
 
 export const MAX_TOOL_ROUNDS = 10;
 
+// Veces que una lectura con la misma huella (tool + argumentos canónicos) se
+// ejecuta en un turno. La siguiente devuelve REPEATED_TOOL_CALL_ERROR sin ejecutarse.
+export const MAX_IDENTICAL_READS = 2;
+export const REPEATED_TOOL_CALL_ERROR = "repeated_tool_call";
+
+function repeatedReadResult(): ToolResult {
+  return toolFailure(REPEATED_TOOL_CALL_ERROR,
+    "Ya has hecho esta misma consulta con los mismos argumentos en esta respuesta y tienes su resultado. "
+    + "No la repitas: responde al usuario con lo que ya sabes o cambia de enfoque.",
+    "choose_alternative");
+}
+
 // Resultado que recibe el modelo por cada tool que pidió cuando ya no quedaban
 // rondas. No se ejecuta nada y el texto solo informa del hecho, para que el modelo
 // no afirme haber hecho algo que no hizo.
@@ -161,6 +173,12 @@ export async function executeToolSafely(
   args: Record<string, unknown>,
   call: ToolCallEnvelope,
 ): Promise<ToolResult> {
+  // Una lectura idéntica (misma huella) repetida en el mismo turno no aporta nada
+  // nuevo: cortarla evita quemar las rondas hasta el tope. Las escrituras ya las
+  // protege el ledger de idempotencia, así que solo se corta lo que es lectura.
+  if (call.occurrence >= MAX_IDENTICAL_READS && agentToolEffect(name) === "read") {
+    return repeatedReadResult();
+  }
   let output: string | ToolResult;
   try {
     output = await execute(name, args, call);

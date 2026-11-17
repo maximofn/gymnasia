@@ -35,7 +35,7 @@ vi.mock("./providerStreamTransport", () => ({
     if (narrateRounds) handlers?.onContentDelta?.(INTERMEDIATE);
     return { responseId: `resp_${round}`, content: "", thinking: null, truncated: false,
       outputItems: [{ type: "function_call", id: `fc_${round}`, call_id: `call_${round}`,
-        name: "read_field_value", arguments: "{}" }] };
+        name: "read_field_value", arguments: JSON.stringify({ key: `campo_${round}` }) }] };
   }),
   streamOpenAIRequestViaXHR: vi.fn(),
   streamAnthropicRequestViaXHR: vi.fn(async (
@@ -54,7 +54,7 @@ vi.mock("./providerStreamTransport", () => ({
     }
     if (narrateRounds) handlers?.onContentDelta?.(INTERMEDIATE);
     return { content: "", thinking: null, stopReason: "tool_use",
-      contentBlocks: [{ type: "tool_use", id: `toolu_${round}`, name: "read_field_value", input: {} }] };
+      contentBlocks: [{ type: "tool_use", id: `toolu_${round}`, name: "read_field_value", input: { key: `campo_${round}` } }] };
   }),
 }));
 
@@ -74,7 +74,7 @@ vi.mock("./providerChatClient", async (importOriginal) => ({
         usage: {}, steps: [{ type: "model_output", content: [{ type: "text", text: "Respuesta de cierre." }] }] };
     }
     return { interactionId: "", status: "requires_action", content: "", thinking: null, usage: {},
-      steps: [{ type: "function_call", id: `google_call_${round}`, name: "read_field_value", arguments: {} }] };
+      steps: [{ type: "function_call", id: `google_call_${round}`, name: "read_field_value", arguments: { key: `campo_${round}` } }] };
   }),
 }));
 
@@ -93,7 +93,7 @@ vi.mock("./customOpenAIChat", async (importOriginal) => ({
     }
     if (narrateRounds) options.onContentDelta?.(INTERMEDIATE);
     return { content: narrateRounds ? INTERMEDIATE : "", toolCalls: [{ id: `call_${round}`, type: "function",
-      function: { name: "read_field_value", arguments: "{}" } }] };
+      function: { name: "read_field_value", arguments: JSON.stringify({ key: `campo_${round}` }) } }] };
   }),
 }));
 
@@ -140,7 +140,7 @@ describe("cliente del chat al agotar las rondas de tools", () => {
     expect(closing.tools).toBeDefined();
     expect((closing.input as Array<Record<string, unknown>>).slice(-2)).toEqual([{
       type: "function_call", id: `fc_${MAX_TOOL_ROUNDS + 1}`,
-      call_id: `call_${MAX_TOOL_ROUNDS + 1}`, name: "read_field_value", arguments: "{}",
+      call_id: `call_${MAX_TOOL_ROUNDS + 1}`, name: "read_field_value", arguments: JSON.stringify({ key: `campo_${MAX_TOOL_ROUNDS + 1}` }),
     }, {
       type: "function_call_output",
       call_id: `call_${MAX_TOOL_ROUNDS + 1}`,
