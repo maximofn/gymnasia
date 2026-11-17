@@ -854,7 +854,7 @@
         {
           "id": "GYM-45",
           "title": "11. Permisos y confirmación humana en tools con efectos",
-          "state": "backlog",
+          "state": "todo",
           "baseline": "missing",
           "summary": "La confirmación vive solo en el prompt (App.tsx:631): es una sugerencia, no un control de código.",
           "dependsOn": [
@@ -909,6 +909,37 @@
             "GYM-47"
           ],
           "related": []
+        },
+        {
+          "id": "GYM-258",
+          "title": "Detectar llamadas repetidas a tools por huella y cortar el bucle antes del tope de rondas",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Si Coach repite la misma llamada (tool + argumentos) por tercera vez en un turno, no se ejecuta y se le avisa, en vez de quemar las 10 rondas.",
+          "dependsOn": [],
+          "related": []
+        },
+        {
+          "id": "GYM-260",
+          "title": "Deshacer los cambios que Coach hace en los datos del usuario",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Guardar el estado previo de cada escritura de Coach para que el usuario pueda deshacer un peso mal anotado o una memoria sobrescrita.",
+          "dependsOn": [],
+          "related": [
+            "GYM-45"
+          ]
+        },
+        {
+          "id": "GYM-270",
+          "title": "Tools de lectura por periodo con totales calculados por la app (medidas, dieta y entrenamientos)",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Las lecturas son de día en día: «¿cómo ha ido mi peso este mes?» cuesta unas 30 llamadas, y no hay tool para el historial de entrenamientos.",
+          "dependsOn": [],
+          "related": [
+            "GYM-268"
+          ]
         }
       ]
     },
@@ -1050,6 +1081,33 @@
             "GYM-135",
             "GYM-136"
           ]
+        },
+        {
+          "id": "GYM-267",
+          "title": "Dar a Coach el perfil del usuario desde el principio de cada conversación",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Un «hola» cuesta 3 o 4 llamadas porque Coach tiene que buscar el nombre en la memoria; cargar el perfil desde el inicio lo evita.",
+          "dependsOn": [],
+          "related": [
+            "GYM-151",
+            "GYM-255",
+            "GYM-265",
+            "GYM-268"
+          ]
+        },
+        {
+          "id": "GYM-269",
+          "title": "Distinguir en la memoria personal los hechos puntuales de los rasgos estables",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Hoy «hoy le duele la rodilla» y «lesión crónica de rodilla» se guardan igual y sin fecha; Coach puede convertir un hecho en un rasgo.",
+          "dependsOn": [
+            "GYM-268"
+          ],
+          "related": [
+            "GYM-151"
+          ]
         }
       ]
     },
@@ -1078,6 +1136,93 @@
             "GYM-34"
           ],
           "related": []
+        },
+        {
+          "id": "GYM-259",
+          "title": "Inyectar recordatorios por evento para que Coach no olvide las instrucciones en conversaciones largas",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Mensajes cortos que se inyectan cuando un detector se dispara, porque las instrucciones del prompt pierden fuerza tras muchas llamadas a tools.",
+          "dependsOn": [],
+          "related": []
+        },
+        {
+          "id": "GYM-261",
+          "title": "Dejar que Coach busque en la parte de la conversación que ya no ve",
+          "state": "backlog",
+          "baseline": "partial",
+          "summary": "La conversación completa ya se guarda en el dispositivo, pero Coach solo ve los últimos 20 mensajes; falta una tool para buscar en el resto.",
+          "dependsOn": [],
+          "related": [
+            "GYM-264"
+          ]
+        },
+        {
+          "id": "GYM-263",
+          "title": "Dejar que Coach decida cuándo compactar la conversación",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "En vez de compactar al llenar un porcentaje fijo de la ventana, que Coach elija el momento, por ejemplo al cerrar un tema.",
+          "dependsOn": [
+            "GYM-264"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-264",
+          "title": "Enviar la conversación completa a Coach y compactarla por etapas cuando crezca",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Hoy se descarta sin avisar todo lo anterior a los últimos 20 mensajes; el plan es enviarlo todo y resumir cuando crezca.",
+          "dependsOn": [
+            "GYM-90"
+          ],
+          "related": [
+            "GYM-103",
+            "GYM-261",
+            "GYM-265"
+          ]
+        },
+        {
+          "id": "GYM-265",
+          "title": "Analizar qué ocupa el contexto de Coach y cómo crece en conversaciones reales",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Medir antes de tocar: los umbrales de compactación y los topes de resultados salen hoy de papers de agentes de programación, no de Coach.",
+          "dependsOn": [
+            "GYM-89"
+          ],
+          "related": [
+            "GYM-264",
+            "GYM-267",
+            "GYM-41"
+          ]
+        },
+        {
+          "id": "GYM-266",
+          "title": "Medir el equilibrio entre caché de prompts y compactación en Coach",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Cada compactación invalida la caché del proveedor; hay que decidir con datos cada cuánto compactar.",
+          "dependsOn": [
+            "GYM-89",
+            "GYM-264",
+            "GYM-103"
+          ],
+          "related": []
+        },
+        {
+          "id": "GYM-268",
+          "title": "Que Coach sepa la fecha de hoy para resolver «ayer», «el martes» o «hace dos semanas»",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Coach no sabe qué día es, pero varias tools exigen fecha: puede inventarla y guardar una medida en el día equivocado.",
+          "dependsOn": [],
+          "related": [
+            "GYM-262",
+            "GYM-267",
+            "GYM-270"
+          ]
         }
       ]
     },
@@ -3310,6 +3455,18 @@
           "related": [
             "GYM-34"
           ]
+        },
+        {
+          "id": "GYM-262",
+          "title": "Revisiones de evolución de Coach: botón manual y avisos periódicos opcionales",
+          "state": "backlog",
+          "summary": "Botón «Revisar mi semana» y una opción, apagada por defecto, para recibir revisiones periódicas. Nada se genera en segundo plano.",
+          "dependsOn": [
+            "GYM-270"
+          ],
+          "related": [
+            "GYM-268"
+          ]
         }
       ]
     }
@@ -3504,7 +3661,8 @@
         "GYM-151",
         "GYM-152",
         "GYM-42",
-        "GYM-40"
+        "GYM-40",
+        "GYM-268"
       ]
     },
     {
@@ -3543,7 +3701,14 @@
       "why": "GYM-254 (ticket para gestionar localmente el contexto de OpenAI) deja el historial bajo control del móvil. GYM-41 (ticket para controlar el tamaño y el formato de los resultados de las tools) queda en esta épica para evaluar salidas grandes cuando exista una necesidad medida, considerando el aislamiento en subagentes antes de imponer recortes arbitrarios.",
       "tickets": [
         "GYM-254",
-        "GYM-41"
+        "GYM-41",
+        "GYM-267",
+        "GYM-265",
+        "GYM-264",
+        "GYM-261",
+        "GYM-263",
+        "GYM-259",
+        "GYM-269"
       ]
     },
     {
@@ -3551,7 +3716,10 @@
       "title": "Cerrar tool calling",
       "why": "Depende de los catorce anteriores: recoge en una suite única los casos que cada ticket ha ido dejando.",
       "tickets": [
-        "GYM-48"
+        "GYM-48",
+        "GYM-258",
+        "GYM-270",
+        "GYM-260"
       ]
     },
     {
@@ -3623,7 +3791,8 @@
         "GYM-101",
         "GYM-102",
         "GYM-104",
-        "GYM-105"
+        "GYM-105",
+        "GYM-266"
       ]
     },
     {
