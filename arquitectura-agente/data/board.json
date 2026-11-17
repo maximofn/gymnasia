@@ -863,30 +863,6 @@
           "related": []
         },
         {
-          "id": "GYM-46",
-          "title": "12. Escalado: qué pasa al crecer el número de tools",
-          "state": "backlog",
-          "baseline": "missing",
-          "summary": "Las 15 tools se envían en cada llamada y en todos los turnos. Nunca se ha medido el coste ni el acierto.",
-          "dependsOn": [
-            "GYM-34"
-          ],
-          "related": []
-        },
-        {
-          "id": "GYM-47",
-          "title": "13. Observabilidad de las tool calls",
-          "state": "backlog",
-          "baseline": "missing",
-          "summary": "Hoy no hay forma de reconstruir qué tools pidió el modelo, con qué argumentos y qué devolvieron.",
-          "dependsOn": [
-            "GYM-34"
-          ],
-          "related": [
-            "GYM-13"
-          ]
-        },
-        {
           "id": "GYM-48",
           "title": "14. Suite de tests del ejecutor de tools sin llamar al LLM",
           "state": "backlog",
@@ -902,11 +878,7 @@
             "GYM-40",
             "GYM-41",
             "GYM-42",
-            "GYM-43",
-            "GYM-44",
-            "GYM-45",
-            "GYM-46",
-            "GYM-47"
+            "GYM-43"
           ],
           "related": []
         },
@@ -1498,6 +1470,18 @@
           "related": [
             "GYM-13"
           ]
+        },
+        {
+          "id": "GYM-46",
+          "title": "Escalado: qué pasa al crecer el número de tools",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Medir cuánto acierta el modelo al elegir tool según cuántas se le ofrecen, con los casos del golden dataset. Las 13 definiciones viajan en cada petición.",
+          "dependsOn": [
+            "GYM-34",
+            "GYM-73"
+          ],
+          "related": []
         }
       ]
     },
@@ -1984,6 +1968,20 @@
             "GYM-51",
             "GYM-103",
             "GYM-46"
+          ]
+        },
+        {
+          "id": "GYM-47",
+          "title": "Observabilidad de las tool calls",
+          "state": "backlog",
+          "baseline": "partial",
+          "summary": "El ejecutor ya traza duración y resultado de cada tool; faltan argumentos redactados, rondas y una traza que reconstruya la conversación.",
+          "dependsOn": [
+            "GYM-116",
+            "GYM-34"
+          ],
+          "related": [
+            "GYM-13"
           ]
         }
       ]
@@ -3687,15 +3685,6 @@
       ]
     },
     {
-      "id": "medir",
-      "title": "Ver qué está pasando",
-      "why": "Instrumentar antes de medir. GYM-47 aprovecha el pushTrace que ya existe y no se usa en el agente; GYM-46 necesita esas trazas para medir la degradación al crecer el número de tools.",
-      "tickets": [
-        "GYM-47",
-        "GYM-46"
-      ]
-    },
-    {
       "id": "contexto-openai-local",
       "title": "Gestionar el contexto del agente",
       "why": "GYM-254 (ticket para gestionar localmente el contexto de OpenAI) deja el historial bajo control del móvil. GYM-41 (ticket para controlar el tamaño y el formato de los resultados de las tools) queda en esta épica para evaluar salidas grandes cuando exista una necesidad medida, considerando el aislamiento en subagentes antes de imponer recortes arbitrarios.",
@@ -3742,6 +3731,7 @@
       "tickets": [
         "GYM-72",
         "GYM-73",
+        "GYM-46",
         "GYM-75",
         "GYM-74",
         "GYM-76",
@@ -3816,6 +3806,7 @@
       "tickets": [
         "GYM-115",
         "GYM-116",
+        "GYM-47",
         "GYM-117",
         "GYM-118",
         "GYM-119",
