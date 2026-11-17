@@ -1,12 +1,11 @@
 ---
 type: guía operativa
-title: Generación y entrega de imágenes de catálogo
-description: Contratos de resolución y entrega de imágenes de alimentos, ejercicios y CIQUAL en el cliente móvil. Distingue el generador histórico de alimentos y ejercicios del flujo vigente, verificable y versionado de imágenes CIQUAL.
+title: Generación y validación de imágenes de alimentos
+description: Flujo de creación editorial por tandas y validación de imágenes del catálogo alimentario BLS, separado de los datos nutricionales y de la aplicación móvil. También distingue esta entrega de la utilidad histórica para alimentos y ejercicios curados y del índice móvil CIQUAL.
 tags: [catalogs, images, mobile, ciqual, generation]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-11-11T15:41:01.947Z
 sources:
+  - id: openwiki-source-d7dac9653f96df70f26fe3c1
+    resource: repo://alimentos/bls/image-batches/README.md
   - id: openwiki-source-fba881b48b95c05eebc3f1a3
     resource: repo://apps/mobile/catalogs/imageUris.ts
   - id: openwiki-source-3f78f2325c436ce5cc553def
@@ -15,6 +14,8 @@ sources:
     resource: repo://apps/mobile/diet/catalogModel.ts
   - id: openwiki-source-bd210931c947e300164b7a63
     resource: repo://apps/mobile/scripts/catalogs.e2e.mjs
+  - id: openwiki-source-59b9987a65b90fd2cec98e1a
+    resource: repo://docs/bls-food-images-handoff.md
   - id: openwiki-source-d54ece17be93a2b0fabf9d35
     resource: repo://ejercicios/SOURCES.md
   - id: openwiki-source-9cb1426cf6b2e16bd4b0b262
@@ -23,6 +24,10 @@ sources:
     resource: repo://package.json
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
+  - id: openwiki-source-12d9e94eec597819762321c8
+    resource: repo://scripts/catalogs/bls-image-batches.mjs
+  - id: openwiki-source-1dc76ef0961ace0af3a86a52
+    resource: repo://scripts/catalogs/bls-image-batches.test.mjs
   - id: openwiki-source-b896fa4e3ea6b5bfcc4ef173
     resource: repo://scripts/catalogs/catalogs.mjs
   - id: openwiki-source-869bed5ee1bbd205948cf49e
@@ -33,72 +38,96 @@ sources:
     resource: repo://scripts/catalogs/ciqual-mobile-images.mjs
   - id: openwiki-source-2cc0790639fb245db6d26267
     resource: repo://scripts/catalogs/generate.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-11-11T15:41:01.947Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-17T17:09:17.831Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-17T17:09:17.831Z
 ---
 
-# Generación y entrega de imágenes de catálogo
+# Generación y validación de imágenes de alimentos
 
-Las imágenes son recursos versionados del repositorio, no resultados que la aplicación solicite a un modelo. El cliente móvil construye URL hacia la rama `main` de `raw.githubusercontent.com` y descarga únicamente las imágenes que necesita mostrar. Por tanto, una modificación segura abarca el recurso, su índice o referencia, el contrato del resolvedor y las pruebas de la superficie afectada.
+Las imágenes son recursos versionados, no resultados que la aplicación solicite a un modelo. Este repositorio contiene tres responsabilidades que conviene no mezclar:
 
-Hay dos flujos que no deben confundirse:
+- **Tandas BLS:** ilustraciones editoriales independientes del catálogo BLS y de la aplicación. Se revisan y se entregan en `alimentos/bls/image-batches/`.
+- **CIQUAL:** el flujo ya integrado en móvil, con índice editorial por ID y un artefacto móvil generado.
+- **Alimentos y ejercicios curados:** la utilidad manual `image-generation/generate_images.py`, que llama a proveedores Gradio y después regenera los agregados de catálogo.
 
-- **CIQUAL (vigente):** ilustraciones IA curadas en muestras y tandas, con manifiestos, hashes e índice móvil generado. Es el mecanismo que entrega imágenes a la fuente `anses_ciqual_2025`.
-- **Alimentos y ejercicios curados (herramienta histórica ejecutable):** `image-generation/generate_images.py` aún genera WebP mediante Spaces de Gradio y después invoca el generador común de catálogos. No genera ni publica las imágenes CIQUAL; no debe usarse como descripción del proceso de tandas CIQUAL.
+Una imagen BLS es una ilustración de Gymnasia, no una imagen proporcionada ni validada por Max Rubner-Institut. No demuestra receta, ingredientes exactos, alérgenos, composición nutricional ni una porción de 100 g. Los nombres oficiales alemanes e ingleses de BLS son la referencia que debe respetar la representación; no se cambia una ficha nutricional para acomodar una imagen.
 
-## Resolución y degradación en móvil
+## Tandas BLS: artefactos editoriales y límite de integración
 
-`imageUris.ts` es el límite entre un registro del catálogo y una URI descargable. Para alimentos personales devuelve `null`. Para una entrada CIQUAL, busca su ID en `ciqualImages.generated.json`; si está indexado, compone `alimentos/ciqual/<ruta-indexada>`. Para las demás fuentes de alimentos, compone `alimentos/images/<image>`, `productos_comerciales/images/<image>` o `recetas/images/<image>` según `sourceId`. Los ejercicios conservan rutas relativas de variante y se resuelven bajo `ejercicios`.
+Cada directorio `alimentos/bls/image-batches/NNNN/` contiene exclusivamente `manifest.json` y los WebP que declara. Una tanda reúne como máximo 100 alimentos y tiene estado `pending-review`: que Codex haya revisado visualmente las salidas no equivale a la aprobación del mantenedor. Las muestras aprobadas de CIQUAL se usan únicamente como referencia de estilo; las fotografías de esas muestras no se reutilizan.
 
-En consecuencia, las fichas curadas no deben almacenar una URL absoluta: sus nombres y rutas relativas forman parte del contrato con el resolvedor. En CIQUAL, la asociación editorial vive fuera de la ficha nutricional, en el artefacto generado; el ID estable es la clave de unión.
-
-```mermaid
-flowchart TD
-    A["Entrada de catálogo"] --> B{"Fuente CIQUAL"}
-    B -->|"Sí"| C["Índice ciqualImages por ID"]
-    C --> D{"Hay ruta indexada"}
-    D -->|"Sí"| E["URL alimentos ciqual"]
-    D -->|"No"| F["Sin URI"]
-    B -->|"No"| G{"Es alimento personal"}
-    G -->|"Sí"| F
-    G -->|"No"| H["Directorio según sourceId e image"]
-    E --> I["Thumbnail"]
-    H --> I
-    I --> J{"URI ausente o carga fallida"}
-    J -->|"Sí"| K["Fallback del dominio"]
-    J -->|"No"| L["Imagen nativa"]
-```
-
-*Resolución perezosa y degradación local: la ausencia del índice, de red o un error de carga no bloquean el registro del alimento.*
-
-`Thumbnail` no decide la URI ni el sustituto: los wrappers de cada dominio se los entregan. Si no hay URI o si el `Image` notifica un error para la URI actual, renderiza el `fallback`; si la URI cambia, puede intentar cargar la nueva. Esto mantiene funcionales búsqueda, consulta y registro aunque una descarga falle.
-
-Para una comida creada desde catálogo, `dietItemFromCatalog` guarda la URI resuelta en `image_uri` junto con el enlace estable. Para comidas CIQUAL antiguas que no la tenían, `dietItemImageUri` vuelve a resolverla desde `catalog_link` al dibujarla; no altera sus macros ni la instantánea histórica.
-
-## CIQUAL: curación, integridad y publicación del índice
-
-Las 3.484 fichas CIQUAL son datos nutricionales locales; sus imágenes son ilustraciones de Gymnasia, no material proporcionado ni validado por ANSES. La atribución se incorpora al artefacto móvil y debe aparecer donde corresponda en la UI. Los WebP no se empaquetan todos con la app: se solicitan desde el repositorio público al mostrarse, y la disponibilidad offline de una imagen depende de la caché de plataforma.
-
-El estado publicable se construye desde una muestra de estilo aprobada y las tandas `image-batches/NNNN`. Cada manifiesto aporta el ID, el archivo, el hash y la referencia a una muestra aprobada. La verificación de tandas rechaza IDs duplicados, archivos no declarados o ausentes, referencias de estilo no aprobadas y hashes distintos; también calcula qué alimentos aún no tienen imagen. El comando `--next <1..50>` solo lista una porción de pendientes: no genera ni publica recursos.
-
-Al sincronizar móvil, `ciqual-mobile-images.mjs` carga la muestra y todas las tandas, exige que el estilo esté aprobado y que haya exactamente una imagen por cada alimento, verifica cada SHA-256 y escribe el mapa ordenado `id → ruta` junto con la atribución en `apps/mobile/catalogs/generated/ciqualImages.generated.json`. No edite ese JSON manualmente: se detectaría como deriva.
+El manifiesto es el registro duradero de la tanda. Para cada imagen conserva el ID BLS, nombres oficiales DE/EN, una huella SHA-256 de esos nombres, el nombre de archivo permitido, hash de los bytes, prompt, referencia de estilo y hash de la referencia. Su sección de revisión debe enumerar, en el mismo orden, todos los IDs declarados. Así, una modificación de datos BLS, una referencia de estilo alterada, una salida sustituida o una revisión parcial no se confunden con una imagen aprobable.
 
 ```mermaid
 flowchart TD
-    A["Muestra aprobada"] --> B["Tanda con manifest y WebP"]
-    B --> C["check ciqual image batches"]
-    C --> D{"Manifiestos, archivos, estilo y hash válidos"}
-    D -->|"No"| E["Detener publicación"]
-    D -->|"Sí"| F["sync ciqual images mobile"]
-    F --> G{"Cobertura completa e hashes válidos"}
-    G -->|"No"| E
-    G -->|"Sí"| H["ciqualImages.generated.json"]
-    H --> I["ciqualFoodImageUri por ID"]
-    I --> J["Descarga bajo demanda en móvil"]
+    A["Índice BLS y muestras CIQUAL aprobadas"] --> B["Plan y una generación Codex por alimento"]
+    B --> C["WebP opaco 1024 por 1024"]
+    C --> D["Revisión visual y hojas de contacto"]
+    D --> E["Manifest de tanda pending-review"]
+    E --> F["check:bls:images"]
+    F --> G{"Metadatos y bytes válidos"}
+    G -->|"No"| H["Corregir sin publicar"]
+    G -->|"Sí"| I["PR para revisión del mantenedor"]
 ```
 
-*Flujo vigente de CIQUAL: la cobertura completa y la integridad de los bytes preceden al índice que consume el resolvedor móvil.*
+*La tanda BLS conserva evidencia editorial e integridad de archivos, pero no publica imágenes en el cliente móvil.*
 
-Desde la raíz, las operaciones son:
+La preparación y revisión visual suceden antes del manifiesto: se usa una llamada integrada de Codex por alimento, se conserva el prompt y el recibo de la salida original, se normaliza el resultado a WebP opaco de 1024×1024 y se revisan todos los WebP finales mediante hojas de contacto, abriendo los dudosos a tamaño completo. Los planes, recibos, notas y hojas de contacto son auxiliares de recuperación o QA; los WebP y el manifiesto versionados son los entregables de la tanda. No añada esos auxiliares a la carpeta numerada.
+
+BLS permanece fuera de la app: al añadir una imagen no se modifican `apps/mobile/**`, fichas BLS oficiales, agregados, erratas, traducciones ni CIQUAL. En particular, no hay índice móvil BLS ni una URL que deba añadirse a una ficha. Una variante BLS recibe su propia imagen; no se reutilizan los mismos bytes para alimentos distintos.
+
+### Comandos y fallos que bloquean la entrega
+
+```bash
+npm run check:bls:images
+npm run next:bls:images -- 100
+npm run test:bls
+npm run test:catalogs
+npm run check:catalogs
+npm run check:bls
+```
+
+`check:bls:images` y `next:bls:images` son de solo lectura. El primero recorre las tandas, devuelve el inventario generado y pendiente, y falla si hay enlaces simbólicos, nombres o huellas de fuente desactualizados, prompts incompletos, referencias no aprobadas o alteradas, hashes incorrectos, WebP inválidos, archivos no declarados, IDs repetidos o bytes repetidos entre variantes. El segundo usa ese mismo inventario y lista una porción determinista de entre 1 y 100 pendientes; no genera, descarga ni publica nada.
+
+La validación no acepta la extensión como prueba: comprueba el SHA-256 y que los bytes sean un WebP real, opaco y de 1024×1024. También exige una correspondencia exacta entre los archivos de la carpeta y el manifiesto. `test:bls` cubre específicamente este contrato, incluidas mutaciones de corrupción, PNG disfrazado, tamaño o alfa erróneos, huérfanos, duplicados y enlaces simbólicos. `test:catalogs` y `check:bls` añaden la coherencia del catálogo y sus artefactos nutricionales; no convierten la revisión visual en una aprobación editorial.
+
+## Utilidad manual para catálogos curados
+
+`image-generation/generate_images.py` es una operación manual para `alimentos` y `ejercicios`, no el generador de las tandas BLS ni un proceso de ejecución móvil. Carga `HF_TOKEN` desde el entorno o el `.env` de la raíz, conecta a un backend de Gradio y, al terminar el recorrido, ejecuta `scripts/catalogs/generate.mjs --write --domain ...`. El generador JavaScript compartido valida todos los catálogos y escribe los agregados del dominio; Python solo produce los recursos candidatos.
+
+```bash
+cd image-generation
+uv sync
+uv run generate_images.py exercises --id press-banca
+uv run generate_images.py --backend z-image-turbo foods --id arroz-blanco
+```
+
+La opción global `--backend` va antes del subcomando. Sin ella se prueban `nano-banana`, `z-image-turbo` y `flux2-dev` en ese orden, pero el respaldo solo ocurre si falla la conexión; un fallo de predicción no cambia de proveedor. Solo Nano Banana recibe la proporción del dominio. Los otros dos solicitan 1024×1024 y aleatorizan la semilla, por lo que una imagen de ejercicio generada con ellos debe superar posteriormente el contrato 16:9 y no se reproduce simplemente al repetir el comando.
+
+El script recorre fichas ordenadas, omite agregados y solo genera IDs presentes en `FOOD_PROMPTS` o `EXERCISE_PROMPTS`. Produce `alimentos/images/<id>.webp` o `ejercicios/images/<id>-male.webp` y `<id>-female.webp`; un destino existente se omite, sin sobrescritura ni regeneración forzada. Los prompts indexados por ID son el material ejecutable; Markdown y ejemplos son auxiliares. Revise la salida visualmente antes de conservarla: el catálogo exige WebP decodificable, rutas seguras y exactas, ausencia de huérfanos y proporciones 1:1 para nutrición y 16:9 para ejercicios.
+
+## Entrega móvil CIQUAL y degradación
+
+CIQUAL tiene un contrato distinto de BLS. El sincronizador de imágenes CIQUAL valida muestras de estilo, manifiestos de tanda, IDs, archivos y hashes; después exige cobertura exacta y vuelve a verificar los hashes antes de escribir `apps/mobile/catalogs/generated/ciqualImages.generated.json`. Ese índice generado asocia el ID con la ruta editorial y la atribución; no se edita a mano.
+
+```mermaid
+flowchart TD
+    A["Muestra y tanda CIQUAL"] --> B["Verificación de manifiestos y hashes"]
+    B --> C["Índice móvil generado por ID"]
+    C --> D["ciqualFoodImageUri"]
+    D --> E["Descarga bajo demanda"]
+    E --> F{"URI ausente o error"}
+    F -->|"Sí"| G["Fallback del dominio"]
+    F -->|"No"| H["Imagen nativa"]
+```
+
+*CIQUAL, a diferencia de BLS, publica un índice que el cliente usa para resolver una imagen en tiempo de ejecución.*
+
+El cliente móvil resuelve imágenes contra la rama `main` de `raw.githubusercontent.com`. Para un alimento personal devuelve `null`; para CIQUAL consulta el índice por ID y forma una ruta bajo `alimentos/ciqual`; para las demás fuentes escoge el directorio según `sourceId`. Los ejercicios conservan una ruta relativa de variante bajo `ejercicios`. `Thumbnail` solo degrada: muestra el fallback si no recibe URI o si la carga emite `onError`; la elección de URI y fallback pertenece al wrapper de cada dominio. Las comidas CIQUAL antiguas sin `image_uri` pueden resolverla desde su `catalog_link` al mostrarse sin modificar sus macros ni su instantánea guardada.
+
+Desde la raíz, los comandos del flujo CIQUAL son:
 
 ```bash
 npm run check:ciqual:images
@@ -108,28 +137,11 @@ npm run check:ciqual:images:mobile
 npm run check:ciqual:mobile
 ```
 
-`check:ciqual:mobile` incluye la comprobación del índice de imágenes. Tras cambiar imágenes o manifiestos, ejecute la sincronización antes de los checks; el check compara el archivo versionado con la salida esperada.
+Tras cambiar una tanda CIQUAL, sincronice el índice antes de los checks. `check:ciqual:mobile` incluye la comprobación del índice de imágenes.
 
-## Generación curada de alimentos y ejercicios
+## Validación transversal y cambio seguro
 
-`image-generation/generate_images.py` es una utilidad manual para los catálogos curados `alimentos` y `ejercicios`. Carga `HF_TOKEN` desde el entorno o el `.env` de la raíz, conecta a un backend de Gradio y, al terminar su recorrido, llama a `scripts/catalogs/generate.mjs --write --domain ...`. El generador compartido, no Python, es la barrera que valida catálogos y escribe sus agregados.
-
-```bash
-cd image-generation
-uv sync
-uv run generate_images.py exercises --id press-banca
-uv run generate_images.py --backend z-image-turbo foods --id arroz-blanco
-```
-
-La opción global `--backend` va antes del subcomando. Sin ella se intenta `nano-banana`, `z-image-turbo` y `flux2-dev` en ese orden, pero el respaldo solo ocurre si falla la conexión; un fallo de predicción no cambia de proveedor. Solo Nano Banana recibe la proporción del dominio. Los otros dos solicitan 1024×1024, así que una imagen de ejercicio generada con ellos debe superar posteriormente el contrato 16:9. Sus semillas se aleatorizan, por lo que una generación no es reproducible solo por repetir el comando.
-
-El script recorre fichas ordenadas, omite agregados y solo genera IDs que existan en `FOOD_PROMPTS` o `EXERCISE_PROMPTS`. Produce `alimentos/images/<id>.webp` o `ejercicios/images/<id>-male.webp` y `<id>-female.webp`. Un destino existente se omite; no hay sobrescritura ni regeneración forzada. Conserve el recurso anterior y elimine o mueva deliberadamente el destino si se ha aprobado una regeneración.
-
-Los prompts son material ejecutable indexado por ID; los documentos Markdown y ejemplos son auxiliares. La salida del proveedor debe revisarse visualmente y no sustituye la validación: los catálogos exigen WebP decodificable, rutas seguras y exactas, ausencia de huérfanos, y proporciones 1:1 para nutrición y 16:9 para ejercicios.
-
-## Verificación enfocada
-
-Para cambios en imágenes, fichas o artefactos curados, ejecute:
+Para un cambio que afecte recursos curados, fichas o sus agregados, ejecute además:
 
 ```bash
 npm run check:catalogs
@@ -137,14 +149,16 @@ npm run test:catalogs
 npm run test:catalogs:e2e
 ```
 
-Los tests unitarios ejercitan la generación estable, la limpieza de páginas paginadas obsoletas, contratos de imágenes, rutas y rollback. El E2E exporta el cliente web y reemplaza red por fixtures; además de los escenarios de consumo, búsqueda, enlaces por ID, caché/migración y degradación, verifica ahora imágenes CIQUAL reales en catálogo, detalle, búsqueda y dieta. Comprueba la URI esperada, que el elemento `img` terminó de cargar con ancho natural 1024, la atribución, la persistencia de `image_uri` y el fallback sin red. Es una comprobación de integración web de URI/carga, no una aprobación estética o biomecánica del contenido generado.
+El generador común inspecciona los cuatro catálogos antes de escribir. Con `--write --domain` publica solo los artefactos del dominio solicitado, mientras que `--check` detecta deriva sin escribir; la publicación usa temporales y deja el manifiesto paginado para el final, de modo que una interrupción no puede pasar la comprobación. Los tests unitarios cubren generación estable, limpieza de páginas paginadas obsoletas, contratos de imágenes, rutas y rollback.
 
-## Procedimiento de cambio
+El E2E exporta el cliente web y usa fixtures controladas para consumo, búsqueda, vínculos por ID, caché y estados degradados. Para CIQUAL también verifica en catálogo, detalle, búsqueda y dieta la URI esperada, que el `img` cargó con ancho natural 1024, la atribución, la persistencia de `image_uri` y el fallback sin red. Es una prueba de integración de URI y carga, no una aprobación estética de una imagen alimentaria ni biomecánica de una imagen de ejercicio.
 
-1. Para CIQUAL, añada o cambie el WebP y su manifiesto de muestra o tanda; mantenga ID, nombre de archivo, referencia aprobada y SHA-256 coherentes.
-2. Ejecute `npm run check:ciqual:images`, sincronice el índice y ejecute los checks CIQUAL. No modifique la ficha nutricional para guardar una URL.
-3. Para alimentos o ejercicios curados, corrija primero la ficha y la referencia relativa; solo después añada el prompt y genere un ID si procede.
-4. Revise el resultado visualmente y confirme formato, dimensiones, ruta y mayúsculas. Ejecute los checks de catálogo y el E2E cuando cambie una superficie móvil.
-5. Revise `git diff`: un cambio CIQUAL debe incluir el recurso/manifiesto y el índice móvil derivado; un cambio curado debe incluir los artefactos de catálogo que produzca el generador compartido.
+### Lista de cambio
 
-Para el contrato general de catálogos, véase [Catálogos locales y artefactos generados](repositories.md). Para las superficies de consumo, véanse [Dieta y estimación de alimentos](../mobile/diet-and-food-estimation.md) y [Plantillas de entrenamiento](../mobile/training.md); la matriz general de validación está en [Compilación, publicación y validación](../operations/build-release-and-testing.md).
+1. Para BLS, seleccione pendientes con `next:bls:images`; conserve el plan y recibo antes de convertir una salida. Añada solo WebP y `manifest.json` a una nueva carpeta de tanda.
+2. Revise todos los finales, complete nombres DE/EN, huellas, prompt, referencia, hashes y `reviewed_ids`; ejecute `check:bls:images` y las verificaciones BLS y de catálogos. Abra una PR para revisión, sin asumir que `pending-review` autoriza fusionar.
+3. Para CIQUAL, cambie el recurso y manifiesto de tanda, sincronice el índice móvil derivado y ejecute sus checks. No guarde la URL en la ficha nutricional.
+4. Para alimentos o ejercicios curados, corrija primero ficha y referencia relativa; añada el prompt y genere solo si procede. Revise formato, dimensiones, ruta y mayúsculas antes de los checks.
+5. Revise `git diff`: una tanda BLS no debe contener cambios de datos nutricionales ni móvil; un cambio CIQUAL debe incluir el recurso, manifiesto e índice derivado; un cambio curado debe incluir los artefactos que escriba el generador compartido.
+
+Para el contrato general de catálogos, véase [Catálogos locales y artefactos generados](repositories.md). Para las superficies de consumo, véase [Dieta y estimación de alimentos](../mobile/diet-and-food-estimation.md), y para la matriz general de validación, [Compilación, publicación y validación](../operations/build-release-and-testing.md).

@@ -5,4 +5,4 @@
 - [Estado local, cachés y copias de seguridad](local-state-and-backup.md) - Contrato local-first para hidratar, confirmar, recuperar, respaldar y borrar el estado local de Gymnasia Mobile sin sobrescribir datos no verificables.
 - [Mediciones y métricas corporales](measurements.md) - Contrato, edición y persistencia local de las mediciones corporales móviles. Describe el recorrido desde la pantalla y el borrador de dieta hasta las herramientas del agente y sus pruebas de contrato.
 - [Cifrado portátil y recuperación](portable-encryption-and-recovery.md) - Contrato del sobre cifrado portable v3 de Gymnasia, el empaquetado e importación de copias y la recuperación local desde cuarentena. Describe límites, fallos seguros y validaciones para operar o cambiar estos flujos sin exponer datos sensibles.
-- [Entrenamiento y sesiones](training.md) - Contratos y ciclo recuperable de plantillas, series, sesiones, historial y descansos de entrenamiento. Distingue los datos durables de los controles de interfaz y las validaciones que evitan perder trabajo o duplicar resúmenes.
+- [Entrenamiento: plantillas, ejecución e historial](training.md)

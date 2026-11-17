@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:88776797cdcad7f5b5b816aacedccbe53471bea614e256e7dc205aa2fa018072",
+  "pageVersion": "sha256:9c701598e0c94739029eaa5542695c0fe4986d61bdb46b455ab1be16cde7ae98",
   "claims": [
     {
       "id": "claim_4f128aa30b194c0d8433f3fffe412436",
@@ -108,23 +108,19 @@
     },
     {
       "id": "claim_251cc29bb74640da815bbdae157956aa",
-      "statement": "Una sesión activa se ejecuta contra un borrador versionado propio; al modificarlo, la aplicación vuelve a validar claves de unidades, contadores y unidad actual. Durante la hidratación migra claves heredadas, filtra y deduplica las claves de unidades, y deriva los contadores desde las claves válidas.",
+      "statement": "Una sesión activa se ejecuta contra un borrador versionado propio; al modificar su estructura, la aplicación vuelve a enumerar unidades, filtra las claves completadas, deriva los contadores y resuelve una unidad actual válida. Si el cambio invalida la unidad actual o el origen de un descanso, cancela el descanso; durante la hidratación migra claves heredadas, filtra y deduplica claves y deriva los contadores desde claves válidas.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/App.tsx#L3865-L3923",
-          "version": "repo-lines-v1:sha256:dc27a0c38af656c527347d64d777ba0bc10efdfc03151d3c17c3a995ba97b83e:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjYzA4YjM0M2Q3MWVmOTQ0NWU1NTIyNzIwOGM4NjU0Zjk4ZjUzZWI5N2ZlNjBiMTZkZmRlNzY4NmVhNmNhMGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiZjU5YjAzZWViMTNhOGE4MThjYWZlOWE2YTVjMGI1ZjNiMTY5NjY4M2FiNDNlMzA0YjEwN2FlNzc0ZDRjNTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmOGE1MjM1ZDY2MDVjYWIxN2JlMmMxNjMwOWY3OTVlNWJjODM3Y2RiOTJkOGU1YmYyNTk2NDIzNWU4MDE5ZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiNDAwMzFjZmVlY2EzMWRhNmVmNDQ0MjdkYWQyYmE3ZmI0ZGUzYzMyZWY5MmUwNTk4NjRiNTAzNjVlZDlkODAifQ"
+          "resource": "repo://apps/mobile/App.tsx#L6189-L6229",
+          "version": "repo-lines-v1:sha256:3aef625932407701413a4b05ce5aadcc6903c78eb328dd62590c9da586e3feb3:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyNzE0ZDM5MjljNGU1M2ViZTlkY2MyMTQ1ODU0ZTAxMjNmNDZkYjMyMzcxZmUwZTkwYzk3MTc2YjM3N2UxOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyZDExY2FmNDNlOTdlZjM2OWU2YmVlZDFhMjY4YmQwNTgzOGYyOWI5ZGQyNTRiZjY5YmE2NDg4NDE0NzIzNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlMTJiNjExODk0M2UzMGMwMDY4MzNlNzgxNjMwYTUzYjMyZjQxN2VmNWY5Nzk1YzNmMTJmMzMwODAyNGM1ZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk1M2E5NTc1MTk2MDYzYTczYjUyY2I1ZmNhOGYyZTRiZTBjZmQ3MWVjZjAyMDg3MmQxZDE0YzZkNjkxZjkzMWUifQ"
         },
         {
-          "resource": "repo://apps/mobile/App.tsx#L4140-L4159",
-          "version": "repo-lines-v1:sha256:d5fcd71ad9b1e5083da906fe33997bfc597fbb5b423f8b37e0fcbac0556eca88:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5NjZmYmZhODg5OThkYTc0NjU2YzUwMTk0OTU2YzI1ZjA4NDk0NTc2NjBjMDA5ZmU2M2QxZTlmYTlkYzkzMWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwZTNiZWJhOGUwNWE0NWVkNTFhMmVkYTk4ZjY5MTFjM2Y4NmMwMjYwMGNhMDc1OWIzNWU1NDFmY2M0NjBlZTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRlYmYzNzViYjc2OWEyODgwODUxZDRjNjM0MjQ2MGQwNjU0NmQxOWQ0NjFjZTA1NjAzZjU1Mjc1MmMwNjUzMGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyZDFjNWY5MzI5OGQ2YWJjOWI5YmJlYWM2MzI3NjI4ZDY4NGFmMTY4ZDA5Y2EyYTQ0YzU5NzU5NDY5MDI1NmYifQ"
+          "resource": "repo://apps/mobile/App.tsx#L7214-L7242",
+          "version": "repo-lines-v1:sha256:9117a0936c76655ca5396717dd6d53bc019b31adb7325699510a90d2d9eebe0a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhMmIzOWJiNDhlZjJhMWI3ZmZiYzY5MDhkOTViOGNkMDc5ZGViNWQ3MmVmYzVhODBhZThiMWQwOGMxODkzNjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhiYjZmNDQzNzM0N2Q1Y2VmOTAwNDMwM2E4ZjVlZTYwMGE3NGM4OTc4OTBhM2VkYTc0MjFkYzNjOGEyZmM0OTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJjZjBkZWI3MzY0MmJiZmMwMjMzMjc3YjM0YjM5YWYxYmY2NzI2MWY0NDc3YTdkNGUxNGI5MDkxMmEwZmFiMWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFlMDQ3NjlhZDU0MTUzODc3NmM2MmY2Zjc3N2U2NGI2ZDhhNzczMjMzODg4ZjkwNmYwNTBkYzQzODJmNjE0NzEifQ"
         },
         {
-          "resource": "repo://apps/mobile/App.tsx#L5862-L5897",
-          "version": "repo-lines-v1:sha256:8f13f894bbdfe74904161a8ebaf491ba4d6b537eead9f7faa9bcf8ec9196bb9e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyNzE0ZDM5MjljNGU1M2ViZTlkY2MyMTQ1ODU0ZTAxMjNmNDZkYjMyMzcxZmUwZTkwYzk3MTc2YjM3N2UxOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVlMTJiNjExODk0M2UzMGMwMDY4MzNlNzgxNjMwYTUzYjMyZjQxN2VmNWY5Nzk1YzNmMTJmMzMwODAyNGM1ZDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5Nzk2MWZiZGMzZmE5ODJlOTQzMzQ5NWRlODU1MDNkNjI4ODE0N2M4MzA1M2U1ZWYxNWQzZGM4NWQwOGFiMTMifQ"
-        },
-        {
-          "resource": "repo://apps/mobile/training/workoutSessionModel.ts#L100-L215",
-          "version": "repo-lines-v1:sha256:8ec19f6e6a680499b86dea8362a90fb611a40919099506c4bc550d6f745b0f4f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0NTQxYWRjMmExNjY2YzM5NTIxYjlhMTk3NWU3MzYwNTdiMjY4ZmQ5YzJhYmE4NWRkNmUwZDY0Y2NjZThmNWU3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5Y2NlNTcyYjhkOGM2Y2Y1Y2FjODQwOTRlZjYzMzhlOTNmZGYyMDMyZGJhYTYzNDUyN2IwZjg2ZGNkZTllNzQzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIn0"
+          "resource": "repo://apps/mobile/training/workoutSessionModel.ts#L101-L225",
+          "version": "repo-lines-v1:sha256:89e3bfae186b43ce02952f948a7f6821a1b416cb4ba270ffe872abd55eeaf6e4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI1LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0NTQxYWRjMmExNjY2YzM5NTIxYjlhMTk3NWU3MzYwNTdiMjY4ZmQ5YzJhYmE4NWRkNmUwZDY0Y2NjZThmNWU3IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5Y2NlNTcyYjhkOGM2Y2Y1Y2FjODQwOTRlZjYzMzhlOTNmZGYyMDMyZGJhYTYzNDUyN2IwZjg2ZGNkZTllNzQzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIn0"
         },
         {
           "resource": "repo://apps/mobile/training/workoutTemplateTransactions.ts#L106-L145",
@@ -192,27 +188,27 @@
     },
     {
       "id": "claim_c48c9bf955aa4a5aaf6d09818e09a026",
-      "statement": "Los recorridos E2E separados cubren la edición y recuperación de borradores de series y la migración, recuperación y ejecución compuesta; están expuestos como `test:train:series-operations:e2e` y `test:train:compound:e2e`.",
+      "statement": "Los recorridos E2E separados cubren la edición y recuperación de borradores de series, y la migración, recuperación y ejecución compuesta. El recorrido compuesto también comprueba que el descanso de una ejecución fuera de orden se presente en el ejercicio que completó el esfuerzo y se conserve tras recargar; están expuestos como `test:train:series-operations:e2e` y `test:train:compound:e2e`.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/scripts/train-compound-execution.e2e.mjs#L268-L384",
-          "version": "repo-lines-v1:sha256:b8b65a0c1cde20b81fb260898a195aad3bb29558a2d4cde0de4ca45ecd05b7d2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhZDY1NzA4YzQ1ZTQ5ZTY2MDg5YzBkMTM3MDAyYzZmNjc1NzJhYTE3ZTc0ZmRhYmY1NTU2MjczOTk3NjhlZTdkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MTJjYTM0NWNjZjc1YmY5YzA4MDZiY2U2OTViZThkZTgwOGI3OTk4NDI1MWE3YTU0ZDIwMmNmNjEwMWRkNDUxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwOTRmYzBjMTczZDFlYzNmYzUwMWQ3ZGZhOTI4NTUwMWM1MjdjZmI0NzEyNTgzZGEzY2MzNjE4MDU2NmI0YmUzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkNTJkZjNhNTBjNzdiMmEwZTkwZDE1YTZlYWY2ZjZkNmVlMDc3OWQ3ODYyMDg0YjRlMDZlOTJiYjA3OGMyMjI0In0"
+          "resource": "repo://apps/mobile/scripts/train-compound-execution.e2e.mjs#L296-L411",
+          "version": "repo-lines-v1:sha256:372b3dc0015095d7e08a8f653063f5867f4c250c74ee00a386b91953a9673916:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhZDY1NzA4YzQ1ZTQ5ZTY2MDg5YzBkMTM3MDAyYzZmNjc1NzJhYTE3ZTc0ZmRhYmY1NTU2MjczOTk3NjhlZTdkIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiJkNTZmZmRlODhlNjlmNzY5NjJlMjdjMDExNDEyNjFjMWNhZWQ1MTc5NmMzNWM3NTMxYmFlNjdjMzk0NGU1NWFlIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIwOTRmYzBjMTczZDFlYzNmYzUwMWQ3ZGZhOTI4NTUwMWM1MjdjZmI0NzEyNTgzZGEzY2MzNjE4MDU2NmI0YmUzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI4YWY2Nzg0YzdmMTYzZTBiYjhhZjZjYTJhYzUxMmI5MDQzMzg3ODYzNmViOTUzMDhmZjNhZmUxNGI3NTVlNjY5In0"
         },
         {
-          "resource": "repo://apps/mobile/scripts/train-compound-execution.e2e.mjs#L491-L627",
-          "version": "repo-lines-v1:sha256:29dd68e2f683cea4a8a58fa998d06f06abdc4547bccf47747b41d85d7d1420be:eyJzZWxlY3RlZExpbmVDb3VudCI6MTM3LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhODQyZWJmODkzNTM0YzE4ODEwYTY4NjJkYTVmMDAyMjI2MzExMzMyNzgyYWRlMGI3MDk5ODJhODc0MWY0OTQ1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyN2U1Nzg4ZDVkOWQ3M2QyNGE4MWRiYzBhNWE3NGJmYTgyYzljM2IzYWY5OWU1MmFmNzk2ZTkwYjQ2OGE4YTNkIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhMjE1Y2UwMjA0ZDU0ZjBhNzg4MmMxMTk5ZjhiMmM5ZmM2MzFhMmM5Y2E4ZjhmNjMzN2NkOTU4ZDM4MjFmNWQyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1NGMxM2UyMzA2Y2UzY2RhODlmYjBjYWQxNmRjZmFlYzc0YzliOGYxZWU0OGY4Yjk3ODlkZGRhMWU0YjM3NDQ3In0"
+          "resource": "repo://apps/mobile/scripts/train-compound-execution.e2e.mjs#L519-L640",
+          "version": "repo-lines-v1:sha256:7eacd5e11ebddf124c5e7b98231e84036e6868a770ebd8653f64bedf1ce426b3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhODQyZWJmODkzNTM0YzE4ODEwYTY4NjJkYTVmMDAyMjI2MzExMzMyNzgyYWRlMGI3MDk5ODJhODc0MWY0OTQ1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI3MjBiMTI2NTZmN2MxMmNhOWEwNzI5MTc2MGMwNzc2MDZmMWJlMTYxOGQ5MjkyODJmM2U2N2EwZmEyMWVkNWQ2IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhMjE1Y2UwMjA0ZDU0ZjBhNzg4MmMxMTk5ZjhiMmM5ZmM2MzFhMmM5Y2E4ZjhmNjMzN2NkOTU4ZDM4MjFmNWQyIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkNjBkOWQwMWIyOWMzYzVmZDg4ODJkOWYwOGY5ZjFiZTA0NzJjNzUwMGMzMjViMGIwYzZiOTc5ODU4Zjc2NDgwIn0"
         },
         {
-          "resource": "repo://apps/mobile/scripts/train-series-operations.e2e.mjs#L259-L335",
-          "version": "repo-lines-v1:sha256:499bc68f093aaaf99817d14b4913f3b2c9eba32c1d7f621ef5ba594ad879cc3e:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0NDczM2VmMmJkYWFlMTUwNjNmOWFiMDNiNmY1MTU4N2JhZmU0MzM4MzNlNWQ2ZWUwMDIxOGUzZTBhNTYwNzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5OGFiNzU4YWNmYzc0MjU4MDNmMTY0ZTIyN2Q3M2Q3M2VkZTc4YzAzYWU2YzM4MmQ4NGE5MTdhOTQ4ODkzOGIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiYjJjYzQ5MjJhZTA0Y2E1NzdiOTAwZGI0OThmZWNlOWU5OWMxNTk0NjRmZTBlNjRhN2QwNjIzZDQ0MWE4NjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE3ODAxNzM3ZmE4MjlhNTNjYzUxN2EyN2JmZTE5MmI2NWFjZjM0MjI5NDFhM2Q4OTI4NmM5MDExYjQ0M2I2NDkifQ"
+          "resource": "repo://apps/mobile/scripts/train-compound-execution.e2e.mjs#L643-L710",
+          "version": "repo-lines-v1:sha256:1c8076c0796df1da6ea92c99385336a40305efbe3661685c1f6ebb8ee2296ed7:eyJzZWxlY3RlZExpbmVDb3VudCI6NjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5ZjhmZGJkZjY5ZTBkOThiMjEzMmMzM2EzMGJkOTY0MTBmNGEyMDU3ZGYxOGZjZjgwNGExYzhkODQ5YzlmMTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3ODhhODY2ZDU0ZjQxMzdmNWMzMWU2MDNhNWJjODhkODQ2Y2Y5NTQ5YWRmM2RhYTZhNzczM2U4Y2M4MGQ4OTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0ZDI2ZjhkNmI0MjUxZjFkZDg5NmZiZGJiNjI1YjkwZDU3MDFmYWM0NTZhODk1NzRiYzc2MGI1OTBlM2JkNTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiMWViZTY3OWM2NDg5OTBkMWNmYTllY2QzMGQ2Y2I4MzgzZDZjOGMzYmMwZjgyMjM5OGIyZmNkYjdkNjg3OTcifQ"
         },
         {
-          "resource": "repo://apps/mobile/scripts/train-series-operations.e2e.mjs#L341-L510",
-          "version": "repo-lines-v1:sha256:310fdf1cfbe4f2decfc043627c7286844d1af5fce4f083d765d3c87ab14198b8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcwLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0Yjg4ZmVlM2VjMmFkMGRiNDIxNzM5MGQ5MzdlYTJlZWE4MTJmMWI1MWNmNmVjNjIxYzg3ZWVhODA0Y2E2Yjk5IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2NTA2OTc4MmU5NTdiZTRjY2JkMDcxODg4YmU2MjE1YmEyYzZmNzk5NmFjYzBiY2NjNTRhM2JjNmNkYjkzZDEyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzZWQ4NDRmZTU4OTc3YzVlZDcyMGE5ZTE1YzFiM2JjY2ViOTUxYzZiYjBiNmU0YTBlYTg2N2MzNWY2MmM5ODIzIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkZmUxNmQ2OTI1YzdjNmIyMmNhZWY4YTIwZWJlYzk3Y2ZmNDAyMzlkOTgwYTkyMjY0OWMxOGQ3Y2ZjMDAwZTY1In0"
+          "resource": "repo://apps/mobile/scripts/train-series-operations.e2e.mjs#L259-L510",
+          "version": "repo-lines-v1:sha256:b2df29fddd61e2ec027b57e38914472ab42623047f34e59f1f886aa1b98779ee:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI1NDQ3MzNlZjJiZGFhZTE1MDYzZjlhYjAzYjZmNTE1ODdiYWZlNDMzODMzZTVkNmVlMDAyMThlM2UwYTU2MDcyIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI2NTA2OTc4MmU5NTdiZTRjY2JkMDcxODg4YmU2MjE1YmEyYzZmNzk5NmFjYzBiY2NjNTRhM2JjNmNkYjkzZDEyIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxYmIyY2M0OTIyYWUwNGNhNTc3YjkwMGRiNDk4ZmVjZTllOTljMTU5NDY0ZmUwZTY0YTdkMDYyM2Q0NDFhODY0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkZmUxNmQ2OTI1YzdjNmIyMmNhZWY4YTIwZWJlYzk3Y2ZmNDAyMzlkOTgwYTkyMjY0OWMxOGQ3Y2ZjMDAwZTY1In0"
         },
         {
           "resource": "repo://package.json#L65-L69",
-          "version": "repo-lines-v1:sha256:b942be14e8213fabacf0b19916e207fa7b2b9feaed969d6ab484a5a59ccaa7ba:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2Y3Y2FiNzY2M2MwOWZiYTM1MDM5MjA4MDFhYjZlZThlNTdkMGQyYTZjNWRlZjg5OTc3MjU1MWQyMjFmODc0YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDgwNGVmZTJlN2E2ZDM4OTU2ZTZlYTc0OTk1YzRmNTE2MGZkYTg1ZWNjZTQ4YjU5ZGU2YTU1OWVmMTg2MmI1MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTkxMWQwYjlmZDNhYzljNDE2NjliNzRkYzdjYmE4NTMwZmIzNzE5ZDBhMTYyY2E4YmI3NzU2NjgzZjMxNDYwNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzRkZDE2ZTkzNTI3YjIxNTkyNTczMzk0NmZkYzU0YzgzZTUwYzE2YTUwZDU0YjIyYWNkMDM4NDI5OWE5NDlkZCJ9"
+          "version": "repo-lines-v1:sha256:74cc4b4c497ccca28e6e6e2efce81a790c6628a45e239a5fb52b1a6a78b3dbe4:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdhZDllN2JhYTEyZmVjZjQyNGI4NWQ4YThkYTliY2ViYWZhMjE4YjdjMmU3YTg2ZGVlYTNjYTAzYTE1ODFjNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTY2NjhjMTBiYjhiMWQyZTU3OTMzY2M5YjU2MDFmMTFjZjc2NTc3YTZhMDlhZmU1MTEyN2RjN2NiZWE4MGE1ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzU4ZTViNjFjZGU0Y2M4N2IxNDA4ODhlMjg1MmYzMDg5NGRmOTJmNzYyNTc4Yjc3YTk1ZDI4MjUyZjQzNWFhOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzZjZTMyMmM3MTI3YmI1ZGM5NjlmZjA2ZDAwZDFkMzYyOWM1ZjY1NjllMDNkZWVhZjM3Yzk0ZGNlN2Q5OTYwNiJ9"
         }
       ]
     },
@@ -279,12 +275,12 @@
           "version": "repo-lines-v1:sha256:c6ee8c1c2737be2264749b47ee9beed6d6a99239bf2c70eb0a86588a68fc483e:eyJzZWxlY3RlZExpbmVDb3VudCI6OTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1ZmIyZTdiMTJkZGY3NjRhMmFkNzdkODVjNTg4M2JkMThlYzI3ZGU3ZTU0NTdhNWNkZjQ5ZDZmYTk4MzA0MzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVkYWVkZDAzZmM4Y2IzZWVkZTk2MDNmNGNjOTVmNjFlNWQwZjQ2MTVjZWZjYTY3MDMyMzdhOTU5MGE0ZTljZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwYjk3ZWZkMjE4ZWYwZTBjYTM1YTY4NDg4ZGNjOTJiMzE0MmY5YTM4YWNjMDJjN2VlY2FhZGUwZDMzZDExYzgifQ"
         },
         {
-          "resource": "repo://apps/mobile/training/workoutSessionClock.ts#L112-L232",
-          "version": "repo-lines-v1:sha256:c31b44e702ebfe9c001c5c243594be3ac684606da9bef61016aaf03afa20517f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIxOTAwYzIyY2VjYzExYTM0ZDgwODMzZGZjNjBkYTQzMTJjN2Y1NTY1Njc4ZTFjNzRjYzVjMTc0ZWVmZTFlN2U0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MjA0MGUwOTVhOTRlMmFkYTc0ZTQyMWYzNzE4NzUxYTkxYTgxMGJmZDY2ZjQ4ZjRlOTM5YzdiNzQ4MGViNjcwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxYmI0YjY0YTgzZWY2Y2Y1MzhmYzdmMmQxMzczZTIzYTRlNThlY2ZhYTNiNjU4ZjQ2ZWU4MDliMzU1ODY3ZjY0In0"
+          "resource": "repo://apps/mobile/training/workoutSessionClock.ts#L115-L236",
+          "version": "repo-lines-v1:sha256:78dc7a140438b4d19b59f9ea85d49dc18dc6f1dd331044804916ca10cf007f43:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIyLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIxOTAwYzIyY2VjYzExYTM0ZDgwODMzZGZjNjBkYTQzMTJjN2Y1NTY1Njc4ZTFjNzRjYzVjMTc0ZWVmZTFlN2U0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0MmEyY2IyNWExMjJiNDQyMjFhNjIzNGVjNjYwYTdiNWZiN2Y5YmRlN2IzYjllMmIzYzU1OWEwZDk2ZmFjNzM5IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI5MjA0MGUwOTVhOTRlMmFkYTc0ZTQyMWYzNzE4NzUxYTkxYTgxMGJmZDY2ZjQ4ZjRlOTM5YzdiNzQ4MGViNjcwIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxYmI0YjY0YTgzZWY2Y2Y1MzhmYzdmMmQxMzczZTIzYTRlNThlY2ZhYTNiNjU4ZjQ2ZWU4MDliMzU1ODY3ZjY0In0"
         },
         {
-          "resource": "repo://apps/mobile/training/workoutSessionClock.ts#L80-L110",
-          "version": "repo-lines-v1:sha256:e88167b3ea3cf7f55f5dfdbb20f37adf6c45448af638847a06583488b3ae675d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZiM2Y5OWM0NDk0ZTU1MGI2NDQ4NGY2MmUxM2NiOTMzMjk0MjZlMGQwOTM0NDg1ZjA4Y2YzNzhhMTgyMThjZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5MDg4MGZlNDk5OWVmNWFjZTU0YzI0Y2YwZDkxZjNjNTZhOGViYjQxYWJjMTY5MGVhN2Q4NDk4M2JkZjk4MWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5ZGJhMDQxYzRlZTY2MTA4Yjc2OGQ1N2U5ZDk5OTM1Zjc1NzE4ZDM0NzY2NzhhMjU1YjVkZmM0NjgxNWEyZDcifQ"
+          "resource": "repo://apps/mobile/training/workoutSessionClock.ts#L83-L112",
+          "version": "repo-lines-v1:sha256:a25ffbc3e9b187904d98f5113fee9380f705847bb0d7d999f929c7971d21ee35:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZiM2Y5OWM0NDk0ZTU1MGI2NDQ4NGY2MmUxM2NiOTMzMjk0MjZlMGQwOTM0NDg1ZjA4Y2YzNzhhMTgyMThjZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5MDg4MGZlNDk5OWVmNWFjZTU0YzI0Y2YwZDkxZjNjNTZhOGViYjQxYWJjMTY5MGVhN2Q4NDk4M2JkZjk4MWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdiZGFmZTY0YWU5NTYwYzk2MWJjYWIxODczMTlmNTE3ODRkYzM1NTY2NGQwNmNiYjZhZmJhYjBlZDE3NmE3ZWMifQ"
         }
       ]
     },
@@ -315,10 +311,54 @@
           "version": "repo-lines-v1:sha256:275dc62f4356a6d7691f367b51e63413cb260105310c19ff4dde9ac9c4b75665:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5ZjJkNDc4NGViMGY5MGM5ODI2NzE5MDliOTFjMjU3OTMxMTI5MTJmN2UyYjc4Y2Y2OWYzZTNmYmE5NGE5ZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlMzhkZTJmMDVlZGM3MTU1OTBiNWE1OWQ3NjQ4ZTgwYmFkMWE2OWUyMDg5ZWNlNzYwMGEwYmFmMDJjYjAwOGYifQ"
         }
       ]
+    },
+    {
+      "id": "claim_c316c797ec304a6c90621048132c8846",
+      "statement": "`rest_origin_unit_key` desacopla la tarjeta que muestra el temporizador del siguiente esfuerzo: se registra al iniciar un descanso, solo es válido si refiere una unidad completada y se limpia al cancelar o vencer el descanso sin alterar el puntero ni los esfuerzos completados.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/training/restOrigin.test.ts#L78-L150",
+          "version": "repo-lines-v1:sha256:1036a00022c58594db1701e45ae21dccc9d996ff83bb6acd655cc08f4531c06d:eyJzZWxlY3RlZExpbmVDb3VudCI6NzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2MDk0MmM2MWY0NDFmNmJiNjkxOTMwYmFjZDEzMmY0NTJkZGJmYjA1Nzg2M2I0MTdiNzNiYTRjOGU1MjJjZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViYmJlMTY0YmVkNTUwNmM3NTZkNjJhYzA0M2NmMzY2ZDBjZWZjNTRjMTliMTkxNDc1MDI5ZmJlZjg1ODkzNjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBhYTViYjkzNDc4MDJjZmU1ODIyMjViMTEyN2QwODc1MWFmNmMxMDczYjc4YjEyOGQ2OGNhODdhMjhhZDEzYzUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutSessionClock.ts#L193-L236",
+          "version": "repo-lines-v1:sha256:467e279022d333fa46b1a466accbb842ab5d46d420569faf94a216c2e5fe9637:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyMGVmNDI2NTE5MDZiZGQ0Y2Q2ZmFiOGJiYWQ3ZjczMThiMzgzNTZjY2I5ZmQwOWE2Zjk3YWU5Zjk3MWU3ZDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJlZWVmZGQ1MTEzZDk5MDU2ZjFlMTlkZTFiN2Q1YmVkZTZlMGEzMDFmOWU4ZjdiZTRlYWQzZjhmOGRhODY2YzgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiYjRiNjRhODNlZjZjZjUzOGZjN2YyZDEzNzNlMjNhNGU1OGVjZmFhM2I2NThmNDZlZTgwOWIzNTU4NjdmNjQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutSessionClock.ts#L239-L273",
+          "version": "repo-lines-v1:sha256:2df507590f17b14bdd25fe74731c807fe959170510873973896647443879e718:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyOTM1ZTBkNGZiODcyZTQ4ZWNhZDY0NzlkYjIyMjJhNzJmODIzMjlmNjhkMjZkYmRkZWUwOGU3NGU0YzQ3NzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFlNTUyNzgxYTZhZmVhM2ExNGQ0M2Y0NzQ0NmE5OTQzY2NjZjU2YTJhODNiZjZkZGY3ZjdjN2Y1MTc0NDgyMGIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/training/workoutSessionModel.ts#L163-L171",
+          "version": "repo-lines-v1:sha256:8151ad479d1b8c277cc25217f251bb17e5c80f40c9511bcdb1a1b996850acf8d:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjVkODliOWQ5MDE3MWY0ZmIzNzhkMjc5OGU3NDY4NjJkOTAzNmFlMDE3ZGVhMWI3YWY0MDkwMzRjZDUyYjA1MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzNmNTJiZGI5YjEwZTZhYmViMjJkNzY2NzZlMjM4NjQ3OGQ4YmRhYzI5MTk2MjA2OTA2ODNlMzkwNDgzZWRmNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzlmYWIwYzg1ZDAwZDcwZjhkNmQ5OTdhNmI5OTM1MzhlMDYzNTM5MTJlNTAxMmZhMmM0MWRlM2YyZGM2NWU5NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGQ5OWEwMTJjZGViOTk3ZGJiZjUzNDRjMjhjZGVmZmQzNzFmZjcyNzg2Yzc1ZGI3NmExZTViZDE2Y2Q4NTU2YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e2a3f36ee834ef2abb1c4380f77722b",
+      "statement": "Los controladores de entrenamiento proyectan el estado y las acciones de `App.tsx` para las pantallas y sus capas de retroceso; la presentación de sesión se construye a partir de la sesión, su borrador y las plantillas, mientras que el detalle de historial muestra la instantánea de prescripción guardada incluso si ya no existe la plantilla actual.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/App.tsx#L3055-L3107",
+          "version": "repo-lines-v1:sha256:9997cec58323ac2d81ab0e0380085e74cc19337d461c553b1e395512e97b881a:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmMDcwYTM1MGVkMWI0NDA1YTljNDMxMzNjZTU0ODU1ZmIyMmVhNTdhNjFkYzgzMzM3ZTAxYjVkOTcyYzAyMmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyNzJkZjM1NTVkZjcyMjFiMmQ4NTM2YThhZGE5ODdmOTdlOGFjMTc0NWYyOTA4YjM0NThjOWZkMjlmZWUxOWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3NThlOWI1ZTY4OWFlODY2ZjFlMjIyYjAxOGMzOWI4ZjE3Njc4NWY5MTQ3YThmZjhmNjRlOTM1MzEzMDVmZmIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/controllers/trainingController.ts#L319-L415",
+          "version": "repo-lines-v1:sha256:dba82eb4f9f81bdd5ff6eb3e62174ab57d5890f2c6e0c6f4f303d32906632f82:eyJzZWxlY3RlZExpbmVDb3VudCI6OTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5MGQxODM5NjJjNDgwNTExYmVjMjQwNWZjZDcxZTUwMDYwMjRlOGU1MzZmYjhlZWU0MDNhYmY0NjJlMGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzZmViMGZmNTY0ZWZmYTA0NWI0MjIwYTg4MzYyOTc4NmYzZWIwOWZkZWM1ZDM5MjJlNzdiNTY2MjkzNTY0ZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNmNmZlOTE4M2YwZWY1MGRhYWFlZDIwNzA0MWE3MTQ1ZGJhM2EwMDEzYjlmOTAyZmY1YzA2MTkzNjlkNjRjMTAifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/controllers/trainingController.ts#L860-L895",
+          "version": "repo-lines-v1:sha256:f5e4a8e2c6f1257b6413c61824994397572e365744e7e9b786687529aee5f455:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxZGY0ZmYxMWYxMDRiMDI2MGI5ODc4NTI2MjJhZDE5MWRjNmNiYzAxYzJkMmM4NjhhMTA4MDlhNjMzMDBmMzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyMDg4M2I2OWY2M2IzMTZhMzkxZDI1Y2VmMTE3YTk0ZDliZjc5OWZhYWI1NzVlMWE2YmJlYjNlMTRlYmEyY2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEyYjE3NmYwNzUxZmNhMTk1NjYwOGU3ZjZiODc2NzQ2ZDdkNWJiZWFhYmFhY2Q1NmY5MzIwOGY3N2ZmMGI5YzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/screens/TrainingScreen.tsx#L30-L100",
+          "version": "repo-lines-v1:sha256:723729b27ab90b0a5a3cce12bd224f35228cab94a6397a0f8322d93f20ada4a4:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNmYmZjZTllYjhjZjhiNWU0Zjg3NDhlMDUxNDhlMGQwNWZiOWMzY2E3MDY3NmEzY2ZlZWEzNzhiMTZkMDg0YjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjYWI4NWRmNWYyZWMyYjZhM2UxNzFlM2E3YTY5Njc0YTI3ZTM5MjE3ZDg5OWU4NDZlYjFhY2YzZTAzZGVkMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ2NDU4OTc3N2VmZDMzOGQ4MWNmMTQ5N2E0ZGE1NmYwNDAyNDhlNmE5Y2M0MWY3Y2RhNGZmNzlmNGZiYzc0MjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBiNmNlM2Q4OWJjMzYzMWQxM2UwODNmZjVkYTcwMWM1OWFiNDFjN2I4ZmE4OTJkNGVmMWM5ZjJiYzU2MzBiOWIifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-09-27T17:43:05.548Z"
+    "at": "2026-11-17T17:09:17.831Z"
   }
 }
