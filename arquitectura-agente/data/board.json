@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-11-03",
+    "updated": "2026-11-17",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -843,7 +843,7 @@
         {
           "id": "GYM-44",
           "title": "10. Control de elección de tool: tool_choice",
-          "state": "backlog",
+          "state": "canceled",
           "baseline": "partial",
           "summary": "tool_choice se usa exactamente una vez, en App.tsx:10659. No hay control general.",
           "dependsOn": [
