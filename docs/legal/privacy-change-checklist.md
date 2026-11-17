@@ -55,8 +55,11 @@ Si un cambio toca cualquiera de estas cosas, recórrela entera:
    "apps/mobile" does not exist`. Enlaza la raíz del checkout antes de desplegar:
    ```bash
    npm exec --yes -- vercel@59.16.0 link --yes --project gymnasia-web --cwd .
-   npm exec --yes -- vercel@59.16.0 deploy --prod --yes --cwd .
+   npm exec --yes -- vercel@59.16.0 deploy --prod --yes --archive=tgz --cwd .
    ```
+   `--archive=tgz` es obligatorio: los catálogos superan el límite de 15.000 ficheros
+   sueltos que Vercel acepta por despliegue (ver «Hay DOS proyectos de Vercel» en
+   `CLAUDE.md`).
    Comprueba que `.vercel/project.json` contiene `"projectName":"gymnasia-web"`.
    La salida del deploy debe decir `Deploying gymnasia-web`; si la CLI propone
    crear un proyecto distinto, detente. `link` puede crear `.env.local` y añadir

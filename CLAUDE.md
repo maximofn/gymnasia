@@ -583,10 +583,19 @@ esto hay que arreglarlo antes o el job pasará siempre.
   desde la raíz del repositorio, no desde `apps/mobile/`. Enlazar primero, siempre:
   ```bash
   npm exec --yes -- vercel@latest link --yes --project gymnasia-web --cwd .
-  npm exec --yes -- vercel@latest deploy --prod --yes --cwd .
+  npm exec --yes -- vercel@latest deploy --prod --yes --archive=tgz --cwd .
   ```
   La salida debe decir `Deploying gymnasia-web` y aliar `gymnasia.maximofn.com`. Si dice
-  `Created`, detente: está creando otro proyecto.
+  `Created`, detente: está creando otro proyecto. `link` puede añadir `.env.local` al
+  `.gitignore`: descarta ese cambio con `git checkout .gitignore`.
+- **`--archive=tgz` es obligatorio.** Sin él, el deploy falla antes de compilar con
+  `` `files` should NOT have more than 15000 items, received 21782 ``. Vercel acepta como
+  mucho 15.000 ficheros sueltos por despliegue y la CLI sube la raíz entera; los catálogos
+  `alimentos/` (BLS y CIQUAL) y `ejercicios/` ya suman más de 20.000. Con
+  `--archive=tgz` se sube un único `.tgz`. No se arregla excluyéndolos en
+  `.vercelignore`: la build los necesita (`apps/mobile/catalogs/ciqual.ts` importa de
+  `alimentos/`). Detectado el 17 de noviembre de 2026 al desplegar GYM-258 (ticket para
+  cortar las llamadas repetidas a tools por huella).
 - Si se enlaza dentro de `apps/mobile/`, Vercel sube esa carpeta como raíz y luego
   intenta aplicar otra vez el Root Directory remoto. El build falla con
   `The specified Root Directory "apps/mobile" does not exist`; no se corrige
