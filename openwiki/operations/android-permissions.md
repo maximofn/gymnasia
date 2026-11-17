@@ -1,8 +1,11 @@
 ---
 type: guía operativa de Android
-title: Permisos y configuración Android
-description: Define los contratos que limitan permisos y configuración nativa generada por Expo antes de publicar Android. Explica los controles reproducibles del checkout, el prebuild aislado y la verificación del APK/AAB final.
-tags: [android, permissions, native-config, expo, release, privacy]
+title: Configuración nativa, permisos y cuota Android
+description: Contrato entre la configuración Expo, el prebuild Android y el artefacto instalado. Describe los permisos publicables, la cuota nativa compartida de AsyncStorage y las validaciones que detectan deriva antes de distribuir una actualización.
+tags: [android, permissions, native-config, expo, asyncstorage, privacy]
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-08T14:36:51.071Z
 sources:
   - id: openwiki-source-0b86c93537ee4ff0031996d7
     resource: repo://.github/workflows/build-apk.yml
@@ -12,6 +15,12 @@ sources:
     resource: repo://apps/mobile/app.json
   - id: openwiki-source-e6092e57680c1313a5efe04e
     resource: repo://apps/mobile/notifications/notificationSounds.json
+  - id: openwiki-source-5dfa33a219815904c9a1abec
+    resource: repo://apps/mobile/plugins/withAsyncStorageCapacity.cjs
+  - id: openwiki-source-365420acf5275e09131fb6f5
+    resource: repo://docs/architecture/android-native-config.md
+  - id: openwiki-source-2d655b45e3cde056bceb5bed
+    resource: repo://docs/legal/play-declarations.md
   - id: openwiki-source-eabbb9df6bf2993bf11b4c2d
     resource: repo://scripts/android-native-config/native-config.mjs
   - id: openwiki-source-11d434466432a7f5b120a19d
@@ -28,140 +37,120 @@ sources:
     resource: repo://scripts/data-inventory/inventory.json
   - id: openwiki-source-f807c3c379c670c5871c2b49
     resource: repo://scripts/data-inventory/inventory.mjs
+  - id: openwiki-source-7718d8047e7c1e0a6137f6de
+    resource: repo://scripts/production-release/policy.json
   - id: openwiki-source-24a206e2ad72f4f0a1502c09
     resource: repo://scripts/production-release/production-release.mjs
   - id: openwiki-source-a43fcdd54439cd4258ab69e4
     resource: repo://scripts/production-release/verify-artifact.mjs
-  - id: openwiki-source-ccd3d9e4de4c353ab98fedd2
-    resource: repo://scripts/production-release/verify-source.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-08T14:36:51.071Z" }
 ---
 
-# Permisos y configuración Android
+# Configuración nativa, permisos y cuota Android
 
-La política Android aplica **defensa en profundidad**: la configuración Expo declara el mínimo necesario, una lista de bloqueos evita que el manifest merger recupere capacidades no aprobadas y los controles verifican tanto el checkout como el binario final. Ninguna de esas señales sustituye a otra: los manifests de dependencias anticipan deriva, `expo prebuild` comprueba lo que genera Expo y la inspección del artefacto comprueba el manifest fusionado que se distribuye.
+La configuración Android tiene fronteras deliberadamente distintas. `app.json` expresa la intención de Expo; `app.config.ts` la especializa para una variante; los checks de fuente inspeccionan esa configuración y las dependencias instaladas; el contrato nativo ejecuta un prebuild limpio; y la release inspecciona el manifest fusionado de APK/AAB. Ninguna frontera sustituye a otra.
 
-La fuente declarativa es `apps/mobile/app.json`; las políticas revisables viven en `scripts/android-permissions/policy.json` y `scripts/android-native-config/policy.json`. No trate `apps/mobile/android/` como fuente de verdad: es un artefacto ignorado y puede estar obsoleto.
-
-## Superficie aprobada y principio de mínimo privilegio
-
-La configuración Expo declara solo cuatro permisos Android:
-
-| Permiso | Motivo aprobado |
-| --- | --- |
-| `WAKE_LOCK` | Permite despertar el dispositivo para el aviso de fin de descanso. |
-| `VIBRATE` | Habilita la vibración configurable del aviso. |
-| `RECEIVE_BOOT_COMPLETED` | Permite reprogramar avisos después de reiniciar el dispositivo. |
-| `SCHEDULE_EXACT_ALARM` | Habilita la alarma exacta del aviso de descanso; el usuario la gestiona en «Alarmas y recordatorios». |
-
-En cambio, `expo.android.blockedPermissions` bloquea `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`. El bloqueo no es documentación pasiva: impide que una dependencia los aporte al manifest final. `USE_EXACT_ALARM` no equivale a `SCHEDULE_EXACT_ALARM` y no se admite; tampoco se admite `FOREGROUND_SERVICE`.
-
-`expo-av` se configura con `microphonePermission: false`: la app reproduce avisos, no graba audio. Al incorporar un plugin o SDK, parta de que puede introducir permisos implícitos y justifique cada excepción en la política, el inventario de privacidad y las comprobaciones, antes de declararla.
-
-`app.config.ts` carga la base de `app.json` y exige `APP_ENV` (`development`, `staging` o `production`). Cambia nombre e identificador de paquete según la variante, pero conserva la base Android y, tras eliminar una posible entrada previa, añade el plugin `expo-notifications` con los sonidos definidos en `notifications/notificationSounds.json`. Por tanto, cambiar un sonido o plugin también es un cambio de configuración nativa, aunque no modifique `android.permissions`.
-
-## Tres observaciones, tres límites
+`apps/mobile/android/` **no es fuente de verdad**: está ignorado y es resultado de `expo prebuild`. No se debe editar para corregir un permiso o la cuota, ni usarlo como evidencia de una release; el siguiente prebuild limpio puede eliminar ese cambio.
 
 ```mermaid
 flowchart TD
-    Config["app.json y app.config.ts"] --> PermissionCheck["Check de permisos"]
-    PermissionPolicy["policy.json de permisos"] --> PermissionCheck
-    Dependencies["Manifests de node_modules"] --> PermissionCheck
-    Config --> Prebuild["Prebuild Production aislado"]
-    NativePolicy["Política de configuración nativa"] --> Prebuild
-    Prebuild --> SourceManifest["Manifest fuente y MainActivity"]
-    PermissionCheck --> SourceGate["Contrato del checkout"]
-    SourceManifest --> SourceGate
-    SourceGate --> LocalBuild["Build local en VM desechable"]
-    LocalBuild --> Quarantine["APK o AAB en cuarentena"]
-    Quarantine --> ArtifactCheck["Verificación del artefacto"]
-    PermissionPolicy --> ArtifactCheck
-    NativePolicy --> ArtifactCheck
-    ArtifactCheck --> Release["Publicación"]
+  Intent["app.json y app.config.ts"] --> PermissionCheck["check:android-permissions"]
+  Dependencies["Manifests de node_modules"] --> PermissionCheck
+  Intent --> Prebuild["Prebuild Android limpio"]
+  CapacityPlugin["Plugin de cuota AsyncStorage"] --> Prebuild
+  PermissionCheck --> SourceGate["Gates de fuente"]
+  Prebuild --> SourceGate
+  SourceGate --> Build["Compilar AAB y APK"]
+  Build --> ArtifactCheck["Verificar manifest del artefacto"]
+  ArtifactCheck --> Play["Enviar AAB validado a Play"]
 ```
 
-*El checkout, el código nativo generado y el binario fusionado son observaciones distintas; la publicación exige las puertas de fuente y artefacto.*
+*Cada etapa reduce una clase diferente de deriva: el artefacto, no el manifest fuente, es lo que declara permisos al dispositivo y a Play.*
 
-### 1. Política declarativa y dependencias instaladas
+## Permisos: contrato de mínimo privilegio
 
-`checkAndroidPermissions` normaliza tanto nombres cortos como `android.permission.*` y exige dos invariantes:
+La allowlist de `expo.android.permissions` contiene exactamente `WAKE_LOCK`, `VIBRATE`, `RECEIVE_BOOT_COMPLETED` y `SCHEDULE_EXACT_ALARM`. `expo.android.blockedPermissions` debe contener `USE_EXACT_ALARM`, `REQUEST_INSTALL_PACKAGES`, `RECORD_AUDIO` y `SYSTEM_ALERT_WINDOW`; la política también prohíbe `FOREGROUND_SERVICE`. `expo-av` se configura con `microphonePermission: false`: la aplicación reproduce avisos, no graba audio.
 
-- La lista `expo.android.permissions` debe coincidir exactamente con `allowedPermissions`: detecta permisos no aprobados y también retiradas no reflejadas en la política.
-- Cada permiso bloqueado debe seguir en `expo.android.blockedPermissions`.
+| Permiso permitido | Finalidad aprobada |
+| --- | --- |
+| `WAKE_LOCK` | Despertar el dispositivo para el aviso de fin de descanso. |
+| `VIBRATE` | Vibración configurable del aviso. |
+| `RECEIVE_BOOT_COMPLETED` | Reprogramar avisos tras reiniciar. |
+| `SCHEDULE_EXACT_ALARM` | Programar el aviso exacto de descanso. |
 
-Después recorre los `node_modules` de la raíz y de `apps/mobile`, sin seguir enlaces simbólicos y omitiendo ejemplos, pruebas e intermedios configurados. Extrae `<uses-permission>` de cada `AndroidManifest.xml`; una entrada con `tools:node="remove"` se ignora porque es una instrucción para retirar el permiso durante el merger, no una contribución. Si ningún manifest está disponible, falla con `scanner-empty`: instale dependencias con `npm ci`; un verde sin manifests no es evidencia.
+`check:android-permissions` normaliza los nombres con o sin `android.permission.`, exige igualdad entre permisos configurados y allowlist, y exige todos los bloqueos. Después busca `AndroidManifest.xml` en los `node_modules` raíz y de `apps/mobile`, sin seguir enlaces simbólicos y omitiendo ejemplos, tests e intermedios definidos por política. Si no hay manifests, falla con `scanner-empty`: correrlo sin `npm ci` no verifica las contribuciones de dependencias.
 
-Una contribución bloqueada de una dependencia desconocida produce `dependency-contribution`. `acknowledgedContributors` solo reconoce el origen para hacer el diagnóstico accionable —actualmente `react-native` por su manifest de depuración con `SYSTEM_ALERT_WINDOW`—; no permite que el permiso aparezca en un APK/AAB. Mantenga el bloqueo y compruebe el binario final.
+El diagnóstico `dependency-contribution` identifica la dependencia que aporta un permiso bloqueado. `acknowledgedContributors` solo reconoce un origen conocido; **no autoriza** el permiso en el binario. Asimismo, una entrada con `tools:node="remove"` no es una declaración: es una instrucción para que el *manifest merger* la retire. Por tanto, el escaneo de dependencias y un `grep` del manifest fuente no demuestran el contenido final.
 
-### 2. Contrato del prebuild Production
+El verificador de producción extrae el manifest de cada APK/AAB y rechaza permisos bloqueados o un conjunto distinto de `expectedArtifactPermissions`. Ese conjunto es mayor que los cuatro permisos explícitos porque fija contribuciones revisadas de dependencias. Comprueba declaraciones empaquetadas, no que el usuario haya concedido un permiso ni que una alarma se ejecute correctamente.
 
-`check:android-native-config` no reutiliza el directorio Android del checkout. Copia `apps/mobile` a un directorio temporal, excluye productos generados y dependencias, enlaza los `node_modules` instalados y ejecuta `expo prebuild --platform android --clean --no-install` con `APP_ENV=production`. Así el check no modifica la fuente ni valida accidentalmente un prebuild antiguo.
+## Configuración Expo y prebuild reproducible
 
-Sobre el resultado generado verifica conjuntos exactos de permisos fuente y directivas `tools:node="remove"`, y rechaza en las declaraciones de origen `FOREGROUND_SERVICE` y los permisos bloqueados. También exige:
+`app.config.ts` parte de `app.json`, rechaza un `APP_ENV` desconocido y aplica nombre, `applicationId`, canal y namespace por variante. También reinyecta `expo-notifications` usando el catálogo de sonidos. Por ello, cambiar un plugin, una dependencia con configuración nativa, un sonido o el configurador dinámico es un cambio del contrato Android, aunque el diff sea TypeScript o JSON.
 
-- `android:enableOnBackInvokedCallback="false"` en `application`.
-- La configuración de `.MainActivity`: exportada, orientación vertical, `singleTask` y los marcadores Kotlin revisados que preservan la integración React y el comportamiento de Atrás.
-- Exactamente los cinco sonidos WAV aprobados (`ascending.wav`, `beep.wav`, `bell.wav`, `buzzer.wav` y `rest_finished.wav`) en `res/raw`.
-- Cero advertencias de `expo prebuild`, salvo que la política las permita explícitamente; hoy la lista permitida está vacía.
+`npm run check:android-native-config` copia `apps/mobile` a un temporal, excluye `.expo`, `android`, `ios`, `dist` y `node_modules`, enlaza las dependencias ya instaladas y ejecuta allí:
 
-Este contrato distingue dos listas que no deben mezclarse: el manifest **fuente** puede contener directivas de retirada para permisos que una dependencia aportaría, mientras que el artefacto no debe contener esos permisos. Un `grep` de `USE_EXACT_ALARM` sobre el manifest fuente puede encontrar la directiva `remove` y dar un falso positivo.
+```bash
+expo prebuild --platform android --clean --no-install
+```
 
-### 3. Evidencia de release y del manifest fusionado
+Lo hace con `APP_ENV=production`, `CI=1` y `EXPO_NO_GIT_STATUS=1`; no instala dependencias ni modifica el checkout. El temporal se borra salvo que se solicite `keepTemporary`. Así detecta que Expo o un plugin hayan cambiado el Android generado, sin depender de un árbol nativo residual.
 
-El workflow `build-apk.yml` valida el SHA exacto con `verify:production-source`, que vuelve a ejecutar los gates canónicos —incluidos ambos checks y sus pruebas— y falla si alguno ensucia el checkout. Después, la compilación `production-apk` ocurre en un runner autoalojado dentro de una VM desechable; su APK y metadatos se transfieren como resultado no confiable a una cuarentena de verificación independiente.
+La política compara productos semánticos, no un snapshot completo del árbol generado:
 
-`verify:production-artifact` extrae el manifest con herramientas Android (`apkanalyzer` para APK; `bundletool` para AAB), inspecciona firma, SDK, configuración integrada, sonidos, tamaño, hashes y MIME. Para permisos aplica dos condiciones sobre el manifest fusionado:
+| Producto | Invariante comprobado |
+| --- | --- |
+| Manifest fuente | Conjuntos exactos de permisos declarados y de directivas `tools:node="remove"`; ausencia de permisos fuente prohibidos. |
+| `application` y `.MainActivity` | `enableOnBackInvokedCallback=false`, atributos de actividad y marcadores Kotlin revisados. |
+| `res/raw` | Exactamente los WAV de notificación aprobados. |
+| `gradle.properties` | Exactamente una propiedad `AsyncStorage_db_size_in_MB=64`. |
+| Salida de prebuild | Solo warnings que coincidan con `allowedPrebuildWarnings`. |
 
-1. Rechaza cualquier elemento de `blockedPermissions`.
-2. Exige igualdad exacta con `expectedArtifactPermissions`.
+Los warnings se detectan en líneas que empiezan por `!`, `»`, `⚠`, `warning` o `warn`. La allowlist actual está vacía: cualquier warning detectado falla como `prebuild-warning`. No se debe añadir un patrón amplio para recuperar el verde; hay que investigar el cambio concreto de Expo o del plugin.
 
-El segundo control detecta tanto permisos inesperados como retiradas no revisadas. La lista es mayor que los cuatro permisos declarados porque documenta el conjunto completo observado en el binario, incluidas aportaciones legítimas de librerías y permisos específicos de launcher o paquete. `expectedMergedExtras` sirve para documentar aportaciones relevantes y para el inventario de Data safety; no relaja la igualdad del artefacto.
+## Cuota de AsyncStorage y actualización segura
 
-Antes de publicar, el workflow también liga la evidencia al commit, transacción y snapshot de política, verifica paquete `com.maximofn.gymnasia`, SDK mínimo/objetivo, certificado de subida y versión, y mantiene el borrador si compilar o verificar falla. No publique ni interprete un APK local como equivalente de esta cadena protegida.
+El plugin `withAsyncStorageCapacity.cjs` elimina cualquier propiedad previa `AsyncStorage_db_size_in_MB` y escribe `64` durante el prebuild. La cuota Android por defecto de AsyncStorage 2.x es 6 MiB y es compartida por el almacén principal, el snapshot de recuperación y las demás particiones; al agotarse puede aparecer `SQLITE_FULL` aunque el dispositivo tenga espacio. El ajuste eleva el máximo a 64 MiB, pero no reserva espacio, no migra ni reemplaza la base y no borra registros.
 
-## Operación y cambios seguros
+Es una propiedad Gradle del binario Android generado: no es un permiso, no aumenta una cuota web y no aplica a Expo Go. Tampoco elimina un disco realmente lleno ni el límite de lectura por entrada de `CursorWindow` (aproximadamente 2 MiB); un valor individual que se acerque a ese límite debe particionarse o trasladarse a otro almacenamiento. Los límites y la recuperación de datos en runtime se documentan en [Estado local, cachés y respaldo](../mobile/local-state-and-backup.md).
 
-### Comprobación reproducible del checkout
+La subida de cuota llega únicamente al instalar una build nueva **sobre la instalación existente y con el mismo paquete**. Para validar la actualización sin destruir evidencia:
 
-Ejecute desde la raíz, con una instalación limpia o actualizada:
+1. Conservar una instalación cuyos datos hayan alcanzado la cuota anterior.
+2. Instalar encima la nueva versión; no desinstalar ni borrar datos.
+3. Guardar una medición o sesión y reiniciar la aplicación para comprobar que persiste.
+4. Si el teléfono está realmente lleno, liberar espacio fuera de los datos de Gymnasia antes de reintentar.
+
+Así se verifica tanto que los datos sobreviven a la actualización como que la nueva capacidad permite persistir. El cambio solo altera la capacidad máxima del mismo almacén; no cambia por sí mismo categorías de datos, terceros, protección de copias, permisos ni acciones de borrado. Aun así, la cuota debe permanecer inventariada y una modificación de permisos exige la revisión de Data safety y Play.
+
+## Gates de release y operación
+
+Antes de una publicación, `validate-production` acredita el SHA elegido con `verify:production-source`, incluidos los checks y tests de permisos y configuración nativa. El build vuelve a obtener ese SHA, genera AAB antes que APK y un runner separado verifica los artefactos desde cuarentena. Para Play solo se restaura y envía el AAB validado al track `production`; la inspección del artefacto sigue siendo el gate que detecta deriva del manifest merger.
+
+Ejecute desde la raíz, con dependencias instaladas:
 
 ```bash
 npm ci
-npm run check:android-permissions
 npm run test:android-permissions
-npm run check:android-native-config
+npm run check:android-permissions
 npm run test:android-native-config
+npm run check:android-native-config
 npm run check:data-inventory
 npm run test:data-inventory
 ```
 
-Los dos primeros comandos de cada familia tienen roles distintos: `check:*` evalúa el checkout actual y `test:*` prueba que el evaluador detecta regresiones mediante fixtures, casos unitarios y propiedades. El check de permisos necesita manifests instalados; el nativo necesita Expo CLI y ejecuta un prebuild temporal. Ninguno prueba la concesión del usuario, una notificación en segundo plano ni el comportamiento en un dispositivo.
+Los tests prueban los evaluadores mediante fixtures: permisos configurados y de dependencias, semántica de `tools:node="remove"`, conjuntos exactos, atributos y marcadores de `MainActivity`, sonidos, warnings, y cuota ausente, de 6 MiB o duplicada. Son guardrails deterministas; no sustituyen pruebas en Android físico de concesión/denegación de permisos, alarmas, notificaciones, sonido, segundo plano, navegación atrás o capacidad efectiva.
 
-El inventario de datos consume la política de permisos: exige una clasificación Data safety para cada permiso permitido y para cada extra relevante esperado del merger. Por privacidad, añadir o retirar un permiso debe actualizar la política de permisos, el contrato nativo cuando afecte al prebuild, el inventario y las declaraciones publicables correspondientes.
-
-### Secuencia para modificar permisos, plugin o configuración nativa
-
-1. **Defina la necesidad mínima.** Evite permisos amplios o de instalación, micrófono, superposición y servicio en primer plano salvo que exista una función aprobada y una revisión de privacidad.
-2. **Cambie las fuentes de verdad en la misma revisión.** Para un permiso declarado, actualice `app.json`, `allowedPermissions` y su `rationale`; para un bloqueo, actualice `blockedPermissions` en ambos lados. Ajuste `expectedArtifactPermissions` únicamente con evidencia de un artefacto revisado, no para silenciar un fallo.
-3. **Actualice el contrato generado.** Si cambian plugins, sonidos, `app.config.ts`, `MainActivity` o manifest, revise `scripts/android-native-config/policy.json` y por qué el cambio es seguro. No edite `apps/mobile/android/` para esquivar el control.
-4. **Mantenga la trazabilidad de privacidad.** Actualice `scripts/data-inventory/inventory.json` y las declaraciones publicables si la capacidad implica datos, fotos, audio, red o un nuevo tercero.
-5. **Ejecute la batería focalizada anterior.** Añada o modifique fixtures y pruebas cuando cambie el parser, una categoría de infracción o la política.
-6. **Para publicar, use el workflow Production.** Solo su candidato exacto obtiene evidencia de fuente y de APK/AAB. Complete la release con una instalación manual en dispositivo representativo, comprobando permisos denegados/concedidos, avisos, segundo plano y retorno a primer plano.
-
-## Diagnóstico de fallos
-
-| Señal | Interpretación y siguiente acción |
+| Señal | Acción segura |
 | --- | --- |
-| `config-drift` o `config-missing-block` | `app.json` y la política no evolucionaron juntos. Corrija la intención o el contrato; no elimine el check. |
-| `dependency-contribution` | Una dependencia aporta un permiso bloqueado. Confirme que el bloqueo lo elimina; reconozca el contribuidor solo si se conoce y sigue siendo neutralizado. |
-| `scanner-empty` | No hay dependencias/manifests legibles. Ejecute `npm ci`; no considere satisfactorio el resultado previo. |
-| `source-permissions`, `removal-directives` o `forbidden-source-permission` | El prebuild Production difiere del contrato o una capacidad prohibida llegó al manifest fuente. Revise plugin/configuración y las directivas de merger. |
-| `main-activity-*`, `application-attribute` o `notification-sounds` | Expo o un plugin alteró integración de actividad, atributo nativo o recursos empaquetados. Actualice la política solo tras revisar el cambio funcional. |
-| `prebuild-warning` | Hay una advertencia no aprobada. Investíguela; no añada una allowlist genérica. |
-| `permission` o `artifact-permissions` | El APK/AAB fusionado contiene un bloqueado o no coincide con el conjunto revisado. Detenga la publicación e identifique la dependencia/manifest que cambió. |
+| `config-drift` o `config-missing-block` | Alinear `app.json` y la política; no retirar el gate. |
+| `dependency-contribution` | Revisar el manifest de la dependencia. Reconocer el contribuidor no autoriza el artefacto. |
+| `scanner-empty` | Ejecutar `npm ci` y repetir el check. |
+| `source-permissions`, `removal-directives` o `forbidden-source-permission` | Revisar configuración/plugin y la semántica del merger. |
+| `gradle-property` | Corregir plugin o política hasta tener una única cuota nativa de 64 MiB. |
+| `prebuild-warning`, `main-activity-*` o `notification-sounds` | Investigar el cambio específico; no ampliar una allowlist genérica. |
+| `permission` o `artifact-permissions` | Detener la release: el manifest distribuible no satisface el contrato. |
 
-## Cobertura y límites de las pruebas
+Para un cambio intencionado, actualice en la misma revisión la fuente declarativa, las políticas afectadas y su justificación. Si cambia un permiso, actualice `scripts/data-inventory/inventory.json`, recorra el checklist de privacidad y revise las declaraciones de Play. Después ejecute también `npm run test:production-release`, `npm run check:legal`, `npm run test:legal` y `npm --workspace apps/mobile exec tsc --noEmit`; genere un artefacto Production y pruébelo en un Android físico.
 
-`permissions.test.mjs` prueba el contrato real, las infracciones `config-blocked`, `config-drift`, `config-missing-block` y `dependency-contribution`, el recorrido vivo de manifests instalados, la normalización y que `tools:node="remove"` no declare un permiso. `native-config.test.mjs` prueba los conjuntos exactos, los atributos y marcadores requeridos, advertencias, parser y tolerancia a orden/duplicados. Son guard rails deterministas: no reemplazan el manifest de un artefacto ni una prueba nativa manual.
-
-La E2E de entrenamiento y otras E2E web sirven para UI y estado en navegador; no validan permisos Android, manifest merger, `MainActivity`, canal de notificaciones, alarmas, intents, audio ni ejecución en segundo plano. Para la cadena de publicación y sus controles remotos, consulte [Build, release y estrategia de validación](build-release-and-testing.md); para la configuración y ciclo de runtime móvil, consulte [Shell y navegación de la aplicación móvil](../mobile/application-shell.md).
+Consulte [Build, release y estrategia de validación](build-release-and-testing.md) para la cadena de publicación, [Shell y navegación de la aplicación móvil](../mobile/application-shell.md) para el runtime, y [VivaGym y actualizaciones](../integrations/vivagym-and-updates.md) para el comportamiento de integraciones ante actualizaciones.

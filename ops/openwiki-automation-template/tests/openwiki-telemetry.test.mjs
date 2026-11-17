@@ -150,6 +150,24 @@ test("reduces LangSmith query errors to a fixed safe category", async () => {
   assert.doesNotMatch(JSON.stringify(telemetry), /private provider response/u);
 });
 
+test("does not misclassify LangSmith HTTP errors as network failures", async () => {
+  const client = {
+    async *listRuns() {
+      const error = new Error(
+        'Failed to fetch /runs/query. Received status [400]: {"detail":"private"}',
+      );
+      error.status = 400;
+      throw error;
+    },
+  };
+
+  const telemetry = await collectTelemetry({ client, now });
+
+  assert.equal(telemetry.latestAttempt.status, "unavailable");
+  assert.equal(telemetry.latestAttempt.failureCategory, "langsmith");
+  assert.doesNotMatch(JSON.stringify(telemetry), /private/u);
+});
+
 test("queries only the bounded structural fields needed for aggregation", async () => {
   let query;
   const client = {
@@ -163,7 +181,7 @@ test("queries only the bounded structural fields needed for aggregation", async 
 
   assert.equal(telemetry.latestAttempt.status, "available");
   assert.equal(query.projectName, "openwiki");
-  assert.equal(query.limit, 900);
+  assert.equal(query.limit, undefined);
   assert.equal(query.startTime.toISOString(), "2026-09-08T08:30:00.000Z");
   assert.ok(query.select.includes("trace_id"));
   assert.ok(query.select.includes("name"));
@@ -181,6 +199,25 @@ test("queries only the bounded structural fields needed for aggregation", async 
   ]) {
     assert.ok(!query.select.includes(forbidden), forbidden);
   }
+});
+
+test("caps the aggregate without sending an invalid LangSmith page limit", async () => {
+  let query;
+  const client = {
+    async *listRuns(value) {
+      query = value;
+      for (let index = 0; index < 901; index += 1) {
+        yield run({ trace_id: `trace-${index}` });
+      }
+    },
+  };
+
+  const telemetry = await collectTelemetry({ client, now });
+
+  assert.equal(query.limit, undefined);
+  assert.equal(telemetry.latestAttempt.status, "available");
+  assert.equal(telemetry.sample.roots.total, 900);
+  assert.equal(telemetry.sample.truncated, true);
 });
 
 test("rejects malformed envelopes and never trusts their previous sample", () => {

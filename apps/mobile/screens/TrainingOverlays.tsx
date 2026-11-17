@@ -1,3 +1,4 @@
+import { OptionChips } from "../components/OptionChips";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { memo } from "react";
 import ConfettiCannon from "react-native-confetti-cannon";
@@ -228,33 +229,6 @@ export const TrainingCatalogOverlays = memo(function TrainingCatalogOverlays({
   );
 });
 
-function OptionChips({
-  label,
-  options,
-  selected,
-  onToggle,
-}: {
-  label: string;
-  options: ReadonlyArray<string>;
-  selected(option: string): boolean;
-  onToggle(option: string, selected: boolean): void;
-}) {
-  return (
-    <View style={{ gap: 6 }}>
-      <Text style={{ color: mobileTheme.color.textSecondary, fontSize: 13, fontWeight: "600" }}>{label}</Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-        {options.map((option) => {
-          const active = selected(option);
-          return (
-            <Pressable key={option} onPress={() => onToggle(option, active)} style={{ paddingHorizontal: 14, paddingVertical: 7, borderRadius: mobileTheme.radius.pill, borderWidth: 1, borderColor: active ? "rgba(203,255,26,0.82)" : mobileTheme.color.borderSubtle, backgroundColor: active ? "rgba(160,204,0,0.12)" : "#0D1117" }}>
-              <Text style={{ color: active ? mobileTheme.color.brandPrimary : "#9EA6B3", fontSize: 14, fontWeight: "600" }}>{option}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
 
 export const TrainingExerciseDetailOverlay = memo(function TrainingExerciseDetailOverlay({
   exercise,

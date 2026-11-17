@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "dataset_id": "anses-ciqual-2025",
+  "batch_id": "0016",
+  "status": "pending-review",
+  "generated_on": "2026-11-06",
+  "generator": "Codex integrated image generator",
+  "attribution": "Imágenes ilustrativas generadas por IA para Gymnasia; no proporcionadas ni validadas por ANSES.",
+  "images": [
+    {
+      "id": "ciqual-20304",
+      "names": {
+        "fr": "Brocoli, cuit à la vapeur",
+        "en": "Broccoli, steamed",
+        "es": "Brócoli, cocinado al vapor"
+      },
+      "source_sha256": "4818d4e9f2071c670d8d72157ca1e775bc4ce3f04b9d5057580eccca75eb94f2",
+      "image": "ciqual-20304.webp",
+      "sha256": "e4a2df55436fa199b6fada527bc0512b6916fd57666d89ce4a27cd4e1ad98e06",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Steamed broccoli, a small bowl of tender green broccoli florets with short pale green stalks and a natural moist cooked texture. Clearly cooked, not a whole raw broccoli head. No sauce, oil, seasoning or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20307",
+      "names": {
+        "fr": "Carotte, cuite à la vapeur",
+        "en": "Carrot, steamed",
+        "es": "Zanahoria, cocinada al vapor"
+      },
+      "source_sha256": "0e1869f7e06ec96e37b0f3d4ffb1f9ed1e99de675e271c85828be6db705768d1",
+      "image": "ciqual-20307.webp",
+      "sha256": "a35c4ba5afcff135cfca09631ab4e2ba6dbe95b0e8ee485b0af3dd6ddf56a4e5",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Steamed carrots, a small bowl of orange carrot rounds with tender moist cooked surfaces and visible concentric centers. Clearly cooked carrots, no raw whole carrots, sauce, oil, seasoning or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20017",
+      "names": {
+        "fr": "Chou-fleur, bouilli/cuit à l'eau",
+        "en": "Cauliflower, boiled",
+        "es": "Coliflor, hervida"
+      },
+      "source_sha256": "46a3551e33ad0e10d0fd126ea289dcdfa54e854e653ad3c4b7bda1ece54aa534",
+      "image": "ciqual-20017.webp",
+      "sha256": "4fb42ee95e333c491580e519f7495507b7d5f0bcf1fbd2a0900e781b35a4a7cb",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Boiled cauliflower, a small bowl of tender ivory cauliflower florets with short pale stems and a natural moist cooked texture. No raw head, brown roasting, sauce, oil, seasoning or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20320",
+      "names": {
+        "fr": "Haricot vert, bouilli/cuit à l'eau",
+        "en": "French bean, boiled/cooked in water",
+        "es": "Judía verde, hervida/cocida en agua"
+      },
+      "source_sha256": "d34299988dd5c64f5cb2e94e2a84cf724dad927ffa06ef6b54511ac8cf18b6c0",
+      "image": "ciqual-20320.webp",
+      "sha256": "65c337e7f95571947da7467409ee503ce980f520ab1f60938ad8d5a85008b46a",
+      "prompt": "Use case: precise-object-edit. Asset type: square food catalog thumbnail for Gymnasia.\nSubject: Green French beans boiled in water, in one small dark ceramic bowl.\nCorrect only the green beans in this image. Several currently look like hollow tubes or green macaroni: replace those with botanically realistic cooked green bean pods. Most pods should be intact with naturally tapered ends; any cut cross-section must be filled with solid pale green bean flesh and tiny embedded seeds, not a hollow circular tunnel. Give the pods slight irregularity and a natural longitudinal seam, in muted cooked green color. No raw vines, sauce, oil, seasoning or garnish.\nThe original is a STYLE REFERENCE ONLY for background, bowl, lighting and composition: preserve the exact charcoal dark background, warm light, grounded shadow, centered bowl and generous margins. Keep the entire bowl visible and square framing. Photorealistic, not an illustration. No text, logos, hands, utensils, extra ingredients or props. Opaque background, 1024x1024. Illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp",
+      "revision": {
+        "reason": "Corregir extremos huecos para representar vainas de judía verde reales, no tubos.",
+        "original_prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Green French beans boiled in water, a small bowl of tender cooked green bean pods with trimmed ends, some cut into shorter lengths. Natural muted green cooked color, no raw vines, sauce, oil, seasoning or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+        "edit_reference": "/Users/macm1/.codex/generated_images/01a01928-1c04-73e2-9bfd-00909cd06a0e/exec-511f980c-bd99-4846-a009-1a8ca37455a5.png"
+      }
+    },
+    {
+      "id": "ciqual-20336",
+      "names": {
+        "fr": "Épinard, bouilli/cuit à l'eau",
+        "en": "Spinach, boiled/cooked in water",
+        "es": "Espinaca, hervida/cocida en agua"
+      },
+      "source_sha256": "1b0f18ff803cb930724e641407323cda4765e9c654d11950927eece31aa3075f",
+      "image": "ciqual-20336.webp",
+      "sha256": "d0f6a56357eda41bd1f354553aaa2bfe663c404c4c47d9194027279be9e51670",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Spinach boiled in water, a small bowl of wilted dark green cooked spinach leaves, soft crumpled leafy texture, lightly drained and moist, not a smooth puree. No raw salad leaves, cream, sauce, oil, seasoning or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20021",
+      "names": {
+        "fr": "Courgette, chair et peau, cuite",
+        "en": "Courgette or zucchini, flesh and skin, cooked",
+        "es": "Calabacín, pulpa y piel, cocido"
+      },
+      "source_sha256": "c6790d4972d694c8919ccd072faac71d075c64e6c8811ea4e3ef557184ba68e3",
+      "image": "ciqual-20021.webp",
+      "sha256": "8a2a406aed76cd9203c62e7c53b68d66e82c5fd8a23319936577baf648702dbf",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Cooked zucchini with flesh and skin, a small bowl of tender zucchini rounds and half rounds with deep green skin and pale translucent soft interiors. Plain moist cooked texture, no brown roasting, sauce, oil, seasoning or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20326",
+      "names": {
+        "fr": "Petits pois, bouillis/cuits à l'eau",
+        "en": "Garden peas, boiled/cooked in water",
+        "es": "Guisantes, hervidos/cocidos en agua"
+      },
+      "source_sha256": "e0525dd08921023592acdf8343c1c3c3192ca5e075e20c1f91644db0a6fc32e5",
+      "image": "ciqual-20326.webp",
+      "sha256": "a6fc6e0139c8ba6f8e31bac0afcc2f2448e877ffc2972c954cff8a64fff6dd57",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Garden peas boiled in water, a small bowl of plump tender cooked green shelled peas with natural slightly softened round surfaces. No pods, ice, sauce, butter, seasoning or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20327",
+      "names": {
+        "fr": "Poireau, bouilli/cuit à l'eau",
+        "en": "Leek, boiled/cooked in water",
+        "es": "Puerro, hervido/cocido en agua"
+      },
+      "source_sha256": "f4924594e4761ac4349be358e5f70856a719ef404af175c1d26cc5d38aaee46d",
+      "image": "ciqual-20327.webp",
+      "sha256": "68aecb22b47b8189088e0f17eb76d040abaf9ada74b455b8ca7f79771d84ea2b",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Leek boiled in water, a small bowl of tender cooked leek rounds and short segments, ivory white and pale green concentric layers, slightly translucent and moist. No raw whole leeks, browning, sauce, oil, seasoning or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20096",
+      "names": {
+        "fr": "Potiron, cuit",
+        "en": "Pumpkin, cooked",
+        "es": "Calabaza, cocida"
+      },
+      "source_sha256": "43400a787c5947027382acf08cabc3a1a4c07678b1075aaa72c27dbff245ab81",
+      "image": "ciqual-20096.webp",
+      "sha256": "d49191171e6111ff812a18d71a862a3f32dca9939e53fce0be9b7e11f37929ac",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Cooked pumpkin, a small bowl of soft orange pumpkin flesh chunks with naturally tender moist surfaces and slightly rounded edges, peeled and seedless. Not puree or soup, no raw pumpkin skin, roasted crust, sauce, oil, seasoning or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    },
+    {
+      "id": "ciqual-20102",
+      "names": {
+        "fr": "Champignon de Paris ou champignon de couche, bouilli/cuit à l'eau",
+        "en": "Button mushroom or cultivated mushroom, boiled/cooked in water",
+        "es": "Champiñón de París o champiñón cultivado, hervido o cocido en agua"
+      },
+      "source_sha256": "0f6e7bb8dce61167174759d307dc96e38ca2ea97b313205bff3b53b3008f7f4a",
+      "image": "ciqual-20102.webp",
+      "sha256": "70090722b389c0f6bc7f2e14dbb04306ea300791ee08d15d57ee921f22a78892",
+      "prompt": "Use case: product-mockup. Asset type: square food catalog thumbnail for Gymnasia.\nCreate ONE NEW photorealistic studio food photograph. The attached existing approved catalog photograph is a STYLE REFERENCE ONLY: match its dark charcoal (#0D1117) matte/slightly textured surface, soft warm overhead lighting, subtle grounded shadow, realistic food texture, quiet premium composition and framing. Do not reproduce the reference's lentils when they differ from this subject.\nSubject: Button mushrooms boiled in water, a small bowl of tender light beige-gray cooked button mushroom halves and thick slices with visible brown gills, moist cooked surfaces. No raw white mushrooms, browned frying, sauce, oil, seasoning or garnish.\nUse one small plain dark ceramic bowl, as in the style reference. Single centered bowl filled with only this one food, entire bowl visible, occupying roughly 55-65% of the square frame, generous dark negative space. Photograph from above or a high 3/4 angle showing the food texture clearly. Bold recognizable silhouette at 48x48 pixels, appetizing natural colors, not an illustration or a plastic 3D render.\nNo text, labels, lettering, logos, watermark, branding, hands, utensils, decorative props, ingredients outside the bowl or plate clutter. No collage or comparison sheet. Opaque dark background, square 1:1, 1024x1024. This is an illustrative Gymnasia image, not an official ANSES image.",
+      "reference_image": "alimentos/ciqual/image-samples/ciqual-20587.webp"
+    }
+  ]
+}

@@ -20,8 +20,12 @@ repositorio no tiene visibilidad privada.
 
 - `OpenWiki Update`: 08:00 UTC y ejecución manual. Usa la suscripción de
   ChatGPT, procesa hasta dos páginas de Code Brain a la vez, actualiza
-  `openwiki/update`, mantiene una única PR, cifra el estado y conserva un
-  agregado saneado de los últimos 7 días de LangSmith. Los lunes y en
+  `openwiki/update`, mantiene una única PR y solicita su auto-merge solo cuando
+  la ejecución es completa, el diff contiene exclusivamente rutas publicables
+  y los SHA revisados de cabeza y base coinciden con GitHub antes de pasar los
+  checks obligatorios. Los artefactos se descargan con reintentos
+  acotados ante fallos 5xx transitorios de GitHub. Cifra el estado y conserva un agregado
+  saneado de los últimos 7 días de LangSmith. Los lunes y en
   ejecuciones manuales renueva la evidencia pública.
 - `OpenWiki Daily Report`: 12:00 UTC y ejecución manual. Envía duración, estado
   de ambos brains, fuentes confirmadas, estadísticas de la PR y el resumen de

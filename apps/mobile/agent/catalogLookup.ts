@@ -1,4 +1,5 @@
 import type { FoodCatalogEntry } from "../catalogs/types";
+import { formatFoodNutrient } from "../catalogs/foodNutrition";
 
 function normalize(value: string): string {
   return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -28,6 +29,7 @@ export function answerCatalogCaloriesLookup(
     : foods.filter((food) => normalize(food.name).includes(query));
   if (matches.length === 1) {
     const food = matches[0];
+    if (food.calories_per_100g === null) return `En el catálogo, ${food.name}: calorías por 100 g ${formatFoodNutrient(food, "calories_per_100g")}. No es un valor exacto disponible.`;
     return `En el catálogo, ${food.name} tiene ${food.calories_per_100g} kcal por 100 g.`;
   }
   if (matches.length > 1) {
