@@ -68,9 +68,37 @@ function compoundTemplate() {
   };
 }
 
+// GYM-256 (ticket para anclar el temporizador de descanso al ejercicio cuya
+// serie se acaba de completar): A queda pendiente y se completa una serie de B.
+function outOfOrderTemplate() {
+  const exercise = (id, name) => ({
+    id,
+    name,
+    sets: [10, 10],
+    load_kg: 20,
+    rest_seconds: 90,
+    series: ["s1", "s2"].map((seriesId) => ({
+      id: seriesId,
+      type: "normal",
+      reps: "10",
+      weight_kg: "20",
+      rest_seconds: "90",
+    })),
+  });
+  return {
+    id: "tpl_out_of_order",
+    series_schema_version: 1,
+    name: "Rutina con máquina ocupada",
+    category: "strength",
+    icon: "zap",
+    duration_minutes: "20",
+    exercises: [exercise("ex_a", "Prensa"), exercise("ex_b", "Femoral de pie")],
+  };
+}
+
 function seededStore() {
   return {
-    templates: [compoundTemplate()],
+    templates: [compoundTemplate(), outOfOrderTemplate()],
     workoutHistory: [{
       id: "legacy_summary",
       template_id: "tpl_compound",
@@ -612,6 +640,64 @@ async function verifyCompoundExecution(browser, baseUrl) {
   await context.close();
 }
 
+async function verifyOutOfOrderRestAnchor(browser, baseUrl) {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  await addSeed(context);
+  const page = await context.newPage();
+  await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await waitForAppReady(page);
+  await openTrainingTab(page);
+  await clickTestId(page, "training-template-inline-start-tpl_out_of_order");
+  await page.getByText("Sesión activa", { exact: true }).waitFor({ timeout: STEP_TIMEOUT_MS });
+
+  const timerInsideB = async (message) => {
+    const timer = page.getByTestId("training-session-exercise-ex_b")
+      .getByTestId("training-session-rest-timer");
+    await timer.waitFor({ timeout: STEP_TIMEOUT_MS });
+    assert.equal(
+      await page.getByTestId("training-session-exercise-ex_a")
+        .getByTestId("training-session-rest-timer").count(),
+      0,
+      message,
+    );
+  };
+
+  await clickTestId(page, "training-session-complete-series-ex_b:s1");
+  let session = await waitForStorage(
+    page,
+    SESSION_KEY,
+    (candidate) => candidate.completed_effort_count === 1 && candidate.is_resting,
+    "completar la serie de B no inició el descanso",
+  );
+  assert.equal(session.rest_origin_unit_key, "ex_b:s1");
+  assert.equal(session.current_unit_key, "ex_b:s2");
+  await timerInsideB("el descanso se dibujó en el ejercicio pendiente anterior");
+  await page.getByTestId("training-session-rest-timer").scrollIntoViewIfNeeded();
+  await page.screenshot({
+    path: process.env.TRAIN_REST_ANCHOR_SCREENSHOT ?? "/tmp/gym-256-rest-anchor.png",
+    fullPage: true,
+  });
+
+  await page.reload({ waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await waitForAppReady(page);
+  await openTrainingTab(page);
+  await timerInsideB("tras recargar, el descanso cambió de tarjeta");
+
+  await clickTestId(page, "training-session-skip-rest");
+  session = await waitForStorage(
+    page,
+    SESSION_KEY,
+    (candidate) => !candidate.is_resting,
+    "omitir el descanso no lo terminó",
+  );
+  assert.equal(session.rest_origin_unit_key, null);
+  assert.equal(session.current_unit_key, "ex_b:s2");
+  assert.deepEqual(session.completed_unit_keys, ["ex_b:s1"]);
+  assert.equal(await page.getByTestId("training-session-rest-timer").count(), 0);
+  logStep("Descanso anclado al ejercicio de la serie completada, con A pendiente");
+  await context.close();
+}
+
 async function main() {
   const server = await ensureWebServer();
   const browser = await chromium.launch({
@@ -621,6 +707,7 @@ async function main() {
     await verifyLegacyMigration(browser, server.baseUrl);
     await verifyClockRecovery(browser, server.baseUrl);
     await verifyCompoundExecution(browser, server.baseUrl);
+    await verifyOutOfOrderRestAnchor(browser, server.baseUrl);
   } finally {
     await browser.close();
     await server.stop();

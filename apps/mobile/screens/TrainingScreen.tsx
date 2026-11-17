@@ -2717,6 +2717,7 @@ export const TrainingSessionScreen = memo(function TrainingSessionScreen({
                       return (
                         <Pressable
                           key={sessionExercise.exercise.id}
+                          testID={`training-session-exercise-${sessionExercise.exercise.id}`}
                           onPress={() => actions.focusExercise(sessionExercise.exercise.id)}
                           disabled={activeWorkoutSession.is_resting}
                           style={{
@@ -3384,7 +3385,7 @@ export const TrainingSessionScreen = memo(function TrainingSessionScreen({
                                 </Text>
                               </Pressable>
   
-                              {activeWorkoutSession.is_resting && sessionExercise.isCurrentExercise ? (
+                              {sessionExercise.showsRestTimer ? (
                                 <View
                                   testID="training-session-rest-timer"
                                   style={{
