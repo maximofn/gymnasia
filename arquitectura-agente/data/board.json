@@ -885,7 +885,7 @@
         {
           "id": "GYM-258",
           "title": "Detectar llamadas repetidas a tools por huella y cortar el bucle antes del tope de rondas",
-          "state": "backlog",
+          "state": "done",
           "baseline": "missing",
           "summary": "Si Coach repite la misma llamada (tool + argumentos) por tercera vez en un turno, no se ejecuta y se le avisa, en vez de quemar las 10 rondas.",
           "dependsOn": [],
