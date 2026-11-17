@@ -65,7 +65,7 @@
         {
           "id": "GYM-244",
           "title": "El Coach no responde: «La compilación no contiene un snapshot firmado»",
-          "state": "todo",
+          "state": "canceled",
           "summary": "Un tester ve un aviso rojo en la pestaña Coach y el agente no contesta: el APK instalado salió sin el snapshot firmado de políticas. Hay que identificar el artefacto, impedir que se publique otro así y hacer el mensaje accionable.",
           "dependsOn": [],
           "related": []
