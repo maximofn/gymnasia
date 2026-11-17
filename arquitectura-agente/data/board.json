@@ -865,7 +865,7 @@
         {
           "id": "GYM-48",
           "title": "14. Suite de tests del ejecutor de tools sin llamar al LLM",
-          "state": "backlog",
+          "state": "canceled",
           "baseline": "missing",
           "summary": "Escribir la suite completa del ejecutor y dejarla en CI. Cubre GYM-35 a GYM-47, así que se cierra el último.",
           "dependsOn": [
