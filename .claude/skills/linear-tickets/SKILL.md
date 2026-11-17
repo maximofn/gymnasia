@@ -286,6 +286,10 @@ Veinte cosas que cuestan tiempo si no se saben:
    equipo supera esa cifra, `list --limit` sigue siendo una lectura limitada.
    `board` sí recorre automáticamente todas las páginas de 250 resultados;
    no auditar el inventario completo a partir de un `list` limitado.
+   `list --all` tampoco pagina: incluye estados cerrados pero no garantiza traerlo
+   todo. Antes de concluir que un ticket no existe, importa el módulo y repite
+   `issues(first: 250, after: $after)` con `pageInfo { hasNextPage endCursor }`
+   hasta que `hasNextPage` sea falso.
 
 8. **Un worktree no hereda el vínculo ignorado de Vercel.** El síntoma al
    desplegar el tablero es `Searching for existing projects` seguido de
