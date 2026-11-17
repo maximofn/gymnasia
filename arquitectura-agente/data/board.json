@@ -854,7 +854,7 @@
         {
           "id": "GYM-45",
           "title": "11. Permisos y confirmación humana en tools con efectos",
-          "state": "todo",
+          "state": "canceled",
           "baseline": "missing",
           "summary": "La confirmación vive solo en el prompt (App.tsx:631): es una sugerencia, no un control de código.",
           "dependsOn": [
