@@ -38,6 +38,7 @@ export type ActiveSessionPresentation = {
     completedEffortCount: number;
     totalEffortCount: number;
     isCurrentExercise: boolean;
+    showsRestTimer: boolean;
     isCompletedExercise: boolean;
     muscle: string;
   }>;
@@ -70,6 +71,14 @@ export function buildActiveSessionPresentation(
     ? 0
     : Math.max(0, Math.min(1, session.completed_effort_count / session.total_effort_count));
   const completedKeySet = new Set(completedKeys);
+  const restOriginUnit = session?.is_resting && session.rest_origin_unit_key
+    && completedKeySet.has(session.rest_origin_unit_key)
+    ? units.find((unit) => unit.key === session.rest_origin_unit_key) ?? null
+    : null;
+  // Sessions saved before the origin existed keep the old placement.
+  const restExerciseId = session?.is_resting
+    ? (restOriginUnit ?? currentUnit)?.exerciseId ?? null
+    : null;
   const exercises = !session || !template ? [] : template.exercises.map((exercise, exerciseIndex) => {
     const seriesStates = (exercise.series ?? []).map((series, seriesIndex) => {
       const key = primaryWorkoutExecutionKey(exercise.id, series.id);
@@ -102,6 +111,7 @@ export function buildActiveSessionPresentation(
       completedEffortCount,
       totalEffortCount,
       isCurrentExercise: currentUnit?.exerciseId === exercise.id,
+      showsRestTimer: restExerciseId === exercise.id,
       isCompletedExercise: totalEffortCount > 0 && completedEffortCount === totalEffortCount,
       muscle: exercise.muscle?.trim() || inferExerciseMuscle(exercise.name ?? "", session.category),
     };

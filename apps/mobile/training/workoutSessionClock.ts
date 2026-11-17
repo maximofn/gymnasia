@@ -23,6 +23,9 @@ export type WorkoutClockSession = WorkoutClockFields & {
   rest_seconds_left: number;
   rest_seconds_total: number;
   status: WorkoutClockStatus;
+  // Effort whose completion started the active rest. It decides which card
+  // shows the timer; where the session continues is a separate pointer.
+  rest_origin_unit_key?: string | null;
 };
 
 export type WorkoutRestAlert = WorkoutRestAlertIdentity & {
@@ -220,6 +223,7 @@ export function reconcileWorkoutSessionClock<T extends WorkoutClockSession>(
       elapsed_seconds: session.elapsed_seconds + elapsedWholeSeconds,
       is_resting: false,
       rest_seconds_left: 0,
+      rest_origin_unit_key: null,
       clock_last_tick_ms: nextAnchor,
       rest_due_at_ms: expectedAt,
       last_handled_rest_alert: identity ?? session.last_handled_rest_alert,
@@ -237,6 +241,7 @@ export function startWorkoutRest<T extends WorkoutClockSession>(
   seconds: number,
   now: number,
   createRestCycleId: () => string,
+  originUnitKey: string | null = null,
 ): T {
   const safeSeconds = nonNegativeInteger(seconds);
   if (safeSeconds < 1) return cancelWorkoutRest(session, now);
@@ -244,6 +249,7 @@ export function startWorkoutRest<T extends WorkoutClockSession>(
     ...session,
     clock_last_tick_ms: now,
     is_resting: true,
+    rest_origin_unit_key: originUnitKey,
     rest_seconds_left: safeSeconds,
     rest_seconds_total: safeSeconds,
     rest_cycle_id: createRestCycleId(),
@@ -259,6 +265,7 @@ export function cancelWorkoutRest<T extends WorkoutClockSession>(session: T, now
     is_resting: false,
     rest_seconds_left: 0,
     rest_seconds_total: 0,
+    rest_origin_unit_key: null,
     rest_due_at_ms: null,
     rest_alarm_revision: session.is_resting
       ? session.rest_alarm_revision + 1

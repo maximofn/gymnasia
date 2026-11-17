@@ -6212,7 +6212,13 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
         };
         if (
           session.is_resting
-          && (!currentUnitKey || currentUnitKey !== session.current_unit_key)
+          && (
+            !currentUnitKey
+            || currentUnitKey !== session.current_unit_key
+            // The edit removed the effort that started this rest.
+            || (!!session.rest_origin_unit_key
+              && !completedKeys.includes(session.rest_origin_unit_key))
+          )
         ) {
           manualRestSkipRef.current = true;
           return cancelWorkoutRest(updatedSession, Date.now());
@@ -7334,7 +7340,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       current_unit_key: nextUnit.key,
     };
     const sessionWithRest = restSeconds > 0
-      ? startWorkoutRest(nextSession, restSeconds, now, () => uid("rest"))
+      ? startWorkoutRest(nextSession, restSeconds, now, () => uid("rest"), currentKey)
       : cancelWorkoutRest(nextSession, now);
     activeWorkoutSessionRef.current = sessionWithRest;
     setActiveWorkoutSession(sessionWithRest);
@@ -7366,14 +7372,10 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       return;
     }
 
-    const currentKey = runtime.currentUnit.key;
-    const nextUnit =
-      !completedUnitKeys.includes(currentKey)
-        ? runtime.currentUnit
-        : runtime.units
-            .slice(runtime.currentIndex + 1)
-            .find((item) => !completedUnitKeys.includes(item.key)) ??
-          runtime.units.find((item) => !completedUnitKeys.includes(item.key));
+    // Continue after the effort the user just did, not at the first pending
+    // one: an earlier exercise may have been skipped on purpose (busy machine).
+    const nextKey = resolveWorkoutExecutionCurrentKey(runtime.units, unitKey, completedUnitKeys);
+    const nextUnit = runtime.units.find((item) => item.key === nextKey);
     if (!nextUnit) return;
     const restSeconds = resolveWorkoutExecutionRest(targetUnit, nextUnit);
     manualRestSkipRef.current = session.is_resting && restSeconds <= 0;
@@ -7385,7 +7387,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
       current_unit_key: nextUnit.key,
     };
     const sessionWithRest = restSeconds > 0
-      ? startWorkoutRest(nextSession, restSeconds, now, () => uid("rest"))
+      ? startWorkoutRest(nextSession, restSeconds, now, () => uid("rest"), targetUnit.key)
       : cancelWorkoutRest(nextSession, now);
     activeWorkoutSessionRef.current = sessionWithRest;
     setActiveWorkoutSession(sessionWithRest);

@@ -35,6 +35,7 @@ export type WorkoutSession = WorkoutClockFields & {
   is_resting: boolean;
   rest_seconds_left: number;
   rest_seconds_total: number;
+  rest_origin_unit_key?: string | null;
   status: WorkoutSessionStatus;
   pending_resolution?: {
     kind: WorkoutSessionResolutionKind;
@@ -160,6 +161,14 @@ export function normalizeWorkoutSession(
     : restSecondsLeft;
   const requestedStatus = maybe.status === "paused" ? "paused" : "running";
   const isResting = Boolean(maybe.is_resting) && restSecondsLeft > 0;
+  // An old, foreign or stale origin degrades to "no origin"; the screen then
+  // falls back to the current exercise instead of refusing to open.
+  const restOriginUnitKey =
+    isResting &&
+    typeof maybe.rest_origin_unit_key === "string" &&
+    completedUnitKeys.includes(maybe.rest_origin_unit_key)
+      ? maybe.rest_origin_unit_key
+      : null;
   const rawPendingResolution = (maybe as {
     pending_resolution?: { kind?: unknown; requested_at?: unknown };
   }).pending_resolution;
@@ -209,6 +218,7 @@ export function normalizeWorkoutSession(
     is_resting: isResting,
     rest_seconds_left: restSecondsLeft,
     rest_seconds_total: restSecondsTotal,
+    rest_origin_unit_key: restOriginUnitKey,
     status,
     ...clockFields,
     ...(pendingResolution ? { pending_resolution: pendingResolution } : {}),

@@ -269,6 +269,7 @@ export type TrainingSessionExercise = {
   completedEffortCount: number;
   totalEffortCount: number;
   isCurrentExercise: boolean;
+  showsRestTimer: boolean;
   isCompletedExercise: boolean;
   muscle: string;
 };
