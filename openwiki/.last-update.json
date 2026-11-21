@@ -1,7 +1,7 @@
 {
-  "updatedAt": "2026-11-20T16:28:35.164Z",
+  "updatedAt": "2026-11-21T15:42:48.409Z",
   "command": "update",
-  "gitHead": "8195829c5440017a65c42d8ec87c138d8258851f",
+  "gitHead": "b3e1991884d0e26f8ee729040fdb68382802a72b",
   "model": "gpt-5.6-terra",
   "status": "complete",
   "language": "es"
