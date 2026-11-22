@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:0b40f224cfb9d5f736217bbda37b0545d5da130e417c41f4afd5d43c5d501dcd",
+  "pageVersion": "sha256:28c7c2c55e001cad6dadec9f449157ab7899552ef9486c019a1ebfed1e6cf2d3",
   "claims": [
     {
       "id": "claim_66d0c82672314fee91a840404965688b",
@@ -146,7 +146,7 @@
         },
         {
           "resource": "repo://package.json#L59-L73",
-          "version": "repo-lines-v1:sha256:3ebbe6891e8f76c9c207df7816d11718c3a3b700eeb5148f93b44988c6beef10:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyNzg1MjY5MzZkYWQxMjBhZTU0NWY4NGZhNDJkNTE1ODk2NDE2NGI3MTI3ZmYwODJjYmMyZTJjMGY2MTBkNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4Nzk2MmRhOTM0NTcwYmUwOTNhZjM5ZjVhNjAxNWE0OGMwYTlkN2FmOTBhOWUzMmM2OGQ0MDhjMmVhNzdiZWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiY2E1OWIyZmQ0M2VmMWVlZTJmMGZhYmY0NDc4YTRhZTczYjk1YzFkOGUzNTY1M2NmZjBmMmVlNTZmZGNiZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5MTFkMGI5ZmQzYWM5YzQxNjY5Yjc0ZGM3Y2JhODUzMGZiMzcxOWQwYTE2MmNhOGJiNzc1NjY4M2YzMTQ2MDUifQ"
+          "version": "repo-lines-v1:sha256:a7e03e0f8e2ac213a48309346c8e5059433ef10c663496ff92290f62eb80f9e4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyNzg1MjY5MzZkYWQxMjBhZTU0NWY4NGZhNDJkNTE1ODk2NDE2NGI3MTI3ZmYwODJjYmMyZTJjMGY2MTBkNWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4Nzk2MmRhOTM0NTcwYmUwOTNhZjM5ZjVhNjAxNWE0OGMwYTlkN2FmOTBhOWUzMmM2OGQ0MDhjMmVhNzdiZWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiY2E1OWIyZmQ0M2VmMWVlZTJmMGZhYmY0NDc4YTRhZTczYjk1YzFkOGUzNTY1M2NmZjBmMmVlNTZmZGNiZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5MTFkMGI5ZmQzYWM5YzQxNjY5Yjc0ZGM3Y2JhODUzMGZiMzcxOWQwYTE2MmNhOGJiNzc1NjY4M2YzMTQ2MDUifQ"
         },
         {
           "resource": "repo://scripts/catalogs/catalogs.test.mjs#L95-L276",
@@ -207,10 +207,74 @@
           "version": "repo-lines-v1:sha256:e6c344d574c6feea3b18e24144a5e9b25bb490cb8f360400cb07ebaa5b1628bd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwNDk3OWE3YzNjNjEzMjVlMDhiNzRkMDNmODFiMGUxYjdmMDEzNzFkM2I2ZDU2YmNmZjBiNTc3ZDJhYjI0Y2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU2MTY0MzViMDhjNDkwZTMzOTgyN2Q1ZTBmNGZjYTk0MzYwZTExNjAyNTRiOTU1YTBkODFjOTg3MWI3ZWNmMmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         }
       ]
+    },
+    {
+      "id": "claim_b36ea2d793b0413bbfd6ec436e023861",
+      "statement": "Las imágenes BLS se entregan como tandas editoriales independientes de la aplicación y del catálogo nutricional: cada manifiesto permanece en `pending-review` (la revisión de Codex no aprueba el mantenedor), registra por imagen los nombres oficiales DE/EN, sus huellas, prompt, referencia de estilo y hashes, y las tandas no se integran en móvil.",
+      "evidence": [
+        {
+          "resource": "repo://alimentos/bls/image-batches/README.md#L1-L16",
+          "version": "repo-lines-v1:sha256:e6a6c40ab7eb60577ae2e81461299037a31d43b549085f249d675cc4d5577e88:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlYmI2NmE3MGY2N2U2ODAwZDQ2MTZmNTAxMjYzNTc1N2FmY2U0NzQ2NjY3MWM0ZTI3MzU2MDJmYWViNmEzOTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4YmEyY2M2ZTNjOTIyNGZlMzA3ODRjZWM5YzgwMTZlYzBjZmNiMDYxMWY1NGQ1ZDljMmExMjI4MDBlOWNiYTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIwYTA1NWQwODFiYWJjZjA1YWUxZWQ4Njg5MjRkNmE1OTA5NjQ1MmI3ZmQwZTkxYmYwMGEwYzM0ZmU3ODZkN2QifQ"
+        },
+        {
+          "resource": "repo://docs/bls-food-images-handoff.md#L3-L6",
+          "version": "repo-lines-v1:sha256:7e2997dfa9326d2f775596ba7f0bdab1cc5e2215a739ea86fa67ae64c3f5365b:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTU4MGFhNzlhMWJhYWQ0ZjYxZmU0NmMzZGFmZTFkOTVkMGRmZGRkM2M3Y2E3ZDFmMTNjMzkxZTlkMTcxYTA4OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDcwZTlhNzIwNGQwMjY3OGM1YjE1NzBmMjhiYzJhNzAyOThiMDI4NGI2NDMzNThhNzU4OWQ2MDgzMmQ3ZjQ0MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzVmNDQyOGQ3NGE2M2RiOWUwMWJkMmQ0NzE4MTc0NTRjZWQ3M2I0NmM0YzQyYWQzZTMxYmE2YzdjNmM3YzQ4YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2Q0ZmJkMTlmYzlkNGFmZTAwZTgyYjkzZTQxNjFmNGJmMWY4MGZiNTJhNmJiMDEwZmM3MDkwZTI3NTM3NWFlOCJ9"
+        },
+        {
+          "resource": "repo://docs/bls-food-images-handoff.md#L78-L92",
+          "version": "repo-lines-v1:sha256:75a8c712db7c44368c58a71e69284ab4bb26ac1f55ba1729fd656f52b4149acd:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzODJmNDJiMTU4MTI0MmI0MzMwNmQ3ZTFhNmVkMzA0ZDVkYjlhYzNhYTAxOGZkYWE0ZDQyMmU0ZTgxODQzNGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwMjI1OGUyYTliMDQyOTc5MGI5YWM1NDQ1NmRmOWMxN2FhNGFjOTlhZGY0ZWM3MDg5NmVlMjNkOTZlYjgyNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU0YWRjMmMwZjA5MzFhYzdkNjBiY2ZiOGNjZmNmMjUxZTljMzM3Mzk1ZjM1M2JhMmYxZWYzOTU2NGRiOTJhZjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU2MDliMDdjNTE3ODRhZGRiMTVjZjBjMGQ3YWRhMmRlZDE2ZGVjZjU5OTI0Y2QwMTMwYWM3YmY0YTg5ODU0YjMifQ"
+        },
+        {
+          "resource": "repo://scripts/catalogs/bls-image-batches.mjs#L10-L39",
+          "version": "repo-lines-v1:sha256:7dd8d626af4923c6abb62e7aac533a721d864e5a8fa5fb54866e13e3d64cf2fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0YzJlYTdjMDE3MjA0ZTQ2MzJlN2ZiMGUxNDM5ZDU1MWJhNDQ0NzZjYTdlMDQ5OTk5NTRkYjY4M2RmZDEyMzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5MGZjMWRjNTQ2MjkwZTdlYmVjNTQzYTkyMDFhNjY0NzdiNmRmMzc5NGU1Mzc4MDU0YWZjNjkxYTFiZWYyYjMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxMzczMTc2ZTQwMGU1NDJiZjM5ZDE4MzAxNjAwNWYwYjg5M2M5OGM5MGIwNmU3OGY4OTJjYTEzMDdkZGRlMDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c1c9f7d985414fc68a9f9b6217c9b605",
+      "statement": "`check:bls:images` valida que cada tanda BLS declare únicamente sus WebP, que IDs y hashes no se dupliquen, que las referencias de estilo aprobadas y los nombres BLS sigan siendo coherentes, y que los bytes sean una imagen válida; rechaza además enlaces simbólicos. `next:bls:images -- <1..100>` reutiliza esa comprobación para listar pendientes de forma determinista y ambos modos son de solo lectura.",
+      "evidence": [
+        {
+          "resource": "repo://package.json#L62-L66",
+          "version": "repo-lines-v1:sha256:053f905c2b83cac7161380bb0d701c324f262fd4c3cdd44f36dfad91909d8b4c:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmJhZGJmZWE2NjNkOWIxMjc2MjQ0NzI0YjIxMDdiNGNiMDVjMDljZjVkMGVkODA0M2ViMzdjZTNlYjc1YjAwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGY1NzNjYjgxNWE5MDUxMDE5NzlhOTk1ZWEwZjU2MTU3ZTZmY2NiMzhiNzg2MjJkOGU2ZWM3N2U2MTlmOTI2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDA4ZjQyMGY1NjM2NzAxZjc4NDE4N2NjNTY0NDQ4NTU2OTFjM2JkMWFhN2UxNGU0YWNiNjE1NzBhYWVmNmYzNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDUzMWM5OTdkZGZhN2M1YWQ0ZTJkNjM2ZDJlYzFiMDZhODk2NjBmYjZhNmZkM2Q1Mjc1ODRhMzk1N2M0ZTAyMyJ9"
+        },
+        {
+          "resource": "repo://scripts/catalogs/bls-image-batches.mjs#L41-L87",
+          "version": "repo-lines-v1:sha256:ff0e30424a28fb5c6a86c46e91e35da5ebaf4f71d405b03b18303ff743822901:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA2MGNhNDYzZWMyYmNlMjk5M2I5ZmVkNGFlYzVhNGVjYTQ5ZTVjNGJiNjVjYzg1NDZhNTU2MGMzYjI3MDdkZTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjNzE2OTBkNjdhMjgwNGQ0ODQyOGZmMWEyNjg5YTE0OTM4OWM3YzFjNDViYTFmNzM1N2Y3ZGZiNDA0N2Q0ODQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM3ZDA0YzU2MDgxMGYyNmVlOWQyNDAzMTA3ZjVkMDA1YjFkODczYzUzMzUxOTA2NmZkZjIwYWU2OGM3YmNkMjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://scripts/catalogs/bls-image-batches.test.mjs#L72-L127",
+          "version": "repo-lines-v1:sha256:e9a31771fe43f15a9419a454e80c26134c4a65c71af3b997c958b5b7d83de8ab:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5YTg1OTA5OGNhOGQxYjliOWYyYWNmMDVlYjY1NzU2MDVmNmZhNTYwYTFiMGRhOTMwODkzNzI0ZTliMjFkZTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4YmI1MTZkNzNhMjY2ODk1ZWM5NjA1NGU2MmZlNjMxYjExNjQxNzVjNWE1YzJlM2NiZTE4ZjZmOGRkMzg3NWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a3c678047e64406387e1753ce9b4ca2d",
+      "statement": "La prueba focalizada BLS verifica también que la validación no confía en la extensión: detecta corrupción, PNG, dimensiones distintas de 1024×1024 y alfa; asimismo prueba archivos huérfanos o ausentes, duplicados entre tandas, enlaces simbólicos y reutilización de los mismos bytes para variantes distintas.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/catalogs/bls-image-batches.mjs#L66-L72",
+          "version": "repo-lines-v1:sha256:dca10743951721cb4c789103b9c4a9d11213666d0b1a61a1b718d7bcc7c71f7c:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzFhZDJmZTJhNzM1MWQ1OTZjNGE3NjU4ODkxYjA0MTAxNTliMGFkOWYyMjE0ZWU2ZWVlMjAxM2MzYWE4MmE4ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTUwOWRkODMzNGI4YTMyZTMxY2M0NmUxNWU1MTZhNGQ4NjBiMzQ2ZDIxMjE1ZjE1ZGM5ZTA0ZDJhZWU1ZGY4NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTdmZDgwMDBlYWE3NzkxNjI2MGRmODhhYjEzMDFlMmYyZmYwMmVmNGUwMjU5NzNiZmVlZThkYWVkYzMyNDI4ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTEwODdmMDM2MjM5ZTc1ZTgxZWFjN2Y1NDUzMWE0NzRlYzJkMmVkZmFlMGU2NTdmODNhMDIzN2M5Mzc0NWRjOCJ9"
+        },
+        {
+          "resource": "repo://scripts/catalogs/bls-image-batches.test.mjs#L72-L115",
+          "version": "repo-lines-v1:sha256:e7dbfdeb8f1433e5b1a5719d2da21309163fa8d81c722a16886d9d6bb67c38a1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5YTg1OTA5OGNhOGQxYjliOWYyYWNmMDVlYjY1NzU2MDVmNmZhNTYwYTFiMGRhOTMwODkzNzI0ZTliMjFkZTMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM4YmI1MTZkNzNhMjY2ODk1ZWM5NjA1NGU2MmZlNjMxYjExNjQxNzVjNWE1YzJlM2NiZTE4ZjZmOGRkMzg3NWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQwODA5MGJlZTBlNmI3NzdhNzg5NDg5MzkyNDU1MDc4YzlhNjExOWZlYWEzZDVkMjRiMTAxMDBjZTYxMDg5ZDcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f70395987c354996b82a5a569d9ed4a6",
+      "statement": "El procedimiento de continuidad BLS requiere normalizar cada salida a WebP opaco de 1024×1024, revisar todos los finales en hojas de contacto y a tamaño completo cuando haga falta, y conservar el plan y los recibos fuera de la carpeta de tanda; los WebP, el manifiesto, prompts y vistas revisables son los entregables duraderos.",
+      "evidence": [
+        {
+          "resource": "repo://docs/bls-food-images-handoff.md#L67-L88",
+          "version": "repo-lines-v1:sha256:9d08e348db92b71a7d3f9b217bab4d63eed3d1ea14ab692219440a659e4fbcf4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmYjczMWVhNWU5ZTc4OGQxYWJiYmVmMzNjMjBiZDc1OTkzOWQxYTkzZTcxZDMyM2EwNzNhOTk0NzU2YjlmMTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmZjk0MWIxNTlkYWYyNmFhOGVhMDQ4Nzc5YzQ5OWE1NDMwNDljZDRkNjkxMTA1YzFjM2Q0Y2RmM2QwN2QyOTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5MGYwNDFhNjc2MDFkNzc0MTI5NDA3ODg3NDgxYzFjNjAxZGI0YWFhYjFiYjY5ZjZjNmIzZmU2NmVkMWNiYWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2NzBiZGFjMTMwNWNlZDZjMzY0YjA0ZDMzNDJmNzUyYjZhN2VhOWI0OWViMzcxNGMyMjBmZGM2ZDdjMGNjOTQifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-11-11T15:41:01.947Z"
+    "at": "2026-11-17T17:09:17.831Z"
   }
 }

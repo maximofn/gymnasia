@@ -4,9 +4,6 @@ title: Runtime del agente Coach y observabilidad
 description: Contratos del turno local-first de Coach y límites de sus señales operativas, trazas y telemetría. Distingue mediciones agregadas disponibles de tokens y coste no observables.
 tags: [agent, runtime, observability, telemetry, privacy, mobile]
 openwiki_generated: true
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-11-10T15:53:08.815Z
 sources:
   - id: openwiki-source-192849a5973afd8b6e55db2c
     resource: repo://apps/mobile/agent/agentPolicyRuntime.test.ts
@@ -32,12 +29,12 @@ sources:
     resource: repo://apps/mobile/agent/providerToolClient.roundLimit.test.ts
   - id: openwiki-source-abc6fea468a7de09acfb0c4f
     resource: repo://apps/mobile/agent/providerToolClient.ts
+  - id: openwiki-source-80b8293634860b5ac55a69f0
+    resource: repo://apps/mobile/agent/providerToolLoop.repeatedReads.test.ts
   - id: openwiki-source-b14a4ecd65e83b5561f88e2a
     resource: repo://apps/mobile/agent/providerToolLoop.ts
   - id: openwiki-source-31ab0914f32f6c759ba493a0
     resource: repo://apps/mobile/agent/streamDraftFlusher.ts
-  - id: openwiki-source-02dfa58fcd62b6df088569fc
-    resource: repo://apps/mobile/agent/toolBatch.test.ts
   - id: openwiki-source-1ad5b6a5e6488611c8796fe1
     resource: repo://apps/mobile/agent/toolBatch.ts
   - id: openwiki-source-875e06bfac5f11963a3dc5b2
@@ -60,7 +57,10 @@ sources:
     resource: repo://apps/mobile/trace.ts
   - id: openwiki-source-ea083ff1c1afd80c588dedd8
     resource: repo://ops/openwiki-runtime-telemetry.json
-generated: { by: "openwiki/0.6.0", at: "2026-11-10T15:53:08.815Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-17T17:09:17.831Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-17T17:09:17.831Z
 ---
 
 
@@ -86,7 +86,7 @@ La instrumentación del lote de tools sí ofrece una extensión acotada: entrega
 
 - **Llamadas de modelo por turno.** Una llamada adicional puede proceder del evaluador sanitario consentido, de hasta tres intentos del turno, de una ronda de continuación, de un cierre al límite de rondas o de un fallback de transporte. `App.sendMessage`, `evaluateHealthSafetyWithProvider` y los loops de `providerToolLoop.ts` son rutas distintas; no atribuir una llamada adicional a una escritura repetida sin correlacionarla.
 - **Presión de contexto.** `selectCoachContext` elige los últimos 20 mensajes antes de adaptar el proveedor. En la rama Google de `requestProviderToolChat`, el símbolo `DEFAULT_GOOGLE_CONTEXT_BUDGET` se sobrescribe a 20 intercambios; `prepareGoogleInteractionRequest` puede aún retirar imágenes antiguas o intercambios completos por bytes y rechaza antes de red si no cabe el último intercambio.
-- **Tools lentas o repetidas.** `executeToolBatch` solo solapa lecturas conocidas contiguas y `ToolOperationCoordinator.execute` hace replay o unión `inFlight` únicamente para efectos. Por tanto, una duración agregada de tool no revela por sí misma ni handler, ni paralelismo, ni una mutación adicional.
+- **Tools lentas o repetidas.** `executeToolBatch` solo solapa lecturas conocidas contiguas; además, cada loop ejecuta solo las dos primeras lecturas conocidas con el mismo nombre y argumentos canónicos y devuelve `repeated_tool_call` sin invocar el handler desde la tercera. `ToolOperationCoordinator.execute` hace replay o unión `inFlight` únicamente para efectos. Por tanto, una duración agregada de tool no revela por sí misma ni handler, ni paralelismo, ni una mutación adicional.
 - **Escritura seguida de error.** `createDetailedAgentToolExecutor` y `ToolOperationCoordinator.executeOnce` distinguen ausencia de efecto, commit e incertidumbre; una incapacidad de confirmar el registro no autoriza repetir la mutación.
 
 ### Hipótesis y comprobación focalizada
@@ -95,7 +95,7 @@ La instrumentación del lote de tools sí ofrece una extensión acotada: entrega
 | --- | --- | --- |
 | Más de una llamada asociada a un turno | Separar evaluador, intento remoto, ronda, cierre y fallback. Mantener `executionId` estable en `sendMessage`. | `providerToolLoop.test.ts` y `providerToolClient.roundLimit.test.ts` |
 | Contexto Google grande o rechazo previo a red | Ventana Coach de 20 mensajes; 512 KiB sin imágenes y 19 000 000 bytes de petición; último intercambio no se descarta. | `coachContext.test.ts` y `googleInteractions.test.ts` |
-| Tool repetida o escritura duplicada | Identidad por `executionId`, proveedor, nombre, JSON canónico y `occurrence`, sin `providerCallId`; revisar replay y `inFlight`. | `toolOperationLedger.test.ts` |
+| Tool repetida o escritura duplicada | Una lectura conocida con el mismo nombre y JSON canónico se ejecuta como máximo dos veces por loop y después devuelve `repeated_tool_call`; para efectos, la identidad usa `executionId`, proveedor, nombre, JSON canónico y `occurrence`, sin `providerCallId`. Revisar el corte, replay e `inFlight`. | `providerToolLoop.repeatedReads.test.ts` y `toolOperationLedger.test.ts` |
 | Turno con demasiadas continuaciones | Máximo de diez rondas ejecutables; la call pendiente recibe resultado sintético y se exige un cierre sin tools. | `providerToolClient.roundLimit.test.ts` y `providerToolLoop.test.ts` |
 | Error después de una escritura | `prepared` no se vuelve a ejecutar a ciegas; reconciliar recibo o estado de dominio y conservar `indeterminate` ante duda. | `toolExecutor.test.ts`, `toolOperationLedger.test.ts` y `toolOperationReceipts.test.ts` |
 
@@ -171,7 +171,11 @@ flowchart TD
 
 *Diez rondas pueden ejecutar tools; la siguiente call no se ejecuta y solo habilita un cierre sin tools.*
 
-`executeToolBatch` preserva el orden de resultados, aunque una racha contigua de lecturas conocidas se ejecute con hasta cuatro operaciones solapadas. Una escritura o tool desconocida es una barrera secuencial. Ante un fallo fatal deja de iniciar nuevas lecturas, espera las que ya estaban activas y propaga el primer error en orden de proveedor: el turno no termina con un lote anterior aún activo. Si se agotan las rondas, las calls pendientes reciben `ROUND_LIMIT_TOOL_RESULT` y se pide un cierre con tools prohibidas; un cierre truncado, fallido o que vuelve a pedir tools produce `ToolRoundLimitError`.
+`executeToolBatch` preserva el orden de resultados, aunque una racha contigua de lecturas conocidas se ejecute con hasta cuatro operaciones solapadas. Una escritura o tool desconocida es una barrera secuencial. Ante un fallo fatal deja de iniciar nuevas lecturas, espera las que ya estaban activas y propaga el primer error en orden de proveedor: el turno no termina con un lote anterior aún activo.
+
+Cada loop mantiene sus `occurrences` por nombre y argumentos JSON canónicos. Para una **lectura conocida**, `executeToolSafely` permite las ocurrencias 0 y 1 y, desde la 2, devuelve al proveedor un resultado de tool recuperable `repeated_tool_call` con la indicación `choose_alternative`, sin llamar al ejecutor. El límite es por loop (por tanto se reinicia con un nuevo turno del usuario) y no se aplica a escrituras: estas dependen de la identidad durable y de la deduplicación del ledger. No eleve este corte para «arreglar» un modelo insistente sin evaluar la presión adicional sobre rondas y handlers.
+
+Si se agotan las rondas, las calls pendientes reciben `ROUND_LIMIT_TOOL_RESULT` y se pide un cierre con tools prohibidas; un cierre truncado, fallido o que vuelve a pedir tools produce `ToolRoundLimitError`.
 
 ## Autorización, ejecución y recuperación de efectos
 
@@ -217,13 +221,13 @@ Las escrituras locales incluyen recibos mínimos con `operationId`, `toolName` y
 2. No describa la ruta Coach de Google con el límite genérico de 10: su límite de intercambios es 20, pero los límites de bytes siguen siendo efectivos.
 3. No convierta reintento, fallback, continuación, cierre, unión `inFlight` y replay en una única noción de «repetición».
 4. Para una nueva escritura, conserve `executionId`, canonicalización y `occurrence`; no incluya `providerCallId` en su identidad. Valide antes del efecto, marque commit inmediatamente después y proporcione recibo/reconciliador.
-5. No introduzca paralelismo en escrituras ni dependa del orden de finalización de lecturas. Mantenga la barrera y el máximo de cuatro lecturas de `executeToolBatch`.
+5. No introduzca paralelismo en escrituras ni dependa del orden de finalización de lecturas. Mantenga la barrera, el máximo de cuatro lecturas de `executeToolBatch` y el corte de una lectura idéntica después de dos ejecuciones.
 6. No registre contenido sensible. Para correlacionar una anomalía basta con dimensiones agregadas de intento, ronda, cierre, categoría, duración y estado de commit.
 
 Desde la raíz, ejecute el conjunto focalizado:
 
 ```bash
-npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/platform/trace.test.ts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/coachContext.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/toolBatch.test.ts apps/mobile/agent/toolBatchDiagnostics.test.ts apps/mobile/agent/toolDefinitions.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts apps/mobile/agent/toolOperationReceipts.test.ts apps/mobile/agent/googleInteractions.test.ts
+npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/platform/trace.test.ts apps/mobile/agent/agentPolicyRuntime.test.ts apps/mobile/agent/coachContext.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/providerToolLoop.repeatedReads.test.ts apps/mobile/agent/toolBatch.test.ts apps/mobile/agent/toolBatchDiagnostics.test.ts apps/mobile/agent/toolDefinitions.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/toolOperationLedger.test.ts apps/mobile/agent/toolOperationReceipts.test.ts apps/mobile/agent/googleInteractions.test.ts
 ```
 
 Estas pruebas verifican contratos locales de trazas, lease, presupuesto, protocolo, lote, autorización, commit y recuperación; no miden disponibilidad, tokens, coste, latencia o frecuencia en producción. Para el manejo del volcado local y sus cautelas, vuelva a [Comportamiento operativo, trazas y degradación](../operations/runtime-behavior.md).

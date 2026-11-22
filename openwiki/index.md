@@ -4,7 +4,7 @@ okf_version: "0.2"
 
 # Archivos
 
-- [Inicio rápido para contribuir en Gymnasia](quickstart.md) - Punto de entrada para instalar y ejecutar Gymnasia, localizar el subsistema responsable de un cambio y elegir una validación proporcional. Distingue los comandos y contratos ejecutables de planes, tableros e informes históricos.
+- [Guía rápida para cambiar Gymnasia](quickstart.md) - Ruta de entrada para localizar el dominio de un cambio en Gymnasia y aplicar la validación proporcional. Conecta la app móvil local-first, el runtime Coach, el contenido, los servicios auxiliares y las operaciones vigentes.
 
 # Directorios
 

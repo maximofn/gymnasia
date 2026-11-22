@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8a44e6b80196b01c12135a2d718fbd5d86eeb7008032998de5cd5d8dd8bce027",
+  "pageVersion": "sha256:901a43cf043768d36591cc1d1552ec2202b8763fe0ef3104c8af064d0fe2dd42",
   "claims": [
     {
       "id": "claim_b549c7104ecd4a7d85357931e153c001",
@@ -138,7 +138,7 @@
         },
         {
           "resource": "repo://apps/mobile/agent/providerToolLoop.ts",
-          "version": "repo-file-v1:sha256:d871e53403c0eff6b51a2607317136e2536e7562374893b4f785e13cdd6138f6"
+          "version": "repo-file-v1:sha256:a18f8d14375b4444017697c1973719e3a03add7b9f01b6646574702635c2be3e"
         }
       ]
     },
@@ -184,15 +184,43 @@
     },
     {
       "id": "claim_bffedac15ba445f48298c4f8e56b8683",
-      "statement": "Los bucles de OpenAI, Anthropic y Google admiten hasta diez rondas; al agotarlas devuelven resultados sintéticos para las llamadas pendientes y piden un cierre con las herramientas prohibidas, o fallan con ToolRoundLimitError si el cierre no es una respuesta final válida. Las llamadas conservan el orden para su contexto y resultados, pero las lecturas consecutivas pueden ejecutarse en paralelo hasta cuatro, mientras escrituras y herramientas desconocidas son barreras secuenciales.",
+      "statement": "Los bucles de OpenAI, Anthropic y Google, y la ruta `custom_openai`, ejecutan como máximo diez rondas de tools; al agotarlas devuelven resultados sintéticos para las llamadas pendientes y solicitan un único cierre con las herramientas prohibidas, o fallan con `ToolRoundLimitError` si ese cierre no es una respuesta final válida. Conservan el orden de llamadas y resultados; las lecturas consecutivas pueden ejecutarse en paralelo hasta cuatro, mientras escrituras y herramientas desconocidas son barreras secuenciales. Además, una misma lectura con igual nombre y argumentos canónicos solo se ejecuta dos veces por bucle: desde la tercera recibe `repeated_tool_call` sin invocar el handler; las escrituras quedan bajo el ledger de idempotencia.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/agent/providerToolLoop.ts",
-          "version": "repo-file-v1:sha256:d871e53403c0eff6b51a2607317136e2536e7562374893b4f785e13cdd6138f6"
+          "resource": "repo://apps/mobile/agent/providerToolClient.roundLimit.test.ts#L131-L246",
+          "version": "repo-lines-v1:sha256:afeead07fc429d67e3b82a2bbbeda8e4a915d20a6837e4e148478366916b45ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTE2LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJiM2UwOTA3NDJhOThhOTJjM2UzMTZmZDZlZjFlZjA2NWJkMzEzZTY1N2I4NDlmMTVjYWZkZDFmNTAzNzZiOGE2IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIyMmQxMWNhZjQzZTk3ZWYzNjllNmJlZWQxYTI2OGJkMDU4MzhmMjliOWRkMjU0YmY2OWJhNjQ4ODQxNDcyMzRhIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIxYWY0ZmExZmExZDc2NDU2MWUwNmU1ODAxMTU0N2I4YTQ2NTJlMTdiYzlhMDc1ODcyN2E0ZjRiYTA3NmVjNWE0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MiwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJkODE3ZmJiNzNjOTJiMzZkNWU0ODk2ZmY1MWMxYjU4ZWVjMzMwYmJlOTYxYmEwNWZjNjIwNWY4NjdlYTFiY2Y2In0"
         },
         {
-          "resource": "repo://apps/mobile/agent/toolBatch.ts",
-          "version": "repo-file-v1:sha256:1b09f8c72de4ddbef187ed4360e434fea91eb0acb7f1a54d78f8de94e06ba9e6"
+          "resource": "repo://apps/mobile/agent/providerToolClient.ts#L172-L248",
+          "version": "repo-lines-v1:sha256:bd8864914703ade5e09276fcbfc56ef9f72f04a366bd91116f855868a9844be5:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEyYTAzYzk4NTU4ZWViN2NlYWVkODM2ZjQ4ZmY0OWViNWEzYjkzYWQ5NDgzOTNmNDkyODA3ODI0M2RlNTYwNmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBiNWViY2RlZWQxMWM3YjZhYzBlZDU1Mjk2NTM4Y2JlZjIyYWEzODVkNzFkNGYzMGQ5OGI2YWNmZjVlMDVlNTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1NTk4MGY1OTVjMGQ1NmE5ZmU2MmI0MjZkMmE4MGIwOWE4OTc0MDgxMTE0Y2RlYTE5NDY0YzljYTg4NTdjM2UifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolLoop.repeatedReads.test.ts#L48-L178",
+          "version": "repo-lines-v1:sha256:a3c6da8f1e0bd6d3ea4b65a6991451d71fca9ecd4c12fb5ba03a0913e9c5acce:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhNTFiOWQzYTU1NTAwNDVmMGEyYTRhYjQwYzQzOTExODQwOGVkNWM0YTMwNjE2NjAyZDVhMWRmMzhhMzdlMzNlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiZDBmMmQzYTNhYWRhMjc1ODY0NTc4ZDBhNDM5MTU2MzhkNTQzZmVjYTJjOTQ4NThkYjk0MTIxMWU4NmNlZjJiIiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MSwiZm9sbG93aW5nQ29udGV4dEhhc2giOiJmNmY1YjQwYjE1ODQ1N2QxNzg2NGYyMTc5MDc4NmRkNWEyZWNkYjY0YjY2YTY1MWY3ODhkNGUyNWNkMzMwM2QyIn0"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolLoop.ts#L118-L157",
+          "version": "repo-lines-v1:sha256:13760229d462a172f42d3f12285593ac7cd80a2432405c8c5eec0b8ee489f90b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1ODNlZGEyOTBmODJjZTU5MTY4NWQ0N2IwNzA4OTUxMTY5MTY1NDY3OWQwYmIwNWY3MGQ5MzFkYzMzMWFhZGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE4OTgwMDljMDE5ZDc4NTZjN2FlYjYyZDlkODY0MDU2NDg1YjNhODE0OWYxZDViYmRlMzlmOWExZGU5NmJkOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcwZWFjMWE2YjVhNmJlZjc2MmNiYjU1MWU0YzQyN2I4NWY3N2FmZjI1OGZhODQ0ZTVkNzY5ZDA1NWJhNTNiZDQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolLoop.ts#L13-L41",
+          "version": "repo-lines-v1:sha256:5ed31136cfb325f30cb6baa74875ade7f47e885804e9e37de64a68bcb0008723:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1OTZlNzdhZDBjZjM5YWMzY2ZhMGZhZWEzNWEyNzg1NGEzYzk1ZjljZjE3NDk2MDUzZDMzNGY3MTM0ODMxM2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM0MmY2YzEzNWViYTFiODJiZDhlMjBhYTY5Y2MzYmNkYTdlYTFmNDNmNjUzZTllYzE1NzQ0YjUyN2Y0MjhiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4MTYxZDNkMDU1ZGRkOWZkOGQ4MWExYmQzMzhjZTE2NGQ1Mjc0MDE2ZmRjOWRkMjRjYzNkY2VmM2E5MDlhNzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU1MGZiODkxNzRhYjEwYmYxNGI4YjY3MmI4MzE3NDAxYjA2N2M4NzM0YTQyM2QxZjU0MWI2NmE4YzZkNmM3YjIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolLoop.ts#L176-L203",
+          "version": "repo-lines-v1:sha256:ccbacee105726c705b9f1380b6b5deaccc65adeb5460a092d1ac1ae91040db65:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4NWU5MTc3N2E3ZDQyMDIyZGY2ZjY3YTM5OWJjMDFlNDg2OWM3OTg4NGJlZjQzZmQxNDJkNTgxYjE0NGE4MjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk1Zjc2ZDQ2MDQwMWYwM2MyNjQ2OWY4OWIzYzE2Y2YzOTkwMzljYjkzZThkZWMyZDlhMjk3M2QxNGZhNjkzNDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ3NDJhMWFjYWY4MmVlNGU1YWYwZDQ0ZjI2NmEwYWMzNWY2ODAzMDFiNThhMzhkMjI5ODg3ZmJmMTFlM2VjMWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE0Y2JjZDllZDgwNWYzMGZmMjI0Mzc0MTFlNDJjZDVhZGRmMTBlMDk2N2U2Mjg0ZTdmMDdhZThkNmIzNDJhYTQifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolLoop.ts#L237-L313",
+          "version": "repo-lines-v1:sha256:9fd38168a8a30ae22a2b478b081fb6bfeb6a4552d704b0078ca7f1a8cc09bea3:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3NmJjNjQwOGM5MDgyYzNjNmRjOGQwOTYyZjVmMWE2NDQ0NGU0ZjRlMTM2ODk1YWJiMDQ4Yzc5ZThlNThkYTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU0YmVmMTcyZjlmNmY0N2VlZGI2ODYxYzAzMzNhYjdmOTZlZWNiNzUwMjQ4MTNjZDRjM2FkOWI1MjUxZTJkYmEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/providerToolLoop.ts#L338-L408",
+          "version": "repo-lines-v1:sha256:047adb3e9be734af8b40663cab7382f72e0a00fa812303ab6dcee16d21f6da94:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlmNzZkYmY5NjFlMjgwNzg2OTg2MzQyYWRkZTg2NmJhYzE3OGRjMDAwOTE0YzgyMWNmMjY5NWY4MzgxZjIwNjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0ZTEwYzVjNjliNjQwMjU0YjMxNzc0YjgwZDVhOGMwYzUzOGI0NzA5ZmRhM2FkMzRkNDE4YmQ2NDRlYTNmNDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolBatch.ts#L4-L64",
+          "version": "repo-lines-v1:sha256:4d1746a0816dfa0f21b0bc32951c9ab6dd32f1c13953e4542c5d296503e003ac:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzYjRhNTY3Y2NiMTQ0MmU2MGY3NmUyYjRlNTQ1MjU1YWU2YzRmMDdmMDEzMmMwMjQwYmM0YTU2YzZhM2I4NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhMzRmZmEzNjY1NzZlYzZlOTVlOGZhOTc3ZTBmMzI0OWUxY2E2NjFkZTI4Nzk5Y2E3NWI4OTI4Yzg3YWQ3MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
         }
       ]
     },
@@ -325,6 +353,6 @@
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-11-08T14:36:51.071Z"
+    "at": "2026-11-17T17:09:17.831Z"
   }
 }

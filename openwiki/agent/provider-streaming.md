@@ -9,7 +9,7 @@ related:
   - ../operations/runtime-behavior.md
 verified:
   - by: openwiki/0.6.0
-    at: 2026-11-08T14:36:51.071Z
+    at: 2026-11-17T17:09:17.831Z
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
@@ -29,8 +29,12 @@ sources:
     resource: repo://apps/mobile/agent/providerStreamParsers.ts
   - id: openwiki-source-479fc45ac32d23cfffe17d8e
     resource: repo://apps/mobile/agent/providerStreamTransport.ts
+  - id: openwiki-source-9de55cc50318c64549e79726
+    resource: repo://apps/mobile/agent/providerToolClient.roundLimit.test.ts
   - id: openwiki-source-abc6fea468a7de09acfb0c4f
     resource: repo://apps/mobile/agent/providerToolClient.ts
+  - id: openwiki-source-80b8293634860b5ac55a69f0
+    resource: repo://apps/mobile/agent/providerToolLoop.repeatedReads.test.ts
   - id: openwiki-source-b14a4ecd65e83b5561f88e2a
     resource: repo://apps/mobile/agent/providerToolLoop.ts
   - id: openwiki-source-c5c28138a849ad0b9daed017
@@ -45,7 +49,7 @@ sources:
     resource: repo://apps/mobile/agent/toolBatch.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.6.0", at: "2026-11-08T14:36:51.071Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-17T17:09:17.831Z" }
 ---
 
 # Streaming, continuaciones y fallos de proveedores
@@ -114,7 +118,9 @@ OpenAI añade al contexto los `outputItems` del turno y un `function_call_output
 
 Google trata su formato de cable como formato local de continuación. `GoogleConversationTurn` persiste pasos e interacciones, y `buildGoogleHistory` vuelve a inyectar una copia profunda de esos pasos para un mensaje de asistente validado. Las firmas de pensamiento y campos desconocidos de los pasos son opacos: no se convierten a texto ni se regeneran. La validación rechaza llamadas pendientes, firmas ausentes y resultados mal correlacionados, por lo que hidratar historial no transforma trabajo pendiente en ejecución.
 
-Las llamadas de una ronda se preparan y devuelven al proveedor en su orden original. La ejecución puede solapar lecturas consecutivas, pero `executeToolBatch` trata escrituras y herramientas desconocidas como barreras secuenciales. Un fallo fatal deja de iniciar lecturas nuevas y espera las ya iniciadas. Cada llamada recibe un sobre con proveedor, ID remoto y ocurrencia. `executeToolSafely` no filtra excepciones crudas al modelo o usuario: una excepción de lectura se vuelve un resultado seguro, pero una escritura fallida se marca indeterminada para impedir un reintento ciego.
+Las llamadas de una ronda se preparan y devuelven al proveedor en su orden original. La ejecución puede solapar hasta cuatro lecturas consecutivas, pero `executeToolBatch` trata escrituras y herramientas desconocidas como barreras secuenciales. Un fallo fatal deja de iniciar lecturas nuevas y espera las ya iniciadas. Cada llamada recibe un sobre con proveedor, ID remoto y ocurrencia. `executeToolSafely` no filtra excepciones crudas al modelo o usuario: una excepción de lectura se vuelve un resultado seguro, pero una escritura fallida se marca indeterminada para impedir un reintento ciego.
+
+Como protección adicional dentro de una misma respuesta, una huella canónica de nombre y argumentos solo permite ejecutar dos veces una herramienta de lectura. Desde la tercera ocurrencia idéntica, el handler no se invoca y el modelo recibe un resultado recuperable `repeated_tool_call` que le pide usar el resultado previo o cambiar de enfoque. Las escrituras no se cortan con esta regla: su protección corresponde al ledger de idempotencia. El contador se crea por ejecución del bucle, por lo que se reinicia con el siguiente mensaje del usuario.
 
 Los cuatro bucles aplican `MAX_TOOL_ROUNDS = 10`. Al llegar al límite con llamadas pendientes, no las ejecutan: añaden resultados sintéticos y hacen una única petición de cierre con herramientas prohibidas e instrucción explícita de informar el límite. Si esa petición falla, llega truncada, carece de contenido final cuando corresponde o vuelve a pedir una herramienta, se lanza `ToolRoundLimitError`; no se presenta una respuesta intermedia como final.
 
@@ -126,10 +132,10 @@ Antes de abrir red, `prepareGoogleInteractionRequest` elige los últimos interca
 
 ## Pruebas y cambios seguros
 
-Las pruebas de `googleInteractions.test.ts` cubren IDs vacíos y metadatos de ciclo de vida omitidos, continuación de herramientas, persistencia/restauración de pasos, truncamiento, estados incompatibles, argumentos inválidos y secuencias reordenadas. `providerToolLoop.test.ts` cubre las invariantes del límite, la correlación y la ejecución; `customOpenAIChat.test.ts` cubre el ensamblado de SSE y tool calls, el fallback explícito sin streaming, saneamiento de errores y la negativa del Coach ante herramientas no soportadas.
+Las pruebas de `googleInteractions.test.ts` cubren IDs vacíos y metadatos de ciclo de vida omitidos, continuación de herramientas, persistencia/restauración de pasos, truncamiento, estados incompatibles, argumentos inválidos y secuencias reordenadas. `providerToolLoop.test.ts` cubre las invariantes del límite, la correlación y la ejecución; `providerToolClient.roundLimit.test.ts` verifica la llamada de cierre de los cuatro proveedores y que no se devuelva como final el texto intermedio. `providerToolLoop.repeatedReads.test.ts` prueba el corte en la tercera lectura con la misma huella, incluidos los cuatro protocolos, y que no alcance el límite de rondas. `customOpenAIChat.test.ts` cubre el ensamblado de SSE y tool calls, el fallback explícito sin streaming, saneamiento de errores y la negativa del Coach ante herramientas no soportadas.
 
 Al cambiar un dialecto, actualice conjuntamente parser, transporte, contrato de continuación y pruebas. Conserve IDs de llamadas, firmas y bloques de razonamiento al persistir o continuar. Añada una fixture completa y variantes que corten eventos y JSON en fronteras distintas; para Google incluya ID vacío y ciclo de vida omitido, y para `custom_openai` compruebe que el fallback ocurre solo ante la incompatibilidad explícita. En todos los casos, una respuesta incompleta debe quedar fuera del ejecutor.
 
 ```bash
-npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/sse.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/googleInteractions.test.ts apps/mobile/agent/customOpenAIChat.test.ts
+npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/sse.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/providerToolLoop.repeatedReads.test.ts apps/mobile/agent/googleInteractions.test.ts apps/mobile/agent/customOpenAIChat.test.ts
 ```

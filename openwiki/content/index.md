@@ -1,4 +1,4 @@
 # Archivos
 
-- [Generación y entrega de imágenes de catálogo](image-generation.md) - Contratos de resolución y entrega de imágenes de alimentos, ejercicios y CIQUAL en el cliente móvil. Distingue el generador histórico de alimentos y ejercicios del flujo vigente, verificable y versionado de imágenes CIQUAL.
+- [Generación y validación de imágenes de alimentos](image-generation.md) - Flujo de creación editorial por tandas y validación de imágenes del catálogo alimentario BLS, separado de los datos nutricionales y de la aplicación móvil. También distingue esta entrega de la utilidad histórica para alimentos y ejercicios curados y del índice móvil CIQUAL.
 - [Catálogos nutricionales y de ejercicios](repositories.md) - Contratos de edición, generación, importación y consumo móvil de los catálogos nutricionales y de ejercicios. Incluye la proyección CIQUAL, su índice editorial de imágenes y la verificación de artefactos remotos.

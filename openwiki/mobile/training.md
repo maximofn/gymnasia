@@ -1,13 +1,17 @@
 ---
-type: concepto de dominio
-title: Entrenamiento y sesiones
-description: Contratos y ciclo recuperable de plantillas, series, sesiones, historial y descansos de entrenamiento. Distingue los datos durables de los controles de interfaz y las validaciones que evitan perder trabajo o duplicar resúmenes.
-tags: [mobile, training, workout-templates, workout-execution, transactions]
+type: "Reference"
+title: "Entrenamiento: plantillas, ejecución e historial"
+openwiki_generated: true
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-17T17:09:17.831Z
 sources:
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
   - id: openwiki-source-d85e28abe300f8689fbec4b2
     resource: repo://apps/mobile/controllers/trainingController.ts
+  - id: openwiki-source-db61bdbbd94556b7a5c83555
+    resource: repo://apps/mobile/screens/TrainingScreen.tsx
   - id: openwiki-source-0c1c1cf9365f0a086537a465
     resource: repo://apps/mobile/scripts/train-compound-execution.e2e.mjs
   - id: openwiki-source-925b08011eb916f5e46a3640
@@ -16,6 +20,8 @@ sources:
     resource: repo://apps/mobile/scripts/train-series-operations.e2e.mjs
   - id: openwiki-source-ce2a29d26d2fc9bbc6f67477
     resource: repo://apps/mobile/training/restNotificationContract.ts
+  - id: openwiki-source-66b048fe5b5b201cf808da77
+    resource: repo://apps/mobile/training/restOrigin.test.ts
   - id: openwiki-source-3f488b56edb095ad7ccfcb94
     resource: repo://apps/mobile/training/seriesContract.ts
   - id: openwiki-source-e62f241b3b74f3d63b5eccbe
@@ -42,13 +48,11 @@ sources:
     resource: repo://apps/mobile/training/workoutTemplateTransactions.ts
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-09-27T17:43:05.548Z
-generated: { by: "openwiki/0.6.0", at: "2026-09-27T17:43:05.548Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-17T17:09:17.831Z" }
 ---
 
-# Entrenamiento y sesiones
+
+# Entrenamiento: plantillas, ejecución e historial
 
 El dominio separa la **prescripción editable** (`WorkoutTemplate`) de una **ejecución recuperable** (`WorkoutSession`) y de su resultado inmutable (`WorkoutSessionSummary`). Los módulos puros de `apps/mobile/training/` son la autoridad de contratos, normalización, cálculo y transiciones; `apps/mobile/App.tsx` posee el estado React, las colas de persistencia, la integración con `AsyncStorage`, el reloj y `expo-notifications`. Los controladores de `apps/mobile/controllers/trainingController.ts` no duplican esas reglas: adaptan modelo y acciones a pantallas, overlays y la pila de volver.
 
@@ -65,6 +69,8 @@ Para los límites generales de persistencia y restauración, véase [Estado loca
 | Integración de dispositivo | La alarma programada, el permiso y el canal Android son efectos reconciliados desde el descanso durable; no son la fuente de verdad del reloj. |
 
 `useTrainingCatalogController`, `useTrainingSessionController`, `useTrainingEditorController`, `useTrainingDetailController` y `useTrainingHistoryController` exponen `model`, `actions` y capas de retroceso. Mantienen el último input en un `ref`, por lo que las acciones memorizadas delegan al estado actual; los manejadores de volver cierran primero la capa abierta correspondiente. El controlador no posee ni persiste las mutaciones de entrenamiento.
+
+La composición en `App.tsx` construye `buildActiveSessionPresentation` con sesión, borrador de sesión y plantillas, y pasa sus ejercicios, esfuerzo actual y progreso al controlador de sesión. `TrainingScreen.tsx` consume ese modelo: el historial global permite abrir el detalle, muestra si la rutina actual fue eliminada y, cuando hay instantánea, renderiza las series y mini-series que se ejecutaron. La vista no reconstruye esos datos desde la plantilla canónica.
 
 ## Plantillas, series e identidades
 
@@ -111,7 +117,7 @@ flowchart TD
 
 Solo se inicia una sesión si no hay otra activa y la plantilla tiene alguna unidad ejecutable. La sesión fija la primera clave actual, las claves completadas, contadores, estado `running` o `paused`, reloj, posible `pending_resolution` y un borrador de plantilla de sesión con `base_revision` y `draft_revision`. Durante el entrenamiento se ejecuta ese borrador, incluso si la plantilla canónica se modifica o elimina.
 
-Al cambiar la estructura del borrador, la aplicación vuelve a enumerar unidades, descarta completadas que ya no existen, recalcula contadores y elige una unidad actual válida. Al hidratar, `normalizeWorkoutSession` deduplica y filtra claves, migra las antiguas claves de serie al bloque completo, normaliza una resolución pendiente a pausa y vuelve a derivar los contadores. Así la migración es idempotente y una marca antigua no deja una sesión parcialmente inconsistente.
+Al cambiar la estructura del borrador, la aplicación vuelve a enumerar unidades, descarta completadas que ya no existen, recalcula contadores y elige una unidad actual válida. Si la edición invalida la unidad actual o elimina el esfuerzo que originó el descanso, cancela ese descanso. Al hidratar, `normalizeWorkoutSession` deduplica y filtra claves, migra las antiguas claves de serie al bloque completo, normaliza una resolución pendiente a pausa y vuelve a derivar los contadores. Así la migración es idempotente y una marca antigua no deja una sesión parcialmente inconsistente.
 
 Marcar el esfuerzo actual lo añade una sola vez y busca el siguiente pendiente; la lista también puede marcar una unidad concreta. Desmarcar cancela un descanso, enfoca esa unidad y recalcula. No se permite mover el foco durante descanso. Al solicitar terminar o descartar, se pausa la sesión y se persiste `pending_resolution`: un cierre o reinicio no convierte silenciosamente una sesión parcial en finalizada.
 
@@ -119,7 +125,9 @@ Marcar el esfuerzo actual lo añade una sola vez y busca el siguiente pendiente;
 
 El reloj durable ancla `clock_last_tick_ms`, `rest_due_at_ms`, `rest_cycle_id`, `rest_alarm_revision` y la última alerta tratada. Reconcilia segundos enteros conservando la fracción subsegundo. Una pausa congela tiempo y descanso; reanudar un descanso conserva lo pendiente pero crea una fecha objetivo y una revisión nuevas. Si el reloj retrocede, se reancla sin sumar tiempo; si el hueco supera 12 horas, la sesión se pausa automáticamente sin inventar tiempo ni terminar el descanso. Cada ciclo de descanso solo puede emitir una alerta lógica gracias a `last_handled_rest_alert`.
 
-El descanso se decide entre unidades: dentro del mismo bloque compuesto toma el descanso de la **siguiente** mini-serie; al salir del bloque toma el de la serie principal completada. Sin siguiente unidad no hay descanso. `parseWorkoutRestSeconds` acepta segundos, sufijo `s`, minutos `m` y `minutos:segundos`; vacío, negativo o inválido vale cero.
+El descanso se decide entre unidades: dentro del mismo bloque compuesto toma el descanso de la **siguiente** mini-serie; al salir del bloque toma el de la serie principal completada. Sin siguiente unidad no hay descanso. `parseWorkoutRestSeconds` acepta segundos, sufijo `s`, minutos `m` y minutos:segundos; vacío, negativo o inválido vale cero.
+
+`rest_origin_unit_key` separa el lugar donde se presenta el temporizador de `current_unit_key`, que apunta al siguiente esfuerzo. Solo se conserva si el origen sigue siendo una clave completada; omitir o vencer el descanso lo limpia sin cambiar ni el siguiente esfuerzo ni las claves completadas. Para sesiones anteriores sin origen o con un origen inválido, la presentación degrada al ejercicio actual en vez de bloquear la apertura.
 
 ```mermaid
 stateDiagram-v2
@@ -134,7 +142,7 @@ stateDiagram-v2
     Resolving --> [*]: commit y limpiar claves
 ```
 
-*El reloj, el ciclo y la revisión de alarma hacen recuperable la transición; los modales solo deciden la resolución.*
+*El reloj, el ciclo y la revisión de alarma hacen recuperable la transición; `rest_origin_unit_key` fija la tarjeta del descanso y los modales solo deciden la resolución.*
 
 ## Finalización atómica e historial
 
@@ -154,8 +162,9 @@ Si las notificaciones están desactivadas no agenda nada. En Android inicializa 
 
 - `series.contract.test.ts` impide que `App.tsx` reintroduzca tipos, normalización, copias o firmas de series; también verifica que solo la importación sea estricta y que el sello no se filtre a la raíz del almacén.
 - Las pruebas de contratos, propiedades y regresión de `seriesContract`, `workoutTemplateOperations` y `workoutTemplateTransactions` cubren reparación, identidades, copias, cambios de tipo, validación, rebase y conflictos.
-- `workoutExecution.test.ts`, `workoutSessionModel.test.ts` y `workoutSessionClock.test.ts` cubren expansión, descansos, deduplicación, migración, pausas, huecos largos, retroceso de reloj y alerta única por ciclo. `restNotificationContract.test.ts` y su prueba de reanudación cubren el payload y la reconciliación de alarmas.
+- `workoutExecution.test.ts`, `workoutSessionModel.test.ts` y `workoutSessionClock.test.ts` cubren expansión, descansos, deduplicación, migración, pausas, huecos largos, retroceso de reloj y alerta única por ciclo. `restOrigin.test.ts` comprueba, incluso con ejecución fuera de orden, que el temporizador se ancla al esfuerzo completado y se limpia al omitir, vencer o invalidar su origen. `restNotificationContract.test.ts` y su prueba de reanudación cubren el payload y la reconciliación de alarmas.
 - `workoutHistory.test.ts` verifica instantáneas sin datos de catálogo o imágenes, independencia frente a ediciones, discrepancias sin sobrescritura, legado, rechazo estricto e impacto de sesiones parciales en racha y semana.
+- `npm run test:train:series-operations:e2e` recorre la edición y recuperación de borradores de series. `npm run test:train:compound:e2e` migra y recupera sesiones compuestas, ejecuta los cinco tipos, verifica el descanso de una mini-serie y el desglose persistido, y confirma que un descanso fuera de orden sigue en la tarjeta del esfuerzo que lo originó tras recargar.
 - `npm run test:train:history:e2e` recorre historial global, cálculo coincidente y discrepante, plantilla eliminada, legado y el ciclo de exportar, borrar actividad, restaurar y rechazar una instantánea incompatible sin alterar lo ya restaurado.
 
 Antes de modificar estos contratos o el flujo, ejecute al menos:
