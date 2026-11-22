@@ -1,0 +1,4 @@
+- [No pushear a main sin permiso](no-push-to-main-without-permission.md) — push a main dispara CI/CD con builds Expo limitados; esperar confirmación
+- [Posts del portafolio: commit, push y merge sin preguntar](portfolio-posts-auto-merge.md) — solo repo portafolio; Gymnasia sigue con merge manual
+- [Estilo de los posts del portafolio](portfolio-posts-style.md) — pseudocódigo, soluciones abstractas y comas en vez de rayas
+- [Coach no pide confirmación de tools](no-tool-confirmations.md) — usuario no técnico; solo se pregunta antes de enviar sugerencias al equipo
