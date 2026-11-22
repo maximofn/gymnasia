@@ -9,6 +9,16 @@
   descripciones de PR y a la documentación. Ejemplo:
   `GYM-45 (ticket para añadir confirmación humana en tools con efectos)`.
 
+## Memoria del asistente: en el repositorio, no en `~/.claude`
+- **Todo lo que guardes en la memoria va a `docs/memory/` de este repositorio**,
+  nunca a `~/.claude/projects/.../memory/`. Mismo formato (un fichero por hecho,
+  con frontmatter) y el índice en `docs/memory/MEMORY.md`. Lee ese índice al
+  empezar una tarea en la que pueda importar.
+- Motivo: así la memoria viaja con `git clone` y sobrevive a un cambio de
+  ordenador.
+- El repositorio es **público**: nada de secretos, claves ni datos personales en
+  la memoria.
+
 ## Cambios en las instrucciones del agente: avisar y esperar aprobación
 - **Cuando un cambio toque `prompts/` o `policy/health-safety/`, para y avisa.**
   Son las instrucciones que el modelo lee y obedece, y el repositorio las gobierna
