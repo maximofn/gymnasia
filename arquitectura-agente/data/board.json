@@ -903,6 +903,42 @@
           ]
         },
         {
+          "id": "GYM-271",
+          "title": "Que Coach pueda quitar, cambiar los gramos y mover alimentos de una comida",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Hoy Coach solo añade alimentos: si apunta mal los gramos o la comida, no puede arreglarlo y tiende a duplicar la entrada.",
+          "dependsOn": [],
+          "related": [
+            "GYM-260",
+            "GYM-83"
+          ]
+        },
+        {
+          "id": "GYM-272",
+          "title": "Que Coach pueda borrar una medición entera",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Coach corrige valores de una medición pero no puede quitarla: un peso apuntado en el día equivocado deja allí un registro que solo se borra a mano.",
+          "dependsOn": [],
+          "related": [
+            "GYM-260",
+            "GYM-171"
+          ]
+        },
+        {
+          "id": "GYM-273",
+          "title": "Que Coach pueda borrar una rutina",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Coach crea rutinas pero no las borra: pedirle que rehaga una deja la mala y una copia nueva.",
+          "dependsOn": [],
+          "related": [
+            "GYM-260",
+            "GYM-178"
+          ]
+        },
+        {
           "id": "GYM-270",
           "title": "Tools de lectura por periodo con totales calculados por la app (medidas, dieta y entrenamientos)",
           "state": "backlog",
@@ -3703,11 +3739,14 @@
     {
       "id": "cerrar-tool-calling",
       "title": "Cerrar tool calling",
-      "why": "Depende de los catorce anteriores: recoge en una suite única los casos que cada ticket ha ido dejando.",
+      "why": "Depende de los catorce anteriores: recoge en una suite única los casos que cada ticket ha ido dejando. GYM-271, GYM-272 y GYM-273 (tickets para que Coach pueda corregir comidas, borrar mediciones y borrar rutinas) van antes que GYM-260 (ticket para deshacer los cambios de Coach): si el usuario puede pedir la corrección hablando, deshacer pierde buena parte de su sentido.",
       "tickets": [
         "GYM-48",
         "GYM-258",
         "GYM-270",
+        "GYM-271",
+        "GYM-272",
+        "GYM-273",
         "GYM-260"
       ]
     },
