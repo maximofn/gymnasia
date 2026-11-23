@@ -20,7 +20,7 @@ function telemetry() {
     [
       {
         trace_id: "private-trace-id",
-        parent_run_id: null,
+        is_root: true,
         run_type: "chain",
         name: "private-name",
         start_time: "2026-09-15T08:00:00.000Z",

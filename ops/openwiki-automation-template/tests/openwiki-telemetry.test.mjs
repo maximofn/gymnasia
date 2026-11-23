@@ -11,10 +11,14 @@ import {
 
 const now = new Date("2026-09-15T08:30:00.000Z");
 
+function langsmithClient(runs) {
+  return { readProject: async () => ({ id: "project-1" }), runs };
+}
+
 function run(overrides) {
   return {
     trace_id: "trace-1",
-    parent_run_id: null,
+    is_root: true,
     run_type: "chain",
     name: "private-root-name",
     start_time: "2026-09-15T08:00:00.000Z",
@@ -37,7 +41,7 @@ test("aggregates allowlisted metrics without retaining trace content", () => {
         end_time: "2026-09-15T08:10:01.000Z",
       }),
       run({
-        parent_run_id: "root-1",
+        is_root: false,
         run_type: "llm",
         name: secret,
         start_time: "2026-09-15T08:00:10.000Z",
@@ -47,14 +51,14 @@ test("aggregates allowlisted metrics without retaining trace content", () => {
         total_cost: 0.0042,
       }),
       run({
-        parent_run_id: "root-1",
+        is_root: false,
         run_type: "tool",
         name: "tavily_search_results_json",
         start_time: "2026-09-15T08:00:18.000Z",
         end_time: "2026-09-15T08:00:18.050Z",
       }),
       run({
-        parent_run_id: "root-1",
+        is_root: false,
         run_type: "tool",
         name: secret,
         start_time: "2026-09-15T08:00:19.000Z",
@@ -88,7 +92,7 @@ test("does not interpret zero token and cost fields as measured usage", () => {
   const sample = aggregateRuns([
     run({}),
     run({
-      parent_run_id: "root-1",
+      is_root: false,
       run_type: "llm",
       total_tokens: 0,
       total_cost: 0,
@@ -119,11 +123,11 @@ test("keeps the previous valid sample when LangSmith is unavailable", async () =
     },
     sample: aggregateRuns([run({})], { collectedAt: now }),
   };
-  const client = {
-    async *listRuns() {
+  const client = langsmithClient({
+    async *query() {
       throw new Error("private remote error");
     },
-  };
+  });
 
   const telemetry = await collectTelemetry({ client, now, previous });
 
@@ -135,13 +139,13 @@ test("keeps the previous valid sample when LangSmith is unavailable", async () =
 });
 
 test("reduces LangSmith query errors to a fixed safe category", async () => {
-  const client = {
-    async *listRuns() {
+  const client = langsmithClient({
+    async *query() {
       const error = new Error("private provider response");
       error.status = 429;
       throw error;
     },
-  };
+  });
 
   const telemetry = await collectTelemetry({ client, now });
 
@@ -151,15 +155,15 @@ test("reduces LangSmith query errors to a fixed safe category", async () => {
 });
 
 test("does not misclassify LangSmith HTTP errors as network failures", async () => {
-  const client = {
-    async *listRuns() {
+  const client = langsmithClient({
+    async *query() {
       const error = new Error(
-        'Failed to fetch /runs/query. Received status [400]: {"detail":"private"}',
+        'Failed to fetch /api/v2/runs/query. Received status [400]: {"detail":"private"}',
       );
       error.status = 400;
       throw error;
     },
-  };
+  });
 
   const telemetry = await collectTelemetry({ client, now });
 
@@ -170,51 +174,60 @@ test("does not misclassify LangSmith HTTP errors as network failures", async () 
 
 test("queries only the bounded structural fields needed for aggregation", async () => {
   let query;
-  const client = {
-    async *listRuns(value) {
+  let projectQuery;
+  const client = langsmithClient({
+    async *query(value) {
       query = value;
       yield run({});
     },
+  });
+  client.readProject = async (value) => {
+    projectQuery = value;
+    return { id: "project-1" };
   };
 
   const telemetry = await collectTelemetry({ client, now });
 
   assert.equal(telemetry.latestAttempt.status, "available");
-  assert.equal(query.projectName, "openwiki");
-  assert.equal(query.limit, undefined);
-  assert.equal(query.startTime.toISOString(), "2026-09-08T08:30:00.000Z");
-  assert.ok(query.select.includes("trace_id"));
-  assert.ok(query.select.includes("name"));
-  assert.ok(query.select.includes("error"));
+  assert.deepEqual(projectQuery, { projectName: "openwiki" });
+  assert.deepEqual(query.project_ids, ["project-1"]);
+  assert.equal(query.page_size, undefined);
+  assert.equal(query.min_start_time, "2026-09-08T08:30:00.000Z");
+  assert.equal(query.max_start_time, "2026-09-15T08:30:00.000Z");
+  for (const field of ["TRACE_ID", "IS_ROOT", "NAME", "ERROR"]) {
+    assert.ok(query.selects.includes(field), field);
+  }
   for (const forbidden of [
-    "inputs",
-    "outputs",
-    "extra",
-    "events",
-    "serialized",
-    "app_path",
-    "share_token",
-    "inputs_s3_urls",
-    "outputs_s3_urls",
+    "INPUTS",
+    "OUTPUTS",
+    "INPUTS_PREVIEW",
+    "OUTPUTS_PREVIEW",
+    "EXTRA",
+    "METADATA",
+    "EVENTS",
+    "MANIFEST",
+    "APP_PATH",
+    "SHARE_URL",
+    "ATTACHMENTS",
   ]) {
-    assert.ok(!query.select.includes(forbidden), forbidden);
+    assert.ok(!query.selects.includes(forbidden), forbidden);
   }
 });
 
 test("caps the aggregate without sending an invalid LangSmith page limit", async () => {
   let query;
-  const client = {
-    async *listRuns(value) {
+  const client = langsmithClient({
+    async *query(value) {
       query = value;
       for (let index = 0; index < 901; index += 1) {
         yield run({ trace_id: `trace-${index}` });
       }
     },
-  };
+  });
 
   const telemetry = await collectTelemetry({ client, now });
 
-  assert.equal(query.limit, undefined);
+  assert.equal(query.page_size, undefined);
   assert.equal(telemetry.latestAttempt.status, "available");
   assert.equal(telemetry.sample.roots.total, 900);
   assert.equal(telemetry.sample.truncated, true);
