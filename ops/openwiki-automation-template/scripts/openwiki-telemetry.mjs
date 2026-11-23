@@ -23,20 +23,20 @@ export const TOOL_CATEGORIES = Object.freeze([
 
 const MAX_DURATION_MS = 120 * 60 * 1_000;
 const SELECTED_RUN_FIELDS = Object.freeze([
-  "trace_id",
-  "parent_run_id",
-  "run_type",
-  "name",
-  "start_time",
-  "end_time",
-  "status",
-  "error",
-  "prompt_tokens",
-  "completion_tokens",
-  "total_tokens",
-  "prompt_cost",
-  "completion_cost",
-  "total_cost",
+  "TRACE_ID",
+  "IS_ROOT",
+  "RUN_TYPE",
+  "NAME",
+  "START_TIME",
+  "END_TIME",
+  "STATUS",
+  "ERROR",
+  "PROMPT_TOKENS",
+  "COMPLETION_TOKENS",
+  "TOTAL_TOKENS",
+  "PROMPT_COST",
+  "COMPLETION_COST",
+  "TOTAL_COST",
 ]);
 
 function runField(run, snakeCase, camelCase) {
@@ -225,7 +225,7 @@ export function aggregateRuns(
     : new Date(endDate.getTime() - TELEMETRY_WINDOW_DAYS * 86_400_000);
   const safeRuns = Array.isArray(runs) ? runs : [];
   const roots = safeRuns.filter(
-    (run) => !runField(run, "parent_run_id", "parentRunId"),
+    (run) => run?.is_root === true,
   );
   const traceIds = new Set(
     roots
@@ -514,10 +514,15 @@ export async function collectTelemetry({
     }
     const runs = [];
     const query = (async () => {
-      for await (const run of langsmithClient.listRuns({
+      const project = await langsmithClient.readProject({
         projectName: TELEMETRY_PROJECT,
-        startTime,
-        select: SELECTED_RUN_FIELDS,
+      });
+      // min_start_time is required in practice: without it v2 only returns the last 24 h.
+      for await (const run of langsmithClient.runs.query({
+        project_ids: [project.id],
+        min_start_time: startTime.toISOString(),
+        max_start_time: attemptedAt.toISOString(),
+        selects: SELECTED_RUN_FIELDS,
       })) {
         runs.push(run);
         if (runs.length >= TELEMETRY_RUN_LIMIT) {

@@ -288,9 +288,12 @@ semanalmente los lunes y también en cada ejecución manual; su JSON fuente es
 `ops/openwiki-runtime-telemetry.json` y se somete a los mismos checks y la misma
 lista cerrada antes del auto-merge.
 
-El recolector no envía `limit: 900` a `/runs/query`: LangSmith limita cada
-petición a 100 spans. Deja que el SDK pagine con el límite admitido y corta la
-muestra agregada al alcanzar 900 spans. Los errores HTTP de LangSmith se
+El recolector resuelve el UUID del proyecto con `readProject` y consulta
+`/api/v2/runs/query` con `client.runs.query`, pasando siempre
+`min_start_time` (sin él, LangSmith solo devuelve las últimas 24 horas). No
+envía `page_size`: deja que el SDK pagine con el tamaño por defecto (100 spans)
+y corta la muestra agregada al alcanzar 900 spans. Los spans raíz se detectan
+con el campo `is_root`. Los errores HTTP de LangSmith se
 clasifican como `langsmith` antes de interpretar el texto del mensaje, para que
 un HTTP 400 cuyo texto empiece por `Failed to fetch` no aparezca falsamente como
 un fallo de red.
