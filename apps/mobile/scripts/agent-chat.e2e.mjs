@@ -861,8 +861,16 @@ async function runAgentChatE2E(
   assert.equal(typeof systemPrompt, "string");
   assert.equal(transparencyMarkerCount(systemPrompt), 1);
   assert(
-    systemPrompt.startsWith(`${bundledPrompt.trim()}\n\n[GYMNASIA_AI_TRANSPARENCY_START`),
-    "el proveedor debe recibir primero el prompt local de development",
+    systemPrompt.startsWith(`${bundledPrompt.trim()}\n\n## Fecha de hoy\n`),
+    "el proveedor debe recibir primero el prompt local de development y después la fecha de hoy",
+  );
+  assert(
+    systemPrompt.includes(`(${localDateKeyOffset(0)}) para el usuario.`),
+    `${provider} debe recibir la fecha local de hoy`,
+  );
+  assert(
+    systemPrompt.indexOf("## Fecha de hoy") < systemPrompt.indexOf("[GYMNASIA_AI_TRANSPARENCY_START"),
+    "la transparencia debe seguir cerrando el prompt",
   );
   assert(systemPrompt.includes("Eres Gymnasia Coach, un sistema de inteligencia artificial"));
   const providerTools = requestBodies[0].tools;
@@ -1892,6 +1900,10 @@ async function runPeriodReadsE2E(page, baseUrl) {
     .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
 
   assert.equal(providerRounds.length, 3, "Cada pregunta debe resolverse con una sola llamada a la tool.");
+  assert.ok(
+    String(providerRounds[0].instructions).includes(`(${today})`),
+    "Coach debe recibir la fecha local de hoy para interpretar «este mes».",
+  );
   const declared = providerRounds[0].tools.map((tool) => tool.name);
   for (const name of ["read_measurements_period", "read_diet_period", "read_workout_history"]) {
     assert.ok(declared.includes(name), `Falta ${name} en las tools declaradas.`);
