@@ -479,6 +479,84 @@ async function expectCiqualOffline(page) {
   await page.unroute("**/v1/responses*");
 }
 
+async function expectCoachMealCorrection() {
+  log("Verificando que Coach corrige los gramos de un alimento sin duplicarlo");
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  try {
+    const page = await preparePage(context, { offline: true }, {}, true);
+    await openApp(page);
+    const today = await page.evaluate(() => {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    });
+    const requests = [];
+    const toolOutput = (request, callId) => {
+      const item = request.input.find((entry) => entry.type === "function_call_output" && entry.call_id === callId);
+      return item ? JSON.parse(item.output) : null;
+    };
+    await page.route("**/v1/responses*", async (route) => {
+      const request = route.request().postDataJSON();
+      requests.push(request);
+      const number = requests.length;
+      let body;
+      if (number === 1) {
+        body = openAIToolCallSse("resp_fix_add", "call_fix_add", "add_meal_food", JSON.stringify({ date: today, meal: "Cena", data: JSON.stringify({ kind: "catalog", source_id: "anses_ciqual_2025", item_id: ciqualRice.id, grams: 150 }) }));
+      } else if (number === 2) {
+        body = openAIFinalSse("Arroz apuntado.");
+      } else if (number === 3) {
+        body = openAIToolCallSse("resp_fix_read", "call_fix_read", "read_meal_foods", JSON.stringify({ date: today, meal: "Cena" }));
+      } else if (number === 4) {
+        const foods = toolOutput(request, "call_fix_read");
+        assert.equal(foods.length, 1);
+        body = openAIToolCallSse("resp_fix_update", "call_fix_update", "update_meal_food", JSON.stringify({ date: today, meal: "Cena", entry_id: foods[0].entrada_id, grams: 100 }));
+      } else {
+        body = openAIFinalSse("Corregido a 100 g.");
+      }
+      await route.fulfill({ status: 200, headers: { "content-type": "text/event-stream; charset=utf-8" }, body });
+    });
+    await page.getByTestId("nav-tab-chat").click();
+    await page.getByTestId("chat-input").fill("Apunta 150 g de arroz en la cena");
+    await page.getByTestId("chat-send").click();
+    await page.getByText("Arroz apuntado.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+    await page.getByTestId("chat-input").fill("Me he equivocado, eran 100 gramos");
+    await page.getByTestId("chat-send").click();
+    await page.getByText("Corregido a 100 g.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+    assert.equal(requests.length, 5);
+    assert.equal(toolOutput(requests[4], "call_fix_update").status, "updated");
+    await page.waitForFunction(({ key, date }) => {
+      const items = (JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate?.[date]?.meals ?? [])
+        .filter((meal) => meal.title === "Cena")
+        .flatMap((meal) => meal.items);
+      return items.length === 1 && items[0].grams === 100;
+    }, { key: storageKey, date: today });
+    await page.unroute("**/v1/responses*");
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.getByTestId("nav-tab-diet").click();
+    const rows = page.getByTestId(/^diet-item-row-/).filter({ hasText: ciqualRice.name });
+    await rows.first().waitFor({ state: "visible" });
+    assert.equal(await rows.count(), 1);
+    await rows.first().getByText(/^100 g · /).waitFor({ state: "visible" });
+    await rows.first().getByText("350 kcal", { exact: true }).waitFor({ state: "visible" });
+    const persisted = await page.evaluate(({ key, date }) => (JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate?.[date]?.meals ?? []).flatMap((meal) => meal.items.map((item) => [meal.title, item.grams, item.calories_kcal])), { key: storageKey, date: today });
+    assert.deepEqual(persisted, [["Cena", 100, 350]]);
+
+    log("Verificando que la pantalla edita y borra con la misma lógica compartida");
+    const readMeals = () => page.evaluate(({ key, date }) => (JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate?.[date]?.meals ?? []).map((meal) => [meal.title, meal.items.map((item) => [item.grams, item.calories_kcal])]), { key: storageKey, date: today });
+    await rows.first().locator('[tabindex="0"]').last().click();
+    await page.getByText("Editar a mano", { exact: true }).click();
+    await page.getByTestId("manual-food-grams-input").fill("80");
+    await page.getByTestId("save-manual-food").click();
+    await page.waitForFunction(({ key, date }) => JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate?.[date]?.meals?.[0]?.items?.[0]?.grams === 80, { key: storageKey, date: today });
+    assert.deepEqual(await readMeals(), [["Cena", [[80, 280]]]]);
+    await rows.first().locator('[tabindex="0"]').last().click();
+    await page.getByText("Eliminar", { exact: true }).click();
+    await page.waitForFunction(({ key, date }) => (JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate?.[date]?.meals ?? []).length === 0, { key: storageKey, date: today });
+    assert.equal(await rows.count(), 0);
+  } finally {
+    await context.close();
+  }
+}
+
 async function expectCiqualImages() {
   log("Verificando imágenes reales de CIQUAL en catálogo, búsqueda, dieta e historial");
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -562,6 +640,7 @@ const browser = await chromium.launch({ headless: process.env.CATALOG_E2E_HEADLE
 
 try {
   await expectCiqualImages();
+  await expectCoachMealCorrection();
   if (process.env.CATALOG_E2E_CIQUAL_ONLY === "1") {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const page = await preparePage(context, { offline: true }, {}, true);

@@ -9,6 +9,7 @@ import {
 } from "../catalogs/types";
 import { dietItemFromCatalog, findDietFoodInCatalog } from "../diet/catalogModel";
 import { buildDietDailyPresentationModel } from "../diet/dailyPresentationModel";
+import { removeDietItem, replaceDietItem } from "../diet/mealItemOperations";
 import {
   createDietMealExpandedState,
   dateFromISO,
@@ -554,21 +555,12 @@ export function useDietRuntime(input: {
       const currentDay = previous.dietByDate[target.date]
         ?? { day_date: target.date, meals: [] };
       if (target.editing) {
-        const meals = currentDay.meals
-          .map((meal) => meal.id !== target.editing?.meal_id ? meal : ({
-            ...meal,
-            items: meal.items.map((current) => current.id === target.editing?.item_id
-              ? { ...item, id: current.id }
-              : current),
-          }))
-          .filter((meal) => meal.items.length > 0);
-        return {
-          ...previous,
-          dietByDate: {
-            ...previous.dietByDate,
-            [target.date]: { ...currentDay, meals: sortDietMealsByCategory(meals) },
-          },
-        };
+        const replaced = replaceDietItem(
+          previous.dietByDate,
+          { date: target.date, meal: { id: target.editing.meal_id }, itemId: target.editing.item_id },
+          item,
+        );
+        return replaced.ok ? { ...previous, dietByDate: replaced.value.dietByDate } : previous;
       }
       const existingMealIndex = currentDay.meals.findIndex(
         (meal) => meal.title === target.category,
@@ -817,20 +809,11 @@ export function useDietRuntime(input: {
     deleteItem: (meal, item) => {
       const activeDate = selectedDate;
       inputRef.current.localStore.update((previous) => {
-        const currentDay = previous.dietByDate[activeDate]
-          ?? { day_date: activeDate, meals: [] };
-        const meals = currentDay.meals
-          .map((currentMeal) => currentMeal.id === meal.id
-            ? { ...currentMeal, items: currentMeal.items.filter((current) => current.id !== item.id) }
-            : currentMeal)
-          .filter((currentMeal) => currentMeal.items.length > 0);
-        return {
-          ...previous,
-          dietByDate: {
-            ...previous.dietByDate,
-            [activeDate]: { ...currentDay, meals: sortDietMealsByCategory(meals) },
-          },
-        };
+        const removed = removeDietItem(
+          previous.dietByDate,
+          { date: activeDate, meal: { id: meal.id }, itemId: item.id },
+        );
+        return removed.ok ? { ...previous, dietByDate: removed.value.dietByDate } : previous;
       });
       if (editingItem?.meal_id === meal.id && editingItem.item_id === item.id) {
         setEditingItem(null);

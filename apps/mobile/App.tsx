@@ -1045,6 +1045,8 @@ const RECONCILED_TOOL_OUTPUTS: Record<string, string> = {
   save_personal_data: "Los datos personales ya se habían guardado.",
   write_measurement: "Las medidas ya se habían guardado.",
   add_meal_food: "El alimento ya se había añadido.",
+  remove_meal_food: "El alimento ya se había quitado.",
+  update_meal_food: "El alimento ya se había corregido.",
   create_routine: "La rutina ya se había creado.",
 };
 

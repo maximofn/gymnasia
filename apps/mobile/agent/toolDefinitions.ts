@@ -380,6 +380,57 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
     },
   },
   {
+    name: "remove_meal_food",
+    effect: "local_write",
+    description:
+      "Quita un alimento concreto de una comida. Úsala solo cuando el usuario pida quitar o borrar un alimento apuntado, nunca por iniciativa propia. " +
+      "Antes llama a read_meal_foods (o a read_diet_period con include_foods) para obtener el entrada_id de esa entrada: " +
+      "si hay dos entradas iguales, pregunta al usuario cuál. Si la entrada no está en esa comida y fecha, no se borra nada.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        date: stringProperty("Fecha de la comida donde está ahora el alimento, en formato YYYY-MM-DD."),
+        meal: stringProperty(
+          "Comida donde está ahora el alimento: Desayuno, Almuerzo, Comida, Merienda o Cena",
+          DIET_MEAL_CATEGORIES,
+        ),
+        entry_id: stringProperty("entrada_id devuelto por read_meal_foods o read_diet_period."),
+      },
+      required: ["date", "meal", "entry_id"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "update_meal_food",
+    effect: "local_write",
+    description:
+      "Corrige un alimento ya apuntado: cambia sus gramos, lo mueve a otra comida u otro día, o ambas cosas a la vez. " +
+      "Úsala solo cuando el usuario pida corregir un alimento, nunca por iniciativa propia. " +
+      "Para corregir NUNCA vuelvas a añadir el alimento con add_meal_food: lo duplicarías. " +
+      "Antes llama a read_meal_foods (o a read_diet_period con include_foods) para obtener el entrada_id. " +
+      "Al cambiar los gramos, la app recalcula calorías y macros; no los calcules tú. " +
+      "Si la entrada no está en esa comida y fecha, no se cambia nada.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        date: stringProperty("Fecha de la comida donde está ahora el alimento, en formato YYYY-MM-DD."),
+        meal: stringProperty(
+          "Comida donde está ahora el alimento: Desayuno, Almuerzo, Comida, Merienda o Cena",
+          DIET_MEAL_CATEGORIES,
+        ),
+        entry_id: stringProperty("entrada_id devuelto por read_meal_foods o read_diet_period."),
+        grams: numberProperty("Gramos correctos, si hay que cambiarlos (opcional).", { minimum: 0.1 }),
+        to_meal: stringProperty(
+          "Comida a la que hay que moverlo, si hay que moverlo (opcional).",
+          DIET_MEAL_CATEGORIES,
+        ),
+        to_date: stringProperty("Día al que hay que moverlo en formato YYYY-MM-DD, si es otro día (opcional; por defecto, el mismo)."),
+      },
+      required: ["date", "meal", "entry_id"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "search_exercises",
     effect: "read",
     description:

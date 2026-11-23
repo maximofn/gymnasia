@@ -64,6 +64,11 @@ function dateKeyToUtcMs(rawValue: unknown): number | null {
   return ms;
 }
 
+/** Fecha civil válida en formato YYYY-MM-DD (rechaza, por ejemplo, el 31 de febrero). */
+export function isCalendarDateKey(rawValue: unknown): rawValue is string {
+  return typeof rawValue === "string" && rawValue === rawValue.trim() && dateKeyToUtcMs(rawValue) !== null;
+}
+
 function utcMsToDateKey(ms: number): string {
   return new Date(ms).toISOString().slice(0, 10);
 }
@@ -254,6 +259,8 @@ export type NutritionTotals = {
 type RawNutritionTotals = NutritionTotals;
 
 export type DietPeriodFood = {
+  /** Identificador de la entrada, para corregirla o quitarla sin confundirla con otra igual. */
+  entrada_id: string;
   nombre: string;
   gramos: number;
   calorias_kcal: number;
@@ -340,6 +347,7 @@ export function buildDietPeriod(
               .map((meal) => ({
                 comida: meal.title,
                 alimentos: meal.items.map((item) => ({
+                  entrada_id: item.id,
                   nombre: item.title,
                   gramos: item.grams,
                   calorias_kcal: item.calories_kcal,

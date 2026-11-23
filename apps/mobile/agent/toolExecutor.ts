@@ -8,12 +8,19 @@ import {
   formatNutritionValidationIssues,
   resolveDietMealCategory,
   validateNutritionItem,
+  type DietMealCategory,
 } from "../diet/nutritionContract";
+import {
+  locateDietItem,
+  moveDietItem,
+  removeDietItem,
+  rescaleDietItem,
+} from "../diet/mealItemOperations";
 import {
   ToolOperationIndeterminateError,
   type ToolOperationExecutionOutcome,
 } from "./toolOperationLedger";
-import { appendToolOperationReceipt, type ToolOperationReceipt } from "./toolOperationReceipts";
+import { appendToolOperationReceipt, hasToolOperationReceipt, type ToolOperationReceipt } from "./toolOperationReceipts";
 import { findByCatalogRef, matchFoodCatalog } from "../catalogs/matching";
 import { hasCompleteFoodNutrition } from "../catalogs/foodNutrition";
 import {
@@ -39,6 +46,7 @@ import {
   buildDietPeriod,
   buildMeasurementPeriod,
   buildWorkoutPeriod,
+  isCalendarDateKey,
   PERIOD_READ_MAX_DAYS,
   serializePeriodResult,
   validatePeriod,
@@ -337,6 +345,7 @@ const readMealFoods: ToolHandler = async (args, context) => {
   if (!matchingMeal) return toolFailure("not_found", `No se encontró la comida "${meal}" para la fecha "${date}". Puedes consultar otra comida conocida o preguntar al usuario.`, "choose_alternative");
   if (matchingMeal.items.length === 0) return `La comida "${meal}" del ${date} no tiene alimentos registrados.`;
   return JSON.stringify(matchingMeal.items.map((item) => ({
+    entrada_id: item.id,
     nombre: item.title,
     gramos: item.grams,
     calorias_kcal: item.calories_kcal,
@@ -520,6 +529,180 @@ const addMealFood: ToolHandler = async (args, context, dependencies) => {
   await commitToolStore(context, updateStore);
   context.markEffectCommitted?.();
   return `Alimento "${foodName}" (${grams}g, ${caloriesKcal} kcal) añadido a ${meal} del ${date}.`;
+};
+
+type MealEntryTarget = { date: string; meal: DietMealCategory; entryId: string };
+
+function parseMealEntryTarget(args: Record<string, unknown>): { ok: true; value: MealEntryTarget } | { ok: false; failure: ToolResult } {
+  if (!isCalendarDateKey(args.date)) {
+    return { ok: false, failure: toolFailure("invalid_date", "La fecha debe tener el formato YYYY-MM-DD y ser un día real. No se ha cambiado nada.", "correct_arguments") };
+  }
+  const mealResult = resolveDietMealCategory(args.meal);
+  if (!mealResult.ok) {
+    return { ok: false, failure: toolFailure("invalid_meal", formatNutritionValidationIssues(mealResult.issues), "correct_arguments") };
+  }
+  const entryId = typeof args.entry_id === "string" ? args.entry_id.trim() : "";
+  if (!entryId) {
+    return { ok: false, failure: toolFailure("invalid_entry", "Falta el entrada_id. Obtenlo con read_meal_foods. No se ha cambiado nada.", "correct_arguments") };
+  }
+  return { ok: true, value: { date: args.date, meal: mealResult.value, entryId } };
+}
+
+function mealEntryNotFound(target: MealEntryTarget): ToolResult {
+  return toolFailure(
+    "not_found",
+    `No se ha cambiado nada: la entrada "${target.entryId}" no está en ${target.meal} del ${target.date}. ` +
+      "Puede que el usuario la haya cambiado o que el id sea de otra comida. Vuelve a leer la comida con read_meal_foods; no elijas otra entrada parecida por tu cuenta.",
+    "choose_alternative",
+    { status: "not_found", written: false, entry_id: target.entryId },
+  );
+}
+
+const ALREADY_APPLIED_OUTPUT = JSON.stringify({ status: "already_applied", written: true });
+
+const removeMealFood: ToolHandler = async (args, context) => {
+  const parsed = parseMealEntryTarget(args);
+  if (!parsed.ok) return parsed.failure;
+  const target = parsed.value;
+  if (!context.commitStore) return toolFailure("storage_unavailable", "No se pudo acceder al almacenamiento durable. No se quitó el alimento.", "stop_turn");
+  const locator = { date: target.date, meal: { category: target.meal }, itemId: target.entryId };
+  type RemoveOutcome = { kind: "replayed" } | { kind: "missing" } | { kind: "removed"; item: ToolDietItem };
+  let outcome: RemoveOutcome = { kind: "missing" };
+  await commitToolStore(context, (previous) => {
+    if (context.operationId && hasToolOperationReceipt(previous.toolOperationReceipts, context.operationId, "remove_meal_food")) {
+      outcome = { kind: "replayed" };
+      return previous;
+    }
+    const result = removeDietItem(previous.dietByDate, locator);
+    if (!result.ok) {
+      outcome = { kind: "missing" };
+      return previous;
+    }
+    outcome = { kind: "removed", item: result.value.removed };
+    return {
+      ...previous,
+      dietByDate: result.value.dietByDate,
+      toolOperationReceipts: appendToolOperationReceipt(previous.toolOperationReceipts, context.operationId, "remove_meal_food"),
+    };
+  });
+  const final = outcome as RemoveOutcome;
+  if (final.kind === "missing") return mealEntryNotFound(target);
+  context.markEffectCommitted?.();
+  if (final.kind === "replayed") return ALREADY_APPLIED_OUTPUT;
+  return JSON.stringify({
+    status: "removed",
+    written: true,
+    entrada_id: final.item.id,
+    nombre: final.item.title,
+    gramos: final.item.grams,
+    fecha: target.date,
+    comida: target.meal,
+  });
+};
+
+const updateMealFood: ToolHandler = async (args, context, dependencies) => {
+  const parsed = parseMealEntryTarget(args);
+  if (!parsed.ok) return parsed.failure;
+  const target = parsed.value;
+  const hasGrams = args.grams !== undefined;
+  const grams = Number(args.grams);
+  if (hasGrams && !(Number.isFinite(grams) && grams > 0)) {
+    return toolFailure("invalid_grams", "Los gramos deben ser un número mayor que 0. No se ha cambiado nada.", "correct_arguments");
+  }
+  let toMeal: DietMealCategory = target.meal;
+  if (args.to_meal !== undefined) {
+    const resolved = resolveDietMealCategory(args.to_meal);
+    if (!resolved.ok) return toolFailure("invalid_meal", formatNutritionValidationIssues(resolved.issues), "correct_arguments");
+    toMeal = resolved.value;
+  }
+  if (args.to_date !== undefined && !isCalendarDateKey(args.to_date)) {
+    return toolFailure("invalid_date", "to_date debe tener el formato YYYY-MM-DD y ser un día real. No se ha cambiado nada.", "correct_arguments");
+  }
+  const toDate = (args.to_date as string | undefined) ?? target.date;
+  if (!hasGrams && args.to_meal === undefined && args.to_date === undefined) {
+    return toolFailure("no_change", "Indica qué cambiar: grams, to_meal o to_date. No se ha cambiado nada.", "correct_arguments");
+  }
+  if (!context.commitStore) return toolFailure("storage_unavailable", "No se pudo acceder al almacenamiento durable. No se cambió el alimento.", "stop_turn");
+  const locator = { date: target.date, meal: { category: target.meal }, itemId: target.entryId };
+  const operationSuffix = context.operationId?.slice(0, 24);
+  const createMealId = () => operationSuffix ? `meal_op_${operationSuffix}` : dependencies.createId("meal");
+  type UpdateOutcome =
+    | { kind: "replayed" }
+    | { kind: "missing" }
+    | { kind: "failed"; failure: ToolResult }
+    | { kind: "unchanged"; item: ToolDietItem }
+    | { kind: "updated"; previous: ToolDietItem; item: ToolDietItem };
+  let outcome: UpdateOutcome = { kind: "missing" };
+  await commitToolStore(context, (previous) => {
+    if (context.operationId && hasToolOperationReceipt(previous.toolOperationReceipts, context.operationId, "update_meal_food")) {
+      outcome = { kind: "replayed" };
+      return previous;
+    }
+    const located = locateDietItem(previous.dietByDate, locator);
+    if (!located) {
+      outcome = { kind: "missing" };
+      return previous;
+    }
+    let replacement: ToolDietItem = located.item;
+    if (hasGrams) {
+      const rescaled = rescaleDietItem(located.item, grams, context.foodsRepo ?? []);
+      if (!rescaled.ok) {
+        outcome = { kind: "failed", failure: toolFailure(rescaled.error.code, rescaled.error.message, "choose_alternative", { written: false }) };
+        return previous;
+      }
+      replacement = rescaled.value;
+    }
+    const moves = toDate !== target.date || toMeal !== target.meal;
+    if (!moves && replacement.grams === located.item.grams) {
+      outcome = { kind: "unchanged", item: located.item };
+      return previous;
+    }
+    const result = moveDietItem(previous.dietByDate, locator, { date: toDate, category: toMeal }, createMealId, replacement);
+    if (!result.ok) {
+      outcome = { kind: "missing" };
+      return previous;
+    }
+    outcome = { kind: "updated", previous: result.value.previous, item: result.value.item };
+    return {
+      ...previous,
+      dietByDate: result.value.dietByDate,
+      toolOperationReceipts: appendToolOperationReceipt(previous.toolOperationReceipts, context.operationId, "update_meal_food"),
+    };
+  });
+  const final = outcome as UpdateOutcome;
+  if (final.kind === "missing") return mealEntryNotFound(target);
+  if (final.kind === "failed") return final.failure;
+  if (final.kind === "unchanged") {
+    return JSON.stringify({
+      status: "unchanged",
+      written: false,
+      message: "La entrada ya estaba así; no se ha cambiado nada.",
+      entrada_id: final.item.id,
+      nombre: final.item.title,
+      gramos: final.item.grams,
+      fecha: target.date,
+      comida: target.meal,
+    });
+  }
+  context.markEffectCommitted?.();
+  if (final.kind === "replayed") return ALREADY_APPLIED_OUTPUT;
+  const snapshot = (item: ToolDietItem, date: string, meal: DietMealCategory) => ({
+    fecha: date,
+    comida: meal,
+    gramos: item.grams,
+    calorias_kcal: item.calories_kcal,
+    proteina_g: item.protein_g,
+    carbohidratos_g: item.carbs_g,
+    grasa_g: item.fat_g,
+  });
+  return JSON.stringify({
+    status: "updated",
+    written: true,
+    entrada_id: final.item.id,
+    nombre: final.item.title,
+    antes: snapshot(final.previous, target.date, target.meal),
+    ahora: snapshot(final.item, toDate, toMeal),
+  });
 };
 
 const searchFoods: ToolHandler = async (args, context) => {
@@ -786,6 +969,8 @@ export const AGENT_TOOL_HANDLERS: Readonly<Record<string, ToolHandler>> = Object
   read_workout_history: readWorkoutHistory,
   search_foods: searchFoods,
   add_meal_food: addMealFood,
+  remove_meal_food: removeMealFood,
+  update_meal_food: updateMealFood,
   search_exercises: searchExercises,
   read_routines: readRoutines,
   create_routine: createRoutine,
