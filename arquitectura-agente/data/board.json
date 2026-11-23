@@ -911,7 +911,8 @@
           "dependsOn": [],
           "related": [
             "GYM-260",
-            "GYM-83"
+            "GYM-83",
+            "GYM-275"
           ]
         },
         {
@@ -928,14 +929,41 @@
         },
         {
           "id": "GYM-273",
-          "title": "Que Coach pueda borrar una rutina",
+          "title": "Que Coach pueda editar y borrar una rutina",
           "state": "backlog",
           "baseline": "missing",
-          "summary": "Coach crea rutinas pero no las borra: pedirle que rehaga una deja la mala y una copia nueva.",
+          "summary": "Coach crea rutinas pero no las cambia ni las borra: pedirle que rehaga una deja la mala y una copia nueva.",
           "dependsOn": [],
           "related": [
             "GYM-260",
+            "GYM-178",
+            "GYM-274"
+          ]
+        },
+        {
+          "id": "GYM-274",
+          "title": "Que Coach pueda añadir, editar y quitar ejercicios de una rutina",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Coach solo mete ejercicios al crear una rutina: no puede añadir uno a una existente, cambiarle el peso o las series, ni quitarlo.",
+          "dependsOn": [],
+          "related": [
+            "GYM-273",
+            "GYM-260",
             "GYM-178"
+          ]
+        },
+        {
+          "id": "GYM-275",
+          "title": "Que Coach pueda crear, mover y vaciar una comida entera",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Coach apunta alimentos de uno en uno: no puede copiar la cena de otro día, mover una comida entera a otra ni vaciarla.",
+          "dependsOn": [],
+          "related": [
+            "GYM-271",
+            "GYM-260",
+            "GYM-83"
           ]
         },
         {
@@ -3739,7 +3767,7 @@
     {
       "id": "cerrar-tool-calling",
       "title": "Cerrar tool calling",
-      "why": "Depende de los catorce anteriores: recoge en una suite única los casos que cada ticket ha ido dejando. GYM-271, GYM-272 y GYM-273 (tickets para que Coach pueda corregir comidas, borrar mediciones y borrar rutinas) van antes que GYM-260 (ticket para deshacer los cambios de Coach): si el usuario puede pedir la corrección hablando, deshacer pierde buena parte de su sentido.",
+      "why": "Depende de los catorce anteriores: recoge en una suite única los casos que cada ticket ha ido dejando. GYM-271 a GYM-275 (tickets para que Coach pueda crear, editar y borrar alimentos, comidas, mediciones, rutinas y sus ejercicios) van antes que GYM-260 (ticket para deshacer los cambios de Coach): si el usuario puede pedir la corrección hablando, deshacer pierde buena parte de su sentido.",
       "tickets": [
         "GYM-48",
         "GYM-258",
@@ -3747,6 +3775,8 @@
         "GYM-271",
         "GYM-272",
         "GYM-273",
+        "GYM-274",
+        "GYM-275",
         "GYM-260"
       ]
     },
