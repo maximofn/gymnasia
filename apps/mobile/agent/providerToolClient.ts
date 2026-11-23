@@ -1,5 +1,6 @@
 import { composeAiSystemPrompt } from "./aiTransparency";
 import { COACH_CONTEXT_MESSAGE_LIMIT } from "./coachContext";
+import { appendCurrentDateContext } from "./currentDateContext";
 import { DEFAULT_GOOGLE_CONTEXT_BUDGET } from "./googleContextBudget";
 import {
   buildGoogleHistory,
@@ -64,6 +65,8 @@ export type ProviderToolChatOptions = StreamingHandlers & {
   executionId?: string;
   executeTool: ExecuteTool;
   toolBatchDiagnostics?: ToolBatchDiagnostics;
+  /** Reloj inyectable para las pruebas; por defecto, la hora del dispositivo. */
+  now?: () => Date;
 };
 
 export async function requestProviderToolChat(
@@ -81,11 +84,16 @@ export async function requestProviderToolChat(
     return fixture;
   }
 
+  // La fecha va tras las instrucciones fijas y antes del bloque de
+  // transparencia, que debe cerrar siempre el prompt.
   const systemPrompt = composeAiSystemPrompt(
-    messages
-      .filter((message) => message.role === "system")
-      .map((message) => message.content)
-      .join("\n\n"),
+    appendCurrentDateContext(
+      messages
+        .filter((message) => message.role === "system")
+        .map((message) => message.content)
+        .join("\n\n"),
+      options.now?.() ?? new Date(),
+    ),
   );
   const nonSystemMessages: Array<{ role: "assistant" | "user"; content: string }> = messages
     .filter((message) => message.role !== "system")

@@ -183,3 +183,15 @@ describe("OpenAI Responses sin estado remoto", () => {
     expect(JSON.stringify(sent[3].input)).not.toContain('"call_write"');
   });
 });
+
+describe("fecha de hoy en la petición real (GYM-270)", () => {
+  it("OpenAI recibe la fecha local de hoy en instructions", async () => {
+    turns.push([{ type: "message", id: "msg_date", role: "assistant", phase: "final_answer",
+      content: [{ type: "output_text", text: "Hecho." }] }]);
+    await requestProviderToolChat(provider, [{ role: "user", content: "¿Cómo ha ido mi peso este mes?" }], runtime, {
+      executeTool: vi.fn(), now: () => new Date(2026, 10, 23, 21, 30),
+    });
+    expect(String(sent[0].instructions)).toContain("Hoy es lunes, 23 de noviembre de 2026 (2026-11-23)");
+  });
+});
+
