@@ -1783,6 +1783,148 @@ async function runOpenAIStatelessE2E(page, baseUrl, roundLimit = false) {
   logStep(`OpenAI stateless ${roundLimit ? "cierre" : "dos rondas"}: cuerpos y persistencia verificados`);
 }
 
+function localDateKeyOffset(daysAgo) {
+  const date = new Date();
+  date.setHours(12, 0, 0, 0);
+  date.setDate(date.getDate() - daysAgo);
+  return [
+    `${date.getFullYear()}`.padStart(4, "0"),
+    `${date.getMonth() + 1}`.padStart(2, "0"),
+    `${date.getDate()}`.padStart(2, "0"),
+  ].join("-");
+}
+
+/**
+ * GYM-270 (ticket para que Coach lea un periodo de fechas de una vez): con un
+ * OpenAI falso, «peso del mes» y «calorías de la semana» se resuelven con una
+ * sola llamada cada una, y las cifras que recibe el modelo coinciden con las
+ * que muestran las pantallas de Medidas y Dieta.
+ */
+async function runPeriodReadsE2E(page, baseUrl) {
+  const providerRounds = [];
+  const today = localDateKeyOffset(0);
+  const monthStart = localDateKeyOffset(29);
+  const weekStart = localDateKeyOffset(6);
+  const measurement = (id, daysAgo, weight) => ({
+    id,
+    measured_on: localDateKeyOffset(daysAgo),
+    measured_at: `${localDateKeyOffset(daysAgo)}T12:00:00.000Z`,
+    weight_kg: weight,
+    body_fat_pct: null,
+    photo_uri: null,
+    neck_cm: null,
+    chest_cm: null,
+    waist_cm: null,
+    hips_cm: null,
+    biceps_cm: null,
+    quadriceps_cm: null,
+    calf_cm: null,
+    height_cm: null,
+  });
+  const dietDay = (daysAgo, calories, protein) => ({
+    day_date: localDateKeyOffset(daysAgo),
+    meals: [{
+      id: `meal_${daysAgo}`,
+      title: "Comida",
+      items: [{
+        id: `item_${daysAgo}`,
+        title: "Arroz blanco",
+        grams: 100,
+        calories_kcal: calories,
+        protein_g: protein,
+        carbs_g: 28,
+        fat_g: 0.3,
+      }],
+    }],
+  });
+  const store = createSeedStore("openai");
+  store.measurements = [measurement("m_old", 25, 82.4), measurement("m_mid", 12, 81.1), measurement("m_new", 1, 80.3)];
+  // Dos días de la semana sin registrar (2 y 4 días atrás).
+  store.dietByDate = Object.fromEntries([[0, 1850.5, 120], [1, 2100, 140], [3, 1950, 130], [5, 2300, 150], [6, 2000, 135]]
+    .map(([daysAgo, calories, protein]) => [localDateKeyOffset(daysAgo), dietDay(daysAgo, calories, protein)]));
+
+  await page.addInitScript(({ storeKey, seed }) => {
+    if (window.sessionStorage.getItem("period-reads-seeded") === "1") return;
+    window.localStorage.clear();
+    window.localStorage.setItem(storeKey, JSON.stringify(seed));
+    window.sessionStorage.setItem("period-reads-seeded", "1");
+  }, { storeKey: STORE_KEY, seed: store });
+  await page.route("**/dev-store", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
+  });
+  await page.route("https://raw.githubusercontent.com/**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+  await page.route("https://api.github.com/**", async (route) => {
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
+  const functionCall = (index, name, args) => ({
+    type: "function_call",
+    id: `fc_period_${index}`,
+    call_id: `call_period_${index}`,
+    name,
+    arguments: JSON.stringify(args),
+    status: "completed",
+  });
+  await page.route("**/v1/responses*", async (route) => {
+    providerRounds.push(route.request().postDataJSON());
+    const round = providerRounds.length;
+    const output = round === 1
+      ? [functionCall(1, "read_measurements_period", { from: monthStart, to: today })]
+      : round === 2
+        ? [functionCall(2, "read_diet_period", { from: weekStart, to: today })]
+        : [];
+    await route.fulfill({
+      status: 200,
+      headers: { "content-type": "text/event-stream; charset=utf-8", "cache-control": "no-cache" },
+      body: openAIStatelessSSE(`period_${round}`, output, round === 3 ? "Resumen del periodo listo." : ""),
+    });
+  });
+
+  logStep("Lecturas por periodo: preguntando por el peso del mes y las calorías de la semana");
+  await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="nav-tab-chat"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid="chat-input"]')
+    .fill("¿Cómo ha ido mi peso este mes y cuántas calorías comí esta semana?");
+  await page.locator('[data-testid="chat-send"]').click({ timeout: STEP_TIMEOUT_MS });
+  await page.locator('[data-testid^="chat-message-assistant-"]')
+    .filter({ hasText: "Resumen del periodo listo." })
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+
+  assert.equal(providerRounds.length, 3, "Cada pregunta debe resolverse con una sola llamada a la tool.");
+  const declared = providerRounds[0].tools.map((tool) => tool.name);
+  for (const name of ["read_measurements_period", "read_diet_period", "read_workout_history"]) {
+    assert.ok(declared.includes(name), `Falta ${name} en las tools declaradas.`);
+  }
+  const outputs = providerRounds.at(-1).input.filter((item) => item?.type === "function_call_output");
+  assert.equal(outputs.length, 2, "Solo debe haber dos resultados de tool en todo el turno.");
+  const measurements = JSON.parse(outputs[0].output);
+  const diet = JSON.parse(outputs[1].output);
+
+  assert.deepEqual(measurements.evolucion.weight_kg, {
+    sin_datos: false,
+    primero: { fecha: localDateKeyOffset(25), valor: 82.4 },
+    ultimo: { fecha: localDateKeyOffset(1), valor: 80.3 },
+    diferencia: -2.1,
+    registros: 3,
+  });
+  assert.equal(diet.dias.length, 7);
+  assert.deepEqual(diet.dias.filter((day) => day.sin_registro).map((day) => day.fecha),
+    [localDateKeyOffset(4), localDateKeyOffset(2)]);
+  assert.equal(diet.resumen.dias_con_registro, 5);
+  assert.equal(diet.resumen.media_por_dia_registrado.calorias_kcal, 2040.1);
+  const todayFromTool = diet.dias.find((day) => day.fecha === today);
+
+  logStep("Lecturas por periodo: comparando con las pantallas de Dieta y Medidas");
+  await page.getByTestId("nav-tab-diet").click({ timeout: STEP_TIMEOUT_MS });
+  await page.getByText(`${todayFromTool.calorias_kcal}/2200`, { exact: true }).first()
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  await page.getByTestId("nav-tab-measures").click({ timeout: STEP_TIMEOUT_MS });
+  await page.getByText(`${measurements.evolucion.weight_kg.ultimo.valor} kg`, { exact: false }).first()
+    .waitFor({ state: "visible", timeout: STEP_TIMEOUT_MS });
+  logStep("Lecturas por periodo: una llamada por pregunta y cifras iguales a las pantallas");
+}
+
 async function main() {
   const server = await ensureWebServer();
   let browser = null;
@@ -1816,6 +1958,21 @@ async function main() {
       }
     }
     await runToolOperationRecoveryE2E(browser, server.baseUrl);
+    {
+      const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+      const page = await context.newPage();
+      page.on("pageerror", (error) => console.error(`[agent-e2e][period-reads][page] ${error.message}`));
+      try {
+        await runPeriodReadsE2E(page, server.baseUrl);
+      } catch (error) {
+        const screenshotPath = "/tmp/agent-chat-e2e-period-reads-failure.png";
+        await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => {});
+        console.error(`[agent-e2e] Captura del fallo: ${screenshotPath}`);
+        throw error;
+      } finally {
+        await context.close().catch(() => {});
+      }
+    }
     if (process.env.AGENT_E2E_PROVIDER) return;
     for (const backendScenario of ["created", "down", "malformed", "retry"]) {
       const context = await browser.newContext({ viewport: { width: 390, height: 844 } });

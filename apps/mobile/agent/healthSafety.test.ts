@@ -1,5 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
+import { agentToolRestrictedOnElevatedHealthRisk } from "./toolDefinitions";
 
 import {
   BUNDLED_RUNTIME_HEALTH_SAFETY_POLICY,
@@ -76,6 +77,17 @@ describe("tools y streaming seguros", () => {
     expect(healthSafetyToolAllowed("read", decision("elevated"))).toBe(true);
     expect(healthSafetyToolAllowed("external_write", decision("elevated"))).toBe(false);
     expect(healthSafetyToolAllowed("external_write", decision("none"))).toBe(true);
+  });
+
+  it("bloquea las lecturas restringidas desde riesgo elevado (GYM-270)", () => {
+    const restricted = { restrictedOnElevatedRisk: true };
+    expect(healthSafetyToolAllowed("read", decision("none"), undefined, restricted)).toBe(true);
+    expect(healthSafetyToolAllowed("read", decision("elevated"), undefined, restricted)).toBe(false);
+    expect(healthSafetyToolAllowed("read", decision("none"), decision("elevated"), restricted)).toBe(false);
+    expect(healthSafetyToolAllowed("read", decision("critical"), undefined, restricted)).toBe(false);
+    expect(agentToolRestrictedOnElevatedHealthRisk("read_diet_period")).toBe(true);
+    expect(agentToolRestrictedOnElevatedHealthRisk("read_measurements_period")).toBe(false);
+    expect(agentToolRestrictedOnElevatedHealthRisk("read_workout_history")).toBe(false);
   });
 
   it("solo publica segmentos completos y retiene un segmento inseguro", () => {

@@ -837,3 +837,88 @@ describe("fronteras arbitrarias de red", () => {
     ), { numRuns: 100 });
   });
 });
+
+describe("GYM-270: lectura por periodo en los tres proveedores", () => {
+  // Reutiliza las grabaciones SSE de write_measurement cambiando solo el nombre
+  // y los argumentos de la llamada, para no duplicar el dialecto de cada proveedor.
+  const RECORDED_ARGS = [
+    '{\\"date\\":\\"2024-04-11\\",\\"data\\":{\\"weight_kg\\":75.5,\\"body_fat_pct\\":18.5}}',
+    '{\\"date\\": \\"2024-04-11\\", \\"data\\": {\\"weight_kg\\": 75.5, \\"body_fat_pct\\": 18.5}}',
+  ];
+  function callFixture(provider: string, name: string, args: Record<string, unknown>, round: number): string {
+    const escapedArgs = JSON.stringify(JSON.stringify(args)).slice(1, -1);
+    let raw = readRawFixture(`${provider}-measurement-tool-call.sse`).replaceAll("write_measurement", name);
+    const before = raw;
+    for (const recorded of RECORDED_ARGS) raw = raw.replaceAll(recorded, escapedArgs);
+    if (raw === before) throw new Error(`La grabación de ${provider} ya no contiene los argumentos esperados.`);
+    // Identificadores distintos por ronda: los proveedores rechazan IDs repetidos.
+    return raw.replaceAll("measurement", `period${round}`).replaceAll("google_call_0", `google_call_period${round}`);
+  }
+
+  it.each(["openai", "anthropic", "google"])(
+    "%s: un periodo demasiado largo vuelve como error recuperable y el periodo acotado devuelve los totales",
+    async (provider) => {
+      const store: ToolStore = {
+        measurements: [],
+        templates: [],
+        dietByDate: {
+          "2026-11-20": {
+            day_date: "2026-11-20",
+            meals: [{ id: "m", title: "Comida", items: [{
+              id: "i", title: "Arroz", grams: 100, calories_kcal: 1800, protein_g: 120, carbs_g: 200, fat_g: 60,
+            }] }],
+          },
+        },
+      };
+      const execute = createAgentToolExecutor({
+        loadPersonalData: async () => [], savePersonalData: async () => {},
+        loadMeasurements: async () => [],
+        createId: (prefix) => `${prefix}_test`, getExerciseImageUrl: () => "",
+        submitFeedbackIssue: async () => ({ status: "canceled" }),
+      });
+      const calls: string[] = [];
+      const executeTool = async (name: string, args: Record<string, unknown>) => {
+        calls.push(`${name}:${args.from}..${args.to}`);
+        return execute(name, args, { store });
+      };
+      let rounds = 0;
+      const nextFixture = (messages: unknown) => {
+        rounds += 1;
+        const sent = JSON.stringify(messages);
+        if (rounds === 1) {
+          expect(sent).toContain("period_too_long");
+          expect(sent).toContain("suggested_from");
+          return callFixture(provider, "read_diet_period", { from: "2026-11-16", to: "2026-11-22" }, 2);
+        }
+        expect(sent).toContain("sin_registro");
+        expect(sent).toContain("media_por_dia_registrado");
+        return readRawFixture(`${provider}-measurement-final.sse`);
+      };
+      const initial = callFixture(provider, "read_diet_period", { from: "2025-11-01", to: "2026-11-22" }, 1);
+      if (provider === "openai") {
+        await runOpenAIToolLoop({
+          initialInput: [], initialTurn: replayInNetworkChunks(initial, createOpenAIStreamParser()),
+          executeTool,
+          requestNextTurn: async (messages) => replayInNetworkChunks(nextFixture(messages), createOpenAIStreamParser()),
+        });
+      } else if (provider === "anthropic") {
+        await runAnthropicToolLoop({
+          initialMessages: [], initialTurn: replayInNetworkChunks(initial, createAnthropicStreamParser()),
+          executeTool,
+          requestNextTurn: async (messages) => replayInNetworkChunks(nextFixture(messages), createAnthropicStreamParser()),
+        });
+      } else {
+        await runGoogleToolLoop({
+          initialMessages: [], initialTurn: replayInNetworkChunks(initial, createGoogleStreamParser()),
+          executeTool,
+          requestNextTurn: async (messages) => replayInNetworkChunks(nextFixture(messages), createGoogleStreamParser()),
+        });
+      }
+      expect(rounds).toBe(2);
+      expect(calls).toEqual([
+        "read_diet_period:2025-11-01..2026-11-22",
+        "read_diet_period:2026-11-16..2026-11-22",
+      ]);
+    },
+  );
+});

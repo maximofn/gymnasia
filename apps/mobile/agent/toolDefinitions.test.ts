@@ -12,7 +12,7 @@ import {
 import { AGENT_TOOL_HANDLER_NAMES } from "./toolExecutor";
 
 const TOOL_NAME_PATTERN = /^[a-z][a-z0-9_]*$/;
-const SUPPORTED_PROPERTY_TYPES = new Set(["string", "number", "integer", "object", "array"]);
+const SUPPORTED_PROPERTY_TYPES = new Set(["string", "number", "integer", "boolean", "object", "array"]);
 
 describe("catálogo canónico de tools", () => {
   it("declara al menos una tool con metadatos significativos", () => {

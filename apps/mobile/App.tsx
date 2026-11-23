@@ -34,7 +34,7 @@ import {
   type PlatformDocumentPickerAsset,
 } from "./platform";
 import { pushTrace, pushAppStartTrace, clearTraces, getTraces } from "./trace";
-import { agentToolEffect } from "./agent/toolDefinitions";
+import { agentToolEffect, agentToolRestrictedOnElevatedHealthRisk } from "./agent/toolDefinitions";
 import { toolFailure, ToolTurnError } from "./agent/toolErrors";
 import {
   buildPersonalDataStore,
@@ -1656,7 +1656,9 @@ async function callProviderChatAPIWithTools(
       "input",
       healthPolicy,
     );
-    if (!effect || !healthSafetyToolAllowed(effect, healthDecision, argumentDecision)) {
+    if (!effect || !healthSafetyToolAllowed(effect, healthDecision, argumentDecision, {
+      restrictedOnElevatedRisk: agentToolRestrictedOnElevatedHealthRisk(name),
+    })) {
       void pushTrace("healthSafety", "tool-blocked", {
         name,
         effect: effect ?? "unknown",

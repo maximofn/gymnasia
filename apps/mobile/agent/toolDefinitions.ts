@@ -8,7 +8,7 @@ import {
 } from "../training/workoutTemplateOperations";
 
 export type JsonSchemaProperty = {
-  type: "string" | "number" | "integer" | "object" | "array";
+  type: "string" | "number" | "integer" | "boolean" | "object" | "array";
   description?: string;
   enum?: string[];
   minimum?: number;
@@ -30,6 +30,12 @@ export type ToolInputSchema = {
 export type AgentToolDefinition = {
   name: string;
   effect: ToolEffect;
+  /**
+   * Lectura que el guardarraíl sanitario bloquea también con riesgo
+   * «elevado», no solo con riesgo alto o crítico. Se usa para lecturas que
+   * reúnen de una vez datos delicados ante un posible trastorno alimentario.
+   */
+  restrictedOnElevatedHealthRisk?: boolean;
   description: string;
   inputSchema: ToolInputSchema;
 };
@@ -267,6 +273,65 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
     },
   },
   {
+    name: "read_measurements_period",
+    effect: "read",
+    description:
+      "Lee las medidas corporales del usuario de un periodo (from y to incluidos, máximo 366 días) en una sola llamada. " +
+      "Devuelve los registros del periodo y, por cada medida, el primer y el último valor con su fecha y la diferencia, ya calculados. " +
+      "Usa esta herramienta para preguntas sobre la evolución en un periodo (este mes, desde enero...) en vez de leer día a día con read_measurement, " +
+      "y usa la diferencia que devuelve en vez de calcularla tú.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        from: stringProperty("Primer día del periodo, en formato YYYY-MM-DD."),
+        to: stringProperty("Último día del periodo, en formato YYYY-MM-DD."),
+      },
+      required: ["from", "to"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "read_diet_period",
+    effect: "read",
+    restrictedOnElevatedHealthRisk: true,
+    description:
+      "Lee la dieta registrada de un periodo (from y to incluidos) en una sola llamada. " +
+      "Devuelve, por día, las calorías, proteína, carbohidratos y grasa ya sumados por la app, y el total y la media del periodo. " +
+      "Los días sin nada apuntado llegan con sin_registro: true: no los trates como 0 kcal. " +
+      "Usa los totales y medias que devuelve en vez de sumar tú. Máximo 92 días; con include_foods máximo 14 días.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        from: stringProperty("Primer día del periodo, en formato YYYY-MM-DD."),
+        to: stringProperty("Último día del periodo, en formato YYYY-MM-DD."),
+        include_foods: {
+          type: "boolean",
+          description: "Si es true, incluye los alimentos de cada comida. Úsalo solo si necesitas el detalle (máximo 14 días).",
+        },
+      },
+      required: ["from", "to"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "read_workout_history",
+    effect: "read",
+    description:
+      "Lee los entrenamientos que el usuario ha realizado en un periodo (from y to incluidos, máximo 366 días). " +
+      "Devuelve cada sesión con fecha, rutina, duración, si se completó o quedó parcial, series hechas, volumen y repeticiones, " +
+      "y un resumen con el número de sesiones y de días entrenados. " +
+      "Usa esta herramienta para preguntas sobre entrenamientos hechos; read_routines solo devuelve las rutinas planificadas.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        from: stringProperty("Primer día del periodo, en formato YYYY-MM-DD."),
+        to: stringProperty("Último día del periodo, en formato YYYY-MM-DD."),
+      },
+      required: ["from", "to"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "search_foods",
     effect: "read",
     description:
@@ -407,6 +472,16 @@ const AGENT_TOOL_EFFECTS = new Map(
 
 export function agentToolEffect(name: string): ToolEffect | null {
   return AGENT_TOOL_EFFECTS.get(name) ?? null;
+}
+
+const ELEVATED_RISK_RESTRICTED_TOOLS = new Set(
+  AGENT_TOOL_DEFINITIONS
+    .filter((tool) => tool.restrictedOnElevatedHealthRisk === true)
+    .map((tool) => tool.name),
+);
+
+export function agentToolRestrictedOnElevatedHealthRisk(name: string): boolean {
+  return ELEVATED_RISK_RESTRICTED_TOOLS.has(name);
 }
 
 export const CHAT_TOOLS = {

@@ -179,6 +179,31 @@ const dispatchScenarios: Record<string, {
     args: { date: "2026-09-01", meal: "Comida" },
     verify: ({ output }) => { expect(JSON.parse(output)).toEqual([expect.objectContaining({ nombre: "Arroz blanco" })]); },
   },
+  read_measurements_period: {
+    args: { from: "2026-08-01", to: "2026-09-30" },
+    verify: ({ output }) => {
+      expect(JSON.parse(output)).toMatchObject({
+        dias_con_registro: 1,
+        evolucion: { weight_kg: { sin_datos: false, diferencia: 0 } },
+      });
+    },
+  },
+  read_diet_period: {
+    args: { from: "2026-08-31", to: "2026-09-02" },
+    verify: ({ output }) => {
+      const result = JSON.parse(output);
+      expect(result.dias).toEqual([
+        { fecha: "2026-08-31", sin_registro: true },
+        expect.objectContaining({ fecha: "2026-09-01", sin_registro: false, calorias_kcal: 130 }),
+        { fecha: "2026-09-02", sin_registro: true },
+      ]);
+      expect(result.resumen.media_por_dia_registrado.calorias_kcal).toBe(130);
+    },
+  },
+  read_workout_history: {
+    args: { from: "2026-09-01", to: "2026-09-30" },
+    verify: ({ output }) => { expect(JSON.parse(output)).toMatchObject({ sesiones: [], resumen: { sesiones: 0 } }); },
+  },
   search_foods: {
     args: { query: "Arroz" },
     verify: ({ output }) => { expect(JSON.parse(output).results).toEqual([expect.objectContaining({ item_id: "rice" })]); },
@@ -909,5 +934,72 @@ describe("ejecutor de tools", () => {
     await expect(ambiguous("create_feature_issue", args)).resolves.toMatchObject({
       status: "indeterminate",
     });
+  });
+});
+
+describe("lecturas por periodo (GYM-270)", () => {
+  const execute = createDetailedAgentToolExecutor(createDependencies());
+
+  it("rechaza un periodo demasiado largo con un error recuperable que explica cómo acotarlo", async () => {
+    for (const [name, args, max] of [
+      ["read_diet_period", { from: "2026-01-01", to: "2026-12-31" }, 92],
+      ["read_diet_period", { from: "2026-11-01", to: "2026-11-30", include_foods: true }, 14],
+      ["read_measurements_period", { from: "2024-01-01", to: "2026-01-01" }, 366],
+      ["read_workout_history", { from: "2024-01-01", to: "2026-01-01" }, 366],
+    ] as const) {
+      const outcome = await execute(name, args, { store: createEmptyStore() });
+      expect(outcome).toMatchObject({ isError: true, status: "no_effect" });
+      expect(JSON.parse(outcome.output)).toMatchObject({
+        kind: "tool_error",
+        error: "period_too_long",
+        recovery: "correct_arguments",
+        recoverable: true,
+        max_days: max,
+      });
+    }
+  });
+
+  it("rechaza periodos invertidos y tipos incorrectos antes de leer nada", async () => {
+    const loadMeasurements = vi.fn(async () => []);
+    const guarded = createDetailedAgentToolExecutor(createDependencies({ loadMeasurements }));
+    const inverted = await guarded("read_measurements_period", { from: "2026-11-30", to: "2026-11-01" });
+    expect(JSON.parse(inverted.output)).toMatchObject({ error: "invalid_period" });
+    const badType = await guarded("read_diet_period", { from: "2026-11-01", to: "2026-11-02", include_foods: "sí" }, { store: createEmptyStore() });
+    expect(JSON.parse(badType.output)).toMatchObject({ error: "invalid_tool_arguments" });
+    expect(loadMeasurements).not.toHaveBeenCalled();
+  });
+
+  it("lee el historial de entrenamientos realizados del almacén", async () => {
+    const store: ToolStore = {
+      ...createEmptyStore(),
+      workoutHistory: [{
+        id: "s1",
+        template_id: "tpl",
+        template_name: "Torso",
+        finished_at: new Date(2026, 10, 12, 18, 0).toISOString(),
+        elapsed_seconds: 2700,
+        completion_status: "completed",
+        summary_schema_version: 2,
+        calculation_version: 2,
+        can_recalculate: false,
+        prescription_snapshot: null,
+        completed_effort_count: 10,
+        total_effort_count: 10,
+        effort_breakdown: null,
+        estimated_calories: 250,
+        total_volume_kg: 3500,
+        total_reps: 80,
+      } as NonNullable<ToolStore["workoutHistory"]>[number]],
+    };
+    const outcome = await execute("read_workout_history", { from: "2026-11-01", to: "2026-11-30" }, { store });
+    expect(JSON.parse(outcome.output)).toMatchObject({
+      sesiones: [{ fecha: "2026-11-12", rutina: "Torso", duracion_minutos: 45 }],
+      resumen: { sesiones: 1, dias_con_entrenamiento: 1, volumen_total_kg: 3500 },
+    });
+  });
+
+  it("no inventa datos si no hay almacén", async () => {
+    const outcome = await execute("read_diet_period", { from: "2026-11-01", to: "2026-11-02" });
+    expect(JSON.parse(outcome.output)).toMatchObject({ error: "storage_unavailable", recovery: "stop_turn" });
   });
 });

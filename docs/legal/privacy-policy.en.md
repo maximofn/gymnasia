@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v10
-effective_date: 2026-09-29
+version: 2026-11-v11
+effective_date: 2026-11-23
 locale: en
 lang: en
 title: Gymnasia Privacy Policy
@@ -166,7 +166,11 @@ catalogue does not make that request. When sent, the request includes:
   complete exchanges starting with the oldest. Food assistants send their recent
   session history, limited to ten exchanges on Google;
 - the results of the tools the assistant uses at your request, which may include your
-  weight, your body fat percentage, your measurements, the day's meals or your routines;
+  weight, your body fat percentage, your measurements, the day's meals or your routines.
+  When you ask about a period, they may include at once up to a year of measurements,
+  daily calories and macros for up to three months (food details for up to two weeks)
+  and the workouts you have completed over up to a year, with their date, routine,
+  duration and volume;
 - in the food estimator, **the images you provide**, encoded within the request.
 - for Anthropic, the workspace identifier, only when you configured one because the key
   type requires it.

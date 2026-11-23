@@ -201,8 +201,13 @@ export function sumDayMacroGrams(
   );
 }
 
+/** Redondeo que muestra la pantalla de Dieta: no negativo y con un decimal. */
+export function roundNutritionValue(value: number): number {
+  return Math.round(Math.max(0, value) * 10) / 10;
+}
+
 export function formatNutritionNumber(value: number): string {
-  const rounded = Math.round(Math.max(0, value) * 10) / 10;
+  const rounded = roundNutritionValue(value);
   return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
 }
 
