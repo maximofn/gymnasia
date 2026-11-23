@@ -166,12 +166,17 @@ export function healthSafetyToolAllowed(
   effect: ToolEffect,
   decision: HealthSafetyDecision,
   toolArgumentDecision?: HealthSafetyDecision,
+  options: { restrictedOnElevatedRisk?: boolean } = {},
 ): boolean {
   const level = toolArgumentDecision
     ? maxHealthRisk(decision.level, toolArgumentDecision.level)
     : decision.level;
   const mode = effectiveToolModeForRisk(level);
-  return mode === "all" || (mode === "read-only" && effect === "read");
+  if (mode === "all") return true;
+  // Con riesgo elevado se permiten lecturas, salvo las que reúnen de una vez
+  // datos delicados (p. ej. las calorías de varias semanas) ante un posible
+  // trastorno alimentario. GYM-270.
+  return mode === "read-only" && effect === "read" && options.restrictedOnElevatedRisk !== true;
 }
 
 function ruleForDecision(

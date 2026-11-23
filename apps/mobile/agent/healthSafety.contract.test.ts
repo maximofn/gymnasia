@@ -39,6 +39,7 @@ describe("contrato de integración del guardrail sanitario", () => {
     );
     expect(provider).toContain("healthSafetyToolAllowed");
     expect(provider).toContain("agentToolEffect");
+    expect(provider).toContain("agentToolRestrictedOnElevatedHealthRisk(name)");
     expect(provider).toContain("tool_blocked_by_health_safety");
     expect(appSource.match(/createHealthSafeStreamGate/g)?.length).toBeGreaterThanOrEqual(4);
     expect(appSource).toContain('kind: "technical_error"');

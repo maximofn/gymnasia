@@ -34,6 +34,16 @@ import {
   type Measurement,
 } from "../measurements/measurementContract";
 import type { ExerciseSeries } from "../training/seriesContract";
+import type { WorkoutSessionSummary } from "../training/workoutHistory";
+import {
+  buildDietPeriod,
+  buildMeasurementPeriod,
+  buildWorkoutPeriod,
+  PERIOD_READ_MAX_DAYS,
+  serializePeriodResult,
+  validatePeriod,
+  type PeriodReadError,
+} from "./periodReads";
 import { listWorkoutExecutionUnits } from "../training/workoutExecution";
 import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
 import { prepareRoutineCreation } from "./routineCreationContract";
@@ -73,6 +83,8 @@ export type ToolStore = {
   templates: ToolWorkoutTemplate[];
   dietByDate: Record<string, ToolDietDay>;
   measurements: ToolMeasurement[];
+  /** Historial de sesiones terminadas; opcional para almacenes antiguos y tests. */
+  workoutHistory?: WorkoutSessionSummary[];
   toolOperationReceipts?: ToolOperationReceipt[];
 };
 
@@ -334,6 +346,41 @@ const readMealFoods: ToolHandler = async (args, context) => {
     source_id: item.catalog_link?.status === "linked" ? item.catalog_link.ref.sourceId : null,
     item_id: item.catalog_link?.status === "linked" ? item.catalog_link.ref.itemId : null,
   })));
+};
+
+function periodFailure(error: PeriodReadError): ToolResult {
+  return toolFailure(error.code, error.message, "correct_arguments", error.details ?? {});
+}
+
+function periodOutput(value: unknown): string | ToolResult {
+  const serialized = serializePeriodResult(value);
+  return serialized.ok ? serialized.output : periodFailure(serialized.error);
+}
+
+const readMeasurementsPeriod: ToolHandler = async (args, _context, dependencies) => {
+  const period = validatePeriod(args.from, args.to, PERIOD_READ_MAX_DAYS.measurements);
+  if (!period.ok) return periodFailure(period.error);
+  const measurements = await dependencies.loadMeasurements();
+  return periodOutput(buildMeasurementPeriod(measurements, period.value));
+};
+
+const readDietPeriod: ToolHandler = async (args, context) => {
+  const includeFoods = args.include_foods === true;
+  const period = validatePeriod(
+    args.from,
+    args.to,
+    includeFoods ? PERIOD_READ_MAX_DAYS.dietWithFoods : PERIOD_READ_MAX_DAYS.diet,
+  );
+  if (!period.ok) return periodFailure(period.error);
+  if (!context.store) return toolFailure("storage_unavailable", "No se pudo acceder a los datos de dieta.", "stop_turn");
+  return periodOutput(buildDietPeriod(context.store.dietByDate, period.value, { includeFoods }));
+};
+
+const readWorkoutHistory: ToolHandler = async (args, context) => {
+  const period = validatePeriod(args.from, args.to, PERIOD_READ_MAX_DAYS.workouts);
+  if (!period.ok) return periodFailure(period.error);
+  if (!context.store) return toolFailure("storage_unavailable", "No se pudo acceder al historial de entrenamientos.", "stop_turn");
+  return periodOutput(buildWorkoutPeriod(context.store.workoutHistory ?? [], period.value));
 };
 
 const addMealFood: ToolHandler = async (args, context, dependencies) => {
@@ -734,6 +781,9 @@ export const AGENT_TOOL_HANDLERS: Readonly<Record<string, ToolHandler>> = Object
   read_measurement: readMeasurement,
   write_measurement: writeMeasurement,
   read_meal_foods: readMealFoods,
+  read_measurements_period: readMeasurementsPeriod,
+  read_diet_period: readDietPeriod,
+  read_workout_history: readWorkoutHistory,
   search_foods: searchFoods,
   add_meal_food: addMealFood,
   search_exercises: searchExercises,

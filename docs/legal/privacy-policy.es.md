@@ -1,6 +1,6 @@
 ---
-version: 2026-09-v10
-effective_date: 2026-09-29
+version: 2026-11-v11
+effective_date: 2026-11-23
 locale: es
 lang: es
 title: Política de privacidad de Gymnasia
@@ -175,7 +175,10 @@ envía, la petición incluye:
   a diez intercambios en Google;
 - los resultados de las herramientas que el asistente utiliza a petición tuya, que
   pueden incluir tu peso, tu porcentaje de grasa, tus perímetros, las comidas del día
-  o tus rutinas;
+  o tus rutinas. Cuando preguntas por un periodo, pueden incluir de una vez las
+  medidas de hasta un año, las calorías y macros por día de hasta tres meses (el
+  detalle de alimentos, de hasta dos semanas) y los entrenamientos que has hecho en
+  hasta un año, con su fecha, rutina, duración y volumen;
 - en el estimador de comida, **las imágenes que le proporcionas**, codificadas dentro
   de la petición.
 - para Anthropic, el identificador del workspace, únicamente si lo has configurado
