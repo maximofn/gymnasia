@@ -33,6 +33,7 @@ import {
   type FoodCatalogEntry,
 } from "../catalogs/types";
 import {
+  deleteMeasurementById,
   formatMeasurementIssues,
   measurementDuplicateDates,
   parseMeasurementToolPatch,
@@ -144,6 +145,16 @@ export type ToolExecutorDependencies = {
     draft: FeedbackIssueDraft,
     operationId?: string,
   ) => Promise<FeedbackIssueOutcome>;
+  /**
+   * Retira la foto de una medición borrada con la misma política que el
+   * historial: solo si es de la app y ninguna medición restante la usa.
+   * Opcional porque los tests no tienen sistema de ficheros; si falta, la
+   * limpieza de huérfanos del siguiente arranque la recoge.
+   */
+  releaseMeasurementPhoto?: (
+    photoUri: string | null,
+    remainingPhotoUris: ReadonlyArray<string | null>,
+  ) => void;
 };
 
 export type ToolHandler = (
@@ -330,6 +341,85 @@ const writeMeasurement: ToolHandler = async (args, context, dependencies) => {
   }
   context.markEffectCommitted?.();
   return successMessage;
+};
+
+const deleteMeasurement: ToolHandler = async (args, context, dependencies) => {
+  const dateResult = validateMeasurementDate(args.date);
+  if (!dateResult.ok) return toolFailure("invalid_measurement", formatMeasurementIssues(dateResult.issues), "correct_arguments");
+  const date = dateResult.value;
+  if (!context.commitStore) return toolFailure("storage_unavailable", "No se pudo acceder al almacenamiento durable. No se borró la medición.", "stop_turn");
+
+  type DeleteOutcome =
+    | { kind: "replayed" }
+    | { kind: "missing" }
+    | { kind: "ambiguous" }
+    | { kind: "failed"; message: string }
+    | { kind: "deleted"; removed: ToolMeasurement; remaining: ToolMeasurement[] };
+  let outcome: DeleteOutcome = { kind: "missing" };
+  await commitToolStore(context, (previous) => {
+    if (context.operationId && hasToolOperationReceipt(previous.toolOperationReceipts, context.operationId, "delete_measurement")) {
+      outcome = { kind: "replayed" };
+      return previous;
+    }
+    const matches = previous.measurements.filter((measurement) => measurement.measured_on === date);
+    if (matches.length === 0) {
+      outcome = { kind: "missing" };
+      return previous;
+    }
+    if (matches.length > 1) {
+      outcome = { kind: "ambiguous" };
+      return previous;
+    }
+    const result = deleteMeasurementById(previous.measurements, matches[0].id);
+    if (!result.ok) {
+      outcome = { kind: "failed", message: formatMeasurementIssues(result.issues) };
+      return previous;
+    }
+    outcome = { kind: "deleted", removed: matches[0], remaining: result.measurements };
+    return {
+      ...previous,
+      measurements: result.measurements,
+      toolOperationReceipts: appendToolOperationReceipt(previous.toolOperationReceipts, context.operationId, "delete_measurement"),
+    };
+  });
+  const final = outcome as DeleteOutcome;
+  if (final.kind === "missing") {
+    return toolFailure(
+      "not_found",
+      `No se ha borrado nada: no hay ninguna medición el ${date}. No borres otra fecha por tu cuenta; si dudas del día, pregunta al usuario.`,
+      "choose_alternative",
+      { status: "not_found", written: false },
+    );
+  }
+  if (final.kind === "ambiguous") {
+    return toolFailure(
+      "ambiguous_measurement",
+      `No se ha borrado nada: hay varias mediciones para ${date}. Revísalas desde el historial para decidir cuál conservar.`,
+      "stop_turn",
+      { status: "ambiguous", written: false },
+    );
+  }
+  if (final.kind === "failed") {
+    return toolFailure("measurement_conflict", `No se borró la medición. ${final.message}`, "stop_turn", { written: false });
+  }
+  context.markEffectCommitted?.();
+  if (final.kind === "replayed") return ALREADY_APPLIED_OUTPUT;
+  try {
+    dependencies.releaseMeasurementPhoto?.(
+      final.removed.photo_uri,
+      final.remaining.map((measurement) => measurement.photo_uri),
+    );
+  } catch {
+    // El borrado ya es durable; la limpieza de huérfanos del arranque recoge la foto.
+  }
+  const { id: _id, photo_uri: photoUri, measured_at: _measuredAt, measured_on: _measuredOn, ...values } = final.removed;
+  return JSON.stringify({
+    status: "deleted",
+    written: true,
+    fecha: date,
+    medidas_borradas: values,
+    tenia_foto: Boolean(photoUri),
+  });
 };
 
 const readMealFoods: ToolHandler = async (args, context) => {
@@ -963,6 +1053,7 @@ export const AGENT_TOOL_HANDLERS: Readonly<Record<string, ToolHandler>> = Object
   read_field_value: readFieldValue,
   read_measurement: readMeasurement,
   write_measurement: writeMeasurement,
+  delete_measurement: deleteMeasurement,
   read_meal_foods: readMealFoods,
   read_measurements_period: readMeasurementsPeriod,
   read_diet_period: readDietPeriod,

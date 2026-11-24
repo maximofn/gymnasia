@@ -557,6 +557,69 @@ async function expectCoachMealCorrection() {
   }
 }
 
+async function expectCoachMeasurementDeletion() {
+  log("Verificando que Coach borra la medición entera de un día y no vuelve al recargar");
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  try {
+    const page = await preparePage(context, { offline: true }, {}, true);
+    await openApp(page);
+    const today = await page.evaluate(() => {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    });
+    const requests = [];
+    const toolOutput = (request, callId) => {
+      const item = request.input.find((entry) => entry.type === "function_call_output" && entry.call_id === callId);
+      return item ? JSON.parse(item.output) : null;
+    };
+    await page.route("**/v1/responses*", async (route) => {
+      const request = route.request().postDataJSON();
+      requests.push(request);
+      const number = requests.length;
+      let body;
+      if (number === 1) {
+        body = openAIToolCallSse("resp_measure_write", "call_measure_write", "write_measurement", JSON.stringify({ date: today, data: { weight_kg: 74.5 } }));
+      } else if (number === 2) {
+        body = openAIFinalSse("Peso apuntado.");
+      } else if (number === 3) {
+        body = openAIToolCallSse("resp_measure_delete", "call_measure_delete", "delete_measurement", JSON.stringify({ date: today }));
+      } else {
+        body = openAIFinalSse("Medición borrada.");
+      }
+      await route.fulfill({ status: 200, headers: { "content-type": "text/event-stream; charset=utf-8" }, body });
+    });
+    const readMeasurements = () => page.evaluate((key) => (JSON.parse(localStorage.getItem(key) ?? "{}").measurements ?? []).map((item) => [item.id, item.measured_on, item.weight_kg]), storageKey);
+    await page.getByTestId("nav-tab-chat").click();
+    await page.getByTestId("chat-input").fill("Apunta que hoy peso 74,5 kg");
+    await page.getByTestId("chat-send").click();
+    await page.getByText("Peso apuntado.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+    await page.waitForFunction((key) => (JSON.parse(localStorage.getItem(key) ?? "{}").measurements ?? []).length === 1, storageKey);
+    const [[measurementId]] = await readMeasurements();
+    await page.getByTestId("chat-input").fill("Borra la medición de hoy, no era mía");
+    await page.getByTestId("chat-send").click();
+    await page.getByText("Medición borrada.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+    assert.equal(requests.length, 4);
+    assert.deepEqual(toolOutput(requests[3], "call_measure_delete"), {
+      status: "deleted",
+      written: true,
+      fecha: today,
+      medidas_borradas: { weight_kg: 74.5, body_fat_pct: null, neck_cm: null, chest_cm: null, waist_cm: null, hips_cm: null, biceps_cm: null, quadriceps_cm: null, calf_cm: null, height_cm: null },
+      tenia_foto: false,
+    });
+    await page.waitForFunction((key) => (JSON.parse(localStorage.getItem(key) ?? "{}").measurements ?? []).length === 0, storageKey);
+    await page.unroute("**/v1/responses*");
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.getByTestId("nav-tab-measures").click();
+    await page.getByTestId("measurement-add").waitFor({ state: "visible" });
+    assert.equal(await page.getByTestId(`measurement-history-${measurementId}`).count(), 0);
+    assert.deepEqual(await readMeasurements(), []);
+    const receipts = await page.evaluate((key) => (JSON.parse(localStorage.getItem(key) ?? "{}").toolOperationReceipts ?? []).map((receipt) => receipt.toolName), storageKey);
+    assert(receipts.includes("delete_measurement"), "El borrado debe dejar recibo de idempotencia.");
+  } finally {
+    await context.close();
+  }
+}
+
 async function expectCiqualImages() {
   log("Verificando imágenes reales de CIQUAL en catálogo, búsqueda, dieta e historial");
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -641,6 +704,7 @@ const browser = await chromium.launch({ headless: process.env.CATALOG_E2E_HEADLE
 try {
   await expectCiqualImages();
   await expectCoachMealCorrection();
+  await expectCoachMeasurementDeletion();
   if (process.env.CATALOG_E2E_CIQUAL_ONLY === "1") {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const page = await preparePage(context, { offline: true }, {}, true);
