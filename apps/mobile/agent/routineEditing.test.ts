@@ -281,6 +281,10 @@ describe("delete_routine", () => {
     const before = h.store;
     const outcome = await h.run("delete_routine", { routine_id: id });
     expect(JSON.parse(outcome.output)).toMatchObject({ error: "routine_in_active_session", recoverable: false });
+    // Corta el turno: el mensaje llega tal cual al usuario, así que se le habla a él, no al modelo.
+    const message = JSON.parse(outcome.output).message as string;
+    expect(message).toContain("la estás entrenando");
+    expect(message).not.toMatch(/al usuario|Explica/);
     expect(h.store).toBe(before);
     expect(outcome.markEffectCommitted).not.toHaveBeenCalled();
   });
