@@ -283,6 +283,30 @@ const dispatchScenarios: Record<string, {
       expect(store.templates).toEqual([]);
     },
   },
+  add_routine_exercise: {
+    args: {
+      routine_id: "template_missing",
+      exercise: { kind: "custom", name: "Dominadas", series: [{ type: "normal", reps: 8 }] },
+    },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({ error: "not_found", status: "not_found", written: false });
+      expect(store.templates).toEqual([]);
+    },
+  },
+  update_routine_exercise: {
+    args: { routine_id: "template_missing", exercise_id: "exercise_missing", all_series: { weight_kg: 60 } },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({ error: "not_found", status: "not_found", written: false });
+      expect(store.templates).toEqual([]);
+    },
+  },
+  remove_routine_exercise: {
+    args: { routine_id: "template_missing", exercise_id: "exercise_missing" },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({ error: "not_found", status: "not_found", written: false });
+      expect(store.templates).toEqual([]);
+    },
+  },
   create_feature_issue: {
     args: { title: "Mejorar el historial", summary: "Permitir filtrar el historial de entrenamiento por fecha." },
     verify: ({ output, submittedDrafts }) => {
