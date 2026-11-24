@@ -177,7 +177,7 @@ const dispatchScenarios: Record<string, {
   },
   read_meal_foods: {
     args: { date: "2026-09-01", meal: "Comida" },
-    verify: ({ output }) => { expect(JSON.parse(output)).toEqual([expect.objectContaining({ nombre: "Arroz blanco" })]); },
+    verify: ({ output }) => { expect(JSON.parse(output)).toEqual([expect.objectContaining({ entrada_id: "food_existing", nombre: "Arroz blanco" })]); },
   },
   read_measurements_period: {
     args: { from: "2026-08-01", to: "2026-09-30" },
@@ -218,6 +218,26 @@ const dispatchScenarios: Record<string, {
       expect(output).toContain("añadido a Cena");
       expect(store.dietByDate["2026-09-01"].meals.find((meal) => meal.title === "Cena")?.items).toEqual([
         expect.objectContaining({ title: "Arroz blanco", grams: 150 }),
+      ]);
+    },
+  },
+  remove_meal_food: {
+    args: { date: "2026-09-01", meal: "Comida", entry_id: "food_existing" },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({ status: "removed", written: true, entrada_id: "food_existing" });
+      expect(store.dietByDate["2026-09-01"].meals).toEqual([]);
+    },
+  },
+  update_meal_food: {
+    args: { date: "2026-09-01", meal: "Comida", entry_id: "food_existing", grams: 150, to_meal: "Cena" },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({
+        status: "updated",
+        antes: { comida: "Comida", gramos: 100 },
+        ahora: { comida: "Cena", gramos: 150, calorias_kcal: 195 },
+      });
+      expect(store.dietByDate["2026-09-01"].meals).toEqual([
+        expect.objectContaining({ title: "Cena", items: [expect.objectContaining({ id: "food_existing", grams: 150 })] }),
       ]);
     },
   },
