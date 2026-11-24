@@ -930,7 +930,7 @@
         {
           "id": "GYM-273",
           "title": "Que Coach pueda editar y borrar una rutina",
-          "state": "backlog",
+          "state": "done",
           "baseline": "missing",
           "summary": "Coach crea rutinas pero no las cambia ni las borra: pedirle que rehaga una deja la mala y una copia nueva.",
           "dependsOn": [],
