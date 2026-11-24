@@ -269,6 +269,20 @@ const dispatchScenarios: Record<string, {
       expect(store.templates).toEqual([expect.objectContaining({ name: "Pierna" })]);
     },
   },
+  update_routine: {
+    args: { routine_id: "template_missing", data: { name: "Pierna A" } },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({ error: "not_found", status: "not_found", written: false });
+      expect(store.templates).toEqual([]);
+    },
+  },
+  delete_routine: {
+    args: { routine_id: "template_missing" },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({ error: "not_found", status: "not_found", written: false });
+      expect(store.templates).toEqual([]);
+    },
+  },
   create_feature_issue: {
     args: { title: "Mejorar el historial", summary: "Permitir filtrar el historial de entrenamiento por fecha." },
     verify: ({ output, submittedDrafts }) => {
