@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-11-23",
+    "updated": "2026-11-24",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -905,7 +905,7 @@
         {
           "id": "GYM-271",
           "title": "Que Coach pueda quitar, cambiar los gramos y mover alimentos de una comida",
-          "state": "backlog",
+          "state": "done",
           "baseline": "missing",
           "summary": "Hoy Coach solo añade alimentos: si apunta mal los gramos o la comida, no puede arreglarlo y tiende a duplicar la entrada.",
           "dependsOn": [],
