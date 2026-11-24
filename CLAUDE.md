@@ -521,6 +521,28 @@ con el runbook `ops/android-build/README.md`. Una build local interrumpida no si
 Expo: el overlay se destruye y la transacción queda fallida. Si AAB o APK ya estaban
 validados, se conservan; `retry-failed` recompila únicamente la pata pendiente.
 
+**Trampa: `compile-android` en cola para siempre tras un mantenimiento de wallabot.** El
+síntoma es un run aprobado con `compile-android` en `queued` durante horas, sin runner, y
+el controlador repitiendo cada minuto `PROVISION_JOB_ALREADY_ATTEMPTED <job_id>`:
+```bash
+journalctl -u gymnasia-android-controller.service --since today --no-pager | grep python3
+```
+La causa es el bloqueo de mantenimiento de wallabot (`/run/wallabot-maintenance.block`)
+cuando se activa y desactiva varias veces. En un hueco sin bloqueo, el controlador reserva
+el job y arranca la VM. Si el bloqueo vuelve, para la VM a propósito, registra
+`PROVISION_FAILED ValueError` y cierra el job como interrumpido **sin reintento**. Cada job
+se reserva una sola vez para no compilar dos veces, así que GitHub espera a un runner que
+ya no llegará. No es una avería: QEMU, la imagen base y la limpieza siguen bien.
+Verificado el 24 de noviembre de 2026 con la 1.60.0, que bloqueó a 1.61.0, 1.61.1 y 1.62.0.
+- No borres el diario del controlador para forzar otra VM. Cancela el run atascado
+  (`gh run cancel`: con el job en cola sí funciona). El siguiente run fallará en
+  `select-transaction` con «La versión X falló; requiere reintento o sustitución manual con
+  motivo».
+- Después, con el mantenimiento terminado, decide con el mantenedor entre `retry-failed` y
+  `supersede-failed` (el procedimiento está en
+  `docs/store/google-play/production-promotion-gates.md`). Si el bloqueo vuelve durante la
+  compilación, se repite lo mismo.
+
 **3. Si ambos binarios están validados**, mira el submission con
 `eas submit:view <submission-id> --json`. Un timeout con ID conocido se reconcilia sin
 otra subida. Una intención sin ID queda bloqueada a propósito: localiza el ID con páginas
