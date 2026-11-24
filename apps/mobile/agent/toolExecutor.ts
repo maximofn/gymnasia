@@ -1075,7 +1075,8 @@ function routineNotFound(routineId: string): ToolResult {
 function routineInSession(name: string): ToolResult {
   return toolFailure(
     "routine_in_active_session",
-    `No se ha cambiado nada: la rutina "${name}" se está entrenando ahora mismo. Explica al usuario que podrá cambiarla cuando termine o descarte el entrenamiento.`,
+    // stop_turn: este texto se muestra tal cual al usuario, no al modelo.
+    `No he cambiado la rutina "${name}" porque la estás entrenando ahora mismo. Podrás cambiarla o borrarla cuando termines o abandones el entrenamiento.`,
     "stop_turn",
     { status: "in_active_session", written: false },
   );
