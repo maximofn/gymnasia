@@ -76,6 +76,56 @@ class BoardPaginationTests(unittest.TestCase):
                 linear.fetch_board_nodes("GYM")
 
 
+    def test_board_also_reads_archived_tickets(self):
+        page = {"issues": {"nodes": [], "pageInfo": {"hasNextPage": False, "endCursor": None}}}
+        with mock.patch.object(linear, "query", return_value=page) as query:
+            linear.fetch_board_nodes("GYM")
+        self.assertIn("includeArchived:true", query.call_args.args[0])
+
+
+class ArchiveDoneTests(unittest.TestCase):
+    @staticmethod
+    def done(identifier, completed_at, archived_at=None):
+        return {"id": f"uuid-{identifier}", "identifier": identifier, "title": f"Ticket {identifier}",
+                "completedAt": completed_at, "archivedAt": archived_at}
+
+    def run_command(self, nodes, oldest, apply):
+        page = {"issues": {"nodes": nodes, "pageInfo": {"hasNextPage": False, "endCursor": None}}}
+        calls = []
+
+        def fake_query(gql, variables=None):
+            calls.append((gql, variables))
+            if "issueArchive" in gql:
+                return {"issueArchive": {"success": True}}
+            return page
+
+        args = mock.Mock(team="GYM", oldest=oldest, apply=apply)
+        with mock.patch.object(linear, "query", side_effect=fake_query), \
+                mock.patch("builtins.print") as printed:
+            linear.cmd_archive_done(args)
+        archived = [variables["id"] for gql, variables in calls if "issueArchive" in gql]
+        return archived, [call.args[0] for call in printed.call_args_list]
+
+    def test_selects_the_oldest_completed_and_skips_already_archived(self):
+        nodes = [
+            self.done("GYM-30", "2026-09-01T00:00:00.000Z"),
+            self.done("GYM-10", "2026-07-01T00:00:00.000Z"),
+            self.done("GYM-5", "2026-06-01T00:00:00.000Z", archived_at="2026-10-01T00:00:00.000Z"),
+            self.done("GYM-20", "2026-08-01T00:00:00.000Z"),
+        ]
+        archived, _ = self.run_command(nodes, oldest=2, apply=True)
+        self.assertEqual(archived, ["uuid-GYM-10", "uuid-GYM-20"])
+
+    def test_previews_without_archiving_by_default(self):
+        archived, lines = self.run_command([self.done("GYM-10", "2026-07-01T00:00:00.000Z")], oldest=5, apply=False)
+        self.assertEqual(archived, [])
+        self.assertTrue(any("[dry-run] archivaría GYM-10" in line for line in lines))
+
+    def test_rejects_a_non_positive_count(self):
+        with self.assertRaises(SystemExit):
+            linear.cmd_archive_done(mock.Mock(team="GYM", oldest=0, apply=True))
+
+
 class BoardSynchronizationTests(unittest.TestCase):
     @staticmethod
     def board(title="Titulo local", state="todo", ignore=None):

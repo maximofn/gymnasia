@@ -202,6 +202,19 @@ Linear**: las pruebas y el QA se realizan explícitamente antes y sus resultados
 se pasan como evidencias. Tras cerrar sigue siendo obligatorio sincronizar,
 validar y desplegar el tablero espejo.
 
+### Archivar tickets completados
+
+Libera hueco cuando el plan gratuito de Linear llega al límite de tickets
+activos (trampa 21). Elige los completados y sin archivar más antiguos según
+su fecha de cierre; sin `--apply` solo los enumera:
+
+```bash
+python3 .claude/skills/linear-tickets/scripts/linear.py archive-done --oldest 20
+python3 .claude/skills/linear-tickets/scripts/linear.py archive-done --oldest 20 --apply
+```
+
+El tablero espejo no cambia: `board` sigue leyendo los tickets archivados.
+
 ### Edición masiva
 
 `update --description` **reemplaza la descripción entera**. Para cambiar una
@@ -235,7 +248,7 @@ linear.query("mutation U($id:String!,$input:IssueUpdateInput!){ issueUpdate(id:$
 
 ## Trampas conocidas
 
-Veinte cosas que cuestan tiempo si no se saben:
+Veintiuna cosas que cuestan tiempo si no se saben:
 
 1. **zsh no hace word-splitting de variables.** Guardar flags en una variable y
    expandirla **no funciona**: `P="--team GYM --state Backlog"; linear.py create $P ...`
@@ -420,6 +433,19 @@ Veinte cosas que cuestan tiempo si no se saben:
     afirmar que una épica está vacía, mira la línea `Sub-issues:` de
     `linear.py get`, que lista los hijos reales con su estado. Si no aparece, no
     tiene ninguno.
+
+21. **El plan gratuito de Linear limita los tickets activos, y los `Done` cuentan.**
+    El síntoma al crear es `usage limit exceeded` con
+    `"usageMetric": "activeIssueCount"` y el mensaje `You've exceeded the free
+    issue limit for this workspace`. No se arregla reintentando ni cancelando:
+    un ticket completado o cancelado sigue ocupando hueco hasta que se archiva.
+    Detectado el 24 de noviembre de 2026 al crear GYM-277 (ticket para que la
+    barra del entrenamiento no tape el botón Enviar del chat). Archiva los
+    completados más antiguos con `archive-done` (ver «Archivar tickets
+    completados»), primero sin `--apply`, y repite el alta. Archivar es
+    reversible desde Linear. `board` lee también los archivados
+    (`includeArchived:true`); sin eso, cada ticket archivado aparecería como
+    `SOBRA` y bloquearía `--apply-safe` y la conciliación automática.
 
 ## Notas
 

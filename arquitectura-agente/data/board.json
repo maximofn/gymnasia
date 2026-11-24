@@ -3529,6 +3529,16 @@
           "related": [
             "GYM-268"
           ]
+        },
+        {
+          "id": "GYM-277",
+          "title": "La barra del entrenamiento en curso tapa el botón Enviar del chat de Coach",
+          "state": "todo",
+          "summary": "Mientras entrenas, la barra flotante del entrenamiento tapa «Enviar» en el chat de Coach: al pulsarlo se abre la sesión en vez de mandar el mensaje.",
+          "dependsOn": [],
+          "related": [
+            "GYM-273"
+          ]
         }
       ]
     }
