@@ -607,7 +607,7 @@ def build_board_report(board: dict, nodes: list, team: str = "GYM", checked_at: 
 def fetch_board_nodes(team: str) -> list:
     gql = """
     query($key:String!,$first:Int,$after:String){
-      issues(filter:{team:{key:{eq:$key}}}, first:$first, after:$after){
+      issues(filter:{team:{key:{eq:$key}}}, first:$first, after:$after, includeArchived:true){
         nodes{ identifier title state{ name } }
         pageInfo{ hasNextPage endCursor }
       }
@@ -1064,6 +1064,56 @@ def cmd_relate(args):
     print(f"Relacionados: {args.id} <-> {args.with_id}")
 
 
+def fetch_unarchived_done(team: str) -> list:
+    """Tickets completados y sin archivar del equipo, del más antiguo al más reciente."""
+    gql = """
+    query($key:String!,$first:Int,$after:String){
+      issues(filter:{team:{key:{eq:$key}}, state:{type:{eq:"completed"}}}, first:$first, after:$after){
+        nodes{ id identifier title completedAt archivedAt }
+        pageInfo{ hasNextPage endCursor }
+      }
+    }
+    """
+    nodes = []
+    after = None
+    cursors = set()
+    while True:
+        page = query(gql, {"key": team.upper(), "first": 250, "after": after})["issues"]
+        nodes.extend(node for node in page["nodes"] if not node.get("archivedAt"))
+        info = page["pageInfo"]
+        if not info["hasNextPage"]:
+            break
+        after = info["endCursor"]
+        if not after or after in cursors:
+            raise ValueError("La paginación de Linear no avanza; no se archivará nada.")
+        cursors.add(after)
+    return sorted(nodes, key=lambda node: (node.get("completedAt") or "", node["identifier"]))
+
+
+def cmd_archive_done(args):
+    """Archiva los N tickets completados más antiguos; sin --apply solo previsualiza."""
+    if args.oldest < 1:
+        sys.exit("--oldest debe ser al menos 1.")
+    selected = fetch_unarchived_done(args.team)[: args.oldest]
+    if not selected:
+        print("No hay tickets completados sin archivar.")
+        return
+    if not args.apply:
+        for node in selected:
+            print(f"[dry-run] archivaría {node['identifier']}  {node['completedAt'][:10]}  {node['title']}")
+        print("Repite con --apply para archivarlos. Archivar es reversible desde Linear.")
+        return
+    gql = """
+    mutation ArchiveIssue($id: String!) {
+      issueArchive(id: $id) { success }
+    }
+    """
+    for node in selected:
+        if not query(gql, {"id": node["id"]})["issueArchive"]["success"]:
+            sys.exit(f"No se pudo archivar {node['identifier']}; los anteriores sí quedaron archivados.")
+        print(f"Archivado: {node['identifier']}  {node['title']}")
+
+
 def main():
     p = argparse.ArgumentParser(description="Cliente Linear GraphQL (leer/crear/modificar)")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -1205,6 +1255,15 @@ def main():
     prelate.add_argument("id", help="primer issue, p.ej. GYM-12")
     prelate.add_argument("--with", dest="with_id", required=True, help="segundo issue")
     prelate.set_defaults(func=cmd_relate)
+
+    parchive = sub.add_parser(
+        "archive-done",
+        help="archivar los tickets completados más antiguos (previsualiza sin --apply)",
+    )
+    parchive.add_argument("--team", default="GYM")
+    parchive.add_argument("--oldest", type=int, required=True, help="cuántos archivar, empezando por el más antiguo")
+    parchive.add_argument("--apply", action="store_true", help="archivar de verdad")
+    parchive.set_defaults(func=cmd_archive_done)
 
     args = p.parse_args()
     args.func(args)
