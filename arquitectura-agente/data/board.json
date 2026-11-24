@@ -918,7 +918,7 @@
         {
           "id": "GYM-272",
           "title": "Que Coach pueda borrar una medición entera",
-          "state": "backlog",
+          "state": "done",
           "baseline": "missing",
           "summary": "Coach corrige valores de una medición pero no puede quitarla: un peso apuntado en el día equivocado deja allí un registro que solo se borra a mano.",
           "dependsOn": [],
