@@ -96,6 +96,7 @@ function createMeasurement(id: string, measuredOn: string, weightKg: number | nu
 async function runDispatchScenario(name: string, args: Record<string, unknown>) {
   let store: ToolStore = {
     ...createEmptyStore(),
+    measurements: [createMeasurement("measurement_existing", "2026-09-01", 72)],
     dietByDate: {
       "2026-09-01": {
         day_date: "2026-09-01",
@@ -172,7 +173,14 @@ const dispatchScenarios: Record<string, {
     args: { date: "2026-09-02", data: { weight_kg: 73 } },
     verify: ({ output, store }) => {
       expect(output).toContain("Medidas guardadas correctamente");
-      expect(store.measurements).toEqual([expect.objectContaining({ measured_on: "2026-09-02", weight_kg: 73 })]);
+      expect(store.measurements).toContainEqual(expect.objectContaining({ measured_on: "2026-09-02", weight_kg: 73 }));
+    },
+  },
+  delete_measurement: {
+    args: { date: "2026-09-01" },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({ status: "deleted", written: true, fecha: "2026-09-01" });
+      expect(store.measurements).toEqual([]);
     },
   },
   read_meal_foods: {

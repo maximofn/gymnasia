@@ -543,6 +543,7 @@ import {
 } from "./backup/portableEncryption";
 import {
   clearMeasurementMedia,
+  deleteOwnedMeasurementPhotoIfUnreferenced,
   isMeasurementMediaEmpty,
   measurementPhotoSha256,
   measureMeasurementMediaUsage,
@@ -1044,6 +1045,7 @@ async function clearPersonalDataOperationReceipts(): Promise<void> {
 const RECONCILED_TOOL_OUTPUTS: Record<string, string> = {
   save_personal_data: "Los datos personales ya se habían guardado.",
   write_measurement: "Las medidas ya se habían guardado.",
+  delete_measurement: "La medición ya se había borrado.",
   add_meal_food: "El alimento ya se había añadido.",
   remove_meal_food: "El alimento ya se había quitado.",
   update_meal_food: "El alimento ya se había corregido.",
@@ -1158,6 +1160,7 @@ const executeAgentTool = createDetailedAgentToolExecutor({
     getExerciseImageUrl(exercise as ExerciseRepoEntry, gender)
   ),
   submitFeedbackIssue,
+  releaseMeasurementPhoto: deleteOwnedMeasurementPhotoIfUnreferenced,
 });
 
 function createToolExecutionContext(

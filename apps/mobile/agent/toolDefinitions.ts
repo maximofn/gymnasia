@@ -255,6 +255,24 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
     },
   },
   {
+    name: "delete_measurement",
+    effect: "local_write",
+    description:
+      "Borra entera la medición de una fecha (todas sus medidas y su foto). " +
+      "Úsala solo cuando el usuario pida expresamente borrar o quitar la medición de un día, nunca por iniciativa propia. " +
+      "Para quitar solo un dato concreto usa write_measurement con clear_fields. " +
+      "Si el dato se apuntó en un día equivocado, guárdalo primero en el día correcto con write_measurement y después borra el día equivocado con esta herramienta. " +
+      "Si ese día no hay medición, o hay varias, no se borra nada.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        date: stringProperty("Fecha de la medición que hay que borrar, en formato YYYY-MM-DD (por ejemplo: 2026-03-30)."),
+      },
+      required: ["date"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "read_meal_foods",
     effect: "read",
     description:
