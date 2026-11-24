@@ -431,3 +431,66 @@ export function buildTemplateSeriesSignature(template: WorkoutTemplate): string 
     })),
   );
 }
+
+/**
+ * Inserta un ejercicio en la posición indicada (base 0). Sin posición, o con
+ * una mayor que la longitud, lo añade al final. No modifica la rutina recibida.
+ */
+export function insertWorkoutExercise(
+  template: WorkoutTemplate,
+  exercise: WorkoutExercise,
+  index?: number,
+): WorkoutTemplate {
+  const exercises = [...template.exercises];
+  const target = index === undefined
+    ? exercises.length
+    : Math.max(0, Math.min(Math.trunc(index), exercises.length));
+  exercises.splice(target, 0, exercise);
+  return { ...template, exercises };
+}
+
+/** Quita un ejercicio y conserva el orden de los demás; null si no existe. */
+export function removeWorkoutExercise(
+  template: WorkoutTemplate,
+  exerciseId: string,
+): WorkoutTemplate | null {
+  if (!template.exercises.some((exercise) => exercise.id === exerciseId)) return null;
+  return {
+    ...template,
+    exercises: template.exercises.filter((exercise) => exercise.id !== exerciseId),
+  };
+}
+
+/**
+ * Mueve un ejercicio a la posición indicada (base 0, acotada a la rutina) y
+ * conserva el orden relativo de los demás; null si el ejercicio no existe.
+ */
+export function moveWorkoutExercise(
+  template: WorkoutTemplate,
+  exerciseId: string,
+  toIndex: number,
+): WorkoutTemplate | null {
+  const from = template.exercises.findIndex((exercise) => exercise.id === exerciseId);
+  if (from < 0) return null;
+  const exercises = [...template.exercises];
+  const [moved] = exercises.splice(from, 1);
+  const target = Math.max(0, Math.min(Math.trunc(toIndex), exercises.length));
+  exercises.splice(target, 0, moved);
+  return { ...template, exercises };
+}
+
+/**
+ * Otros ejercicios de la rutina con alguna mini-serie de superserie que apunta
+ * a `exerciseId`. Quitar ese ejercicio dejaría esas referencias colgando.
+ */
+export function findSupersetReferences(
+  template: WorkoutTemplate,
+  exerciseId: string,
+): WorkoutExercise[] {
+  return template.exercises.filter((exercise) => (
+    exercise.id !== exerciseId
+    && (exercise.series ?? []).some((series) => (
+      (series.sub_series ?? []).some((subSeries) => subSeries.exercise_id === exerciseId)
+    ))
+  ));
+}
