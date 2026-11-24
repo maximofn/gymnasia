@@ -943,7 +943,7 @@
         {
           "id": "GYM-274",
           "title": "Que Coach pueda añadir, editar y quitar ejercicios de una rutina",
-          "state": "backlog",
+          "state": "done",
           "baseline": "missing",
           "summary": "Coach solo mete ejercicios al crear una rutina: no puede añadir uno a una existente, cambiarle el peso o las series, ni quitarlo.",
           "dependsOn": [],
