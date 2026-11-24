@@ -620,6 +620,115 @@ async function expectCoachMeasurementDeletion() {
   }
 }
 
+async function expectCoachRoutineEditing() {
+  log("Verificando que Coach renombra y borra una rutina sin perder el historial");
+  const routineId = "template_e2e_pierna";
+  const otherId = "template_e2e_torso";
+  const exercise = (id) => ({
+    id,
+    name: "Sentadilla",
+    muscle: "Cuádriceps",
+    image_uri: null,
+    sets: [],
+    series: [{ id: `${id}_s1`, type: "normal", reps: "8", weight_kg: "60", rest_seconds: "90" }],
+    catalog_link: { schemaVersion: 1, status: "unresolved", reason: "manual" },
+  });
+  const template = (id, name) => ({ id, name, category: "strength", icon: "activity", duration_minutes: "45", exercises: [exercise(`${id}_ex1`)] });
+  const historyEntry = {
+    id: "session_e2e_pierna",
+    template_id: routineId,
+    template_name: "Pierna",
+    finished_at: new Date(Date.now() - 86_400_000).toISOString(),
+    elapsed_seconds: 2400,
+    completion_status: "completed",
+    summary_schema_version: 1,
+    calculation_version: 1,
+    can_recalculate: false,
+    prescription_snapshot: null,
+    completed_effort_count: 1,
+    total_effort_count: 1,
+    effort_breakdown: null,
+    estimated_calories: 120,
+    total_volume_kg: 480,
+    total_reps: 8,
+  };
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  try {
+    const seeded = { ...seedStore(true), templates: [template(routineId, "Pierna"), template(otherId, "Torso")], workoutHistory: [historyEntry] };
+    const page = await preparePage(context, { offline: true }, { [storageKey]: JSON.stringify(seeded) }, true);
+    await openApp(page);
+    const requests = [];
+    const toolOutput = (request, callId) => {
+      const item = request.input.find((entry) => entry.type === "function_call_output" && entry.call_id === callId);
+      return item ? JSON.parse(item.output) : null;
+    };
+    await page.route("**/v1/responses*", async (route) => {
+      requests.push(route.request().postDataJSON());
+      const number = requests.length;
+      let body;
+      if (number === 1) {
+        body = openAIToolCallSse("resp_routine_read", "call_routine_read", "read_routines");
+      } else if (number === 2) {
+        body = openAIToolCallSse("resp_routine_update", "call_routine_update", "update_routine", JSON.stringify({ routine_id: routineId, data: { name: "Pierna A" } }));
+      } else if (number === 3) {
+        body = openAIFinalSse("Rutina renombrada.");
+      } else if (number === 4) {
+        body = openAIToolCallSse("resp_routine_delete", "call_routine_delete", "delete_routine", JSON.stringify({ routine_id: routineId }));
+      } else {
+        body = openAIFinalSse("Rutina borrada.");
+      }
+      await route.fulfill({ status: 200, headers: { "content-type": "text/event-stream; charset=utf-8" }, body });
+    });
+    const readTemplates = () => page.evaluate((key) => (JSON.parse(localStorage.getItem(key) ?? "{}").templates ?? []).map((item) => [item.id, item.name, item.exercises.length]), storageKey);
+    await page.getByTestId("nav-tab-chat").click();
+    await page.getByTestId("chat-input").fill("Cámbiale el nombre a la rutina de pierna por Pierna A");
+    await page.getByTestId("chat-send").click();
+    await page.getByText("Rutina renombrada.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+    const routines = toolOutput(requests[1], "call_routine_read");
+    assert.deepEqual(routines.map((item) => [item.id, item.nombre, item.icono]), [[routineId, "Pierna", "activity"], [otherId, "Torso", "activity"]]);
+    assert.deepEqual(toolOutput(requests[2], "call_routine_update"), {
+      status: "updated",
+      written: true,
+      routine_id: routineId,
+      antes: { nombre: "Pierna", categoria: "strength", icono: "activity", duracion_minutos: "45" },
+      despues: { nombre: "Pierna A", categoria: "strength", icono: "activity", duracion_minutos: "45" },
+      ejercicios: 1,
+    });
+    await page.waitForFunction((key) => JSON.parse(localStorage.getItem(key) ?? "{}").templates?.[0]?.name === "Pierna A", storageKey);
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.getByTestId("nav-tab-training").click();
+    await page.getByTestId(`training-template-open-${routineId}`).getByText("Pierna A", { exact: true }).waitFor({ state: "visible" });
+    assert.deepEqual(await readTemplates(), [[routineId, "Pierna A", 1], [otherId, "Torso", 1]]);
+
+    await page.getByTestId("nav-tab-chat").click();
+    await page.getByTestId("chat-input").fill("Borra la rutina Pierna A");
+    await page.getByTestId("chat-send").click();
+    await page.getByText("Rutina borrada.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+    assert.equal(requests.length, 5);
+    assert.deepEqual(toolOutput(requests[4], "call_routine_delete"), {
+      status: "deleted",
+      written: true,
+      routine_id: routineId,
+      nombre: "Pierna A",
+      ejercicios: 1,
+      historial_conservado: true,
+    });
+    await page.waitForFunction((key) => (JSON.parse(localStorage.getItem(key) ?? "{}").templates ?? []).length === 1, storageKey);
+    await page.unroute("**/v1/responses*");
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.getByTestId("nav-tab-training").click();
+    await page.getByTestId(`training-template-open-${otherId}`).waitFor({ state: "visible" });
+    assert.equal(await page.getByTestId(`training-template-open-${routineId}`).count(), 0);
+    assert.deepEqual(await readTemplates(), [[otherId, "Torso", 1]]);
+    const history = await page.evaluate((key) => (JSON.parse(localStorage.getItem(key) ?? "{}").workoutHistory ?? []).map((item) => [item.id, item.template_name]), storageKey);
+    assert.deepEqual(history, [["session_e2e_pierna", "Pierna"]]);
+    const receipts = await page.evaluate((key) => (JSON.parse(localStorage.getItem(key) ?? "{}").toolOperationReceipts ?? []).map((receipt) => receipt.toolName), storageKey);
+    assert(receipts.includes("update_routine") && receipts.includes("delete_routine"), "Editar y borrar deben dejar recibo de idempotencia.");
+  } finally {
+    await context.close();
+  }
+}
+
 async function expectCiqualImages() {
   log("Verificando imágenes reales de CIQUAL en catálogo, búsqueda, dieta e historial");
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -705,6 +814,7 @@ try {
   await expectCiqualImages();
   await expectCoachMealCorrection();
   await expectCoachMeasurementDeletion();
+  await expectCoachRoutineEditing();
   if (process.env.CATALOG_E2E_CIQUAL_ONLY === "1") {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const page = await preparePage(context, { offline: true }, {}, true);

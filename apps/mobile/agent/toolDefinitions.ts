@@ -510,6 +510,61 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
     },
   },
   {
+    name: "update_routine",
+    effect: "local_write",
+    description:
+      "Cambia los datos generales de una rutina existente: nombre, categoría, icono o duración. " +
+      "Úsala solo cuando el usuario pida expresamente cambiar una rutina, nunca por iniciativa propia, y no crees una rutina nueva para sustituirla. " +
+      "Antes llama a read_routines y usa el id exacto de la rutina; no la elijas por un nombre parecido: si hay varias que encajan, pregunta al usuario. " +
+      "Incluye en data solo los campos que el usuario quiere cambiar: los demás se conservan. " +
+      "No sirve para añadir, quitar, reordenar ni cambiar ejercicios o series. " +
+      "Si la rutina se está entrenando ahora mismo, no se cambia nada.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        routine_id: stringProperty("Id de la rutina, tal como lo devuelve read_routines."),
+        data: {
+          type: "object",
+          description: "Solo los campos que hay que cambiar.",
+          properties: {
+            name: stringProperty("Nuevo nombre de la rutina (opcional)."),
+            category: stringProperty("Nueva categoría de entrenamiento (opcional).", TRAINING_CATEGORIES),
+            icon: stringProperty("Nuevo icono de la rutina (opcional).", ROUTINE_ICON_NAMES),
+            duration_minutes: integerProperty("Nueva duración en minutos (opcional).", {
+              minimum: 1,
+              maximum: 999,
+            }),
+          },
+          additionalProperties: false,
+        },
+        clear_fields: {
+          type: "array",
+          description: "Datos que el usuario ha pedido quitar de la rutina (opcional).",
+          items: stringProperty("Campo de la rutina", ["duration_minutes"]),
+        },
+      },
+      required: ["routine_id"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "delete_routine",
+    effect: "local_write",
+    description:
+      "Borra una rutina entera. Los entrenamientos que ya se hicieron con ella se conservan en el historial. " +
+      "Úsala solo cuando el usuario pida expresamente borrar o quitar una rutina, nunca por iniciativa propia. " +
+      "Antes llama a read_routines y usa el id exacto de la rutina; no la elijas por un nombre parecido: si hay varias que encajan, pregunta al usuario. " +
+      "Si la rutina se está entrenando ahora mismo, no se borra.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        routine_id: stringProperty("Id de la rutina que hay que borrar, tal como lo devuelve read_routines."),
+      },
+      required: ["routine_id"],
+      additionalProperties: false,
+    },
+  },
+  {
     name: "create_feature_issue",
     effect: "external_write",
     description:

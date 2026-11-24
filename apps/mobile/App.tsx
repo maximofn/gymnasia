@@ -619,6 +619,7 @@ type ChatProviderCallOptions = StreamingHandlers & {
   resolveExerciseCatalogIds?: ToolExecutionContext["resolveExerciseCatalogIds"];
   exerciseCatalogAvailability?: CatalogSearchAvailability;
   getExerciseCatalogAvailability?: ToolExecutionContext["getExerciseCatalogAvailability"];
+  getActiveWorkoutTemplateId?: ToolExecutionContext["getActiveWorkoutTemplateId"];
   executionId?: string;
   healthDecision?: HealthSafetyDecision;
   healthPolicy?: HealthSafetyRuntimePolicy;
@@ -1046,6 +1047,8 @@ const RECONCILED_TOOL_OUTPUTS: Record<string, string> = {
   save_personal_data: "Los datos personales ya se habían guardado.",
   write_measurement: "Las medidas ya se habían guardado.",
   delete_measurement: "La medición ya se había borrado.",
+  update_routine: "La rutina ya se había modificado.",
+  delete_routine: "La rutina ya se había borrado.",
   add_meal_food: "El alimento ya se había añadido.",
   remove_meal_food: "El alimento ya se había quitado.",
   update_meal_food: "El alimento ya se había corregido.",
@@ -1175,6 +1178,7 @@ function createToolExecutionContext(
   searchExerciseCatalog?: ToolExecutionContext["searchExerciseCatalog"],
   resolveExerciseCatalogIds?: ToolExecutionContext["resolveExerciseCatalogIds"],
   getExerciseCatalogAvailability?: ToolExecutionContext["getExerciseCatalogAvailability"],
+  getActiveWorkoutTemplateId?: ToolExecutionContext["getActiveWorkoutTemplateId"],
 ): ToolExecutionContext {
   return {
     setStore: setStore
@@ -1192,6 +1196,7 @@ function createToolExecutionContext(
     searchExerciseCatalog,
     resolveExerciseCatalogIds,
     getExerciseCatalogAvailability,
+    getActiveWorkoutTemplateId,
   };
 }
 
@@ -1209,6 +1214,7 @@ async function executeChatTool(
   searchExerciseCatalog?: ToolExecutionContext["searchExerciseCatalog"],
   resolveExerciseCatalogIds?: ToolExecutionContext["resolveExerciseCatalogIds"],
   getExerciseCatalogAvailability?: ToolExecutionContext["getExerciseCatalogAvailability"],
+  getActiveWorkoutTemplateId?: ToolExecutionContext["getActiveWorkoutTemplateId"],
 ) {
   return executeAgentTool(
     name,
@@ -1225,6 +1231,7 @@ async function executeChatTool(
       searchExerciseCatalog,
       resolveExerciseCatalogIds,
       getExerciseCatalogAvailability,
+      getActiveWorkoutTemplateId,
     ),
   );
 }
@@ -1693,6 +1700,7 @@ async function callProviderChatAPIWithTools(
           options?.searchExerciseCatalog,
           options?.resolveExerciseCatalogIds,
           options?.getExerciseCatalogAvailability,
+          options?.getActiveWorkoutTemplateId,
         );
       },
       reconcileToolOperation,
@@ -5009,6 +5017,7 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
             searchExerciseCatalog: exerciseCatalogRuntime.actions.search,
             resolveExerciseCatalogIds: exerciseCatalogRuntime.actions.resolveIds,
             getExerciseCatalogAvailability: exerciseCatalogRuntime.actions.currentAvailability,
+            getActiveWorkoutTemplateId: () => activeWorkoutSessionRef.current?.template_id ?? null,
             executionId: userMessage.id,
             healthDecision,
             healthPolicy: healthSelection.policy,

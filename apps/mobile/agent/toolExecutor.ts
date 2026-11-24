@@ -56,6 +56,7 @@ import {
 import { listWorkoutExecutionUnits } from "../training/workoutExecution";
 import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
 import { prepareRoutineCreation } from "./routineCreationContract";
+import { validateWorkoutTemplateForWrite } from "../training/workoutTemplateContract";
 import { AGENT_TOOL_DEFINITIONS, agentToolEffect, formatToolInputError, validateToolInput } from "./toolDefinitions";
 import { toolFailure, type ToolResult } from "./toolErrors";
 
@@ -118,6 +119,12 @@ export type ToolExecutionContext = {
   foodCatalogAvailability?: CatalogSearchAvailability;
   exerciseCatalogAvailability?: CatalogSearchAvailability;
   getExerciseCatalogAvailability?: () => CatalogSearchAvailability;
+  /**
+   * Rutina del entrenamiento en curso, o null si no hay ninguno. Se consulta
+   * en el momento de guardar, no antes, para que un entrenamiento que empiece
+   * entre medias no se cuele. Opcional porque los tests no tienen sesiones.
+   */
+  getActiveWorkoutTemplateId?: () => string | null;
   operationId?: string;
   markEffectCommitted?: () => void;
   markEffectIndeterminate?: () => void;
@@ -933,6 +940,7 @@ const readRoutines: ToolHandler = async (_args, context) => {
     id: template.id,
     nombre: template.name,
     categoria: template.category ?? "",
+    icono: template.icon ?? "",
     duracion_minutos: template.duration_minutes ?? "",
     ejercicios: template.exercises.map((exercise) => ({
       nombre: exercise.name ?? "Sin nombre",
@@ -1030,6 +1038,171 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
   });
 };
 
+const ROUTINE_EDITABLE_FIELDS = ["name", "category", "icon", "duration_minutes"] as const;
+type RoutineEditableField = (typeof ROUTINE_EDITABLE_FIELDS)[number];
+
+type RoutineWriteOutcome =
+  | { kind: "replayed" }
+  | { kind: "missing" }
+  | { kind: "in_session"; name: string }
+  | { kind: "invalid"; issues: ReadonlyArray<{ field: string; code: string; message: string }> }
+  | { kind: "unchanged"; template: ToolWorkoutTemplate }
+  | { kind: "updated"; before: ToolWorkoutTemplate; after: ToolWorkoutTemplate }
+  | { kind: "deleted"; removed: ToolWorkoutTemplate };
+
+function parseRoutineId(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function routineSummaryFields(template: ToolWorkoutTemplate) {
+  return {
+    nombre: template.name,
+    categoria: template.category ?? "",
+    icono: template.icon ?? "",
+    duracion_minutos: template.duration_minutes ?? "",
+  };
+}
+
+function routineNotFound(routineId: string): ToolResult {
+  return toolFailure(
+    "not_found",
+    `No se ha cambiado nada: no existe ninguna rutina con id ${routineId}. Consulta read_routines y, si dudas de cuál es, pregunta al usuario.`,
+    "choose_alternative",
+    { status: "not_found", written: false },
+  );
+}
+
+function routineInSession(name: string): ToolResult {
+  return toolFailure(
+    "routine_in_active_session",
+    `No se ha cambiado nada: la rutina "${name}" se está entrenando ahora mismo. Explica al usuario que podrá cambiarla cuando termine o descarte el entrenamiento.`,
+    "stop_turn",
+    { status: "in_active_session", written: false },
+  );
+}
+
+const updateRoutine: ToolHandler = async (args, context) => {
+  const routineId = parseRoutineId(args.routine_id);
+  if (!routineId) return toolFailure("invalid_routine", "Falta routine_id. Obtenlo con read_routines. No se ha cambiado nada.", "correct_arguments");
+  const data = (args.data && typeof args.data === "object" ? args.data : {}) as Record<string, unknown>;
+  const clearFields = Array.isArray(args.clear_fields) ? args.clear_fields : [];
+  const clearDuration = clearFields.includes("duration_minutes");
+  if (clearDuration && data.duration_minutes !== undefined) {
+    return toolFailure("invalid_routine", "No se puede cambiar y borrar la duración a la vez. No se ha cambiado nada.", "correct_arguments");
+  }
+  const requested = ROUTINE_EDITABLE_FIELDS.filter((field) => data[field] !== undefined);
+  if (requested.length === 0 && !clearDuration) {
+    return toolFailure("invalid_routine", "No se indicó ningún cambio. No se ha cambiado nada.", "correct_arguments");
+  }
+  if (!context.commitStore) return toolFailure("storage_unavailable", "No se pudo acceder al almacenamiento durable. No se modificó la rutina.", "stop_turn");
+
+  let outcome: RoutineWriteOutcome = { kind: "missing" };
+  await commitToolStore(context, (previous) => {
+    if (context.operationId && hasToolOperationReceipt(previous.toolOperationReceipts, context.operationId, "update_routine")) {
+      outcome = { kind: "replayed" };
+      return previous;
+    }
+    const current = previous.templates.find((template) => template.id === routineId);
+    if (!current) {
+      outcome = { kind: "missing" };
+      return previous;
+    }
+    if (context.getActiveWorkoutTemplateId?.() === routineId) {
+      outcome = { kind: "in_session", name: current.name };
+      return previous;
+    }
+    const candidate: ToolWorkoutTemplate = { ...current };
+    if (typeof data.name === "string") candidate.name = data.name.trim();
+    if (data.category !== undefined) candidate.category = data.category as ToolWorkoutTemplate["category"];
+    if (data.icon !== undefined) candidate.icon = data.icon as ToolWorkoutTemplate["icon"];
+    if (data.duration_minutes !== undefined) candidate.duration_minutes = String(data.duration_minutes);
+    if (clearDuration) delete candidate.duration_minutes;
+    const validation = validateWorkoutTemplateForWrite(candidate);
+    if (!validation.ok) {
+      outcome = { kind: "invalid", issues: validation.issues };
+      return previous;
+    }
+    const after = validation.value;
+    const changed = ROUTINE_EDITABLE_FIELDS.some((field: RoutineEditableField) => after[field] !== current[field]);
+    if (!changed) {
+      outcome = { kind: "unchanged", template: current };
+      return previous;
+    }
+    outcome = { kind: "updated", before: current, after };
+    return {
+      ...previous,
+      templates: previous.templates.map((template) => (template.id === routineId ? after : template)),
+      toolOperationReceipts: appendToolOperationReceipt(previous.toolOperationReceipts, context.operationId, "update_routine"),
+    };
+  });
+  const final = outcome as RoutineWriteOutcome;
+  if (final.kind === "missing") return routineNotFound(routineId);
+  if (final.kind === "in_session") return routineInSession(final.name);
+  if (final.kind === "invalid") {
+    return toolFailure("invalid_routine", "No se modificó la rutina. Corrige los problemas indicados antes de volver a intentarlo.", "correct_arguments", {
+      status: "invalid_input",
+      written: false,
+      issues: final.issues,
+    });
+  }
+  if (final.kind === "unchanged") {
+    return JSON.stringify({ status: "unchanged", written: false, routine_id: routineId, ...routineSummaryFields(final.template) });
+  }
+  context.markEffectCommitted?.();
+  if (final.kind !== "updated") return ALREADY_APPLIED_OUTPUT;
+  return JSON.stringify({
+    status: "updated",
+    written: true,
+    routine_id: routineId,
+    antes: routineSummaryFields(final.before),
+    despues: routineSummaryFields(final.after),
+    ejercicios: final.after.exercises.length,
+  });
+};
+
+const deleteRoutine: ToolHandler = async (args, context) => {
+  const routineId = parseRoutineId(args.routine_id);
+  if (!routineId) return toolFailure("invalid_routine", "Falta routine_id. Obtenlo con read_routines. No se ha borrado nada.", "correct_arguments");
+  if (!context.commitStore) return toolFailure("storage_unavailable", "No se pudo acceder al almacenamiento durable. No se borró la rutina.", "stop_turn");
+
+  let outcome: RoutineWriteOutcome = { kind: "missing" };
+  await commitToolStore(context, (previous) => {
+    if (context.operationId && hasToolOperationReceipt(previous.toolOperationReceipts, context.operationId, "delete_routine")) {
+      outcome = { kind: "replayed" };
+      return previous;
+    }
+    const current = previous.templates.find((template) => template.id === routineId);
+    if (!current) {
+      outcome = { kind: "missing" };
+      return previous;
+    }
+    if (context.getActiveWorkoutTemplateId?.() === routineId) {
+      outcome = { kind: "in_session", name: current.name };
+      return previous;
+    }
+    outcome = { kind: "deleted", removed: current };
+    // El historial guarda su propia copia de nombre y series: no se toca.
+    return {
+      ...previous,
+      templates: previous.templates.filter((template) => template.id !== routineId),
+      toolOperationReceipts: appendToolOperationReceipt(previous.toolOperationReceipts, context.operationId, "delete_routine"),
+    };
+  });
+  const final = outcome as RoutineWriteOutcome;
+  if (final.kind === "missing") return routineNotFound(routineId);
+  if (final.kind === "in_session") return routineInSession(final.name);
+  context.markEffectCommitted?.();
+  if (final.kind !== "deleted") return ALREADY_APPLIED_OUTPUT;
+  return JSON.stringify({
+    status: "deleted",
+    written: true,
+    routine_id: routineId,
+    nombre: final.removed.name,
+    ejercicios: final.removed.exercises.length,
+    historial_conservado: true,
+  });
+};
+
 const createFeatureIssue: ToolHandler = async (args, _context, dependencies) => {
   const draft = sanitizeFeedbackDraft({
     kind: "feature",
@@ -1065,6 +1238,8 @@ export const AGENT_TOOL_HANDLERS: Readonly<Record<string, ToolHandler>> = Object
   search_exercises: searchExercises,
   read_routines: readRoutines,
   create_routine: createRoutine,
+  update_routine: updateRoutine,
+  delete_routine: deleteRoutine,
   create_feature_issue: createFeatureIssue,
 });
 
