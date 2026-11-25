@@ -1737,6 +1737,10 @@ async function callProviderChatAPIWithTools(
       toolBatchDiagnostics: {
         onEvent: (event) => { void pushTrace("toolPerformance", event.phase, event); },
       },
+      // Solo números, nombres canónicos y códigos de error: nunca argumentos ni texto.
+      toolLoopDiagnostics: {
+        onEvent: (event) => { void pushTrace("toolLoop", event.phase, event); },
+      },
     },
   );
 }
