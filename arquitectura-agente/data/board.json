@@ -1156,6 +1156,18 @@
           "related": [
             "GYM-151"
           ]
+        },
+        {
+          "id": "GYM-279",
+          "title": "Que guardar un dato personal nunca borre los demás",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Hoy guardar un dato personal sustituye la memoria entera por lo que envía el modelo; si solo manda el dato nuevo, borra en silencio el resto.",
+          "dependsOn": [],
+          "related": [
+            "GYM-269",
+            "GYM-26"
+          ]
         }
       ]
     },
@@ -3783,6 +3795,7 @@
         "GYM-261",
         "GYM-263",
         "GYM-259",
+        "GYM-279",
         "GYM-269"
       ]
     },
