@@ -1,6 +1,6 @@
 {
   "meta": {
-    "updated": "2026-11-24",
+    "updated": "2026-11-25",
     "team": "GYM",
     "linearBase": "https://linear.app/gymnasia/issue/",
     "note": "Espejo manual de Linear. La página no llama a la API: al mover un ticket de estado, actualizar aquí con `linear.py board --apply`. Ver README.md.",
@@ -956,7 +956,7 @@
         {
           "id": "GYM-275",
           "title": "Que Coach pueda crear, mover y vaciar una comida entera",
-          "state": "backlog",
+          "state": "done",
           "baseline": "missing",
           "summary": "Coach apunta alimentos de uno en uno: no puede copiar la cena de otro día, mover una comida entera a otra ni vaciarla.",
           "dependsOn": [],
