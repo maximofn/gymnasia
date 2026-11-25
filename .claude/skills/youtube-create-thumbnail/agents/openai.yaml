@@ -1,0 +1,4 @@
+interface:
+  display_name: "YouTube Create Thumbnail"
+  short_description: "Create high-impact, truthful video thumbnails"
+  default_prompt: "Use $youtube-create-thumbnail to create a 16:9 YouTube thumbnail for my video."
