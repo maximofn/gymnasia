@@ -9,7 +9,7 @@ import {
 } from "../catalogs/types";
 import { dietItemFromCatalog, findDietFoodInCatalog } from "../diet/catalogModel";
 import { buildDietDailyPresentationModel } from "../diet/dailyPresentationModel";
-import { removeDietItem, replaceDietItem } from "../diet/mealItemOperations";
+import { placeItemsInMeal, removeDietItem, replaceDietItem } from "../diet/mealItemOperations";
 import {
   createDietMealExpandedState,
   dateFromISO,
@@ -1032,26 +1032,16 @@ export function useDietRuntime(input: {
         ...item,
         id: inputRef.current.createId("food"),
       }));
-      inputRef.current.localStore.update((previous) => {
-        const currentDay = previous.dietByDate[selectedDate]
-          ?? { day_date: selectedDate, meals: [] };
-        const existingMeal = currentDay.meals.find((meal) => meal.title === category);
-        const meals = existingMeal
-          ? currentDay.meals.map((meal) => meal.id === existingMeal.id
-            ? { ...meal, items: [...meal.items, ...clonedItems] }
-            : meal)
-          : sortDietMealsByCategory([
-              ...currentDay.meals,
-              { id: inputRef.current.createId("meal"), title: category, items: clonedItems },
-            ]);
-        return {
-          ...previous,
-          dietByDate: {
-            ...previous.dietByDate,
-            [selectedDate]: { ...currentDay, meals },
-          },
-        };
-      });
+      inputRef.current.localStore.update((previous) => ({
+        ...previous,
+        dietByDate: placeItemsInMeal(
+          previous.dietByDate,
+          { date: selectedDate, category },
+          clonedItems,
+          "append",
+          () => inputRef.current.createId("meal"),
+        ).dietByDate,
+      }));
       setCopyConfirmation(null);
     },
     closeCopyConfirmation: () => setCopyConfirmation(null),

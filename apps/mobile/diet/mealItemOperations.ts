@@ -187,3 +187,151 @@ export function rescaleDietItem(
     },
   };
 }
+
+/*
+ * Operaciones sobre una comida entera (todas sus entradas a la vez).
+ *
+ * Una comida se señala por día y categoría. Cuando la comida de destino ya
+ * tiene alimentos, quien llama debe decir si se sustituyen o se suman: sin esa
+ * decisión no se toca nada, para no mezclar ni perder comidas por sorpresa.
+ */
+
+export type DietMealLocator = { date: string; category: DietMealCategory };
+
+/** `replace` deja en el destino solo lo que llega; `append` lo suma a lo que ya había. */
+export type DietMealPlacement = "replace" | "append";
+
+export type MealOperationError = {
+  code: "meal_empty" | "same_meal" | "destination_not_empty";
+  message: string;
+  /** En `destination_not_empty`, lo que ya hay en el destino. */
+  existing?: DietItem[];
+};
+
+export type MealOperationResult<T> =
+  | { ok: true; value: T }
+  | { ok: false; error: MealOperationError };
+
+function mealFailure<T>(error: MealOperationError): MealOperationResult<T> {
+  return { ok: false, error };
+}
+
+function findMeal(dietByDate: DietByDate, locator: DietMealLocator): DietMeal | null {
+  return dietByDate[locator.date]?.meals.find((meal) => mealMatches(meal, { category: locator.category })) ?? null;
+}
+
+/** Alimentos de una comida, en su orden; vacío si el día o la comida no existen. */
+export function dietMealItems(dietByDate: DietByDate, locator: DietMealLocator): DietItem[] {
+  return findMeal(dietByDate, locator)?.items ?? [];
+}
+
+/**
+ * Coloca una lista de entradas en una comida, creándola con `createMealId` si no
+ * existe. Es la pieza común de «repetir día» en la pantalla y de las
+ * herramientas de Coach que añaden, copian o mueven comidas.
+ */
+export function placeItemsInMeal(
+  dietByDate: DietByDate,
+  target: DietMealLocator,
+  items: readonly DietItem[],
+  placement: DietMealPlacement,
+  createMealId: () => string,
+): { dietByDate: DietByDate; replaced: DietItem[] } {
+  const day = dietByDate[target.date] ?? { day_date: target.date, meals: [] };
+  const existing = day.meals.find((meal) => mealMatches(meal, { category: target.category }));
+  const replaced = placement === "replace" ? existing?.items ?? [] : [];
+  const meals = existing
+    ? day.meals.map((meal) => meal === existing
+      ? { ...meal, items: placement === "replace" ? [...items] : [...meal.items, ...items] }
+      : meal)
+    : [...day.meals, { id: createMealId(), title: target.category, items: [...items] }];
+  return { dietByDate: withDayMeals(dietByDate, target.date, meals), replaced };
+}
+
+function sameMeal(source: DietMealLocator, target: DietMealLocator): boolean {
+  return source.date === target.date && source.category.toLowerCase() === target.category.toLowerCase();
+}
+
+function emptyMeal<T>(locator: DietMealLocator): MealOperationResult<T> {
+  return mealFailure({
+    code: "meal_empty",
+    message: `No hay alimentos en ${locator.category} del ${locator.date}. No se ha cambiado nada.`,
+  });
+}
+
+/**
+ * Comprueba si se puede escribir en el destino. Sin `placement`, solo se puede
+ * si el destino está vacío; si tiene alimentos, devuelve cuáles.
+ */
+function resolvePlacement(
+  dietByDate: DietByDate,
+  target: DietMealLocator,
+  placement: DietMealPlacement | undefined,
+): MealOperationResult<DietMealPlacement> {
+  if (placement) return { ok: true, value: placement };
+  const existing = dietMealItems(dietByDate, target);
+  if (existing.length === 0) return { ok: true, value: "append" };
+  return mealFailure({
+    code: "destination_not_empty",
+    message: `${target.category} del ${target.date} ya tiene alimentos. Hay que decidir si se sustituyen o se suman. No se ha cambiado nada.`,
+    existing,
+  });
+}
+
+/**
+ * Copia los alimentos de una comida a otra, del mismo día o de otro, con los
+ * mismos gramos y macros. Cada copia recibe un id nuevo de `createItemId`, para
+ * que origen y destino se puedan corregir por separado.
+ */
+export function copyDietMeal(
+  dietByDate: DietByDate,
+  source: DietMealLocator,
+  target: DietMealLocator,
+  options: { placement?: DietMealPlacement; createItemId: (index: number) => string; createMealId: () => string },
+): MealOperationResult<{ dietByDate: DietByDate; copied: DietItem[]; replaced: DietItem[] }> {
+  if (sameMeal(source, target)) {
+    return mealFailure({ code: "same_meal", message: "El origen y el destino son la misma comida. No se ha cambiado nada." });
+  }
+  const items = dietMealItems(dietByDate, source);
+  if (items.length === 0) return emptyMeal(source);
+  const placement = resolvePlacement(dietByDate, target, options.placement);
+  if (!placement.ok) return placement;
+  const copied = items.map((item, index) => ({ ...item, id: options.createItemId(index) }));
+  const placed = placeItemsInMeal(dietByDate, target, copied, placement.value, options.createMealId);
+  return { ok: true, value: { dietByDate: placed.dietByDate, copied, replaced: placed.replaced } };
+}
+
+/**
+ * Lleva todos los alimentos de una comida a otra y deja la de origen vacía. Las
+ * entradas conservan su id: siguen siendo las mismas, solo cambian de sitio.
+ */
+export function moveDietMeal(
+  dietByDate: DietByDate,
+  source: DietMealLocator,
+  target: DietMealLocator,
+  options: { placement?: DietMealPlacement; createMealId: () => string },
+): MealOperationResult<{ dietByDate: DietByDate; moved: DietItem[]; replaced: DietItem[] }> {
+  if (sameMeal(source, target)) {
+    return mealFailure({ code: "same_meal", message: "El origen y el destino son la misma comida. No se ha cambiado nada." });
+  }
+  const items = dietMealItems(dietByDate, source);
+  if (items.length === 0) return emptyMeal(source);
+  const placement = resolvePlacement(dietByDate, target, options.placement);
+  if (!placement.ok) return placement;
+  const cleared = clearDietMeal(dietByDate, source);
+  if (!cleared.ok) return cleared;
+  const placed = placeItemsInMeal(cleared.value.dietByDate, target, items, placement.value, options.createMealId);
+  return { ok: true, value: { dietByDate: placed.dietByDate, moved: [...items], replaced: placed.replaced } };
+}
+
+/** Quita todos los alimentos de una comida de un día; las demás comidas y días quedan intactos. */
+export function clearDietMeal(
+  dietByDate: DietByDate,
+  locator: DietMealLocator,
+): MealOperationResult<{ dietByDate: DietByDate; cleared: DietItem[] }> {
+  const meal = findMeal(dietByDate, locator);
+  if (!meal || meal.items.length === 0) return emptyMeal(locator);
+  const day = dietByDate[locator.date];
+  const meals = day.meals.filter((candidate) => candidate !== meal);
+  return { ok: true, value: { dietByDate: withDayMeals(dietByDate, locator.date, meals), cleared: [...meal.items] } };
+}
