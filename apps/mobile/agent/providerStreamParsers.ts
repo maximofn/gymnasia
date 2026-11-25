@@ -46,7 +46,20 @@ export type OpenAIStreamTurnResult = {
   thinking: string | null;
   truncated: boolean;
   outputItems: OpenAIResponseOutputItem[];
+  /** Tokens que informa el proveedor; vacíos si no los manda. */
+  usage?: StreamTokenUsage;
 };
+
+export type StreamTokenUsage = { inputTokens: number | null; outputTokens: number | null };
+
+function usageNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : null;
+}
+
+function sumUsage(...values: unknown[]): number | null {
+  const numbers = values.map(usageNumber).filter((value): value is number => value !== null);
+  return numbers.length ? numbers.reduce((total, value) => total + value, 0) : null;
+}
 
 export type AnthropicStreamTurnResult = {
   content: string;
@@ -59,6 +72,8 @@ export type AnthropicStreamTurnResult = {
    * completo y el contenido parcial pasa por bueno.
    */
   truncated: boolean;
+  /** Tokens que informa el proveedor; vacíos si no los manda. */
+  usage?: StreamTokenUsage;
 };
 
 export type GoogleStreamTurnResult = GoogleInteractionTurn;
@@ -371,6 +386,7 @@ export function createOpenAIStreamParser(handlers?: StreamingHandlers) {
   let streamedThinking = "";
   let responseId: string | null = null;
   let sawTerminalEvent = false;
+  let usage: StreamTokenUsage = { inputTokens: null, outputTokens: null };
   const itemsByIndex = new Map<number, OpenAIResponseOutputItem>();
   const indexesById = new Map<string, number>();
 
@@ -408,7 +424,7 @@ export function createOpenAIStreamParser(handlers?: StreamingHandlers) {
       item_id?: string;
       output_index?: number;
       item?: unknown;
-      response?: { id?: string; output?: unknown[]; error?: { message?: string } };
+      response?: { id?: string; output?: unknown[]; error?: { message?: string }; usage?: Record<string, unknown> };
     };
     const type = payload.type ?? event.event;
     if (type === "error" || event.event === "error") {
@@ -440,6 +456,10 @@ export function createOpenAIStreamParser(handlers?: StreamingHandlers) {
     } else if (type === "response.completed") {
       sawTerminalEvent = true;
       responseId = payload.response?.id ?? responseId;
+      const reported = payload.response?.usage;
+      if (reported && typeof reported === "object") {
+        usage = { inputTokens: usageNumber(reported.input_tokens), outputTokens: usageNumber(reported.output_tokens) };
+      }
       const finalItems = parseOpenAIOutputItems(payload.response);
       if (finalItems.length > 0) replaceItems(finalItems);
     }
@@ -464,6 +484,7 @@ export function createOpenAIStreamParser(handlers?: StreamingHandlers) {
         thinking: streamedThinking.trim() || collectOpenAIThinking(outputItems),
         truncated: !sawTerminalEvent,
         outputItems,
+        usage,
       };
     },
   };
@@ -475,6 +496,7 @@ export function createAnthropicStreamParser(handlers?: StreamingHandlers) {
   let streamedThinking = "";
   let stopReason: string | null = null;
   let sawTerminalEvent = false;
+  let usage: StreamTokenUsage = { inputTokens: null, outputTokens: null };
   const blocks = new Map<number, AnthropicResponseBlock & { partial_json?: string }>();
   const processEvent = (rawEvent: string) => {
     const event = parseSSEEvent(rawEvent);
@@ -486,7 +508,8 @@ export function createAnthropicStreamParser(handlers?: StreamingHandlers) {
       index?: number;
       content_block?: Record<string, unknown>;
       delta?: Record<string, unknown>;
-      message?: { stop_reason?: string | null };
+      message?: { stop_reason?: string | null; usage?: Record<string, unknown> };
+      usage?: Record<string, unknown>;
     };
     const type = payload.type ?? event.event;
     if (type === "error" || event.event === "error") {
@@ -539,7 +562,17 @@ export function createAnthropicStreamParser(handlers?: StreamingHandlers) {
           ? input as Record<string, unknown>
           : {};
       }
+    } else if (type === "message_start" && payload.message?.usage) {
+      // La entrada se reparte entre tokens nuevos y los de caché.
+      const reported = payload.message.usage;
+      usage = {
+        inputTokens: sumUsage(reported.input_tokens, reported.cache_creation_input_tokens, reported.cache_read_input_tokens),
+        outputTokens: usageNumber(reported.output_tokens),
+      };
     } else if (type === "message_delta") {
+      // El recuento de salida de message_delta es acumulado: sustituye, no suma.
+      const outputTokens = usageNumber(payload.usage?.output_tokens);
+      if (outputTokens !== null) usage = { ...usage, outputTokens };
       stopReason = payload.message?.stop_reason
         ?? (typeof payload.delta?.stop_reason === "string" ? payload.delta.stop_reason : null)
         ?? stopReason;
@@ -574,6 +607,7 @@ export function createAnthropicStreamParser(handlers?: StreamingHandlers) {
         contentBlocks,
         stopReason,
         truncated: !sawTerminalEvent,
+        usage,
       };
     },
   };
