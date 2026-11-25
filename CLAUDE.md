@@ -40,6 +40,19 @@
   echada a propósito; tratarla como un trámite anula su razón de ser.
 - El detalle del mecanismo vive en `docs/security/prompt-policy-governance.md`.
 
+## Guiones de YouTube: público y nivel
+- Al usar la skill `youtube-create-narration` (o cualquier guion de vídeo de este
+  proyecto), **el espectador quiere entender a alto nivel cómo se construyen
+  agentes**. No viene a aprender a programarlos línea a línea.
+- Cuenta la idea de cómo se hacen las cosas: qué problema hay, qué decide el
+  agente, qué hace la app, qué se mide y qué se aprende. Apóyate en diagramas,
+  ejemplos concretos y resultados, no en código.
+- **No enseñes código a bajo nivel** (funciones, ficheros, diffs, schemas
+  completos). Como mucho, un nombre de tool o un fragmento mínimo de una petición
+  o un resultado cuando ilustre la idea, explicado en lenguaje llano. Solo se
+  entra en el código si el mantenedor lo pide para un vídeo concreto.
+- Anota esta premisa en el apartado «Público y conocimientos previos» del guion.
+
 ## Project Structure & Module Organization
 This repo contains an Expo React Native mobile app and un Worker de Cloudflare de apoyo.
 - `apps/mobile`: Expo React Native app (`App.tsx`, `theme.ts`). This is the only application.
