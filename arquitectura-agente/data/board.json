@@ -976,6 +976,18 @@
           "related": [
             "GYM-268"
           ]
+        },
+        {
+          "id": "GYM-278",
+          "title": "Exponer a Coach el detalle de ejercicios de los entrenos y los ajustes de dieta",
+          "state": "backlog",
+          "baseline": "missing",
+          "summary": "Coach no puede decir cuánto ha subido un ejercicio ni ver el objetivo de proteína: el historial solo da el volumen por sesión y ninguna tool lee los ajustes de dieta.",
+          "dependsOn": [],
+          "related": [
+            "GYM-26",
+            "GYM-270"
+          ]
         }
       ]
     },
@@ -3787,6 +3799,7 @@
         "GYM-273",
         "GYM-274",
         "GYM-275",
+        "GYM-278",
         "GYM-260"
       ]
     },
