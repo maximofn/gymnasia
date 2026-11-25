@@ -500,11 +500,25 @@ jobs:
             echo "result=success" >> "$GITHUB_OUTPUT"
           else
             echo "result=failure" >> "$GITHUB_OUTPUT"
+            # Only the fixed category leaves the private log.
+            if ! failure_category="$(
+              node scripts/classify-openwiki-error.mjs \
+                "$RUNNER_TEMP/openwiki-personal.log" 2> /dev/null
+            )"; then
+              failure_category="unknown"
+            fi
+            case "$failure_category" in
+              oauth|managed-markers|langsmith|rate-limit|model|context-limit|network|unknown) ;;
+              *) failure_category="unknown" ;;
+            esac
+            echo "failure_category=$failure_category" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Mark Personal Brain update failure
         if: steps.personal.outputs.result == 'failure'
-        run: echo "::error title=Personal Brain update failed::No source content or private log data was printed."
+        env:
+          FAILURE_CATEGORY: ${{ steps.personal.outputs.failure_category }}
+        run: echo "::error title=Personal Brain update failed::Failure category:$FAILURE_CATEGORY. No source content or private log data was printed."
 
       - name: Encrypt Personal Brain state
         id: encrypt_personal
