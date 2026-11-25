@@ -557,6 +557,79 @@ async function expectCoachMealCorrection() {
   }
 }
 
+async function expectCoachWholeMeal() {
+  log("Verificando que Coach apunta, copia y vacía una comida entera");
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  try {
+    const page = await preparePage(context, { offline: true }, {}, true);
+    await openApp(page);
+    const [today, yesterday] = await page.evaluate(() => {
+      const iso = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      const now = new Date();
+      const before = new Date(now);
+      before.setDate(now.getDate() - 1);
+      return [iso(now), iso(before)];
+    });
+    const requests = [];
+    const toolOutput = (request, callId) => {
+      const item = request.input.find((entry) => entry.type === "function_call_output" && entry.call_id === callId);
+      return item ? JSON.parse(item.output) : null;
+    };
+    const rice = (grams) => ({ kind: "catalog", source_id: "anses_ciqual_2025", item_id: ciqualRice.id, grams });
+    await page.route("**/v1/responses*", async (route) => {
+      const request = route.request().postDataJSON();
+      requests.push(request);
+      const number = requests.length;
+      let body;
+      if (number === 1) {
+        body = openAIToolCallSse("resp_whole_add", "call_whole_add", "add_meal_foods", JSON.stringify({ date: yesterday, meal: "Cena", foods: [rice(150), rice(50)] }));
+      } else if (number === 2) {
+        body = openAIFinalSse("Cena de ayer apuntada.");
+      } else if (number === 3) {
+        body = openAIToolCallSse("resp_whole_copy", "call_whole_copy", "copy_meal", JSON.stringify({ from_date: yesterday, from_meal: "Cena", to_date: today, to_meal: "Cena", mode: "copy" }));
+      } else if (number === 4) {
+        body = openAIFinalSse("Cena copiada a hoy.");
+      } else if (number === 5) {
+        body = openAIToolCallSse("resp_whole_clear", "call_whole_clear", "clear_meal", JSON.stringify({ date: yesterday, meal: "Cena" }));
+      } else {
+        body = openAIFinalSse("Cena de ayer vaciada.");
+      }
+      await route.fulfill({ status: 200, headers: { "content-type": "text/event-stream; charset=utf-8" }, body });
+    });
+    await page.getByTestId("nav-tab-chat").click();
+    for (const [message, reply] of [
+      ["Ayer cené 150 g de arroz y otros 50 g de arroz", "Cena de ayer apuntada."],
+      ["Hoy he cenado lo mismo que ayer", "Cena copiada a hoy."],
+      ["Borra todo lo de la cena de ayer", "Cena de ayer vaciada."],
+    ]) {
+      await page.getByTestId("chat-input").fill(message);
+      await page.getByTestId("chat-send").click();
+      await page.getByText(reply, { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+    }
+    assert.equal(requests.length, 6);
+    assert.equal(toolOutput(requests[1], "call_whole_add").status, "added");
+    const copied = toolOutput(requests[3], "call_whole_copy");
+    assert.equal(copied.status, "copied");
+    assert.deepEqual(copied.sustituidos, []);
+    assert.equal(toolOutput(requests[5], "call_whole_clear").quitados.length, 2);
+
+    const readDay = (date) => page.evaluate(({ key, day }) => (JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate?.[day]?.meals ?? []).map((meal) => [meal.title, meal.items.map((item) => [item.grams, item.calories_kcal])]), { key: storageKey, day: date });
+    await page.waitForFunction(({ key, date }) => (JSON.parse(localStorage.getItem(key) ?? "{}").dietByDate?.[date]?.meals ?? []).length === 0, { key: storageKey, date: yesterday });
+    await page.unroute("**/v1/responses*");
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.getByTestId("nav-tab-diet").click();
+    const rows = page.getByTestId(/^diet-item-row-/).filter({ hasText: ciqualRice.name });
+    await rows.first().waitFor({ state: "visible" });
+    assert.equal(await rows.count(), 2);
+    await page.getByText("525 kcal", { exact: true }).first().waitFor({ state: "visible" });
+    await page.getByText("175 kcal", { exact: true }).first().waitFor({ state: "visible" });
+    assert.deepEqual(await readDay(today), [["Cena", [[150, 525], [50, 175]]]]);
+    assert.deepEqual(await readDay(yesterday), []);
+  } finally {
+    await context.close();
+  }
+}
+
 async function expectCoachMeasurementDeletion() {
   log("Verificando que Coach borra la medición entera de un día y no vuelve al recargar");
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -813,6 +886,7 @@ const browser = await chromium.launch({ headless: process.env.CATALOG_E2E_HEADLE
 try {
   await expectCiqualImages();
   await expectCoachMealCorrection();
+  await expectCoachWholeMeal();
   await expectCoachMeasurementDeletion();
   await expectCoachRoutineEditing();
   if (process.env.CATALOG_E2E_CIQUAL_ONLY === "1") {
