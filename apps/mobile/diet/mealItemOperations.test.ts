@@ -5,7 +5,12 @@ import { catalogRef, linkedCatalog, unresolvedCatalog, type FoodCatalogEntry } f
 import type { DietItem } from "./model";
 import { DIET_MEAL_CATEGORIES } from "./nutritionContract";
 import {
+  clearDietMeal,
+  copyDietMeal,
+  dietMealItems,
   locateDietItem,
+  moveDietMeal,
+  placeItemsInMeal,
   moveDietItem,
   removeDietItem,
   replaceDietItem,
@@ -198,5 +203,171 @@ describe("propiedades de las operaciones sobre entradas", () => {
       const expected = canonical(diet).filter((line) => !line.includes(`"id":"${target.item.id}"`));
       expect(canonical(result.value.dietByDate)).toEqual(expected);
     }), { seed: 271272, numRuns: 300 });
+  });
+});
+
+const copyIds = { createItemId: (index: number) => `copy_${index}`, createMealId };
+
+function categoryItems(diet: DietByDate, date: string, category: string): string[] {
+  return diet[date]?.meals.find((meal) => meal.title === category)?.items.map((entry) => entry.id) ?? [];
+}
+
+describe("operaciones sobre una comida entera", () => {
+  it("coloca varias entradas creando la comida si no existe, en el orden de categorías", () => {
+    const diet = sampleDiet();
+    const placed = placeItemsInMeal(diet, { date: "2026-11-20", category: "Desayuno" }, [item("a"), item("b")], "append", createMealId);
+    expect(placed.replaced).toEqual([]);
+    expect(placed.dietByDate["2026-11-20"].meals.map((meal) => meal.title)).toEqual(["Desayuno", "Comida", "Cena"]);
+    expect(categoryItems(placed.dietByDate, "2026-11-20", "Desayuno")).toEqual(["a", "b"]);
+    expect(placed.dietByDate["2026-11-20"].meals[0].id).toBe("meal_new");
+    expect(diet["2026-11-20"].meals).toHaveLength(2);
+  });
+
+  it("al sumar conserva lo que había y al sustituir devuelve lo que quita", () => {
+    const appended = placeItemsInMeal(sampleDiet(), { date: "2026-11-20", category: "Comida" }, [item("a")], "append", createMealId);
+    expect(categoryItems(appended.dietByDate, "2026-11-20", "Comida")).toEqual(["comida_rice", "a"]);
+    const replaced = placeItemsInMeal(sampleDiet(), { date: "2026-11-20", category: "Comida" }, [item("a")], "replace", createMealId);
+    expect(categoryItems(replaced.dietByDate, "2026-11-20", "Comida")).toEqual(["a"]);
+    expect(replaced.replaced.map((entry) => entry.id)).toEqual(["comida_rice"]);
+    expect(replaced.dietByDate["2026-11-20"].meals.find((meal) => meal.title === "Comida")?.id).toBe("meal_comida");
+  });
+
+  it("copia una comida a otro día con los mismos gramos y macros e ids nuevos", () => {
+    const diet = sampleDiet();
+    const result = copyDietMeal(diet, { date: "2026-11-20", category: "Cena" }, { date: "2026-11-21", category: "Cena" }, copyIds);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const copied = dietMealItems(result.value.dietByDate, { date: "2026-11-21", category: "Cena" });
+    const original = diet["2026-11-20"].meals[1].items;
+    expect(copied.map((entry) => entry.id)).toEqual(["copy_0", "copy_1", "copy_2"]);
+    expect(copied.map(({ id: _id, ...rest }) => rest)).toEqual(original.map(({ id: _id, ...rest }) => rest));
+    expect(categoryItems(result.value.dietByDate, "2026-11-20", "Cena")).toEqual(["cena_rice_1", "cena_rice_2", "cena_chicken"]);
+  });
+
+  it("copia a otra categoría del mismo día", () => {
+    const result = copyDietMeal(sampleDiet(), { date: "2026-11-20", category: "Comida" }, { date: "2026-11-20", category: "Merienda" }, copyIds);
+    expect(result.ok && categoryItems(result.value.dietByDate, "2026-11-20", "Merienda")).toEqual(["copy_0"]);
+    expect(result.ok && categoryItems(result.value.dietByDate, "2026-11-20", "Comida")).toEqual(["comida_rice"]);
+  });
+
+  it("mueve una comida a otra categoría conservando los ids y vacía la de origen", () => {
+    const result = moveDietMeal(sampleDiet(), { date: "2026-11-20", category: "Cena" }, { date: "2026-11-20", category: "Merienda" }, { createMealId });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(categoryItems(result.value.dietByDate, "2026-11-20", "Merienda")).toEqual(["cena_rice_1", "cena_rice_2", "cena_chicken"]);
+    expect(result.value.dietByDate["2026-11-20"].meals.map((meal) => meal.title)).toEqual(["Comida", "Merienda"]);
+    expect(result.value.moved).toHaveLength(3);
+  });
+
+  it("mueve una comida a otro día", () => {
+    const result = moveDietMeal(sampleDiet(), { date: "2026-11-20", category: "Comida" }, { date: "2026-11-22", category: "Comida" }, { createMealId });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(categoryItems(result.value.dietByDate, "2026-11-22", "Comida")).toEqual(["comida_rice"]);
+    expect(result.value.dietByDate["2026-11-20"].meals.map((meal) => meal.title)).toEqual(["Cena"]);
+  });
+
+  it("si el destino tiene alimentos y no se indica qué hacer, no toca nada y dice qué hay", () => {
+    const diet = sampleDiet();
+    const copy = copyDietMeal(diet, { date: "2026-11-20", category: "Cena" }, { date: "2026-11-20", category: "Comida" }, copyIds);
+    expect(copy).toMatchObject({ ok: false, error: { code: "destination_not_empty", existing: [expect.objectContaining({ id: "comida_rice" })] } });
+    const move = moveDietMeal(diet, { date: "2026-11-20", category: "Cena" }, { date: "2026-11-20", category: "Comida" }, { createMealId });
+    expect(move).toMatchObject({ ok: false, error: { code: "destination_not_empty" } });
+  });
+
+  it("mover sobre una comida con alimentos solo pierde lo que había si se pide sustituir", () => {
+    const appended = moveDietMeal(sampleDiet(), { date: "2026-11-20", category: "Cena" }, { date: "2026-11-20", category: "Comida" }, { placement: "append", createMealId });
+    expect(appended.ok && categoryItems(appended.value.dietByDate, "2026-11-20", "Comida")).toEqual(["comida_rice", "cena_rice_1", "cena_rice_2", "cena_chicken"]);
+    expect(appended.ok && appended.value.replaced).toEqual([]);
+    const replaced = moveDietMeal(sampleDiet(), { date: "2026-11-20", category: "Cena" }, { date: "2026-11-20", category: "Comida" }, { placement: "replace", createMealId });
+    expect(replaced.ok && categoryItems(replaced.value.dietByDate, "2026-11-20", "Comida")).toEqual(["cena_rice_1", "cena_rice_2", "cena_chicken"]);
+    expect(replaced.ok && replaced.value.replaced.map((entry) => entry.id)).toEqual(["comida_rice"]);
+  });
+
+  it("rechaza copiar o mover una comida sobre sí misma", () => {
+    const locator = { date: "2026-11-20", category: "Cena" as const };
+    expect(copyDietMeal(sampleDiet(), locator, { ...locator }, copyIds)).toMatchObject({ ok: false, error: { code: "same_meal" } });
+    expect(moveDietMeal(sampleDiet(), locator, { ...locator }, { createMealId })).toMatchObject({ ok: false, error: { code: "same_meal" } });
+  });
+
+  it("rechaza copiar, mover o vaciar una comida o un día sin alimentos", () => {
+    const target = { date: "2026-11-21", category: "Cena" as const };
+    expect(copyDietMeal(sampleDiet(), { date: "2026-11-20", category: "Desayuno" }, target, copyIds)).toMatchObject({ ok: false, error: { code: "meal_empty" } });
+    expect(moveDietMeal(sampleDiet(), { date: "2026-11-25", category: "Cena" }, target, { createMealId })).toMatchObject({ ok: false, error: { code: "meal_empty" } });
+    expect(clearDietMeal(sampleDiet(), { date: "2026-11-25", category: "Cena" })).toMatchObject({ ok: false, error: { code: "meal_empty" } });
+    expect(clearDietMeal(sampleDiet(), { date: "2026-11-20", category: "Desayuno" })).toMatchObject({ ok: false, error: { code: "meal_empty" } });
+  });
+
+  it("vacía una comida sin tocar las demás y devuelve lo que quitó", () => {
+    const diet = sampleDiet();
+    const result = clearDietMeal(diet, { date: "2026-11-20", category: "Cena" });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.value.cleared.map((entry) => entry.id)).toEqual(["cena_rice_1", "cena_rice_2", "cena_chicken"]);
+    expect(result.value.dietByDate["2026-11-20"].meals).toEqual([diet["2026-11-20"].meals[0]]);
+    expect(diet["2026-11-20"].meals).toHaveLength(2);
+  });
+});
+
+describe("propiedades de las operaciones sobre comidas enteras", () => {
+  it("mover una comida a una vacía y devolverla deja los datos igual", () => {
+    fc.assert(fc.property(
+      dietArbitrary,
+      fc.nat(),
+      fc.constantFrom(...dates),
+      fc.constantFrom(...DIET_MEAL_CATEGORIES),
+      (diet, pick, toDate, toCategory) => {
+        const entries = allEntries(diet);
+        const picked = entries[pick % entries.length];
+        const source = { date: picked.date, category: picked.category as (typeof DIET_MEAL_CATEGORIES)[number] };
+        const target = { date: toDate, category: toCategory };
+        fc.pre(dietMealItems(diet, target).length === 0);
+        const there = moveDietMeal(diet, source, target, { createMealId });
+        expect(there.ok).toBe(true);
+        if (!there.ok) return;
+        const back = moveDietMeal(there.value.dietByDate, target, source, { createMealId });
+        expect(back.ok).toBe(true);
+        if (!back.ok) return;
+        expect(canonical(back.value.dietByDate)).toEqual(canonical(diet));
+      },
+    ), { seed: 275275, numRuns: 300 });
+  });
+
+  it("vaciar una comida nunca cambia las demás ni sus totales", () => {
+    fc.assert(fc.property(dietArbitrary, fc.nat(), (diet, pick) => {
+      const entries = allEntries(diet);
+      const picked = entries[pick % entries.length];
+      const result = clearDietMeal(diet, { date: picked.date, category: picked.category as never });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      const prefix = `${picked.date}|${picked.category}|`;
+      expect(canonical(result.value.dietByDate)).toEqual(canonical(diet).filter((line) => !line.startsWith(prefix)));
+    }), { seed: 275276, numRuns: 300 });
+  });
+
+  it("copiar una comida no cambia el origen ni las comidas ajenas al destino", () => {
+    fc.assert(fc.property(
+      dietArbitrary,
+      fc.nat(),
+      fc.constantFrom(...dates),
+      fc.constantFrom(...DIET_MEAL_CATEGORIES),
+      fc.constantFrom("replace" as const, "append" as const),
+      (diet, pick, toDate, toCategory, placement) => {
+        const entries = allEntries(diet);
+        const picked = entries[pick % entries.length];
+        const source = { date: picked.date, category: picked.category as (typeof DIET_MEAL_CATEGORIES)[number] };
+        fc.pre(source.date !== toDate || source.category !== toCategory);
+        const result = copyDietMeal(diet, source, { date: toDate, category: toCategory }, { ...copyIds, placement });
+        expect(result.ok).toBe(true);
+        if (!result.ok) return;
+        const targetPrefix = `${toDate}|${toCategory}|`;
+        expect(canonical(result.value.dietByDate).filter((line) => !line.startsWith(targetPrefix)))
+          .toEqual(canonical(diet).filter((line) => !line.startsWith(targetPrefix)));
+        const expectedTarget = placement === "append"
+          ? dietMealItems(diet, { date: toDate, category: toCategory }).length + dietMealItems(diet, source).length
+          : dietMealItems(diet, source).length;
+        expect(dietMealItems(result.value.dietByDate, { date: toDate, category: toCategory })).toHaveLength(expectedTarget);
+      },
+    ), { seed: 275277, numRuns: 300 });
   });
 });
