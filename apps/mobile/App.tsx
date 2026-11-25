@@ -1052,6 +1052,9 @@ const RECONCILED_TOOL_OUTPUTS: Record<string, string> = {
   add_meal_food: "El alimento ya se había añadido.",
   remove_meal_food: "El alimento ya se había quitado.",
   update_meal_food: "El alimento ya se había corregido.",
+  add_meal_foods: "Los alimentos ya se habían añadido.",
+  copy_meal: "La comida ya se había copiado o movido.",
+  clear_meal: "La comida ya se había vaciado.",
   create_routine: "La rutina ya se había creado.",
 };
 

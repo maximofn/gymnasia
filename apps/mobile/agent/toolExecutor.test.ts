@@ -249,6 +249,41 @@ const dispatchScenarios: Record<string, {
       ]);
     },
   },
+  add_meal_foods: {
+    args: {
+      date: "2026-09-01",
+      meal: "Desayuno",
+      foods: [
+        { kind: "catalog", source_id: "gymnasia_foods", item_id: "rice", grams: 50 },
+        { kind: "manual", name: "Tostada", grams: 30, calories_kcal: 80, protein_g: 3, carbs_g: 15, fat_g: 1 },
+      ],
+    },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({ status: "added", written: true, comida: "Desayuno", total_kcal_anadidas: 145 });
+      expect(store.dietByDate["2026-09-01"].meals.map((meal) => meal.title)).toEqual(["Desayuno", "Comida"]);
+      expect(store.dietByDate["2026-09-01"].meals[0].items).toEqual([
+        expect.objectContaining({ title: "Arroz blanco", grams: 50, calories_kcal: 65 }),
+        expect.objectContaining({ title: "Tostada", grams: 30, calories_kcal: 80 }),
+      ]);
+    },
+  },
+  copy_meal: {
+    args: { from_date: "2026-09-01", from_meal: "Comida", to_date: "2026-09-02", to_meal: "Comida", mode: "copy" },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({ status: "copied", written: true, total_kcal: 130, sustituidos: [] });
+      expect(store.dietByDate["2026-09-02"].meals).toEqual([
+        expect.objectContaining({ title: "Comida", items: [expect.objectContaining({ title: "Arroz blanco", grams: 100, calories_kcal: 130 })] }),
+      ]);
+      expect(store.dietByDate["2026-09-01"].meals[0].items).toEqual([expect.objectContaining({ id: "food_existing" })]);
+    },
+  },
+  clear_meal: {
+    args: { date: "2026-09-01", meal: "Comida" },
+    verify: ({ output, store }) => {
+      expect(JSON.parse(output)).toMatchObject({ status: "cleared", written: true, quitados: [expect.objectContaining({ entrada_id: "food_existing" })] });
+      expect(store.dietByDate["2026-09-01"].meals).toEqual([]);
+    },
+  },
   search_exercises: {
     args: { query: "sentadilla" },
     verify: ({ output }) => { expect(JSON.parse(output).results).toEqual([expect.objectContaining({ item_id: "sentadilla" })]); },
