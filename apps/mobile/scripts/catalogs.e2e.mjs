@@ -802,6 +802,121 @@ async function expectCoachRoutineEditing() {
   }
 }
 
+async function expectCoachRoutineExerciseEditing() {
+  log("Verificando que Coach añade un ejercicio a una rutina existente y le cambia el peso");
+  const routineId = "template_e2e_espalda";
+  const exercise = (id, name, weight) => ({
+    id,
+    name,
+    muscle: "Espalda",
+    image_uri: null,
+    sets: [],
+    series: [
+      { id: `${id}_s1`, type: "normal", reps: "10", weight_kg: weight, rest_seconds: "90" },
+      { id: `${id}_s2`, type: "normal", reps: "10", weight_kg: weight, rest_seconds: "90" },
+    ],
+    catalog_link: { schemaVersion: 1, status: "unresolved", reason: "manual" },
+  });
+  const template = {
+    id: routineId,
+    name: "Espalda",
+    category: "strength",
+    icon: "activity",
+    exercises: [exercise("exercise_e2e_remo", "Remo", "50"), exercise("exercise_e2e_jalon", "Jalón", "45")],
+  };
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  try {
+    const seeded = { ...seedStore(true), templates: [template] };
+    const page = await preparePage(context, { offline: true }, { [storageKey]: JSON.stringify(seeded) }, true);
+    await openApp(page);
+    const requests = [];
+    const toolOutput = (request, callId) => {
+      const item = request.input.find((entry) => entry.type === "function_call_output" && entry.call_id === callId);
+      return item ? JSON.parse(item.output) : null;
+    };
+    await page.route("**/v1/responses*", async (route) => {
+      requests.push(route.request().postDataJSON());
+      const number = requests.length;
+      let body;
+      if (number === 1) {
+        body = openAIToolCallSse("resp_rex_read", "call_rex_read", "read_routines");
+      } else if (number === 2) {
+        body = openAIToolCallSse("resp_rex_add", "call_rex_add", "add_routine_exercise", JSON.stringify({
+          routine_id: routineId,
+          exercise: { kind: "custom", name: "Dominadas", muscle: "Espalda", series: [1, 2, 3].map(() => ({ type: "normal", reps: 8 })) },
+        }));
+      } else if (number === 3) {
+        body = openAIFinalSse("Ejercicio añadido.");
+      } else if (number === 4) {
+        const added = toolOutput(requests[2], "call_rex_add").despues.ejercicio_id;
+        body = openAIToolCallSse("resp_rex_update", "call_rex_update", "update_routine_exercise", JSON.stringify({
+          routine_id: routineId,
+          exercise_id: added,
+          all_series: { weight_kg: 10 },
+        }));
+      } else {
+        body = openAIFinalSse("Peso cambiado.");
+      }
+      await route.fulfill({ status: 200, headers: { "content-type": "text/event-stream; charset=utf-8" }, body });
+    });
+    const readExercises = () => page.evaluate((key) => (
+      (JSON.parse(localStorage.getItem(key) ?? "{}").templates ?? [])[0]?.exercises ?? []
+    ).map((item) => [item.name, item.series.map((series) => `${series.reps}x${series.weight_kg}`)]), storageKey);
+
+    await page.getByTestId("nav-tab-chat").click();
+    await page.getByTestId("chat-input").fill("Añade dominadas a la rutina de espalda, 3x8");
+    await page.getByTestId("chat-send").click();
+    await page.getByText("Ejercicio añadido.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+    const routines = toolOutput(requests[1], "call_rex_read");
+    assert.deepEqual(
+      routines[0].ejercicios.map((item) => [item.ejercicio_id, item.series.map((series) => series.serie_id)]),
+      [
+        ["exercise_e2e_remo", ["exercise_e2e_remo_s1", "exercise_e2e_remo_s2"]],
+        ["exercise_e2e_jalon", ["exercise_e2e_jalon_s1", "exercise_e2e_jalon_s2"]],
+      ],
+    );
+    const addResult = toolOutput(requests[2], "call_rex_add");
+    assert.equal(addResult.status, "updated");
+    assert.deepEqual(addResult.orden, ["Remo", "Jalón", "Dominadas"]);
+    assert.equal(addResult.despues.posicion, 3);
+    const addedId = addResult.despues.ejercicio_id;
+    await page.waitForFunction((key) => (JSON.parse(localStorage.getItem(key) ?? "{}").templates?.[0]?.exercises ?? []).length === 3, storageKey);
+
+    await page.getByTestId("chat-input").fill("Ponle 10 kilos a las dominadas");
+    await page.getByTestId("chat-send").click();
+    await page.getByText("Peso cambiado.", { exact: true }).waitFor({ state: "visible", timeout: 30_000 });
+    assert.equal(requests.length, 5);
+    const updateResult = toolOutput(requests[4], "call_rex_update");
+    assert.equal(updateResult.status, "updated");
+    assert.deepEqual(updateResult.despues.series.map((series) => series.peso_kg), ["10", "10", "10"]);
+    await page.waitForFunction((key) => (JSON.parse(localStorage.getItem(key) ?? "{}").templates?.[0]?.exercises?.[2]?.series ?? [])
+      .every((series) => series.weight_kg === "10"), storageKey);
+
+    await page.unroute("**/v1/responses*");
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await page.getByTestId("nav-tab-training").click();
+    await page.getByTestId(`training-template-open-${routineId}`).click();
+    // La ficha de la rutina enseña el ejercicio nuevo con el peso cambiado…
+    await page.getByText("Dominadas", { exact: true }).first().waitFor({ state: "visible" });
+    await page.getByText("10 kg", { exact: true }).first().waitFor({ state: "visible" });
+    // …y el editor lo abre como un ejercicio más, con su propio menú.
+    await page.getByTestId("training-detail-edit").click();
+    await page.getByTestId(`training-exercise-menu-${addedId}`).waitFor({ state: "visible" });
+    assert.deepEqual(await readExercises(), [
+      ["Remo", ["10x50", "10x50"]],
+      ["Jalón", ["10x45", "10x45"]],
+      ["Dominadas", ["8x10", "8x10", "8x10"]],
+    ]);
+    const receipts = await page.evaluate((key) => (JSON.parse(localStorage.getItem(key) ?? "{}").toolOperationReceipts ?? []).map((receipt) => receipt.toolName), storageKey);
+    assert(
+      receipts.includes("add_routine_exercise") && receipts.includes("update_routine_exercise"),
+      "Añadir y editar un ejercicio deben dejar recibo de idempotencia.",
+    );
+  } finally {
+    await context.close();
+  }
+}
+
 async function expectCiqualImages() {
   log("Verificando imágenes reales de CIQUAL en catálogo, búsqueda, dieta e historial");
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
@@ -889,6 +1004,7 @@ try {
   await expectCoachWholeMeal();
   await expectCoachMeasurementDeletion();
   await expectCoachRoutineEditing();
+  await expectCoachRoutineExerciseEditing();
   if (process.env.CATALOG_E2E_CIQUAL_ONLY === "1") {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const page = await preparePage(context, { offline: true }, {}, true);

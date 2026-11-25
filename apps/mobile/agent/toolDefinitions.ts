@@ -151,6 +151,21 @@ const mealFoodInputSchema: JsonSchemaProperty = {
   additionalProperties: false,
 };
 
+/** Campos de una serie que se pueden cambiar; ninguno es obligatorio. */
+const routineSeriesPatchSchema = {
+  type: "object",
+  properties: {
+    type: stringProperty("Nuevo tipo de serie.", SERIES_TYPES),
+    reps: integerProperty("Nuevas repeticiones.", { minimum: 1 }),
+    weight_kg: numberProperty("Nuevo peso en kg.", { minimum: 0 }),
+    rest_seconds: integerProperty("Nuevo descanso en segundos.", { minimum: 0 }),
+    tempo_contraction: numberProperty("Nuevos segundos de contracción del tempo.", { minimum: 0 }),
+    tempo_pause: numberProperty("Nuevos segundos de pausa del tempo.", { minimum: 0 }),
+    tempo_relaxation: numberProperty("Nuevos segundos de relajación del tempo.", { minimum: 0 }),
+  },
+  additionalProperties: false,
+} satisfies JsonSchemaProperty;
+
 export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
   {
     name: "save_personal_data",
@@ -569,7 +584,8 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
     effect: "read",
     description:
       "Lee las rutinas de entrenamiento del usuario. Devuelve todas las rutinas con sus ejercicios, series, repeticiones, peso y descanso. " +
-      "Usa esta herramienta cuando el usuario pregunte por sus rutinas, entrenamientos, o quiera revisar sus ejercicios programados.",
+      "Usa esta herramienta cuando el usuario pregunte por sus rutinas, entrenamientos, o quiera revisar sus ejercicios programados. " +
+      "Cada ejercicio trae su ejercicio_id y cada serie su serie_id, que son los que piden las herramientas para cambiarlos.",
     inputSchema: { type: "object", properties: {} },
   },
   {
@@ -615,7 +631,7 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
       "Úsala solo cuando el usuario pida expresamente cambiar una rutina, nunca por iniciativa propia, y no crees una rutina nueva para sustituirla. " +
       "Antes llama a read_routines y usa el id exacto de la rutina; no la elijas por un nombre parecido: si hay varias que encajan, pregunta al usuario. " +
       "Incluye en data solo los campos que el usuario quiere cambiar: los demás se conservan. " +
-      "No sirve para añadir, quitar, reordenar ni cambiar ejercicios o series. " +
+      "No sirve para añadir, quitar, reordenar ni cambiar ejercicios o series: para eso están add_routine_exercise, update_routine_exercise y remove_routine_exercise. " +
       "Si la rutina se está entrenando ahora mismo, no se cambia nada.",
     inputSchema: {
       type: "object",
@@ -659,6 +675,92 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
         routine_id: stringProperty("Id de la rutina que hay que borrar, tal como lo devuelve read_routines."),
       },
       required: ["routine_id"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "add_routine_exercise",
+    effect: "local_write",
+    description:
+      "Añade un ejercicio, con sus series, a una rutina que ya existe. " +
+      "Úsala solo cuando el usuario pida expresamente añadir un ejercicio a una rutina, nunca por iniciativa propia, y no crees una rutina nueva para ello. " +
+      "Antes llama a read_routines para obtener el id exacto de la rutina (si hay varias que encajan, pregunta al usuario) y a search_exercises para obtener source_id e item_id. " +
+      "Sin position se añade al final. Si la rutina se está entrenando ahora mismo, no se cambia nada.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        routine_id: stringProperty("Id de la rutina, tal como lo devuelve read_routines."),
+        exercise: routineExerciseSchema,
+        position: integerProperty("Posición en la rutina empezando por 1 (opcional; por defecto, al final).", { minimum: 1 }),
+      },
+      required: ["routine_id", "exercise"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "update_routine_exercise",
+    effect: "local_write",
+    description:
+      "Cambia un ejercicio de una rutina existente: sus series (repeticiones, peso, descanso, tipo o tempo), añade o quita series, o lo mueve de posición. " +
+      "Úsala solo cuando el usuario pida expresamente cambiar ese ejercicio, nunca por iniciativa propia. " +
+      "Antes llama a read_routines y usa los ids exactos (id de la rutina, ejercicio_id y serie_id); no los elijas por un nombre parecido: si el mismo ejercicio aparece varias veces y no está claro cuál es, pregunta al usuario. " +
+      "Para cambiar algo en todas las series usa all_series; para series concretas, series_updates. Incluye solo los campos que cambian: los demás se conservan. " +
+      "En series compuestas (drop set, superserie…) los cambios afectan a la serie principal, no a sus subseries. " +
+      "Todos los cambios se aplican juntos o ninguno. Si la rutina se está entrenando ahora mismo, no se cambia nada.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        routine_id: stringProperty("Id de la rutina, tal como lo devuelve read_routines."),
+        exercise_id: stringProperty("ejercicio_id del ejercicio, tal como lo devuelve read_routines."),
+        all_series: {
+          ...routineSeriesPatchSchema,
+          description: "Cambios que se aplican a todas las series actuales del ejercicio (opcional).",
+        },
+        series_updates: {
+          type: "array",
+          description: "Cambios en series concretas (opcional).",
+          items: {
+            type: "object",
+            properties: {
+              series_id: stringProperty("serie_id de la serie, tal como lo devuelve read_routines."),
+              ...routineSeriesPatchSchema.properties,
+            },
+            required: ["series_id"],
+            additionalProperties: false,
+          },
+        },
+        remove_series_ids: {
+          type: "array",
+          description: "serie_id de las series que hay que quitar (opcional). El ejercicio debe conservar al menos una serie.",
+          items: stringProperty("serie_id de una serie del ejercicio."),
+        },
+        add_series: {
+          type: "array",
+          description: "Series nuevas que se añaden al final del ejercicio (opcional).",
+          items: routineSeriesSchema,
+        },
+        position: integerProperty("Nueva posición del ejercicio en la rutina, empezando por 1 (opcional).", { minimum: 1 }),
+      },
+      required: ["routine_id", "exercise_id"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "remove_routine_exercise",
+    effect: "local_write",
+    description:
+      "Quita un ejercicio de una rutina existente y conserva los demás en su orden. " +
+      "Úsala solo cuando el usuario pida expresamente quitar ese ejercicio, nunca por iniciativa propia. " +
+      "Antes llama a read_routines y usa los ids exactos (id de la rutina y ejercicio_id): si el mismo ejercicio aparece varias veces y no está claro cuál es, pregunta al usuario. " +
+      "No quita el último ejercicio de una rutina (para eso está delete_routine) ni un ejercicio que forma parte de una superserie de otro ejercicio. " +
+      "Si la rutina se está entrenando ahora mismo, no se cambia nada.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        routine_id: stringProperty("Id de la rutina, tal como lo devuelve read_routines."),
+        exercise_id: stringProperty("ejercicio_id del ejercicio que hay que quitar, tal como lo devuelve read_routines."),
+      },
+      required: ["routine_id", "exercise_id"],
       additionalProperties: false,
     },
   },

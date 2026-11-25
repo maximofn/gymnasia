@@ -525,6 +525,84 @@ function createSubSeries(
   };
 }
 
+type StableIdFactory = (prefix: string, suffix: string) => string;
+
+function stableIdFactory(
+  dependencies: RoutineCreationDependencies,
+  operationId: string | undefined,
+): StableIdFactory {
+  const operationSuffix = operationId?.slice(0, 24);
+  return (prefix, suffix) => (
+    operationSuffix ? `${prefix}_op_${operationSuffix}_${suffix}` : dependencies.createId(prefix)
+  );
+}
+
+type TargetExerciseResolver = (target: ResolvedTarget | undefined) => string | undefined;
+
+function buildSeries(
+  seriesItem: ValidatedSeries,
+  seriesId: string,
+  subSeriesId: (subSeriesIndex: number) => string,
+  internalExerciseIdForTarget: TargetExerciseResolver,
+): ExerciseSeries {
+  return {
+    id: seriesId,
+    type: seriesItem.type,
+    reps: numericText(seriesItem.reps),
+    weight_kg: numericText(seriesItem.weightKg),
+    rest_seconds: numericText(seriesItem.restSeconds),
+    ...(seriesItem.tempoContraction !== undefined
+      ? { tempo_contraction: numericText(seriesItem.tempoContraction) }
+      : {}),
+    ...(seriesItem.tempoPause !== undefined
+      ? { tempo_pause: numericText(seriesItem.tempoPause) }
+      : {}),
+    ...(seriesItem.tempoRelaxation !== undefined
+      ? { tempo_relaxation: numericText(seriesItem.tempoRelaxation) }
+      : {}),
+    ...(seriesItem.subSeries.length > 0 ? {
+      sub_series: seriesItem.subSeries.map((subSeries, subSeriesIndex) => createSubSeries(
+        subSeries,
+        subSeriesId(subSeriesIndex),
+        internalExerciseIdForTarget(subSeries.target),
+      )),
+    } : {}),
+  };
+}
+
+function buildExercise(
+  exercise: ValidatedExercise,
+  exerciseId: string,
+  series: ExerciseSeries[],
+  dependencies: RoutineCreationDependencies,
+): WorkoutExercise {
+  return {
+    id: exerciseId,
+    name: exercise.name,
+    muscle: exercise.muscle,
+    image_uri: exercise.candidate
+      ? dependencies.getExerciseImageUrl(exercise.candidate, "male")
+      : null,
+    sets: [],
+    series,
+    catalog_link: exercise.candidate
+      ? linkedCatalog(catalogRef(exercise.candidate.sourceId, exercise.candidate.id), "tool")
+      : unresolvedCatalog("manual"),
+  };
+}
+
+/** Busca, entre ejercicios ya construidos, el que corresponde a un objetivo de catálogo. */
+function existingExerciseResolver(exercises: readonly WorkoutExercise[]): TargetExerciseResolver {
+  return (target) => {
+    if (target?.kind !== "catalog") return undefined;
+    return exercises.find((exercise) => (
+      exercise.catalog_link?.status === "linked"
+      && exercise.catalog_link.ref.sourceId === target.candidate.sourceId
+      && exercise.catalog_link.ref.itemId === target.candidate.id
+    ))?.id;
+  };
+}
+
 export function prepareRoutineCreation(
   raw: unknown,
   repository: readonly ExerciseCatalogEntry[],
@@ -536,13 +614,11 @@ export function prepareRoutineCreation(
   if (!parsed || issues.length > 0) return { ok: false, value: null, issues };
 
   const operationSuffix = operationId?.slice(0, 24);
-  const createStableId = (prefix: string, suffix: string): string => (
-    operationSuffix ? `${prefix}_op_${operationSuffix}_${suffix}` : dependencies.createId(prefix)
-  );
+  const createStableId = stableIdFactory(dependencies, operationId);
   const exerciseIds = parsed.exercises.map((_exercise, exerciseIndex) => (
     createStableId("exercise", `${exerciseIndex}`)
   ));
-  const internalExerciseIdForTarget = (target: ResolvedTarget | undefined): string | undefined => {
+  const internalExerciseIdForTarget: TargetExerciseResolver = (target) => {
     if (target?.kind !== "catalog") return undefined;
     const exerciseIndex = parsed.exercises.findIndex((exercise) => (
       exercise.candidate?.sourceId === target.candidate.sourceId
@@ -551,42 +627,13 @@ export function prepareRoutineCreation(
     return exerciseIndex >= 0 ? exerciseIds[exerciseIndex] : undefined;
   };
   const exercises: WorkoutExercise[] = parsed.exercises.map((exercise, exerciseIndex) => {
-    const series: ExerciseSeries[] = exercise.series.map((seriesItem, seriesIndex) => ({
-      id: createStableId("series", `${exerciseIndex}_${seriesIndex}`),
-      type: seriesItem.type,
-      reps: numericText(seriesItem.reps),
-      weight_kg: numericText(seriesItem.weightKg),
-      rest_seconds: numericText(seriesItem.restSeconds),
-      ...(seriesItem.tempoContraction !== undefined
-        ? { tempo_contraction: numericText(seriesItem.tempoContraction) }
-        : {}),
-      ...(seriesItem.tempoPause !== undefined
-        ? { tempo_pause: numericText(seriesItem.tempoPause) }
-        : {}),
-      ...(seriesItem.tempoRelaxation !== undefined
-        ? { tempo_relaxation: numericText(seriesItem.tempoRelaxation) }
-        : {}),
-      ...(seriesItem.subSeries.length > 0 ? {
-        sub_series: seriesItem.subSeries.map((subSeries, subSeriesIndex) => createSubSeries(
-          subSeries,
-          createStableId("subseries", `${exerciseIndex}_${seriesIndex}_${subSeriesIndex}`),
-          internalExerciseIdForTarget(subSeries.target),
-        )),
-      } : {}),
-    }));
-    return {
-      id: exerciseIds[exerciseIndex],
-      name: exercise.name,
-      muscle: exercise.muscle,
-      image_uri: exercise.candidate
-        ? dependencies.getExerciseImageUrl(exercise.candidate, "male")
-        : null,
-      sets: [],
-      series,
-      catalog_link: exercise.candidate
-        ? linkedCatalog(catalogRef(exercise.candidate.sourceId, exercise.candidate.id), "tool")
-        : unresolvedCatalog("manual"),
-    };
+    const series: ExerciseSeries[] = exercise.series.map((seriesItem, seriesIndex) => buildSeries(
+      seriesItem,
+      createStableId("series", `${exerciseIndex}_${seriesIndex}`),
+      (subSeriesIndex) => createStableId("subseries", `${exerciseIndex}_${seriesIndex}_${subSeriesIndex}`),
+      internalExerciseIdForTarget,
+    ));
+    return buildExercise(exercise, exerciseIds[exerciseIndex], series, dependencies);
   });
   const candidate: WorkoutTemplate = {
     id: operationSuffix ? `template_op_${operationSuffix}` : dependencies.createId("template"),
@@ -607,4 +654,75 @@ export function prepareRoutineCreation(
     };
   }
   return { ok: true, value: validation.value, issues: [] };
+}
+
+export type RoutineExercisePreparation =
+  | { ok: true; value: WorkoutExercise; issues: [] }
+  | { ok: false; value: null; issues: RoutineCreationIssue[] };
+
+export type RoutineSeriesPreparation =
+  | { ok: true; value: ExerciseSeries[]; issues: [] }
+  | { ok: false; value: null; issues: RoutineCreationIssue[] };
+
+/**
+ * Construye un ejercicio nuevo para una rutina existente con las mismas reglas
+ * que create_routine. Las superseries pueden apuntar al propio ejercicio o a
+ * cualquiera que ya esté en la rutina. No valida la rutina resultante: eso lo
+ * hace quien la guarda, sobre la rutina completa.
+ */
+export function prepareRoutineExerciseAddition(
+  raw: unknown,
+  routine: WorkoutTemplate,
+  repository: readonly ExerciseCatalogEntry[],
+  dependencies: RoutineCreationDependencies,
+  operationId?: string,
+  field = "exercise",
+): RoutineExercisePreparation {
+  const issues: RoutineCreationIssue[] = [];
+  const parsed = parseExercise(raw, field, repository, issues);
+  if (!parsed || issues.length > 0) return { ok: false, value: null, issues };
+  const createStableId = stableIdFactory(dependencies, operationId);
+  const exerciseId = createStableId("exercise", "add");
+  const placeholder = buildExercise(parsed, exerciseId, [], dependencies);
+  const resolveTarget = existingExerciseResolver([placeholder, ...routine.exercises]);
+  const series = parsed.series.map((seriesItem, seriesIndex) => buildSeries(
+    seriesItem,
+    createStableId("series", `add_${seriesIndex}`),
+    (subSeriesIndex) => createStableId("subseries", `add_${seriesIndex}_${subSeriesIndex}`),
+    resolveTarget,
+  ));
+  return { ok: true, value: { ...placeholder, series }, issues: [] };
+}
+
+/** Construye series nuevas para un ejercicio existente con las reglas de create_routine. */
+export function prepareRoutineSeriesAddition(
+  raw: unknown,
+  routine: WorkoutTemplate,
+  repository: readonly ExerciseCatalogEntry[],
+  dependencies: RoutineCreationDependencies,
+  operationId?: string,
+  field = "add_series",
+): RoutineSeriesPreparation {
+  const issues: RoutineCreationIssue[] = [];
+  if (!Array.isArray(raw)) {
+    pushIssue(issues, field, "invalid_type", "Las series deben ser un array.");
+    return { ok: false, value: null, issues };
+  }
+  const parsed = raw.flatMap((item, index) => {
+    const series = parseSeries(item, `${field}[${index}]`, repository, issues);
+    return series ? [series] : [];
+  });
+  if (issues.length > 0) return { ok: false, value: null, issues };
+  const createStableId = stableIdFactory(dependencies, operationId);
+  const resolveTarget = existingExerciseResolver(routine.exercises);
+  return {
+    ok: true,
+    value: parsed.map((seriesItem, seriesIndex) => buildSeries(
+      seriesItem,
+      createStableId("series", `upd_${seriesIndex}`),
+      (subSeriesIndex) => createStableId("subseries", `upd_${seriesIndex}_${subSeriesIndex}`),
+      resolveTarget,
+    )),
+    issues: [],
+  };
 }

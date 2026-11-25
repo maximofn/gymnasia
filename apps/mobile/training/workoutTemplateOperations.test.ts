@@ -10,6 +10,10 @@ import {
   duplicateWorkoutExercise,
   duplicateWorkoutTemplate,
   diffWorkoutTemplates,
+  findSupersetReferences,
+  insertWorkoutExercise,
+  moveWorkoutExercise,
+  removeWorkoutExercise,
   type WorkoutTemplate,
 } from "./workoutTemplateOperations";
 
@@ -259,5 +263,42 @@ describe("operaciones de plantillas con series avanzadas", () => {
       changes: [],
       summaries: [],
     });
+  });
+});
+
+describe("operaciones de ejercicios de una rutina", () => {
+  const extra = { id: "exercise_row", name: "Remo", sets: [10], series: [{ id: "set_row", reps: "10", weight_kg: "", rest_seconds: "" }] };
+
+  it("insertWorkoutExercise añade al final por defecto, en la posición pedida o acotada, sin mutar la original", () => {
+    const template = fixture();
+    const snapshot = JSON.stringify(template);
+    expect(insertWorkoutExercise(template, extra).exercises.map(({ id }) => id))
+      .toEqual(["exercise_press", "exercise_fly", "exercise_row"]);
+    expect(insertWorkoutExercise(template, extra, 0).exercises.map(({ id }) => id))
+      .toEqual(["exercise_row", "exercise_press", "exercise_fly"]);
+    expect(insertWorkoutExercise(template, extra, 99).exercises.at(-1)?.id).toBe("exercise_row");
+    expect(JSON.stringify(template)).toBe(snapshot);
+  });
+
+  it("removeWorkoutExercise quita solo ese ejercicio o devuelve null si no existe", () => {
+    const template = fixture();
+    expect(removeWorkoutExercise(template, "exercise_press")?.exercises.map(({ id }) => id)).toEqual(["exercise_fly"]);
+    expect(removeWorkoutExercise(template, "exercise_nope")).toBeNull();
+    expect(template.exercises).toHaveLength(2);
+  });
+
+  it("moveWorkoutExercise mueve conservando el orden relativo y acota la posición", () => {
+    const template = insertWorkoutExercise(fixture(), extra);
+    expect(moveWorkoutExercise(template, "exercise_row", 0)?.exercises.map(({ id }) => id))
+      .toEqual(["exercise_row", "exercise_press", "exercise_fly"]);
+    expect(moveWorkoutExercise(template, "exercise_press", 99)?.exercises.map(({ id }) => id))
+      .toEqual(["exercise_fly", "exercise_row", "exercise_press"]);
+    expect(moveWorkoutExercise(template, "exercise_nope", 0)).toBeNull();
+  });
+
+  it("findSupersetReferences encuentra quién apunta a un ejercicio desde una superserie", () => {
+    const template = fixture();
+    expect(findSupersetReferences(template, "exercise_fly").map(({ id }) => id)).toEqual(["exercise_press"]);
+    expect(findSupersetReferences(template, "exercise_press")).toEqual([]);
   });
 });

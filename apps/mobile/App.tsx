@@ -193,6 +193,8 @@ import {
   duplicateExerciseSeries,
   duplicateWorkoutExercise,
   duplicateWorkoutTemplate,
+  moveWorkoutExercise,
+  removeWorkoutExercise,
   type RoutineIconName,
   type TrainingCategory,
   type WorkoutTemplate,
@@ -1048,6 +1050,9 @@ const RECONCILED_TOOL_OUTPUTS: Record<string, string> = {
   write_measurement: "Las medidas ya se habían guardado.",
   delete_measurement: "La medición ya se había borrado.",
   update_routine: "La rutina ya se había modificado.",
+  add_routine_exercise: "El ejercicio ya se había añadido a la rutina.",
+  update_routine_exercise: "El ejercicio de la rutina ya se había cambiado.",
+  remove_routine_exercise: "El ejercicio ya se había quitado de la rutina.",
   delete_routine: "La rutina ya se había borrado.",
   add_meal_food: "El alimento ya se había añadido.",
   remove_meal_food: "El alimento ya se había quitado.",
@@ -6833,24 +6838,14 @@ function GymnasiaApp({ deletionOutcome, onRuntimeReset }: GymnasiaAppProps) {
     updateActiveTrainingTemplate((template) => {
         const index = template.exercises.findIndex((exercise) => exercise.id === exerciseId);
         if (index <= 0) return template;
-        const next = [...template.exercises];
-        const current = next[index];
-        next[index] = next[index - 1];
-        next[index - 1] = current;
-        return {
-          ...template,
-          exercises: next,
-        };
+        return moveWorkoutExercise(template, exerciseId, index - 1) ?? template;
       });
     setActiveExerciseMenuId(null);
   }
 
   function deleteExerciseInActiveTemplate(exerciseId: string) {
     if (!activeTrainingTemplateId) return;
-    updateActiveTrainingTemplate((template) => ({
-          ...template,
-          exercises: template.exercises.filter((exercise) => exercise.id !== exerciseId),
-        }));
+    updateActiveTrainingTemplate((template) => removeWorkoutExercise(template, exerciseId) ?? template);
     if (expandedExerciseId === exerciseId) {
       const nextExercise = activeTrainingTemplate?.exercises.find((item) => item.id !== exerciseId) ?? null;
       setExpandedExerciseId(nextExercise?.id ?? null);

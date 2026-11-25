@@ -47,7 +47,7 @@ import {
   validateMeasurementDate,
   type Measurement,
 } from "../measurements/measurementContract";
-import type { ExerciseSeries } from "../training/seriesContract";
+import { isSeriesType, type ExerciseSeries, type SeriesType } from "../training/seriesContract";
 import type { WorkoutSessionSummary } from "../training/workoutHistory";
 import {
   buildDietPeriod,
@@ -60,8 +60,21 @@ import {
   type PeriodReadError,
 } from "./periodReads";
 import { listWorkoutExecutionUnits } from "../training/workoutExecution";
-import type { WorkoutTemplate } from "../training/workoutTemplateOperations";
-import { prepareRoutineCreation } from "./routineCreationContract";
+import {
+  buildWorkoutTemplateRevision,
+  changeExerciseSeriesType,
+  findSupersetReferences,
+  insertWorkoutExercise,
+  moveWorkoutExercise,
+  removeWorkoutExercise,
+  type WorkoutExercise,
+  type WorkoutTemplate,
+} from "../training/workoutTemplateOperations";
+import {
+  prepareRoutineCreation,
+  prepareRoutineExerciseAddition,
+  prepareRoutineSeriesAddition,
+} from "./routineCreationContract";
 import { validateWorkoutTemplateForWrite } from "../training/workoutTemplateContract";
 import { AGENT_TOOL_DEFINITIONS, MEAL_FOODS_BATCH_MAX, agentToolEffect, formatToolInputError, validateToolInput } from "./toolDefinitions";
 import { toolFailure, type ToolResult } from "./toolErrors";
@@ -1188,11 +1201,13 @@ const readRoutines: ToolHandler = async (_args, context) => {
     icono: template.icon ?? "",
     duracion_minutos: template.duration_minutes ?? "",
     ejercicios: template.exercises.map((exercise) => ({
+      ejercicio_id: exercise.id,
       nombre: exercise.name ?? "Sin nombre",
       musculo: exercise.muscle ?? "",
       source_id: exercise.catalog_link?.status === "linked" ? exercise.catalog_link.ref.sourceId : null,
       item_id: exercise.catalog_link?.status === "linked" ? exercise.catalog_link.ref.itemId : null,
       series: (exercise.series ?? []).map((series) => ({
+        serie_id: series.id,
         tipo: series.type ?? "normal",
         repeticiones: series.reps,
         peso_kg: series.weight_kg,
@@ -1206,7 +1221,15 @@ const readRoutines: ToolHandler = async (_args, context) => {
   })));
 };
 
-const createRoutine: ToolHandler = async (args, context, dependencies) => {
+/**
+ * Catálogo local más los ejercicios de gymnasia_exercises que cite `value`,
+ * resueltos por id: el modelo puede citar ejercicios que search_exercises
+ * encontró fuera del repositorio cargado en memoria.
+ */
+async function exerciseRepositoryFor(
+  value: unknown,
+  context: ToolExecutionContext,
+): Promise<ToolExerciseRepoEntry[]> {
   const referencedIds = new Set<string>();
   const visit = (value: unknown): void => {
     if (Array.isArray(value)) {
@@ -1220,7 +1243,7 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
     }
     Object.values(record).forEach(visit);
   };
-  visit(args.data);
+  visit(value);
   const resolved = context.resolveExerciseCatalogIds && referencedIds.size > 0
     ? await context.resolveExerciseCatalogIds([...referencedIds])
     : [];
@@ -1230,6 +1253,11 @@ const createRoutine: ToolHandler = async (args, context, dependencies) => {
     const key = `${entry.sourceId}:${entry.id}`;
     if (!known.has(key)) repository.push(entry);
   }
+  return repository;
+}
+
+const createRoutine: ToolHandler = async (args, context, dependencies) => {
+  const repository = await exerciseRepositoryFor(args.data, context);
   const preparation = prepareRoutineCreation(
     args.data,
     repository,
@@ -1449,6 +1477,379 @@ const deleteRoutine: ToolHandler = async (args, context) => {
   });
 };
 
+type RoutineExerciseEdit =
+  | { kind: "failure"; failure: ToolResult }
+  | { kind: "edited"; template: ToolWorkoutTemplate; exerciseId: string | null; removed?: WorkoutExercise };
+
+type RoutineExerciseOutcome =
+  | { kind: "replayed" }
+  | { kind: "missing" }
+  | { kind: "in_session"; name: string }
+  | { kind: "failure"; failure: ToolResult }
+  | { kind: "invalid"; issues: ReadonlyArray<{ field: string; code: string; message: string }> }
+  | { kind: "unchanged"; template: ToolWorkoutTemplate; exerciseId: string | null }
+  | {
+    kind: "updated";
+    before: ToolWorkoutTemplate;
+    after: ToolWorkoutTemplate;
+    exerciseId: string | null;
+    removed?: WorkoutExercise;
+  };
+
+/**
+ * Flujo común de las herramientas que cambian ejercicios de una rutina: recibo
+ * de idempotencia, rutina inexistente, rutina en entrenamiento y validación de
+ * la rutina completa, todo dentro de la misma escritura para que nada se cuele
+ * entre la comprobación y el guardado. `edit` es pura: devuelve la rutina
+ * candidata o un fallo, y el almacén no cambia hasta que la candidata valida.
+ */
+async function commitRoutineExerciseEdit(
+  context: ToolExecutionContext,
+  toolName: string,
+  routineId: string,
+  edit: (current: ToolWorkoutTemplate) => RoutineExerciseEdit,
+): Promise<RoutineExerciseOutcome> {
+  let outcome: RoutineExerciseOutcome = { kind: "missing" };
+  await commitToolStore(context, (previous) => {
+    if (context.operationId && hasToolOperationReceipt(previous.toolOperationReceipts, context.operationId, toolName)) {
+      outcome = { kind: "replayed" };
+      return previous;
+    }
+    const current = previous.templates.find((template) => template.id === routineId);
+    if (!current) {
+      outcome = { kind: "missing" };
+      return previous;
+    }
+    if (context.getActiveWorkoutTemplateId?.() === routineId) {
+      outcome = { kind: "in_session", name: current.name };
+      return previous;
+    }
+    const result = edit(current);
+    if (result.kind === "failure") {
+      outcome = result;
+      return previous;
+    }
+    const validation = validateWorkoutTemplateForWrite(result.template);
+    if (!validation.ok) {
+      outcome = { kind: "invalid", issues: validation.issues };
+      return previous;
+    }
+    const after = validation.value;
+    if (buildWorkoutTemplateRevision(after) === buildWorkoutTemplateRevision(current)) {
+      outcome = { kind: "unchanged", template: current, exerciseId: result.exerciseId };
+      return previous;
+    }
+    outcome = { kind: "updated", before: current, after, exerciseId: result.exerciseId, removed: result.removed };
+    return {
+      ...previous,
+      templates: previous.templates.map((template) => (template.id === routineId ? after : template)),
+      toolOperationReceipts: appendToolOperationReceipt(previous.toolOperationReceipts, context.operationId, toolName),
+    };
+  });
+  return outcome as RoutineExerciseOutcome;
+}
+
+function routineExerciseSummary(template: ToolWorkoutTemplate, exerciseId: string | null) {
+  const index = exerciseId ? template.exercises.findIndex((exercise) => exercise.id === exerciseId) : -1;
+  if (index < 0) return null;
+  const exercise = template.exercises[index];
+  return {
+    ejercicio_id: exercise.id,
+    nombre: exercise.name ?? "Sin nombre",
+    posicion: index + 1,
+    series: (exercise.series ?? []).map((series) => ({
+      serie_id: series.id,
+      tipo: series.type ?? "normal",
+      repeticiones: series.reps,
+      peso_kg: series.weight_kg,
+      descanso_segundos: series.rest_seconds,
+      ...(series.tempo_contraction || series.tempo_pause || series.tempo_relaxation ? {
+        tempo_contraccion: series.tempo_contraction ?? "",
+        tempo_pausa: series.tempo_pause ?? "",
+        tempo_relajacion: series.tempo_relaxation ?? "",
+      } : {}),
+    })),
+  };
+}
+
+function routineExerciseResult(
+  outcome: RoutineExerciseOutcome,
+  routineId: string,
+  context: ToolExecutionContext,
+  failureMessage: string,
+): string | ToolResult {
+  if (outcome.kind === "missing") return routineNotFound(routineId);
+  if (outcome.kind === "in_session") return routineInSession(outcome.name);
+  if (outcome.kind === "failure") return outcome.failure;
+  if (outcome.kind === "invalid") {
+    return toolFailure("invalid_routine", failureMessage, "correct_arguments", {
+      status: "invalid_input",
+      written: false,
+      issues: outcome.issues,
+    });
+  }
+  if (outcome.kind === "unchanged") {
+    return JSON.stringify({
+      status: "unchanged",
+      written: false,
+      routine_id: routineId,
+      ejercicio: routineExerciseSummary(outcome.template, outcome.exerciseId),
+    });
+  }
+  context.markEffectCommitted?.();
+  if (outcome.kind !== "updated") return ALREADY_APPLIED_OUTPUT;
+  const antes = routineExerciseSummary(outcome.before, outcome.exerciseId);
+  const despues = routineExerciseSummary(outcome.after, outcome.exerciseId);
+  return JSON.stringify({
+    status: "updated",
+    written: true,
+    routine_id: routineId,
+    rutina: outcome.after.name,
+    ...(antes ? { antes } : {}),
+    ...(despues ? { despues } : {}),
+    ...(outcome.removed ? { quitado: { ejercicio_id: outcome.removed.id, nombre: outcome.removed.name ?? "Sin nombre" } } : {}),
+    orden: outcome.after.exercises.map((exercise) => exercise.name ?? "Sin nombre"),
+  });
+}
+
+function routineArgumentFailure(message: string): ToolResult {
+  return toolFailure("invalid_routine", `${message} No se ha cambiado nada.`, "correct_arguments", {
+    status: "invalid_input",
+    written: false,
+  });
+}
+
+function routineChildNotFound(message: string): ToolResult {
+  return toolFailure(
+    "not_found",
+    `No se ha cambiado nada: ${message} Vuelve a consultar read_routines y, si dudas, pregunta al usuario.`,
+    "choose_alternative",
+    { status: "not_found", written: false },
+  );
+}
+
+/** Convierte una posición «humana» (desde 1) en índice; undefined si no viene. */
+function parsePosition(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 1 ? value - 1 : undefined;
+}
+
+const ADD_EXERCISE_FAILURE = "No se añadió el ejercicio. Corrige los problemas indicados antes de volver a intentarlo.";
+const UPDATE_EXERCISE_FAILURE = "No se modificó el ejercicio. Corrige los problemas indicados antes de volver a intentarlo.";
+
+const addRoutineExercise: ToolHandler = async (args, context, dependencies) => {
+  const routineId = parseRoutineId(args.routine_id);
+  if (!routineId) return routineArgumentFailure("Falta routine_id. Obtenlo con read_routines.");
+  if (!args.exercise || typeof args.exercise !== "object") return routineArgumentFailure("Falta el ejercicio.");
+  if (!context.commitStore) return toolFailure("storage_unavailable", "No se pudo acceder al almacenamiento durable. No se modificó la rutina.", "stop_turn");
+  const repository = await exerciseRepositoryFor(args.exercise, context);
+  const position = parsePosition(args.position);
+
+  const outcome = await commitRoutineExerciseEdit(context, "add_routine_exercise", routineId, (current) => {
+    const preparation = prepareRoutineExerciseAddition(args.exercise, current, repository, dependencies, context.operationId);
+    if (!preparation.ok) {
+      return {
+        kind: "failure",
+        failure: toolFailure("invalid_routine", ADD_EXERCISE_FAILURE, "correct_arguments", {
+          status: "invalid_input",
+          written: false,
+          issues: preparation.issues,
+        }),
+      };
+    }
+    const exercise = preparation.value;
+    if (current.exercises.some((item) => item.id === exercise.id)) {
+      // Mismo id derivado de la operación pero sin recibo: ya estaba aplicado.
+      return { kind: "edited", template: current, exerciseId: exercise.id };
+    }
+    return { kind: "edited", template: insertWorkoutExercise(current, exercise, position), exerciseId: exercise.id };
+  });
+  return routineExerciseResult(outcome, routineId, context, ADD_EXERCISE_FAILURE);
+};
+
+type SeriesPatch = {
+  type?: SeriesType;
+  reps?: number;
+  weight_kg?: number;
+  rest_seconds?: number;
+  tempo_contraction?: number;
+  tempo_pause?: number;
+  tempo_relaxation?: number;
+};
+
+const SERIES_PATCH_NUMBER_FIELDS = [
+  "reps",
+  "weight_kg",
+  "rest_seconds",
+  "tempo_contraction",
+  "tempo_pause",
+  "tempo_relaxation",
+] as const;
+
+function readSeriesPatch(value: unknown): SeriesPatch {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  const record = value as Record<string, unknown>;
+  const patch: SeriesPatch = {};
+  if (isSeriesType(record.type)) patch.type = record.type;
+  for (const field of SERIES_PATCH_NUMBER_FIELDS) {
+    const raw = record[field];
+    if (typeof raw === "number" && Number.isFinite(raw)) patch[field] = raw;
+  }
+  return patch;
+}
+
+function isEmptySeriesPatch(patch: SeriesPatch): boolean {
+  return patch.type === undefined && SERIES_PATCH_NUMBER_FIELDS.every((field) => patch[field] === undefined);
+}
+
+function applySeriesPatch(
+  series: ExerciseSeries,
+  patch: SeriesPatch,
+  createId: (prefix: string) => string,
+): ExerciseSeries {
+  const next: ExerciseSeries = patch.type !== undefined && patch.type !== (series.type ?? "normal")
+    ? changeExerciseSeriesType(series, patch.type, createId)
+    : { ...series };
+  for (const field of SERIES_PATCH_NUMBER_FIELDS) {
+    const value = patch[field];
+    if (value !== undefined) next[field] = String(value);
+  }
+  return next;
+}
+
+const updateRoutineExercise: ToolHandler = async (args, context, dependencies) => {
+  const routineId = parseRoutineId(args.routine_id);
+  if (!routineId) return routineArgumentFailure("Falta routine_id. Obtenlo con read_routines.");
+  const exerciseId = parseRoutineId(args.exercise_id);
+  if (!exerciseId) return routineArgumentFailure("Falta exercise_id. Obtenlo (ejercicio_id) con read_routines.");
+
+  const allSeries = readSeriesPatch(args.all_series);
+  const rawUpdates = Array.isArray(args.series_updates) ? args.series_updates : [];
+  const seriesUpdates = rawUpdates.map((raw) => {
+    const record = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+    return { seriesId: parseRoutineId(record.series_id), patch: readSeriesPatch(record) };
+  });
+  const rawRemovals = (Array.isArray(args.remove_series_ids) ? args.remove_series_ids : []).map(parseRoutineId);
+  const addSeries = Array.isArray(args.add_series) ? args.add_series : [];
+  const position = parsePosition(args.position);
+
+  if (seriesUpdates.some((update) => !update.seriesId) || rawRemovals.some((id) => !id)) {
+    return routineArgumentFailure("Cada serie se indica con su serie_id de read_routines.");
+  }
+  const updateIds = seriesUpdates.map((update) => update.seriesId as string);
+  const removeIds = rawRemovals as string[];
+  if (new Set(updateIds).size !== updateIds.length) {
+    return routineArgumentFailure("series_updates repite la misma serie: junta sus cambios en una sola entrada.");
+  }
+  if (updateIds.some((id) => removeIds.includes(id))) {
+    return routineArgumentFailure("Una misma serie no se puede cambiar y quitar a la vez.");
+  }
+  if (seriesUpdates.some((update) => isEmptySeriesPatch(update.patch))) {
+    return routineArgumentFailure("Cada entrada de series_updates debe incluir al menos un campo que cambiar.");
+  }
+  if (
+    isEmptySeriesPatch(allSeries)
+    && seriesUpdates.length === 0
+    && removeIds.length === 0
+    && addSeries.length === 0
+    && position === undefined
+  ) {
+    return routineArgumentFailure("No se indicó ningún cambio.");
+  }
+  if (!context.commitStore) return toolFailure("storage_unavailable", "No se pudo acceder al almacenamiento durable. No se modificó la rutina.", "stop_turn");
+  const repository = addSeries.length > 0 ? await exerciseRepositoryFor(addSeries, context) : [];
+  const operationSuffix = context.operationId?.slice(0, 24);
+  const createIdFor = (tag: string) => (prefix: string): string => (
+    operationSuffix ? `${prefix}_op_${operationSuffix}_${tag}` : dependencies.createId(prefix)
+  );
+
+  const outcome = await commitRoutineExerciseEdit(context, "update_routine_exercise", routineId, (current) => {
+    const exercise = current.exercises.find((item) => item.id === exerciseId);
+    if (!exercise) {
+      return { kind: "failure", failure: routineChildNotFound(`la rutina "${current.name}" no tiene ningún ejercicio con id ${exerciseId}.`) };
+    }
+    const seriesList = exercise.series ?? [];
+    const knownSeries = new Set(seriesList.map((series) => series.id));
+    const missingSeries = [...updateIds, ...removeIds].filter((id) => !knownSeries.has(id));
+    if (missingSeries.length > 0) {
+      return {
+        kind: "failure",
+        failure: routineChildNotFound(`el ejercicio "${exercise.name ?? "Sin nombre"}" no tiene ninguna serie con id ${missingSeries.join(", ")}.`),
+      };
+    }
+    let nextSeries = seriesList.map((series, index) => {
+      let next = isEmptySeriesPatch(allSeries) ? series : applySeriesPatch(series, allSeries, createIdFor(`all_${index}`));
+      const update = seriesUpdates.find((item) => item.seriesId === series.id);
+      if (update) next = applySeriesPatch(next, update.patch, createIdFor(`set_${index}`));
+      return next;
+    });
+    nextSeries = nextSeries.filter((series) => !removeIds.includes(series.id));
+    if (addSeries.length > 0) {
+      const preparation = prepareRoutineSeriesAddition(addSeries, current, repository, dependencies, context.operationId);
+      if (!preparation.ok) {
+        return {
+          kind: "failure",
+          failure: toolFailure("invalid_routine", UPDATE_EXERCISE_FAILURE, "correct_arguments", {
+            status: "invalid_input",
+            written: false,
+            issues: preparation.issues,
+          }),
+        };
+      }
+      nextSeries = [...nextSeries, ...preparation.value];
+    }
+    let template: ToolWorkoutTemplate = {
+      ...current,
+      exercises: current.exercises.map((item) => (item.id === exerciseId ? { ...item, series: nextSeries } : item)),
+    };
+    if (position !== undefined) template = moveWorkoutExercise(template, exerciseId, position) ?? template;
+    return { kind: "edited", template, exerciseId };
+  });
+  return routineExerciseResult(outcome, routineId, context, UPDATE_EXERCISE_FAILURE);
+};
+
+const removeRoutineExercise: ToolHandler = async (args, context) => {
+  const routineId = parseRoutineId(args.routine_id);
+  if (!routineId) return routineArgumentFailure("Falta routine_id. Obtenlo con read_routines.");
+  const exerciseId = parseRoutineId(args.exercise_id);
+  if (!exerciseId) return routineArgumentFailure("Falta exercise_id. Obtenlo (ejercicio_id) con read_routines.");
+  if (!context.commitStore) return toolFailure("storage_unavailable", "No se pudo acceder al almacenamiento durable. No se modificó la rutina.", "stop_turn");
+
+  const outcome = await commitRoutineExerciseEdit(context, "remove_routine_exercise", routineId, (current) => {
+    const exercise = current.exercises.find((item) => item.id === exerciseId);
+    if (!exercise) {
+      return { kind: "failure", failure: routineChildNotFound(`la rutina "${current.name}" no tiene ningún ejercicio con id ${exerciseId}.`) };
+    }
+    const name = exercise.name ?? "Sin nombre";
+    if (current.exercises.length === 1) {
+      return {
+        kind: "failure",
+        failure: toolFailure(
+          "invalid_routine",
+          `No se ha cambiado nada: "${name}" es el único ejercicio de la rutina "${current.name}" y una rutina necesita al menos uno. Si el usuario quiere quitar la rutina entera, confírmalo con él y usa delete_routine.`,
+          "choose_alternative",
+          { status: "last_exercise", written: false },
+        ),
+      };
+    }
+    const references = findSupersetReferences(current, exerciseId);
+    if (references.length > 0) {
+      const names = references.map((item) => `"${item.name ?? "Sin nombre"}"`).join(", ");
+      return {
+        kind: "failure",
+        failure: toolFailure(
+          "exercise_in_superset",
+          `No se ha cambiado nada: "${name}" forma parte de una superserie de ${names}, que se quedaría apuntando a un ejercicio que ya no está. Explícaselo al usuario: puede quitar antes esa superserie desde la pantalla de la rutina, o pedirte que quites también ${names}.`,
+          "choose_alternative",
+          { status: "in_superset", written: false, referenciado_por: references.map((item) => item.id) },
+        ),
+      };
+    }
+    const template = removeWorkoutExercise(current, exerciseId) ?? current;
+    return { kind: "edited", template, exerciseId: null, removed: exercise };
+  });
+  return routineExerciseResult(outcome, routineId, context, "No se quitó el ejercicio. Corrige los problemas indicados antes de volver a intentarlo.");
+};
+
 const createFeatureIssue: ToolHandler = async (args, _context, dependencies) => {
   const draft = sanitizeFeedbackDraft({
     kind: "feature",
@@ -1489,6 +1890,9 @@ export const AGENT_TOOL_HANDLERS: Readonly<Record<string, ToolHandler>> = Object
   create_routine: createRoutine,
   update_routine: updateRoutine,
   delete_routine: deleteRoutine,
+  add_routine_exercise: addRoutineExercise,
+  update_routine_exercise: updateRoutineExercise,
+  remove_routine_exercise: removeRoutineExercise,
   create_feature_issue: createFeatureIssue,
 });
 
