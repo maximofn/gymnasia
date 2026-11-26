@@ -51,9 +51,6 @@ sources:
   - id: openwiki-source-06bd7c851908a218f4ac8a15
     resource: repo://scripts/anthropic-proxy/check.test.mjs
 generated: { by: "openwiki/0.6.0", at: "2026-11-17T17:09:17.831Z" }
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-11-17T17:09:17.831Z
 ---
 
 # Proxy Anthropic y frontera de transporte

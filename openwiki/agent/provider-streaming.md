@@ -9,7 +9,7 @@ related:
   - ../operations/runtime-behavior.md
 verified:
   - by: openwiki/0.6.0
-    at: 2026-11-17T17:09:17.831Z
+    at: 2026-11-26T17:57:31.517Z
 sources:
   - id: openwiki-source-c2d1a0c89805fc4fc01238e2
     resource: repo://apps/anthropic_proxy/cors-proxy.py
@@ -29,6 +29,8 @@ sources:
     resource: repo://apps/mobile/agent/providerStreamParsers.ts
   - id: openwiki-source-479fc45ac32d23cfffe17d8e
     resource: repo://apps/mobile/agent/providerStreamTransport.ts
+  - id: openwiki-source-ae11bf9cf5148ae06824a0ea
+    resource: repo://apps/mobile/agent/providerToolClient.metrics.test.ts
   - id: openwiki-source-9de55cc50318c64549e79726
     resource: repo://apps/mobile/agent/providerToolClient.roundLimit.test.ts
   - id: openwiki-source-abc6fea468a7de09acfb0c4f
@@ -47,9 +49,11 @@ sources:
     resource: repo://apps/mobile/agent/sse.ts
   - id: openwiki-source-1ad5b6a5e6488611c8796fe1
     resource: repo://apps/mobile/agent/toolBatch.ts
+  - id: openwiki-source-97bc7dbbc5ffa999736b654f
+    resource: repo://apps/mobile/agent/toolLoopMetrics.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
-generated: { by: "openwiki/0.6.0", at: "2026-11-17T17:09:17.831Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-26T17:57:31.517Z" }
 ---
 
 # Streaming, continuaciones y fallos de proveedores
@@ -130,12 +134,18 @@ Los cuatro bucles aplican `MAX_TOOL_ROUNDS = 10`. Al llegar al límite con llama
 
 Antes de abrir red, `prepareGoogleInteractionRequest` elige los últimos intercambios completos —cada uno comienza en `user_input`— y mide el JSON sin imágenes y el cuerpo completo. Sus límites predeterminados son 10 intercambios, 512 KiB sin imágenes y 19 000 000 bytes totales; Coach sustituye solo el máximo de intercambios por `COACH_CONTEXT_MESSAGE_LIMIT` (20). Primero elimina imágenes inline de intercambios antiguos, conservando texto o un marcador, y después descarta intercambios completos desde el más antiguo. Si el intercambio activo ya excede un límite, lanza `GoogleContextBudgetError` sin mutar el historial. `onGoogleContextReport` es diagnóstico: si el callback falla no bloquea la petición ni oculta el error de presupuesto.
 
+## Diagnóstico de vueltas, tokens y latencia
+
+`requestProviderToolChat` activa la medición solo si recibe `toolLoopDiagnostics` y no está en `fakeMode`. El envoltorio mide cada petición —incluida la de cierre— sin modificar los mensajes ni el resultado del chat; un sumidero de diagnóstico que lance tampoco interrumpe la conversación. Emite un evento por vuelta y uno final con proveedor, número de vueltas, número de llamadas y fallos, tamaño y cantidad de mensajes del contexto, duración de la petición y del bucle, y tokens de entrada/salida cuando el proveedor los informa. OpenAI y Anthropic normalizan ese uso en el parser; Google toma sus contadores totales; `custom_openai` no los aporta, por lo que quedan en `null`.
+
+Los eventos excluyen texto de usuario o modelo, argumentos, resultados, IDs remotos y nombres de herramientas inventados; estos últimos se clasifican como `unknown`. Son instrumentación local para diagnosticar una ejecución concreta, no una factura ni una medición de disponibilidad remota. En particular, `providerMs` y `durationMs` incluyen el comportamiento observado en el dispositivo y las esperas del flujo, y los tokens dependen de que el proveedor los devuelva. No deben extrapolarse a coste, latencia o tasa poblacional; para los límites de esa interpretación y el triage operativo, véase [Comportamiento operativo, trazas y degradación](../operations/runtime-behavior.md).
+
 ## Pruebas y cambios seguros
 
-Las pruebas de `googleInteractions.test.ts` cubren IDs vacíos y metadatos de ciclo de vida omitidos, continuación de herramientas, persistencia/restauración de pasos, truncamiento, estados incompatibles, argumentos inválidos y secuencias reordenadas. `providerToolLoop.test.ts` cubre las invariantes del límite, la correlación y la ejecución; `providerToolClient.roundLimit.test.ts` verifica la llamada de cierre de los cuatro proveedores y que no se devuelva como final el texto intermedio. `providerToolLoop.repeatedReads.test.ts` prueba el corte en la tercera lectura con la misma huella, incluidos los cuatro protocolos, y que no alcance el límite de rondas. `customOpenAIChat.test.ts` cubre el ensamblado de SSE y tool calls, el fallback explícito sin streaming, saneamiento de errores y la negativa del Coach ante herramientas no soportadas.
+`providerPipeline.test.ts` reproduce fixtures SSE de OpenAI, Anthropic y Google, primero con cortes de red repetidos y después con particiones generadas; cubre continuación tras herramientas, correlación de llamadas múltiples, argumentos inválidos, errores de proveedor y truncamiento antes de ejecutar herramientas. `googleInteractions.test.ts` cubre IDs vacíos y metadatos de ciclo de vida omitidos, continuación de herramientas, persistencia/restauración de pasos, truncamiento, estados incompatibles, argumentos inválidos y secuencias reordenadas. `providerToolLoop.test.ts` cubre las invariantes del límite, la correlación y la ejecución; `providerToolClient.roundLimit.test.ts` verifica la llamada de cierre de los cuatro proveedores y que no se devuelva como final el texto intermedio. `providerToolLoop.repeatedReads.test.ts` prueba el corte en la tercera lectura con la misma huella, incluidos los cuatro protocolos, y que no alcance el límite de rondas. `providerToolClient.metrics.test.ts` fija la forma privada de las trazas, suma de tokens disponibles y que medir no cambia la petición. `customOpenAIChat.test.ts` cubre el ensamblado de SSE y tool calls, el fallback explícito sin streaming, saneamiento de errores y la negativa del Coach ante herramientas no soportadas.
 
-Al cambiar un dialecto, actualice conjuntamente parser, transporte, contrato de continuación y pruebas. Conserve IDs de llamadas, firmas y bloques de razonamiento al persistir o continuar. Añada una fixture completa y variantes que corten eventos y JSON en fronteras distintas; para Google incluya ID vacío y ciclo de vida omitido, y para `custom_openai` compruebe que el fallback ocurre solo ante la incompatibilidad explícita. En todos los casos, una respuesta incompleta debe quedar fuera del ejecutor.
+Al cambiar un dialecto, actualice conjuntamente parser, transporte, contrato de continuación, normalización de uso y pruebas. Conserve IDs de llamadas, firmas y bloques de razonamiento al persistir o continuar. Añada una fixture completa y variantes que corten eventos y JSON en fronteras distintas; para Google incluya ID vacío y ciclo de vida omitido, y para `custom_openai` compruebe que el fallback ocurre solo ante la incompatibilidad explícita. En todos los casos, una respuesta incompleta debe quedar fuera del ejecutor.
 
 ```bash
-npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/sse.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/providerToolLoop.repeatedReads.test.ts apps/mobile/agent/googleInteractions.test.ts apps/mobile/agent/customOpenAIChat.test.ts
+npm exec -- vitest run --config apps/mobile/vitest.config.mts apps/mobile/agent/sse.test.ts apps/mobile/agent/providerPipeline.test.ts apps/mobile/agent/providerStreamTransport.test.ts apps/mobile/agent/providerToolLoop.test.ts apps/mobile/agent/providerToolClient.roundLimit.test.ts apps/mobile/agent/providerToolLoop.repeatedReads.test.ts apps/mobile/agent/providerToolClient.metrics.test.ts apps/mobile/agent/googleInteractions.test.ts apps/mobile/agent/customOpenAIChat.test.ts
 ```

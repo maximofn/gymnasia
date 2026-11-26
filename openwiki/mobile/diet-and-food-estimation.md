@@ -6,6 +6,10 @@ tags: [mobile, diet, nutrition, food-estimation, catalogs, agent]
 sources:
   - id: openwiki-source-ece1e91de1b7e96cadcc5bc8
     resource: repo://apps/mobile/agent/foodEstimatorClient.ts
+  - id: openwiki-source-235731cb695a4cca201eacd5
+    resource: repo://apps/mobile/agent/mealFoodCorrections.test.ts
+  - id: openwiki-source-bf45c1e4f7cf590d125dfbe4
+    resource: repo://apps/mobile/agent/mealWholeOperations.test.ts
   - id: openwiki-source-165cffcff462003cd11223e2
     resource: repo://apps/mobile/agent/toolExecutor.test.ts
   - id: openwiki-source-d3be928c369037f29888bc0b
@@ -36,6 +40,8 @@ sources:
     resource: repo://apps/mobile/diet/dailyCaloriesCalculation.test.ts
   - id: openwiki-source-22ae7a6aeeb87295a2a85546
     resource: repo://apps/mobile/diet/dailyCaloriesCalculation.ts
+  - id: openwiki-source-816232afb7e1e974aaf4ee1c
+    resource: repo://apps/mobile/diet/mealItemOperations.ts
   - id: openwiki-source-8bc8bac1938308df7241b2fd
     resource: repo://apps/mobile/diet/model.ts
   - id: openwiki-source-baabb5f135bf207cf1cd88cf
@@ -46,10 +52,10 @@ sources:
     resource: repo://apps/mobile/scripts/diet-validation.e2e.mjs
   - id: openwiki-source-5b54a58d1b51cd490b0e7162
     resource: repo://package.json
-generated: { by: "openwiki/0.6.0", at: "2026-11-11T15:41:01.947Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-11-11T15:41:01.947Z
+    at: 2026-11-26T17:57:31.517Z
+generated: { by: "openwiki/0.6.0", at: "2026-11-26T17:57:31.517Z" }
 ---
 
 # Dieta, catálogo y estimación de alimentos
@@ -243,9 +249,32 @@ Si no se encuentra un producto comercial o receta estimado, se crea una propuest
 
 ## Agente general: lectura, búsqueda y escritura
 
-El runtime del agente expone `search_foods`, `read_meal_foods` y `add_meal_food`. `search_foods` filtra el repositorio combinado por nombre, categoría, origen o rango nutricional, ordena opcionalmente y limita los resultados a 15; devuelve además disponibilidad, avisos y las referencias `source_id`/`item_id`. Así el modelo puede pedir una selección explícita en vez de inferir qué duplicado elegir.
+El runtime del agente expone `search_foods` y `read_meal_foods`, además de escrituras para añadir, corregir y operar sobre una comida completa. `search_foods` filtra el repositorio combinado por nombre, categoría, origen o rango nutricional, ordena opcionalmente y limita los resultados a 15; devuelve disponibilidad, avisos y las referencias `source_id`/`item_id`. `read_meal_foods` devuelve el `entrada_id` de cada porción: es el identificador que las correcciones deben usar, porque un mismo alimento puede estar repetido.
 
-`add_meal_food` acepta una forma `kind: "catalog"` con referencia e `grams`: busca exactamente esa referencia disponible, pero rechaza la ficha si no tiene kcal y los tres macronutrientes exactos; solo entonces calcula una instantánea por 100 g y prepara un vínculo `linked` con `linkedBy: "tool"`. La forma manual prepara un vínculo no resuelto. La forma heredada basada en nombre busca únicamente entre fichas completas y se vincula solo ante coincidencia exacta o alias única; si es ambigua devuelve candidatas y `written: false`, sin escribir. **Todas** las formas pasan por `validateNutritionItem` antes de crear o modificar el día. La mutación exige `commitStore`; si este falla, se informa un resultado indeterminado en lugar de afirmar que se guardó. Solo después del `commit` se marca el efecto comprometido y se registra el recibo de operación para mantener la idempotencia del runtime.
+`add_meal_food` y el lote `add_meal_foods` aceptan `kind: "catalog"` con referencia e `grams`, o `kind: "manual"` con los cinco totales. La referencia explícita debe existir en el repositorio disponible y tener kcal y los tres macros completos; entonces se escala desde 100 g y se guarda un vínculo `linked` con `linkedBy: "tool"`. El manual queda `unresolvedCatalog("manual")`. La forma heredada de `add_meal_food` basada en nombre solo vincula una coincidencia exacta o alias única entre fichas completas; ante ambigüedad devuelve candidatas y `written: false`, sin elegir ni escribir. Todas las rutas validan el resultado con `validateNutritionItem` antes de mutar. En el lote se resuelven todos los alimentos antes del `commit`: si falla uno, no se escribe ninguno y el error incluye su posición.
+
+Las escrituras requieren `commitStore`. Si falta, devuelven `storage_unavailable`; si el `commit` lanza, el ejecutor declara un resultado indeterminado en vez de afirmar que se guardó. Tras un `commit` exitoso, marcan el efecto comprometido. Las operaciones de lote y de corrección persisten además un recibo asociado a `operationId`: al reintentarlas devuelven `already_applied` sin duplicar el cambio. La adición individual usa un ID derivado de la operación para no insertar una segunda porción en el reintento.
+
+### Correcciones de porciones y comidas
+
+`update_meal_food`, `remove_meal_food`, `copy_meal` y `clear_meal` son escrituras locales con schemas cerrados. Las operaciones sobre una porción localizan por fecha, categoría e `entrada_id`, nunca por nombre: una corrección fallida por entrada ausente deja el almacén intacto. Actualizar puede cambiar gramos, fecha y categoría en un paso; los gramos deben ser estrictamente positivos. Al reescalar, una ficha vinculada y todavía disponible con nutrición completa vuelve a calcular desde catálogo; una porción manual o cuya ficha ya no está disponible se escala proporcionalmente desde su instantánea. Si esta no tiene gramos de referencia, falla con `cannot_scale`.
+
+`copy_meal` copia o mueve todos los elementos entre día y categoría. Copiar asigna IDs nuevos y conserva gramos, totales, imagen y procedencia; mover conserva los IDs y elimina la comida de origen. `clear_meal` elimina solo la categoría indicada. Una comida origen vacía, el mismo origen y destino, o un destino con alimentos sin una decisión explícita de `append` o `replace` producen un fallo estructurado sin cambios; el último caso devuelve las entradas ya presentes para que el agente pregunte a la persona. `replace` es el único modo que descarta contenido de destino.
+
+```mermaid
+flowchart TD
+    Read["read_meal_foods devuelve entrada_id"] --> Request["Tool de corrección"]
+    Request --> Validate["Validar fecha, categoría y argumentos"]
+    Validate --> Target{"Entrada o comida disponible"}
+    Target -->|"no"| NoWrite["Fallo estructurado sin escritura"]
+    Target -->|"sí"| Destination{"Destino ocupado sin modo"}
+    Destination -->|"sí"| Ask["Devolver entradas y pedir append o replace"]
+    Destination -->|"no"| Prepare["Preparar cambio puro"]
+    Prepare --> Commit["commitStore y recibo de operación"]
+    Commit --> Done["Marcar efecto comprometido"]
+```
+
+*Las correcciones se resuelven antes de la persistencia; una decisión destructiva o ambigua no se infiere.*
 
 ## Persistencia, procedencia y cambios seguros
 
@@ -257,7 +286,9 @@ Para añadir un nutriente, actualice conjuntamente el contrato nutricional, `Die
 
 ## Pruebas focalizadas
 
-`apps/mobile/diet/nutritionContract.test.ts` cubre categorías, conversión de formulario, validación de valores no negativos y finitos, salida estructurada, presupuestos de macros y una propiedad de 1.000 ejecuciones. `apps/mobile/catalogs/matching.test.ts` verifica normalización, estabilidad de ambiguos y alias. `apps/mobile/catalogs/ciqual.test.ts` protege la separación entre calificadores y cero, la exclusión de fichas incompletas, el escalado de instantáneas y la resolución de imágenes CIQUAL conocidas —incluida la recuperación visual de comidas antiguas sin mutarlas—. `apps/mobile/agent/toolExecutor.test.ts` cubre búsqueda con metadatos de disponibilidad, escritura por referencia, rechazo de fichas nutricionalmente incompletas y de ambigüedad, categorías inválidas y nutrientes inválidos. `apps/mobile/agent/foodEstimatorClient.test.ts` cubre el modo determinista sin red, la tool sin código y la validación de la extracción estructurada.
+`apps/mobile/diet/nutritionContract.test.ts` cubre categorías, conversión de formulario, validación de valores no negativos y finitos, salida estructurada, presupuestos de macros y una propiedad de 1.000 ejecuciones. `apps/mobile/catalogs/matching.test.ts` verifica normalización, estabilidad de ambiguos y alias. `apps/mobile/catalogs/ciqual.test.ts` protege la separación entre calificadores y cero, la exclusión de fichas incompletas, el escalado de instantáneas y la resolución de imágenes CIQUAL conocidas —incluida la recuperación visual de comidas antiguas sin mutarlas—.
+
+Para cambios de comidas, `apps/mobile/diet/mealItemOperations.test.ts` prueba que las funciones puras no mutan la entrada, identifican por ID, preservan o renuevan IDs según se mueva o copie, y no borran ni mezclan un destino ocupado sin el modo explícito; incluye propiedades de ida y vuelta y aislamiento de elementos ajenos. `apps/mobile/agent/mealFoodCorrections.test.ts` cubre las respuestas estructuradas y la idempotencia de borrar, reescalar y mover una porción. `apps/mobile/agent/mealWholeOperations.test.ts` cubre lote atómico, copia, movimiento y vaciado de comidas, incluidos conflictos de destino, recibos e IDs deterministas. `apps/mobile/agent/toolExecutor.test.ts` conserva la cobertura de búsqueda con metadatos de disponibilidad, escritura por referencia, rechazo de fichas nutricionalmente incompletas y de ambigüedad, categorías inválidas y nutrientes inválidos. `apps/mobile/agent/foodEstimatorClient.test.ts` cubre el modo determinista sin red, la tool sin código y la validación de la extracción estructurada.
 
 La prueba de navegador `apps/mobile/scripts/diet-validation.e2e.mjs` exporta la app web, siembra un almacenamiento de desarrollo y comprueba el ciclo del plan: el aviso de cálculo sin datos se descarta al navegar, un peso inválido no se guarda, peso y altura válidos completan la medición existente del día y sobreviven a una recarga. También verifica que un objetivo diario cero no se persiste, que un exceso de macros se representa sin remanente negativo, que una caloría manual negativa no escribe y que una entrada válida a cero sí se guarda. Desde la raíz se ejecuta con:
 

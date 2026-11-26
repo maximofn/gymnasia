@@ -3,9 +3,6 @@ type: automatización operativa
 title: Automatización de OpenWiki
 description: Runner privado de GitHub Actions que actualiza la documentación de Gymnasia, conserva estados sensibles cifrados y genera un informe diario saneado. Describe sus límites operativos, ciclo de vida y pruebas de contrato.
 tags: [openwiki, github-actions, langsmith, oauth, automation]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-21T13:49:23.153Z
 sources:
   - id: openwiki-source-d63b46e4983cf20d445e960a
     resource: repo://ops/openwiki-automation-template/.github/workflows/openwiki-report.yml
@@ -33,16 +30,21 @@ sources:
     resource: repo://ops/openwiki-automation-template/tests/classify-openwiki-error.test.mjs
   - id: openwiki-source-001a02c95dceb799665ac93d
     resource: repo://ops/openwiki-automation-template/tests/oauth-state.test.mjs
+  - id: openwiki-source-223055e3a11cb0e01b11a668
+    resource: repo://ops/openwiki-automation-template/tests/openwiki-telemetry.test.mjs
   - id: openwiki-source-e13702cacda9531adcebfc8f
     resource: repo://ops/openwiki-automation-template/tests/private-state.test.mjs
   - id: openwiki-source-e204cf07a21df797f3596f66
     resource: repo://ops/openwiki-automation-template/tests/workflow.test.mjs
-generated: { by: "openwiki/0.6.0", at: "2026-10-21T13:49:23.153Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-26T17:57:31.517Z" }
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-26T17:57:31.517Z
 ---
 
 # Automatización de OpenWiki
 
-`ops/openwiki-automation-template` es una **plantilla automatizable** de runner documental privado, separada de la aplicación Gymnasia. Este repositorio documenta el contrato de esa plantilla; sus secretos, el repositorio que la instala y la ejecución efectiva se configuran fuera de ella y no se infieren aquí. Mantiene dos ámbitos: el **Code Brain**, que propone cambios de documentación en la rama `openwiki/update`, y un **Personal Brain** que permanece privado. La publicación del Code Brain queda limitada a `openwiki/`, `.openwikiignore` y, cuando se genera evidencia semanal o manual, `ops/openwiki-runtime-telemetry.json`; no es una dependencia de ejecución de `apps/mobile`, del agente ni de los Workers del producto. Para el runtime y la entrega de Gymnasia, consulte [Inicio rápido](../quickstart.md) y [Comportamiento en ejecución](runtime-behavior.md).
+`ops/openwiki-automation-template` es una **plantilla automatizable** de runner documental privado, separada de la aplicación Gymnasia. Este repositorio documenta el contrato de esa plantilla; sus secretos, el repositorio que la instala y la ejecución efectiva se configuran fuera de ella y no se infieren aquí. Mantiene dos ámbitos excluyentes por ejecución: el **Code Brain**, que propone cambios de documentación en la rama `openwiki/update`, y un **Personal Brain** que permanece privado. La publicación del Code Brain queda limitada a `openwiki/`, `.openwikiignore` y, cuando se genera evidencia semanal o manual, `ops/openwiki-runtime-telemetry.json`; no es una dependencia de ejecución de `apps/mobile`, del agente ni de los Workers del producto. Para el runtime y la entrega de Gymnasia, consulte [Inicio rápido](../quickstart.md) y [Comportamiento en ejecución](runtime-behavior.md).
 
 La evidencia observada del runner —muestra, fallos, latencia, rondas y coste— se renueva en [Telemetría agregada](#telemetría-agregada-de-los-últimos-7-días). Una muestra no es un comportamiento garantizado del producto: esta página distingue el contrato ejecutable actual de planes o resultados históricos.
 
@@ -50,17 +52,20 @@ La evidencia observada del runner —muestra, fallos, latencia, rondas y coste�
 
 `OpenWiki Update` se programa a las 08:00 UTC y también admite despacho manual. Serializa actualizaciones en el grupo `openwiki-update`, sin cancelar una ya iniciada, y tiene un límite de 120 minutos. Antes de instalar dependencias, exige que el repositorio de automatización sea privado y que existan los secretos requeridos. Después instala el grafo bloqueado con `npm ci`, clona Gymnasia sin tags y crea `openwiki/update` forzada desde `origin/main`.
 
+El despacho manual acepta `wiki=auto`, `gymnasia` o `personal`; `auto` selecciona Personal Brain cuando el número de día UTC desde el epoch es divisible por tres y Gymnasia en los demás días. La selección ocurre después de restaurar OAuth: una ejecución de Gymnasia invoca `openwiki code --update --language es --print`, mientras que una de Personal Brain prepara e ingiere sus fuentes. Por tanto, la programación diaria no actualiza ambos ámbitos en paralelo; el comentario del workflow explica esta cadencia como ajuste a la cuota de ChatGPT Plus.
+
 ```mermaid
 flowchart TD
     Trigger["Programación o despacho manual"] --> Guard["Preflight privado y configuración"]
     Guard --> Install["npm ci y clon de Gymnasia"]
     Install --> OAuthRestore["Restaura OAuth cifrado"]
-    OAuthRestore --> Code["Actualiza Code Brain"]
-    OAuthRestore --> Personal["Actualiza Personal Brain opcional"]
+    OAuthRestore --> Select{"Selecciona wiki"}
+    Select -->|"Gymnasia"| Code["Actualiza Code Brain"]
+    Select -->|"Personal"| Personal["Prepara e ingiere Personal Brain"]
     Code --> Telemetry["Recoge telemetría saneada"]
-    Telemetry --> Encrypt["Cifra estados y limpia datos en claro"]
-    Personal --> Encrypt
-    Encrypt --> Publish{"OAuth cifrado y cambios preparados"}
+    Personal --> Encrypt["Cifra estados y limpia datos en claro"]
+    Telemetry --> Encrypt
+    Encrypt --> Publish{"Cambios de Gymnasia preparados"}
     Publish -->|"Sin cambios"| Finish["Finaliza"]
     Publish -->|"Con cambios"| PR["Rama y PR openwiki update"]
     PR --> Complete{"Actualización completa y PR segura"}
@@ -70,13 +75,13 @@ flowchart TD
     Metadata --> Telegram["Telegram saneado"]
 ```
 
-*El diagrama muestra el ciclo de actualización, incluida la publicación de progreso parcial y la fusión automática exclusivamente para una actualización completa; el informe consume metadatos y el artefacto saneado, no logs ni trazas.*
+*El diagrama muestra la selección excluyente de ámbito, la publicación posible de progreso parcial de Gymnasia y la fusión automática exclusiva para una actualización completa; el informe consume metadatos y el artefacto saneado, no logs ni trazas.*
 
 El workflow valida que `AGENTS.md` sea un enlace a `CLAUDE.md`. Al publicar, restaura ambos archivos desde `origin/main`, elimina el checkpoint transitorio `openwiki/.run.json` e indexa `openwiki`, `.openwikiignore` y, cuando se renueva, el JSON saneado de telemetría. Si ya existía `openwiki/update`, la rama se empuja con `--force-with-lease` contra el SHA observado; si no existía, se hace un push normal. Después crea o actualiza una PR contra `main` solo si hay cambios preparados. El commit requiere que el paso de OpenWiki haya concluido y que OAuth se haya cifrado; puede preservar páginas duraderas terminadas aunque el comando haya devuelto un fallo, y el workflow propaga ese fallo después. Esto evita publicar archivos ajenos a la wiki o cambios de política de agente y permite reanudar el trabajo mediante la PR.
 
 La fusión automática no es el mecanismo para publicar progreso parcial. Solo se solicita para una PR cuya actualización de Code Brain fue satisfactoria y cuyos preflight, restauración y cifrado de OAuth, y etapas configuradas del Personal Brain no fallaron. Antes de solicitarla, el workflow verifica que la cabeza y la base de la PR correspondan al checkout revisado y rechaza cualquier ruta fuera de `.openwikiignore`, `openwiki/*` y `ops/openwiki-runtime-telemetry.json`. Una PR parcial o con una etapa fallida queda disponible para revisión, pero no satisface esas condiciones.
 
-La plantilla configura Node 22.22.0 en el workflow; su manifiesto y lockfile v3 fijan la plantilla en la versión 1.0.0, Node `>=22.22.0 <23` y las dependencias directas `openwiki` 0.6.0, `langsmith` 0.7.17, `jsdom` 29.1.1 y `mermaid` 11.16.1. `npm ci` instala ese grafo bloqueado cuando se ejecuta la plantilla.
+La plantilla configura Node 22.22.0 en el workflow; su manifiesto y lockfile v3 fijan la plantilla en la versión 1.0.0, Node `>=22.22.0 <23` y las dependencias directas `openwiki` 0.6.0, `langsmith` 0.13.1, `jsdom` 29.1.1 y `mermaid` 11.16.1. `npm ci` instala ese grafo bloqueado cuando se ejecuta la plantilla.
 
 ## Estado sensible y ciclo de vida
 
