@@ -165,6 +165,11 @@ test("auto-merges only complete OpenWiki documentation from allowed paths", asyn
     workflow,
     /\.openwikiignore\|openwiki\/\*\|ops\/openwiki-runtime-telemetry\.json/u,
   );
+  assert.match(
+    workflow,
+    /classify-openwiki-error\.mjs \\\n\s+"\$RUNNER_TEMP\/openwiki-personal\.log"/u,
+  );
+  assert.match(workflow, /steps\.personal\.outputs\.failure_category/u);
   assert.match(workflow, /gh pr diff "\$PR_URL" --name-only/u);
   assert.match(workflow, /gh pr merge "\$PR_URL" --auto --merge/u);
   assert.doesNotMatch(workflow, /gh pr review/u);
