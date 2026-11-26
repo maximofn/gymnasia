@@ -46,6 +46,11 @@ import {
 } from "./customOpenAIChat";
 import { executeToolBatch } from "./toolBatch";
 import type { ToolBatchDiagnostics } from "./toolBatchDiagnostics";
+import {
+  createToolLoopMeasurement,
+  type ToolLoopDiagnostics,
+  type ToolLoopProvider,
+} from "./toolLoopMetrics";
 import { toolCallOccurrenceKey } from "./toolOperationLedger";
 import {
   anthropicApiHeaders,
@@ -65,15 +70,49 @@ export type ProviderToolChatOptions = StreamingHandlers & {
   executionId?: string;
   executeTool: ExecuteTool;
   toolBatchDiagnostics?: ToolBatchDiagnostics;
+  /** Medidas del bucle: vueltas, tokens, tamaño de la conversación y resultado de cada tool. */
+  toolLoopDiagnostics?: ToolLoopDiagnostics;
   /** Reloj inyectable para las pruebas; por defecto, la hora del dispositivo. */
   now?: () => Date;
 };
+
+/** Envuelve cada petición al proveedor con la conversación que se le envía. */
+type MeasureRequest = <T>(messages: readonly unknown[], closing: boolean, send: () => Promise<T>) => Promise<T>;
+
+const unmeasured: MeasureRequest = (_messages, _closing, send) => send();
 
 export async function requestProviderToolChat(
   provider: ProviderConfiguration,
   messages: ChatInputMessage[],
   runtime: ProviderChatRuntime,
   options: ProviderToolChatOptions,
+): Promise<ProviderChatResult> {
+  if (runtime.fakeMode || !options.toolLoopDiagnostics) {
+    return requestMeasuredProviderToolChat(provider, messages, runtime, options, unmeasured);
+  }
+  const measurement = createToolLoopMeasurement(
+    provider.provider as ToolLoopProvider,
+    options.toolLoopDiagnostics,
+  );
+  try {
+    const result = await requestMeasuredProviderToolChat(
+      provider, messages, runtime, options,
+      (sent, closing, send) => measurement.request(sent, closing, send),
+    );
+    measurement.finish();
+    return result;
+  } catch (error) {
+    measurement.finish(error);
+    throw error;
+  }
+}
+
+async function requestMeasuredProviderToolChat(
+  provider: ProviderConfiguration,
+  messages: ChatInputMessage[],
+  runtime: ProviderChatRuntime,
+  options: ProviderToolChatOptions,
+  measure: MeasureRequest,
 ): Promise<ProviderChatResult> {
   const latestUserInput = [...messages]
     .reverse()
@@ -160,9 +199,9 @@ export async function requestProviderToolChat(
     const initialInput = nonSystemMessages;
     const payload = await runOpenAIToolLoop({
       initialInput,
-      initialTurn: await makeRequest(initialInput, true),
-      requestNextTurn: (context) => makeRequest(context, true),
-      requestClosingTurn: (context) => makeRequest(context, true, "none"),
+      initialTurn: await measure(initialInput, false, () => makeRequest(initialInput, true)),
+      requestNextTurn: (context) => measure(context, false, () => makeRequest(context, true)),
+      requestClosingTurn: (context) => measure(context, true, () => makeRequest(context, true, "none")),
       executeTool: options.executeTool,
       toolBatchDiagnostics: options.toolBatchDiagnostics,
       executionId: options.executionId,
@@ -194,7 +233,7 @@ export async function requestProviderToolChat(
         const messagesForRound = closing
           ? [{ role: "system" as const, content: closingSystemPrompt(systemPrompt) }, ...history.slice(1)]
           : history;
-        turn = await requestCustomOpenAIChat(provider, messagesForRound, {
+        turn = await measure(messagesForRound.slice(1), closing, () => requestCustomOpenAIChat(provider, messagesForRound, {
           platform: runtime.platform,
           tools,
           ...(closing ? { toolChoice: "none" as const } : {}),
@@ -203,7 +242,7 @@ export async function requestProviderToolChat(
             fullContent += delta;
             options.onContentDelta?.(delta, fullContent);
           },
-        });
+        }));
       } catch (error) {
         if (closing) throw new ToolRoundLimitError({ cause: error });
         if (isUnsupportedCustomFeature(error, "tools")) {
@@ -318,10 +357,11 @@ export async function requestProviderToolChat(
     };
 
     const payload = await runAnthropicToolLoop({
-      initialTurn: await makeRequest([...nonSystemMessages], true),
+      initialTurn: await measure(nonSystemMessages, false, () => makeRequest([...nonSystemMessages], true)),
       initialMessages: nonSystemMessages,
-      requestNextTurn: (currentMessages) => makeRequest(currentMessages, true),
-      requestClosingTurn: (currentMessages) => makeRequest(currentMessages, true, "none"),
+      requestNextTurn: (currentMessages) => measure(currentMessages, false, () => makeRequest(currentMessages, true)),
+      requestClosingTurn: (currentMessages) =>
+        measure(currentMessages, true, () => makeRequest(currentMessages, true, "none")),
       executeTool: options.executeTool,
       toolBatchDiagnostics: options.toolBatchDiagnostics,
       executionId: options.executionId,
@@ -368,10 +408,10 @@ export async function requestProviderToolChat(
     streamHandlers,
   );
   const payload = await runGoogleToolLoop({
-    initialTurn: await makeRequest(googleMessages),
+    initialTurn: await measure(googleMessages, false, () => makeRequest(googleMessages)),
     initialMessages: googleMessages,
-    requestNextTurn: (history) => makeRequest(history),
-    requestClosingTurn: (history) => makeRequest(history, "none"),
+    requestNextTurn: (history) => measure(history, false, () => makeRequest(history)),
+    requestClosingTurn: (history) => measure(history, true, () => makeRequest(history, "none")),
     executeTool: options.executeTool,
     toolBatchDiagnostics: options.toolBatchDiagnostics,
     executionId: options.executionId,

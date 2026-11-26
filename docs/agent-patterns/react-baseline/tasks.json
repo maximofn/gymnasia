@@ -1,0 +1,14 @@
+[
+ {"id":"T01","domain":"entrenamiento","prompt":"¿Qué ejercicios tiene mi rutina de empuje?"},
+ {"id":"T02","domain":"entrenamiento","prompt":"¿Cuánto he subido en press banca este mes?"},
+ {"id":"T03","domain":"entrenamiento","prompt":"En la rutina de pierna, cambia la sentadilla por prensa de piernas, 4 series de 10 con 120 kg."},
+ {"id":"T04","domain":"entrenamiento","prompt":"Créame una rutina de tirón con 4 ejercicios."},
+ {"id":"T05","domain":"dieta","prompt":"¿Cuántas calorías y proteína he comido esta semana?"},
+ {"id":"T06","domain":"dieta","prompt":"Añade a la cena de hoy 150 g de pechuga de pollo, 200 g de arroz blanco cocido y una manzana."},
+ {"id":"T07","domain":"dieta","prompt":"En el desayuno de hoy no eran 100 g de avena, eran 60 g, y quita el zumo."},
+ {"id":"T08","domain":"dieta","prompt":"Copia la comida de ayer a hoy."},
+ {"id":"T09","domain":"medidas","prompt":"Hoy peso 78,4 kg y tengo 82 cm de cintura."},
+ {"id":"T10","domain":"medidas","prompt":"¿Cómo ha ido mi peso en el último mes?"},
+ {"id":"T11","domain":"mixta","prompt":"He bajado de peso estas semanas. ¿Estoy comiendo suficiente proteína para mi peso actual? Si no, añade un yogur griego a la merienda de hoy."},
+ {"id":"T12","domain":"mixta","prompt":"Hazme un resumen de la semana: entrenos hechos, calorías medias y cambio de peso. Y registra que hoy peso 78 kg."}
+]

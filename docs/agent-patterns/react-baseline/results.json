@@ -1,0 +1,985 @@
+{
+ "model": "gpt-6-luna",
+ "provider": "openai",
+ "date": "2026-11-25",
+ "appVersion": "1.64.0",
+ "repetitions": 3,
+ "notes": "Métricas de las trazas toolLoop de la app. Argumentos capturados en el navegador; algunas series repetidas se abrevian como '4 x {...}' o 'id 150 g'.",
+ "runs": [
+  {
+   "task": "T01",
+   "rep": 1,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 23483,
+   "outputTokens": 104,
+   "finalContextChars": 10735,
+   "durationMs": 5064,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_routines",
+     "args": "{}"
+    }
+   ]
+  },
+  {
+   "task": "T01",
+   "rep": 2,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 23483,
+   "outputTokens": 105,
+   "finalContextChars": 10735,
+   "durationMs": 5561,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_routines",
+     "args": "{}"
+    }
+   ]
+  },
+  {
+   "task": "T01",
+   "rep": 3,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 23483,
+   "outputTokens": 105,
+   "finalContextChars": 10735,
+   "durationMs": 2037,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_routines",
+     "args": "{}"
+    }
+   ]
+  },
+  {
+   "task": "T02",
+   "rep": 1,
+   "rounds": 3,
+   "toolCalls": 2,
+   "failedCalls": 0,
+   "inputTokens": 35772,
+   "outputTokens": 328,
+   "finalContextChars": 15769,
+   "durationMs": 4943,
+   "correct": false,
+   "note": "La tool del historial no expone pesos por ejercicio; responde que no puede calcularlo",
+   "calls": [
+    {
+     "name": "read_workout_history",
+     "args": "{\"from\":\"2026-11-01\",\"to\":\"2026-11-25\"}"
+    },
+    {
+     "name": "read_routines",
+     "args": "{}"
+    }
+   ]
+  },
+  {
+   "task": "T02",
+   "rep": 2,
+   "rounds": 3,
+   "toolCalls": 2,
+   "failedCalls": 0,
+   "inputTokens": 35784,
+   "outputTokens": 304,
+   "finalContextChars": 15961,
+   "durationMs": 5474,
+   "correct": false,
+   "note": "Igual que la repetición 1",
+   "calls": [
+    {
+     "name": "read_workout_history",
+     "args": "{\"from\":\"2026-11-01\",\"to\":\"2026-11-25\"}"
+    },
+    {
+     "name": "read_routines",
+     "args": "{}"
+    }
+   ]
+  },
+  {
+   "task": "T02",
+   "rep": 3,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 21894,
+   "outputTokens": 297,
+   "finalContextChars": 4978,
+   "durationMs": 3638,
+   "correct": false,
+   "note": "Igual, sin leer la rutina",
+   "calls": [
+    {
+     "name": "read_workout_history",
+     "args": "{\"from\":\"2026-11-01\",\"to\":\"2026-11-25\"}"
+    }
+   ]
+  },
+  {
+   "task": "T03",
+   "rep": 1,
+   "rounds": 4,
+   "toolCalls": 4,
+   "failedCalls": 0,
+   "inputTokens": 55425,
+   "outputTokens": 398,
+   "finalContextChars": 24605,
+   "durationMs": 7112,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_routines",
+     "args": "{}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"prensa de piernas\"}"
+    },
+    {
+     "name": "add_routine_exercise",
+     "args": "{\"routine_id\":\"tpl_seed_pierna\",\"exercise\":{\"kind\":\"catalog\",\"source_id\":\"gymnasia_exercises\",\"item_id\":\"prensa-de-piernas-a-45-grados-en-trineo\",\"series\":[4 x {\"type\":\"normal\",\"reps\":10,\"weight_kg\":120,\"rest_seconds\":90}]},\"position\":1}"
+    },
+    {
+     "name": "remove_routine_exercise",
+     "args": "{\"routine_id\":\"tpl_seed_pierna\",\"exercise_id\":\"ex_seed_0018\"}"
+    }
+   ]
+  },
+  {
+   "task": "T03",
+   "rep": 2,
+   "rounds": 4,
+   "toolCalls": 4,
+   "failedCalls": 0,
+   "inputTokens": 55658,
+   "outputTokens": 504,
+   "finalContextChars": 26241,
+   "durationMs": 9050,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_routines",
+     "args": "{}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"prensa de piernas\"}"
+    },
+    {
+     "name": "add_routine_exercise",
+     "args": "{\"routine_id\":\"tpl_seed_pierna\",\"position\":1,\"exercise\":{\"kind\":\"catalog\",\"source_id\":\"gymnasia_exercises\",\"item_id\":\"prensa-de-piernas-a-45-grados-en-trineo\",\"series\":[4 x {\"type\":\"normal\",\"reps\":10,\"weight_kg\":120}]}}"
+    },
+    {
+     "name": "remove_routine_exercise",
+     "args": "{\"routine_id\":\"tpl_seed_pierna\",\"exercise_id\":\"ex_seed_0018\"}"
+    }
+   ]
+  },
+  {
+   "task": "T03",
+   "rep": 3,
+   "rounds": 5,
+   "toolCalls": 4,
+   "failedCalls": 0,
+   "inputTokens": 68431,
+   "outputTokens": 418,
+   "finalContextChars": 23409,
+   "durationMs": 15647,
+   "correct": true,
+   "note": "Lectura y búsqueda en vueltas separadas",
+   "calls": [
+    {
+     "name": "read_routines",
+     "args": "{}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\":\"prensa de piernas\"}"
+    },
+    {
+     "name": "add_routine_exercise",
+     "args": "{\"routine_id\":\"tpl_seed_pierna\",\"position\":1,\"exercise\":{\"kind\":\"catalog\",\"source_id\":\"gymnasia_exercises\",\"item_id\":\"prensa-de-piernas-a-45-grados-en-trineo\",\"series\":[4 x {\"type\":\"normal\",\"reps\":10,\"weight_kg\":120}]}}"
+    },
+    {
+     "name": "remove_routine_exercise",
+     "args": "{\"routine_id\":\"tpl_seed_pierna\",\"exercise_id\":\"ex_seed_0018\"}"
+    }
+   ]
+  },
+  {
+   "task": "T04",
+   "rep": 1,
+   "rounds": 5,
+   "toolCalls": 6,
+   "failedCalls": 0,
+   "inputTokens": 75660,
+   "outputTokens": 1038,
+   "finalContextChars": 38828,
+   "durationMs": 15214,
+   "correct": true,
+   "note": "Una búsqueda sin resultados (face pull)",
+   "calls": [
+    {
+     "name": "search_exercises",
+     "args": "{\"muscle_group\": \"espalda\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"muscle_group\": \"biceps\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\":\"remo con barra\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"jalón al pecho\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"face pull\"}"
+    },
+    {
+     "name": "create_routine",
+     "args": "{\"data\":{\"name\":\"Tirón\",\"category\":\"hypertrophy\",\"duration_minutes\":50,\"exercises\":[jalon-al-pecho-polea 3x10, remo-banco-inclinado-barra 3x10, dominadas 3x8, curl-biceps-agarre-cerrado-barra-z 3x12]}}"
+    }
+   ]
+  },
+  {
+   "task": "T04",
+   "rep": 2,
+   "rounds": 5,
+   "toolCalls": 7,
+   "failedCalls": 0,
+   "inputTokens": 61013,
+   "outputTokens": 777,
+   "finalContextChars": 21859,
+   "durationMs": 10610,
+   "correct": true,
+   "note": "Dos búsquedas sin resultados (face pull, pájaro máquina)",
+   "calls": [
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"jalón al pecho\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"remo sentado en polea\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"face pull\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"curl de bíceps con mancuernas\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\":\"pájaro máquina\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\":\"aperturas inversas\"}"
+    },
+    {
+     "name": "create_routine",
+     "args": "{\"data\":{\"name\":\"Tirón\",\"category\":\"hypertrophy\",\"duration_minutes\":45,\"exercises\":[jalon-al-pecho-polea 3x10, remo-sentado-polea 3x10, aperturas-inversas-maquina 3x15, curl-biceps-mancuernas-de-pie 3x12]}}"
+    }
+   ]
+  },
+  {
+   "task": "T04",
+   "rep": 3,
+   "rounds": 5,
+   "toolCalls": 7,
+   "failedCalls": 0,
+   "inputTokens": 59471,
+   "outputTokens": 786,
+   "finalContextChars": 18755,
+   "durationMs": 14045,
+   "correct": true,
+   "note": "Dos búsquedas sin resultados (face pull, pájaros)",
+   "calls": [
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"jalón al pecho\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"remo sentado en polea\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"face pull\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\": \"curl de bíceps con mancuernas\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\":\"pájaros\"}"
+    },
+    {
+     "name": "search_exercises",
+     "args": "{\"query\":\"elevación posterior\"}"
+    },
+    {
+     "name": "create_routine",
+     "args": "{\"data\":{\"name\":\"Tirón\",\"category\":\"hypertrophy\",\"exercises\":[jalon-al-pecho-polea 3x10, remo-sentado-polea 3x10, elevacion-posterior-banco-inclinado-mancuernas 3x15, curl-biceps-mancuernas-de-pie 3x12]}}"
+    }
+   ]
+  },
+  {
+   "task": "T05",
+   "rep": 1,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 21360,
+   "outputTokens": 177,
+   "finalContextChars": 1366,
+   "durationMs": 7288,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_diet_period",
+     "args": "{\"from\":\"2026-11-23\",\"to\":\"2026-11-25\"}"
+    }
+   ]
+  },
+  {
+   "task": "T05",
+   "rep": 2,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 21403,
+   "outputTokens": 133,
+   "finalContextChars": 3601,
+   "durationMs": 3049,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_diet_period",
+     "args": "{\"from\":\"2026-11-23\",\"to\":\"2026-11-25\"}"
+    }
+   ]
+  },
+  {
+   "task": "T05",
+   "rep": 3,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 21387,
+   "outputTokens": 105,
+   "finalContextChars": 3429,
+   "durationMs": 5078,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_diet_period",
+     "args": "{\"from\":\"2026-11-23\",\"to\":\"2026-11-25\"}"
+    }
+   ]
+  },
+  {
+   "task": "T06",
+   "rep": 1,
+   "rounds": 4,
+   "toolCalls": 5,
+   "failedCalls": 0,
+   "inputTokens": 48700,
+   "outputTokens": 402,
+   "finalContextChars": 17685,
+   "durationMs": 5951,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "search_foods",
+     "args": "{\"query\": \"pechuga de pollo\", \"source\": \"gymnasia_foods\"}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\": \"arroz blanco cocido\", \"source\": \"gymnasia_foods\"}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\": \"manzana\", \"source\": \"gymnasia_foods\"}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\":\"arroz blanco\"}"
+    },
+    {
+     "name": "add_meal_foods",
+     "args": "{\"date\":\"2026-11-25\",\"meal\":\"Cena\",\"foods\":[{\"kind\":\"catalog\",\"source_id\":\"gymnasia_foods\",\"item_id\":\"pechuga-pollo\",\"grams\":150},{\"kind\":\"catalog\",\"source_id\":\"gymnasia_foods\",\"item_id\":\"arroz-blanco\",\"grams\":200},{\"kind\":\"catalog\",\"source_id\":\"gymnasia_foods\",\"item_id\":\"manzana\",\"grams\":180}]}"
+    }
+   ]
+  },
+  {
+   "task": "T06",
+   "rep": 2,
+   "rounds": 4,
+   "toolCalls": 5,
+   "failedCalls": 0,
+   "inputTokens": 60245,
+   "outputTokens": 373,
+   "finalContextChars": 30984,
+   "durationMs": 7628,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "search_foods",
+     "args": "{\"query\": \"pechuga de pollo\"}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\": \"arroz blanco cocido\"}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\": \"manzana\"}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\":\"arroz blanco\"}"
+    },
+    {
+     "name": "add_meal_foods",
+     "args": "{\"date\":\"2026-11-25\",\"meal\":\"Cena\",\"foods\":[pechuga-pollo 150 g, arroz-blanco 200 g, manzana 180 g]}"
+    }
+   ]
+  },
+  {
+   "task": "T06",
+   "rep": 3,
+   "rounds": 4,
+   "toolCalls": 5,
+   "failedCalls": 0,
+   "inputTokens": 60202,
+   "outputTokens": 371,
+   "finalContextChars": 30964,
+   "durationMs": 5860,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "search_foods",
+     "args": "{\"query\": \"pechuga de pollo\"}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\": \"arroz blanco cocido\"}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\": \"manzana\"}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\":\"arroz blanco\"}"
+    },
+    {
+     "name": "add_meal_foods",
+     "args": "{\"date\":\"2026-11-25\",\"meal\":\"Cena\",\"foods\":[pechuga-pollo 150 g, arroz-blanco 200 g, manzana 180 g]}"
+    }
+   ]
+  },
+  {
+   "task": "T07",
+   "rep": 1,
+   "rounds": 3,
+   "toolCalls": 3,
+   "failedCalls": 0,
+   "inputTokens": 32421,
+   "outputTokens": 232,
+   "finalContextChars": 6867,
+   "durationMs": 5231,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_meal_foods",
+     "args": "{\"date\":\"2026-11-25\",\"meal\":\"Desayuno\"}"
+    },
+    {
+     "name": "update_meal_food",
+     "args": "{\"date\": \"2026-11-25\", \"meal\": \"Desayuno\", \"entry_id\": \"item_seed_0170\", \"grams\": 60}"
+    },
+    {
+     "name": "remove_meal_food",
+     "args": "{\"date\": \"2026-11-25\", \"meal\": \"Desayuno\", \"entry_id\": \"item_seed_0172\"}"
+    }
+   ]
+  },
+  {
+   "task": "T07",
+   "rep": 2,
+   "rounds": 3,
+   "toolCalls": 3,
+   "failedCalls": 0,
+   "inputTokens": 32407,
+   "outputTokens": 219,
+   "finalContextChars": 6591,
+   "durationMs": 4640,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_meal_foods",
+     "args": "{\"date\":\"2026-11-25\",\"meal\":\"Desayuno\"}"
+    },
+    {
+     "name": "update_meal_food",
+     "args": "{\"date\": \"2026-11-25\", \"meal\": \"Desayuno\", \"entry_id\": \"item_seed_0170\", \"grams\": 60}"
+    },
+    {
+     "name": "remove_meal_food",
+     "args": "{\"date\": \"2026-11-25\", \"meal\": \"Desayuno\", \"entry_id\": \"item_seed_0172\"}"
+    }
+   ]
+  },
+  {
+   "task": "T07",
+   "rep": 3,
+   "rounds": 3,
+   "toolCalls": 3,
+   "failedCalls": 0,
+   "inputTokens": 32312,
+   "outputTokens": 163,
+   "finalContextChars": 2397,
+   "durationMs": 4859,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_meal_foods",
+     "args": "{\"date\":\"2026-11-25\",\"meal\":\"Desayuno\"}"
+    },
+    {
+     "name": "remove_meal_food",
+     "args": "{\"date\": \"2026-11-25\", \"meal\": \"Desayuno\", \"entry_id\": \"item_seed_0172\"}"
+    },
+    {
+     "name": "update_meal_food",
+     "args": "{\"date\": \"2026-11-25\", \"meal\": \"Desayuno\", \"entry_id\": \"item_seed_0170\", \"grams\": 60}"
+    }
+   ]
+  },
+  {
+   "task": "T08",
+   "rep": 1,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 21477,
+   "outputTokens": 196,
+   "finalContextChars": 4300,
+   "durationMs": 4265,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "copy_meal",
+     "args": "{\"from_date\":\"2026-11-24\",\"from_meal\":\"Comida\",\"to_date\":\"2026-11-25\",\"to_meal\":\"Comida\",\"mode\":\"copy\"}"
+    }
+   ]
+  },
+  {
+   "task": "T08",
+   "rep": 2,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 21506,
+   "outputTokens": 206,
+   "finalContextChars": 4728,
+   "durationMs": 3267,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "copy_meal",
+     "args": "{\"from_date\":\"2026-11-24\",\"from_meal\":\"Comida\",\"to_date\":\"2026-11-25\",\"to_meal\":\"Comida\",\"mode\":\"copy\"}"
+    }
+   ]
+  },
+  {
+   "task": "T08",
+   "rep": 3,
+   "rounds": 1,
+   "toolCalls": 0,
+   "failedCalls": 0,
+   "inputTokens": 10494,
+   "outputTokens": 161,
+   "finalContextChars": 60,
+   "durationMs": 1971,
+   "correct": false,
+   "note": "Pide aclaración: «comida» puede ser el almuerzo o cualquier comida",
+   "calls": []
+  },
+  {
+   "task": "T09",
+   "rep": 1,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 21096,
+   "outputTokens": 103,
+   "finalContextChars": 2591,
+   "durationMs": 2568,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "write_measurement",
+     "args": "{\"date\":\"2026-11-25\",\"data\":{\"weight_kg\":78.4,\"waist_cm\":82}}"
+    }
+   ]
+  },
+  {
+   "task": "T09",
+   "rep": 2,
+   "rounds": 3,
+   "toolCalls": 2,
+   "failedCalls": 0,
+   "inputTokens": 31669,
+   "outputTokens": 117,
+   "finalContextChars": 2916,
+   "durationMs": 4128,
+   "correct": true,
+   "note": "Consulta datos personales sin necesidad",
+   "calls": [
+    {
+     "name": "list_personal_data_keys",
+     "args": "{}"
+    },
+    {
+     "name": "write_measurement",
+     "args": "{\"date\":\"2026-11-25\",\"data\":{\"weight_kg\":78.4,\"waist_cm\":82}}"
+    }
+   ]
+  },
+  {
+   "task": "T09",
+   "rep": 3,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 21139,
+   "outputTokens": 145,
+   "finalContextChars": 3123,
+   "durationMs": 2742,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "write_measurement",
+     "args": "{\"date\":\"2026-11-25\",\"data\":{\"weight_kg\":78.4,\"waist_cm\":82}}"
+    }
+   ]
+  },
+  {
+   "task": "T10",
+   "rep": 1,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 21467,
+   "outputTokens": 114,
+   "finalContextChars": 1743,
+   "durationMs": 2527,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_measurements_period",
+     "args": "{\"from\":\"2026-10-25\",\"to\":\"2026-11-25\"}"
+    }
+   ]
+  },
+  {
+   "task": "T10",
+   "rep": 2,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 21505,
+   "outputTokens": 130,
+   "finalContextChars": 3894,
+   "durationMs": 2754,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_measurements_period",
+     "args": "{\"from\":\"2026-10-25\",\"to\":\"2026-11-25\"}"
+    }
+   ]
+  },
+  {
+   "task": "T10",
+   "rep": 3,
+   "rounds": 2,
+   "toolCalls": 1,
+   "failedCalls": 0,
+   "inputTokens": 21506,
+   "outputTokens": 132,
+   "finalContextChars": 3934,
+   "durationMs": 4396,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_measurements_period",
+     "args": "{\"from\":\"2026-10-25\",\"to\":\"2026-11-25\"}"
+    }
+   ]
+  },
+  {
+   "task": "T11",
+   "rep": 1,
+   "rounds": 4,
+   "toolCalls": 5,
+   "failedCalls": 0,
+   "inputTokens": 47900,
+   "outputTokens": 685,
+   "finalContextChars": 17010,
+   "durationMs": 8680,
+   "correct": true,
+   "note": "Media de 8 días incluyendo hoy incompleto (88,1 g); ignora el objetivo configurado de 2 g/kg",
+   "calls": [
+    {
+     "name": "list_personal_data_keys",
+     "args": "{}"
+    },
+    {
+     "name": "read_measurements_period",
+     "args": "{\"from\": \"2026-10-28\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "read_diet_period",
+     "args": "{\"from\": \"2026-11-12\", \"to\": \"2026-11-25\", \"include_foods\": false}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\":\"yogur griego natural\"}"
+    },
+    {
+     "name": "add_meal_food",
+     "args": "{\"date\":\"2026-11-25\",\"meal\":\"Merienda\",\"data\":\"{\\\"kind\\\":\\\"catalog\\\",\\\"source_id\\\":\\\"gymnasia_foods\\\",\\\"item_id\\\":\\\"yogur-griego\\\",\\\"grams\\\":170}\"}"
+    }
+   ]
+  },
+  {
+   "task": "T11",
+   "rep": 2,
+   "rounds": 5,
+   "toolCalls": 6,
+   "failedCalls": 0,
+   "inputTokens": 60307,
+   "outputTokens": 1358,
+   "finalContextChars": 27826,
+   "durationMs": 14181,
+   "correct": true,
+   "note": "Igual que la repetición 1, con una lectura extra de la merienda",
+   "calls": [
+    {
+     "name": "list_personal_data_keys",
+     "args": "{}"
+    },
+    {
+     "name": "read_measurements_period",
+     "args": "{\"from\": \"2026-10-27\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "read_diet_period",
+     "args": "{\"from\": \"2026-11-12\", \"to\": \"2026-11-25\", \"include_foods\": false}"
+    },
+    {
+     "name": "read_meal_foods",
+     "args": "{\"date\": \"2026-11-25\", \"meal\": \"Merienda\"}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\":\"yogur griego\",\"category\":\"lacteo\"}"
+    },
+    {
+     "name": "add_meal_food",
+     "args": "{\"date\":\"2026-11-25\",\"meal\":\"Merienda\",\"data\":\"{\\\"kind\\\":\\\"catalog\\\",\\\"source_id\\\":\\\"gymnasia_foods\\\",\\\"item_id\\\":\\\"yogur-griego\\\",\\\"grams\\\":170}\"}"
+    }
+   ]
+  },
+  {
+   "task": "T11",
+   "rep": 3,
+   "rounds": 4,
+   "toolCalls": 6,
+   "failedCalls": 0,
+   "inputTokens": 50484,
+   "outputTokens": 1890,
+   "finalContextChars": 31476,
+   "durationMs": 17259,
+   "correct": true,
+   "note": "Guarda un dato personal que nadie pidió; ignora el objetivo configurado de 2 g/kg",
+   "calls": [
+    {
+     "name": "list_personal_data_keys",
+     "args": "{}"
+    },
+    {
+     "name": "read_measurements_period",
+     "args": "{\"from\": \"2026-10-28\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "read_diet_period",
+     "args": "{\"from\": \"2026-10-28\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "save_personal_data",
+     "args": "{\"personal_data\": \"[{\\\"key\\\":\\\"Pérdida reciente de peso\\\",\\\"description\\\":\\\"Cambio de peso que el usuario refiere haber experimentado durante las últimas semanas.\\\",\\\"value\\\":\\\"Ha bajado de peso estas semanas (25-11-2026).\\\"}]\"}"
+    },
+    {
+     "name": "search_foods",
+     "args": "{\"query\": \"yogur griego\", \"category\": \"lacteo\"}"
+    },
+    {
+     "name": "add_meal_food",
+     "args": "{\"date\":\"2026-11-25\",\"meal\":\"Merienda\",\"data\":\"{\\\"kind\\\":\\\"catalog\\\",\\\"source_id\\\":\\\"gymnasia_foods\\\",\\\"item_id\\\":\\\"yogur-griego\\\",\\\"grams\\\":170}\"}"
+    }
+   ]
+  },
+  {
+   "task": "T12",
+   "rep": 1,
+   "rounds": 4,
+   "toolCalls": 6,
+   "failedCalls": 0,
+   "inputTokens": 44831,
+   "outputTokens": 835,
+   "finalContextChars": 11537,
+   "durationMs": 10019,
+   "correct": true,
+   "note": "Guarda un dato personal que nadie pidió",
+   "calls": [
+    {
+     "name": "list_personal_data_keys",
+     "args": "{}"
+    },
+    {
+     "name": "read_workout_history",
+     "args": "{\"from\": \"2026-11-23\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "read_diet_period",
+     "args": "{\"from\": \"2026-11-23\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "read_measurements_period",
+     "args": "{\"from\": \"2026-11-23\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "write_measurement",
+     "args": "{\"date\": \"2026-11-25\", \"data\": {\"weight_kg\": 78}}"
+    },
+    {
+     "name": "save_personal_data",
+     "args": "{\"personal_data\":\"[{\\\"key\\\":\\\"Peso actual\\\",\\\"description\\\":\\\"Peso corporal más reciente compartido por el usuario; usar como dato de referencia de personalización, distinguiendo siempre la fecha de la medición.\\\",\\\"value\\\":\\\"78 kg (2026-11-25)\\\"}]\"}"
+    }
+   ]
+  },
+  {
+   "task": "T12",
+   "rep": 2,
+   "rounds": 3,
+   "toolCalls": 6,
+   "failedCalls": 0,
+   "inputTokens": 33976,
+   "outputTokens": 717,
+   "finalContextChars": 13315,
+   "durationMs": 9033,
+   "correct": true,
+   "note": "Guarda un dato personal que nadie pidió",
+   "calls": [
+    {
+     "name": "list_personal_data_keys",
+     "args": "{}"
+    },
+    {
+     "name": "write_measurement",
+     "args": "{\"date\": \"2026-11-25\", \"data\": {\"weight_kg\": 78}}"
+    },
+    {
+     "name": "read_workout_history",
+     "args": "{\"from\": \"2026-11-23\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "read_diet_period",
+     "args": "{\"from\": \"2026-11-23\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "read_measurements_period",
+     "args": "{\"from\": \"2026-11-23\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "save_personal_data",
+     "args": "{\"personal_data\": \"[{\\\"key\\\":\\\"Peso actual\\\",\\\"description\\\":\\\"Peso corporal más reciente comunicado por el usuario, con fecha de registro.\\\",\\\"value\\\":\\\"78 kg, registrado el 2026-11-25\\\"}]\"}"
+    }
+   ]
+  },
+  {
+   "task": "T12",
+   "rep": 3,
+   "rounds": 3,
+   "toolCalls": 4,
+   "failedCalls": 0,
+   "inputTokens": 33549,
+   "outputTokens": 523,
+   "finalContextChars": 8214,
+   "durationMs": 6255,
+   "correct": true,
+   "note": "",
+   "calls": [
+    {
+     "name": "read_workout_history",
+     "args": "{\"from\": \"2026-11-23\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "read_diet_period",
+     "args": "{\"from\": \"2026-11-23\", \"to\": \"2026-11-25\"}"
+    },
+    {
+     "name": "write_measurement",
+     "args": "{\"date\": \"2026-11-25\", \"data\": {\"weight_kg\": 78}}"
+    },
+    {
+     "name": "read_measurements_period",
+     "args": "{\"from\":\"2026-11-23\",\"to\":\"2026-11-25\"}"
+    }
+   ]
+  }
+ ]
+}

@@ -131,6 +131,26 @@ const routineExerciseSchema: JsonSchemaProperty = {
   additionalProperties: false,
 };
 
+/** Máximo de alimentos que add_meal_foods acepta en una llamada. */
+export const MEAL_FOODS_BATCH_MAX = 30;
+
+const mealFoodInputSchema: JsonSchemaProperty = {
+  type: "object",
+  properties: {
+    kind: stringProperty("catalog para un resultado de search_foods; manual para valores que da el usuario.", ["catalog", "manual"]),
+    source_id: stringProperty("source_id del resultado de search_foods (solo catalog)."),
+    item_id: stringProperty("item_id del resultado de search_foods (solo catalog)."),
+    name: stringProperty("Nombre del alimento (solo manual)."),
+    grams: numberProperty("Gramos consumidos.", { minimum: 0.1 }),
+    calories_kcal: numberProperty("Calorías de esa cantidad (solo manual).", { minimum: 0 }),
+    protein_g: numberProperty("Proteína en gramos de esa cantidad (solo manual).", { minimum: 0 }),
+    carbs_g: numberProperty("Carbohidratos en gramos de esa cantidad (solo manual).", { minimum: 0 }),
+    fat_g: numberProperty("Grasa en gramos de esa cantidad (solo manual).", { minimum: 0 }),
+  },
+  required: ["kind", "grams"],
+  additionalProperties: false,
+};
+
 /** Campos de una serie que se pueden cambiar; ninguno es obligatorio. */
 const routineSeriesPatchSchema = {
   type: "object",
@@ -460,6 +480,84 @@ export const AGENT_TOOL_DEFINITIONS: AgentToolDefinition[] = [
         to_date: stringProperty("Día al que hay que moverlo en formato YYYY-MM-DD, si es otro día (opcional; por defecto, el mismo)."),
       },
       required: ["date", "meal", "entry_id"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "add_meal_foods",
+    effect: "local_write",
+    description:
+      "Añade varios alimentos a una misma comida en un solo paso, por ejemplo cuando el usuario cuenta todo lo que ha cenado. " +
+      `Máximo ${MEAL_FOODS_BATCH_MAX} alimentos. Se guardan todos o ninguno: si uno no es válido, no se guarda nada y se indica cuál falló. ` +
+      "Se suman a lo que ya hubiera en esa comida. " +
+      "Antes busca cada alimento con search_foods. Para un resultado del catálogo pasa kind='catalog', source_id, item_id y grams; " +
+      "usa kind='manual' solo cuando el usuario quiera conservar valores introducidos expresamente. " +
+      "Para copiar una comida ya apuntada en otro día usa copy_meal, no esta herramienta.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        date: stringProperty("Fecha en formato YYYY-MM-DD (por ejemplo: 2026-04-11)."),
+        meal: stringProperty(
+          "Nombre de la comida: Desayuno, Almuerzo, Comida, Merienda o Cena",
+          DIET_MEAL_CATEGORIES,
+        ),
+        foods: {
+          type: "array",
+          description: "Alimentos que hay que añadir, en el orden en que se mostrarán.",
+          minItems: 1,
+          items: mealFoodInputSchema,
+        },
+      },
+      required: ["date", "meal", "foods"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "copy_meal",
+    effect: "local_write",
+    description:
+      "Copia o mueve todos los alimentos de una comida a otra comida, del mismo día o de otro. " +
+      "Úsala solo cuando el usuario lo pida, nunca por iniciativa propia. " +
+      "mode='copy' para «hoy he cenado lo mismo que el lunes» (el origen queda igual); " +
+      "mode='move' para «lo de la merienda era la comida» (el origen queda vacío). " +
+      "Se copian los mismos gramos, calorías y macros; no los calcules tú. " +
+      "Si la comida de destino ya tiene alimentos y el usuario no ha dicho si sustituirlos o sumarlos, no pases if_destination_has_foods: " +
+      "la herramienta no cambiará nada y devolverá lo que hay; entonces pregunta al usuario y repite la llamada con su respuesta.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        from_date: stringProperty("Día de la comida de origen, en formato YYYY-MM-DD."),
+        from_meal: stringProperty("Comida de origen: Desayuno, Almuerzo, Comida, Merienda o Cena", DIET_MEAL_CATEGORIES),
+        to_date: stringProperty("Día de la comida de destino, en formato YYYY-MM-DD."),
+        to_meal: stringProperty("Comida de destino: Desayuno, Almuerzo, Comida, Merienda o Cena", DIET_MEAL_CATEGORIES),
+        mode: stringProperty("copy deja el origen igual; move lo deja vacío.", ["copy", "move"]),
+        if_destination_has_foods: stringProperty(
+          "Solo si el usuario lo ha dicho: replace sustituye lo que haya en el destino; append lo suma (opcional).",
+          ["replace", "append"],
+        ),
+      },
+      required: ["from_date", "from_meal", "to_date", "to_meal", "mode"],
+      additionalProperties: false,
+    },
+  },
+  {
+    name: "clear_meal",
+    effect: "local_write",
+    description:
+      "Vacía una comida de un día: quita todos sus alimentos y no toca las demás comidas ni otros días. " +
+      "Úsala solo cuando el usuario pida borrar todo lo de una comida, nunca por iniciativa propia. " +
+      "Para quitar un solo alimento usa remove_meal_food. Para pasar los alimentos a otra comida usa copy_meal con mode='move', no vacíes y vuelvas a añadir. " +
+      "Devuelve la lista de lo que se ha quitado.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        date: stringProperty("Fecha de la comida que hay que vaciar, en formato YYYY-MM-DD."),
+        meal: stringProperty(
+          "Comida que hay que vaciar: Desayuno, Almuerzo, Comida, Merienda o Cena",
+          DIET_MEAL_CATEGORIES,
+        ),
+      },
+      required: ["date", "meal"],
       additionalProperties: false,
     },
   },
