@@ -8,6 +8,15 @@ on:
         required: false
         default: false
         type: boolean
+      wiki:
+        description: "Wiki to update (auto: Personal Brain every third day, Gymnasia otherwise)"
+        required: false
+        default: auto
+        type: choice
+        options:
+          - auto
+          - gymnasia
+          - personal
   schedule:
     - cron: "0 8 * * *"
 
@@ -200,9 +209,27 @@ jobs:
         if: steps.oauth.outcome == 'failure'
         run: echo "::error title=OpenWiki OAuth state failure::The encrypted state could not be restored or decrypted."
 
+      # ponytail: the ChatGPT Plus quota fits one wiki per day, so the Personal
+      # Brain takes every third UTC day and Gymnasia the others.
+      - name: Choose today's wiki
+        id: plan
+        shell: bash
+        env:
+          WIKI: ${{ inputs.wiki || 'auto' }}
+        run: |
+          if [ "$WIKI" = "auto" ]; then
+            if [ "$(( $(date -u +%s) / 86400 % 3 ))" -eq 0 ]; then
+              WIKI=personal
+            else
+              WIKI=gymnasia
+            fi
+          fi
+          echo "wiki=$WIKI" >> "$GITHUB_OUTPUT"
+          echo "::notice title=OpenWiki target::$WIKI"
+
       - name: Run OpenWiki
         id: openwiki
-        if: steps.oauth.outcome == 'success'
+        if: steps.oauth.outcome == 'success' && steps.plan.outputs.wiki == 'gymnasia'
         working-directory: target
         continue-on-error: true
         shell: bash
@@ -329,7 +356,7 @@ jobs:
 
       - name: Prepare selected Personal Brain sources
         id: personal_sources
-        if: steps.oauth.outcome == 'success'
+        if: steps.oauth.outcome == 'success' && steps.plan.outputs.wiki == 'personal'
         continue-on-error: true
         shell: bash
         env:
