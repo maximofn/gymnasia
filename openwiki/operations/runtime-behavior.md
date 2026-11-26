@@ -3,9 +3,6 @@ type: guía operativa
 title: Comportamiento operativo, trazas y degradación
 description: Diagnóstico local de versión, almacenamiento y configuración de proveedores, con límites explícitos de privacidad y de lo que una comprobación local puede asegurar sobre servicios remotos.
 tags: [runtime, observability, mobile, privacy, providers, storage]
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-11-08T14:36:51.071Z
 sources:
   - id: openwiki-source-d663aad02875819980c54be4
     resource: repo://apps/mobile/agent/providerPresentation.ts

@@ -40,9 +40,6 @@ sources:
   - id: openwiki-source-2d527a0a2fddf1f1e4422fcf
     resource: repo://scripts/board-automation/workflow-contract.test.mjs
 generated: { by: "openwiki/0.6.0", at: "2026-11-17T17:09:17.831Z" }
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-11-17T17:09:17.831Z
 ---
 
 

@@ -9,25 +9,25 @@
       "completedRunId": "56c1fac1-f03d-4266-b723-22128d98190c"
     },
     "/openwiki/agent/provider-streaming.md": {
-      "gitHead": "b3e1991884d0e26f8ee729040fdb68382802a72b",
-      "sourceFingerprint": "sha256:985c1b3c64cdaf9792259fcdf927855640e2d6e71ad2159cc8f1a618952efcfd",
-      "pageVersion": "sha256:901a43cf043768d36591cc1d1552ec2202b8763fe0ef3104c8af064d0fe2dd42",
+      "pageVersion": "sha256:c7e408fd9f3b799fdfad5ba96f38a52c5bb3b8d8b13431d7f192fec47179d3fe",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "c62e50e3-0fd8-4b61-b23f-49b00a4c99d8"
+      "completedRunId": "8554a327-b55c-456c-9e45-1e7545c96004",
+      "gitHead": "d9bed30fe3bbf964f9b2775ae904a70cb0961561",
+      "sourceFingerprint": "sha256:ce047d0c42370d436daf44e36b557c3f95d501988c17eca6d48d33b3a28a5d0d"
     },
     "/openwiki/agent/runtime.md": {
-      "gitHead": "b3e1991884d0e26f8ee729040fdb68382802a72b",
-      "sourceFingerprint": "sha256:985c1b3c64cdaf9792259fcdf927855640e2d6e71ad2159cc8f1a618952efcfd",
-      "pageVersion": "sha256:a7c475aac9e8738b7455ae6561b2ef4cbd2a83ed13813d4c89154312dc613131",
+      "pageVersion": "sha256:7eb5bdd18ef95aab6618f0a42d899afaf1498cc04c43e4ec987ed4bc8234cf19",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "c62e50e3-0fd8-4b61-b23f-49b00a4c99d8"
+      "completedRunId": "8554a327-b55c-456c-9e45-1e7545c96004",
+      "gitHead": "d9bed30fe3bbf964f9b2775ae904a70cb0961561",
+      "sourceFingerprint": "sha256:ce047d0c42370d436daf44e36b557c3f95d501988c17eca6d48d33b3a28a5d0d"
     },
     "/openwiki/architecture/overview.md": {
-      "gitHead": "b3e1991884d0e26f8ee729040fdb68382802a72b",
-      "sourceFingerprint": "sha256:985c1b3c64cdaf9792259fcdf927855640e2d6e71ad2159cc8f1a618952efcfd",
-      "pageVersion": "sha256:0392e94a36c5746c844cdadfefde57542627648f820aa439539a6bcfd88dcb78",
+      "pageVersion": "sha256:6e25b452e454ddb973cb54ded7e35ad2bc24c7c135c22ca43d148ffde0a9a9aa",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "56c1fac1-f03d-4266-b723-22128d98190c"
+      "completedRunId": "8554a327-b55c-456c-9e45-1e7545c96004",
+      "gitHead": "d9bed30fe3bbf964f9b2775ae904a70cb0961561",
+      "sourceFingerprint": "sha256:ce047d0c42370d436daf44e36b557c3f95d501988c17eca6d48d33b3a28a5d0d"
     },
     "/openwiki/architecture/policy-delivery.md": {
       "gitHead": "b3e1991884d0e26f8ee729040fdb68382802a72b",
@@ -65,11 +65,11 @@
       "completedRunId": "cfbdb69d-edf8-41a8-ad8d-8b7e6dcad5eb"
     },
     "/openwiki/mobile/diet-and-food-estimation.md": {
-      "gitHead": "b3e1991884d0e26f8ee729040fdb68382802a72b",
-      "sourceFingerprint": "sha256:985c1b3c64cdaf9792259fcdf927855640e2d6e71ad2159cc8f1a618952efcfd",
-      "pageVersion": "sha256:c2e2d04f26516b18ff0cde8b9f07318d6a59b97c2c50570b26c83f7ac8124b6b",
+      "pageVersion": "sha256:955e3e7616a80d0b12fd5390d3c2c8cb56ca19dd7866084352b7ded4c3a3b612",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "b29ff7d9-5e6f-4812-999a-4ac62b8a5a91"
+      "completedRunId": "8554a327-b55c-456c-9e45-1e7545c96004",
+      "gitHead": "d9bed30fe3bbf964f9b2775ae904a70cb0961561",
+      "sourceFingerprint": "sha256:ce047d0c42370d436daf44e36b557c3f95d501988c17eca6d48d33b3a28a5d0d"
     },
     "/openwiki/mobile/local-state-and-backup.md": {
       "gitHead": "b3e1991884d0e26f8ee729040fdb68382802a72b",
@@ -79,11 +79,11 @@
       "completedRunId": "56c1fac1-f03d-4266-b723-22128d98190c"
     },
     "/openwiki/mobile/measurements.md": {
-      "gitHead": "b3e1991884d0e26f8ee729040fdb68382802a72b",
-      "sourceFingerprint": "sha256:985c1b3c64cdaf9792259fcdf927855640e2d6e71ad2159cc8f1a618952efcfd",
-      "pageVersion": "sha256:8b4d1a2704c9773df4cf8580f8cffb0562f2738f558aaf53201998779fac6008",
+      "pageVersion": "sha256:bc9cd960a89a038142b08f57576c6aa99cb5f29b5f4eecbc492e984eab298354",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "d11a484c-50f3-4224-a128-bb385eddd58f"
+      "completedRunId": "8554a327-b55c-456c-9e45-1e7545c96004",
+      "gitHead": "d9bed30fe3bbf964f9b2775ae904a70cb0961561",
+      "sourceFingerprint": "sha256:ce047d0c42370d436daf44e36b557c3f95d501988c17eca6d48d33b3a28a5d0d"
     },
     "/openwiki/mobile/portable-encryption-and-recovery.md": {
       "gitHead": "b3e1991884d0e26f8ee729040fdb68382802a72b",
@@ -114,11 +114,11 @@
       "completedRunId": "c62e50e3-0fd8-4b61-b23f-49b00a4c99d8"
     },
     "/openwiki/operations/openwiki-automation.md": {
-      "gitHead": "b3e1991884d0e26f8ee729040fdb68382802a72b",
-      "sourceFingerprint": "sha256:985c1b3c64cdaf9792259fcdf927855640e2d6e71ad2159cc8f1a618952efcfd",
-      "pageVersion": "sha256:6f9218a5233edafa8bdef06c000bb9050c2cb318e06440284a791644716f5b48",
+      "pageVersion": "sha256:f8cf69094cc16d8c090c292c8e4a9a6c1f2f3fe303b91d6912b0e2411e374775",
       "completedBy": "openwiki/0.6.0",
-      "completedRunId": "a89b68f9-7ac8-4138-ba9b-77d799a5d689"
+      "completedRunId": "8554a327-b55c-456c-9e45-1e7545c96004",
+      "gitHead": "d9bed30fe3bbf964f9b2775ae904a70cb0961561",
+      "sourceFingerprint": "sha256:ce047d0c42370d436daf44e36b557c3f95d501988c17eca6d48d33b3a28a5d0d"
     },
     "/openwiki/operations/prompt-policy-governance.md": {
       "gitHead": "b3e1991884d0e26f8ee729040fdb68382802a72b",

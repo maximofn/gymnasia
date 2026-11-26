@@ -25,9 +25,6 @@ sources:
   - id: openwiki-source-92ee27e969d35b12e4aae573
     resource: repo://scripts/data-inventory/check.mjs
 generated: { by: "openwiki/0.6.0", at: "2026-11-17T17:09:17.831Z" }
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-11-17T17:09:17.831Z
 ---
 
 # Guía rápida para cambiar Gymnasia

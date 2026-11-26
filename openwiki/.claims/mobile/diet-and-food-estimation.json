@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:c2e2d04f26516b18ff0cde8b9f07318d6a59b97c2c50570b26c83f7ac8124b6b",
+  "pageVersion": "sha256:955e3e7616a80d0b12fd5390d3c2c8cb56ca19dd7866084352b7ded4c3a3b612",
   "claims": [
     {
       "id": "claim_9404cf5a7ee8470eadc02c568d6c9af9",
@@ -144,23 +144,23 @@
     },
     {
       "id": "claim_b5c32b54bc594b52b14768557eecc71b",
-      "statement": "La tool `add_meal_food` calcula una instantánea desde una referencia explícita de catálogo completa y rechaza sin escribir las coincidencias ambiguas de la forma heredada por nombre; todas las formas validan los totales antes de mutar y requieren un `commitStore` durable antes de marcar el efecto como comprometido.",
+      "statement": "La tool `add_meal_food` calcula una instantánea desde una referencia explícita de catálogo completa y rechaza sin escribir una coincidencia ambigua de la forma heredada por nombre; sus formas validan los totales antes de mutar, exigen `commitStore` y solo marcan el efecto como comprometido tras completarlo.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/agent/toolExecutor.test.ts#L548-L587",
-          "version": "repo-lines-v1:sha256:2772b2a5d60bc3b86f9f677cbd247e738f062818f229036906f03288a5a48c46:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2YjZjNjExZjNmNmVhMTEzYmE3OTNkNWYyOTg3MTUyNzUzNDkyY2E5YWMzNzBmYWNkZWNmYjE1NmM1MTg0NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyZDExY2FmNDNlOTdlZjM2OWU2YmVlZDFhMjY4YmQwNTgzOGYyOWI5ZGQyNTRiZjY5YmE2NDg4NDE0NzIzNGEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhlMTVkNDljYjM1Y2YyNjJlNmE2MWRlOGUzNzc1OTAyNTFkYzlhYWJlNGQ5NGMyMDMzMzdkMmQ1NWEzZThlOTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjYmMzNGE3OTc3MmNhN2RhN2ZlZDQyYTJlNWQxNTAyZjU3YmY2YzU4NDBhNmY5ZDllZjRlNzg4MzBkNTY4N2YifQ"
+          "resource": "repo://apps/mobile/agent/toolExecutor.test.ts#L736-L775",
+          "version": "repo-lines-v1:sha256:f465bda367ad4b1e6095fa30586eb6664f9841c18d1ed0db9d730922f31aff29:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5ZjhjZjFmZGI0N2Y0Zjc4OTAyZmVjMGI3NjQzN2RlNGI2MGI3OWVkZTA5Y2Q0YzRiNWYzNTk0MDdkMjliMjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAzMTc4ZWZmZTExMmFiN2Q3MTVmYmM0ZDllNTkxYTk2MzhkMmYxYjE4NWM1Nzk1NmFjODZjM2VlMGU2YjgzNDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwMWFiY2FhZGM1OWIyZDcyNjRkZGRkMGM4MmQ0ZjcxZWZhNTRlYWMyMmVkMzY4Mzk4NThiMzA0NTU3MWMxNGMifQ"
         },
         {
-          "resource": "repo://apps/mobile/agent/toolExecutor.test.ts#L680-L701",
-          "version": "repo-lines-v1:sha256:eaafa91393f09bc10d6baf63969de2c56a16ab701e69dd40704800c5a70199ce:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmZTA3NGNjZjBmYTI4YWIzY2NmMWFkNzU2N2JiZTI4MzNhOGIwYzg2ZGY0Nzc5NDIzYjljMmM1MGRmM2VkYTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0ZmNmMTcxNDJjNTM2OGJjZjRmNWFkZmJiODE3OGZmYmJmNWFhYmJiYmM3NDU1NThlODJjOGI4ZDMxYWZiYzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjljNGMwNDE5OTJkNWU2ZTg2MjExZDRhOGRiMzhjZDA0OTI5MmViMGI0ZmVjZjViMjM0N2NjN2U1MGI4MTk1MzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxYWJkODI0MzM1YTA5OWUxY2E2MGM2ZDJmMGQ3OWE3ZmE0NmZmMzJhNzA5ZDQ1OTAzY2ZiZjg1NmQyMWIxNjMifQ"
+          "resource": "repo://apps/mobile/agent/toolExecutor.test.ts#L940-L984",
+          "version": "repo-lines-v1:sha256:bd8a06db2422283d685621d1f7e20dfb3db01259364320ff9c24a4facf633045:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwODg2OWEzNDQ3MDU4ZmE1NzcxOTQxMjM4NTJiMGE5YmI2MDM4OGQ2NGU3MWU0ZmQzZTZkNWFiMjU0MTYzOWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmM2ExYTc3OThmOGU0ZWJjNjZjNGUxM2JiMzI5YzdlOGNiNTk5ZDQyY2EyMmU3YjA3MGNhZjE2N2NhMDRiYjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE2MTlmMjQwOWU5ZGZlMzFlOTExZmE2YjVmMDhiM2I0OTJmNzE5MjZjODg2ZmVlM2Y0NDRkZDg0MmY3MDU3ZjkifQ"
         },
         {
-          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L339-L405",
-          "version": "repo-lines-v1:sha256:5e26a559501dd24cda7e674b72a89534fbbcad45b201447b0e8e085127f297d3:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyN2M1MzhlYTg2NjUxM2UyMjBlMDA4NTNjOTZlNjgxY2VlNjY5Yjc0YWJiNDZkMmE2NmRhZDk1MTczMDZiNGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4NTRmZDdmZTcyNmY3ZDI4NzNkMzhmYjliODAyYjEwNGZmNTI0NTdhMTQwMjkwMjkwOWFjYzA2OTM1MTAwMjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjNzFkOTgwYWZlMTY0MGJkNjMyODEyMjhkOTMyYjAwYjBhZTM4M2U1YjMyY2QxYzM2MWY4NjYzYWQ3ZmUwZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiZGZkZjY4ZDM0ZWU3OGVkOTM5ZDcxOTNmNDBmMjg4ZjkzYWI1MjM4MzEwN2E5ZmQwNDdlNWY2YjVjNjlkNDQifQ"
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L533-L603",
+          "version": "repo-lines-v1:sha256:298a2c5fb9900e5623184c894dcb882c2db95a70de7c103142408270ad5fbda4:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2YjM3YzQzMTFjYTk5MGQ5Zjc2N2M1ZGYzYjBkNGM0ZmY0NjVlMjQzNmNhNzc4NmFhMGVmOTA1MzFjNjFkNjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIxMWNhNDQ5YTNmN2E0Yzk1NzQ0YjJmZjY0YTUzNDhjZGUwOTM3YWM3ODkzZDI3NWY1YTMyZWI2ZTJhNjE5YjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhZDc4NGYxMjk2Y2E2NjRkY2U5ODk4NjU3NjZhOTNmY2RkMmIwN2MyMTRjMzcxNjlmZGNjZWRiY2M4ZGE0OGEifQ"
         },
         {
-          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L415-L475",
-          "version": "repo-lines-v1:sha256:cbd21b5b8d1b217e62b1d8936d7566f3e9ae2884d35e2f2f9d9fd282b93254e3:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwODE4Y2JkM2ZiOTllY2YxMjEwZWYyNzUxMTc3OGY4MDE5MWMzNTcxMTc5M2EyNjY4YTk2MzNmMGJiMjUyNWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiYzkzNzk5ZWEzZWFkMjZiOTVhNTBjYTJjNGE0NThhZDc3Y2M0Yzg4ZWFhYWIwOWUwN2I4MDVmNTRiYmY5ZWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI0NTMwNDRkYzEzMWZkMDFjM2MwYjQ0NGI1MTE4YTMwMWUwZjNkN2RjZWQyY2U1ZTgxZWVmOWNkOWE4OWU2ZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVhYTI5MmRjODdlOTU0MDVlM2JlOWVlNTllMTBlZWU5Y2UwYTkxNWE3MTQzN2QwZjY0MWZiYmM5NmQwNDk3YzYifQ"
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L618-L692",
+          "version": "repo-lines-v1:sha256:88a6b63997bf7fa0f8901da072a19ff29fa83e571406921892e2261cdc64b478:eyJzZWxlY3RlZExpbmVDb3VudCI6NzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyN2M1MzhlYTg2NjUxM2UyMjBlMDA4NTNjOTZlNjgxY2VlNjY5Yjc0YWJiNDZkMmE2NmRhZDk1MTczMDZiNGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFiYzkzNzk5ZWEzZWFkMjZiOTVhNTBjYTJjNGE0NThhZDc3Y2M0Yzg4ZWFhYWIwOWUwN2I4MDVmNTRiYmY5ZWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwYmYwNjY0YjYzMjlkZTY1MjNmNTA0YjhiMjExYzgzNDgwOWUxNGNiNzVhMjY2MmNiNjcwYmQ2NjIxMDFkYjkifQ"
         }
       ]
     },
@@ -240,23 +240,27 @@
     },
     {
       "id": "claim_b096ad2213fe4faa9385d27bb234c30f",
-      "statement": "La resolución de dieta solo considera vinculables las fichas con kcal, proteína, carbohidratos y grasa por 100 g como números finitos no negativos; una ficha incompleta no puede generar una instantánea de catálogo. La interfaz exige completar explícitamente los cinco totales para continuar por vía manual y `add_meal_food` la rechaza en su forma explícita de catálogo.",
+      "statement": "La resolución de dieta solo considera vinculables las fichas con kcal, proteína, carbohidratos y grasa por 100 g como números finitos no negativos; una ficha incompleta no puede generar una instantánea de catálogo. La interfaz exige completar explícitamente los cinco totales antes de continuar manualmente desde una ficha incompleta, y la forma explícita de catálogo de `add_meal_food` la rechaza.",
       "evidence": [
         {
-          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L357-L379",
-          "version": "repo-lines-v1:sha256:7ecadfb04869d808c3d78c58a91566df190b4b281bddcf7c729ee412dc6293d8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZGJkNDQ0MDAzNzRiNzVhYTY5YzIxYTUyNjkwZDhmODcxMDQxNzBiYTJiNjQ2Nzg1YTI0MWM2NDIxZDUyNWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZmZhYjBiMTJhN2MzODY4NDJkMDg4MTQ1NGZlNDQyNWViMzYyODcyMzFkYTMwZGQzYjRiYzkwOTcxMTUyNWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0N2FmZTY2NGFlNDE2NmM4ODliZDJkMjE1NDA4MDNmNWZjYTQ1ZDg0ZjNhMTkyZTk2MjU4ZDJmODQzMTYwMzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0NjhmY2MzNmUzMTE0M2IzYmI2ZmZiMjM0YjBiODY2N2IzYzc4YmQ1MjYxMjBkMzVlOTljYzgyNjM3YzkwMWYifQ"
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L541-L563",
+          "version": "repo-lines-v1:sha256:e748e6d8999c3989b95c134f45c94445db6a922dd83455a691065bbda327fa93:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyZGJkNDQ0MDAzNzRiNzVhYTY5YzIxYTUyNjkwZDhmODcxMDQxNzBiYTJiNjQ2Nzg1YTI0MWM2NDIxZDUyNWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlZmZhYjBiMTJhN2MzODY4NDJkMDg4MTQ1NGZlNDQyNWViMzYyODcyMzFkYTMwZGQzYjRiYzkwOTcxMTUyNWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0N2FmZTY2NGFlNDE2NmM4ODliZDJkMjE1NDA4MDNmNWZjYTQ1ZDg0ZjNhMTkyZTk2MjU4ZDJmODQzMTYwMzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM0NjhmY2MzNmUzMTE0M2IzYmI2ZmZiMjM0YjBiODY2N2IzYzc4YmQ1MjYxMjBkMzVlOTljYzgyNjM3YzkwMWYifQ"
         },
         {
           "resource": "repo://apps/mobile/catalogs/foodNutrition.ts#L3-L8",
           "version": "repo-lines-v1:sha256:6bdb1d44c49ce6de66617ab04a672e0868261dd5b09feef038db028db309d4f9:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDlmZTI4OTk1OTAwYzM4ZTZmNDUwMzIwNjk0ZjNlMjE1MmVjZjAxYmZlYTQyMTIxNzk5MjZkNTBmMGNlNWY1MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjY2ZDQyNGNhMjI0Y2QxODRkYmI4MDc3NjY3ZjM0MjliZmE1NWM2NmZjYWJkZTgyZGEyYzUwMjM5OGRjYWIwMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzdkNmE5MDZkNjE0NTBkMjE0ZmY2MTg4MDI1YjliMjZmYTljMTZlZGI3ZTFhMTk2ODdmZGNiNDYxOGU2ODE3YiJ9"
         },
         {
-          "resource": "repo://apps/mobile/controllers/dietController.ts#L866-L881",
-          "version": "repo-lines-v1:sha256:6796ddd3f1afe65443af227c26500671913d78d58072c2c3fca88ffd394de351:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0ZjAyM2MzZTg4YmY0YTk5YWJlYjAzOWY3M2ZhOTY0OWQ2OWU3OWE4MDIyMjRiOTEzZjRhMGU3OGM4NGVmYjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAyYjQwNWJhMWE0ZGQyMmNiZDc3OTBjMDczNzJlNDI3YThhMzk0OTJiZmU3NDIyMGQ4MWFiYTIxOWQ3MTZmNGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4YjNlZGRkOTYxM2ViOTFlMGEwN2MzYjcxYTlhNjQ1ZTA4ZTE4ZGEzMjIzOGQzMTFhMGRkMjA5Y2I2NTRlZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE0MGU4Yjk1YWYyMjNmY2ZjYzE0YzQ0YzRlMzhkMDgwYTA2Nzg4YTljZWFkZDg1MDM0MjliOTQzYjQ4YzdlOGYifQ"
+          "resource": "repo://apps/mobile/controllers/dietController.ts#L619-L689",
+          "version": "repo-lines-v1:sha256:b8236f6d20756e7b1c408c4fba52bf70b1bdf0c9efb301e5e72641733bef66eb:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzNGFkOTAzNTM5N2U0NmZmOThiOGI0MGJlNWQ5NWQ0NDk1MTVlMTIwNGFlYmU3OTk4M2FkMjkxYTUzNzcwZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyYmU2M2NlZGU4YzAyMjY2OTM4YTYwZDFjZDBjNGU0N2ZjMmM2OTRlMDlmN2QxYmJiZWFiYmU4ZGQzZTljMWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUyZjVlOTc5MmIxOTQyNzA0NmIzNGU0ZTA3NGU1MDEzZTk2N2IxZGI2ZmNmMmZkYTBhMjA4ZDk2NTRmZmRiYTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3ZTI3ZDBkMDg1NWZjMjIyNzFjMmNjN2ZlMDcyMjkyYzhjYWNhZjA3MjM4MjhlZTQyZmU0OGZiZDI1NTI5M2QifQ"
         },
         {
-          "resource": "repo://apps/mobile/diet/catalogModel.ts#L10-L27",
-          "version": "repo-lines-v1:sha256:abbfe6b6863b9f4ce2742f60ee2207dbcff198513fa538e0246d42b4bc659af7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1YjU4YTU2ZTMxYmU4YzUzYzI1N2MzZjY2ZDhhMGIzZjUxOTczMTgzNTQ3MjY0NTBmN2Q2NTUxOTY2ODY4NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjMDZhMDkwZjY3ZjM5MmJlZjgyYTBhNjIzYzBhOWYyNmQ0ZWIwODFmMzg5MzA5NTExMTc3ZDAxYzY1NTIyODciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxYzk4YTUxODVhM2Y2NzlmY2FjYTA5OWY1ZDQwZjY1Y2Q1ZDNmZjZkZWViMDBmMzgyMDE4ZjMwODBlYTk1MzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzOWU4ZjY4ZGI5ZmVlMGEwOWU2Y2M5Y2QzZWEzNGY1YWMwNWE5MThkNmFkMTliM2U5NThmMzAzYTA0NTNjNGEifQ"
+          "resource": "repo://apps/mobile/controllers/dietController.ts#L849-L918",
+          "version": "repo-lines-v1:sha256:ff967c5147e03cfef28c39e00711a79562810f9a385ecc4b549d1fb736f784b4:eyJzZWxlY3RlZExpbmVDb3VudCI6NzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0ZjAyM2MzZTg4YmY0YTk5YWJlYjAzOWY3M2ZhOTY0OWQ2OWU3OWE4MDIyMjRiOTEzZjRhMGU3OGM4NGVmYjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhYzU1NThkNzFkN2E4ZDZlYzQwYzJjYmZlMDQyZDgyYjFkYzgxZjJhNDVkMzQwODc1YTdmZmQ3ODI2N2RiYzYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4YjNlZGRkOTYxM2ViOTFlMGEwN2MzYjcxYTlhNjQ1ZTA4ZTE4ZGEzMjIzOGQzMTFhMGRkMjA5Y2I2NTRlZTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmMmIxYjAxMzU1NWMzNzc2MGNjNzdiZTk2MjUxYTI1MGMzZWNkNTRmM2VjZDE1MTdmMjQ4YjdmNmQ0YmU2MzgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/diet/catalogModel.ts#L21-L46",
+          "version": "repo-lines-v1:sha256:329679e11d7eb8243cc8ef580e0f673a10375b1cf582ff6357ce70745fac2959:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExNWZiMmI4NTJiNTI4ZDFjMzE1ODI1ZDQyMDk0N2ExOTZhNjU5ZDYxMmUzOGMwOTU1NjhmZWFiODZlMDViMDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3N2QyMzJkNWRmNDk5YTNmYzY1N2E1ZmVhN2M2MTg1ZmM2YmQwMGJlMWYxOWZkYTZlMmEyYzE3ODVhNTMzZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjllOTVjMjIyN2JkYTYyZjE1YTA4M2NlOTRlYzBhZjNhMjY0YjljYzdhNTUxMzRkNDQxZmNjNmNlZGJmMTM1OTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiNDQ2MmQwNzIyZmRmYzA2YmE3YmZlNWMyMTA5ZThhM2RlZDY0N2U3MGNjYTY4MTU1NzBhOWU4MzE1ZDBkM2IifQ"
         }
       ]
     },
@@ -309,10 +313,98 @@
           "version": "repo-lines-v1:sha256:b4647425a6505ae6ee4050009086e9daf0b822803c574609017f2e9e9a902767:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjIxNjUwMWU0MjM3MTU4ZWI5Njk1NmYxOTNkZDI1NTY5MGRiNDIyMGFhNzcwNzQyMWIyMjlhYzk0NDE1MDY5OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTdmZDhlZDg5MGE4ZGZmMWRkOTNhNWI5MzM0OWNmNzY3MzExNmViMjJhZjBmYzU5YjQwZmRlZjY2ZDgzMmUxNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWEwODIxMGQ0NzdlZWYxOTA3YjJhOGY4NWIzNjJkMDhiMGM3NmMzOTUxZTUzYWM3ZGI0OGRkZWFhNTUxOTVlOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODkxNTA1MWZiOGJkN2NlNDhhMmM0OTJmY2QyNTE5NmNhNTRjYjI3ODA1MzI0YzA2ODk5Yjc3MWVhOWNjOWVkOCJ9"
         }
       ]
+    },
+    {
+      "id": "claim_b9ffb28637ec416b8527ac4abc58e79b",
+      "statement": "`add_meal_foods` resuelve y valida la lista completa antes de escribir; si un alimento falla, devuelve su posición y no persiste ninguno. En un éxito agrega las porciones a la categoría —creándola si es necesario— y el recibo de `operationId` hace idempotente el reintento.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/mealWholeOperations.test.ts#L107-L175",
+          "version": "repo-lines-v1:sha256:feed431ed04bb8c82c11711a4d953fb95f776fad1acb7239a839f790f474c260:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMWQ0OGMxYmQxOTc3ZjBkNTVlMzRkNzI5NGRiNWNlMzA4OTk0YTJkZTUyMDBiMDNhM2NjMDIxYzZiMWQ1MzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg3YTg1M2NiMTJhNDBmOWNkMTRlNWRlNWY3ZjI2OTk2YWFjN2JjNjIxMDdhYTZhY2M3OGZkODQ2Mzg2YjU2NGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhOTg3Zjg0M2Y0YTc4OWU5YmQyOWVkZDkyMGRhMDQ2NGRhNTc1NzY1YWQ5OGI4MzIzNTBlZjYxNDYxNGZhNjgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L777-L825",
+          "version": "repo-lines-v1:sha256:9d3dcc748c72c04f26aa1a9d5dfdaa859e15998b464d2ccb66af6ecc166fd856:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3MDBhOGE2YTIxODE5NDdiZGNjNWNjYTQzZjk3ZjBlNmU2MzUyNzNiOTE3N2Y0MzU0MGFhZTc0YTI0YTY3MDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZlOWE1NDExYTg2MGZkNGNhNDhlZmFmMWNlZWUwMDQzYmE3OGFmOTE0NWE4YjJjNGZjMDNjNjhkN2EzN2ZiOGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIxMGRiM2RhYTMyNmVkNTdiOTcyZjViZjcxMDcxYmQ3OTk0MTBjNTEwNThlZDNhMTJlNWNlNWQxYWEyMmExMDcifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/diet/mealItemOperations.ts#L228-L249",
+          "version": "repo-lines-v1:sha256:47947aa18855588b1fb4f7a0eead12d13f6d1252d1ecaa7f4d77276d0b017c60:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIyZjdkMjZjNjFlN2JlNDE2NjUzYzkxMGJhMTMwODE0NDVlZTM1NzE2NDkxYzVmY2E2NzEwZDZmYTA4ZTcwNjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2YzdjMjNjN2EyMjk5MjIyNmUzODZmMmUwZjlhMTUwYjEyZjQwZTVlYzcyNWNiZTc4MGM0ZGRmYTBlNmJlYTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b685b41ac63f4ef890135dc3ec5bb724",
+      "statement": "Las correcciones de porción identifican el objetivo por fecha, categoría y `entrada_id`, de modo que no confunden alimentos repetidos. `update_meal_food` puede reescalar y mover la misma entrada; reescala desde una ficha vinculada completa disponible o, para entradas manuales o sin ficha, proporcionalmente desde la instantánea, y rechaza cantidades no positivas o una instantánea sin gramos de referencia.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/mealFoodCorrections.test.ts#L143-L223",
+          "version": "repo-lines-v1:sha256:0b77e39132bc2bb257d8f2a1fb9f4d915cfcc75afd347092647d8a7556d36253:eyJzZWxlY3RlZExpbmVDb3VudCI6ODEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRjZjk3ZGZkYjJjYmRiYzIyY2M4NWQwMjk4MjJjYTdlYzY2MzhhZjcyMzlhM2IwNzMwM2I1NDEzMzAwMmY1NmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzNzk0MTJlMjcyYWQxYTliZTEwYzk5M2JkOWNhMDk4MmZjZGNjYmYxYmFjMTg2Y2E5ZGViY2Y4NDljYWM3Y2QifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L451-L473",
+          "version": "repo-lines-v1:sha256:3d2657f34fc183d625022a5be0070081329b9aca781546064be424d43e287f70:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg4OWUwNGE1ODcwOGE3OGZjMTEwNzdhN2NhYzdhNjJiMWJiZDZkNGZiNzQ3MDZiMDY4NDlmNGI1Yzg0ZjgyZGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjMDBiNzRlYjU3NGEyNTBkOTA1N2U2MjJhZDg5N2NjNzljNDI3ZGZiZTg1MGE3M2EwZDgzNWVlYjc1MTBlOTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3M2IwZGJlMjE4Yzc4NWI4YWY4MDNhOGJlZDBlZWVmNTc3NmUxNTNkM2FjOTFlMzFiYzlhOTJmNTJlYTIxMDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNiZjk2NjMzMTM5ZmNmNWRlOWRlYTA1YTRlOGQ1OGE1MGZiZmU1ZWFiMzhiYzRlZmZhZTBhZGQxZTE1ZmUyNjgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L958-L1060",
+          "version": "repo-lines-v1:sha256:3e2fa2dd82029aee0cd1bcfc5cbb14d28842bbb9cc94d63f319e9cb18359b5d7:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmM2NmM2ViZTNiMzU4OTUyMDBhODY0N2NlOGM5YTMwZjc2NThjYTRiZDRkYjEyMzRiZjU5MWI2YzZiMTM2NzA0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiIzNzNiMGRiZTIxOGM3ODViOGFmODAzYThiZWQwZWVlZjU3NzZlMTUzZDNhYzkxZTMxYmM5YTkyZjUyZWEyMTA2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1YWEyOTJkYzg3ZTk1NDA1ZTNiZTllZTU5ZTEwZWVlOWNlMGE5MTVhNzE0MzdkMGY2NDFmYmJjOTZkMDQ5N2M2In0"
+        },
+        {
+          "resource": "repo://apps/mobile/diet/mealItemOperations.ts#L150-L188",
+          "version": "repo-lines-v1:sha256:0a6bece63f0421b3ee0c691ac36e4cda61e938946b381b5fe1cbe0ebedf504f7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzMTM4MmJkMTIzYWE3MWNkZjY3NzY4ZTA1ZGRmNmNkZWRkYzJlZDRjZjMzNzk2ZjZhYzAyMmFjNWRlZTNjNjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQyYTJjYjI1YTEyMmI0NDIyMWE2MjM0ZWM2NjBhN2I1ZmI3ZjliZGU3YjNiOWUyYjNjNTU5YTBkOTZmYWM3MzkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiNGQ0YTc5ZDk3MGI1ZGJiNTMwOWMxOTUxMTAxZDg1MGY3MmUxOGRmNWJkNTkxMTNjNjI1YjgwNzk4MTYxM2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRkODM5YWZhNWU4NTU1M2VmODI0MjdmMjk5NDBkNmIyYTdmZWE3NmY2ZWM3NWJmNTZjNThlZGQ5NDZiZWIwYzgifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/diet/mealItemOperations.ts#L60-L67",
+          "version": "repo-lines-v1:sha256:1b0fb02818282cdd447faed4ddc6c705b5216c56f6995fe4f953fb8ae52e302d:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTVjZWZiODVlNDZjN2Q5MzI0OGIwMDQ0ZWM1NjJiZTE2ZTg0Zjc3NzRkNjY3YTU2N2Q3ZjFiY2RkNTBiZjIwYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGI0ODY4YmM4NmU3ODMwMDU2MDYzYzZiODljYzhhOGY5MWNlOTliMjk4NmJmMmIxYWNlNTE1YjA3YWMzMDY0YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzBmOTkwM2JjN2I3ZDA2Mzc1MWYzNTRjNDllZjE0ZjljZmE2M2IyNTQ4NmVkMWEzMmZmMmE5ZjcyZDg5MWY5ZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_bd754a65670c40d1a3250b6867f072c5",
+      "statement": "`copy_meal` copia o mueve todos los elementos entre comidas: copiar genera IDs nuevos y mover conserva los existentes. Si el destino tiene alimentos, la operación no cambia nada sin una decisión explícita de `append` o `replace`; solo `replace` descarta el contenido previo y el fallo devuelve las entradas existentes para pedir esa decisión.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/mealWholeOperations.test.ts#L178-L250",
+          "version": "repo-lines-v1:sha256:e688e63972066c2f66e4f666357768ec6a035549f90ed305a9016f8e6d5c0fd0:eyJzZWxlY3RlZExpbmVDb3VudCI6NzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViMzA0MmU0OGU5MTQzY2Q3MTljY2YzOTM0Nzg5NDYzZGQzZjYwNmEzMTdhZGRjMDU4NzQ2OThjMTY2MThkZjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5ZDYxODBmZmE4NWQzM2FiMTg4OWZlZDUzZjBiMzUwZmM1NjI2YjlhZmI4ZmFlOWI1ZDQ5N2IxODNiZjc1OTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L765-L877",
+          "version": "repo-lines-v1:sha256:39568298a827bd4c7ad657c2328f97c86437313842b8a381222e8bdbca6b05de:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJhZWU0N2NjYzdmNjM4NmMyYTk4ZDYwODFhNWI1MjQ2MTI4MmIxZTU2NTMyZTg2YTFiMTk2MmM2NzNkMmEyMzg0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIzYTNlNDZmOTQyNzZiNmY2ZjRlZDFmMDJhZjc4YmVmNmEyZWUxYzQzOWRkNTU4NGI5NzM5NDgzMTMyMTRkMmI3IiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJiNzhlODk4MWE3YjcwODg2YjZjNzljMzQ1OWExZDU3NTEzMDYzZGRlMTJjZWVkZmI4MDUzMWE2OThjNWNiMWI1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiJhNTFmYmNiZTRmZTU3OTNkODM1ZmY0OWI0NTE5MTA0ZmUyZDVkYmUyYmYyNjU1MjU5NzZhMDEwZWE3MzhiNzdmIn0"
+        },
+        {
+          "resource": "repo://apps/mobile/diet/mealItemOperations.ts#L262-L324",
+          "version": "repo-lines-v1:sha256:602c93b6d0834419a5de9b5e4969c5f7e956ba1a31e53ad0ee6b43cc3069f2b3:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzNTk2ZDkzYmEzZjUwZWEyNTQ0MTBiYjI4ZWMwMmI4NTBiOWNlMTk0ZjIzZDRjOTg2NGM1ZjQ5NTBmZWVjZjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkMGYyZDNhM2FhZGEyNzU4NjQ1NzhkMGE0MzkxNTYzOGQ1NDNmZWNhMmM5NDg1OGRiOTQxMjExZTg2Y2VmMmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA2MzBhMjdiZWQyMjdjMGE3MmVkM2EzMTIzN2E4ODVkNzQwNzZhOWE4YWVhOTVhNDg0NzQzMGM5ZjBiMDVlN2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0240c4b274214ee5be1df8d4f30bb919",
+      "statement": "`remove_meal_food` y `clear_meal` no mutan cuando el objetivo no existe o está vacío; en éxito eliminan respectivamente solo la entrada identificada o solo la comida indicada. Las herramientas de corrección y de comida completa se declaran como `local_write` con schemas cerrados y reciben resultados idempotentes mediante recibos de operación.",
+      "evidence": [
+        {
+          "resource": "repo://apps/mobile/agent/mealFoodCorrections.test.ts#L110-L140",
+          "version": "repo-lines-v1:sha256:efe3769db41dc279735b10add6c430d1b5350067b2c613078436d8499b2a4c18:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0MzAxZGUyYTBlMmRmMzNhZDMyZWNiOThmMDY2Zjc1YzdhNjZjYzI1YjlhODYzMDIwNTIwZDVmOGFhOTRmNWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhOGQyMGE1YzAxZjc5OGZiMjVlNmM2NzUwM2M5ZDliMTMzNDU2ZTc4MTFmNjVkYjcxMDA2ZDFhN2I5YWI1M2YifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/mealWholeOperations.test.ts#L254-L320",
+          "version": "repo-lines-v1:sha256:db5847f0af8e109d65e860b5453a140b1cf5e5d18cc4fdcf408043078a709177:eyJzZWxlY3RlZExpbmVDb3VudCI6NjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5OTgyNmEzNzgwMDJmMmE3NTAzMDFjZDI1NTBiMTJkN2ExYzhhODI0NzYyYTFkOTdjYzc1ZWU1NjQ1ODk2ZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI3NzlkMTE4ZDZlM2NiZjQ1MDUzOTc0OGRlZTdhNDMwN2FjYmU2NDQ2Y2JhMjk3ZjI3NjBmYTVkMGJiYTFiYzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY2ZjViNDBiMTU4NDU3ZDE3ODY0ZjIxNzkwNzg2ZGQ1YTJlY2RiNjRiNjZhNjUxZjc4OGQ0ZTI1Y2QzMzAzZDIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/agent/toolExecutor.ts#L880-L955",
+          "version": "repo-lines-v1:sha256:37e4645ac46cd48037ba564f60a7f789ee1ea0a5d57907006c8348126c4f8626:eyJzZWxlY3RlZExpbmVDb3VudCI6NzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlZTVmMGI0ZDJiNWY1ODJmY2FmZjVhZjJlZDBlNmU5ZjUyYWYwMjYxNzRlMzViMGIyMTRkMWU2MGI4ZGM0N2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2U0NmY5NDI3NmI2ZjZmNGVkMWYwMmFmNzhiZWY2YTJlZTFjNDM5ZGQ1NTg0Yjk3Mzk0ODMxMzIxNGQyYjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM3M2IwZGJlMjE4Yzc4NWI4YWY4MDNhOGJlZDBlZWVmNTc3NmUxNTNkM2FjOTFlMzFiYzlhOTJmNTJlYTIxMDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNlNWI0ZDUzNGQ5YmQyN2NlMGIwOTgyNzgxNGRmNjRkYjFkNGVlYjcxMzUwMGE0MmQ1YTc1Y2U2N2U4OTUxYjIifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/diet/mealItemOperations.ts#L327-L336",
+          "version": "repo-lines-v1:sha256:0a1d1c0a3f7e4d1ef5f6c4a535f5a0e946a9f10cdf24498f398c9a50f97737ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmMWE0NjFiMTFlYmNhZDA5NmEyNGI5NWQ3ZTRjYjg0NGY4MzkxNzJmMDllZGY3NmNjMWY0MTgyNWQ5YTQ5YjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1YTBiZDEyZjMxNGRmM2RlOTQ5ODYwYjJmYmM1NzE1YjFjMGIxODljODdkOGU5NDA4NjczZjk2ODU3ZDg3NGMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1NTU2NjZiMzkwMzg3MjkxZmMzNGMxOTIxMjZiM2ZmZDFlYTM0MWVmNmU4MjQ5MzVkZTVkMzZkNzk3MzMxOTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEifQ"
+        },
+        {
+          "resource": "repo://apps/mobile/diet/mealItemOperations.ts#L80-L90",
+          "version": "repo-lines-v1:sha256:a4f69aeef511539ca6e12fed1cbfc74647a42ab0b0bcc60b79aea97084fc7847:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5MTg4YjEzNGU1NjNiZjI4NzgxYTZmOWI2MmY1MzIwOGQzY2I0NGJkNGM4YjAwOGYyN2Q1Y2YyZWQ3ZDEwZGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5NGJlNzUzYTg0NThkYzI5YzhkOTE3NGIwZmViMGUxZDJmOTI4MGRhMTc5YzUzMjRiZTg5MjVhNDZjYTliZjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMDQwZTA5NWE5NGUyYWRhNzRlNDIxZjM3MTg3NTFhOTFhODEwYmZkNjZmNDhmNGU5MzljN2I3NDgwZWI2NzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFhZGZmYzkwYzA1M2M5ZWRhOGYxNDZhMjU4OWFjYzFjMDA4NzlmN2IzN2YxZjM5NWZhYTBiZTViNWVjZmE1NDAifQ"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.0",
-    "at": "2026-11-11T15:41:01.947Z"
+    "at": "2026-11-26T17:57:31.517Z"
   }
 }

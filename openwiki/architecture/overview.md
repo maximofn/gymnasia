@@ -60,12 +60,14 @@ sources:
     resource: repo://README.md
   - id: openwiki-source-3a6fcd656a0c5c85a01f8e48
     resource: repo://scripts/mobile-boundaries/check.mjs
+  - id: openwiki-source-ccc4d57151a4dc51ade16829
+    resource: repo://scripts/mobile-boundaries/check.test.mjs
   - id: openwiki-source-6f9dc1fe6ee9c17751b010df
     resource: repo://scripts/mobile-boundaries/policy.json
-generated: { by: "openwiki/0.6.0", at: "2026-11-11T15:41:01.947Z" }
+generated: { by: "openwiki/0.6.0", at: "2026-11-26T17:57:31.517Z" }
 verified:
   - by: openwiki/0.6.0
-    at: 2026-11-08T14:36:51.071Z
+    at: 2026-11-26T17:57:31.517Z
 ---
 
 # Arquitectura local-first y fronteras del sistema
@@ -181,9 +183,10 @@ npm test
 npm run check:mobile-boundaries
 ```
 
-El último comando analiza los módulos fuente de `apps/mobile` —no los tests ni los artefactos generados— y falla ante módulos sin capa, imports locales no resolubles, dependencias entre capas no permitidas, imports que no usan la entrada pública del destino, excepciones heredadas ya innecesarias o ciclos. Es la comprobación que protege la separación entre shell, controladores, plataforma y dominios; no sustituye una prueba de comportamiento.
+El último comando recorre los archivos `.ts`, `.tsx`, `.js` y `.mjs` de `apps/mobile` que no estén excluidos por la política —por ejemplo, tests, `dist/`, `assets/`, `public/` y `scripts/`—. Extrae imports y reexports estáticos, `import()` dinámicos y `require()`; falla ante módulos sin capa, imports locales no resolubles, dependencias entre capas no permitidas, cruces que no usan una entrada pública declarada, excepciones heredadas que ya no se usan o ciclos locales. Las restricciones externas son igualmente explícitas: por ejemplo, `controllers` no puede importar React Native ni Expo y `platform` no puede importar React. Es la comprobación que protege la separación entre shell, controladores, plataforma y dominios; no sustituye una prueba de comportamiento.
 
-<!-- openwiki: broken internal link [../quickstart.md#mapa-compacto-de-tareas] heading anchor "mapa-compacto-de-tareas" does not exist in "../quickstart.md". Fix the href or restore the target, then delete this comment. -->
-Después seleccione el control según el límite modificado, sin convertir esta página en un inventario de scripts: política y seguridad sanitaria requieren sus checks de artefactos y reglas; catálogos, privacidad/persistencia, permisos o configuración nativa, proxy y release tienen controles propios. La [guía de inicio](../quickstart.md#mapa-compacto-de-tareas) enlaza cada superficie con su validación mínima y las páginas de [runtime del agente](../agent/runtime.md), [repositorios de contenido](../content/repositories.md), [shell móvil](../mobile/application-shell.md) y [build, release y pruebas](../operations/build-release-and-testing.md) especifican qué prueba focalizada corresponde.
+Las pruebas de `scripts/mobile-boundaries/check.test.mjs` construyen árboles temporales para comprobar que se aceptan entradas públicas y `import()` dinámicos, y que se rechazan un acceso privado entre capas, una API externa prohibida y un ciclo. Al extender la política, añada una prueba de ese tipo para que una modificación del analizador no relaje inadvertidamente la frontera.
+
+Después seleccione el control según el límite modificado, sin convertir esta página en un inventario de scripts: política y seguridad sanitaria requieren sus checks de artefactos y reglas; catálogos, privacidad/persistencia, permisos o configuración nativa, proxy y release tienen controles propios. La [guía de inicio](../quickstart.md) enlaza cada superficie con su validación mínima y las páginas de [runtime del agente](../agent/runtime.md), [repositorios de contenido](../content/repositories.md), [shell móvil](../mobile/application-shell.md) y [build, release y pruebas](../operations/build-release-and-testing.md) especifican qué prueba focalizada corresponde.
 
 Para una modificación del Worker, ejecute `npm --workspace apps/feedback-worker run test`. La suite construye un entorno con D1 falso, token, sal y repositorio de prueba, y sustituye `fetch`; por ello verifica el contrato y los fallos del Worker sin usar la credencial ni la red reales. Para una ruta web, añada `npm --workspace apps/mobile run build:web`; la exportación no acredita por sí misma capacidades nativas.

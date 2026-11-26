@@ -1,7 +1,7 @@
 ---
 type: concepto
 title: Mediciones y métricas corporales
-description: Contrato, edición y persistencia local de las mediciones corporales móviles. Describe el recorrido desde la pantalla y el borrador de dieta hasta las herramientas del agente y sus pruebas de contrato.
+description: Contrato, edición, borrado y persistencia local de las mediciones corporales móviles. Cubre la pantalla, el borrador del plan de dieta, las herramientas del agente, los recibos de operación y el tratamiento privado de fotos.
 tags: [mobile, measurements, validation, persistence, diet]
 okf:
   version: 1
@@ -13,16 +13,17 @@ related:
   - ./local-state-and-backup.md
   - ./diet-and-food-estimation.md
   - ../agent/runtime.md
-verified:
-  - by: openwiki/0.6.0
-    at: 2026-10-20T13:07:24.686Z
 sources:
+  - id: openwiki-source-404a4ecb653d0577876809d2
+    resource: repo://apps/mobile/agent/measurementDeletion.test.ts
   - id: openwiki-source-ce025f2f0f394ccba9235558
     resource: repo://apps/mobile/agent/toolDefinitions.ts
   - id: openwiki-source-d3be928c369037f29888bc0b
     resource: repo://apps/mobile/agent/toolExecutor.ts
   - id: openwiki-source-929e8e1df23628a3f3848ff8
     resource: repo://apps/mobile/App.tsx
+  - id: openwiki-source-c13b295e970a1149f0f40cbd
+    resource: repo://apps/mobile/backup/measurementMedia.ts
   - id: openwiki-source-38706b8a9c8db94990f38e34
     resource: repo://apps/mobile/controllers/measurementsController.ts
   - id: openwiki-source-f4cb42639b722f40aa5d0429
@@ -35,12 +36,17 @@ sources:
     resource: repo://apps/mobile/measurements/measurementContract.ts
   - id: openwiki-source-2738c54d099fb7a1c8c82e19
     resource: repo://apps/mobile/measurements/measurementSummary.test.ts
-generated: { by: "openwiki/0.6.0", at: "2026-10-20T13:07:24.686Z" }
+  - id: openwiki-source-5d5e12ead8a32eca07439b03
+    resource: repo://apps/mobile/screens/SettingsScreen.tsx
+verified:
+  - by: openwiki/0.6.0
+    at: 2026-11-26T17:57:31.517Z
+generated: { by: "openwiki/0.6.0", at: "2026-11-26T17:57:31.517Z" }
 ---
 
 # Mediciones y métricas corporales
 
-`apps/mobile/measurements/measurementContract.ts` es el límite de dominio del historial. Centraliza la forma almacenada, normalización, mutaciones y proyecciones derivadas; la pantalla Medidas, el borrador del plan de dieta y las herramientas del agente deben pasar por él. Peso y altura no tienen una segunda copia persistida en `dietSettings`.
+`apps/mobile/measurements/measurementContract.ts` es el límite de dominio del historial. Centraliza la forma almacenada, normalización, mutaciones y proyecciones derivadas; la pantalla Medidas, los ajustes, el borrador del plan de dieta y las herramientas del agente deben pasar por él. Peso y altura no tienen una segunda copia persistida en `dietSettings`.
 
 ## Registro e invariantes
 
@@ -80,9 +86,9 @@ flowchart TD
 
 *El borrador decide el valor efectivo y el parche; el contrato decide si la medición de hoy puede persistirse.*
 
-## Entrada manual, fotos y persistencia
+## Edición, borrado y fotos desde la interfaz
 
-`App.tsx` crea `useMeasurementsRuntime` con `LocalStoreRuntime`, servicios de plataforma, preferencias y un generador de IDs. El runtime prepara una vez el historial por cambio de `store.measurements`; de ahí toma últimos peso y altura y el resumen de la pantalla. Cuando aún no hay altura medida, usa como alternativa un `height_cm` positivo de los ajustes de dieta para presentación y cálculos, sin convertirlo en una medición.
+`useMeasurementsRuntime` adapta `LocalStoreRuntime`, los servicios de plataforma, preferencias y el generador de IDs a la pantalla. Prepara una vez el historial por cambio de `store.measurements`; de ahí toma últimos peso y altura y el resumen. Cuando aún no hay altura medida, usa como alternativa un `height_cm` positivo de los ajustes de dieta para presentación y cálculos, sin convertirlo en una medición.
 
 La entrada manual conserva localmente fecha, textos, foto, estado de edición, carga y overlays. Al guardar:
 
@@ -92,7 +98,9 @@ La entrada manual conserva localmente fecha, textos, foto, estado de edición, c
 4. para una alta hace `upsertMeasurementByDate`; para una edición, `replaceMeasurementById`;
 5. ejecuta la mutación con `localStore.commit` y solo cierra el formulario tras el commit exitoso.
 
-Al reemplazar o borrar un registro, el controlador elimina una foto propia únicamente si ya no está referenciada. Tras hidratar, intenta migrar fotos heredadas a ese almacenamiento; en web no puede garantizar la supervivencia de esas URI y muestra un aviso para exportar una copia. Esto evita tratar una URI de galería o cámara como respaldo durable y reduce el riesgo de borrar un medio aún compartido.
+En Ajustes, cada registro tiene acciones directas **Editar** y **Eliminar**. El borrado de UI pasa el `id` al runtime, que ejecuta `deleteMeasurementById` dentro de `localStore.commit`. Un resultado de contrato inválido o un fallo del commit deja la colección sin cambio y muestra un error; no hay una confirmación intermedia en ese recorrido. Tras un commit de borrado correcto se intenta liberar la foto eliminada solo si es propia y ninguna medición restante referencia la misma URI.
+
+Las fotos son datos sensibles y no se deben tratar como una URI durable de galería o cámara. En nativo, una foto nueva se renderiza como JPEG —máximo 2048 px de lado, calidad 0,8—, se le quitan metadatos, se limita a 5 MiB y se guarda en el directorio privado de medios con nombre SHA-256. La misma URI ya propia se vuelve a validar. En web el resultado no es propio, por lo que no ofrece esa garantía de persistencia. Tras hidratar, el runtime intenta migrar URI heredadas al almacén propio; en web avisa que se debe exportar una copia. La limpieza de reemplazos, borrados y huérfanos nunca borra una URI aún referenciada; los fallos de limpieza se dejan para una pasada posterior y no revierten un cambio de medición ya durable.
 
 ## Lecturas derivadas y visualización
 
@@ -100,13 +108,15 @@ Los selectores trabajan sobre un historial preparado y ordenado. Para cada métr
 
 El porcentaje de grasa explícito tiene prioridad. Si falta, se estima con cintura, cuello y altura; para `female` también requiere cadera. La estimación devuelve `null` cuando faltan prerrequisitos o las relaciones son inválidas, y acota su resultado a 3–60 con un decimal. Las preferencias de métrica y periodo de gráfico se actualizan fuera de la colección de mediciones.
 
-## Herramientas del agente: límite de privacidad y confirmación
+## Herramientas del agente: privacidad, commit y recibos
 
 `read_measurement` valida la fecha y rechaza días duplicados antes de responder. Solo serializa `measured_on` y las métricas: elimina `id`, `photo_uri` y `measured_at`, por lo que el agente no recibe identidad interna, URI de fotografía ni timestamp técnico.
 
 `write_measurement` está declarado como `local_write`. Recibe `data` estructurado y `clear_fields`: campos omitidos conservan el valor existente y los solicitados para borrar pasan a `null`. El parser rechaza campos desconocidos, un parche vacío, tipos inválidos y actualizar/borrar el mismo campo en la operación. Después delega el `upsert` al contrato, por lo que mantiene los límites de fecha, métrica, contenido y duplicados de la UI.
 
-La escritura requiere `context.commitStore`; el adaptador de `App.tsx` lo conecta con `localStoreRuntime.commit`. No hay mensaje de éxito ni `markEffectCommitted` antes de que ese commit resuelva. Si el commit lanza, el ejecutor marca el resultado como indeterminado; si el contrato falla dentro del mutador, responde con conflicto sin modificar la colección. Con `operationId`, el ID de medición se deriva de la operación y se añade un recibo `write_measurement`, lo que permite a la infraestructura de operaciones reconocer la escritura repetida sin crear otra medición.
+La escritura exige `context.commitStore`; `App.tsx` lo adapta a `localStoreRuntime.commit`. No se llama a `markEffectCommitted` ni se comunica éxito hasta que ese commit resuelve. Una excepción de persistencia se transforma en estado indeterminado, mientras que un rechazo del contrato dentro del mutador retorna `measurement_conflict` sin modificar la colección. Con `operationId`, el ID de medición se deriva de la operación y el mismo commit añade un recibo `write_measurement`; la reconciliación inspecciona los recibos del almacén local para reconocer una operación ya confirmada.
+
+`delete_measurement` también es `local_write`, pero borra el registro completo por fecha únicamente cuando el usuario lo pidió expresamente. Primero valida la fecha y, dentro del commit, exige exactamente una medición para ese día: una fecha ausente o ambigua no borra nada. Un recibo previo de la misma `operationId` devuelve `already_applied`; un borrado nuevo elimina el registro y añade el recibo `delete_measurement` en la misma mutación durable. Solo después marca el efecto como confirmado e intenta liberar la foto con la misma política de referencias que la UI. Su salida no expone `id`, URI ni timestamp: informa fecha, métricas eliminadas y si tenía foto.
 
 ```mermaid
 sequenceDiagram
@@ -139,10 +149,11 @@ Al añadir una métrica, actualice de forma coordinada `MEASUREMENT_METRIC_KEYS`
 - `measurementContract.test.ts` cubre calendario y futuro, redondeo y máximo de grasa, migración heredada, parches del agente, duplicados, reemplazo, borrado, límite, resumen, gráficas y estimación.
 - `measurementSummary.test.ts` compara resumen y gráficas con una referencia, permuta historiales y exige una sola ordenación más recorridos lineales del historial preparado. Los contadores de rendimiento no contienen valores de medición.
 - `agent/toolExecutor.test.ts` verifica escritura estructurada, preservación de campos omitidos, borrado explícito, rechazo sin persistir ante dato inválido o día duplicado y resultado indeterminado si falla el almacenamiento.
+- `agent/measurementDeletion.test.ts` cubre el recibo y resultado del borrado, protección ante fecha inexistente, inválida o ambigua, reintento idempotente, liberación de foto y la secuencia para corregir una fecha equivocada.
 
 Para cambios de contrato, borrador o herramienta, ejecute:
 
 ```bash
-npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/measurements/bodyMetricsDraft.test.ts apps/mobile/measurements/measurementContract.test.ts apps/mobile/measurements/measurementSummary.test.ts apps/mobile/agent/toolExecutor.test.ts
+npx vitest run --config apps/mobile/vitest.config.mts apps/mobile/measurements/bodyMetricsDraft.test.ts apps/mobile/measurements/measurementContract.test.ts apps/mobile/measurements/measurementSummary.test.ts apps/mobile/agent/toolExecutor.test.ts apps/mobile/agent/measurementDeletion.test.ts
 npx tsc --noEmit -p apps/mobile/tsconfig.json
 ```
