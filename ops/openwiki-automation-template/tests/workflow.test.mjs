@@ -170,6 +170,9 @@ test("auto-merges only complete OpenWiki documentation from allowed paths", asyn
     /classify-openwiki-error\.mjs \\\n\s+"\$RUNNER_TEMP\/openwiki-personal\.log"/u,
   );
   assert.match(workflow, /steps\.personal\.outputs\.failure_category/u);
+  assert.match(workflow, /\/ 86400 % 3 \)\)" -eq 0 \]; then\n\s+WIKI=personal/u);
+  assert.match(workflow, /steps\.oauth\.outcome == 'success' && steps\.plan\.outputs\.wiki == 'gymnasia'/u);
+  assert.match(workflow, /steps\.oauth\.outcome == 'success' && steps\.plan\.outputs\.wiki == 'personal'/u);
   assert.match(workflow, /gh pr diff "\$PR_URL" --name-only/u);
   assert.match(workflow, /gh pr merge "\$PR_URL" --auto --merge/u);
   assert.doesNotMatch(workflow, /gh pr review/u);
